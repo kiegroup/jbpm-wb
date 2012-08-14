@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.bpm.console.client.model;
+package org.drools.guvnor.server.editors.jbpm.inbox;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jboss.bpm.console.client.model.TaskSummary;
 
 /**
  *

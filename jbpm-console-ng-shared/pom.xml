@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.drools</groupId>
     <artifactId>jbpm-console-ng</artifactId>
-    <version>5.5.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>jbpm-console-ng-shared</artifactId>
@@ -31,16 +31,11 @@
   <description>jBPM Console NG - Shared files</description>
 
   <dependencies>
+    <!-- Errai -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-marshalling</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-human-task-core-cdi</artifactId>
-    </dependency>
-
-    <!-- Errai Core -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-bus</artifactId>

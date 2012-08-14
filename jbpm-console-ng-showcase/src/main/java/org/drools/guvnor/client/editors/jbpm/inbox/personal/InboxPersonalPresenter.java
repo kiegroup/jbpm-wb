@@ -15,19 +15,18 @@
  */
 package org.drools.guvnor.client.editors.jbpm.inbox.personal;
 
-import org.jboss.bpm.console.client.TaskServiceEntryPoint;
-import org.jboss.bpm.console.client.model.TaskSummary;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
-import java.util.Date;
-import java.util.Set;
-import javax.annotation.PostConstruct;
-
+import org.jboss.bpm.console.client.model.TaskSummary;
+import org.jboss.bpm.console.shared.TaskServiceEntryPoint;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.uberfire.client.annotations.WorkbenchPartTitle;

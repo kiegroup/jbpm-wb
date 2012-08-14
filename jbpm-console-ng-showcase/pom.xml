@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.drools</groupId>
     <artifactId>jbpm-console-ng</artifactId>
-    <version>5.5.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>jbpm-console-ng-showcase</artifactId>
@@ -30,7 +30,7 @@
 
   <name>jBPM Console NG - Showcase</name>
   <description>jBPM Console NG - Showcase</description>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.drools</groupId>
@@ -128,14 +128,37 @@
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
+    <!-- <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
+    </dependency> -->
+
+
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-xjc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.xml.stream</groupId>
+      <artifactId>stax-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mvel</groupId>
+      <artifactId>mvel2</artifactId>
     </dependency>
 
   </dependencies>
 
-  
+
   <build>
     <plugins>
 
@@ -153,12 +176,10 @@
             <compileSourcesArtifact>org.uberfire:backend-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:backend-commons</compileSourcesArtifact>
             <compileSourcesArtifact>org.drools:jbpm-console-ng-shared</compileSourcesArtifact>
-            <compileSourcesArtifact>org.jbpm:jbpm-human-task-core-cdi</compileSourcesArtifact>
           </compileSourcesArtifacts>
           <runTarget>org.drools.guvnor.jBPMShowcase/jBPM.html</runTarget>
           <extraJvmArgs>-Xmx1024m -XX:MaxPermSize=256m</extraJvmArgs>
           <soyc>false</soyc>
-          <hostedWebapp>src/main/webapp/</hostedWebapp>
           <server>org.jboss.errai.cdi.server.gwt.JettyLauncher</server>
           <!-- drools-compiler has dependency on org.eclipse.jdt.core.compiler:ecj:jar:3.5.1:compile,
               see http://code.google.com/p/google-web-toolkit/issues/detail?id=4479 -->
