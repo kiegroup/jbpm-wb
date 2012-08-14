@@ -24,21 +24,20 @@
     <version>5.5.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>uberfire-jbpm</artifactId>
+  <artifactId>jbpm-console-ng</artifactId>
   <packaging>pom</packaging>
 
-  <name>jBPM ÜberFire Modules</name>
-  <description>jBPM ÜberFire Modules</description>
+  <name>jBPM Console NG</name>
+  <description>jBPM Console NG Modules</description>
 
   <properties>
-    <errai.version>2.1.0-SNAPSHOT</errai.version>
+    <errai.version>2.1.0.Beta1</errai.version>
     <uberfire.version>0.1-SNAPSHOT</uberfire.version>
     <jetty.version>6.1.25</jetty.version>
     <gwt.maven.version>2.4.0</gwt.maven.version>
     <jetty.version>6.1.25</jetty.version>
     <weld.version>1.1.6.Final</weld.version>
     <uberfire.version>0.1-SNAPSHOT</uberfire.version>
-    <resteasy.version>2.3.3.Final</resteasy.version>
     <gwt.version>2.4.0</gwt.version>
   </properties>
 
@@ -189,15 +188,15 @@
   </build>
 
   <modules>
-    <module>jbpm-console-shared</module>
-    <module>jbpm-console-client</module>
+    <module>jbpm-console-ng-showcase</module>
+    <module>jbpm-console-ng-shared</module>
   </modules>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>jbpm-console-shared</artifactId>
+        <artifactId>jbpm-console-ng-shared</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -244,11 +243,7 @@
         <version>${uberfire.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>guvnorng-repository</artifactId>
-        <version>5.5.0-SNAPSHOT</version>
-      </dependency>
+      
 
       <dependency>
         <groupId>javax.enterprise</groupId>
