@@ -44,7 +44,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.drools</groupId>
+                <groupId>org.jbpm</groupId>
                 <artifactId>jbpm-console-ng-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>

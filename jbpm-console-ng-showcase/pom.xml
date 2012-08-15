@@ -33,7 +33,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.drools</groupId>
+            <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-shared</artifactId>
         </dependency>
         
@@ -149,7 +149,7 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
                 <configuration>
-                    <module>org.drools.guvnor.FastCompiledjBPMShowcase</module>
+                    <module>org.jbpm.console.ng.FastCompiledjBPMShowcase</module>
                     <logLevel>INFO</logLevel>
                     <compileSourcesArtifacts>
                         <compileSourcesArtifact>org.uberfire:widgets-core</compileSourcesArtifact>
@@ -158,9 +158,9 @@
                         <compileSourcesArtifact>org.uberfire:vfs-model</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:backend-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:backend-commons</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.drools:jbpm-console-ng-shared</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-shared</compileSourcesArtifact>
                     </compileSourcesArtifacts>
-                    <runTarget>org.drools.guvnor.jBPMShowcase/jBPM.html</runTarget>
+                    <runTarget>org.jbpm.console.ng.jBPMShowcase/jBPM.html</runTarget>
                     <extraJvmArgs>-Xmx1024m -XX:MaxPermSize=256m</extraJvmArgs>
                     <soyc>false</soyc>
                     <server>org.jboss.errai.cdi.server.gwt.JettyLauncher</server>
