@@ -32,7 +32,9 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DatePicker;
 import java.util.Date;
+import javax.enterprise.event.Event;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 @Dependent
 public class NewPersonalTaskViewImpl extends Composite implements NewPersonalTaskPresenter.InboxView {
@@ -47,7 +49,6 @@ public class NewPersonalTaskViewImpl extends Composite implements NewPersonalTas
     public Button addTaskButton;
     @UiField
     public Button clearButton;
-    
     @UiField
     public TextBox userText;
     @UiField
@@ -60,33 +61,34 @@ public class NewPersonalTaskViewImpl extends Composite implements NewPersonalTas
     public TextBox taskPriorityText;
     @UiField
     public DatePicker dueDate;
-    
-    
+    @Inject
+    private Event<NotificationEvent> notification;
+
     @PostConstruct
     public void init() {
 
         initWidget(uiBinder.createAndBindUi(this));
-       
+
     }
 
     @UiHandler("addTaskButton")
     public void addTaskButton(ClickEvent e) {
-        presenter.addTask(userText.getText(), groupText.getText(), 
-                            taskNameText.getText(), taskDescriptionText.getText(), 
-                            dueDate.getValue(), taskPriorityText.getText());
+        presenter.addTask(userText.getText(), groupText.getText(),
+                taskNameText.getText(), taskDescriptionText.getText(),
+                dueDate.getValue(), taskPriorityText.getText());
     }
-
-    
 
     @UiHandler("clearButton")
     public void clearButton(ClickEvent e) {
-       userText.setText("");
-       groupText.setText("");
-       taskNameText.setText("");
-       taskDescriptionText.setText("");
-       dueDate.setValue(new Date());
+        userText.setText("");
+        groupText.setText("");
+        taskNameText.setText("");
+        taskDescriptionText.setText("");
+        dueDate.setValue(new Date());
 
     }
 
-    
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
+    }
 }

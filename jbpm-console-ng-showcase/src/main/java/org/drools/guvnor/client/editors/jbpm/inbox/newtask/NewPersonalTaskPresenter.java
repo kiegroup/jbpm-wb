@@ -21,8 +21,9 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import java.util.Date;
 import javax.annotation.PostConstruct;
-
 import org.jboss.bpm.console.shared.TaskServiceEntryPoint;
+
+
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -36,6 +37,7 @@ public class NewPersonalTaskPresenter {
     public interface InboxView
             extends
             IsWidget {
+        void displayNotification(String text);
     }
     @Inject
     InboxView view;
@@ -74,7 +76,7 @@ public class NewPersonalTaskPresenter {
         taskServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long taskId) {
-                System.out.println("The returned Task Id is = " + taskId);
+                view.displayNotification("Task Created (id = " + taskId +")");
                 
             }
         }).addTask(str, null);

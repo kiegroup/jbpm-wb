@@ -38,7 +38,6 @@ import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
@@ -52,7 +51,9 @@ import com.google.gwt.view.client.SelectionModel;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Set;
+import javax.enterprise.event.Event;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 @Dependent
 public class InboxGroupViewImpl extends Composite implements InboxGroupPresenter.InboxView {
@@ -65,20 +66,17 @@ public class InboxGroupViewImpl extends Composite implements InboxGroupPresenter
     private InboxGroupPresenter presenter;
     @UiField
     public Button refreshTasksButton;
-    
     @UiField
     public TextBox userText;
     @UiField
     public TextBox groupText;
-   
     @UiField(provided = true)
     public DataGrid<TaskSummary> myGroupTaskListGrid;
-
     @UiField(provided = true)
     public SimplePager pagerGroup;
-    
-    
     private Set<TaskSummary> selectedGroupTasks;
+    @Inject
+    private Event<NotificationEvent> notification;
     
     public static final ProvidesKey<TaskSummary> KEY_PROVIDER = new ProvidesKey<TaskSummary>() {
         public Object getKey(TaskSummary item) {
@@ -115,7 +113,7 @@ public class InboxGroupViewImpl extends Composite implements InboxGroupPresenter
             public void onSelectionChange(SelectionChangeEvent event) {
 
                 selectedGroupTasks = selectionModel.getSelectedSet();
-               
+
             }
         });
 
@@ -123,16 +121,14 @@ public class InboxGroupViewImpl extends Composite implements InboxGroupPresenter
                 .<TaskSummary>createCheckboxManager());
 
         initTableColumns(selectionModel, sortHandler);
-        
-      
+
+
         initWidget(uiBinder.createAndBindUi(this));
 
         presenter.addDataDisplay(myGroupTaskListGrid);
-        
-        
-    }
 
-    
+
+    }
 
     @UiHandler("refreshTasksButton")
     public void refreshTasksButton(ClickEvent e) {
@@ -141,8 +137,8 @@ public class InboxGroupViewImpl extends Composite implements InboxGroupPresenter
 
     @UiHandler("claimTaskButton")
     public void claimTaskButton(ClickEvent e) {
-       presenter.claimTasks(selectedGroupTasks, userText.getText(), Arrays.asList(groupText.getText().split(",")));
-       
+        presenter.claimTasks(selectedGroupTasks, userText.getText(), Arrays.asList(groupText.getText().split(",")));
+
     }
 
     private void initTableColumns(final SelectionModel<TaskSummary> selectionModel,
@@ -227,7 +223,7 @@ public class InboxGroupViewImpl extends Composite implements InboxGroupPresenter
         myGroupTaskListGrid.addColumn(taskPriorityColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Priority")));
         myGroupTaskListGrid.setColumnWidth(taskPriorityColumn, 40, Unit.PCT);
 
-         // Status.
+        // Status.
         Column<TaskSummary, String> statusColumn = new Column<TaskSummary, String>(new TextCell()) {
             @Override
             public String getValue(TaskSummary object) {
@@ -243,7 +239,7 @@ public class InboxGroupViewImpl extends Composite implements InboxGroupPresenter
 
         myGroupTaskListGrid.addColumn(statusColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Status")));
         myGroupTaskListGrid.setColumnWidth(statusColumn, 50, Unit.PCT);
-        
+
         // User.
         Column<TaskSummary, String> userColumn = new Column<TaskSummary, String>(new TextCell()) {
             @Override
@@ -262,8 +258,8 @@ public class InboxGroupViewImpl extends Composite implements InboxGroupPresenter
         myGroupTaskListGrid.setColumnWidth(userColumn, 50, Unit.PCT);
 
 
-        
-        
+
+
         // Description.
         Column<TaskSummary, String> descriptionColumn = new Column<TaskSummary, String>(new TextCell()) {
             @Override
@@ -272,10 +268,14 @@ public class InboxGroupViewImpl extends Composite implements InboxGroupPresenter
             }
         };
         descriptionColumn.setSortable(true);
-        
+
 
         myGroupTaskListGrid.addColumn(descriptionColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Description")));
         myGroupTaskListGrid.setColumnWidth(descriptionColumn, 150, Unit.PCT);
-        
+
+    }
+
+    public void displayNotification(String text) {
+        notification.fire( new NotificationEvent( text ) );
     }
 }

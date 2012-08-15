@@ -26,8 +26,9 @@ import com.google.gwt.view.client.ListDataProvider;
 
 import java.util.Set;
 import javax.annotation.PostConstruct;
-
 import org.jboss.bpm.console.shared.TaskServiceEntryPoint;
+
+
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -41,6 +42,8 @@ public class InboxGroupPresenter {
     public interface InboxView
             extends
             IsWidget {
+
+        void displayNotification(String text);
     }
     @Inject
     InboxView view;
@@ -66,17 +69,15 @@ public class InboxGroupPresenter {
     }
 
     public void refreshGroupTasks(String userId, List<String> groupIds) {
-        System.out.println(" XXX Looking for Group Tasks for userId = "+userId+" groupIds"+groupIds);
         taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback(List<TaskSummary> tasks) {
-                System.out.println(" XXX Number of group tasks returned = " + tasks.size() );
                 dataProvider.setList(tasks);
                 dataProvider.refresh();
 
             }
-        }).getTasksAssignedAsPotentialOwner(userId, groupIds , "en-UK");
-        
+        }).getTasksAssignedAsPotentialOwner(userId, groupIds, "en-UK");
+
     }
 
     public void claimTasks(Set<TaskSummary> selectedTasks, final String userId, final List<String> groupIds) {
@@ -84,13 +85,13 @@ public class InboxGroupPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
-
-                     refreshGroupTasks(userId, groupIds);
+                    view.displayNotification("Task(s) Claimed");
+                    refreshGroupTasks(userId, groupIds);
 
                 }
             }).claim(ts.getId(), userId);
         }
-        
+
 
     }
 

@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import org.jboss.bpm.console.shared.TaskServiceEntryPoint;
 
 import org.jboss.bpm.console.client.model.TaskSummary;
-import org.jboss.bpm.console.shared.TaskServiceEntryPoint;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.task.Task;
 import org.jbpm.task.api.TaskInstanceService;

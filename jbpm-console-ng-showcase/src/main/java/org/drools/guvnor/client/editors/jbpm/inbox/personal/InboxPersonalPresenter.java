@@ -32,6 +32,7 @@ import org.jboss.errai.ioc.client.api.Caller;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 @Dependent
 @WorkbenchScreen(identifier = "Personal Tasks")
@@ -41,6 +42,8 @@ public class InboxPersonalPresenter {
     public interface InboxView
             extends
             IsWidget {
+        
+        void displayNotification(String text);
     }
     @Inject
     InboxView view;
@@ -66,32 +69,13 @@ public class InboxPersonalPresenter {
         
     }
 
-    public void addTask(final String userId, String groupId) {
-        String str = "(with (new Task()) { priority = " + Math.random() % 5 + ", taskData = (with( new TaskData()) { } ), ";
-        str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
-        if (userId != null && !userId.equals("")) {
-            str += " [new User('" + userId + "')  ], }),";
-        }
-        if (groupId != null && !groupId.equals("")) {
-            str += " [new Group('" + groupId + "')  ], }),";
-        }
-        
-        str += "names = [ new I18NText( 'en-UK', 'This is my task " + Math.random() + " name " + new Date() + "')] })";
-        taskServices.call(new RemoteCallback<Long>() {
-            @Override
-            public void callback(Long taskId) {
-                System.out.println("The returned Task Id is = " + taskId);
-                refreshTasks(userId);
-            }
-        }).addTask(str, null);
-        
-    }
+   
 
     public void refreshTasks(String userId) {
         taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback(List<TaskSummary> tasks) {
-                System.out.println(" XXX Number of personal tasks returned = " + tasks.size());
+                
                 dataProvider.setList(tasks);
                 dataProvider.refresh();
 
@@ -100,11 +84,12 @@ public class InboxPersonalPresenter {
         
     }
 
-    public void startTasks(Set<TaskSummary> selectedTasks, final String userId) {
+    public void startTasks(final Set<TaskSummary> selectedTasks, final String userId) {
         for (TaskSummary ts : selectedTasks) {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
+                    view.displayNotification("Task(s) Started");
                     refreshTasks(userId);
                 }
             }).start(ts.getId(), userId);
@@ -118,6 +103,7 @@ public class InboxPersonalPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
+                    view.displayNotification("Task(s) Released");
                     refreshTasks(userId);
                 }
             }).release(ts.getId(), userId);
@@ -132,6 +118,7 @@ public class InboxPersonalPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
+                    view.displayNotification("Task(s) Completed");
                     refreshTasks(userId);
                 }
             }).complete(ts.getId(), userId, null);

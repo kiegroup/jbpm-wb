@@ -52,8 +52,10 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
 import java.util.Comparator;
 import java.util.Set;
+import javax.enterprise.event.Event;
 import org.drools.guvnor.client.editors.jbpm.inbox.events.InboxAction;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 @Dependent
 public class InboxPersonalViewImpl extends Composite implements InboxPersonalPresenter.InboxView {
@@ -81,6 +83,10 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
     @UiField(provided = true)
     public SimplePager pager;
     private Set<TaskSummary> selectedTasks;
+    
+    @Inject
+    private Event<NotificationEvent> notification;
+    
     public static final ProvidesKey<TaskSummary> KEY_PROVIDER = new ProvidesKey<TaskSummary>() {
         public Object getKey(TaskSummary item) {
             return item == null ? null : item.getId();
@@ -290,4 +296,9 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
         myTaskListGrid.setColumnWidth(descriptionColumn, 150, Unit.PCT);
 
     }
+    
+    public void displayNotification(String text){
+        notification.fire( new NotificationEvent( text ) );
+    }
+    
 }
