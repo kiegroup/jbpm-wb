@@ -4,6 +4,7 @@
  */
 package org.jbpm.console.ng.shared;
 
+import java.util.Date;
 import org.jbpm.console.ng.client.model.TaskSummary;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,8 @@ public interface TaskServiceEntryPoint {
 
     List<TaskSummary> getSubTasksByParent(long parentId);
     
+   
+    
     public long addTask(String taskString, Map<String, Object> params);
 
     public void start(long taskId, String user);
@@ -47,4 +50,27 @@ public interface TaskServiceEntryPoint {
     public void complete(long taskId, String user, Map<String, Object> params);
   
     public void release(long taskId, String user);
+    
+    void setPriority(long taskId, int priority);
+    
+    void setExpirationDate(long taskId, Date date);
+    
+    public void setDescriptions(long taskId, List<String> descriptions);
+    
+    public void setSkipable(long taskId, boolean skipable);
+    
+    void setSubTaskStrategy(long taskId, String strategy);
+    
+    int getPriority(long taskId);
+    
+    Date getExpirationDate(long taskId);
+    
+    List<String> getDescriptions(long taskId);
+    
+    boolean isSkipable(long taskId);
+    
+    String getSubTaskStrategy(long taskId);
+    
+    TaskSummary getTaskDetails(long taskId);
+    
 }
