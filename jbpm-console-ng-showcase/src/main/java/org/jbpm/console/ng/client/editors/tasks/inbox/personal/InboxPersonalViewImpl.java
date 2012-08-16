@@ -145,6 +145,10 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
 
     @UiHandler("startTaskButton")
     public void startTaskButton(ClickEvent e) {
+        if(selectedTasks.isEmpty()){
+            displayNotification("Please Select at least one Task to Execute a Quick Action");
+            return;
+        }
         presenter.startTasks(selectedTasks, userText.getText());
 
 
@@ -152,12 +156,20 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
 
     @UiHandler("completeTaskButton")
     public void completeTaskButton(ClickEvent e) {
+        if(selectedTasks.isEmpty()){
+            displayNotification("Please Select at least one Task to Execute a Quick Action");
+            return;
+        }
         presenter.completeTasks(selectedTasks, userText.getText());
 
     }
     
     @UiHandler("releaseTaskButton")
     public void releaseTaskButton(ClickEvent e) {
+        if(selectedTasks.isEmpty()){
+            displayNotification("Please Select at least one Task to Execute a Quick Action");
+            return;
+        }
         presenter.releaseTasks(selectedTasks, userText.getText());
 
 

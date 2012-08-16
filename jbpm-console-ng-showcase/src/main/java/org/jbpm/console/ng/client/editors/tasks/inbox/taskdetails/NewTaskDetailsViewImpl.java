@@ -47,6 +47,12 @@ public class NewTaskDetailsViewImpl extends Composite implements NewTaskDetailsP
     @UiField
     public Button refreshButton;
     @UiField
+    public Button createSubTaskButton;
+    @UiField
+    public TextBox subTaskNameText;
+    @UiField
+    public TextBox subTaskAsigneeText;
+    @UiField
     public TextBox userText;
     @UiField
     public TextBox taskIdText;
@@ -71,10 +77,17 @@ public class NewTaskDetailsViewImpl extends Composite implements NewTaskDetailsP
     }
 
     @UiHandler("updateTaskButton")
-    public void addTaskButton(ClickEvent e) {
+    public void updateTaskButton(ClickEvent e) {
         presenter.updateTask(Long.parseLong(taskIdText.getText()), 
                 taskDescriptionText.getText(),
                 dueDate.getValue(), taskPriorityText.getText());
+    }
+    
+     @UiHandler("createSubTaskButton")
+    public void createSubTaskButton(ClickEvent e) {
+        presenter.addSubTask(Long.parseLong(taskIdText.getText()), 
+                subTaskAsigneeText.getText(),
+                subTaskNameText.getText());
     }
 
     @UiHandler("refreshButton")

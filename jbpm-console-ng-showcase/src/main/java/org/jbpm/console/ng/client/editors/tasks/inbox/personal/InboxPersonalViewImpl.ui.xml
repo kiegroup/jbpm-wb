@@ -28,13 +28,14 @@
     <gwt:VerticalPanel width="100%">
         <gwt:HorizontalPanel width="100%">
             <gwt:HTMLPanel>
-                <gwt:Label>User: </gwt:Label>
+                <gwt:Label>MOCK should be the logged User: </gwt:Label>
                 <gwt:TextBox
                     ui:field='userText'>
-                </gwt:TextBox>  
+                </gwt:TextBox> 
                 <gwt:Button
                     ui:field='refreshTasksButton' >Refresh Tasks
                 </gwt:Button>
+                <gwt:Label>Quick Actions: </gwt:Label> 
                 <gwt:Button
                     ui:field='startTaskButton' >Start Task
                 </gwt:Button>

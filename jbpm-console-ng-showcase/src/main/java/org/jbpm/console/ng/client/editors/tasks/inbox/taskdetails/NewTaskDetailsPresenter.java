@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 
@@ -65,7 +66,7 @@ public class NewTaskDetailsPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "New Task";
+        return "Task Details";
     }
 
     @WorkbenchPartView
@@ -91,19 +92,17 @@ public class NewTaskDetailsPresenter {
 
                 }
             }).setPriority(taskId, Integer.valueOf(priority));
-
-
+            List<String> descriptions = new ArrayList<String>();
+            descriptions.
+                    add(taskDescription);
+                
             taskServices.call(new RemoteCallback<Void>() {
                 @Override
                 public void callback(Void nothing) {
                     view.displayNotification("Task Description Updated for Task id = " + taskId + ")");
 
                 }
-            }).setDescriptions(taskId, new ArrayList<String>() {
-                {
-                    add(taskDescription);
-                }
-            });
+            }).setDescriptions(taskId, descriptions);
 
             taskServices.call(new RemoteCallback<Void>() {
                 @Override
@@ -132,5 +131,21 @@ public class NewTaskDetailsPresenter {
             }
         }).getTaskDetails(taskId);
 
+    }
+    
+    public void addSubTask(final long parentId, String assignee, String taskName) {
+        String str = "(with (new Task()) { taskData = (with( new TaskData( )) { parentId = "+parentId+" } ), ";
+        str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
+        if (assignee != null && !assignee.equals("")) {
+            str += " [new User('" + assignee + "')  ], }),";
+        }
+        str += "names = [ new I18NText( 'en-UK', '" + taskName + "')] })";
+        taskServices.call(new RemoteCallback<Long>() {
+            @Override
+            public void callback(Long taskId) {
+                view.displayNotification("Sub Task Created (id = " + taskId + " for parent: "+parentId+")");
+
+            }
+        }).addTask(str, null);
     }
 }

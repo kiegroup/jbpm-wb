@@ -70,6 +70,20 @@
                 <dp:DatePicker ui:field='dueDate'></dp:DatePicker>
             </gwt:HorizontalPanel>
             <gwt:HorizontalPanel>
+                <gwt:Label>Sub Tasks: </gwt:Label>
+                <gwt:Label>Sub Task Name: </gwt:Label>
+                <gwt:TextBox
+                    ui:field='subTaskNameText'>
+                </gwt:TextBox>
+                <gwt:Label>Sub Task Assignee: </gwt:Label>
+                <gwt:TextBox
+                    ui:field='subTaskAsigneeText'>
+                </gwt:TextBox>
+                <gwt:Button
+                    ui:field='createSubTaskButton'>New Sub Task
+                </gwt:Button>
+            </gwt:HorizontalPanel>
+            <gwt:HorizontalPanel>
                 <gwt:Label>Actions: </gwt:Label>
                 <gwt:Button
                     ui:field='updateTaskButton'>Update Task
