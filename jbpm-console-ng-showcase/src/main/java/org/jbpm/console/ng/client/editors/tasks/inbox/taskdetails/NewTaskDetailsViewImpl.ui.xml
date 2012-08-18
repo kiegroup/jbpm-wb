@@ -66,6 +66,12 @@
                 </gwt:TextBox>
             </gwt:HorizontalPanel>
             <gwt:HorizontalPanel>
+                <gwt:Label>Sub Task Strategy: </gwt:Label>
+                <gwt:TextBox
+                    ui:field='subTaskStrategyText'>
+                </gwt:TextBox>
+            </gwt:HorizontalPanel>
+            <gwt:HorizontalPanel>
                 <gwt:Label>Due Date: </gwt:Label>
                 <dp:DatePicker ui:field='dueDate'></dp:DatePicker>
             </gwt:HorizontalPanel>

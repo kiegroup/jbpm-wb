@@ -42,7 +42,9 @@ public class TaskSummaryHelper {
                                 taskSum.getActivationTime(),
                                 taskSum.getExpirationTime(), 
                                 taskSum.getProcessId(), 
-                                taskSum.getProcessSessionId()));
+                                taskSum.getProcessSessionId(),
+                                taskSum.getSubTaskStrategy().name(),
+                                (int)taskSum.getParentId()));
         }
         return taskSummaries;
     }

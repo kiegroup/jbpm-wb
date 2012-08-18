@@ -176,7 +176,9 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
                 task.getTaskData().getActivationTime(),
                 task.getTaskData().getExpirationTime(),
                 task.getTaskData().getProcessId(),
-                task.getTaskData().getProcessSessionId());
+                task.getTaskData().getProcessSessionId(),
+                task.getSubTaskStrategy().name(),
+                (int)task.getTaskData().getParentId());
     }
     
     

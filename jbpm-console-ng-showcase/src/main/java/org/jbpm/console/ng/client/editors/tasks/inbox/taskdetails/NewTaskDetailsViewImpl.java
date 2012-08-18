@@ -46,6 +46,8 @@ public class NewTaskDetailsViewImpl extends Composite implements NewTaskDetailsP
     public Button updateTaskButton;
     @UiField
     public Button refreshButton;
+     @UiField
+    public TextBox subTaskStrategyText;
     @UiField
     public Button createSubTaskButton;
     @UiField
@@ -79,7 +81,7 @@ public class NewTaskDetailsViewImpl extends Composite implements NewTaskDetailsP
     @UiHandler("updateTaskButton")
     public void updateTaskButton(ClickEvent e) {
         presenter.updateTask(Long.parseLong(taskIdText.getText()), 
-                taskDescriptionText.getText(),
+                taskDescriptionText.getText(), subTaskStrategyText.getText(),
                 dueDate.getValue(), taskPriorityText.getText());
     }
     
@@ -123,7 +125,10 @@ public class NewTaskDetailsViewImpl extends Composite implements NewTaskDetailsP
     public DatePicker getDueDate() {
         return dueDate;
     }
-    
+
+    public TextBox getSubTaskStrategyText() {
+        return subTaskStrategyText;
+    }
     
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));

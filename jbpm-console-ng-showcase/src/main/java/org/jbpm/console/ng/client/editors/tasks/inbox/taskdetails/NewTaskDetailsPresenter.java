@@ -58,6 +58,8 @@ public class NewTaskDetailsPresenter {
         DatePicker getDueDate();
         
         TextBox getUserText();
+        
+        TextBox getSubTaskStrategyText();
     }
     @Inject
     InboxView view;
@@ -81,7 +83,7 @@ public class NewTaskDetailsPresenter {
     public void init() {
     }
 
-    public void updateTask(final long taskId, final String taskDescription, Date dueDate, String priority) {
+    public void updateTask(final long taskId, final String taskDescription, String subTaskStrategy, Date dueDate, String priority) {
 
         if (taskId > 0) {
 
@@ -92,6 +94,13 @@ public class NewTaskDetailsPresenter {
 
                 }
             }).setPriority(taskId, Integer.valueOf(priority));
+            taskServices.call(new RemoteCallback<Void>() {
+                @Override
+                public void callback(Void nothing) {
+                    view.displayNotification("Task Sub Task Strategy Updated for Task id = " + taskId + ")");
+
+                }
+            }).setSubTaskStrategy(taskId, subTaskStrategy);
             List<String> descriptions = new ArrayList<String>();
             descriptions.
                     add(taskDescription);
@@ -128,6 +137,7 @@ public class NewTaskDetailsPresenter {
                 view.getTaskDescriptionText().setText(details.getDescription());
                 view.getDueDate().setValue(details.getExpirationTime());
                 view.getUserText().setText(details.getActualOwner());
+                view.getSubTaskStrategyText().setText(details.getSubTaskStrategy());
             }
         }).getTaskDetails(taskId);
 

@@ -1,19 +1,18 @@
 /**
  * Copyright 2010 JBoss Inc
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
-
 package org.jbpm.console.ng.client.model;
 
 import java.io.Serializable;
@@ -22,54 +21,47 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class TaskSummary
-    implements
-    Serializable {
-    private long    id;
+        implements
+        Serializable {
 
-    private String  name;
-
-    private String  subject;
-
-    private String  description;
+    private long id;
+    private String name;
+    private String subject;
+    private String description;
     // Was Status
-    private String  status;
-
-    private int     priority;
-
+    private String status;
+    private int priority;
+    private int parentId;
     private boolean skipable;
     //Was User
-    private String    actualOwner;
+    private String actualOwner;
     //Was User
-    private String    createdBy;
-
-    private Date    createdOn;
-
-    private Date    activationTime;
-
-    private Date    expirationTime;
-    
-    private long    processInstanceId;
-    
-    private String  processId;
-    
+    private String createdBy;
+    private Date createdOn;
+    private Date activationTime;
+    private Date expirationTime;
+    private long processInstanceId;
+    private String processId;
     private int processSessionId;
-    
+    private String subTaskStrategy;
 
     public TaskSummary(long id,
-    		           long processInstanceId,
-                       String name,
-                       String subject,
-                       String description,
-                       String status,
-                       int priority,
-                       boolean skipable,
-                       String actualOwner,
-                       String createdBy,
-                       Date createdOn,
-                       Date activationTime,
-                       Date expirationTime,
-                       String processId,
-                       int processSessionId) {
+            long processInstanceId,
+            String name,
+            String subject,
+            String description,
+            String status,
+            int priority,
+            boolean skipable,
+            String actualOwner,
+            String createdBy,
+            Date createdOn,
+            Date activationTime,
+            Date expirationTime,
+            String processId,
+            int processSessionId,
+            String subTaskStrategy,
+            int parentId) {
         super();
         this.id = id;
         this.processInstanceId = processInstanceId;
@@ -86,12 +78,13 @@ public class TaskSummary
         this.expirationTime = expirationTime;
         this.processId = processId;
         this.processSessionId = processSessionId;
+        this.subTaskStrategy = subTaskStrategy;
+        this.parentId = parentId;
     }
 
     public TaskSummary() {
     }
 
-    
     public long getId() {
         return id;
     }
@@ -99,16 +92,16 @@ public class TaskSummary
     public void setId(long id) {
         this.id = id;
     }
-    
+
     public long getProcessInstanceId() {
-    	return processInstanceId;
+        return processInstanceId;
     }
-    
+
     public void setProcessInstanceId(long processInstanceId) {
-    	this.processInstanceId = processInstanceId;
+        this.processInstanceId = processInstanceId;
     }
-    
-	public String getName() {
+
+    public String getName() {
         return name;
     }
 
@@ -195,24 +188,42 @@ public class TaskSummary
     public void setExpirationTime(Date expirationTime) {
         this.expirationTime = expirationTime;
     }
-    
+
     public String getProcessId() {
-		return processId;
-	}
+        return processId;
+    }
 
-	public void setProcessId(String processId) {
-		this.processId = processId;
-	}
-	
-	public int getProcessSessionId() {
-		return processSessionId;
-	}
+    public void setProcessId(String processId) {
+        this.processId = processId;
+    }
 
-	public void setProcessSessionId(int processSessionId) {
-		this.processSessionId = processSessionId;
-	}
+    public int getProcessSessionId() {
+        return processSessionId;
+    }
 
-	@Override
+    public void setProcessSessionId(int processSessionId) {
+        this.processSessionId = processSessionId;
+    }
+
+    public String getSubTaskStrategy() {
+        return subTaskStrategy;
+    }
+
+    public void setSubTaskStrategy(String subTaskStrategy) {
+        this.subTaskStrategy = subTaskStrategy;
+    }
+
+    public int getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
+    }
+
+    
+    
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -225,7 +236,9 @@ public class TaskSummary
         result = prime * result + (int) (id ^ (id >>> 32));
         result = prime * result + (int) (processInstanceId ^ (processInstanceId >>> 32));
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((subTaskStrategy == null) ? 0 : subTaskStrategy.hashCode());
         result = prime * result + priority;
+        result = prime * result + parentId;
         result = prime * result + (skipable ? 1231 : 1237);
         result = prime * result + ((status == null) ? 0 : status.hashCode());
         result = prime * result + ((subject == null) ? 0 : subject.hashCode());
@@ -236,45 +249,108 @@ public class TaskSummary
 
     @Override
     public boolean equals(Object obj) {
-        if ( this == obj ) return true;
-        if ( obj == null ) return false;
-        if ( !(obj instanceof TaskSummary) ) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof TaskSummary)) {
+            return false;
+        }
         TaskSummary other = (TaskSummary) obj;
-        if ( processInstanceId != other.processInstanceId) return false;
-        if ( activationTime == null ) {
-            if ( other.activationTime != null ) return false;
-        } else if ( activationTime.getTime() != other.activationTime.getTime() ) return false;
-        if ( actualOwner == null ) {
-            if ( other.actualOwner != null ) return false;
-        } else if ( !actualOwner.equals( other.actualOwner ) ) return false;
-        if ( createdBy == null ) {
-            if ( other.createdBy != null ) return false;
-        } else if ( !createdBy.equals( other.createdBy ) ) return false;
-        if ( createdOn == null ) {
-            if ( other.createdOn != null ) return false;
-        } else if ( createdOn.getTime() != other.createdOn.getTime() ) return false;
-        if ( description == null ) {
-            if ( other.description != null ) return false;
-        } else if ( !description.equals( other.description ) ) return false;
-        if ( expirationTime == null ) {
-            if ( other.expirationTime != null ) return false;
-        } else if ( expirationTime.getTime() != other.expirationTime.getTime() ) return false;
-        if ( name == null ) {
-            if ( other.name != null ) return false;
-        } else if ( !name.equals( other.name ) ) return false;
-        if ( priority != other.priority ) return false;
-        if ( skipable != other.skipable ) return false;
-        if ( status == null ) {
-            if ( other.status != null ) return false;
-        } else if ( !status.equals( other.status ) ) return false;
-        if ( subject == null ) {
-            if ( other.subject != null ) return false;
-        } else if ( !subject.equals( other.subject ) ) return false;
-        if ( processId == null ) {
-            if ( other.processId != null ) return false;
-        } else if ( !processId.equals( other.processId ) ) return false;
-        if ( processSessionId != other.processSessionId ) return false;
+        if (processInstanceId != other.processInstanceId) {
+            return false;
+        }
+        if (activationTime == null) {
+            if (other.activationTime != null) {
+                return false;
+            }
+        } else if (activationTime.getTime() != other.activationTime.getTime()) {
+            return false;
+        }
+        if (actualOwner == null) {
+            if (other.actualOwner != null) {
+                return false;
+            }
+        } else if (!actualOwner.equals(other.actualOwner)) {
+            return false;
+        }
+        if (createdBy == null) {
+            if (other.createdBy != null) {
+                return false;
+            }
+        } else if (!createdBy.equals(other.createdBy)) {
+            return false;
+        }
+        if (createdOn == null) {
+            if (other.createdOn != null) {
+                return false;
+            }
+        } else if (createdOn.getTime() != other.createdOn.getTime()) {
+            return false;
+        }
+        if (description == null) {
+            if (other.description != null) {
+                return false;
+            }
+        } else if (!description.equals(other.description)) {
+            return false;
+        }
+        if (expirationTime == null) {
+            if (other.expirationTime != null) {
+                return false;
+            }
+        } else if (expirationTime.getTime() != other.expirationTime.getTime()) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        if (subTaskStrategy == null) {
+            if (other.subTaskStrategy != null) {
+                return false;
+            }
+        } else if (!subTaskStrategy.equals(other.subTaskStrategy)) {
+            return false;
+        }
+        if (priority != other.priority) {
+            return false;
+        }
+        if (parentId != other.parentId) {
+            return false;
+        }
+        if (skipable != other.skipable) {
+            return false;
+        }
+        if (status == null) {
+            if (other.status != null) {
+                return false;
+            }
+        } else if (!status.equals(other.status)) {
+            return false;
+        }
+        if (subject == null) {
+            if (other.subject != null) {
+                return false;
+            }
+        } else if (!subject.equals(other.subject)) {
+            return false;
+        }
+        if (processId == null) {
+            if (other.processId != null) {
+                return false;
+            }
+        } else if (!processId.equals(other.processId)) {
+            return false;
+        }
+        if (processSessionId != other.processSessionId) {
+            return false;
+        }
         return true;
     }
-
 }

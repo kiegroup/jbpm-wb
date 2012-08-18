@@ -290,10 +290,7 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
 
         myTaskListGrid.addColumn(userColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Actual Owner")));
         myTaskListGrid.setColumnWidth(userColumn, 50, Unit.PCT);
-        
-       
-
-
+ 
         // Description.
         Column<TaskSummary, String> descriptionColumn = new Column<TaskSummary, String>(new TextCell()) {
             @Override
@@ -307,6 +304,23 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
         myTaskListGrid.addColumn(descriptionColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Description")));
         myTaskListGrid.setColumnWidth(descriptionColumn, 150, Unit.PCT);
 
+        // Task parent id.
+        Column<TaskSummary, Number> taskParentIdColumn =
+                new Column<TaskSummary, Number>(new NumberCell()) {
+                    @Override
+                    public Number getValue(TaskSummary object) {
+                        return object.getParentId();
+                    }
+                };
+        taskParentIdColumn.setSortable(true);
+        sortHandler.setComparator(taskParentIdColumn, new Comparator<TaskSummary>() {
+            public int compare(TaskSummary o1, TaskSummary o2) {
+                return Integer.valueOf(o1.getParentId()).compareTo(o2.getParentId());
+            }
+        });
+        myTaskListGrid.addColumn(taskParentIdColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Parent Id")));
+        myTaskListGrid.setColumnWidth(taskParentIdColumn, 40, Unit.PCT);
+        
     }
     
     public void displayNotification(String text){
