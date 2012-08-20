@@ -19,6 +19,8 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
 import java.util.ArrayList;
@@ -51,15 +53,19 @@ public class NewTaskDetailsPresenter {
 
         TextBox getTaskNameText();
 
-        TextBox getTaskDescriptionText();
+        TextArea getTaskDescriptionTextArea();
 
-        TextBox getTaskPriorityText();
+        ListBox getTaskPriorityListBox();
 
         DatePicker getDueDate();
         
         TextBox getUserText();
         
-        TextBox getSubTaskStrategyText();
+        ListBox getSubTaskStrategyListBox();
+        
+        public String[] getSubTaskStrategies();
+        
+        public String[] getPriorities();
     }
     @Inject
     InboxView view;
@@ -83,7 +89,7 @@ public class NewTaskDetailsPresenter {
     public void init() {
     }
 
-    public void updateTask(final long taskId, final String taskDescription, String subTaskStrategy, Date dueDate, String priority) {
+    public void updateTask(final long taskId, final String taskDescription, String subTaskStrategy, Date dueDate, int priority) {
 
         if (taskId > 0) {
 
@@ -133,29 +139,29 @@ public class NewTaskDetailsPresenter {
             @Override
             public void callback(TaskSummary details) {
                 view.getTaskNameText().setText(details.getName());
-                view.getTaskPriorityText().setText(String.valueOf(details.getPriority()));
-                view.getTaskDescriptionText().setText(details.getDescription());
+                
+                view.getTaskDescriptionTextArea().setText(details.getDescription());
                 view.getDueDate().setValue(details.getExpirationTime());
                 view.getUserText().setText(details.getActualOwner());
-                view.getSubTaskStrategyText().setText(details.getSubTaskStrategy());
+                int i = 0;
+                for(String strategy : view.getSubTaskStrategies()){
+                    if(details.getSubTaskStrategy().equals(strategy)){
+                        view.getSubTaskStrategyListBox().setSelectedIndex(i);
+                    }
+                    i++;
+                }
+                i = 0;
+                for(String priority : view.getPriorities()){
+                    if(details.getPriority() == i){
+                        view.getTaskPriorityListBox().setSelectedIndex(i);
+                    }
+                    i++;
+                }
+
             }
         }).getTaskDetails(taskId);
 
     }
     
-    public void addSubTask(final long parentId, String assignee, String taskName) {
-        String str = "(with (new Task()) { taskData = (with( new TaskData( )) { parentId = "+parentId+" } ), ";
-        str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
-        if (assignee != null && !assignee.equals("")) {
-            str += " [new User('" + assignee + "')  ], }),";
-        }
-        str += "names = [ new I18NText( 'en-UK', '" + taskName + "')] })";
-        taskServices.call(new RemoteCallback<Long>() {
-            @Override
-            public void callback(Long taskId) {
-                view.displayNotification("Sub Task Created (id = " + taskId + " for parent: "+parentId+")");
-
-            }
-        }).addTask(str, null);
-    }
+    
 }

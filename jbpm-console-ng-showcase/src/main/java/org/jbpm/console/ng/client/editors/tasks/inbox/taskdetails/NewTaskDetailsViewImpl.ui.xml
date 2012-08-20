@@ -54,40 +54,26 @@
         
             <gwt:HorizontalPanel>
                 <gwt:Label>Task Description </gwt:Label>
-                <gwt:TextBox
-                    ui:field='taskDescriptionText'>
-                </gwt:TextBox>
+                <gwt:TextArea
+                    ui:field='taskDescriptionTextArea'>
+                </gwt:TextArea>
             </gwt:HorizontalPanel>
         
             <gwt:HorizontalPanel>
-                <gwt:Label>Task Priority (0 - 10): </gwt:Label>
-                <gwt:TextBox
-                    ui:field='taskPriorityText'>
-                </gwt:TextBox>
+                <gwt:Label>Task Priority: </gwt:Label>
+                <gwt:ListBox
+                    ui:field='taskPriorityListBox'>
+                </gwt:ListBox>
             </gwt:HorizontalPanel>
             <gwt:HorizontalPanel>
                 <gwt:Label>Sub Task Strategy: </gwt:Label>
-                <gwt:TextBox
-                    ui:field='subTaskStrategyText'>
-                </gwt:TextBox>
+                <gwt:ListBox
+                    ui:field='subTaskStrategyListBox'>
+                </gwt:ListBox>
             </gwt:HorizontalPanel>
             <gwt:HorizontalPanel>
                 <gwt:Label>Due Date: </gwt:Label>
                 <dp:DatePicker ui:field='dueDate'></dp:DatePicker>
-            </gwt:HorizontalPanel>
-            <gwt:HorizontalPanel>
-                <gwt:Label>Sub Tasks: </gwt:Label>
-                <gwt:Label>Sub Task Name: </gwt:Label>
-                <gwt:TextBox
-                    ui:field='subTaskNameText'>
-                </gwt:TextBox>
-                <gwt:Label>Sub Task Assignee: </gwt:Label>
-                <gwt:TextBox
-                    ui:field='subTaskAsigneeText'>
-                </gwt:TextBox>
-                <gwt:Button
-                    ui:field='createSubTaskButton'>New Sub Task
-                </gwt:Button>
             </gwt:HorizontalPanel>
             <gwt:HorizontalPanel>
                 <gwt:Label>Actions: </gwt:Label>

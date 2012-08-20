@@ -25,10 +25,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DatePicker;
-import java.util.Date;
 import javax.enterprise.event.Event;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
@@ -46,14 +47,8 @@ public class NewTaskDetailsViewImpl extends Composite implements NewTaskDetailsP
     public Button updateTaskButton;
     @UiField
     public Button refreshButton;
-     @UiField
-    public TextBox subTaskStrategyText;
     @UiField
-    public Button createSubTaskButton;
-    @UiField
-    public TextBox subTaskNameText;
-    @UiField
-    public TextBox subTaskAsigneeText;
+    public ListBox subTaskStrategyListBox;
     @UiField
     public TextBox userText;
     @UiField
@@ -63,35 +58,42 @@ public class NewTaskDetailsViewImpl extends Composite implements NewTaskDetailsP
     @UiField
     public TextBox taskNameText;
     @UiField
-    public TextBox taskDescriptionText;
+    public TextArea taskDescriptionTextArea;
     @UiField
-    public TextBox taskPriorityText;
+    public ListBox taskPriorityListBox;
     @UiField
     public DatePicker dueDate;
+    
+    private String[] subTaskStrategies = {"NoAction", "EndParentOnAllSubTasksEnd", "SkipAllSubTasksOnParentSkip"};
+    
+    private String[] priorities = {"0 - High", "1", "2", "3", "4", "5 - Medium" , "6", "7", "8", "9", "10 - Low"};
+    
     @Inject
     private Event<NotificationEvent> notification;
 
     @PostConstruct
     public void init() {
-
         initWidget(uiBinder.createAndBindUi(this));
-
+        int i = 0;
+        for(String strategy : subTaskStrategies){
+            subTaskStrategyListBox.addItem(strategy);
+            i++;
+        }
+        i = 0;
+        for(String priority : priorities){
+            taskPriorityListBox.addItem(priority);
+            i++;
+        }
+        taskDescriptionTextArea.setVisibleLines(5);
     }
 
     @UiHandler("updateTaskButton")
     public void updateTaskButton(ClickEvent e) {
         presenter.updateTask(Long.parseLong(taskIdText.getText()), 
-                taskDescriptionText.getText(), subTaskStrategyText.getText(),
-                dueDate.getValue(), taskPriorityText.getText());
+                taskDescriptionTextArea.getText(), subTaskStrategyListBox.getItemText(subTaskStrategyListBox.getSelectedIndex()),
+                dueDate.getValue(), taskPriorityListBox.getSelectedIndex());
     }
-    
-     @UiHandler("createSubTaskButton")
-    public void createSubTaskButton(ClickEvent e) {
-        presenter.addSubTask(Long.parseLong(taskIdText.getText()), 
-                subTaskAsigneeText.getText(),
-                subTaskNameText.getText());
-    }
-
+  
     @UiHandler("refreshButton")
     public void refreshButton(ClickEvent e) {
         presenter.refreshTask(Long.parseLong(taskIdText.getText()));
@@ -114,25 +116,34 @@ public class NewTaskDetailsViewImpl extends Composite implements NewTaskDetailsP
         return taskNameText;
     }
 
-    public TextBox getTaskDescriptionText() {
-        return taskDescriptionText;
+    public TextArea getTaskDescriptionTextArea() {
+        return taskDescriptionTextArea;
     }
 
-    public TextBox getTaskPriorityText() {
-        return taskPriorityText;
+    public ListBox getTaskPriorityListBox() {
+        return taskPriorityListBox;
     }
 
     public DatePicker getDueDate() {
         return dueDate;
     }
 
-    public TextBox getSubTaskStrategyText() {
-        return subTaskStrategyText;
+    public ListBox getSubTaskStrategyListBox() {
+        return subTaskStrategyListBox;
     }
     
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
+
+    public String[] getSubTaskStrategies() {
+        return subTaskStrategies;
+    }
+
+    public String[] getPriorities() {
+        return priorities;
+    }
+    
     
     
 }

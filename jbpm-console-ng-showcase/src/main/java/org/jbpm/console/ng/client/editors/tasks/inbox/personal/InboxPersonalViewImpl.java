@@ -305,11 +305,11 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
         myTaskListGrid.setColumnWidth(descriptionColumn, 150, Unit.PCT);
 
         // Task parent id.
-        Column<TaskSummary, Number> taskParentIdColumn =
-                new Column<TaskSummary, Number>(new NumberCell()) {
+        Column<TaskSummary, String> taskParentIdColumn =
+                new Column<TaskSummary, String>(new TextCell()) {
                     @Override
-                    public Number getValue(TaskSummary object) {
-                        return object.getParentId();
+                    public String getValue(TaskSummary object) {
+                        return (object.getParentId() > 0)?String.valueOf(object.getParentId()):"No Parent";
                     }
                 };
         taskParentIdColumn.setSortable(true);
