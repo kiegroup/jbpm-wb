@@ -29,6 +29,7 @@ import org.jboss.errai.ioc.client.api.Caller;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.UberView;
 
 @Dependent
 @WorkbenchScreen(identifier = "New Task")
@@ -36,7 +37,7 @@ public class NewPersonalTaskPresenter {
 
     public interface InboxView
             extends
-            IsWidget {
+            UberView<NewPersonalTaskPresenter> {
         void displayNotification(String text);
     }
     @Inject
@@ -50,17 +51,14 @@ public class NewPersonalTaskPresenter {
     }
 
     @WorkbenchPartView
-    public IsWidget getView() {
+    public UberView<NewPersonalTaskPresenter> getView() {
         return view;
     }
 
     public NewPersonalTaskPresenter() {
     }
 
-    @PostConstruct
-    public void init() {
-        
-    }
+    
 
     public void addTask(final String userId, String groupId, String taskName, String taskDescription, Date dueDate, String priority) {
         String str = "(with (new Task()) { priority = " + priority + ", taskData = (with( new TaskData()) { } ), ";

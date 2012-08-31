@@ -38,8 +38,6 @@ import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
@@ -53,7 +51,9 @@ import com.google.gwt.view.client.SelectionModel;
 import java.util.Comparator;
 import java.util.Set;
 import javax.enterprise.event.Event;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.InboxAction;
+import javax.enterprise.event.Observes;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
@@ -64,7 +64,7 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
     private UiBinder<Widget, InboxPersonalViewImpl> uiBinder;
     @Inject
     private PlaceManager placeManager;
-    @Inject
+    
     private InboxPersonalPresenter presenter;
    
     @UiField
@@ -87,15 +87,18 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
     @Inject
     private Event<NotificationEvent> notification;
     
+    @Inject
+    private Event<TaskSelectionEvent> taskSelection;
+    
     public static final ProvidesKey<TaskSummary> KEY_PROVIDER = new ProvidesKey<TaskSummary>() {
         public Object getKey(TaskSummary item) {
             return item == null ? null : item.getId();
         }
     };
 
-    @PostConstruct
-    public void init() {
-
+    @Override
+    public void init(InboxPersonalPresenter presenter) {
+        this.presenter = presenter;
 
         myTaskListGrid = new DataGrid<TaskSummary>(KEY_PROVIDER);
         myTaskListGrid.setWidth("100%");
@@ -120,9 +123,10 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
                 new MultiSelectionModel<TaskSummary>(KEY_PROVIDER);
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             public void onSelectionChange(SelectionChangeEvent event) {
-
                 selectedTasks = selectionModel.getSelectedSet();
-
+                for(TaskSummary ts : selectedTasks){
+                    taskSelection.fire(new TaskSelectionEvent(ts.getId()));
+                }
             }
         });
 
@@ -325,6 +329,14 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
     
     public void displayNotification(String text){
         notification.fire( new NotificationEvent( text ) );
+    }
+
+    public TextBox getUserText() {
+        return userText;
+    }
+    
+    public void onTaskSelected(@Observes TaskChangedEvent taskChanged){
+        presenter.refreshTasks(taskChanged.getUserId());
     }
     
 }

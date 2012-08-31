@@ -15,27 +15,22 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.subtask;
 
-import org.jbpm.console.ng.client.editors.tasks.inbox.taskdetails.*;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.datepicker.client.DatePicker;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
 import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.client.model.TaskSummary;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.UberView;
 
 @Dependent
 @WorkbenchScreen(identifier = "Quick New Sub Task")
@@ -43,23 +38,27 @@ public class NewQuickSubTaskPresenter {
 
     public interface InboxView
             extends
-            IsWidget {
+            UberView<NewQuickSubTaskPresenter> {
 
         void displayNotification(String text);
         
     }
     @Inject
-    InboxView view;
+    private InboxView view;
     @Inject
-    Caller<TaskServiceEntryPoint> taskServices;
+    private Caller<TaskServiceEntryPoint> taskServices;
 
+    
+    @Inject
+    private Event<TaskChangedEvent> taskChanged;
+    
     @WorkbenchPartTitle
     public String getTitle() {
         return "Quick New Sub Task";
     }
 
     @WorkbenchPartView
-    public IsWidget getView() {
+    public UberView<NewQuickSubTaskPresenter> getView() {
         return view;
     }
 
@@ -71,7 +70,7 @@ public class NewQuickSubTaskPresenter {
     }
 
    
-    public void addSubTask(final long parentId, String assignee, String taskName) {
+    public void addSubTask(final long parentId, final String assignee, String taskName) {
         String str = "(with (new Task()) { taskData = (with( new TaskData( )) { parentId = "+parentId+" } ), ";
         str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
         if (assignee != null && !assignee.equals("")) {
@@ -82,7 +81,7 @@ public class NewQuickSubTaskPresenter {
             @Override
             public void callback(Long taskId) {
                 view.displayNotification("Sub Task Created (id = " + taskId + " for parent: "+parentId+")");
-
+                //taskChanged.fire(new TaskChangedEvent(taskId, assignee));
             }
         }).addTask(str, null);
     }

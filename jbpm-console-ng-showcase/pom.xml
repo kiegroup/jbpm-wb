@@ -41,7 +41,12 @@
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-human-task-core-cdi</artifactId>
         </dependency>
-
+        
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>form-builder-services-cdi</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
 
         <dependency>
             <groupId>org.uberfire</groupId>
@@ -58,6 +63,11 @@
             <artifactId>uberfire-workbench</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>security-client</artifactId>
+        </dependency>
+        
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
@@ -138,6 +148,46 @@
             <groupId>org.mvel</groupId>
             <artifactId>mvel2</artifactId>
         </dependency>
+        
+        <!-- Form Builder Related -->
+         <dependency>
+            <groupId>com.yesmail</groupId>
+            <artifactId>gwt-rolodex</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.gwtent</groupId>
+            <artifactId>gwtent.parent</artifactId>
+            <version>1.0.0</version>
+            
+            <scope>system</scope>
+            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/gwtent-1.0.0.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.gc.gwt.wysiwyg</groupId>
+            <artifactId>gwt-html-editor</artifactId>
+            <version>0.1.4</version>
+            
+            <scope>system</scope>
+            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/editor-0.1.4.jar</systemPath>
+        </dependency>
+       <dependency>
+            <groupId>com.google.gwt.google-apis</groupId>
+            <artifactId>gwt-visualization</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <!--dependency>
+            <groupId>com.googlecode.gwtupload</groupId>
+            <artifactId>gwtupload</artifactId>
+            <version>0.6.3-compat</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
+            <version>2.4.0</version>
+            <scope>runtime</scope>
+        </dependency-->
 
     </dependencies>
 
@@ -152,6 +202,8 @@
                     <module>org.jbpm.console.ng.FastCompiledjBPMShowcase</module>
                     <logLevel>INFO</logLevel>
                     <compileSourcesArtifacts>
+                        <compileSourcesArtifact>org.uberfire:security-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:security-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:widgets-core</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:widgets-commons</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-workbench</compileSourcesArtifact>
@@ -159,6 +211,10 @@
                         <compileSourcesArtifact>org.uberfire:backend-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:backend-commons</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-shared</compileSourcesArtifact>
+                        <!-- Form Builder Related -->
+                        <compileSourcesArtifact>org.jbpm:form-builder-ng-model</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.jbpm:form-builder-services-cdi</compileSourcesArtifact>
+                        
                     </compileSourcesArtifacts>
                     <runTarget>org.jbpm.console.ng.jBPMShowcase/jBPM.html</runTarget>
                     <extraJvmArgs>-Xmx1024m -XX:MaxPermSize=256m</extraJvmArgs>
@@ -260,6 +316,7 @@
                             <directory>${basedir}</directory>
                             <includes>
                                 <include>.errai/**</include>
+                                <include>.vfsjgit/**</include>
                             </includes>
                         </fileset>
                     </filesets>

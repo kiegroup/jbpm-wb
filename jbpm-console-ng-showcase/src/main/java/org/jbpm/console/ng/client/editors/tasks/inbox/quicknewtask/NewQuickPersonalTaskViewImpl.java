@@ -34,6 +34,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DatePicker;
 import java.util.Date;
 import javax.enterprise.event.Event;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
@@ -44,7 +45,6 @@ public class NewQuickPersonalTaskViewImpl extends Composite implements NewQuickP
     private UiBinder<Widget, NewQuickPersonalTaskViewImpl> uiBinder;
     @Inject
     private PlaceManager placeManager;
-    @Inject
     private NewQuickPersonalTaskPresenter presenter;
     @UiField
     public Button addTaskButton;
@@ -54,10 +54,10 @@ public class NewQuickPersonalTaskViewImpl extends Composite implements NewQuickP
     public TextBox taskNameText;
     @Inject
     private Event<NotificationEvent> notification;
-
-    @PostConstruct
-    public void init() {
-
+    
+    @Override
+    public void init(NewQuickPersonalTaskPresenter presenter) {
+        this.presenter = presenter;
         initWidget(uiBinder.createAndBindUi(this));
 
     }
@@ -65,7 +65,7 @@ public class NewQuickPersonalTaskViewImpl extends Composite implements NewQuickP
     @UiHandler("addTaskButton")
     public void addTaskButton(ClickEvent e) {
         presenter.addQuickTask(userText.getText(),
-                taskNameText.getText());
+                                    taskNameText.getText());  
     }
 
     public void displayNotification(String text) {

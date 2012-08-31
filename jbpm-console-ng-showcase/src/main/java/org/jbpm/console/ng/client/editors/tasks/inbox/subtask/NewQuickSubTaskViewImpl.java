@@ -31,6 +31,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DatePicker;
 import javax.enterprise.event.Event;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
@@ -41,7 +42,7 @@ public class NewQuickSubTaskViewImpl extends Composite implements NewQuickSubTas
     private UiBinder<Widget, NewQuickSubTaskViewImpl> uiBinder;
     @Inject
     private PlaceManager placeManager;
-    @Inject
+    
     private NewQuickSubTaskPresenter presenter;
 
     @UiField
@@ -55,20 +56,26 @@ public class NewQuickSubTaskViewImpl extends Composite implements NewQuickSubTas
 
     @Inject
     private Event<NotificationEvent> notification;
+    
+    @Inject
+    private Event<TaskChangedEvent> taskChanged;
 
-    @PostConstruct
-    public void init() {
+    @Override
+    public void init(NewQuickSubTaskPresenter presenter) {
+        this.presenter = presenter;
         initWidget(uiBinder.createAndBindUi(this));
         
     }
 
    
     
-     @UiHandler("createSubTaskButton")
+    @UiHandler("createSubTaskButton")
     public void createSubTaskButton(ClickEvent e) {
         presenter.addSubTask(Long.parseLong(parentTaskIdText.getText()), 
                 subTaskAsigneeText.getText(),
                 subTaskNameText.getText());
+        
+        
     }
 
    

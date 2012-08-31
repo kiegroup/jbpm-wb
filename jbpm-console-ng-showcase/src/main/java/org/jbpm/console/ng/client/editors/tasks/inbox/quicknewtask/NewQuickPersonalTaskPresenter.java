@@ -15,21 +15,22 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.quicknewtask;
 
-import org.jbpm.console.ng.client.editors.tasks.inbox.newtask.*;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import java.util.Date;
 import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
 import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.UberView;
 
 @Dependent
 @WorkbenchScreen(identifier = "Quick New Task")
@@ -37,7 +38,7 @@ public class NewQuickPersonalTaskPresenter {
 
     public interface InboxView
             extends
-            IsWidget {
+            UberView<NewQuickPersonalTaskPresenter> {
 
         void displayNotification(String text);
     }
@@ -52,7 +53,7 @@ public class NewQuickPersonalTaskPresenter {
     }
 
     @WorkbenchPartView
-    public IsWidget getView() {
+    public UberView<NewQuickPersonalTaskPresenter> getView() {
         return view;
     }
 
@@ -63,7 +64,7 @@ public class NewQuickPersonalTaskPresenter {
     public void init() {
     }
 
-    public void addQuickTask(String userId, String taskName) {
+    public void addQuickTask(final String userId, String taskName) {
         String str = "(with (new Task()) { taskData = (with( new TaskData()) { } ), ";
         str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
         if (userId != null && !userId.equals("")) {
@@ -74,8 +75,9 @@ public class NewQuickPersonalTaskPresenter {
             @Override
             public void callback(Long taskId) {
                 view.displayNotification("Task Created (id = " + taskId + ")");
-
+                
             }
         }).addTask(str, null);
+
     }
 }

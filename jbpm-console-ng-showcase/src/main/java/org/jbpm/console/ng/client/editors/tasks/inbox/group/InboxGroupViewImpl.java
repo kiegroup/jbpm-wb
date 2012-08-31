@@ -52,6 +52,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Set;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
@@ -62,7 +65,7 @@ public class InboxGroupViewImpl extends Composite implements InboxGroupPresenter
     private UiBinder<Widget, InboxGroupViewImpl> uiBinder;
     @Inject
     private PlaceManager placeManager;
-    @Inject
+    
     private InboxGroupPresenter presenter;
     @UiField
     public Button refreshTasksButton;
@@ -77,17 +80,28 @@ public class InboxGroupViewImpl extends Composite implements InboxGroupPresenter
     private Set<TaskSummary> selectedGroupTasks;
     @Inject
     private Event<NotificationEvent> notification;
-    
+    @Inject
+    private Event<TaskSelectionEvent> taskSelection;
     public static final ProvidesKey<TaskSummary> KEY_PROVIDER = new ProvidesKey<TaskSummary>() {
         public Object getKey(TaskSummary item) {
             return item == null ? null : item.getId();
         }
     };
 
-    @PostConstruct
-    public void init() {
+    @UiHandler("refreshTasksButton")
+    public void refreshTasksButton(ClickEvent e) {
+        presenter.refreshGroupTasks(userText.getText(), Arrays.asList(groupText.getText().split(",")));
+    }
 
+    @UiHandler("claimTaskButton")
+    public void claimTaskButton(ClickEvent e) {
+        presenter.claimTasks(selectedGroupTasks, userText.getText(), Arrays.asList(groupText.getText().split(",")));
 
+    }
+    
+    @Override
+    public void init(InboxGroupPresenter presenter) {
+        this.presenter = presenter;
         myGroupTaskListGrid = new DataGrid<TaskSummary>(KEY_PROVIDER);
         myGroupTaskListGrid.setWidth("100%");
         myGroupTaskListGrid.setHeight("300px");
@@ -113,7 +127,9 @@ public class InboxGroupViewImpl extends Composite implements InboxGroupPresenter
             public void onSelectionChange(SelectionChangeEvent event) {
 
                 selectedGroupTasks = selectionModel.getSelectedSet();
-
+                for (TaskSummary ts : selectedGroupTasks) {
+                    taskSelection.fire(new TaskSelectionEvent(ts.getId()));
+                }
             }
         });
 
@@ -126,19 +142,6 @@ public class InboxGroupViewImpl extends Composite implements InboxGroupPresenter
         initWidget(uiBinder.createAndBindUi(this));
 
         presenter.addDataDisplay(myGroupTaskListGrid);
-
-
-    }
-
-    @UiHandler("refreshTasksButton")
-    public void refreshTasksButton(ClickEvent e) {
-        presenter.refreshGroupTasks(userText.getText(), Arrays.asList(groupText.getText().split(",")));
-    }
-
-    @UiHandler("claimTaskButton")
-    public void claimTaskButton(ClickEvent e) {
-        presenter.claimTasks(selectedGroupTasks, userText.getText(), Arrays.asList(groupText.getText().split(",")));
-
     }
 
     private void initTableColumns(final SelectionModel<TaskSummary> selectionModel,
@@ -276,6 +279,20 @@ public class InboxGroupViewImpl extends Composite implements InboxGroupPresenter
     }
 
     public void displayNotification(String text) {
-        notification.fire( new NotificationEvent( text ) );
+        notification.fire(new NotificationEvent(text));
     }
+
+    public TextBox getUserText() {
+        return userText;
+    }
+
+    public TextBox getGroupText() {
+        return groupText;
+    }
+
+    public void onTaskSelected(@Observes TaskChangedEvent taskChanged) {
+        presenter.refreshGroupTasks(taskChanged.getUserId(), taskChanged.getGroupsId());
+    }
+
+    
 }

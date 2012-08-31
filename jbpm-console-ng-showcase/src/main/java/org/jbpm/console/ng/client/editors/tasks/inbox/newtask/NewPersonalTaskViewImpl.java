@@ -43,7 +43,6 @@ public class NewPersonalTaskViewImpl extends Composite implements NewPersonalTas
     private UiBinder<Widget, NewPersonalTaskViewImpl> uiBinder;
     @Inject
     private PlaceManager placeManager;
-    @Inject
     private NewPersonalTaskPresenter presenter;
     @UiField
     public Button addTaskButton;
@@ -64,11 +63,9 @@ public class NewPersonalTaskViewImpl extends Composite implements NewPersonalTas
     @Inject
     private Event<NotificationEvent> notification;
 
-    @PostConstruct
-    public void init() {
-
+    public void init(NewPersonalTaskPresenter presenter) {
+        this.presenter = presenter;
         initWidget(uiBinder.createAndBindUi(this));
-
     }
 
     @UiHandler("addTaskButton")

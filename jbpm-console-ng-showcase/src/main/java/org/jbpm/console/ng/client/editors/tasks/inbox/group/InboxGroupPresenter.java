@@ -21,19 +21,23 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 
 import java.util.Set;
 import javax.annotation.PostConstruct;
+import javax.enterprise.event.Observes;
 import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.UberView;
 
 @Dependent
 @WorkbenchScreen(identifier = "Group Tasks")
@@ -41,9 +45,13 @@ public class InboxGroupPresenter {
 
     public interface InboxView
             extends
-            IsWidget {
+            UberView<InboxGroupPresenter> {
 
         void displayNotification(String text);
+
+        TextBox getUserText();
+
+        TextBox getGroupText();
     }
     @Inject
     InboxView view;
@@ -57,7 +65,7 @@ public class InboxGroupPresenter {
     }
 
     @WorkbenchPartView
-    public IsWidget getView() {
+    public UberView<InboxGroupPresenter> getView() {
         return view;
     }
 
@@ -68,10 +76,14 @@ public class InboxGroupPresenter {
     public void init() {
     }
 
-    public void refreshGroupTasks(String userId, List<String> groupIds) {
+    public void refreshGroupTasks(final String userId, final List<String> groupIds) {
         taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback(List<TaskSummary> tasks) {
+                view.getUserText().setText(userId);
+                if(groupIds != null){
+                    view.getGroupText().setText(groupIds.toString());
+                }
                 dataProvider.setList(tasks);
                 dataProvider.refresh();
 
@@ -105,5 +117,13 @@ public class InboxGroupPresenter {
 
     public void refreshData() {
         dataProvider.refresh();
+    }
+
+    public void onTaskSelected(@Observes TaskChangedEvent taskChanged) {
+        refreshGroupTasks(taskChanged.getUserId(), taskChanged.getGroupsId());
+        if(taskChanged.getGroupsId() != null){
+            view.getGroupText().setText(taskChanged.getGroupsId().toString());
+        }
+        view.getUserText().setText(taskChanged.getUserId());
     }
 }

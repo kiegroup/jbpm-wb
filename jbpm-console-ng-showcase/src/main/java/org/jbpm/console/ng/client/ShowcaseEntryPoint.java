@@ -15,11 +15,22 @@
  */
 package org.jbpm.console.ng.client;
 
+import com.google.gwt.animation.client.Animation;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.ui.RootPanel;
+import java.util.Arrays;
 import javax.inject.Inject;
 
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
-import org.jboss.errai.ioc.client.container.IOCBeanManager;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.widgets.menu.Command;
+import org.uberfire.client.workbench.widgets.menu.CommandMenuItem;
+import org.uberfire.client.workbench.widgets.menu.SubMenuItem;
+import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBar;
+import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
+import org.uberfire.shared.mvp.PlaceRequest;
 
 /**
  *
@@ -27,11 +38,17 @@ import org.jboss.errai.ioc.client.container.IOCBeanManager;
 @EntryPoint
 public class ShowcaseEntryPoint {
 
-    @Inject private IOCBeanManager manager;
+    @Inject
+    private PlaceManager placeManager;
+    @Inject
+    private WorkbenchMenuBarPresenter menubar;
+    private String[] menuItems = new String[]{"Form Display", "Quick New Task", "Quick New Sub Task", "Personal Tasks", "Group Tasks", "Task Details"};
 
     @AfterInitialization
     public void startApp() {
         loadStyles();
+        setupMenu();
+        hideLoadingPopup();
     }
 
     private void loadStyles() {
@@ -40,4 +57,41 @@ public class ShowcaseEntryPoint {
         //RoundedCornersResource.INSTANCE.roundCornersCss().ensureInjected();
     }
 
+    private void setupMenu() {
+        //Places sub-menu
+        final WorkbenchMenuBar placesMenuBar = new WorkbenchMenuBar();
+        final SubMenuItem placesMenu = new SubMenuItem("Places",
+                placesMenuBar);
+
+        //Add places
+        Arrays.sort(menuItems);
+        for (final String menuItem : menuItems) {
+            final CommandMenuItem item = new CommandMenuItem(menuItem,
+                    new Command() {
+                        @Override
+                        public void execute() {
+                            placeManager.goTo(new PlaceRequest(menuItem));
+                        }
+                    });
+            placesMenuBar.addItem(item);
+        }
+        menubar.addMenuItem(placesMenu);
+    }
+    //Fade out the "Loading application" pop-up
+
+    private void hideLoadingPopup() {
+        final Element e = RootPanel.get("loading").getElement();
+
+        new Animation() {
+            @Override
+            protected void onUpdate(double progress) {
+                e.getStyle().setOpacity(1.0 - progress);
+            }
+
+            @Override
+            protected void onComplete() {
+                e.getStyle().setVisibility(Style.Visibility.HIDDEN);
+            }
+        }.run(500);
+    }
 }

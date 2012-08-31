@@ -31,6 +31,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DatePicker;
 import javax.enterprise.event.Event;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
@@ -41,7 +42,7 @@ public class NewTaskDetailsViewImpl extends Composite implements NewTaskDetailsP
     private UiBinder<Widget, NewTaskDetailsViewImpl> uiBinder;
     @Inject
     private PlaceManager placeManager;
-    @Inject
+    
     private NewTaskDetailsPresenter presenter;
     @UiField
     public Button updateTaskButton;
@@ -70,9 +71,10 @@ public class NewTaskDetailsViewImpl extends Composite implements NewTaskDetailsP
     
     @Inject
     private Event<NotificationEvent> notification;
-
-    @PostConstruct
-    public void init() {
+    
+    @Override
+    public void init(NewTaskDetailsPresenter presenter) {
+        this.presenter = presenter;
         initWidget(uiBinder.createAndBindUi(this));
         int i = 0;
         for(String strategy : subTaskStrategies){
@@ -92,6 +94,8 @@ public class NewTaskDetailsViewImpl extends Composite implements NewTaskDetailsP
         presenter.updateTask(Long.parseLong(taskIdText.getText()), 
                 taskDescriptionTextArea.getText(), subTaskStrategyListBox.getItemText(subTaskStrategyListBox.getSelectedIndex()),
                 dueDate.getValue(), taskPriorityListBox.getSelectedIndex());
+        
+        
     }
   
     @UiHandler("refreshButton")

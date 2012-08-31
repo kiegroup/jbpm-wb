@@ -13,11 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.inbox.events;
+package org.jbpm.console.ng.shared.fb.events;
+
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  *
  */
-public class InboxAction {
+@Portable
+public class FormRenderedEvent {
+    private String form;
+
+    public FormRenderedEvent() {
+    }
+
+    
+    public FormRenderedEvent(String form) {
+        this.form = form;
+    }
+
+    public String getForm() {
+        return form;
+    }
+    
     
 }

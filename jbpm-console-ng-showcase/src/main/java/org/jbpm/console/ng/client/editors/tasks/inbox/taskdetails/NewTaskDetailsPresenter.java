@@ -27,15 +27,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.enterprise.event.Observes;
 import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
 import org.jbpm.console.ng.client.model.TaskSummary;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.UberView;
 
 @Dependent
 @WorkbenchScreen(identifier = "Task Details")
@@ -43,7 +46,7 @@ public class NewTaskDetailsPresenter {
 
     public interface InboxView
             extends
-            IsWidget {
+            UberView<NewTaskDetailsPresenter> {
 
         void displayNotification(String text);
 
@@ -78,7 +81,7 @@ public class NewTaskDetailsPresenter {
     }
 
     @WorkbenchPartView
-    public IsWidget getView() {
+    public UberView<NewTaskDetailsPresenter> getView() {
         return view;
     }
 
@@ -123,7 +126,6 @@ public class NewTaskDetailsPresenter {
                 @Override
                 public void callback(Void nothing) {
                     view.displayNotification("Task Expiration Date Updated for Task id = " + taskId + ")");
-
                 }
             }).setExpirationDate(taskId, dueDate);
 
@@ -138,6 +140,7 @@ public class NewTaskDetailsPresenter {
         taskServices.call(new RemoteCallback<TaskSummary>() {
             @Override
             public void callback(TaskSummary details) {
+                view.getTaskIdText().setText(String.valueOf(details.getId()));
                 view.getTaskNameText().setText(details.getName());
                 
                 view.getTaskDescriptionTextArea().setText(details.getDescription());
@@ -157,11 +160,15 @@ public class NewTaskDetailsPresenter {
                     }
                     i++;
                 }
+                
 
             }
         }).getTaskDetails(taskId);
 
     }
     
+    public void onTaskSelected(@Observes TaskSelectionEvent taskSelection){
+        refreshTask(taskSelection.getTaskId());
+    }
     
 }

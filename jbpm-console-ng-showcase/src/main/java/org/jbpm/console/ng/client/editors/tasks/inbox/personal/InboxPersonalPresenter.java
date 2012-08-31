@@ -15,14 +15,13 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.personal;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import org.jbpm.console.ng.client.model.TaskSummary;
@@ -32,7 +31,7 @@ import org.jboss.errai.ioc.client.api.Caller;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
+import org.uberfire.client.mvp.UberView;
 
 @Dependent
 @WorkbenchScreen(identifier = "Personal Tasks")
@@ -41,14 +40,17 @@ public class InboxPersonalPresenter {
     
     public interface InboxView
             extends
-            IsWidget {
+            UberView<InboxPersonalPresenter> {
         
         void displayNotification(String text);
+        
+        TextBox getUserText();
+        
     }
     @Inject
-    InboxView view;
+    private InboxView view;
     @Inject
-    Caller<TaskServiceEntryPoint> taskServices;
+    private Caller<TaskServiceEntryPoint> taskServices;
     private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
 
     @WorkbenchPartTitle
@@ -57,7 +59,7 @@ public class InboxPersonalPresenter {
     }
 
     @WorkbenchPartView
-    public IsWidget getView() {
+    public UberView<InboxPersonalPresenter> getView() {
         return view;
     }
 
@@ -71,11 +73,11 @@ public class InboxPersonalPresenter {
 
    
 
-    public void refreshTasks(String userId) {
+    public void refreshTasks(final String userId) {
         taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback(List<TaskSummary> tasks) {
-                
+                view.getUserText().setText(userId);
                 dataProvider.setList(tasks);
                 dataProvider.refresh();
 
@@ -137,4 +139,5 @@ public class InboxPersonalPresenter {
     public void refreshData() {
         dataProvider.refresh();
     }
+
 }
