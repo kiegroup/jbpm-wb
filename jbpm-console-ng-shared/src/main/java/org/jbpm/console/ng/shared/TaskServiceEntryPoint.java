@@ -9,6 +9,7 @@ import org.jbpm.console.ng.client.model.TaskSummary;
 import java.util.List;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.task.Content;
 
 
 /**
@@ -72,5 +73,9 @@ public interface TaskServiceEntryPoint {
     String getSubTaskStrategy(long taskId);
     
     TaskSummary getTaskDetails(long taskId);
+    
+   public long saveContent(long taskId, Map<String, String> values);
+   
+   public Map<String, String> getContentListById(long contentId);
     
 }

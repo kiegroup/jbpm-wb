@@ -18,6 +18,14 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- before your module(*.nocache.js) loading  -->
+		<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if IE 7]>
+ 		<link rel="stylesheet" href="{your module name}/css/font-awesome-ie7.css">
+		<![endif]-->
+		<!-- your module(*.nocache.js) loading  -->
   <!--
        Note you can append #asset=UUID to the end of the URL to preload a given asset.
        Also, if you append #asset=UUID&nochrome it will only show the asset without all the GUI "chrome"

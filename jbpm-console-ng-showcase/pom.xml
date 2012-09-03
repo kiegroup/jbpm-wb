@@ -150,7 +150,7 @@
         </dependency>
         
         <!-- Form Builder Related -->
-         <dependency>
+        <dependency>
             <groupId>com.yesmail</groupId>
             <artifactId>gwt-rolodex</artifactId>
             <version>1.1</version>
@@ -171,23 +171,17 @@
             <scope>system</scope>
             <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/editor-0.1.4.jar</systemPath>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>com.google.gwt.google-apis</groupId>
             <artifactId>gwt-visualization</artifactId>
             <version>1.0.2</version>
         </dependency>
-        <!--dependency>
-            <groupId>com.googlecode.gwtupload</groupId>
-            <artifactId>gwtupload</artifactId>
-            <version>0.6.3-compat</version>
-        </dependency>
-        
+      <!-- bootstrap --> 
         <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-servlet</artifactId>
-            <version>2.4.0</version>
-            <scope>runtime</scope>
-        </dependency-->
+            <groupId>com.github.gwtbootstrap</groupId>
+            <artifactId>gwt-bootstrap</artifactId>
+            <version>2.1.0.0-SNAPSHOT</version>
+        </dependency>
 
     </dependencies>
 
@@ -365,5 +359,11 @@
             </plugins>
         </pluginManagement>
     </build>
+    <repositories>
+        <repository>
+            <id>gwtbootstrap</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+    </repositories>
 
 </project>

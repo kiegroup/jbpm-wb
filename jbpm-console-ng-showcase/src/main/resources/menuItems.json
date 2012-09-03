@@ -1,0 +1,270 @@
+{   
+     "Fields": [
+         {   "className": "org.jbpm.form.builder.ng.model.shared.menu.items.HeaderMenuItem",
+            "allowedEvents": [ "onclick", "ondblclick", "onmousedown", "onmousemove", "onmouseout",
+                "onmouseover", "onmouseup", "onkeydown", "onkeypress", "onkeyup"
+            ],
+            "effects": [
+                { "className": "org.jbpm.formbuilder.parent.client.effect.RemoveEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CopyFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CutFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.PasteFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.DoneEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ResizeEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.MoveItemFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.I18NFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.L10NFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.EventHandlingFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.SaveAsMenuOptionFormEffect" }
+            ]
+        },
+          {   "className": "org.jbpm.form.builder.ng.model.shared.menu.items.LabelMenuItem",
+            "allowedEvents": [ "onclick", "ondblclick", "onmousedown", "onmousemove", "onmouseout",
+                "onmouseover", "onmouseup", "onkeydown", "onkeypress", "onkeyup"
+            ],
+            "effects": [
+                { "className": "org.jbpm.formbuilder.parent.client.effect.RemoveEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CopyFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CutFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.PasteFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.DoneEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ResizeEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.MoveItemFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.EventHandlingFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.SaveAsMenuOptionFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.I18NFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.L10NFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.IoBindingEffect" }
+            ]
+        },
+         {   "className": "org.jbpm.form.builder.ng.model.shared.menu.items.TextFieldMenuItem",
+            "allowedEvents": [ "onblur", "onchange", "onclick", "ondblclick", "onfocus",
+                "onmousedown", "onmousemove", "onmouseout", "onmouseover", "onmouseup",
+                "onkeydown", "onkeypress", "onkeyup", "onselect"
+            ],
+            "effects": [
+                { "className": "org.jbpm.formbuilder.parent.client.effect.RemoveEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CopyFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CutFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.PasteFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.DoneEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ResizeEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.EventHandlingFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.MoveItemFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.SaveAsMenuOptionFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ValidationsEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.IoBindingEffect" }
+            ]
+        },
+       
+        {   "className": "org.jbpm.form.builder.ng.model.shared.menu.items.ComboBoxMenuItem",
+            "allowedEvents": [ "onblur", "onchange", "onclick", "ondblclick", "onfocus", 
+                "onmousedown", "onmousemove", "onmouseout", "onmouseover", "onmouseup", 
+                "onkeydown", "onkeypress", "onkeyup" 
+            ],
+            "effects": [
+                { "className": "org.jbpm.formbuilder.parent.client.effect.RemoveEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CopyFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CutFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.PasteFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.DoneEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ResizeEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.MoveItemFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.EventHandlingFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.SaveAsMenuOptionFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.AddItemFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.DeleteItemFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ValidationsEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.IoBindingEffect" }
+            ]
+        },
+               
+        {   "className": "org.jbpm.form.builder.ng.model.shared.menu.items.NumberFieldMenuItem",
+            "allowedEvents": [ "onblur", "onchange", "onclick", "ondblclick", "onfocus",
+                "onmousedown", "onmousemove", "onmouseout", "onmouseover", "onmouseup",
+                "onkeydown", "onkeypress", "onkeyup", "onselect"
+            ],
+            "effects": [
+                { "className": "org.jbpm.formbuilder.parent.client.effect.RemoveEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CopyFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CutFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.PasteFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.DoneEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ResizeEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.EventHandlingFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.MoveItemFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.SaveAsMenuOptionFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ValidationsEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.IoBindingEffect" }
+            ]
+        },
+        
+        {   "className": "org.jbpm.form.builder.ng.model.shared.menu.items.PasswordFieldMenuItem",
+            "allowedEvents": [ "onblur", "onchange", "onclick", "ondblclick", "onfocus",
+                "onmousedown", "onmousemove", "onmouseout", "onmouseover", "onmouseup",
+                "onkeydown", "onkeypress", "onkeyup", "onselect"
+            ],
+            "effects": [
+                { "className": "org.jbpm.formbuilder.parent.client.effect.RemoveEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CopyFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CutFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.PasteFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.DoneEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ResizeEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.EventHandlingFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.MoveItemFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.SaveAsMenuOptionFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ValidationsEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.IoBindingEffect" }
+            ]
+        },
+        {   "className": "org.jbpm.form.builder.ng.model.shared.menu.items.ButtonMenuItem",
+            "allowedEvents": [  "onclick"
+            ],
+            "effects": [
+                { "className": "org.jbpm.formbuilder.parent.client.effect.RemoveEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CopyFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CutFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.PasteFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.DoneEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ResizeEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.EventHandlingFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.MoveItemFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.SaveAsMenuOptionFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ValidationsEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.I18NFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.L10NFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.IoBindingEffect" }
+            ]
+        },
+        {   "className": "org.jbpm.form.builder.ng.model.shared.menu.items.TextAreaMenuItem",
+            "allowedEvents": [ "onblur", "onchange", "onclick", "ondblclick", "onfocus",
+                "onmousedown", "onmousemove", "onmouseout", "onmouseover", "onmouseup",
+                "onkeydown", "onkeypress", "onkeyup", "onselect"
+            ],
+            "effects": [
+                { "className": "org.jbpm.formbuilder.parent.client.effect.RemoveEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CopyFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CutFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.PasteFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.DoneEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ResizeEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.MoveItemFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.SaveAsMenuOptionFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ValidationsEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.EventHandlingFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.IoBindingEffect" }
+            ]
+        },
+        {   "className": "org.jbpm.form.builder.ng.model.shared.menu.items.HiddenMenuItem",
+            "allowedEvents": [ "onblur", "onchange", "onclick", "ondblclick", "onfocus",
+                "onmousedown", "onmousemove", "onmouseout", "onmouseover", "onmouseup",
+                "onkeydown", "onkeypress", "onkeyup", "onselect"
+            ],
+            "effects": [
+                { "className": "org.jbpm.formbuilder.parent.client.effect.RemoveEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CopyFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CutFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.PasteFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.DoneEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ResizeEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.MoveItemFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.EventHandlingFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.SaveAsMenuOptionFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ValidationsEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.IoBindingEffect" }
+            ]
+        },
+        {   "className": "org.jbpm.form.builder.ng.model.shared.menu.items.FileInputMenuItem",
+            "allowedEvents": [ "onblur", "onchange", "onclick", "ondblclick", "onfocus",
+                "onmousedown", "onmousemove", "onmouseout", "onmouseover", "onmouseup",
+                "onkeydown", "onkeypress", "onkeyup", "onselect"
+            ],
+            "effects": [
+                { "className": "org.jbpm.formbuilder.parent.client.effect.RemoveEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CopyFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CutFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.PasteFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.DoneEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ResizeEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.MoveItemFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.EventHandlingFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.SaveAsMenuOptionFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ValidationsEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.IoBindingEffect" }
+            ]
+        },
+        {   "className": "org.jbpm.form.builder.ng.model.shared.menu.items.CheckBoxMenuItem",
+            "allowedEvents": [ "onblur", "onchange", "onclick", "ondblclick", "onfocus",
+                "onmousedown", "onmousemove", "onmouseout", "onmouseover", "onmouseup",
+                "onkeydown", "onkeypress", "onkeyup", "onselect"
+            ],
+            "effects": [
+                { "className": "org.jbpm.formbuilder.parent.client.effect.RemoveEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CopyFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CutFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.PasteFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.DoneEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ResizeEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.MoveItemFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.EventHandlingFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.SaveAsMenuOptionFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ValidationsEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.IoBindingEffect" }
+            ]
+        },
+        {   "className": "org.jbpm.form.builder.ng.model.shared.menu.items.RadioButtonMenuItem",
+            "allowedEvents": [ "onblur", "onchange", "onclick", "ondblclick", "onfocus",
+                "onmousedown", "onmousemove", "onmouseout", "onmouseover", "onmouseup",
+                "onkeydown", "onkeypress", "onkeyup", "onselect"
+            ],
+            "effects": [
+                { "className": "org.jbpm.formbuilder.parent.client.effect.RemoveEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CopyFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CutFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.PasteFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.DoneEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ResizeEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.MoveItemFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.EventHandlingFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.SaveAsMenuOptionFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ValidationsEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.IoBindingEffect" }
+            ]
+        },
+        
+        
+         
+        {   "className": "org.jbpm.form.builder.ng.model.shared.menu.items.CalendarMenuItem",
+            "allowedEvents": [ ],
+            "effects": [
+                { "className": "org.jbpm.formbuilder.parent.client.effect.RemoveEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CopyFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CutFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.PasteFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.DoneEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ResizeEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.MoveItemFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.EventHandlingFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.SaveAsMenuOptionFormEffect" }
+            ]
+        },
+         {   "className": "org.jbpm.form.builder.ng.model.shared.menu.items.RichTextEditorMenuItem",
+            "allowedEvents": [ ],
+            "effects": [
+                { "className": "org.jbpm.formbuilder.parent.client.effect.RemoveEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CopyFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.CutFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.PasteFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.DoneEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.ResizeEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.MoveItemFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.EventHandlingFormEffect" },
+                { "className": "org.jbpm.formbuilder.parent.client.effect.SaveAsMenuOptionFormEffect" }
+            ]
+        }
+        
+     ]
+     
+ }
+ 

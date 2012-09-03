@@ -26,20 +26,17 @@
     
  
     <gwt:DockPanel>
-        <gwt:Dock direction="WEST" size="800px">   
+        <gwt:Dock direction="WEST" size="230px">   
             
-            <gwt:ScrollPanel  ui:field="formView">
+            <gwt:ScrollPanel  ui:field="menuView">
                 
             </gwt:ScrollPanel>
         </gwt:Dock>
-        <gwt:Dock direction="SOUTH" size="100px">   
-            <gwt:VerticalPanel>
-                <gwt:Label>Task Id</gwt:Label>
-                <gwt:TextBox  ui:field="taskIdText"/>
-             
-                <gwt:Button  ui:field="renderButton">Render Form</gwt:Button>   
-            </gwt:VerticalPanel>
+        <gwt:Dock direction="SOUTH" size="760px">
             
+            <gwt:ScrollPanel  ui:field="layoutView">
+                
+            </gwt:ScrollPanel>
         </gwt:Dock>
     </gwt:DockPanel>
       

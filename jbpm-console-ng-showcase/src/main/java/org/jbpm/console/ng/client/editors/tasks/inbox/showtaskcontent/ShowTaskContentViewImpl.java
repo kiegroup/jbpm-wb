@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.inbox.quicknewtask;
+package org.jbpm.console.ng.client.editors.tasks.inbox.showtaskcontent;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -24,45 +22,57 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import javax.enterprise.event.Event;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 @Dependent
-public class NewQuickPersonalTaskViewImpl extends Composite implements NewQuickPersonalTaskPresenter.InboxView {
+public class ShowTaskContentViewImpl extends Composite implements ShowTaskContentPresenter.InboxView {
 
     @Inject
-    private UiBinder<Widget, NewQuickPersonalTaskViewImpl> uiBinder;
+    private UiBinder<Widget, ShowTaskContentViewImpl> uiBinder;
     @Inject
     private PlaceManager placeManager;
-    private NewQuickPersonalTaskPresenter presenter;
+    private ShowTaskContentPresenter presenter;
     @UiField
-    public Button addTaskButton;
+    public Button refreshContentButton;
+    
     @UiField
-    public TextBox userText;
+    public TextBox contentIdText;
     @UiField
-    public TextBox taskNameText;
+    public VerticalPanel contentPanel;
+    @UiField
+    public ScrollPanel scrollPanel;
     @Inject
     private Event<NotificationEvent> notification;
     
+    
     @Override
-    public void init(NewQuickPersonalTaskPresenter presenter) {
+    public void init(ShowTaskContentPresenter presenter) {
         this.presenter = presenter;
         initWidget(uiBinder.createAndBindUi(this));
-
     }
 
-    @UiHandler("addTaskButton")
-    public void addTaskButton(ClickEvent e) {
-        presenter.addQuickTask(userText.getText(),
-                                    taskNameText.getText());  
+    
+    @UiHandler("refreshContentButton")
+    public void saveContentButton(ClickEvent e) {
+        presenter.getContent(new Long(contentIdText.getText()));
     }
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
+
+    public VerticalPanel getContentPanel() {
+        return contentPanel;
+    }
+    
+    
 }

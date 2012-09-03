@@ -20,38 +20,47 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:gwt='urn:import:com.google.gwt.user.client.ui'
              xmlns:c="urn:import:com.google.gwt.user.cellview.client"
-             xmlns:dp="urn:import:com.google.gwt.user.datepicker.client" >
+             xmlns:dp="urn:import:com.google.gwt.user.datepicker.client"
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
 
     <ui:with field="i18n" type="org.jbpm.console.ng.client.i18n.Constants"/>
     <ui:with field='resources' type='org.jbpm.console.ng.client.resources.ShowcaseResources'/>
 
-    <gwt:DecoratorPanel>
-        <gwt:VerticalPanel width="100%">
-            <gwt:DecoratorPanel>
-            <gwt:HTMLPanel>
-                <gwt:Label>MOCK THIS IS THE CURRENTLY LOGGED USER! </gwt:Label>
-                <gwt:Label>User: </gwt:Label>
-                <gwt:TextBox
-                    ui:field='userText'>
-                </gwt:TextBox>
-            </gwt:HTMLPanel>
-            </gwt:DecoratorPanel>
-            <gwt:HTMLPanel>
-                <gwt:Label>Task Name: </gwt:Label>
-                <gwt:TextBox
-                    ui:field='taskNameText'>
-                </gwt:TextBox>
-            </gwt:HTMLPanel>
-
-            <gwt:HTMLPanel>
-                <gwt:Label>Actions: </gwt:Label>
-                <gwt:Button
-                    ui:field='addTaskButton'>Add Task
-                </gwt:Button>
-            
-            </gwt:HTMLPanel>    
+    
+    
+           
+           
+        <b:Form type="HORIZONTAL">
+            <b:Fieldset>
+               
+                <b:ControlGroup>
+                    <b:ControlLabel for="b_userId">User (Mock)</b:ControlLabel>
+                    <b:Controls>
+                        <b:TextBox
+                            ui:field='userText' b:id="b_userId">
+                        </b:TextBox>
+                    </b:Controls>
+                </b:ControlGroup>
+                <b:ControlGroup>
+                    <b:ControlLabel for="b_taskName">Task Name</b:ControlLabel>
+                    <b:Controls>
+                        <b:TextBox
+                            ui:field='taskNameText'  b:id="b_taskName">
+                        </b:TextBox>
+                    </b:Controls>
+                </b:ControlGroup>
+                <b:ControlGroup>
+                    <b:Controls>
+                        <b:Button
+                            ui:field='addTaskButton' type="PRIMARY">Create Task
+                        </b:Button>
+                    </b:Controls>
+                </b:ControlGroup>
+            </b:Fieldset>
+        </b:Form>
+          
         
-        </gwt:VerticalPanel>
-    </gwt:DecoratorPanel>
+    
+    
 
 </ui:UiBinder>
