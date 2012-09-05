@@ -19,8 +19,9 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.workbench.Position;
-import org.uberfire.client.workbench.perspectives.PerspectiveDefinition;
-import org.uberfire.client.workbench.perspectives.PerspectivePartDefinition;
+import org.uberfire.client.workbench.model.PanelDefinition;
+import org.uberfire.client.workbench.model.PartDefinition;
+import org.uberfire.client.workbench.model.PerspectiveDefinition;
 import org.uberfire.shared.mvp.PlaceRequest;
 
 /**
@@ -33,15 +34,13 @@ public class InboxPerspective {
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinition();
         p.setName( "Inbox Perspective" );
-        p.addPart( new PerspectivePartDefinition( Position.WEST,
-                                                  new PlaceRequest( "Quick New Task" ) ) );
-        p.addPart( new PerspectivePartDefinition( Position.ROOT,
-                                                  new PlaceRequest( "Personal Tasks" ) ) );
-        p.addPart( new PerspectivePartDefinition( Position.ROOT,
-                                                  new PlaceRequest( "Group Tasks" ) ) );
-        
-        
-
+        p.getRoot().addPart( new PartDefinition( new PlaceRequest( "Quick New Task"  ) ) );
+        final PanelDefinition eastPanel = new PanelDefinition();
+        eastPanel.addPart( new PartDefinition( new PlaceRequest(  "Personal Tasks" ) ) );      
+        final PanelDefinition westPanelSouthPanel = new PanelDefinition();
+        westPanelSouthPanel.addPart( new PartDefinition( new PlaceRequest(  "Group Tasks" ) ) );
+        eastPanel.getChildren( Position.SOUTH ).add(westPanelSouthPanel);
+        p.getRoot().getChildren( Position.EAST ).add( eastPanel );
         return p;
     }
 

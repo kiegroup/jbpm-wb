@@ -19,8 +19,9 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.workbench.Position;
-import org.uberfire.client.workbench.perspectives.PerspectiveDefinition;
-import org.uberfire.client.workbench.perspectives.PerspectivePartDefinition;
+import org.uberfire.client.workbench.model.PanelDefinition;
+import org.uberfire.client.workbench.model.PartDefinition;
+import org.uberfire.client.workbench.model.PerspectiveDefinition;
 import org.uberfire.shared.mvp.PlaceRequest;
 
 /**
@@ -31,19 +32,18 @@ public class TaskEditPerspective {
 
     @Perspective(identifier = "Task Edit Perspective")
     public PerspectiveDefinition getPerspective() {
+        
         final PerspectiveDefinition p = new PerspectiveDefinition();
         p.setName( "Task Edit Perspective" );
-        
-        p.addPart( new PerspectivePartDefinition( Position.WEST,
-                                                  new PlaceRequest( "Task Details" ) ) );
-        p.addPart( new PerspectivePartDefinition( Position.WEST,
-                                                  new PlaceRequest( "Add Task Content" ) ) );
-        p.addPart( new PerspectivePartDefinition( Position.EAST,
-                                                  new PlaceRequest( "Quick New Sub Task" ) ) );
-      
-        
-
+        p.getRoot().addPart( new PartDefinition( new PlaceRequest( "Task Details" ) ) );
+        final PanelDefinition eastPanel = new PanelDefinition();
+        eastPanel.addPart( new PartDefinition( new PlaceRequest( "Add Task Content") ) );      
+        final PanelDefinition westPanelSouthPanel = new PanelDefinition();
+        westPanelSouthPanel.addPart( new PartDefinition( new PlaceRequest(  "Quick New Sub Task" ) ) );
+        eastPanel.getChildren( Position.SOUTH ).add(westPanelSouthPanel);
+        p.getRoot().getChildren( Position.EAST ).add( eastPanel );
         return p;
+  
     }
 
 }

@@ -19,8 +19,9 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.workbench.Position;
-import org.uberfire.client.workbench.perspectives.PerspectiveDefinition;
-import org.uberfire.client.workbench.perspectives.PerspectivePartDefinition;
+import org.uberfire.client.workbench.model.PanelDefinition;
+import org.uberfire.client.workbench.model.PartDefinition;
+import org.uberfire.client.workbench.model.PerspectiveDefinition;
 import org.uberfire.shared.mvp.PlaceRequest;
 
 /**
@@ -31,15 +32,14 @@ public class FormPerspective {
 
     @Perspective(identifier = "Form Perspective")
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinition();
-        p.setName( "Form Perspective" );
-        p.addPart( new PerspectivePartDefinition( Position.SELF,
-                                                  new PlaceRequest( "Form Display" ) ) );
-       
-      
-        
+         final PerspectiveDefinition p = new PerspectiveDefinition();
+            p.setName( "Form Perspective" );
+            p.getRoot().addPart( new PartDefinition( new PlaceRequest( "Form Builder" ) ) );
+            final PanelDefinition westPanel = new PanelDefinition();
+            westPanel.addPart( new PartDefinition( new PlaceRequest( "Form Display" ) ) );
+            p.getRoot().getChildren( Position.WEST ).add( westPanel );
+            return p;
 
-        return p;
     }
 
 }
