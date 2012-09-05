@@ -22,7 +22,7 @@
   <inherits name="org.jbpm.form.builder.ng.model.FormBuilderModel"/>
   <inherits name="com.gwtent.GwtEnt" />
   <inherits name="com.google.gwt.xml.XML" /-->
-  
+  <set-property name="bootstrap.responsiveDesign" value="true"/>
    
   <!-- Specify the application specific style sheet. -->
   <stylesheet src='css/uberfire-showcase.css'/>

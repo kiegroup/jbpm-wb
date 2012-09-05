@@ -15,6 +15,10 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.addtaskcontent;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.FluidContainer;
+import com.github.gwtbootstrap.client.ui.FluidRow;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -22,17 +26,17 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
+
 import com.google.gwt.user.client.ui.Widget;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
@@ -53,7 +57,7 @@ public class AddTaskContentViewImpl extends Composite implements AddTaskContentP
     @UiField
     public ScrollPanel scrollPanel;
     @UiField
-    public VerticalPanel contentPanel;
+    public FluidContainer contentPanel;
     @Inject
     private Event<NotificationEvent> notification;
     
@@ -67,9 +71,11 @@ public class AddTaskContentViewImpl extends Composite implements AddTaskContentP
 
     @UiHandler("addRowButton")
     public void addTaskButton(ClickEvent e) {
-        HorizontalPanel horizontalPanel = new HorizontalPanel();
+        FluidRow horizontalPanel = new FluidRow();
         TextBox keyTextBox = new TextBox();
+        keyTextBox.setPlaceholder(" set key ");
         TextBox valueTextBox = new TextBox();
+        valueTextBox.setPlaceholder(" set value ");
         horizontalPanel.add(keyTextBox);
         horizontalPanel.add(valueTextBox);
         textBoxs.put(keyTextBox, valueTextBox);
@@ -86,5 +92,9 @@ public class AddTaskContentViewImpl extends Composite implements AddTaskContentP
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
+    }
+    
+    public void receiveSelectedNotification(@Observes TaskSelectionEvent event){
+        taskIdText.setText(String.valueOf(event.getTaskId()));
     }
 }

@@ -107,7 +107,7 @@ public class FormDisplayPresenter {
     private native void publish(FormDisplayPresenter fdp) /*-{
      
      $wnd.completeForm = function(from) {
-        fdp.@org.jbpm.console.ng.client.editors.tasks.display.FormDisplayPresenter::completeForm(Ljava/lang/String;)(from);
+        fdp.@org.jbpm.console.ng.client.editors.tasks.fb.display.FormDisplayPresenter::completeForm(Ljava/lang/String;)(from);
      }
      
         

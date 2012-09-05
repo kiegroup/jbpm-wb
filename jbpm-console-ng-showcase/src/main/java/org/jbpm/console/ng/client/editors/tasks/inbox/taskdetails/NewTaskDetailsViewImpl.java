@@ -15,7 +15,10 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.taskdetails;
 
-import javax.annotation.PostConstruct;
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.ListBox;
+import com.github.gwtbootstrap.client.ui.TextArea;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -23,15 +26,14 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Button;
+
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
+
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DatePicker;
 import javax.enterprise.event.Event;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
+import javax.enterprise.event.Observes;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
@@ -97,11 +99,14 @@ public class NewTaskDetailsViewImpl extends Composite implements NewTaskDetailsP
         
         
     }
-  
+    public void receiveSelectedNotification(@Observes TaskSelectionEvent event){
+        taskIdText.setText(String.valueOf(event.getTaskId()));
+        presenter.refreshTask(Long.parseLong(taskIdText.getText()));
+    }
+    
     @UiHandler("refreshButton")
     public void refreshButton(ClickEvent e) {
         presenter.refreshTask(Long.parseLong(taskIdText.getText()));
-
     }
 
     public TextBox getUserText() {

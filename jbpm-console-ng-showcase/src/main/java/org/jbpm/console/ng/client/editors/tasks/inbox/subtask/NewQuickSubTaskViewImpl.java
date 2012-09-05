@@ -15,8 +15,8 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.subtask;
 
-import org.jbpm.console.ng.client.editors.tasks.inbox.taskdetails.*;
-import javax.annotation.PostConstruct;
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -24,14 +24,12 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.datepicker.client.DatePicker;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
@@ -67,17 +65,13 @@ public class NewQuickSubTaskViewImpl extends Composite implements NewQuickSubTas
         
     }
 
-   
-    
     @UiHandler("createSubTaskButton")
     public void createSubTaskButton(ClickEvent e) {
         presenter.addSubTask(Long.parseLong(parentTaskIdText.getText()), 
                 subTaskAsigneeText.getText(),
                 subTaskNameText.getText());
         
-        
     }
-
    
     public TextBox getParentTaskIdText() {
         return parentTaskIdText;
@@ -88,5 +82,8 @@ public class NewQuickSubTaskViewImpl extends Composite implements NewQuickSubTas
         notification.fire(new NotificationEvent(text));
     }
 
+     public void receiveSelectedNotification(@Observes TaskSelectionEvent event){
+        parentTaskIdText.setText(String.valueOf(event.getTaskId()));
+    }
   
 }

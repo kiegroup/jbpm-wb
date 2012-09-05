@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.quicknewtask;
 
+
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import javax.enterprise.context.Dependent;
@@ -29,6 +30,7 @@ import com.google.gwt.user.client.ui.Composite;
 
 import com.google.gwt.user.client.ui.Widget;
 import javax.enterprise.event.Event;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.UserTaskEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
@@ -48,6 +50,8 @@ public class NewQuickPersonalTaskViewImpl extends Composite implements NewQuickP
     public TextBox taskNameText;
     @Inject
     private Event<NotificationEvent> notification;
+    @Inject
+    private Event<UserTaskEvent> userTaskChanges;
     
     @Override
     public void init(NewQuickPersonalTaskPresenter presenter) {
@@ -64,5 +68,6 @@ public class NewQuickPersonalTaskViewImpl extends Composite implements NewQuickP
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
+        userTaskChanges.fire(new UserTaskEvent(userText.getText()));
     }
 }

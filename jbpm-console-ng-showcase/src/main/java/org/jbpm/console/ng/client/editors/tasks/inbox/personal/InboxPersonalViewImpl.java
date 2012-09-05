@@ -15,13 +15,17 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.personal;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.DataGrid;
+
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.cell.client.ButtonCell;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import org.jbpm.console.ng.client.model.TaskSummary;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -34,18 +38,20 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
-import com.google.gwt.user.cellview.client.DataGrid;
+
 import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
-import com.google.gwt.user.client.ui.Button;
+
+
+
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
+
+
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
-import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
 import java.util.Comparator;
@@ -54,8 +60,10 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
 import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.UserTaskEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
+import org.uberfire.shared.mvp.PlaceRequest;
 
 @Dependent
 public class InboxPersonalViewImpl extends Composite implements InboxPersonalPresenter.InboxView {
@@ -64,9 +72,7 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
     private UiBinder<Widget, InboxPersonalViewImpl> uiBinder;
     @Inject
     private PlaceManager placeManager;
-    
     private InboxPersonalPresenter presenter;
-   
     @UiField
     public Button refreshTasksButton;
     @UiField
@@ -77,30 +83,28 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
     public Button releaseTaskButton;
     @UiField
     public TextBox userText;
-    
     @UiField(provided = true)
     public DataGrid<TaskSummary> myTaskListGrid;
     @UiField(provided = true)
     public SimplePager pager;
     private Set<TaskSummary> selectedTasks;
-    
     @Inject
     private Event<NotificationEvent> notification;
-    
     @Inject
     private Event<TaskSelectionEvent> taskSelection;
     
-    public static final ProvidesKey<TaskSummary> KEY_PROVIDER = new ProvidesKey<TaskSummary>() {
-        public Object getKey(TaskSummary item) {
-            return item == null ? null : item.getId();
-        }
-    };
+    
+//    public static final ProvidesKey<TaskSummary> KEY_PROVIDER = new ProvidesKey<TaskSummary>() {
+//        public Object getKey(TaskSummary item) {
+//            return item == null ? null : item.getId();
+//        }
+//    };
 
     @Override
     public void init(InboxPersonalPresenter presenter) {
         this.presenter = presenter;
 
-        myTaskListGrid = new DataGrid<TaskSummary>(KEY_PROVIDER);
+        myTaskListGrid = new DataGrid<TaskSummary>();
         myTaskListGrid.setWidth("100%");
         myTaskListGrid.setHeight("300px");
 
@@ -120,11 +124,11 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
 
         // Add a selection model so we can select cells.
         final MultiSelectionModel<TaskSummary> selectionModel =
-                new MultiSelectionModel<TaskSummary>(KEY_PROVIDER);
+                new MultiSelectionModel<TaskSummary>();
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             public void onSelectionChange(SelectionChangeEvent event) {
                 selectedTasks = selectionModel.getSelectedSet();
-                for(TaskSummary ts : selectedTasks){
+                for (TaskSummary ts : selectedTasks) {
                     taskSelection.fire(new TaskSelectionEvent(ts.getId()));
                 }
             }
@@ -138,10 +142,14 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
         initWidget(uiBinder.createAndBindUi(this));
 
         presenter.addDataDisplay(myTaskListGrid);
-       
+
     }
 
-    
+    public void recieveStatusChanged(@Observes UserTaskEvent event) {
+        presenter.refreshTasks(event.getUserId());
+        userText.setText(event.getUserId());
+    }
+
     @UiHandler("refreshTasksButton")
     public void refreshTasksButton(ClickEvent e) {
         presenter.refreshTasks(userText.getText());
@@ -149,7 +157,7 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
 
     @UiHandler("startTaskButton")
     public void startTaskButton(ClickEvent e) {
-        if(selectedTasks.isEmpty()){
+        if (selectedTasks.isEmpty()) {
             displayNotification("Please Select at least one Task to Execute a Quick Action");
             return;
         }
@@ -160,17 +168,17 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
 
     @UiHandler("completeTaskButton")
     public void completeTaskButton(ClickEvent e) {
-        if(selectedTasks.isEmpty()){
+        if (selectedTasks.isEmpty()) {
             displayNotification("Please Select at least one Task to Execute a Quick Action");
             return;
         }
         presenter.completeTasks(selectedTasks, userText.getText());
 
     }
-    
+
     @UiHandler("releaseTaskButton")
     public void releaseTaskButton(ClickEvent e) {
-        if(selectedTasks.isEmpty()){
+        if (selectedTasks.isEmpty()) {
             displayNotification("Please Select at least one Task to Execute a Quick Action");
             return;
         }
@@ -293,8 +301,8 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
         });
 
         myTaskListGrid.addColumn(userColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Actual Owner")));
-        myTaskListGrid.setColumnWidth(userColumn, 50, Unit.PCT);
- 
+        myTaskListGrid.setColumnWidth(userColumn, 60, Unit.PCT);
+
         // Description.
         Column<TaskSummary, String> descriptionColumn = new Column<TaskSummary, String>(new TextCell()) {
             @Override
@@ -306,14 +314,14 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
 
 
         myTaskListGrid.addColumn(descriptionColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Description")));
-        myTaskListGrid.setColumnWidth(descriptionColumn, 150, Unit.PCT);
+        myTaskListGrid.setColumnWidth(descriptionColumn, 140, Unit.PCT);
 
         // Task parent id.
         Column<TaskSummary, String> taskParentIdColumn =
                 new Column<TaskSummary, String>(new TextCell()) {
                     @Override
                     public String getValue(TaskSummary object) {
-                        return (object.getParentId() > 0)?String.valueOf(object.getParentId()):"No Parent";
+                        return (object.getParentId() > 0) ? String.valueOf(object.getParentId()) : "No Parent";
                     }
                 };
         taskParentIdColumn.setSortable(true);
@@ -323,20 +331,63 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
             }
         });
         myTaskListGrid.addColumn(taskParentIdColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Parent Id")));
-        myTaskListGrid.setColumnWidth(taskParentIdColumn, 40, Unit.PCT);
-        
+        myTaskListGrid.setColumnWidth(taskParentIdColumn, 50, Unit.PCT);
+
+
+        Column<TaskSummary, String> editColumn =
+                new Column<TaskSummary, String>(new ButtonCell()) {
+                    @Override
+                    public String getValue(TaskSummary task) {
+                        return String.valueOf(task.getId());
+                    }
+                };
+
+        editColumn.setFieldUpdater(new FieldUpdater<TaskSummary, String>() {
+            @Override
+            public void update(int index, TaskSummary task, String value) {
+                placeManager.goTo(new PlaceRequest("Task Edit Perspective"));
+                taskSelection.fire(new TaskSelectionEvent(Long.parseLong(value)));
+            }
+        });
+
+        myTaskListGrid.addColumn(editColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Edit")));
+        myTaskListGrid.setColumnWidth(editColumn, 50, Unit.PCT);
+
+
+        Column<TaskSummary, String> workColumn =
+                new Column<TaskSummary, String>(new ButtonCell()) {
+                    @Override
+                    public String getValue(TaskSummary task) {
+                        return String.valueOf(task.getId());
+                    }
+                };
+
+        workColumn.setFieldUpdater(new FieldUpdater<TaskSummary, String>() {
+            @Override
+            public void update(int index, TaskSummary task, String value) {
+                placeManager.goTo(new PlaceRequest("Form Perspective"));
+                taskSelection.fire(new TaskSelectionEvent(Long.parseLong(value)));
+            }
+        });
+
+        myTaskListGrid.addColumn(workColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Work")));
+        myTaskListGrid.setColumnWidth(workColumn, 50, Unit.PCT);
+
+
+
     }
-    
-    public void displayNotification(String text){
-        notification.fire( new NotificationEvent( text ) );
+
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     public TextBox getUserText() {
         return userText;
     }
-    
-    public void onTaskSelected(@Observes TaskChangedEvent taskChanged){
+
+    public void onTaskSelected(@Observes TaskChangedEvent taskChanged) {
         presenter.refreshTasks(taskChanged.getUserId());
+
+
     }
-    
 }

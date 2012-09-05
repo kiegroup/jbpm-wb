@@ -20,72 +20,86 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:gwt='urn:import:com.google.gwt.user.client.ui'
              xmlns:c="urn:import:com.google.gwt.user.cellview.client"
-             xmlns:dp="urn:import:com.google.gwt.user.datepicker.client" >
+             xmlns:dp="urn:import:com.google.gwt.user.datepicker.client" 
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
 
     <ui:with field="i18n" type="org.jbpm.console.ng.client.i18n.Constants"/>
     <ui:with field='resources' type='org.jbpm.console.ng.client.resources.ShowcaseResources'/>
 
-    <gwt:DecoratorPanel>
-        <gwt:VerticalPanel width="100%">
-            <gwt:HorizontalPanel >
-                <gwt:Label>Task ID (MOCK): </gwt:Label>
-                <gwt:TextBox
-                    ui:field='taskIdText'>
-                </gwt:TextBox>
-            </gwt:HorizontalPanel>
-            <gwt:HorizontalPanel >
-                <gwt:Label>User: </gwt:Label>
-                <gwt:TextBox 
-                    ui:field='userText'>
-                </gwt:TextBox>
-            </gwt:HorizontalPanel>
-            <gwt:HorizontalPanel>
-                <gwt:Label>Group: </gwt:Label>
-                <gwt:TextBox
-                    ui:field='groupText'>
-                </gwt:TextBox>
-            </gwt:HorizontalPanel>
-            <gwt:HorizontalPanel>
-                <gwt:Label>Task Name: </gwt:Label>
-                <gwt:TextBox
-                    ui:field='taskNameText'>
-                </gwt:TextBox>
-            </gwt:HorizontalPanel>
-        
-            <gwt:HorizontalPanel>
-                <gwt:Label>Task Description </gwt:Label>
-                <gwt:TextArea
-                    ui:field='taskDescriptionTextArea'>
-                </gwt:TextArea>
-            </gwt:HorizontalPanel>
-        
-            <gwt:HorizontalPanel>
-                <gwt:Label>Task Priority: </gwt:Label>
-                <gwt:ListBox
-                    ui:field='taskPriorityListBox'>
-                </gwt:ListBox>
-            </gwt:HorizontalPanel>
-            <gwt:HorizontalPanel>
-                <gwt:Label>Sub Task Strategy: </gwt:Label>
-                <gwt:ListBox
-                    ui:field='subTaskStrategyListBox'>
-                </gwt:ListBox>
-            </gwt:HorizontalPanel>
-            <gwt:HorizontalPanel>
-                <gwt:Label>Due Date: </gwt:Label>
-                <dp:DatePicker ui:field='dueDate'></dp:DatePicker>
-            </gwt:HorizontalPanel>
-            <gwt:HorizontalPanel>
-                <gwt:Label>Actions: </gwt:Label>
-                <gwt:Button
-                    ui:field='updateTaskButton'>Update Task
-                </gwt:Button>
-                <gwt:Button
-                    ui:field='refreshButton'>Refresh
-                </gwt:Button>        
-            </gwt:HorizontalPanel>    
-        
-        </gwt:VerticalPanel>
-    </gwt:DecoratorPanel>
+    <b:WellForm type="HORIZONTAL">
+       
+        <b:Fieldset>
+            <b:ControlGroup>
+                <b:ControlLabel for="taskId">Task Id (Mock)</b:ControlLabel> 
+                <b:Controls>
+                    <b:TextBox
+                        ui:field='taskIdText' b:id="taskId" placeholder="task id (mock)">
+                    </b:TextBox>
+                </b:Controls>        
+            </b:ControlGroup>
+            <b:ControlGroup>
+                <b:ControlLabel for="userText">User</b:ControlLabel> 
+                <b:Controls>        
+                    <b:TextBox 
+                        ui:field='userText' b:id="userText" placeholder="user">
+                    </b:TextBox>
+                </b:Controls>
+            </b:ControlGroup>
+            <b:ControlGroup>
+                <b:ControlLabel for="groupText">Group</b:ControlLabel>  
+                <b:Controls>       
+                    <b:TextBox
+                        ui:field='groupText' b:id="groupText" placeholder="group">
+                    </b:TextBox>
+                </b:Controls>
+            </b:ControlGroup>
+            <b:ControlGroup>
+                <b:ControlLabel for="taskNameText">Name</b:ControlLabel>    
+                <b:Controls>         
+                    <b:TextBox
+                        ui:field='taskNameText' b:id="taskNameText" placeholder="task name">
+                    </b:TextBox>
+                </b:Controls>
+            </b:ControlGroup>
+            <b:ControlGroup>
+                <b:ControlLabel for="taskDescriptionText">Description</b:ControlLabel>             
+                <b:Controls>
+                    <b:TextArea
+                        ui:field='taskDescriptionTextArea' b:id="taskDescriptionText" placeholder="task description">
+                    </b:TextArea>
+                </b:Controls>
+            </b:ControlGroup>
+            <b:ControlGroup>
+                <b:ControlLabel for="priorityText">Priority</b:ControlLabel>
+                <b:Controls>                
+                    <b:ListBox b:id="priorityText"
+                               ui:field='taskPriorityListBox'>
+                    </b:ListBox>
+                </b:Controls>
+            </b:ControlGroup>
+            <b:ControlGroup>
+                <b:ControlLabel for="subTaskStrategyText">Sub Task Strategy</b:ControlLabel>                
+                <b:Controls>
+                    <b:ListBox 
+                        ui:field='subTaskStrategyListBox' b:id="subTaskStrategyText">
+                    </b:ListBox>
+                </b:Controls>
+            </b:ControlGroup>
+            <b:ControlGroup>
+                <b:ControlLabel>Due Date</b:ControlLabel>                   
+                <b:Controls>
+                    <dp:DatePicker ui:field='dueDate'></dp:DatePicker>
+                </b:Controls>
+            </b:ControlGroup>
+        </b:Fieldset>
+           
+        <b:Button
+            ui:field='updateTaskButton' size="SMALL" type="PRIMARY">Update
+        </b:Button>
+        <b:Button
+            ui:field='refreshButton' size="SMALL" type="PRIMARY">Refresh
+        </b:Button>        
+           
+    </b:WellForm>
 
 </ui:UiBinder>

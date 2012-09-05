@@ -19,59 +19,53 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:gwt='urn:import:com.google.gwt.user.client.ui'
-             xmlns:c="urn:import:com.google.gwt.user.cellview.client">
+             xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
 
     <ui:with field="i18n" type="org.jbpm.console.ng.client.i18n.Constants"/>
     <ui:with field='resources' type='org.jbpm.console.ng.client.resources.ShowcaseResources'/>
-
     
-    <gwt:VerticalPanel width="100%">
-        <gwt:HorizontalPanel width="100%">
-            <gwt:HTMLPanel>
-                <gwt:Label>MOCK should be the logged User: </gwt:Label>
-                <gwt:TextBox
-                    ui:field='userText'>
-                </gwt:TextBox> 
-                <gwt:Button
-                    ui:field='refreshTasksButton' >Refresh Tasks
-                </gwt:Button>
-                <gwt:Label>Quick Actions: </gwt:Label> 
-                <gwt:Button
-                    ui:field='startTaskButton' >Start Task
-                </gwt:Button>
-                <gwt:Button
-                    ui:field='completeTaskButton' >Complete Task
-                </gwt:Button>
-                <gwt:Button
-                    ui:field='releaseTaskButton' >Relese Task
-                </gwt:Button>
-            </gwt:HTMLPanel>
-        </gwt:HorizontalPanel>
-        <gwt:HorizontalPanel width="100%">
-            <gwt:HTMLPanel>
-                <c:DataGrid
-                    ui:field='myTaskListGrid'  />
-            </gwt:HTMLPanel>
-
-        </gwt:HorizontalPanel>
-        <gwt:HorizontalPanel width="100%">
-            <gwt:HTMLPanel>
-                <table
-                    style="width:100%">
-                    <tr>
-                        <td
-                            align='center'>
-                            <c:SimplePager
-                                ui:field='pager' />
-                        </td>
-                    </tr>
-                </table>
-             
-            
-            </gwt:HTMLPanel>
-        </gwt:HorizontalPanel>
+    <b:WellForm type="INLINE">
         
-    </gwt:VerticalPanel>
+        <b:TextBox
+            ui:field='userText' placeholder="user" b:id="b_userId">
+        </b:TextBox>
+            
+        <b:Button 
+            ui:field='refreshTasksButton' size="SMALL" type="PRIMARY">Refresh
+        </b:Button>
+             
+        <b:Button 
+            ui:field='startTaskButton' size="SMALL" type="PRIMARY">Start 
+        </b:Button>
+                
+        <b:Button 
+            ui:field='completeTaskButton' size="SMALL" type="PRIMARY">Complete
+        </b:Button>
+                
+        <b:Button 
+            ui:field='releaseTaskButton' size="SMALL" type="PRIMARY">Release
+        </b:Button>
+
+        <b:FluidContainer>
+            <b:FluidRow>
+                <b:Column size="12">
+                    <b:DataGrid
+                        ui:field='myTaskListGrid'  />
+             
+                </b:Column>
+         
+            </b:FluidRow>
+            <b:FluidRow>
+                <b:Column size="12">
+                    <c:SimplePager
+                        ui:field='pager' />
+                </b:Column>
+         
+            </b:FluidRow>
+        </b:FluidContainer>   
+    </b:WellForm>
+    
     
 
 </ui:UiBinder>

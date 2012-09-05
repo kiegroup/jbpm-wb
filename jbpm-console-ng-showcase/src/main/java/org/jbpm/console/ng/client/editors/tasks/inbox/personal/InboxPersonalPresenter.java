@@ -15,13 +15,14 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.personal;
 
+import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.TextBox;
+
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import org.jbpm.console.ng.client.model.TaskSummary;

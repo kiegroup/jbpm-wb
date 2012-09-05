@@ -25,42 +25,21 @@
 
     <ui:with field="i18n" type="org.jbpm.console.ng.client.i18n.Constants"/>
     <ui:with field='resources' type='org.jbpm.console.ng.client.resources.ShowcaseResources'/>
-
     
-    
-           
-           
-        <b:Form type="HORIZONTAL">
-            <b:Fieldset>
-               
-                <b:ControlGroup>
-                    <b:ControlLabel for="b_userId">User (Mock)</b:ControlLabel>
-                    <b:Controls>
-                        <b:TextBox
-                            ui:field='userText' b:id="b_userId">
-                        </b:TextBox>
-                    </b:Controls>
-                </b:ControlGroup>
-                <b:ControlGroup>
-                    <b:ControlLabel for="b_taskName">Task Name</b:ControlLabel>
-                    <b:Controls>
-                        <b:TextBox
-                            ui:field='taskNameText'  b:id="b_taskName">
-                        </b:TextBox>
-                    </b:Controls>
-                </b:ControlGroup>
-                <b:ControlGroup>
-                    <b:Controls>
-                        <b:Button
-                            ui:field='addTaskButton' type="PRIMARY">Create Task
-                        </b:Button>
-                    </b:Controls>
-                </b:ControlGroup>
-            </b:Fieldset>
-        </b:Form>
-          
-        
-    
-    
+    <b:WellForm type="HORIZONTAL">
+      
+        <b:TextBox  
+            ui:field='userText' placeholder="user" b:id="b_userId">
+        </b:TextBox>
+                
+        <b:TextBox
+            ui:field='taskNameText' placeholder="task name"  b:id="b_taskName">
+        </b:TextBox>
+                    
+        <b:Button
+            ui:field='addTaskButton' size="SMALL" type="PRIMARY">Create
+        </b:Button>
+                  
+    </b:WellForm>
 
 </ui:UiBinder>

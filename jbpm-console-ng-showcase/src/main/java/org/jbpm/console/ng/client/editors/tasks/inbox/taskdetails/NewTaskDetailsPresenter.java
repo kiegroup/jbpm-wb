@@ -15,13 +15,13 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.taskdetails;
 
+import com.github.gwtbootstrap.client.ui.ListBox;
+import com.github.gwtbootstrap.client.ui.TextArea;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
+
 import com.google.gwt.user.datepicker.client.DatePicker;
 import java.util.ArrayList;
 import java.util.Date;

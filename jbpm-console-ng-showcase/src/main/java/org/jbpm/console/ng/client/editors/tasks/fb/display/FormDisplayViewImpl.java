@@ -31,6 +31,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
 import org.jbpm.console.ng.shared.fb.events.FormRenderedEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
@@ -68,6 +69,12 @@ public class FormDisplayViewImpl extends Composite implements FormDisplayPresent
     public void renderForm(@Observes FormRenderedEvent formRendered) {
         formView.add(new HTMLPanel(formRendered.getForm()));
 
+    }
+    
+    public void receiveSelectedNotification(@Observes TaskSelectionEvent event){
+        System.out.println(" -> Event recieved: printing a form: "+this.hashCode());
+        taskIdText.setText(String.valueOf(event.getTaskId()));
+        presenter.renderForm(new Long(taskIdText.getText()));
     }
 
     @Override

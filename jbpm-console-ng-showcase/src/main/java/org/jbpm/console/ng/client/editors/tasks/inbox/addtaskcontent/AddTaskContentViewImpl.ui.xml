@@ -19,44 +19,44 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:gwt='urn:import:com.google.gwt.user.client.ui'
-             xmlns:c="urn:import:com.google.gwt.user.cellview.client"
-             xmlns:dp="urn:import:com.google.gwt.user.datepicker.client" >
+             xmlns:c="urn:import:com.google.gwt.user.cellview.client" 
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
 
     <ui:with field="i18n" type="org.jbpm.console.ng.client.i18n.Constants"/>
     <ui:with field='resources' type='org.jbpm.console.ng.client.resources.ShowcaseResources'/>
 
-    <gwt:DecoratorPanel>
-        <gwt:VerticalPanel width="100%">
-            <gwt:DecoratorPanel>
-            <gwt:HTMLPanel>
-                <gwt:Label>MOCK! THIS IS THE CURRENTLY SELECTED TASK! </gwt:Label>
-                <gwt:Label>Task Id: </gwt:Label>
-                <gwt:TextBox
-                    ui:field='taskIdText'>
-                </gwt:TextBox>
-            </gwt:HTMLPanel>
-            </gwt:DecoratorPanel>
-            <gwt:HTMLPanel>
-                <gwt:Label>Define your content: </gwt:Label>
-                 <gwt:ScrollPanel  ui:field="scrollPanel">
-                    <gwt:VerticalPanel ui:field="contentPanel">
-                        
-                    </gwt:VerticalPanel>
-                </gwt:ScrollPanel>
-                <gwt:Button
-                    ui:field='addRowButton'>Add Row
-                </gwt:Button>
-            </gwt:HTMLPanel>
-
-            <gwt:HTMLPanel>
-                <gwt:Label>Actions: </gwt:Label>
-                <gwt:Button
-                    ui:field='saveContentButton'>Save Content
-                </gwt:Button>
+    <b:WellForm type="HORIZONTAL">
+       
+        <b:Fieldset>
+            <b:ControlGroup>
+                <b:ControlLabel for="taskId">Task Id (Mock)</b:ControlLabel> 
+                <b:Controls>
+                    <b:TextBox
+                        ui:field='taskIdText' b:id="taskId" placeholder="task id (mock)">
+                    </b:TextBox>
+                </b:Controls>        
+            </b:ControlGroup>      
+        </b:Fieldset>         
+                
             
-            </gwt:HTMLPanel>    
+                
+        <gwt:ScrollPanel  ui:field="scrollPanel">
+            <b:FluidContainer ui:field="contentPanel">
+                
+            </b:FluidContainer>
+        </gwt:ScrollPanel>
+            
+        <b:Button
+            ui:field='addRowButton' size="SMALL" type="PRIMARY">Add Row
+        </b:Button>
+            
+            
+        <b:Button
+            ui:field='saveContentButton' size="SMALL" type="PRIMARY">Save Content
+        </b:Button>
+            
+           
         
-        </gwt:VerticalPanel>
-    </gwt:DecoratorPanel>
+    </b:WellForm>
 
 </ui:UiBinder>

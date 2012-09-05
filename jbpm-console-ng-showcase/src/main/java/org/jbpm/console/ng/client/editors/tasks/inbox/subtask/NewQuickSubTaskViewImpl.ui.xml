@@ -20,37 +20,48 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:gwt='urn:import:com.google.gwt.user.client.ui'
              xmlns:c="urn:import:com.google.gwt.user.cellview.client"
-             xmlns:dp="urn:import:com.google.gwt.user.datepicker.client" >
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
 
     <ui:with field="i18n" type="org.jbpm.console.ng.client.i18n.Constants"/>
     <ui:with field='resources' type='org.jbpm.console.ng.client.resources.ShowcaseResources'/>
 
-    <gwt:DecoratorPanel>
-        <gwt:VerticalPanel width="100%">
-            <gwt:HorizontalPanel >
-                <gwt:Label>Parent Task ID (MOCK): </gwt:Label>
-                <gwt:TextBox
-                    ui:field='parentTaskIdText'>
-                </gwt:TextBox>
-            </gwt:HorizontalPanel>
-            
-            <gwt:HorizontalPanel>
+    
+    <b:WellForm type="HORIZONTAL">
+      
+        <b:Fieldset>
+            <b:ControlGroup>
+                <b:ControlLabel for="parentTaskId">Parent Task Id</b:ControlLabel> 
+                <b:Controls>
+                    <b:TextBox
+                        ui:field='parentTaskIdText' b:id="parentTaskId" placeholder="parent task id">
+                    </b:TextBox>
+                </b:Controls>        
+            </b:ControlGroup>
+            <b:ControlGroup>
+                <b:ControlLabel for="subTaskNameText">Sub Task Name</b:ControlLabel> 
+                <b:Controls>
+                    <b:TextBox
+                        ui:field='subTaskNameText' b:id="subTaskNameText" placeholder="sub task name">
+                    </b:TextBox>
+                </b:Controls>        
+            </b:ControlGroup>
+            <b:ControlGroup>
+                <b:ControlLabel for="subTaskAsigneeText">Sub Task Asignee</b:ControlLabel> 
+                <b:Controls>
+                    <b:TextBox
+                        ui:field='subTaskAsigneeText' b:id="subTaskAsigneeText" placeholder="sub task asignee">
+                    </b:TextBox>
+                </b:Controls>        
+            </b:ControlGroup>   
+           
+        </b:Fieldset>
+        <b:Button
+            ui:field='createSubTaskButton' size="SMALL" type="PRIMARY">New Sub Task
+        </b:Button>
+           
+    </b:WellForm>   
                 
-                <gwt:Label>Sub Task Name: </gwt:Label>
-                <gwt:TextBox
-                    ui:field='subTaskNameText'>
-                </gwt:TextBox>
-                <gwt:Label>Sub Task Assignee: </gwt:Label>
-                <gwt:TextBox
-                    ui:field='subTaskAsigneeText'>
-                </gwt:TextBox>
-                <gwt:Button
-                    ui:field='createSubTaskButton'>New Sub Task
-                </gwt:Button>
-            </gwt:HorizontalPanel>
             
-        
-        </gwt:VerticalPanel>
-    </gwt:DecoratorPanel>
+
 
 </ui:UiBinder>
