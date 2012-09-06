@@ -13,31 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.inbox.newtask;
+package org.jbpm.console.ng.client.editors.tasks.statistics;
 
+import org.jbpm.console.ng.client.editors.tasks.inbox.quicknewtask.*;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import java.util.Date;
 import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
 import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 
 @Dependent
-@WorkbenchScreen(identifier = "New Task")
-public class NewPersonalTaskPresenter {
+@WorkbenchScreen(identifier = "Personal Task Statistics")
+public class PersonalTasksStatisticsPresenter {
 
     public interface InboxView
             extends
-            UberView<NewPersonalTaskPresenter> {
+            UberView<PersonalTasksStatisticsPresenter> {
+
         void displayNotification(String text);
     }
     @Inject
@@ -47,40 +50,38 @@ public class NewPersonalTaskPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "New Task";
+        return "Statistics";
     }
 
     @WorkbenchPartView
-    public UberView<NewPersonalTaskPresenter> getView() {
+    public UberView<PersonalTasksStatisticsPresenter> getView() {
         return view;
     }
 
-    public NewPersonalTaskPresenter() {
+    public PersonalTasksStatisticsPresenter() {
     }
 
-    
+    @PostConstruct
+    public void init() {
+    }
 
-    public void addTask(final String userId, String groupId, String taskName, String taskDescription, Date dueDate, String priority) {
-        String str = "(with (new Task()) { priority = " + priority + ", taskData = (with( new TaskData()) { } ), ";
-        str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
-        if (userId != null && !userId.equals("")) {
-            str += " [new User('" + userId + "')  ], }),";
-        }
-        if (groupId != null && !groupId.equals("")) {
-            str += " [new Group('" + groupId + "')  ], }),";
-        }
+    public void refreshGraphs(final String userId) {
         
-        str += "names = [ new I18NText( 'en-UK', '" + taskName + "')] })";
-        taskServices.call(new RemoteCallback<Long>() {
+        taskServices.call(new RemoteCallback<Integer>() {
             @Override
-            public void callback(Long taskId) {
-                view.displayNotification("Task Created (id = " + taskId +")");
+            public void callback(Integer completedTasks) {
+                view.displayNotification("Tasks Completed ( by "+userId + " ): "+completedTasks);
                 
             }
-        }).addTask(str, null);
+        }).getCompletedTaskByUserId(userId);
         
-    }
+        taskServices.call(new RemoteCallback<Integer>() {
+            @Override
+            public void callback(Integer pendingTasks) {
+                view.displayNotification("Pending Tasks ( for "+userId + " ): "+pendingTasks);
+                
+            }
+        }).getPendingTaskByUserId(userId);
 
-   
-   
+    }
 }

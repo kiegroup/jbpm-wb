@@ -32,6 +32,7 @@ import org.jbpm.task.Task;
 import org.jbpm.task.api.TaskContentService;
 import org.jbpm.task.api.TaskInstanceService;
 import org.jbpm.task.api.TaskQueryService;
+import org.jbpm.task.api.TaskStatisticsService;
 import org.jbpm.task.impl.factories.TaskFactory;
 import org.jbpm.task.utils.ContentMarshallerHelper;
 
@@ -49,6 +50,8 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     TaskInstanceService taskInstanceService;
     @Inject
     TaskContentService taskContentService;
+    @Inject
+    TaskStatisticsService taskStatisticsService;
 
     @Override
     public List<TaskSummary> getTasksAssignedAsBusinessAdministrator(String userId, String language) {
@@ -240,4 +243,15 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         Object unmarshall = ContentMarshallerHelper.unmarshall(contentById.getContent(), null);
         return (Map<String, String>) unmarshall;
     }
+
+    public int getCompletedTaskByUserId(String userId) {
+        return taskStatisticsService.getCompletedTaskByUserId(userId);
+    }
+
+    public int getPendingTaskByUserId(String userId) {
+        return taskStatisticsService.getPendingTaskByUserId(userId);
+    }
+    
+    
+    
 }
