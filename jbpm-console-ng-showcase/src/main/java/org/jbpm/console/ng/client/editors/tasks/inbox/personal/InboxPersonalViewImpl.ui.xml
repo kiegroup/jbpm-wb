@@ -46,6 +46,10 @@
         <b:Button 
             ui:field='releaseTaskButton' size="SMALL" type="PRIMARY">Release
         </b:Button>
+        
+        <b:CheckBox ui:field='showCompletedCheck'>
+            Show Completed?
+        </b:CheckBox>
 
         <b:FluidContainer>
             <b:FluidRow>

@@ -26,24 +26,43 @@
     <ui:with field='resources' type='org.jbpm.console.ng.client.resources.ShowcaseResources'/>
     
  
-    <gwt:DockPanel>
-        <gwt:Dock direction="WEST" size="800px">   
-            
+    <b:WellForm type="HORIZONTAL">
+       
+        <b:Fieldset>
+            <b:ControlGroup>
+                <b:ControlLabel for="taskId">Task Id</b:ControlLabel> 
+                <b:Controls>
+                    <b:TextBox
+                        ui:field='taskIdText' b:id="taskId" placeholder="task id">
+                    </b:TextBox>
+                </b:Controls>        
+            </b:ControlGroup>
+            <b:ControlGroup>
+                <b:ControlLabel for="userId">User</b:ControlLabel> 
+                <b:Controls>
+                    <b:TextBox
+                        ui:field='userIdText' b:id="userId" placeholder="user (mock)">
+                    </b:TextBox>
+                </b:Controls>        
+            </b:ControlGroup>
+            <b:ControlGroup>
+                <b:Controls>
+                    <b:Button  ui:field="renderButton" size="SMALL" type="PRIMARY">Render Form</b:Button>   
+                </b:Controls>
+            </b:ControlGroup>
             <gwt:ScrollPanel  ui:field="scrollPanel">
-                <gwt:VerticalPanel ui:field="formView"></gwt:VerticalPanel>
+                <b:FluidContainer ui:field="formView">
+                
+                </b:FluidContainer>
+                
             </gwt:ScrollPanel>
-        </gwt:Dock>
-        <gwt:Dock direction="SOUTH" size="100px">   
-            <gwt:VerticalPanel>
-                <gwt:Label>User Id</gwt:Label>
-                <gwt:TextBox  ui:field="userIdText"/>
-                <gwt:Label>Task Id</gwt:Label>
-                <gwt:TextBox  ui:field="taskIdText"/>
-             
-                <b:Button  ui:field="renderButton">Render Form</b:Button>   
-            </gwt:VerticalPanel>
+       
             
-        </gwt:Dock>
-    </gwt:DockPanel>
+        </b:Fieldset>
+        
+    </b:WellForm>
+             
+               
+           
       
 </ui:UiBinder>

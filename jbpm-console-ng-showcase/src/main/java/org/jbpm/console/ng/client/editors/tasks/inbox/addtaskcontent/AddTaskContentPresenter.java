@@ -15,6 +15,10 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.addtaskcontent;
 
+import com.github.gwtbootstrap.client.ui.FluidContainer;
+import com.github.gwtbootstrap.client.ui.FluidRow;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -39,6 +43,10 @@ public class AddTaskContentPresenter {
             UberView<AddTaskContentPresenter> {
 
         void displayNotification(String text);
+        
+        FluidContainer getContentPanel();
+        
+        FluidContainer getOutputPanel();
     }
     @Inject
     InboxView view;
@@ -70,6 +78,43 @@ public class AddTaskContentPresenter {
 
             }
         }).saveContent(taskId, values);
+    }
+    
+    public void getContentByTaskId(Long taskId) {
+        
+        taskServices.call(new RemoteCallback<Map<String, String>>() {
+            @Override
+            public void callback(Map<String, String> content) {
+                for (String key : content.keySet()) {
+                    FluidRow horizontalPanel = new FluidRow();
+                    TextBox keyTextBox = new TextBox();
+                    keyTextBox.setText(key);
+                    TextBox valueTextBox = new TextBox();
+                    valueTextBox.setText(content.get(key));
+                    horizontalPanel.add(keyTextBox);
+                    horizontalPanel.add(valueTextBox);
+                    view.getContentPanel().add(horizontalPanel);
+                }
+
+            }
+        }).getContentListByTaskId(taskId);
+        
+        taskServices.call(new RemoteCallback<Map<String, String>>() {
+            @Override
+            public void callback(Map<String, String> content) {
+                for (String key : content.keySet()) {
+                    HorizontalPanel horizontalPanel = new HorizontalPanel();
+                    TextBox keyTextBox = new TextBox();
+                    keyTextBox.setText(key);
+                    TextBox valueTextBox = new TextBox();
+                    valueTextBox.setText(content.get(key));
+                    horizontalPanel.add(keyTextBox);
+                    horizontalPanel.add(valueTextBox);
+                    view.getOutputPanel().add(horizontalPanel);
+                }
+
+            }
+        }).getTaskOutputContentByTaskId(taskId);
     }
 
     

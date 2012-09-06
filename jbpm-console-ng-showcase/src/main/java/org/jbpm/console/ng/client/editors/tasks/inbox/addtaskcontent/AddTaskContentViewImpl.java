@@ -53,16 +53,17 @@ public class AddTaskContentViewImpl extends Composite implements AddTaskContentP
     @UiField
     public Button addRowButton;
     @UiField
+    public Button refreshContentButton;
+    @UiField
     public TextBox taskIdText;
     @UiField
-    public ScrollPanel scrollPanel;
-    @UiField
     public FluidContainer contentPanel;
+    @UiField
+    public FluidContainer outputPanel;
     @Inject
     private Event<NotificationEvent> notification;
-    
     private Map<TextBox, TextBox> textBoxs = new HashMap<TextBox, TextBox>();
-    
+
     @Override
     public void init(AddTaskContentPresenter presenter) {
         this.presenter = presenter;
@@ -81,20 +82,35 @@ public class AddTaskContentViewImpl extends Composite implements AddTaskContentP
         textBoxs.put(keyTextBox, valueTextBox);
         contentPanel.add(horizontalPanel);
     }
+
     @UiHandler("saveContentButton")
     public void saveContentButton(ClickEvent e) {
         Map<String, String> values = new HashMap<String, String>();
-        for(Entry<TextBox, TextBox> entry : textBoxs.entrySet()){
+        for (Entry<TextBox, TextBox> entry : textBoxs.entrySet()) {
             values.put(entry.getKey().getText(), entry.getValue().getText());
         }
         presenter.saveContent(new Long(taskIdText.getText()), values);
     }
 
+    @UiHandler("refreshContentButton")
+    public void getContentButton(ClickEvent e) {
+        presenter.getContentByTaskId(new Long(taskIdText.getText()));
+    }
+
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
-    
-    public void receiveSelectedNotification(@Observes TaskSelectionEvent event){
+
+    public void receiveSelectedNotification(@Observes TaskSelectionEvent event) {
         taskIdText.setText(String.valueOf(event.getTaskId()));
+        presenter.getContentByTaskId(new Long(taskIdText.getText()));
     }
+
+    public FluidContainer getContentPanel() {
+        return contentPanel;
+    }
+    public FluidContainer getOutputPanel() {
+        return outputPanel;
+    }
+    
 }

@@ -37,11 +37,17 @@ public class TaskEditPerspective {
         p.setName( "Task Edit Perspective" );
         p.getRoot().addPart( new PartDefinition( new PlaceRequest( "Task Details" ) ) );
         final PanelDefinition eastPanel = new PanelDefinition();
+        eastPanel.setWidth( 300 );
+ 	eastPanel.setMinWidth( 200 );
+        eastPanel.setWidth(800);
         eastPanel.addPart( new PartDefinition( new PlaceRequest( "Add Task Content") ) );      
         final PanelDefinition westPanelSouthPanel = new PanelDefinition();
         westPanelSouthPanel.addPart( new PartDefinition( new PlaceRequest(  "Quick New Sub Task" ) ) );
-        eastPanel.getChildren( Position.SOUTH ).add(westPanelSouthPanel);
-        p.getRoot().getChildren( Position.EAST ).add( eastPanel );
+        westPanelSouthPanel.setHeight(400);
+        westPanelSouthPanel.setMinHeight(200);
+        westPanelSouthPanel.setWidth(800);
+        eastPanel.setChild( Position.SOUTH , westPanelSouthPanel);
+        p.getRoot().setChild( Position.EAST , eastPanel );
         return p;
   
     }

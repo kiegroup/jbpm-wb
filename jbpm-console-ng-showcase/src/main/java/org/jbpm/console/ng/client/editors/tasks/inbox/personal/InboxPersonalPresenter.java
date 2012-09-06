@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.personal;
 
+import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.List;
 import java.util.Set;
@@ -38,15 +39,15 @@ import org.uberfire.client.mvp.UberView;
 @WorkbenchScreen(identifier = "Personal Tasks")
 public class InboxPersonalPresenter {
 
-    
     public interface InboxView
             extends
             UberView<InboxPersonalPresenter> {
-        
+
         void displayNotification(String text);
-        
+
         TextBox getUserText();
         
+        CheckBox getShowCompletedCheck();
     }
     @Inject
     private InboxView view;
@@ -69,22 +70,34 @@ public class InboxPersonalPresenter {
 
     @PostConstruct
     public void init() {
-        
     }
 
-   
+    public void refreshTasks(final String userId, boolean showCompleted) {
 
-    public void refreshTasks(final String userId) {
-        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
-            @Override
-            public void callback(List<TaskSummary> tasks) {
-                view.getUserText().setText(userId);
-                dataProvider.setList(tasks);
-                dataProvider.refresh();
+        if (showCompleted) {
+            taskServices.call(new RemoteCallback<List<TaskSummary>>() {
+                @Override
+                public void callback(List<TaskSummary> tasks) {
+                    view.getUserText().setText(userId);
+                    dataProvider.setList(tasks);
+                    dataProvider.refresh();
 
-            }
-        }).getTasksOwned(userId);
-        
+                }
+            }).getTasksOwned(userId);
+        } else {
+            taskServices.call(new RemoteCallback<List<TaskSummary>>() {
+                @Override
+                public void callback(List<TaskSummary> tasks) {
+                    view.getUserText().setText(userId);
+                    dataProvider.setList(tasks);
+                    dataProvider.refresh();
+
+                }
+            }).getTasksAssignedAsPotentialOwner(userId, "en-UK");
+        }
+
+
+
     }
 
     public void startTasks(final Set<TaskSummary> selectedTasks, final String userId) {
@@ -93,28 +106,25 @@ public class InboxPersonalPresenter {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                     view.displayNotification("Task(s) Started");
-                    refreshTasks(userId);
+                    refreshTasks(userId, view.getShowCompletedCheck().getValue());
                 }
             }).start(ts.getId(), userId);
         }
-        
+
 
     }
-    
+
     public void releaseTasks(Set<TaskSummary> selectedTasks, final String userId) {
         for (TaskSummary ts : selectedTasks) {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                     view.displayNotification("Task(s) Released");
-                    refreshTasks(userId);
+                    refreshTasks(userId, view.getShowCompletedCheck().getValue());
                 }
             }).release(ts.getId(), userId);
         }
     }
-
-
-   
 
     public void completeTasks(Set<TaskSummary> selectedTasks, final String userId) {
         for (TaskSummary ts : selectedTasks) {
@@ -122,11 +132,11 @@ public class InboxPersonalPresenter {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                     view.displayNotification("Task(s) Completed");
-                    refreshTasks(userId);
+                    refreshTasks(userId, view.getShowCompletedCheck().getValue());
                 }
             }).complete(ts.getId(), userId, null);
         }
-        
+
     }
 
     public void addDataDisplay(HasData<TaskSummary> display) {
@@ -140,5 +150,4 @@ public class InboxPersonalPresenter {
     public void refreshData() {
         dataProvider.refresh();
     }
-
 }

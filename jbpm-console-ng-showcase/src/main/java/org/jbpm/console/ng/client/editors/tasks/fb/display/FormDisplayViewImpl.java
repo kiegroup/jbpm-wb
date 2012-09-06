@@ -15,7 +15,10 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.fb.display;
 
+
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.FluidContainer;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -23,9 +26,10 @@ import com.google.gwt.uibinder.client.UiHandler;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
+
+
 import com.google.gwt.user.client.ui.Widget;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -48,9 +52,7 @@ public class FormDisplayViewImpl extends Composite implements FormDisplayPresent
     private PlaceManager placeManager;
     private FormDisplayPresenter presenter;
     @UiField
-    public ScrollPanel scrollPanel;
-    @UiField
-    public VerticalPanel formView;
+    public FluidContainer formView;
     @UiField
     public TextBox userIdText;
     @UiField
@@ -72,7 +74,7 @@ public class FormDisplayViewImpl extends Composite implements FormDisplayPresent
     }
     
     public void receiveSelectedNotification(@Observes TaskSelectionEvent event){
-        System.out.println(" -> Event recieved: printing a form: "+this.hashCode());
+        userIdText.setText(event.getUserId());
         taskIdText.setText(String.valueOf(event.getTaskId()));
         presenter.renderForm(new Long(taskIdText.getText()));
     }

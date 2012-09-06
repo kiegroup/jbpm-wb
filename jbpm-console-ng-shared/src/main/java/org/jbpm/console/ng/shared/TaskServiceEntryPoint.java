@@ -77,5 +77,9 @@ public interface TaskServiceEntryPoint {
    public long saveContent(long taskId, Map<String, String> values);
    
    public Map<String, String> getContentListById(long contentId);
+   
+   public Map<String, String> getTaskOutputContentByTaskId(long taskId);
+   
+   public Map<String, String> getContentListByTaskId(long taskId); 
     
 }

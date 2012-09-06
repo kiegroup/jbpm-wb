@@ -176,7 +176,7 @@
             <artifactId>gwt-visualization</artifactId>
             <version>1.0.2</version>
         </dependency>
-      <!-- bootstrap --> 
+        <!-- bootstrap --> 
         <dependency>
             <groupId>com.github.gwtbootstrap</groupId>
             <artifactId>gwt-bootstrap</artifactId>

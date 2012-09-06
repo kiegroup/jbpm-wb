@@ -7,11 +7,16 @@ Description: ${task.descriptions[0].text}
 
 <form>
 <input type="hidden" name="taskId" value="${task.id}"/>
+<table>
+    
 <#list content?keys as key>
     <#assign value = content[key]>
     
-    ${key} : <input type="text" name="${key}" value="${value}"/><br/>
+    
+    <tr><td>${key} : </td><td> <input type="text" name="${key}" value="${value}"/> </td></tr>
 </#list>
+<tr><td colspan="2" align="center">
 <input type="button" name="btn_Complete" value="Complete" onClick="completeForm(getFormValues(form));"/>
-
+</td></tr>
+</table>
 </form>

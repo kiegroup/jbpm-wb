@@ -20,6 +20,8 @@ package org.jbpm.console.ng.client.editors.tasks.inbox.events;
  */
 public class TaskSelectionEvent {
     private long taskId;
+    // This should be removed from here 
+    private String userId;
 
     public TaskSelectionEvent() {
     }
@@ -28,6 +30,15 @@ public class TaskSelectionEvent {
         this.taskId = taskId;
     }
 
+    public TaskSelectionEvent(long taskId, String userId) {
+        this.taskId = taskId;
+        this.userId = userId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+    
     public long getTaskId() {
         return taskId;
     }

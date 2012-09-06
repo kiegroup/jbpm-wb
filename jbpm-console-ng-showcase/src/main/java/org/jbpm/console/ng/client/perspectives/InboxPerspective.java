@@ -36,11 +36,17 @@ public class InboxPerspective {
         p.setName( "Inbox Perspective" );
         p.getRoot().addPart( new PartDefinition( new PlaceRequest( "Quick New Task"  ) ) );
         final PanelDefinition eastPanel = new PanelDefinition();
+        eastPanel.setHeight(400);
+        eastPanel.setWidth(800);
+        eastPanel.setMinHeight(200);
         eastPanel.addPart( new PartDefinition( new PlaceRequest(  "Personal Tasks" ) ) );      
         final PanelDefinition westPanelSouthPanel = new PanelDefinition();
+        westPanelSouthPanel.setHeight(400);
+        westPanelSouthPanel.setMinHeight(200);
+        eastPanel.setWidth(800);
         westPanelSouthPanel.addPart( new PartDefinition( new PlaceRequest(  "Group Tasks" ) ) );
-        eastPanel.getChildren( Position.SOUTH ).add(westPanelSouthPanel);
-        p.getRoot().getChildren( Position.EAST ).add( eastPanel );
+        eastPanel.setChild( Position.SOUTH , westPanelSouthPanel);
+        p.getRoot().setChild( Position.EAST , eastPanel );
         return p;
     }
 

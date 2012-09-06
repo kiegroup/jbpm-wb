@@ -36,26 +36,35 @@
                     </b:TextBox>
                 </b:Controls>        
             </b:ControlGroup>      
-        </b:Fieldset>         
+                 
+
+            <gwt:ScrollPanel >
+                <b:FluidContainer>
+                    <b:Row>
+                        <b:Label type="INFO">Content</b:Label>
+                        <b:FluidContainer ui:field="contentPanel">
                 
-            
+                        </b:FluidContainer>
+                    </b:Row>
+                    <b:Row>
+                        <b:Label type="INFO">Output Content</b:Label>
+                        <b:FluidContainer ui:field="outputPanel">
                 
-        <gwt:ScrollPanel  ui:field="scrollPanel">
-            <b:FluidContainer ui:field="contentPanel">
-                
-            </b:FluidContainer>
-        </gwt:ScrollPanel>
+                        </b:FluidContainer>
+                    </b:Row>
+                </b:FluidContainer>
+            </gwt:ScrollPanel>
             
-        <b:Button
-            ui:field='addRowButton' size="SMALL" type="PRIMARY">Add Row
-        </b:Button>
-            
-            
-        <b:Button
-            ui:field='saveContentButton' size="SMALL" type="PRIMARY">Save Content
-        </b:Button>
-            
-           
+            <b:Button
+                ui:field='addRowButton' size="SMALL" type="PRIMARY"> (+) Add Row
+            </b:Button>
+            <b:Button
+                ui:field='saveContentButton' size="SMALL" type="PRIMARY">Save
+            </b:Button>
+            <b:Button
+                ui:field='refreshContentButton' size="SMALL" type="PRIMARY">Refresh
+            </b:Button>    
+        </b:Fieldset>
         
     </b:WellForm>
 

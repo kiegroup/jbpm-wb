@@ -34,10 +34,7 @@ public class FormPerspective {
     public PerspectiveDefinition getPerspective() {
          final PerspectiveDefinition p = new PerspectiveDefinition();
             p.setName( "Form Perspective" );
-            p.getRoot().addPart( new PartDefinition( new PlaceRequest( "Form Builder" ) ) );
-            final PanelDefinition westPanel = new PanelDefinition();
-            westPanel.addPart( new PartDefinition( new PlaceRequest( "Form Display" ) ) );
-            p.getRoot().getChildren( Position.WEST ).add( westPanel );
+            p.getRoot().addPart( new PartDefinition( new PlaceRequest( "Form Display" ) ) );
             return p;
 
     }

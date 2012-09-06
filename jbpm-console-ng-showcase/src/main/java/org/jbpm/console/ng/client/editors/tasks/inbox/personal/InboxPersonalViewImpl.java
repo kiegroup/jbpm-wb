@@ -16,6 +16,7 @@
 package org.jbpm.console.ng.client.editors.tasks.inbox.personal;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 
 import com.github.gwtbootstrap.client.ui.TextBox;
@@ -87,6 +88,8 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
     public DataGrid<TaskSummary> myTaskListGrid;
     @UiField(provided = true)
     public SimplePager pager;
+    @UiField
+    public CheckBox showCompletedCheck;
     private Set<TaskSummary> selectedTasks;
     @Inject
     private Event<NotificationEvent> notification;
@@ -94,11 +97,8 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
     private Event<TaskSelectionEvent> taskSelection;
     
     
-//    public static final ProvidesKey<TaskSummary> KEY_PROVIDER = new ProvidesKey<TaskSummary>() {
-//        public Object getKey(TaskSummary item) {
-//            return item == null ? null : item.getId();
-//        }
-//    };
+    
+    
 
     @Override
     public void init(InboxPersonalPresenter presenter) {
@@ -146,13 +146,16 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
     }
 
     public void recieveStatusChanged(@Observes UserTaskEvent event) {
-        presenter.refreshTasks(event.getUserId());
+        Boolean isChecked = showCompletedCheck.getValue();
+        
+        presenter.refreshTasks(event.getUserId(), isChecked);
         userText.setText(event.getUserId());
     }
 
     @UiHandler("refreshTasksButton")
     public void refreshTasksButton(ClickEvent e) {
-        presenter.refreshTasks(userText.getText());
+        Boolean isChecked = showCompletedCheck.getValue();
+        presenter.refreshTasks(userText.getText(), isChecked);
     }
 
     @UiHandler("startTaskButton")
@@ -162,8 +165,6 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
             return;
         }
         presenter.startTasks(selectedTasks, userText.getText());
-
-
     }
 
     @UiHandler("completeTaskButton")
@@ -183,8 +184,6 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
             return;
         }
         presenter.releaseTasks(selectedTasks, userText.getText());
-
-
     }
 
     private void initTableColumns(final SelectionModel<TaskSummary> selectionModel,
@@ -340,13 +339,14 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
                     public String getValue(TaskSummary task) {
                         return String.valueOf(task.getId());
                     }
+                    
                 };
 
         editColumn.setFieldUpdater(new FieldUpdater<TaskSummary, String>() {
             @Override
             public void update(int index, TaskSummary task, String value) {
                 placeManager.goTo(new PlaceRequest("Task Edit Perspective"));
-                taskSelection.fire(new TaskSelectionEvent(Long.parseLong(value)));
+                taskSelection.fire(new TaskSelectionEvent(Long.parseLong(value),userText.getText()));
             }
         });
 
@@ -366,7 +366,7 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
             @Override
             public void update(int index, TaskSummary task, String value) {
                 placeManager.goTo(new PlaceRequest("Form Perspective"));
-                taskSelection.fire(new TaskSelectionEvent(Long.parseLong(value)));
+                taskSelection.fire(new TaskSelectionEvent(Long.parseLong(value),userText.getText()));
             }
         });
 
@@ -386,8 +386,15 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
     }
 
     public void onTaskSelected(@Observes TaskChangedEvent taskChanged) {
-        presenter.refreshTasks(taskChanged.getUserId());
+        Boolean isChecked = showCompletedCheck.getValue();
+        presenter.refreshTasks(taskChanged.getUserId(), isChecked);
 
 
     }
+
+    public CheckBox getShowCompletedCheck() {
+        return showCompletedCheck;
+    }
+    
+    
 }
