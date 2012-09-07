@@ -13,7 +13,7 @@
   <inherits name="org.uberfire.security.UberfireSecurityClient"/> 
   <inherits name="org.jbpm.form.builder.services.FormBuilderServicesCDI"/>
   <inherits name="org.jbpm.form.builder.ng.model.FormBuilderModel"/>
-  
+  <inherits name='com.googlecode.gchart.GChart'/>
   <inherits name="com.github.gwtbootstrap.Bootstrap" />
   
   <!-- Form Builder Related -->

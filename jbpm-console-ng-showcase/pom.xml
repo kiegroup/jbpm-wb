@@ -52,7 +52,10 @@
             <groupId>org.uberfire</groupId>
             <artifactId>backend-server</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.uberfire</groupId>
             <artifactId>widgets-core</artifactId>
@@ -182,7 +185,12 @@
             <artifactId>gwt-bootstrap</artifactId>
             <version>2.1.0.0-SNAPSHOT</version>
         </dependency>
-
+        
+        <!-- Charts -->
+        <dependency>
+            <groupId>com.googlecode.gchart</groupId>
+            <artifactId>gchart</artifactId>
+        </dependency>
     </dependencies>
 
 
@@ -197,6 +205,7 @@
                     <logLevel>INFO</logLevel>
                     <compileSourcesArtifacts>
                         <compileSourcesArtifact>org.uberfire:security-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:uberfire-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:security-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:widgets-core</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:widgets-commons</compileSourcesArtifact>

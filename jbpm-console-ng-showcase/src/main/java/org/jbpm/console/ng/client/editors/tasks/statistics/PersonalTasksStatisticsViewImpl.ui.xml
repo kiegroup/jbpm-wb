@@ -31,10 +31,16 @@
         <b:TextBox  
             ui:field='userText' placeholder="user" b:id="b_userId">
         </b:TextBox>
-
+        
         <b:Button
             ui:field='refreshButton' size="SMALL" type="PRIMARY">Refresh
         </b:Button>
+        
+        <gwt:ScrollPanel>
+            <b:FluidContainer ui:field='graphContainer'>
+                
+            </b:FluidContainer>
+        </gwt:ScrollPanel>
                   
     </b:WellForm>
 
