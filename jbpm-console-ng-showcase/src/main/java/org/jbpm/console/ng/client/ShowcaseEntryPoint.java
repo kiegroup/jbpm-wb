@@ -20,10 +20,15 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.RootPanel;
 import java.util.Arrays;
+import java.util.Collection;
 import javax.inject.Inject;
 
+import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
+import org.jboss.errai.ioc.client.api.Caller;
 import org.jboss.errai.ioc.client.api.EntryPoint;
+import org.uberfire.backend.FileExplorerRootService;
+import org.uberfire.backend.Root;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.menu.Command;
 import org.uberfire.client.workbench.widgets.menu.CommandMenuItem;
@@ -44,10 +49,14 @@ public class ShowcaseEntryPoint {
     private WorkbenchMenuBarPresenter menubar;
     private String[] menuItems = new String[]{"Personal Task Statistics","Show Task Content","Add Task Content", "Form Display", "Form Builder","Quick New Task", "Quick New Sub Task", "Personal Tasks", "Group Tasks", "Task Details"};
 
+    @Inject
+    private Caller<FileExplorerRootService> rootService;
+
     @AfterInitialization
     public void startApp() {
         loadStyles();
         setupMenu();
+        setupFileSystems();
         hideLoadingPopup();
     }
 
@@ -77,8 +86,18 @@ public class ShowcaseEntryPoint {
         }
         menubar.addMenuItem(placesMenu);
     }
-    //Fade out the "Loading application" pop-up
 
+    //TODO {manstis} Speak to porcelli about bootstrapping FileSystems
+    private void setupFileSystems() {
+        rootService.call( new RemoteCallback<Collection<Root>>() {
+            @Override
+            public void callback(Collection<Root> response) {
+                //Do nothing. FileSystems have been initialised.
+            }
+        } ).listRoots();
+
+    }
+    //Fade out the "Loading application" pop-up
     private void hideLoadingPopup() {
         final Element e = RootPanel.get("loading").getElement();
 
