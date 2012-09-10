@@ -15,23 +15,16 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.statistics;
 
-import org.jbpm.console.ng.client.editors.tasks.inbox.quicknewtask.*;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-
-import com.google.gwt.user.client.ui.IsWidget;
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Event;
-import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
-
-
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
+import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
+
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 @Dependent
 @WorkbenchScreen(identifier = "Personal Task Statistics")
@@ -41,8 +34,11 @@ public class PersonalTasksStatisticsPresenter {
             extends
             UberView<PersonalTasksStatisticsPresenter> {
 
-        void displayNotification(String text);
+        void displayCompletedTasks(Integer completedTasks);
+
+        void displayPendingTasks(Integer pendingTasks);
     }
+
     @Inject
     InboxView view;
     @Inject
@@ -61,25 +57,21 @@ public class PersonalTasksStatisticsPresenter {
     public PersonalTasksStatisticsPresenter() {
     }
 
-    @PostConstruct
-    public void init() {
-    }
-
     public void refreshGraphs(final String userId) {
-        
+
         taskServices.call(new RemoteCallback<Integer>() {
             @Override
             public void callback(Integer completedTasks) {
-                view.displayNotification("Tasks Completed ( by "+userId + " ): "+completedTasks);
-                
+                view.displayCompletedTasks(completedTasks);
+
             }
         }).getCompletedTaskByUserId(userId);
-        
+
         taskServices.call(new RemoteCallback<Integer>() {
             @Override
             public void callback(Integer pendingTasks) {
-                view.displayNotification("Pending Tasks ( for "+userId + " ): "+pendingTasks);
-                
+                view.displayPendingTasks(pendingTasks);
+
             }
         }).getPendingTaskByUserId(userId);
 

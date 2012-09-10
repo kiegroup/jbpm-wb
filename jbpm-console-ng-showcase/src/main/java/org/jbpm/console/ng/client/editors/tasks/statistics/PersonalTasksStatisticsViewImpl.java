@@ -18,59 +18,54 @@ package org.jbpm.console.ng.client.editors.tasks.statistics;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.FluidContainer;
 import com.github.gwtbootstrap.client.ui.TextBox;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-
 import com.google.gwt.user.client.ui.Composite;
-
 import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.gchart.client.GChart;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.ChartPopulateEvent;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.ChartPopulateEvent;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.UserTaskEvent;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 @Dependent
-public class PersonalTasksStatisticsViewImpl extends Composite implements PersonalTasksStatisticsPresenter.InboxView {
+public class PersonalTasksStatisticsViewImpl
+        extends Composite
+        implements PersonalTasksStatisticsPresenter.InboxView {
 
     @Inject
     private UiBinder<Widget, PersonalTasksStatisticsViewImpl> uiBinder;
-    @Inject
-    private PlaceManager placeManager;
+
     private PersonalTasksStatisticsPresenter presenter;
+
     @UiField
     public Button refreshButton;
     @UiField
     public TextBox userText;
     @UiField
     public FluidContainer graphContainer;
-    
+
     public GChart chart;
-    @Inject
-    private Event<NotificationEvent> notification;
-    @Inject
-    private Event<UserTaskEvent> userTaskChanges;
-    
-    
-    
+
     private Map<String, Column> columns = new HashMap<String, Column>();
     private int position = 1;
-    
+    private Column completed;
+    private Column pending;
+
     @Override
     public void init(PersonalTasksStatisticsPresenter presenter) {
         this.presenter = presenter;
         initWidget(uiBinder.createAndBindUi(this));
         chart = createChart();
+
+        completed = new Column("Completed", 0);
+        pending = new Column("Pending", 0);
+
         chart.update();
     }
 
@@ -81,16 +76,11 @@ public class PersonalTasksStatisticsViewImpl extends Composite implements Person
         chart.update();
     }
 
-    public void displayNotification(String text) {
-        notification.fire(new NotificationEvent(text));
-        userTaskChanges.fire(new UserTaskEvent(userText.getText()));
-    }
-
     private GChart createChart() {
         GChart gChart = new GChart();
         gChart.setChartSize(300, 200);
         gChart.setChartTitle("<b><big><big>"
-                + "Finished tasks per user"
+                + "Personal Task Statistics"
                 + "</big></big><br>&nbsp;</b>");
         gChart.addCurve();
         gChart.getCurve().getSymbol().setSymbolType(
@@ -109,15 +99,17 @@ public class PersonalTasksStatisticsViewImpl extends Composite implements Person
         gChart.getYAxis().setHasGridlines(true);
         gChart.getXAxis().addTick(0, "");
 
-        com.google.gwt.user.client.ui.Button updateButton = new com.google.gwt.user.client.ui.Button("Refresh");
-        updateButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                //chartRefreshEvent.fire(new ChartRefreshEvent());
-            }
-        });
-        gChart.setChartFootnotes(updateButton);
         return gChart;
+    }
+
+    @Override
+    public void displayCompletedTasks(Integer completedTasks) {
+        completed.setValue(completedTasks);
+    }
+
+    @Override
+    public void displayPendingTasks(Integer pendingTasks) {
+        pending.setValue(pendingTasks);
     }
 
     public void addData(@Observes ChartPopulateEvent event) {
@@ -126,11 +118,11 @@ public class PersonalTasksStatisticsViewImpl extends Composite implements Person
 
         chart.update();
     }
-    
+
     private void addColumn(String name, double value) {
         columns.put(name, new Column(name, value));
     }
-    
+
     class Column {
 
         private final int myPosition;
