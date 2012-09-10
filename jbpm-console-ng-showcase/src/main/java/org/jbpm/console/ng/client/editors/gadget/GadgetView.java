@@ -66,4 +66,10 @@ public class GadgetView extends Composite
     @Override
     public void onResize() {
     }
+
+	@Override
+	public void dummyMethod() {
+		// TODO Auto-generated method stub
+		
+	}
  }

@@ -38,12 +38,14 @@ import com.google.gwt.user.client.ui.IsWidget;
 /**
  * A stand-alone Presenter annotated to hook into the Workbench
  */
-@WorkbenchEditor(identifier = "Gadget", fileTypes = {"test6"})
+@WorkbenchEditor(identifier = "Gadget")
 public class GadgetPresenter {
 
     public interface View
         extends
         IsWidget {
+    	
+    	void dummyMethod();
 
     }
 
