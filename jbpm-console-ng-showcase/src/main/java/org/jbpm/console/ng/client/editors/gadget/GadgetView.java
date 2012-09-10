@@ -17,6 +17,7 @@
 package org.jbpm.console.ng.client.editors.gadget;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
@@ -28,6 +29,7 @@ import org.jbpm.console.ng.shared.gadget.WidgetModel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RequiresResize;
 
+@Dependent
 public class GadgetView extends Composite
     implements
     RequiresResize,
