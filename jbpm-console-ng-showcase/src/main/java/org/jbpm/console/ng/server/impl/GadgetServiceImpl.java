@@ -23,9 +23,9 @@ import javax.ws.rs.core.MediaType;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.resteasy.client.ClientRequest;
-import org.jbpm.console.ng.server.GadgetService;
 import org.jbpm.console.ng.shared.gadget.UserPreference;
 import org.jbpm.console.ng.shared.gadget.WidgetModel;
+import org.jbpm.console.ng.shared.services.GadgetService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

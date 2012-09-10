@@ -22,14 +22,13 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.server.GadgetService;
 import org.jbpm.console.ng.shared.gadget.WidgetModel;
+import org.jbpm.console.ng.shared.services.GadgetService;
 
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RequiresResize;
 
-@Dependent
 public class GadgetView extends Composite
     implements
     RequiresResize,

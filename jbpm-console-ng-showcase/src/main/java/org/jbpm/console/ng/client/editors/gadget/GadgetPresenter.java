@@ -40,7 +40,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 /**
  * A stand-alone Presenter annotated to hook into the Workbench
  */
-@Dependent
+
 @WorkbenchEditor(identifier = "Gadget")
 public class GadgetPresenter {
 
