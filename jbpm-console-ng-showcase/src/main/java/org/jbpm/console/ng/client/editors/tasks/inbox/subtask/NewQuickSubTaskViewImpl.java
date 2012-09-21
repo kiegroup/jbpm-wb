@@ -15,75 +15,83 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.subtask;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.widgets.events.NotificationEvent;
+
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 @Dependent
-public class NewQuickSubTaskViewImpl extends Composite implements NewQuickSubTaskPresenter.InboxView {
+public class NewQuickSubTaskViewImpl extends Composite
+    implements
+    NewQuickSubTaskPresenter.InboxView {
+
+    interface NewQuickSubTaskViewImplBinder
+        extends
+        UiBinder<Widget, NewQuickSubTaskViewImpl> {
+    }
+
+    private static NewQuickSubTaskViewImplBinder uiBinder = GWT.create( NewQuickSubTaskViewImplBinder.class );
 
     @Inject
-    private UiBinder<Widget, NewQuickSubTaskViewImpl> uiBinder;
-    @Inject
-    private PlaceManager placeManager;
-    
-    private NewQuickSubTaskPresenter presenter;
+    private PlaceManager                         placeManager;
+
+    private NewQuickSubTaskPresenter             presenter;
 
     @UiField
-    public Button createSubTaskButton;
+    public Button                                createSubTaskButton;
     @UiField
-    public TextBox subTaskNameText;
+    public TextBox                               subTaskNameText;
     @UiField
-    public TextBox subTaskAsigneeText;
+    public TextBox                               subTaskAsigneeText;
     @UiField
-    public TextBox parentTaskIdText;
+    public TextBox                               parentTaskIdText;
 
     @Inject
-    private Event<NotificationEvent> notification;
-    
+    private Event<NotificationEvent>             notification;
+
     @Inject
-    private Event<TaskChangedEvent> taskChanged;
+    private Event<TaskChangedEvent>              taskChanged;
 
     @Override
     public void init(NewQuickSubTaskPresenter presenter) {
         this.presenter = presenter;
-        initWidget(uiBinder.createAndBindUi(this));
-        
+        initWidget( uiBinder.createAndBindUi( this ) );
+
     }
 
     @UiHandler("createSubTaskButton")
     public void createSubTaskButton(ClickEvent e) {
-        presenter.addSubTask(Long.parseLong(parentTaskIdText.getText()), 
-                subTaskAsigneeText.getText(),
-                subTaskNameText.getText());
-        
+        presenter.addSubTask( Long.parseLong( parentTaskIdText.getText() ),
+                              subTaskAsigneeText.getText(),
+                              subTaskNameText.getText() );
+
     }
-   
+
     public TextBox getParentTaskIdText() {
         return parentTaskIdText;
     }
 
-   
     public void displayNotification(String text) {
-        notification.fire(new NotificationEvent(text));
+        notification.fire( new NotificationEvent( text ) );
     }
 
-     public void receiveSelectedNotification(@Observes TaskSelectionEvent event){
-        parentTaskIdText.setText(String.valueOf(event.getTaskId()));
+    public void receiveSelectedNotification(@Observes TaskSelectionEvent event) {
+        parentTaskIdText.setText( String.valueOf( event.getTaskId() ) );
     }
-  
+
 }

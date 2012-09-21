@@ -15,9 +15,18 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.statistics;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
+
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.ChartPopulateEvent;
+
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.FluidContainer;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -25,122 +34,131 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.gchart.client.GChart;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.ChartPopulateEvent;
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
 
 @Dependent
 public class PersonalTasksStatisticsViewImpl
         extends Composite
-        implements PersonalTasksStatisticsPresenter.InboxView {
+        implements
+    PersonalTasksStatisticsPresenter.InboxView {
 
-    @Inject
-    private UiBinder<Widget, PersonalTasksStatisticsViewImpl> uiBinder;
+    interface PersonalTasksStatisticsViewImplBinder
+        extends
+        UiBinder<Widget, PersonalTasksStatisticsViewImpl> {
+    }
 
-    private PersonalTasksStatisticsPresenter presenter;
+    private static PersonalTasksStatisticsViewImplBinder uiBinder = GWT.create( PersonalTasksStatisticsViewImplBinder.class );
+
+    private PersonalTasksStatisticsPresenter             presenter;
 
     @UiField
-    public Button refreshButton;
+    public Button                                        refreshButton;
     @UiField
-    public TextBox userText;
+    public TextBox                                       userText;
     @UiField
-    public FluidContainer graphContainer;
+    public FluidContainer                                graphContainer;
 
-    public GChart chart;
+    public GChart                                        chart;
 
-    private Map<String, Column> columns = new HashMap<String, Column>();
-    private int position = 1;
-    private Column completed;
-    private Column pending;
+    private Map<String, Column>                          columns  = new HashMap<String, Column>();
+    private int                                          position = 1;
+    private Column                                       completed;
+    private Column                                       pending;
 
     @Override
     public void init(PersonalTasksStatisticsPresenter presenter) {
         this.presenter = presenter;
-        initWidget(uiBinder.createAndBindUi(this));
+        initWidget( uiBinder.createAndBindUi( this ) );
         chart = createChart();
 
-        completed = new Column("Completed", 0);
-        pending = new Column("Pending", 0);
+        completed = new Column( "Completed",
+                                0 );
+        pending = new Column( "Pending",
+                              0 );
 
         chart.update();
     }
 
     @UiHandler("refreshButton")
     public void refreshButton(ClickEvent e) {
-        presenter.refreshGraphs(userText.getText());
-        graphContainer.add(chart);
+        presenter.refreshGraphs( userText.getText() );
+        graphContainer.add( chart );
         chart.update();
     }
 
     private GChart createChart() {
         GChart gChart = new GChart();
-        gChart.setChartSize(300, 200);
-        gChart.setChartTitle("<b><big><big>"
-                + "Personal Task Statistics"
-                + "</big></big><br>&nbsp;</b>");
+        gChart.setChartSize( 300,
+                             200 );
+        gChart.setChartTitle( "<b><big><big>"
+                              + "Personal Task Statistics"
+                              + "</big></big><br>&nbsp;</b>" );
         gChart.addCurve();
         gChart.getCurve().getSymbol().setSymbolType(
-                GChart.SymbolType.VBAR_SOUTH);
-        gChart.getCurve().getSymbol().setBackgroundColor("#DDF");
-        gChart.getCurve().getSymbol().setModelWidth(0.5);
-        gChart.getCurve().getSymbol().setBorderColor("red");
-        gChart.getCurve().getSymbol().setBorderWidth(1);
+                                                     GChart.SymbolType.VBAR_SOUTH );
+        gChart.getCurve().getSymbol().setBackgroundColor( "#DDF" );
+        gChart.getCurve().getSymbol().setModelWidth( 0.5 );
+        gChart.getCurve().getSymbol().setBorderColor( "red" );
+        gChart.getCurve().getSymbol().setBorderWidth( 1 );
 
-        gChart.getXAxis().setTickThickness(0);
-        gChart.getXAxis().setAxisMin(0);
+        gChart.getXAxis().setTickThickness( 0 );
+        gChart.getXAxis().setAxisMin( 0 );
 
-        gChart.getYAxis().setAxisMin(0);
-        gChart.getYAxis().setAxisMax(100);
-        gChart.getYAxis().setTickCount(11);
-        gChart.getYAxis().setHasGridlines(true);
-        gChart.getXAxis().addTick(0, "");
+        gChart.getYAxis().setAxisMin( 0 );
+        gChart.getYAxis().setAxisMax( 100 );
+        gChart.getYAxis().setTickCount( 11 );
+        gChart.getYAxis().setHasGridlines( true );
+        gChart.getXAxis().addTick( 0,
+                                   "" );
 
         return gChart;
     }
 
     @Override
     public void displayCompletedTasks(Integer completedTasks) {
-        completed.setValue(completedTasks);
+        completed.setValue( completedTasks );
     }
 
     @Override
     public void displayPendingTasks(Integer pendingTasks) {
-        pending.setValue(pendingTasks);
+        pending.setValue( pendingTasks );
     }
 
     public void addData(@Observes ChartPopulateEvent event) {
 
-        addColumn(event.getColumnName(), event.getValue());
+        addColumn( event.getColumnName(),
+                   event.getValue() );
 
         chart.update();
     }
 
-    private void addColumn(String name, double value) {
-        columns.put(name, new Column(name, value));
+    private void addColumn(String name,
+                           double value) {
+        columns.put( name,
+                     new Column( name,
+                                 value ) );
     }
 
     class Column {
 
         private final int myPosition;
 
-        Column(String name, double value) {
+        Column(String name,
+               double value) {
             myPosition = position++;
-            chart.getCurve().addPoint(myPosition, value);
-            chart.getCurve().getPoint().setAnnotationText(name);
-            chart.getCurve().getPoint().setAnnotationLocation(GChart.AnnotationLocation.SOUTH);
+            chart.getCurve().addPoint( myPosition,
+                                       value );
+            chart.getCurve().getPoint().setAnnotationText( name );
+            chart.getCurve().getPoint().setAnnotationLocation( GChart.AnnotationLocation.SOUTH );
 
             // Hides X axis ticks that get in our labels way
-            chart.getXAxis().addTick(myPosition, "");
+            chart.getXAxis().addTick( myPosition,
+                                      "" );
             // Looks nicer if there is room after the last column
-            chart.getXAxis().setAxisMax(position);
+            chart.getXAxis().setAxisMax( position );
         }
 
         public void setValue(double value) {
-            chart.getCurve(0).getPoint(myPosition - 1).setY(value);
+            chart.getCurve( 0 ).getPoint( myPosition - 1 ).setY( value );
         }
     }
 }

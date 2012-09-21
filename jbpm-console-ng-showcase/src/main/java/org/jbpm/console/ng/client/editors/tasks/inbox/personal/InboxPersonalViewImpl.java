@@ -15,10 +15,25 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.personal;
 
+import java.util.Comparator;
+import java.util.Set;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
+import org.jbpm.console.ng.client.editors.tasks.inbox.events.UserTaskEvent;
+import org.jbpm.console.ng.client.model.TaskSummary;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.widgets.events.NotificationEvent;
+import org.uberfire.shared.mvp.PlaceRequest;
+
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.DataGrid;
-
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.cell.client.ButtonCell;
 import com.google.gwt.cell.client.CheckboxCell;
@@ -26,10 +41,6 @@ import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
-import org.jbpm.console.ng.client.model.TaskSummary;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -39,346 +50,391 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
-
 import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
-
-
-
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
-
-
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
-import java.util.Comparator;
-import java.util.Set;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.UserTaskEvent;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-import org.uberfire.shared.mvp.PlaceRequest;
 
 @Dependent
-public class InboxPersonalViewImpl extends Composite implements InboxPersonalPresenter.InboxView {
+public class InboxPersonalViewImpl extends Composite
+    implements
+    InboxPersonalPresenter.InboxView {
+
+    interface InboxPersonalViewImplBinder
+        extends
+        UiBinder<Widget, InboxPersonalViewImpl> {
+    }
+
+    private static InboxPersonalViewImplBinder uiBinder = GWT.create( InboxPersonalViewImplBinder.class );
 
     @Inject
-    private UiBinder<Widget, InboxPersonalViewImpl> uiBinder;
-    @Inject
-    private PlaceManager placeManager;
-    private InboxPersonalPresenter presenter;
+    private PlaceManager                       placeManager;
+    private InboxPersonalPresenter             presenter;
     @UiField
-    public Button refreshTasksButton;
+    public Button                              refreshTasksButton;
     @UiField
-    public Button startTaskButton;
+    public Button                              startTaskButton;
     @UiField
-    public Button completeTaskButton;
+    public Button                              completeTaskButton;
     @UiField
-    public Button releaseTaskButton;
+    public Button                              releaseTaskButton;
     @UiField
-    public TextBox userText;
+    public TextBox                             userText;
     @UiField(provided = true)
-    public DataGrid<TaskSummary> myTaskListGrid;
+    public DataGrid<TaskSummary>               myTaskListGrid;
     @UiField(provided = true)
-    public SimplePager pager;
+    public SimplePager                         pager;
     @UiField
-    public CheckBox showCompletedCheck;
-    private Set<TaskSummary> selectedTasks;
+    public CheckBox                            showCompletedCheck;
+    private Set<TaskSummary>                   selectedTasks;
     @Inject
-    private Event<NotificationEvent> notification;
+    private Event<NotificationEvent>           notification;
     @Inject
-    private Event<TaskSelectionEvent> taskSelection;
-    
-    
-    
-    
+    private Event<TaskSelectionEvent>          taskSelection;
 
     @Override
     public void init(InboxPersonalPresenter presenter) {
         this.presenter = presenter;
 
         myTaskListGrid = new DataGrid<TaskSummary>();
-        myTaskListGrid.setWidth("100%");
-        myTaskListGrid.setHeight("300px");
+        myTaskListGrid.setWidth( "100%" );
+        myTaskListGrid.setHeight( "300px" );
 
         // Set the message to display when the table is empty.
-        myTaskListGrid.setEmptyTableWidget(new Label("Hooray you don't have any pending Task!!"));
+        myTaskListGrid.setEmptyTableWidget( new Label( "Hooray you don't have any pending Task!!" ) );
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
         ListHandler<TaskSummary> sortHandler =
-                new ListHandler<TaskSummary>(presenter.getDataProvider().getList());
-        myTaskListGrid.addColumnSortHandler(sortHandler);
-        myTaskListGrid.setPageSize(6);
+                new ListHandler<TaskSummary>( presenter.getDataProvider().getList() );
+        myTaskListGrid.addColumnSortHandler( sortHandler );
+        myTaskListGrid.setPageSize( 6 );
         // Create a Pager to control the table.
-        SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class);
-        pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
-        pager.setDisplay(myTaskListGrid);
-        pager.setPageSize(6);
+        SimplePager.Resources pagerResources = GWT.create( SimplePager.Resources.class );
+        pager = new SimplePager( TextLocation.CENTER,
+                                 pagerResources,
+                                 false,
+                                 0,
+                                 true );
+        pager.setDisplay( myTaskListGrid );
+        pager.setPageSize( 6 );
 
         // Add a selection model so we can select cells.
         final MultiSelectionModel<TaskSummary> selectionModel =
                 new MultiSelectionModel<TaskSummary>();
-        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+        selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
             public void onSelectionChange(SelectionChangeEvent event) {
                 selectedTasks = selectionModel.getSelectedSet();
-                for (TaskSummary ts : selectedTasks) {
-                    taskSelection.fire(new TaskSelectionEvent(ts.getId()));
+                for ( TaskSummary ts : selectedTasks ) {
+                    taskSelection.fire( new TaskSelectionEvent( ts.getId() ) );
                 }
             }
-        });
+        } );
 
-        myTaskListGrid.setSelectionModel(selectionModel, DefaultSelectionEventManager
-                .<TaskSummary>createCheckboxManager());
+        myTaskListGrid.setSelectionModel( selectionModel,
+                                          DefaultSelectionEventManager
+                                                  .<TaskSummary> createCheckboxManager() );
 
-        initTableColumns(selectionModel, sortHandler);
+        initTableColumns( selectionModel,
+                          sortHandler );
 
-        initWidget(uiBinder.createAndBindUi(this));
+        initWidget( uiBinder.createAndBindUi( this ) );
 
-        presenter.addDataDisplay(myTaskListGrid);
+        presenter.addDataDisplay( myTaskListGrid );
 
     }
 
     public void recieveStatusChanged(@Observes UserTaskEvent event) {
         Boolean isChecked = showCompletedCheck.getValue();
-        
-        presenter.refreshTasks(event.getUserId(), isChecked);
-        userText.setText(event.getUserId());
+
+        presenter.refreshTasks( event.getUserId(),
+                                isChecked );
+        userText.setText( event.getUserId() );
     }
 
     @UiHandler("refreshTasksButton")
     public void refreshTasksButton(ClickEvent e) {
         Boolean isChecked = showCompletedCheck.getValue();
-        presenter.refreshTasks(userText.getText(), isChecked);
+        presenter.refreshTasks( userText.getText(),
+                                isChecked );
     }
 
     @UiHandler("startTaskButton")
     public void startTaskButton(ClickEvent e) {
-        if (selectedTasks.isEmpty()) {
-            displayNotification("Please Select at least one Task to Execute a Quick Action");
+        if ( selectedTasks.isEmpty() ) {
+            displayNotification( "Please Select at least one Task to Execute a Quick Action" );
             return;
         }
-        presenter.startTasks(selectedTasks, userText.getText());
+        presenter.startTasks( selectedTasks,
+                              userText.getText() );
     }
 
     @UiHandler("completeTaskButton")
     public void completeTaskButton(ClickEvent e) {
-        if (selectedTasks.isEmpty()) {
-            displayNotification("Please Select at least one Task to Execute a Quick Action");
+        if ( selectedTasks.isEmpty() ) {
+            displayNotification( "Please Select at least one Task to Execute a Quick Action" );
             return;
         }
-        presenter.completeTasks(selectedTasks, userText.getText());
+        presenter.completeTasks( selectedTasks,
+                                 userText.getText() );
 
     }
 
     @UiHandler("releaseTaskButton")
     public void releaseTaskButton(ClickEvent e) {
-        if (selectedTasks.isEmpty()) {
-            displayNotification("Please Select at least one Task to Execute a Quick Action");
+        if ( selectedTasks.isEmpty() ) {
+            displayNotification( "Please Select at least one Task to Execute a Quick Action" );
             return;
         }
-        presenter.releaseTasks(selectedTasks, userText.getText());
+        presenter.releaseTasks( selectedTasks,
+                                userText.getText() );
     }
 
     private void initTableColumns(final SelectionModel<TaskSummary> selectionModel,
-            ListHandler<TaskSummary> sortHandler) {
+                                  ListHandler<TaskSummary> sortHandler) {
         // Checkbox column. This table will uses a checkbox column for selection.
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
         // mouse selection.
 
-
         Column<TaskSummary, Boolean> checkColumn =
-                new Column<TaskSummary, Boolean>(new CheckboxCell(true, false)) {
+                new Column<TaskSummary, Boolean>( new CheckboxCell( true,
+                                                                    false ) ) {
                     @Override
                     public Boolean getValue(TaskSummary object) {
                         // Get the value from the selection model.
-                        return selectionModel.isSelected(object);
+                        return selectionModel.isSelected( object );
                     }
                 };
-        myTaskListGrid.addColumn(checkColumn, SafeHtmlUtils.fromSafeConstant("<br/>"));
-        myTaskListGrid.setColumnWidth(checkColumn, 40, Unit.PCT);
+        myTaskListGrid.addColumn( checkColumn,
+                                  SafeHtmlUtils.fromSafeConstant( "<br/>" ) );
+        myTaskListGrid.setColumnWidth( checkColumn,
+                                       40,
+                                       Unit.PCT );
 
         // First name.
         Column<TaskSummary, Number> taskIdColumn =
-                new Column<TaskSummary, Number>(new NumberCell()) {
+                new Column<TaskSummary, Number>( new NumberCell() ) {
                     @Override
                     public Number getValue(TaskSummary object) {
                         return object.getId();
                     }
                 };
-        taskIdColumn.setSortable(true);
-        sortHandler.setComparator(taskIdColumn, new Comparator<TaskSummary>() {
-            public int compare(TaskSummary o1, TaskSummary o2) {
-                return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
-            }
-        });
-        myTaskListGrid.addColumn(taskIdColumn, "Task Id");
-        taskIdColumn.setFieldUpdater(new FieldUpdater<TaskSummary, Number>() {
-            public void update(int index, TaskSummary object, Number value) {
+        taskIdColumn.setSortable( true );
+        sortHandler.setComparator( taskIdColumn,
+                                   new Comparator<TaskSummary>() {
+                                       public int compare(TaskSummary o1,
+                                                          TaskSummary o2) {
+                                           return Long.valueOf( o1.getId() ).compareTo( Long.valueOf( o2.getId() ) );
+                                       }
+                                   } );
+        myTaskListGrid.addColumn( taskIdColumn,
+                                  "Task Id" );
+        taskIdColumn.setFieldUpdater( new FieldUpdater<TaskSummary, Number>() {
+            public void update(int index,
+                               TaskSummary object,
+                               Number value) {
                 // Called when the user changes the value.
                 presenter.refreshData();
             }
-        });
-        myTaskListGrid.setColumnWidth(taskIdColumn, 40, Unit.PCT);
+        } );
+        myTaskListGrid.setColumnWidth( taskIdColumn,
+                                       40,
+                                       Unit.PCT );
 
         // Task name.
         Column<TaskSummary, String> taskNameColumn =
-                new Column<TaskSummary, String>(new EditTextCell()) {
+                new Column<TaskSummary, String>( new EditTextCell() ) {
                     @Override
                     public String getValue(TaskSummary object) {
                         return object.getName();
                     }
                 };
-        taskNameColumn.setSortable(true);
-        sortHandler.setComparator(taskNameColumn, new Comparator<TaskSummary>() {
-            public int compare(TaskSummary o1, TaskSummary o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
-        myTaskListGrid.addColumn(taskNameColumn, "Task Name");
-        taskNameColumn.setFieldUpdater(new FieldUpdater<TaskSummary, String>() {
-            public void update(int index, TaskSummary object, String value) {
+        taskNameColumn.setSortable( true );
+        sortHandler.setComparator( taskNameColumn,
+                                   new Comparator<TaskSummary>() {
+                                       public int compare(TaskSummary o1,
+                                                          TaskSummary o2) {
+                                           return o1.getName().compareTo( o2.getName() );
+                                       }
+                                   } );
+        myTaskListGrid.addColumn( taskNameColumn,
+                                  "Task Name" );
+        taskNameColumn.setFieldUpdater( new FieldUpdater<TaskSummary, String>() {
+            public void update(int index,
+                               TaskSummary object,
+                               String value) {
                 // Called when the user changes the value.
-//                
+                //                
                 presenter.refreshData();
             }
-        });
-        myTaskListGrid.setColumnWidth(taskNameColumn, 130, Unit.PCT);
+        } );
+        myTaskListGrid.setColumnWidth( taskNameColumn,
+                                       130,
+                                       Unit.PCT );
 
         // Task priority.
         Column<TaskSummary, Number> taskPriorityColumn =
-                new Column<TaskSummary, Number>(new NumberCell()) {
+                new Column<TaskSummary, Number>( new NumberCell() ) {
                     @Override
                     public Number getValue(TaskSummary object) {
                         return object.getPriority();
                     }
                 };
-        taskPriorityColumn.setSortable(true);
-        sortHandler.setComparator(taskPriorityColumn, new Comparator<TaskSummary>() {
-            public int compare(TaskSummary o1, TaskSummary o2) {
-                return Integer.valueOf(o1.getPriority()).compareTo(o2.getPriority());
-            }
-        });
-        myTaskListGrid.addColumn(taskPriorityColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Priority")));
-        myTaskListGrid.setColumnWidth(taskPriorityColumn, 40, Unit.PCT);
+        taskPriorityColumn.setSortable( true );
+        sortHandler.setComparator( taskPriorityColumn,
+                                   new Comparator<TaskSummary>() {
+                                       public int compare(TaskSummary o1,
+                                                          TaskSummary o2) {
+                                           return Integer.valueOf( o1.getPriority() ).compareTo( o2.getPriority() );
+                                       }
+                                   } );
+        myTaskListGrid.addColumn( taskPriorityColumn,
+                                  new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Priority" ) ) );
+        myTaskListGrid.setColumnWidth( taskPriorityColumn,
+                                       40,
+                                       Unit.PCT );
 
         // Status.
-        Column<TaskSummary, String> statusColumn = new Column<TaskSummary, String>(new TextCell()) {
+        Column<TaskSummary, String> statusColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue(TaskSummary object) {
                 return object.getStatus();
             }
         };
-        statusColumn.setSortable(true);
-        sortHandler.setComparator(statusColumn, new Comparator<TaskSummary>() {
-            public int compare(TaskSummary o1, TaskSummary o2) {
-                return o1.getStatus().compareTo(o2.getStatus());
-            }
-        });
+        statusColumn.setSortable( true );
+        sortHandler.setComparator( statusColumn,
+                                   new Comparator<TaskSummary>() {
+                                       public int compare(TaskSummary o1,
+                                                          TaskSummary o2) {
+                                           return o1.getStatus().compareTo( o2.getStatus() );
+                                       }
+                                   } );
 
-        myTaskListGrid.addColumn(statusColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Status")));
-        myTaskListGrid.setColumnWidth(statusColumn, 50, Unit.PCT);
+        myTaskListGrid.addColumn( statusColumn,
+                                  new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Status" ) ) );
+        myTaskListGrid.setColumnWidth( statusColumn,
+                                       50,
+                                       Unit.PCT );
 
         // User.
-        Column<TaskSummary, String> userColumn = new Column<TaskSummary, String>(new TextCell()) {
+        Column<TaskSummary, String> userColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue(TaskSummary object) {
                 return object.getActualOwner();
             }
         };
-        userColumn.setSortable(true);
-        sortHandler.setComparator(userColumn, new Comparator<TaskSummary>() {
-            public int compare(TaskSummary o1, TaskSummary o2) {
-                return o1.getActualOwner().compareTo(o2.getActualOwner());
-            }
-        });
+        userColumn.setSortable( true );
+        sortHandler.setComparator( userColumn,
+                                   new Comparator<TaskSummary>() {
+                                       public int compare(TaskSummary o1,
+                                                          TaskSummary o2) {
+                                           return o1.getActualOwner().compareTo( o2.getActualOwner() );
+                                       }
+                                   } );
 
-        myTaskListGrid.addColumn(userColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Actual Owner")));
-        myTaskListGrid.setColumnWidth(userColumn, 60, Unit.PCT);
+        myTaskListGrid.addColumn( userColumn,
+                                  new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Actual Owner" ) ) );
+        myTaskListGrid.setColumnWidth( userColumn,
+                                       60,
+                                       Unit.PCT );
 
         // Description.
-        Column<TaskSummary, String> descriptionColumn = new Column<TaskSummary, String>(new TextCell()) {
+        Column<TaskSummary, String> descriptionColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue(TaskSummary object) {
                 return object.getDescription();
             }
         };
-        descriptionColumn.setSortable(true);
+        descriptionColumn.setSortable( true );
 
-
-        myTaskListGrid.addColumn(descriptionColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Description")));
-        myTaskListGrid.setColumnWidth(descriptionColumn, 140, Unit.PCT);
+        myTaskListGrid.addColumn( descriptionColumn,
+                                  new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Description" ) ) );
+        myTaskListGrid.setColumnWidth( descriptionColumn,
+                                       140,
+                                       Unit.PCT );
 
         // Task parent id.
         Column<TaskSummary, String> taskParentIdColumn =
-                new Column<TaskSummary, String>(new TextCell()) {
+                new Column<TaskSummary, String>( new TextCell() ) {
                     @Override
                     public String getValue(TaskSummary object) {
-                        return (object.getParentId() > 0) ? String.valueOf(object.getParentId()) : "No Parent";
+                        return (object.getParentId() > 0) ? String.valueOf( object.getParentId() ) : "No Parent";
                     }
                 };
-        taskParentIdColumn.setSortable(true);
-        sortHandler.setComparator(taskParentIdColumn, new Comparator<TaskSummary>() {
-            public int compare(TaskSummary o1, TaskSummary o2) {
-                return Integer.valueOf(o1.getParentId()).compareTo(o2.getParentId());
-            }
-        });
-        myTaskListGrid.addColumn(taskParentIdColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Parent Id")));
-        myTaskListGrid.setColumnWidth(taskParentIdColumn, 50, Unit.PCT);
-
+        taskParentIdColumn.setSortable( true );
+        sortHandler.setComparator( taskParentIdColumn,
+                                   new Comparator<TaskSummary>() {
+                                       public int compare(TaskSummary o1,
+                                                          TaskSummary o2) {
+                                           return Integer.valueOf( o1.getParentId() ).compareTo( o2.getParentId() );
+                                       }
+                                   } );
+        myTaskListGrid.addColumn( taskParentIdColumn,
+                                  new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Parent Id" ) ) );
+        myTaskListGrid.setColumnWidth( taskParentIdColumn,
+                                       50,
+                                       Unit.PCT );
 
         Column<TaskSummary, String> editColumn =
-                new Column<TaskSummary, String>(new ButtonCell()) {
+                new Column<TaskSummary, String>( new ButtonCell() ) {
                     @Override
                     public String getValue(TaskSummary task) {
-                        return String.valueOf(task.getId());
+                        return String.valueOf( task.getId() );
                     }
-                    
+
                 };
 
-        editColumn.setFieldUpdater(new FieldUpdater<TaskSummary, String>() {
+        editColumn.setFieldUpdater( new FieldUpdater<TaskSummary, String>() {
             @Override
-            public void update(int index, TaskSummary task, String value) {
-                placeManager.goTo(new PlaceRequest("Task Edit Perspective"));
-                taskSelection.fire(new TaskSelectionEvent(Long.parseLong(value),userText.getText()));
+            public void update(int index,
+                               TaskSummary task,
+                               String value) {
+                placeManager.goTo( new PlaceRequest( "Task Edit Perspective" ) );
+                taskSelection.fire( new TaskSelectionEvent( Long.parseLong( value ),
+                                                            userText.getText() ) );
             }
-        });
+        } );
 
-        myTaskListGrid.addColumn(editColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Edit")));
-        myTaskListGrid.setColumnWidth(editColumn, 50, Unit.PCT);
-
+        myTaskListGrid.addColumn( editColumn,
+                                  new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Edit" ) ) );
+        myTaskListGrid.setColumnWidth( editColumn,
+                                       50,
+                                       Unit.PCT );
 
         Column<TaskSummary, String> workColumn =
-                new Column<TaskSummary, String>(new ButtonCell()) {
+                new Column<TaskSummary, String>( new ButtonCell() ) {
                     @Override
                     public String getValue(TaskSummary task) {
-                        return String.valueOf(task.getId());
+                        return String.valueOf( task.getId() );
                     }
                 };
 
-        workColumn.setFieldUpdater(new FieldUpdater<TaskSummary, String>() {
+        workColumn.setFieldUpdater( new FieldUpdater<TaskSummary, String>() {
             @Override
-            public void update(int index, TaskSummary task, String value) {
-                placeManager.goTo(new PlaceRequest("Form Perspective"));
-                taskSelection.fire(new TaskSelectionEvent(Long.parseLong(value),userText.getText()));
+            public void update(int index,
+                               TaskSummary task,
+                               String value) {
+                placeManager.goTo( new PlaceRequest( "Form Perspective" ) );
+                taskSelection.fire( new TaskSelectionEvent( Long.parseLong( value ),
+                                                            userText.getText() ) );
             }
-        });
+        } );
 
-        myTaskListGrid.addColumn(workColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Work")));
-        myTaskListGrid.setColumnWidth(workColumn, 50, Unit.PCT);
-
-
+        myTaskListGrid.addColumn( workColumn,
+                                  new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Work" ) ) );
+        myTaskListGrid.setColumnWidth( workColumn,
+                                       50,
+                                       Unit.PCT );
 
     }
 
     public void displayNotification(String text) {
-        notification.fire(new NotificationEvent(text));
+        notification.fire( new NotificationEvent( text ) );
     }
 
     public TextBox getUserText() {
@@ -387,14 +443,13 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
 
     public void onTaskSelected(@Observes TaskChangedEvent taskChanged) {
         Boolean isChecked = showCompletedCheck.getValue();
-        presenter.refreshTasks(taskChanged.getUserId(), isChecked);
-
+        presenter.refreshTasks( taskChanged.getUserId(),
+                                isChecked );
 
     }
 
     public CheckBox getShowCompletedCheck() {
         return showCompletedCheck;
     }
-    
-    
+
 }

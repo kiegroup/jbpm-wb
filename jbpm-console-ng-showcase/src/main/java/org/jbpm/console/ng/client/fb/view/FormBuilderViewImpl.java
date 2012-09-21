@@ -15,44 +15,54 @@
  */
 package org.jbpm.console.ng.client.fb.view;
 
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.Widget;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.jbpm.console.ng.shared.fb.events.PaletteItemAddedEvent;
 import org.jbpm.console.ng.client.fb.view.canvas.CanvasViewImpl;
 import org.jbpm.console.ng.client.fb.view.palette.AnimatedPaletteViewImpl;
 import org.jbpm.console.ng.client.fb.view.palette.PalettePresenter;
 import org.jbpm.console.ng.client.fb.view.palette.PaletteView;
+import org.jbpm.console.ng.shared.fb.events.PaletteItemAddedEvent;
 import org.jbpm.form.builder.ng.model.client.menu.FBMenuItem;
 import org.jbpm.form.builder.ng.model.common.reflect.ReflectionHelper;
 import org.jbpm.form.builder.ng.model.shared.menu.MenuItemDescription;
 import org.uberfire.client.mvp.PlaceManager;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.Widget;
+
 /**
  * Main view. Uses UIBinder to define the correct position of components
  */
 @Dependent
-public class FormBuilderViewImpl extends AbsolutePanel implements FormBuilderPresenter.FormBuilderView{
+public class FormBuilderViewImpl extends AbsolutePanel
+    implements
+    FormBuilderPresenter.FormBuilderView {
+
+    interface FormBuilderViewImplBinder
+        extends
+        UiBinder<Widget, FormBuilderViewImpl> {
+    }
+
+    private static FormBuilderViewImplBinder uiBinder = GWT.create( FormBuilderViewImplBinder.class );
 
     @Inject
-    private UiBinder<Widget, FormBuilderViewImpl> uiBinder;
+    private PlaceManager                     placeManager;
 
+    private FormBuilderPresenter             presenter;
 
-    @Inject
-    private PlaceManager placeManager;
-
-    private FormBuilderPresenter presenter;
-    
-    public @UiField(provided=true) ScrollPanel menuView;
-    public @UiField(provided=true) ScrollPanel layoutView;
+    public @UiField(provided = true)
+    ScrollPanel                              menuView;
+    public @UiField(provided = true)
+    ScrollPanel                              layoutView;
 
     @Override
     public void init(final FormBuilderPresenter presenter) {
@@ -61,29 +71,34 @@ public class FormBuilderViewImpl extends AbsolutePanel implements FormBuilderPre
     }
 
     protected final void init() {
-            menuView = new AnimatedPaletteViewImpl();
-            layoutView = new CanvasViewImpl();
-            menuView.setAlwaysShowScrollBars(true);
-            menuView.setSize("235px", "100%");
-            layoutView.setSize("700px", "700px");
-            layoutView.setAlwaysShowScrollBars(true);
-            add(uiBinder.createAndBindUi(this));
+        menuView = new AnimatedPaletteViewImpl();
+        layoutView = new CanvasViewImpl();
+        menuView.setAlwaysShowScrollBars( true );
+        menuView.setSize( "235px",
+                          "100%" );
+        layoutView.setSize( "700px",
+                            "700px" );
+        layoutView.setAlwaysShowScrollBars( true );
+        add( uiBinder.createAndBindUi( this ) );
 
-            ((PaletteView)menuView).removeAllItems();
-            
+        ((PaletteView) menuView).removeAllItems();
+
     }
-    
+
     public void addItem(@Observes PaletteItemAddedEvent event) {
         try {
             String group = event.getGroupName();
             MenuItemDescription menuItemDescription = event.getMenuItemDescription();
-            Object newInstance = ReflectionHelper.newInstance(menuItemDescription.getClassName());
+            Object newInstance = ReflectionHelper.newInstance( menuItemDescription.getClassName() );
             FBMenuItem item = (FBMenuItem) newInstance;
-            
-            ((PaletteView)menuView).addItem(group, item);
-        } catch (Exception ex) {
+
+            ((PaletteView) menuView).addItem( group,
+                                              item );
+        } catch ( Exception ex ) {
             ex.printStackTrace();
-            Logger.getLogger(PalettePresenter.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger( PalettePresenter.class.getName() ).log( Level.SEVERE,
+                                                                      null,
+                                                                      ex );
         }
     }
 
@@ -95,12 +110,8 @@ public class FormBuilderViewImpl extends AbsolutePanel implements FormBuilderPre
         return layoutView;
     }
 
-    public AbsolutePanel getPanel(){
+    public AbsolutePanel getPanel() {
         return this;
     }
-
-
-
-
 
 }

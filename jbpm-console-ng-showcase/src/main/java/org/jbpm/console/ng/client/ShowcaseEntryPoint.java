@@ -48,14 +48,11 @@ public class ShowcaseEntryPoint {
     @Inject
     private WorkbenchMenuBarPresenter menubar;
     private String[] menuItems = new String[]{"Personal Task Statistics", "Show Task Content", "Add Task Content", "Form Display", "Form Builder", "Quick New Task", "Quick New Sub Task", "Personal Tasks", "Group Tasks", "Task Details"};
-    @Inject
-    private Caller<FileExplorerRootService> rootService;
 
     @AfterInitialization
     public void startApp() {
         loadStyles();
         setupMenu();
-        setupFileSystems();
         hideLoadingPopup();
     }
 
@@ -86,18 +83,8 @@ public class ShowcaseEntryPoint {
         menubar.addMenuItem(placesMenu);
     }
 
-    //TODO {manstis} Speak to porcelli about bootstrapping FileSystems
-    private void setupFileSystems() {
-        rootService.call(new RemoteCallback<Collection<Root>>() {
-            @Override
-            public void callback(Collection<Root> response) {
-                //Do nothing. FileSystems have been initialised.
-            }
-        }).listRoots();
 
-    }
     //Fade out the "Loading application" pop-up
-
     private void hideLoadingPopup() {
         final Element e = RootPanel.get("loading").getElement();
 

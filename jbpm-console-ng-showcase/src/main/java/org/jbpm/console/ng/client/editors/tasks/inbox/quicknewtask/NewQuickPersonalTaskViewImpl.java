@@ -15,59 +15,66 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.quicknewtask;
 
-
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-
-import com.google.gwt.user.client.ui.Composite;
-
-import com.google.gwt.user.client.ui.Widget;
-import javax.enterprise.event.Event;
 import org.jbpm.console.ng.client.editors.tasks.inbox.events.UserTaskEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Widget;
+
 @Dependent
-public class NewQuickPersonalTaskViewImpl extends Composite implements NewQuickPersonalTaskPresenter.InboxView {
+public class NewQuickPersonalTaskViewImpl extends Composite
+    implements
+    NewQuickPersonalTaskPresenter.InboxView {
+
+    interface NewQuickPersonalTaskViewImplBinder
+        extends
+        UiBinder<Widget, NewQuickPersonalTaskViewImpl> {
+    }
+
+    private static NewQuickPersonalTaskViewImplBinder uiBinder = GWT.create( NewQuickPersonalTaskViewImplBinder.class );
 
     @Inject
-    private UiBinder<Widget, NewQuickPersonalTaskViewImpl> uiBinder;
-    @Inject
-    private PlaceManager placeManager;
-    private NewQuickPersonalTaskPresenter presenter;
+    private PlaceManager                              placeManager;
+
+    private NewQuickPersonalTaskPresenter             presenter;
     @UiField
-    public Button addTaskButton;
+    public Button                                     addTaskButton;
     @UiField
-    public TextBox userText;
+    public TextBox                                    userText;
     @UiField
-    public TextBox taskNameText;
+    public TextBox                                    taskNameText;
     @Inject
-    private Event<NotificationEvent> notification;
+    private Event<NotificationEvent>                  notification;
     @Inject
-    private Event<UserTaskEvent> userTaskChanges;
-    
+    private Event<UserTaskEvent>                      userTaskChanges;
+
     @Override
     public void init(NewQuickPersonalTaskPresenter presenter) {
         this.presenter = presenter;
-        initWidget(uiBinder.createAndBindUi(this));
+        initWidget( uiBinder.createAndBindUi( this ) );
 
     }
 
     @UiHandler("addTaskButton")
     public void addTaskButton(ClickEvent e) {
-        presenter.addQuickTask(userText.getText(),
-                                    taskNameText.getText());  
+        presenter.addQuickTask( userText.getText(),
+                                    taskNameText.getText() );
     }
 
     public void displayNotification(String text) {
-        notification.fire(new NotificationEvent(text));
-        userTaskChanges.fire(new UserTaskEvent(userText.getText()));
+        notification.fire( new NotificationEvent( text ) );
+        userTaskChanges.fire( new UserTaskEvent( userText.getText() ) );
     }
 }
