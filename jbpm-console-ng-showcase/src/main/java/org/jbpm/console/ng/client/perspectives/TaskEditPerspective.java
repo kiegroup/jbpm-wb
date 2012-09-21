@@ -20,8 +20,10 @@ import javax.enterprise.context.ApplicationScoped;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.workbench.Position;
 import org.uberfire.client.workbench.model.PanelDefinition;
-import org.uberfire.client.workbench.model.PartDefinition;
 import org.uberfire.client.workbench.model.PerspectiveDefinition;
+import org.uberfire.client.workbench.model.impl.PanelDefinitionImpl;
+import org.uberfire.client.workbench.model.impl.PartDefinitionImpl;
+import org.uberfire.client.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.shared.mvp.PlaceRequest;
 
 /**
@@ -33,16 +35,16 @@ public class TaskEditPerspective {
     @Perspective(identifier = "Task Edit Perspective")
     public PerspectiveDefinition getPerspective() {
         
-        final PerspectiveDefinition p = new PerspectiveDefinition();
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
         p.setName( "Task Edit Perspective" );
-        p.getRoot().addPart( new PartDefinition( new PlaceRequest( "Task Details" ) ) );
-        final PanelDefinition eastPanel = new PanelDefinition();
+        p.getRoot().addPart( new PartDefinitionImpl( new PlaceRequest( "Task Details" ) ) );
+        final PanelDefinition eastPanel = new PanelDefinitionImpl();
         eastPanel.setWidth( 300 );
  	eastPanel.setMinWidth( 200 );
         eastPanel.setWidth(800);
-        eastPanel.addPart( new PartDefinition( new PlaceRequest( "Add Task Content") ) );      
-        final PanelDefinition westPanelSouthPanel = new PanelDefinition();
-        westPanelSouthPanel.addPart( new PartDefinition( new PlaceRequest(  "Quick New Sub Task" ) ) );
+        eastPanel.addPart( new PartDefinitionImpl( new PlaceRequest( "Add Task Content") ) );      
+        final PanelDefinition westPanelSouthPanel = new PanelDefinitionImpl();
+        westPanelSouthPanel.addPart( new PartDefinitionImpl( new PlaceRequest(  "Quick New Sub Task" ) ) );
         westPanelSouthPanel.setHeight(400);
         westPanelSouthPanel.setMinHeight(200);
         westPanelSouthPanel.setWidth(800);

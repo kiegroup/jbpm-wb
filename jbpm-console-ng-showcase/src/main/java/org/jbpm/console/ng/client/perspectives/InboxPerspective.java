@@ -20,8 +20,10 @@ import javax.enterprise.context.ApplicationScoped;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.workbench.Position;
 import org.uberfire.client.workbench.model.PanelDefinition;
-import org.uberfire.client.workbench.model.PartDefinition;
 import org.uberfire.client.workbench.model.PerspectiveDefinition;
+import org.uberfire.client.workbench.model.impl.PanelDefinitionImpl;
+import org.uberfire.client.workbench.model.impl.PartDefinitionImpl;
+import org.uberfire.client.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.shared.mvp.PlaceRequest;
 
 /**
@@ -32,19 +34,19 @@ public class InboxPerspective {
 
     @Perspective(identifier = "InboxPerspective", isDefault = true)
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinition();
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
         p.setName( "Inbox Perspective" );
-        p.getRoot().addPart( new PartDefinition( new PlaceRequest( "Quick New Task"  ) ) );
-        final PanelDefinition eastPanel = new PanelDefinition();
+        p.getRoot().addPart( new PartDefinitionImpl( new PlaceRequest( "Quick New Task"  ) ) );
+        final PanelDefinition eastPanel = new PanelDefinitionImpl();
         eastPanel.setHeight(400);
         eastPanel.setWidth(800);
         eastPanel.setMinHeight(200);
-        eastPanel.addPart( new PartDefinition( new PlaceRequest(  "Personal Tasks" ) ) );      
-        final PanelDefinition westPanelSouthPanel = new PanelDefinition();
+        eastPanel.addPart( new PartDefinitionImpl( new PlaceRequest(  "Personal Tasks" ) ) );      
+        final PanelDefinition westPanelSouthPanel = new PanelDefinitionImpl();
         westPanelSouthPanel.setHeight(400);
         westPanelSouthPanel.setMinHeight(200);
         eastPanel.setWidth(800);
-        westPanelSouthPanel.addPart( new PartDefinition( new PlaceRequest(  "Group Tasks" ) ) );
+        westPanelSouthPanel.addPart( new PartDefinitionImpl( new PlaceRequest(  "Group Tasks" ) ) );
         eastPanel.setChild( Position.SOUTH , westPanelSouthPanel);
         p.getRoot().setChild( Position.EAST , eastPanel );
         return p;
