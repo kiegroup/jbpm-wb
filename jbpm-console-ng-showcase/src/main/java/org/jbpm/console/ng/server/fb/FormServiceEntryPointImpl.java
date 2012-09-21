@@ -111,8 +111,7 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
     }
 
     public void completeForm(long id, String userId, Map<String, String> params) {
-        //TODO: Salaboy, please take a look at the missing userId parameter here
-        displayService.completeForm(id, params);
+        displayService.completeForm(id, userId, params);
     }
     
 }
