@@ -52,7 +52,7 @@ public interface TaskServiceEntryPoint {
     void setPriority(long taskId, int priority);
 
     void setExpirationDate(long taskId, Date date);
-
+   
     public void setDescriptions(long taskId, List<String> descriptions);
 
     public void setSkipable(long taskId, boolean skipable);

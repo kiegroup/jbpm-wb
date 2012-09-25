@@ -16,53 +16,71 @@
 -->
 
 <html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
-        <!-- before your module(*.nocache.js) loading  -->
-        <!--[if lt IE 9]>
-        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
-        <!--[if IE 7]>
-        <link rel="stylesheet" href="{your module name}/css/font-awesome-ie7.css">
-        <![endif]-->
-        <!-- your module(*.nocache.js) loading  -->
-        <!-- Note you can append #asset=UUID to the end of the URL to preload a given asset.
-        Also, if you append #asset=UUID&nochrome it will only show the asset without all the GUI "chrome"
+    <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+    <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+    <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+    <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
 
-        To select a locale, specify &locale=en_US at the end of the URL to pick the appropriate bundle.
-        -->
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <!-- before your module(*.nocache.js) loading  -->
+            <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+            <![endif]-->
+            <!--[if IE 7]>
+            <link rel="stylesheet" href="{your module name}/css/font-awesome-ie7.css">
+            <![endif]-->
+            <!-- your module(*.nocache.js) loading  -->
+            <!-- Note you can append #asset=UUID to the end of the URL to preload a given asset.
+            Also, if you append #asset=UUID&nochrome it will only show the asset without all the GUI "chrome"
+    
+            To select a locale, specify &locale=en_US at the end of the URL to pick the appropriate bundle.
+            -->
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-        <title>jBPM Console</title>
-        <link rel="shortcut icon" href="images/drools.gif" type="image/gif"/>
-        <link rel="icon" href="images/drools.gif" type="image/gif"/>
+            <title>jBPM Console</title>
+            <link rel="shortcut icon" href="images/drools.gif" type="image/gif"/>
+            <link rel="icon" href="images/drools.gif" type="image/gif"/>
 
-        <link rel="stylesheet" href="css/uberfire-workbench.css">
-        <link rel="stylesheet" href="css/uberfire-showcase.css">
-        <link rel="stylesheet" href="css/ruleflow.css">
-    <link type="text/css" rel="stylesheet" href="jquery-ui-1.8.18.custom.css">
-    <link type="text/css" rel="stylesheet" href="Application.css">
+            <link rel="stylesheet" href="css/uberfire-workbench.css">
+            <link rel="stylesheet" href="css/uberfire-showcase.css">
+            <link rel="stylesheet" href="css/ruleflow.css">
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <script type="text/javascript" language="javascript" src="configuration.js"></script>
-    <script type="text/javascript" language="javascript" src="jquery-1.7.1.min.js"></script>
-    <script type="text/javascript" language="javascript" src="jquery-ui-1.8.18.custom.min.js"></script>
-    <script type="text/javascript" language="javascript" src="http://localhost:8080/gadget-server/gadgets/js/container.js?c=1&container=default&debug=1"></script>
-    <script type="text/javascript" language="javascript" src="application.js"></script>
-    </head>
-    <body>
-        <iframe id="__gwt_historyFrame" style="width: 0; height: 0; border: 0"></iframe>
+            <meta name="description" content="">
+            <meta name="viewport" content="width=device-width">
+            <link rel="stylesheet" href="css/normalize.css">
+            <link rel="stylesheet" href="css/main.css">
+            <link rel="stylesheet" href="css/skin.css">
+            <script src="js/vendor/modernizr-2.6.1.min.js"></script>
+            <link type="text/css" rel="stylesheet" href="jquery-ui-1.8.18.custom.css">
+            <link type="text/css" rel="stylesheet" href="Application.css">
 
-        <!--add loading indicator while the app is being loaded-->
-        <div id="loading">
-            <div class="loading-indicator">
-                <img src="images/loading-icon.gif" width="32" height="32" style="margin-right: 8px; float: left; vertical-align: top;"/>
-                Please wait<br/><span id="loading-msg">Loading application...</span>
+            <script type="text/javascript" language="javascript" src="configuration.js"></script>
+            <script type="text/javascript" language="javascript" src="jquery-1.7.1.min.js"></script>
+            <script type="text/javascript" language="javascript" src="jquery-ui-1.8.18.custom.min.js"></script>
+            <script type="text/javascript" language="javascript" src="http://localhost:8080/gadget-server/gadgets/js/container.js?c=1&container=default&debug=1"></script>
+            <script type="text/javascript" language="javascript" src="application.js"></script>
+        </head>
+        <body>
+            <!--[if lt IE 7]>
+         <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+     <![endif]-->
+            <iframe id="__gwt_historyFrame" style="width: 0; height: 0; border: 0"></iframe>
+
+            <!--add loading indicator while the app is being loaded-->
+            <div id="loading">
+                <div class="loading-indicator">
+                    <img src="images/loading-icon.gif" width="32" height="32" style="margin-right: 8px; float: left; vertical-align: top;"/>
+                    Please wait<br/><span id="loading-msg">Loading application...</span>
+                </div>
             </div>
-        </div>
 
-        <!-- The GWT js file generated at run time -->
-        <script type="text/javascript" src='org.jbpm.console.ng.jBPMShowcase.nocache.js'></script>
+            <!-- The GWT js file generated at run time -->
+            <script type="text/javascript" src='org.jbpm.console.ng.jBPMShowcase.nocache.js'></script>
 
-    </body>
-</html>
+        </body>
+    </html>

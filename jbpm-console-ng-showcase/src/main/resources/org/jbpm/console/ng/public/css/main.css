@@ -1,0 +1,532 @@
+/*
+ * HTML5 Boilerplate
+ *
+ * What follows is the result of much research on cross-browser styling.
+ * Credit left inline and big thanks to Nicolas Gallagher, Jonathan Neal,
+ * Kroc Camen, and the H5BP dev community and team.
+ */
+
+/* ==========================================================================
+   Base styles: opinionated defaults
+   ========================================================================== */
+
+html,
+button,
+input,
+select,
+textarea {
+    color: #222;
+}
+
+body {
+    font-size: 1em;
+    line-height: 1.4;
+}
+
+/*
+ * Remove text-shadow in selection highlight: h5bp.com/i
+ * These selection declarations have to be separate.
+ * Customize the background color to match your design.
+ */
+
+::-moz-selection {
+    background: #b3d4fc;
+    text-shadow: none;
+}
+
+::selection {
+    background: #b3d4fc;
+    text-shadow: none;
+}
+
+/*
+ * A better looking default horizontal rule
+ */
+
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
+}
+
+/*
+ * Remove the gap between images and the bottom of their containers: h5bp.com/i/440
+ */
+
+img {
+    vertical-align: middle;
+}
+
+/*
+ * Remove default fieldset styles.
+ */
+
+fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+/*
+ * Allow only vertical resizing of textareas.
+ */
+
+textarea {
+    resize: vertical;
+}
+
+/* ==========================================================================
+   Chrome Frame prompt
+   ========================================================================== */
+
+.chromeframe {
+    margin: 0.2em 0;
+    background: #ccc;
+    color: #000;
+    padding: 0.2em 0;
+}
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+
+
+/* FORMS */
+.form {
+    min-width: 250px;
+    margin: 2px;
+}
+.form .form-header {
+    padding: 20px;
+    position: relative;
+    border-bottom: 1px solid;
+}
+.form .form-header h2 {
+    padding: 0;
+    margin: 0;
+    display: block;
+    max-width: 70%;
+}
+
+.form .form-header .button.main {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.form .form-content {
+    padding: 20px;
+    position: relative;
+}
+.form .form-content .form-row {
+    width: 100%;
+    max-width: 900px;
+
+    margin: 0 0 5px;
+}
+.form .form-content .form-row.submit {
+    text-align: right;
+    padding: 5px 10px 0 0;
+
+}
+
+.form .form-content .form-row label{
+    width: 30%;
+    min-width: 70px;
+    text-align: right;
+    padding: 0;
+    display: inline-block;
+    padding-top: 6px;
+}
+
+.form .form-content .form-row input[type="text"], .form .form-content .form-row input[type="date"], .form .form-content .form-row input[type="file"] {
+    width:65%;
+    padding: 0 1%;
+    margin: 0;
+    min-width: 200px;
+    vertical-align:top;
+    border: 1px solid;
+     -webkit-border-radius: 3px;
+              border-radius: 3px;
+    min-height: 25px; 
+   -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+   float: right;
+}
+.form .form-content .form-row input[type="file"] {
+    padding-top: 3px;
+    height:22px;
+    background-color: #FFF;
+    min-height: 22px;
+}
+.form .form-content .form-row .input-button  {
+    width: 67%;
+     padding: 0;
+    float: right;
+    margin-right: 2px;
+}
+
+.form .form-content .form-row .input-button input[type="text"] {
+    width: 72% !important;
+    float: none;
+}
+.form .form-content .form-row .input-button .button {
+    float: none;
+    width: 20%;
+    max-width: 20%;
+    min-width: 60px;
+    padding: 0 5px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space:nowrap;
+}
+
+.form .form-content .form-row textarea{
+    width: 65%;
+    padding: 1%;
+    margin: 0;
+    min-width: 200px;
+    vertical-align:top;
+    border: 1px solid;
+     -webkit-border-radius: 3px;
+              border-radius: 3px;
+    min-height: 100px; 
+   -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+   float: right;
+}
+.form .form-content .form-row .select-container {
+    width: 67%;
+    min-width: 200px;
+    background-color: #FFF;
+  padding: 1px 0 0;
+    min-width: 200px;
+    vertical-align:top;
+    border: 1px solid;
+     -webkit-border-radius: 3px;
+    border-radius: 3px;
+     height: 25px; 
+     display: inline-block;
+     float: right;
+}
+
+.form .form-content .form-row .select-container select {
+    border: none !important;
+    width: 100%;
+    height:25px;
+    -webkit-appearance: select;
+    -webkit-padding-end: 20px;
+    -webkit-padding-start: 2px;
+    background-color: #FFF;
+
+
+}
+
+/* BUTTONS */
+
+.button {
+    display: inline-block;
+    cursor: pointer; 
+     height: 27px;
+     line-height: 27px;
+     padding: 0 15px;
+         text-align: center;
+}
+
+a.button {
+    height: 25px;
+    text-decoration: none;
+    text-align: center;
+}
+
+td .button {
+    font-size: 10px;
+    padding: 0 5px;
+    height: 16px;
+    line-height: 16px;
+}
+
+/* LIST */
+
+.list {
+    min-width: 320px;
+    margin: 2px;
+}
+
+.list .list-options {
+    padding: 20px;
+    position: relative;
+    border-bottom: 1px solid;
+    min-height: 25px;
+    line-height: 26px;
+    font-size: 11px;
+}
+
+.list .list-options input[type="search"] {
+padding: 0;
+    border: 1px solid;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    min-height: 25px; 
+   -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+}
+.list .list-options .option {
+    display: inline-block;
+    height: 25px;
+    line-height: 30px;
+    padding: 0px 5px;
+}
+
+.list .list-content {
+    padding: 20px;
+    position: relative;
+    font-size: 12px;
+}
+.list .list-content table {
+    width: 100%;
+    border: 1px solid ;
+}
+.list .list-content table thead{
+    border-bottom: 1px solid ;
+}
+.list .list-content table thead th{
+    text-align: left;
+    padding: 2px 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space:nowrap;
+    border-left: 1px solid;
+    
+}
+.list .list-content table tbody tr{
+    border-bottom: 1px solid;
+}
+.list .list-content table tbody td{
+    text-align: left;
+    padding: 2px 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space:nowrap;
+    border-left: 1px solid;
+}
+
+.list .list-content table td.checkbox-size, .list .list-content table th.checkbox-size {
+    width: 10px;
+}
+
+/* ==========================================================================
+   Helper classes
+   ========================================================================== */
+
+/*
+ * Image replacement
+ */
+
+.ir {
+    background-color: transparent;
+    border: 0;
+    overflow: hidden;
+    /* IE 6/7 fallback */
+    *text-indent: -9999px;
+}
+
+.ir:before {
+    content: "";
+    display: block;
+    width: 0;
+    height: 100%;
+}
+
+/*
+ * Hide from both screenreaders and browsers: h5bp.com/u
+ */
+
+.hidden {
+    display: none !important;
+    visibility: hidden;
+}
+
+/*
+ * Hide only visually, but have it available for screenreaders: h5bp.com/v
+ */
+
+.visuallyhidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+/*
+ * Extends the .visuallyhidden class to allow the element to be focusable
+ * when navigated to via the keyboard: h5bp.com/p
+ */
+
+.visuallyhidden.focusable:active,
+.visuallyhidden.focusable:focus {
+    clip: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    position: static;
+    width: auto;
+}
+
+/*
+ * Hide visually and from screenreaders, but maintain layout
+ */
+
+.invisible {
+    visibility: hidden;
+}
+
+/*
+ * Clearfix: contain floats
+ *
+ * For modern browsers
+ * 1. The space content is one way to avoid an Opera bug when the
+ *    `contenteditable` attribute is included anywhere else in the document.
+ *    Otherwise it causes space to appear at the top and bottom of elements
+ *    that receive the `clearfix` class.
+ * 2. The use of `table` rather than `block` is only necessary if using
+ *    `:before` to contain the top-margins of child elements.
+ */
+
+.clearfix:before,
+.clearfix:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+/*
+ * For IE 6/7 only
+ * Include this rule to trigger hasLayout and contain floats.
+ */
+
+.clearfix {
+    *zoom: 1;
+}
+
+.gradient {
+       filter: none;
+    }
+
+/* ==========================================================================
+   EXAMPLE Media Queries for Responsive Design.
+   Theses examples override the primary ('mobile first') styles.
+   Modify as content requires.
+   ========================================================================== */
+
+@media only screen and (max-width: 35em) {
+    /* Style adjustments for viewports that meet the condition */
+    .form .form-content .form-row label{
+        width: 100%;
+        text-align: left;
+    }
+    .form .form-content .form-row input[type="text"], .form .form-content .form-row input[type="date"], .form .form-content .form-row input[type="file"], .form .form-content .form-row textarea {
+        width: 98%;
+        float: none;
+    }
+    .form .form-content .form-row .select-container, .form .form-content .form-row .input-button {
+        width: 100%;
+        float: none;
+    }
+    .list .list-options {
+        height: auto;
+        min-height: 25px;
+    }
+    .list .list-options input[type="search"] {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    .list .list-options .option {
+        display: block;
+
+    }
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5),
+       only screen and (min-resolution: 144dpi) {
+    /* Style adjustments for high resolution devices */
+}
+
+/* ==========================================================================
+   Print styles.
+   Inlined to avoid required HTTP connection: h5bp.com/r
+   ========================================================================== */
+
+@media print {
+    * {
+        background: transparent !important;
+        color: #000 !important; /* Black prints faster: h5bp.com/s */
+        box-shadow:none !important;
+        text-shadow: none !important;
+    }
+
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+
+    abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+
+    /*
+     * Don't show links for images, or javascript/internal links
+     */
+
+    .ir a:after,
+    a[href^="javascript:"]:after,
+    a[href^="#"]:after {
+        content: "";
+    }
+
+    pre,
+    blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group; /* h5bp.com/t */
+    }
+
+    tr,
+    img {
+        page-break-inside: avoid;
+    }
+
+    img {
+        max-width: 100% !important;
+    }
+
+    @page {
+        margin: 0.5cm;
+    }
+
+    p,
+    h2,
+    h3 {
+        orphans: 3;
+        widows: 3;
+    }
+
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+}

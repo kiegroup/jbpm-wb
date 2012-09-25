@@ -47,7 +47,10 @@ public class ShowcaseEntryPoint {
     private PlaceManager placeManager;
     @Inject
     private WorkbenchMenuBarPresenter menubar;
-    private String[] menuItems = new String[]{"Personal Task Statistics", "Show Task Content", "Add Task Content", "Form Display", "Form Builder", "Quick New Task", "Quick New Sub Task", "Personal Tasks", "Group Tasks", "Task Details"};
+    private String[] menuItems = new String[]{"Personal Task Statistics", "Show Task Content", "Add Task Content", 
+                                                "Form Display", "Form Builder", "Quick New Task", 
+                                                "Quick New Sub Task", "Personal Tasks", "Group Tasks", "Task Details", 
+                                                "Errai UI - Task Details", "Errai UI - Personal Tasks"};
 
     @AfterInitialization
     public void startApp() {

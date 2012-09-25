@@ -14,6 +14,9 @@
   <inherits name="org.jbpm.form.builder.ng.model.FormBuilderModel"/>
   <inherits name='com.googlecode.gchart.GChart'/>
   <inherits name="com.github.gwtbootstrap.Bootstrap" />
+  <inherits name="org.jboss.errai.ui.UI" />
+  
+
   
   <!-- Form Builder Related -->
   <!--inherits name="org.jbpm.form.builder.ng.FormBuilderShared"/>

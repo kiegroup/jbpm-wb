@@ -1,0 +1,172 @@
+/* COLORS AND VISUAL STYLES */
+/* FORMS */
+.form {
+    background-color: #f4f4f4;
+}
+
+.form .form-header h2 {
+    font-size: 18px;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+}
+.form .form-header {
+    border-bottom-color: #fff;
+    background-color: #EFEFEF;
+}
+
+.form .form-content {
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.form .form-content .form-row {
+    font-size: 11px;
+    min-height: 20px;
+}
+
+.form .form-content .form-row input[type="text"], .form .form-content .form-row input[type="date"], .form .form-content .form-row input[type="file"], .form .form-content .form-row textarea, .form .form-content .form-row .select-container {
+
+
+-webkit-box-shadow: inset 0px 1px 2px 0px rgba(0,0,0,0.2), 0px -1px 0px 0px rgba(255,255,255,0.8); 
+        box-shadow: inset 0px 1px 2px 0px rgba(0,0,0,0.2), 0px -1px 0px 0px rgba(255,255,255,0.8); 
+        border-color: #999;
+}
+
+label {
+    font-weight: bold;
+    color: #555;
+    text-shadow: 0 1px 0 #FFF;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+input[type="text"], input[type="file"], input[type="date"], input[type="search"],textarea, select {
+    font-size: 13px;
+    color: #333;
+    
+}
+
+input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus {
+    -webkit-box-shadow: none !important; 
+    box-shadow: none !important;  
+}
+
+input[type="text"].error, input[type="date"].error, textarea.error, .select-container.error {
+    border-color: #b33533 !important;
+    background-color: #fcf0f0 !important;
+}
+input[type="text"].inactive, input[type="date"].inactive, textarea.inactive, .select-container.inactive {
+    -webkit-box-shadow: none !important; 
+    box-shadow:none !important; 
+    font-style: italic;
+    color: #999;
+    background-color: #CCC;
+}
+
+/* BUTTONS */
+
+.button {
+     background-color: #999;
+     border: 1px solid #666;
+     -webkit-box-shadow: inset 0px 1px 2px 0px rgba(255,255,255,0.3), 0px 1px 0px 0px rgba(0,0,0,0.2); 
+     box-shadow: inset 0px 1px 2px 0px rgba(255,255,255,0.3), 0px 1px 0px 0px rgba(0,0,0,0.2); 
+     -webkit-border-radius: 3px;
+    border-radius: 3px;
+     -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+     color: #333;
+     font-size: 11px;
+     font-weight: bold;
+     text-shadow: 0 1px 0 rgba(255,255,255,0.2);
+     text-transform: uppercase;
+}
+
+.button.main {
+    background-color: #125496;
+    border-color: #0e3e66; 
+    color: #99b2c6;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.2);
+}
+
+.button:hover {
+    -webkit-box-shadow: inset 0px 1px 2px 0px rgba(0,0,0,0.4), 0px -1px 0px 0px rgba(255,255,255,0.3); 
+    box-shadow: inset 0px 1px 2px 0px rgba(0,0,0,0.4), 0px -1px 0px 0px rgba(255,255,255,0.3); 
+    color: #000;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+}
+.button.main:hover {
+    color: #FFF;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.7);
+}
+
+
+/* LIST */
+.list {
+    background-color: #f4f4f4;
+}
+.list .list-options {
+    border-bottom-color: #fff;
+    background-color: #EFEFEF;
+    color: #333;
+}
+
+.list .list-options input[type="search"] {
+
+
+-webkit-box-shadow: inset 0px 1px 2px 0px rgba(0,0,0,0.2), 0px -1px 0px 0px rgba(255,255,255,0.8); 
+        box-shadow: inset 0px 1px 2px 0px rgba(0,0,0,0.2), 0px -1px 0px 0px rgba(255,255,255,0.8); 
+        border-color: #999;
+}
+
+.list .list-content table {
+    background-color: #FFF;
+   -webkit-box-shadow:  0px 2px 0px 0px rgba(0,0,0,0.2); 
+           box-shadow:  0px 2px 0px 0px rgba(0,0,0,0.2); 
+           border-color: #666; 
+}
+.list .list-content table thead th{ 
+    border-color: #666;
+    font-weight: bold;
+    color: #333;
+    text-shadow: 0 1px 0 #DDD;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-size: 12px;
+    
+   background-color: #CCC;    
+   -webkit-box-shadow: inset 0px 1px 2px 0px rgba(0,0,0,0.2), 0px -1px 0px 0px rgba(255,255,255,0.8); 
+           box-shadow: inset 0px 1px 2px 0px rgba(0,0,0,0.2), 0px -1px 0px 0px rgba(255,255,255,0.8); 
+           background: #cccccc; /* Old browsers */
+           /* IE9 SVG, needs conditional override of 'filter' to 'none' */
+           background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSI4NSUiIHN0b3AtY29sb3I9IiNjY2NjY2MiIHN0b3Atb3BhY2l0eT0iMSIvPgogICAgPHN0b3Agb2Zmc2V0PSI5NiUiIHN0b3AtY29sb3I9IiM5OTk5OTkiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+           background: -moz-linear-gradient(top,  #cccccc 85%, #999999 96%); /* FF3.6+ */
+           background: -webkit-gradient(linear, left top, left bottom, color-stop(85%,#cccccc), color-stop(96%,#999999)); /* Chrome,Safari4+ */
+           background: -webkit-linear-gradient(top,  #cccccc 85%,#999999 96%); /* Chrome10+,Safari5.1+ */
+           background: -o-linear-gradient(top,  #cccccc 85%,#999999 96%); /* Opera 11.10+ */
+           background: -ms-linear-gradient(top,  #cccccc 85%,#999999 96%); /* IE10+ */
+           background: linear-gradient(to bottom,  #cccccc 85%,#999999 96%); /* W3C */
+           filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cccccc', endColorstr='#999999',GradientType=0 ); /* IE6-8 */
+           
+    
+}
+.list .list-content table thead {
+    border-bottom-color: #666;
+} 
+.list .list-content table tr td:first-child{
+    border: none !important;
+}
+.list .list-content table tbody tr{
+    border-bottom-color: #999;
+}
+.list .list-content table tbody td{
+    border-left-color: #999;
+    font-size: 11px;
+    color: #333;
+}
+
+.green {
+    background-color: #a8f3c2;
+}
+.yellow {
+    background-color: #f5f5be;    
+}
+.red {
+    background-color: #f0d7d6;
+}

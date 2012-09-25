@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.server.editors.jbpm.inbox;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -138,10 +139,10 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         taskInstanceService.setPriority(taskId, priority);
     }
 
-    public void setExpirationDate(long taskId, Date date) {
+    public void setExpirationDate(long taskId, Date date) {        
         taskInstanceService.setExpirationDate(taskId, date);
     }
-
+    
     public void setDescriptions(long taskId, List<String> descriptions) {
         taskInstanceService.setDescriptions(taskId, TaskI18NHelper.adaptI18NList(descriptions));
     }
@@ -161,6 +162,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     public Date getExpirationDate(long taskId) {
         return taskInstanceService.getExpirationDate(taskId);
     }
+    
 
     public List<String> getDescriptions(long taskId) {
         return TaskI18NHelper.adaptStringList(taskInstanceService.getDescriptions(taskId));

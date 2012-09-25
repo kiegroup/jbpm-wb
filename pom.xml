@@ -29,7 +29,11 @@
 
     <name>jBPM Console NG</name>
     <description>jBPM Console NG Modules</description>
-
+    <properties>
+        <jbpm.version>5.4.0-SNAPSHOT</jbpm.version>
+        <form.builder.ng.version>0.1-SNAPSHOT</form.builder.ng.version>
+        <errai.version>2.1.0.Beta1</errai.version>
+    </properties>
     <modules>
         <module>jbpm-console-ng-showcase</module>
         <module>jbpm-console-ng-shared</module>
@@ -45,7 +49,7 @@
             <dependency>
                 <groupId>org.jbpm</groupId>
                 <artifactId>jbpm-human-task-services</artifactId>
-                <version>5.4.0-SNAPSHOT</version>
+                <version>${jbpm.version}</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>ecj</artifactId>
@@ -56,12 +60,29 @@
             <dependency>
                 <groupId>org.jbpm</groupId>
                 <artifactId>form-builder-services-cdi</artifactId>
-                <version>0.1-SNAPSHOT</version>
+                <version>${form.builder.ng.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jbpm</groupId>
                 <artifactId>form-builder-ng-model</artifactId>
-                <version>0.1-SNAPSHOT</version>
+                <version>${form.builder.ng.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.errai</groupId>
+                <artifactId>errai-ui</artifactId>
+                <version>${errai.version}</version>
+            </dependency>
+                
+            <dependency>
+                <groupId>org.jboss.errai</groupId>
+                <artifactId>errai-data-binding</artifactId>
+                <version>${errai.version}</version>
+            </dependency>
+            <!-- Charts -->
+            <dependency>
+                <groupId>com.googlecode.gchart</groupId>
+                <artifactId>gchart</artifactId>
+                <version>2.6</version>
             </dependency>
             <dependency>
                 <groupId>javax.xml.bind</groupId>
