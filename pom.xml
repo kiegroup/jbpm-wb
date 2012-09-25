@@ -33,6 +33,7 @@
         <jbpm.version>5.4.0-SNAPSHOT</jbpm.version>
         <form.builder.ng.version>0.1-SNAPSHOT</form.builder.ng.version>
         <errai.version>2.1.0.Beta1</errai.version>
+        <uberfire.version>0.1-SNAPSHOT</uberfire.version>
     </properties>
     <modules>
         <module>jbpm-console-ng-showcase</module>
@@ -56,6 +57,11 @@
                         <groupId>org.eclipse.jdt.core.compiler</groupId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.uberfire</groupId>
+                <artifactId>security-client</artifactId>
+                <version>${uberfire.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jbpm</groupId>
