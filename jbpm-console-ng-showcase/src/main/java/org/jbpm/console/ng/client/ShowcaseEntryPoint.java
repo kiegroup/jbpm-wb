@@ -45,7 +45,7 @@ public class ShowcaseEntryPoint {
     private String[] menuItems = new String[]{
         "Errai UI - Quick New Task", "Errai UI - Personal Tasks", "Errai UI - Group Tasks",
         "Errai UI - Quick New Sub Task", "Errai UI - Task Details", "Errai UI - Add Task Content",
-        "Errai UI - Form Display", "Form Builder"
+        "Errai UI - Form Display","Errai UI - Get Pending Tasks", "Form Builder"
     };
 
     @AfterInitialization
