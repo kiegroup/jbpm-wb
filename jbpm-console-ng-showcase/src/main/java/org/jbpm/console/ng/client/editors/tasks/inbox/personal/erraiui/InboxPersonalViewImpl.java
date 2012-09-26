@@ -395,7 +395,7 @@ public class InboxPersonalViewImpl extends Composite
             public void update(int index,
                                TaskSummary task,
                                String value) {
-                placeManager.goTo( new PlaceRequest( "Task Edit Perspective" ) );
+                placeManager.goTo( new PlaceRequest( "Task Edit Perspective Errai" ) );
                 taskSelection.fire( new TaskSelectionEvent( Long.parseLong( value ),
                                                             userText.getText() ) );
             }
@@ -420,7 +420,7 @@ public class InboxPersonalViewImpl extends Composite
             public void update(int index,
                                TaskSummary task,
                                String value) {
-                placeManager.goTo( new PlaceRequest( "Form Perspective" ) );
+                placeManager.goTo( new PlaceRequest( "Form Perspective Errai" ) );
                 taskSelection.fire( new TaskSelectionEvent( Long.parseLong( value ),
                                                             userText.getText() ) );
             }

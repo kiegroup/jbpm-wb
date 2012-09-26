@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.fb.display.erraiui;
 
-import org.jbpm.console.ng.client.editors.tasks.fb.display.*;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -31,7 +30,6 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 @Dependent
 @WorkbenchScreen(identifier = "Errai UI - Form Display")
@@ -46,8 +44,6 @@ public class FormDisplayPresenter {
     @Inject
     private Event<FormRenderedEvent> formRendered;
 
-    
-    
     
     public interface FormBuilderView
             extends
@@ -108,7 +104,7 @@ public class FormDisplayPresenter {
     private native void publish(FormDisplayPresenter fdp) /*-{
      
      $wnd.completeForm = function(from) {
-        fdp.@org.jbpm.console.ng.client.editors.tasks.fb.display.FormDisplayPresenter::completeForm(Ljava/lang/String;)(from);
+        fdp.@org.jbpm.console.ng.client.editors.tasks.fb.display.erraiui.FormDisplayPresenter::completeForm(Ljava/lang/String;)(from);
      }
      
         

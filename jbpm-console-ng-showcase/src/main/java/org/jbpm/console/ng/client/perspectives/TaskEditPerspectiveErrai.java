@@ -50,6 +50,7 @@ public class TaskEditPerspectiveErrai {
         westPanelSouthPanel.setWidth(800);
         eastPanel.setChild( Position.SOUTH , westPanelSouthPanel);
         p.getRoot().setChild( Position.EAST , eastPanel );
+        p.setTransient(true);
         return p;
   
     }

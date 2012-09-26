@@ -42,11 +42,11 @@ public class ShowcaseEntryPoint {
     private PlaceManager placeManager;
     @Inject
     private WorkbenchMenuBarPresenter menubar;
-    private String[] menuItems = new String[]{  "Form Builder", 
-                                                "Errai UI - Quick New Task", "Errai UI - Personal Tasks", "Errai UI - Group Tasks",
-                                                "Errai UI - Quick New Sub Task", "Errai UI - Task Details", "Errai UI - Add Task Content",
-                                                "Errai UI - Form Display"
-                                                };
+    private String[] menuItems = new String[]{
+        "Errai UI - Quick New Task", "Errai UI - Personal Tasks", "Errai UI - Group Tasks",
+        "Errai UI - Quick New Sub Task", "Errai UI - Task Details", "Errai UI - Add Task Content",
+        "Errai UI - Form Display", "Form Builder"
+    };
 
     @AfterInitialization
     public void startApp() {
@@ -81,7 +81,6 @@ public class ShowcaseEntryPoint {
         }
         menubar.addMenuItem(placesMenu);
     }
-
 
     //Fade out the "Loading application" pop-up
     private void hideLoadingPopup() {

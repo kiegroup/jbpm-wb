@@ -32,7 +32,7 @@ import org.uberfire.shared.mvp.PlaceRequest;
 @ApplicationScoped
 public class InboxPerspectiveErrai {
 
-    @Perspective(identifier = "InboxPerspectiveErrai", isDefault=true)
+    @Perspective(identifier = "Inbox Perspective Errai", isDefault=true)
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
         p.setName( "Inbox Perspective Errai" );
@@ -49,6 +49,7 @@ public class InboxPerspectiveErrai {
         westPanelSouthPanel.addPart( new PartDefinitionImpl( new PlaceRequest(  "Errai UI - Group Tasks" ) ) );
         eastPanel.setChild( Position.SOUTH , westPanelSouthPanel);
         p.getRoot().setChild( Position.EAST , eastPanel );
+        p.setTransient(true);
         return p;
     }
 

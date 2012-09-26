@@ -27,15 +27,15 @@ import org.uberfire.shared.mvp.PlaceRequest;
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-public class FormPerspective {
+public class FormPerspectiveErrai {
 
     @Perspective(identifier = "Form Perspective Errai")
     public PerspectiveDefinition getPerspective() {
-         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
-            p.setName( "Form Perspective Errai" );
-            p.getRoot().addPart( new PartDefinitionImpl( new PlaceRequest( "Errai UI - Form Display" ) ) );
-            return p;
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
+        p.setName("Form Perspective Errai");
+        p.getRoot().addPart(new PartDefinitionImpl(new PlaceRequest("Errai UI - Form Display")));
+        p.setTransient(true);
+        return p;
 
     }
-
 }
