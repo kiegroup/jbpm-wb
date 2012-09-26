@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.inbox.subtask;
+package org.jbpm.console.ng.client.editors.tasks.inbox.subtask.erraiui;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -25,40 +25,37 @@ import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.core.client.GWT;
+
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.TextBox;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 @Dependent
+@Templated(value="NewQuickSubTaskViewImpl.html")
 public class NewQuickSubTaskViewImpl extends Composite
     implements
     NewQuickSubTaskPresenter.InboxView {
-
-    interface NewQuickSubTaskViewImplBinder
-        extends
-        UiBinder<Widget, NewQuickSubTaskViewImpl> {
-    }
-
-    private static NewQuickSubTaskViewImplBinder uiBinder = GWT.create( NewQuickSubTaskViewImplBinder.class );
 
     @Inject
     private PlaceManager                         placeManager;
 
     private NewQuickSubTaskPresenter             presenter;
 
-    @UiField
+    @Inject
+    @DataField
     public Button                                createSubTaskButton;
-    @UiField
+    @Inject
+    @DataField
     public TextBox                               subTaskNameText;
-    @UiField
+    @Inject
+    @DataField
     public TextBox                               subTaskAsigneeText;
-    @UiField
+    @Inject
+    @DataField
     public TextBox                               parentTaskIdText;
 
     @Inject
@@ -70,11 +67,10 @@ public class NewQuickSubTaskViewImpl extends Composite
     @Override
     public void init(NewQuickSubTaskPresenter presenter) {
         this.presenter = presenter;
-        initWidget( uiBinder.createAndBindUi( this ) );
 
     }
 
-    @UiHandler("createSubTaskButton")
+    @EventHandler("createSubTaskButton")
     public void createSubTaskButton(ClickEvent e) {
         presenter.addSubTask( Long.parseLong( parentTaskIdText.getText() ),
                               subTaskAsigneeText.getText(),

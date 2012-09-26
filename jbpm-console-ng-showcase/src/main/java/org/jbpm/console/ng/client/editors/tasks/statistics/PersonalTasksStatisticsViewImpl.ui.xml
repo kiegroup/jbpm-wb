@@ -21,27 +21,27 @@
              xmlns:gwt='urn:import:com.google.gwt.user.client.ui'
              xmlns:c="urn:import:com.google.gwt.user.cellview.client"
              xmlns:dp="urn:import:com.google.gwt.user.datepicker.client"
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+             >
 
     <ui:with field="i18n" type="org.jbpm.console.ng.client.i18n.Constants"/>
     <ui:with field='resources' type='org.jbpm.console.ng.client.resources.ShowcaseResources'/>
     
-    <b:WellForm type="HORIZONTAL">
-      
-        <b:TextBox  
-            ui:field='userText' placeholder="user" b:id="b_userId">
-        </b:TextBox>
+    
+      <gwt:VerticalPanel>
+        <gwt:TextBox  
+            ui:field='userText' >
+        </gwt:TextBox>
         
-        <b:Button
-            ui:field='refreshButton' size="SMALL" type="PRIMARY">Refresh
-        </b:Button>
+        <gwt:Button
+            ui:field='refreshButton'>Refresh
+        </gwt:Button>
         
         <gwt:ScrollPanel>
-            <b:FluidContainer ui:field='graphContainer'>
+            <gwt:VerticalPanel ui:field='graphContainer'>
                 
-            </b:FluidContainer>
+            </gwt:VerticalPanel>
         </gwt:ScrollPanel>
-                  
-    </b:WellForm>
+      </gwt:VerticalPanel>      
+    
 
 </ui:UiBinder>

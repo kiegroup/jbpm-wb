@@ -30,21 +30,21 @@ import org.uberfire.shared.mvp.PlaceRequest;
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-public class TaskEditPerspective {
+public class TaskEditPerspectiveErrai {
 
-    @Perspective(identifier = "Task Edit Perspective")
+    @Perspective(identifier = "Task Edit Perspective Errai")
     public PerspectiveDefinition getPerspective() {
         
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
-        p.setName( "Task Edit Perspective" );
-        p.getRoot().addPart( new PartDefinitionImpl( new PlaceRequest( "Task Details" ) ) );
+        p.setName( "Task Edit Perspective Errai" );
+        p.getRoot().addPart( new PartDefinitionImpl( new PlaceRequest( "Errai UI - Task Details" ) ) );
         final PanelDefinition eastPanel = new PanelDefinitionImpl();
         eastPanel.setWidth( 300 );
  	eastPanel.setMinWidth( 200 );
         eastPanel.setWidth(800);
-        eastPanel.addPart( new PartDefinitionImpl( new PlaceRequest( "Add Task Content") ) );      
+        eastPanel.addPart( new PartDefinitionImpl( new PlaceRequest( "Errai UI - Add Task Content") ) );      
         final PanelDefinition westPanelSouthPanel = new PanelDefinitionImpl();
-        westPanelSouthPanel.addPart( new PartDefinitionImpl( new PlaceRequest(  "Quick New Sub Task" ) ) );
+        westPanelSouthPanel.addPart( new PartDefinitionImpl( new PlaceRequest(  "Errai UI - Quick New Sub Task" ) ) );
         westPanelSouthPanel.setHeight(400);
         westPanelSouthPanel.setMinHeight(200);
         westPanelSouthPanel.setWidth(800);

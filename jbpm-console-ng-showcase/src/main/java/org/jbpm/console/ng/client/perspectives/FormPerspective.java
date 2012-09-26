@@ -29,11 +29,11 @@ import org.uberfire.shared.mvp.PlaceRequest;
 @ApplicationScoped
 public class FormPerspective {
 
-    @Perspective(identifier = "Form Perspective")
+    @Perspective(identifier = "Form Perspective Errai")
     public PerspectiveDefinition getPerspective() {
          final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
-            p.setName( "Form Perspective" );
-            p.getRoot().addPart( new PartDefinitionImpl( new PlaceRequest( "Form Display" ) ) );
+            p.setName( "Form Perspective Errai" );
+            p.getRoot().addPart( new PartDefinitionImpl( new PlaceRequest( "Errai UI - Form Display" ) ) );
             return p;
 
     }

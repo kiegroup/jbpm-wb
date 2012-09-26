@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.fb.display;
+package org.jbpm.console.ng.client.editors.tasks.fb.display.erraiui;
 
+import org.jbpm.console.ng.client.editors.tasks.fb.display.*;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -33,7 +34,7 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 @Dependent
-@WorkbenchScreen(identifier = "Form Display")
+@WorkbenchScreen(identifier = "Errai UI - Form Display")
 public class FormDisplayPresenter {
 
     @Inject
@@ -80,7 +81,7 @@ public class FormDisplayPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Form Display";
+        return "Errai UI - Form Display";
     }
 
     @WorkbenchPartView

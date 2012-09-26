@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.inbox.group;
+package org.jbpm.console.ng.client.editors.tasks.inbox.group.erraiui;
 
-import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.user.client.ui.TextBox;
+
 import org.jbpm.console.ng.client.model.TaskSummary;
 import java.util.List;
 import javax.enterprise.context.Dependent;
@@ -40,7 +41,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 
 @Dependent
-@WorkbenchScreen(identifier = "Group Tasks")
+@WorkbenchScreen(identifier = "Errai UI - Group Tasks")
 public class InboxGroupPresenter {
 
     public interface InboxView
@@ -61,7 +62,7 @@ public class InboxGroupPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Group Tasks";
+        return "Errai UI - Group Tasks";
     }
 
     @WorkbenchPartView

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.inbox.subtask;
+package org.jbpm.console.ng.client.editors.tasks.inbox.quicknewtask.erraiui;
 
+import org.jbpm.console.ng.client.editors.tasks.inbox.quicknewtask.*;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -33,56 +34,51 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 
 @Dependent
-@WorkbenchScreen(identifier = "Quick New Sub Task")
-public class NewQuickSubTaskPresenter {
+@WorkbenchScreen(identifier = "Errai UI - Quick New Task")
+public class NewQuickPersonalTaskPresenter {
 
     public interface InboxView
             extends
-            UberView<NewQuickSubTaskPresenter> {
+            UberView<NewQuickPersonalTaskPresenter> {
 
         void displayNotification(String text);
-        
     }
     @Inject
-    private InboxView view;
+    InboxView view;
     @Inject
-    private Caller<TaskServiceEntryPoint> taskServices;
+    Caller<TaskServiceEntryPoint> taskServices;
 
-    
-    @Inject
-    private Event<TaskChangedEvent> taskChanged;
-    
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Quick New Sub Task";
+        return "Errai UI - New Task";
     }
 
     @WorkbenchPartView
-    public UberView<NewQuickSubTaskPresenter> getView() {
+    public UberView<NewQuickPersonalTaskPresenter> getView() {
         return view;
     }
 
-    public NewQuickSubTaskPresenter() {
+    public NewQuickPersonalTaskPresenter() {
     }
 
     @PostConstruct
     public void init() {
     }
 
-   
-    public void addSubTask(final long parentId, final String assignee, String taskName) {
-        String str = "(with (new Task()) { taskData = (with( new TaskData( )) { parentId = "+parentId+" } ), ";
+    public void addQuickTask(final String userId, String taskName) {
+        String str = "(with (new Task()) { taskData = (with( new TaskData()) { } ), ";
         str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
-        if (assignee != null && !assignee.equals("")) {
-            str += " [new User('" + assignee + "')  ], }),";
+        if (userId != null && !userId.equals("")) {
+            str += " [new User('" + userId + "')  ], }),";
         }
         str += "names = [ new I18NText( 'en-UK', '" + taskName + "')] })";
         taskServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long taskId) {
-                view.displayNotification("Sub Task Created (id = " + taskId + " for parent: "+parentId+")");
-                //taskChanged.fire(new TaskChangedEvent(taskId, assignee));
+                view.displayNotification("Task Created (id = " + taskId + ")");
+                
             }
         }).addTask(str, null);
+
     }
 }

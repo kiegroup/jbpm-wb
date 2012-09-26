@@ -30,23 +30,23 @@ import org.uberfire.shared.mvp.PlaceRequest;
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-public class InboxPerspective {
+public class InboxPerspectiveErrai {
 
-    @Perspective(identifier = "InboxPerspective", isDefault = true)
+    @Perspective(identifier = "InboxPerspectiveErrai", isDefault=true)
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
-        p.setName( "Inbox Perspective" );
-        p.getRoot().addPart( new PartDefinitionImpl( new PlaceRequest( "Quick New Task"  ) ) );
+        p.setName( "Inbox Perspective Errai" );
+        p.getRoot().addPart( new PartDefinitionImpl( new PlaceRequest( "Errai UI - Quick New Task"  ) ) );
         final PanelDefinition eastPanel = new PanelDefinitionImpl();
         eastPanel.setHeight(400);
         eastPanel.setWidth(800);
         eastPanel.setMinHeight(200);
-        eastPanel.addPart( new PartDefinitionImpl( new PlaceRequest(  "Personal Tasks" ) ) );      
+        eastPanel.addPart( new PartDefinitionImpl( new PlaceRequest(  "Errai UI - Personal Tasks" ) ) );      
         final PanelDefinition westPanelSouthPanel = new PanelDefinitionImpl();
         westPanelSouthPanel.setHeight(400);
         westPanelSouthPanel.setMinHeight(200);
         eastPanel.setWidth(800);
-        westPanelSouthPanel.addPart( new PartDefinitionImpl( new PlaceRequest(  "Group Tasks" ) ) );
+        westPanelSouthPanel.addPart( new PartDefinitionImpl( new PlaceRequest(  "Errai UI - Group Tasks" ) ) );
         eastPanel.setChild( Position.SOUTH , westPanelSouthPanel);
         p.getRoot().setChild( Position.EAST , eastPanel );
         return p;

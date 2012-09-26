@@ -23,15 +23,16 @@ import javax.enterprise.event.Observes;
 
 import org.jbpm.console.ng.client.editors.tasks.inbox.events.ChartPopulateEvent;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.FluidContainer;
-import com.github.gwtbootstrap.client.ui.TextBox;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.gchart.client.GChart;
 
@@ -55,7 +56,7 @@ public class PersonalTasksStatisticsViewImpl
     @UiField
     public TextBox                                       userText;
     @UiField
-    public FluidContainer                                graphContainer;
+    public VerticalPanel                                graphContainer;
 
     public GChart                                        chart;
 

@@ -75,28 +75,4 @@
     </properties>
   </persistence-unit>
   
-  <!-- Form Builder Persistence --> 
- 
- <persistence-unit name="org.jbpm.form.builder" transaction-type="RESOURCE_LOCAL">
-    <provider>org.hibernate.ejb.HibernatePersistence</provider>
-    <mapping-file>META-INF/Settingsorm.xml</mapping-file>
-    <class>org.jbpm.model.formapi.client.SettingsEntry</class>
-    <class>org.jbpm.model.formapi.client.Settings</class>
-  
-    <properties>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
-      <property name="hibernate.connection.driver_class" value="org.h2.Driver" />
-      <property name="hibernate.connection.url" value="jdbc:h2:mem:test;MVCC=true" />
-      <property name="hibernate.connection.username" value="sa" />
-      <property name="hibernate.connection.password" value="sasa" />
-
-      <property name="hibernate.connection.autocommit" value="false" />
-
-      <property name="hibernate.max_fetch_depth" value="3" />
-      <property name="hibernate.hbm2ddl.auto" value="create-drop" />
-      <property name="hibernate.show_sql" value="false" />
-    </properties>
-  </persistence-unit>
-
-  
 </persistence>

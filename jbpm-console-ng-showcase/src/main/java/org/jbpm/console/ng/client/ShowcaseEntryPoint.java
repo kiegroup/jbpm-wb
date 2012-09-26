@@ -20,15 +20,10 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.RootPanel;
 import java.util.Arrays;
-import java.util.Collection;
 import javax.inject.Inject;
 
-import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
-import org.jboss.errai.ioc.client.api.Caller;
 import org.jboss.errai.ioc.client.api.EntryPoint;
-import org.uberfire.backend.FileExplorerRootService;
-import org.uberfire.backend.Root;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.menu.Command;
 import org.uberfire.client.workbench.widgets.menu.CommandMenuItem;
@@ -47,10 +42,11 @@ public class ShowcaseEntryPoint {
     private PlaceManager placeManager;
     @Inject
     private WorkbenchMenuBarPresenter menubar;
-    private String[] menuItems = new String[]{"Personal Task Statistics", "Show Task Content", "Add Task Content", 
-                                                "Form Display", "Form Builder", "Quick New Task", 
-                                                "Quick New Sub Task", "Personal Tasks", "Group Tasks", "Task Details", 
-                                                "Errai UI - Task Details", "Errai UI - Personal Tasks"};
+    private String[] menuItems = new String[]{  "Form Builder", 
+                                                "Errai UI - Quick New Task", "Errai UI - Personal Tasks", "Errai UI - Group Tasks",
+                                                "Errai UI - Quick New Sub Task", "Errai UI - Task Details", "Errai UI - Add Task Content",
+                                                "Errai UI - Form Display"
+                                                };
 
     @AfterInitialization
     public void startApp() {

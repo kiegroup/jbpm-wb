@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.inbox.addtaskcontent;
+package org.jbpm.console.ng.client.editors.tasks.inbox.addtaskcontent.erraiui;
 
-import com.github.gwtbootstrap.client.ui.FluidContainer;
-import com.github.gwtbootstrap.client.ui.FluidRow;
+
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -35,7 +35,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 
 @Dependent
-@WorkbenchScreen(identifier = "Add Task Content")
+@WorkbenchScreen(identifier = "Errai UI - Add Task Content")
 public class AddTaskContentPresenter {
 
     public interface InboxView
@@ -44,9 +44,9 @@ public class AddTaskContentPresenter {
 
         void displayNotification(String text);
         
-        FluidContainer getContentPanel();
+        VerticalPanel getContentPanel();
         
-        FluidContainer getOutputPanel();
+        VerticalPanel getOutputPanel();
     }
     @Inject
     InboxView view;
@@ -55,7 +55,7 @@ public class AddTaskContentPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Add Task Content";
+        return "Errai UI - Add Task Content";
     }
 
     @WorkbenchPartView
@@ -86,7 +86,7 @@ public class AddTaskContentPresenter {
             @Override
             public void callback(Map<String, String> content) {
                 for (String key : content.keySet()) {
-                    FluidRow horizontalPanel = new FluidRow();
+                    HorizontalPanel horizontalPanel = new HorizontalPanel();
                     TextBox keyTextBox = new TextBox();
                     keyTextBox.setText(key);
                     TextBox valueTextBox = new TextBox();

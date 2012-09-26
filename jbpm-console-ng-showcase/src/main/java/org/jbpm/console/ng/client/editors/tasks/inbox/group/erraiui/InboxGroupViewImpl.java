@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.inbox.group;
+package org.jbpm.console.ng.client.editors.tasks.inbox.group.erraiui;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -29,61 +29,61 @@ import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
 import org.jbpm.console.ng.client.model.TaskSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
-import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 @Dependent
+@Templated(value="InboxGroupViewImpl.html")
 public class InboxGroupViewImpl extends Composite
     implements
     InboxGroupPresenter.InboxView {
 
-    interface InboxGroupViewImplBinder
-        extends
-        UiBinder<Widget, InboxGroupViewImpl> {
-    }
-
-    private static InboxGroupViewImplBinder      uiBinder     = GWT.create( InboxGroupViewImplBinder.class );
-
+    
     @Inject
     private PlaceManager                         placeManager;
 
     private InboxGroupPresenter                  presenter;
-    @UiField
+    @Inject
+    @DataField
     public Button                                refreshTasksButton;
-    @UiField
+    
+    @Inject
+    @DataField
+    public Button                                claimTaskButton;
+    @Inject
+    @DataField
     public TextBox                               userText;
-    @UiField
+    @Inject
+    @DataField
     public TextBox                               groupText;
-    @UiField(provided = true)
+    @Inject
+    @DataField
     public DataGrid<TaskSummary>                 myGroupTaskListGrid;
-    @UiField(provided = true)
+    @Inject
+    @DataField
     public SimplePager                           pagerGroup;
     private Set<TaskSummary>                     selectedGroupTasks;
     @Inject
@@ -96,13 +96,13 @@ public class InboxGroupViewImpl extends Composite
                                                                   }
                                                               };
 
-    @UiHandler("refreshTasksButton")
+    @EventHandler("refreshTasksButton")
     public void refreshTasksButton(ClickEvent e) {
         presenter.refreshGroupTasks( userText.getText(),
                                      Arrays.asList( groupText.getText().split( "," ) ) );
     }
 
-    @UiHandler("claimTaskButton")
+    @EventHandler("claimTaskButton")
     public void claimTaskButton(ClickEvent e) {
         presenter.claimTasks( selectedGroupTasks,
                               userText.getText(),
@@ -113,7 +113,7 @@ public class InboxGroupViewImpl extends Composite
     @Override
     public void init(InboxGroupPresenter presenter) {
         this.presenter = presenter;
-        myGroupTaskListGrid = new DataGrid<TaskSummary>( KEY_PROVIDER );
+       
         myGroupTaskListGrid.setWidth( "100%" );
         myGroupTaskListGrid.setHeight( "300px" );
 
@@ -126,12 +126,6 @@ public class InboxGroupViewImpl extends Composite
         myGroupTaskListGrid.addColumnSortHandler( sortHandler );
         myGroupTaskListGrid.setPageSize( 6 );
         // Create a Pager to control the table.
-        SimplePager.Resources pagerResources = GWT.create( SimplePager.Resources.class );
-        pagerGroup = new SimplePager( TextLocation.CENTER,
-                                      pagerResources,
-                                      false,
-                                      0,
-                                      true );
         pagerGroup.setDisplay( myGroupTaskListGrid );
         pagerGroup.setPageSize( 10 );
 
@@ -154,8 +148,6 @@ public class InboxGroupViewImpl extends Composite
 
         initTableColumns( selectionModel,
                           sortHandler );
-
-        initWidget( uiBinder.createAndBindUi( this ) );
 
         presenter.addDataDisplay( myGroupTaskListGrid );
     }

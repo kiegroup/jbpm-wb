@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.inbox.addtaskcontent;
+package org.jbpm.console.ng.client.editors.tasks.inbox.addtaskcontent.erraiui;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,45 +28,45 @@ import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.FluidContainer;
-import com.github.gwtbootstrap.client.ui.FluidRow;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.core.client.GWT;
+
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 @Dependent
+@Templated(value="AddTaskContentViewImpl.html")
 public class AddTaskContentViewImpl extends Composite
     implements
     AddTaskContentPresenter.InboxView {
 
-    interface AddTaskContentViewImplBinder
-        extends
-        UiBinder<Widget, AddTaskContentViewImpl> {
-    }
-
-    private static AddTaskContentViewImplBinder uiBinder = GWT.create( AddTaskContentViewImplBinder.class );
 
     @Inject
     private PlaceManager                        placeManager;
     private AddTaskContentPresenter             presenter;
-    @UiField
+    @Inject
+    @DataField
     public Button                               saveContentButton;
-    @UiField
+    @Inject
+    @DataField
     public Button                               addRowButton;
-    @UiField
+    @Inject
+    @DataField
     public Button                               refreshContentButton;
-    @UiField
+    @Inject
+    @DataField
     public TextBox                              taskIdText;
-    @UiField
-    public FluidContainer                       contentPanel;
-    @UiField
-    public FluidContainer                       outputPanel;
+    @Inject
+    @DataField
+    public VerticalPanel                       contentPanel;
+    @Inject
+    @DataField
+    public VerticalPanel                       outputPanel;
     @Inject
     private Event<NotificationEvent>            notification;
     private Map<TextBox, TextBox>               textBoxs = new HashMap<TextBox, TextBox>();
@@ -74,16 +74,16 @@ public class AddTaskContentViewImpl extends Composite
     @Override
     public void init(AddTaskContentPresenter presenter) {
         this.presenter = presenter;
-        initWidget( uiBinder.createAndBindUi( this ) );
+        
     }
 
-    @UiHandler("addRowButton")
+    @EventHandler("addRowButton")
     public void addTaskButton(ClickEvent e) {
-        FluidRow horizontalPanel = new FluidRow();
+        HorizontalPanel horizontalPanel = new HorizontalPanel();
         TextBox keyTextBox = new TextBox();
-        keyTextBox.setPlaceholder( " set key " );
+        
         TextBox valueTextBox = new TextBox();
-        valueTextBox.setPlaceholder( " set value " );
+        
         horizontalPanel.add( keyTextBox );
         horizontalPanel.add( valueTextBox );
         textBoxs.put( keyTextBox,
@@ -91,7 +91,7 @@ public class AddTaskContentViewImpl extends Composite
         contentPanel.add( horizontalPanel );
     }
 
-    @UiHandler("saveContentButton")
+    @EventHandler("saveContentButton")
     public void saveContentButton(ClickEvent e) {
         Map<String, String> values = new HashMap<String, String>();
         for ( Entry<TextBox, TextBox> entry : textBoxs.entrySet() ) {
@@ -102,7 +102,7 @@ public class AddTaskContentViewImpl extends Composite
                                values );
     }
 
-    @UiHandler("refreshContentButton")
+    @EventHandler("refreshContentButton")
     public void getContentButton(ClickEvent e) {
         presenter.getContentByTaskId( new Long( taskIdText.getText() ) );
     }
@@ -116,11 +116,11 @@ public class AddTaskContentViewImpl extends Composite
         presenter.getContentByTaskId( new Long( taskIdText.getText() ) );
     }
 
-    public FluidContainer getContentPanel() {
+    public VerticalPanel getContentPanel() {
         return contentPanel;
     }
 
-    public FluidContainer getOutputPanel() {
+    public VerticalPanel getOutputPanel() {
         return outputPanel;
     }
 

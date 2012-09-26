@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.fb.display;
+package org.jbpm.console.ng.client.editors.tasks.fb.display.erraiui;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -25,48 +25,46 @@ import org.jbpm.console.ng.shared.fb.events.FormRenderedEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.FluidContainer;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.core.client.GWT;
+
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 /**
- * Main view. Uses UIBinder to define the correct position of components
+ * Main view. 
  */
 @Dependent
+@Templated(value="FormDisplayViewImpl.html")
 public class FormDisplayViewImpl extends Composite
     implements
     FormDisplayPresenter.FormBuilderView {
 
-    interface FormDisplayViewImplBinder
-        extends
-        UiBinder<Widget, FormDisplayViewImpl> {
-    }
-
-    private static FormDisplayViewImplBinder uiBinder = GWT.create( FormDisplayViewImplBinder.class );
 
     @Inject
     private PlaceManager                     placeManager;
     private FormDisplayPresenter             presenter;
-    @UiField
-    public FluidContainer                    formView;
-    @UiField
+    @Inject
+    @DataField
+    public VerticalPanel                    formView;
+    @Inject
+    @DataField
     public TextBox                           userIdText;
-    @UiField
+    @Inject
+    @DataField
     public TextBox                           taskIdText;
-    @UiField
+    @Inject
+    @DataField
     public Button                            renderButton;
     @Inject
     private Event<NotificationEvent>         notification;
 
-    @UiHandler("renderButton")
+    @EventHandler("renderButton")
     public void renderAction(ClickEvent e) {
         presenter.renderForm( new Long( taskIdText.getText() ) );
 
@@ -86,7 +84,6 @@ public class FormDisplayViewImpl extends Composite
     @Override
     public void init(FormDisplayPresenter presenter) {
         this.presenter = presenter;
-        initWidget( uiBinder.createAndBindUi( this ) );
 
     }
 

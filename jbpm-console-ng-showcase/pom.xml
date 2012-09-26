@@ -105,10 +105,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--<dependency> -->
-        <!--<groupId>org.jboss.errai</groupId> -->
-        <!--<artifactId>errai-uibinder</artifactId> -->
-        <!--</dependency> -->
 
         <!-- CDI Development Utils -->
         <!-- This must be placed above com.google.gwt:gwt-dev to override the Jetty 
@@ -216,12 +212,7 @@
             <artifactId>gwt-visualization</artifactId>
             <version>1.0.2</version>
         </dependency>
-        <!-- bootstrap -->
-        <dependency>
-            <groupId>com.github.gwtbootstrap</groupId>
-            <artifactId>gwt-bootstrap</artifactId>
-            <version>2.1.0.0-SNAPSHOT</version>
-        </dependency>
+        
 
         <!-- Charts -->
         <dependency>
