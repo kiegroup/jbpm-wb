@@ -111,10 +111,11 @@ textarea {
     max-width: 70%;
 }
 
-.form .form-header .button.main {
+.form .form-header .header-actions {
     position: absolute;
     top: 20px;
     right: 20px;
+    text-align: right;
 }
 
 .form .form-content {
@@ -240,7 +241,7 @@ a.button {
     text-align: center;
 }
 
-td .button {
+.list-content td .button {
     font-size: 10px;
     padding: 0 5px;
     height: 16px;
@@ -264,7 +265,7 @@ td .button {
 }
 
 .list .list-options input[type="search"] {
-padding: 0;
+padding: 0 1%;
     border: 1px solid;
     -webkit-border-radius: 6px;
     border-radius: 6px;
@@ -284,23 +285,23 @@ padding: 0;
     font-size: 12px;
 }
 .list .list-content table {
-    width: 100%;
-    border: 1px solid ;
+   width: 100%;
+
 }
 .list .list-content table thead{
-    border-bottom: 1px solid ;
+
 }
 .list .list-content table thead th{
     text-align: left;
-    padding: 2px 5px;
+    padding: 4px 5px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space:nowrap;
-    border-left: 1px solid;
+
     
 }
 .list .list-content table tbody tr{
-    border-bottom: 1px solid;
+
 }
 .list .list-content table tbody td{
     text-align: left;
@@ -308,7 +309,7 @@ padding: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space:nowrap;
-    border-left: 1px solid;
+
 }
 
 .list .list-content table td.checkbox-size, .list .list-content table th.checkbox-size {

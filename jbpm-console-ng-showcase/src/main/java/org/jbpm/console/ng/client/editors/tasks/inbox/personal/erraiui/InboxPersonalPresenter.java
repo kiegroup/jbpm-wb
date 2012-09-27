@@ -54,6 +54,7 @@ public class InboxPersonalPresenter {
     private InboxView view;
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
+    
     private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
 
     @WorkbenchPartTitle

@@ -2,6 +2,7 @@
 /* FORMS */
 .form {
     background-color: #f4f4f4;
+    font-family: Arial, sans-serif !important;
 }
 
 .form .form-header h2 {
@@ -72,7 +73,8 @@ input[type="text"].inactive, input[type="date"].inactive, textarea.inactive, .se
     border-radius: 3px;
      -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
      color: #333;
-     font-size: 11px;
+     font-size: 11px !important;
+     font-family: Arial, sans-serif !important;
      font-weight: bold;
      text-shadow: 0 1px 0 rgba(255,255,255,0.2);
      text-transform: uppercase;
@@ -100,6 +102,7 @@ input[type="text"].inactive, input[type="date"].inactive, textarea.inactive, .se
 /* LIST */
 .list {
     background-color: #f4f4f4;
+     font-family: Arial, sans-serif !important;
 }
 .list .list-options {
     border-bottom-color: #fff;
@@ -119,14 +122,13 @@ input[type="text"].inactive, input[type="date"].inactive, textarea.inactive, .se
     background-color: #FFF;
    -webkit-box-shadow:  0px 2px 0px 0px rgba(0,0,0,0.2); 
            box-shadow:  0px 2px 0px 0px rgba(0,0,0,0.2); 
-           border-color: #666; 
+       //    border-color: #666; 
 }
 .list .list-content table thead th{ 
-    border-color: #666;
+   // border-color: #666;
     font-weight: bold;
     color: #333;
     text-shadow: 0 1px 0 #DDD;
-    font-size: 11px;
     text-transform: uppercase;
     font-size: 12px;
     
@@ -147,16 +149,16 @@ input[type="text"].inactive, input[type="date"].inactive, textarea.inactive, .se
     
 }
 .list .list-content table thead {
-    border-bottom-color: #666;
+   // border-bottom-color: #666;
 } 
 .list .list-content table tr td:first-child{
     border: none !important;
 }
 .list .list-content table tbody tr{
-    border-bottom-color: #999;
+ //   border-bottom-color: #999;
 }
 .list .list-content table tbody td{
-    border-left-color: #999;
+//    border-left-color: #999;
     font-size: 11px;
     color: #333;
 }
