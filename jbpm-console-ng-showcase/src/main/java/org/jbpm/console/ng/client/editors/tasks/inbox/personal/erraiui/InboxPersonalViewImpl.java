@@ -97,7 +97,6 @@ public class InboxPersonalViewImpl extends Composite
     @DataField
     public CheckBox                            showCompletedCheck;
     
-    
     private Set<TaskSummary>                   selectedTasks;
     @Inject
     private Event<NotificationEvent>           notification;

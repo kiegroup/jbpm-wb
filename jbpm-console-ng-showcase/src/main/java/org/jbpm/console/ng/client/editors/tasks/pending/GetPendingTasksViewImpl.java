@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.client.editors.tasks.pending;
 
 
-import org.jbpm.console.ng.client.editors.tasks.inbox.quicknewtask.erraiui.*;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -29,10 +28,12 @@ import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.shared.fb.events.FormLoadedEvent;
 
 @Dependent
 @Templated(value = "GetPendingTasksViewImpl.html")
@@ -49,11 +50,22 @@ public class GetPendingTasksViewImpl extends Composite
    
     @Inject
     @DataField
+    public Button loadFormButton;
+    
+    @Inject
+    @DataField
     public TextBox userText;
+    
+    @Inject
+    @DataField 
+    public TextArea formTextArea;
     @Inject
     private Event<NotificationEvent> notification;
     @Inject
     private Event<UserTaskEvent> userTaskChanges;
+    
+    @Inject
+    private Event<FormLoadedEvent> formLoadedEvents;
 
     @Override
     public void init(GetPendingTasksPresenter presenter) {
@@ -66,6 +78,12 @@ public class GetPendingTasksViewImpl extends Composite
         presenter.getPendingTasks(userText.getText());
     }
 
+    @EventHandler("loadFormButton")
+    public void loadFormButton(ClickEvent e) {
+        formLoadedEvents.fire(new FormLoadedEvent(formTextArea.getText()));
+    }
+
+    
     public void displayNotification(String userId) {
         notification.fire(new NotificationEvent(userId));
         

@@ -18,6 +18,9 @@ package org.jbpm.console.ng.shared.fb;
 import java.util.List;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.form.builder.ng.model.client.FormBuilderException;
+import org.jbpm.form.builder.ng.model.shared.api.FormItemRepresentation;
+import org.jbpm.form.builder.ng.model.shared.api.FormRepresentation;
 import org.jbpm.form.builder.ng.model.shared.menu.MenuOptionDescription;
 import org.jbpm.form.builder.services.api.FileException;
 import org.jbpm.form.builder.services.api.MenuServiceException;
@@ -42,8 +45,14 @@ public interface FormServiceEntryPoint {
     public List<String> loadFilesByType(String packageName, String fileType) throws FileException;
 
     public byte[] loadFile(String packageName, String fileName) throws FileException;
-    
+
     public String getFormDisplay(long taskId);
-    
+
     public void completeForm(long id, String userId, Map<String, String> params);
+
+    public String saveForm(FormRepresentation form);
+    
+    public FormRepresentation loadForm(String json) ;
+
+    public void saveFormItem(FormItemRepresentation formItem, String formItemName) ;
 }

@@ -33,37 +33,45 @@ import org.jbpm.form.builder.ng.model.shared.menu.MenuItemDescription;
 import org.uberfire.client.mvp.PlaceManager;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
+import org.jbpm.console.ng.shared.fb.events.FormLoadedEvent;
+import org.jbpm.form.builder.ng.model.client.FormBuilderException;
+import org.jbpm.form.builder.ng.model.client.form.FBForm;
+import org.jbpm.form.builder.ng.model.shared.api.FormRepresentation;
 
 /**
  * Main view. Uses UIBinder to define the correct position of components
  */
 @Dependent
 public class FormBuilderViewImpl extends AbsolutePanel
-    implements
-    FormBuilderPresenter.FormBuilderView {
+        implements
+        FormBuilderPresenter.FormBuilderView {
 
     interface FormBuilderViewImplBinder
-        extends
-        UiBinder<Widget, FormBuilderViewImpl> {
+            extends
+            UiBinder<Widget, FormBuilderViewImpl> {
     }
-
-    private static FormBuilderViewImplBinder uiBinder = GWT.create( FormBuilderViewImplBinder.class );
-
+    private static FormBuilderViewImplBinder uiBinder = GWT.create(FormBuilderViewImplBinder.class);
     @Inject
-    private PlaceManager                     placeManager;
-
-    private FormBuilderPresenter             presenter;
-
+    private PlaceManager placeManager;
+    private FormBuilderPresenter presenter;
     public @UiField(provided = true)
-    ScrollPanel                              menuView;
+    ScrollPanel menuView;
     public @UiField(provided = true)
-    ScrollPanel                              layoutView;
+    ScrollPanel layoutView;
+    @UiField
+    public Button saveButton;
 
+    @UiField
+    public Button clearButton;
+    
     @Override
     public void init(final FormBuilderPresenter presenter) {
         this.presenter = presenter;
@@ -73,13 +81,13 @@ public class FormBuilderViewImpl extends AbsolutePanel
     protected final void init() {
         menuView = new AnimatedPaletteViewImpl();
         layoutView = new CanvasViewImpl();
-        menuView.setAlwaysShowScrollBars( true );
-        menuView.setSize( "235px",
-                          "100%" );
-        layoutView.setSize( "700px",
-                            "700px" );
-        layoutView.setAlwaysShowScrollBars( true );
-        add( uiBinder.createAndBindUi( this ) );
+        menuView.setAlwaysShowScrollBars(true);
+        menuView.setSize("235px",
+                "100%");
+        layoutView.setSize("700px",
+                "700px");
+        layoutView.setAlwaysShowScrollBars(true);
+        add(uiBinder.createAndBindUi(this));
 
         ((PaletteView) menuView).removeAllItems();
 
@@ -89,17 +97,33 @@ public class FormBuilderViewImpl extends AbsolutePanel
         try {
             String group = event.getGroupName();
             MenuItemDescription menuItemDescription = event.getMenuItemDescription();
-            Object newInstance = ReflectionHelper.newInstance( menuItemDescription.getClassName() );
+            Object newInstance = ReflectionHelper.newInstance(menuItemDescription.getClassName());
             FBMenuItem item = (FBMenuItem) newInstance;
 
-            ((PaletteView) menuView).addItem( group,
-                                              item );
-        } catch ( Exception ex ) {
+            ((PaletteView) menuView).addItem(group,
+                    item);
+        } catch (Exception ex) {
             ex.printStackTrace();
-            Logger.getLogger( PalettePresenter.class.getName() ).log( Level.SEVERE,
-                                                                      null,
-                                                                      ex );
+            Logger.getLogger(PalettePresenter.class.getName()).log(Level.SEVERE,
+                    null,
+                    ex);
         }
+    }
+
+    @UiHandler("saveButton")
+    public void saveButton(ClickEvent e) {
+        
+            FBForm formDisplay = ((CanvasViewImpl) layoutView).getFormDisplay();
+            FormRepresentation createRepresentation = formDisplay.createRepresentation();
+            presenter.saveForm(createRepresentation);
+        
+    }
+
+    @UiHandler("clearButton")
+    public void clearButton(ClickEvent e) {
+
+        ((CanvasViewImpl) layoutView).getFormDisplay().clear();
+
     }
 
     public ScrollPanel getMenuView() {
@@ -114,4 +138,7 @@ public class FormBuilderViewImpl extends AbsolutePanel
         return this;
     }
 
+    public void loadForm(@Observes FormLoadedEvent event)  {
+        presenter.decodeForm(event.getJsonForm());
+    }
 }
