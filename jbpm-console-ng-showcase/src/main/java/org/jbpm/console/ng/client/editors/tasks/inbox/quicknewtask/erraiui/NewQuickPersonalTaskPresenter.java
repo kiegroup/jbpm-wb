@@ -66,12 +66,12 @@ public class NewQuickPersonalTaskPresenter {
     }
 
     public void addQuickTask(final String userId, String taskName) {
-        String str = "(with (new Task()) { taskData = (with( new TaskData()) { } ), ";
+        String str = "(with (new Task()) { taskData = (with( new TaskData()) { expirationTime = new java.util.Date() } ), ";
         str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
         if (userId != null && !userId.equals("")) {
             str += " [new User('" + userId + "')  ], }),";
         }
-        str += "names = [ new I18NText( 'en-UK', '" + taskName + "')] })";
+        str += "names = [ new I18NText( 'en-UK', '" + taskName + "')]})";
         taskServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long taskId) {

@@ -15,6 +15,8 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.personal.erraiui;
 
+import com.google.gwt.user.cellview.client.ColumnSortEvent;
+import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -47,14 +49,17 @@ public class InboxPersonalPresenter {
         void displayNotification(String text);
 
         TextBox getUserText();
-        
+
         CheckBox getShowCompletedCheck();
+
+        DataGrid<TaskSummary> getDataGrid();
+        
+        ColumnSortEvent.ListHandler<TaskSummary> getSortHandler();
     }
     @Inject
     private InboxView view;
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
-    
     private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
 
     @WorkbenchPartTitle
@@ -83,7 +88,8 @@ public class InboxPersonalPresenter {
                     view.getUserText().setText(userId);
                     dataProvider.setList(tasks);
                     dataProvider.refresh();
-
+                    view.getSortHandler().getList().addAll(dataProvider.getList());
+                    
                 }
             }).getTasksOwned(userId);
         } else {
@@ -93,6 +99,7 @@ public class InboxPersonalPresenter {
                     view.getUserText().setText(userId);
                     dataProvider.setList(tasks);
                     dataProvider.refresh();
+                    view.getSortHandler().getList().addAll(dataProvider.getList());
 
                 }
             }).getTasksAssignedAsPotentialOwner(userId, "en-UK");

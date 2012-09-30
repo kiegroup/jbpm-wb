@@ -35,11 +35,21 @@
         <!-- UberFire dependencies -->
         <dependency>
             <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-server</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
             <artifactId>security-client</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.uberfire</groupId>
+      <artifactId>security-server</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
             <artifactId>backend-server</artifactId>
         </dependency>
 
@@ -74,6 +84,10 @@
             <artifactId>vfs-jgit</artifactId>
         </dependency>
 
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>vfs-fs</artifactId>
+    </dependency>
 
         <!-- Errai Core -->
         <dependency>
@@ -226,7 +240,6 @@
         </dependency>
     </dependencies>
 
-
     <build>
         <plugins>
 
@@ -237,6 +250,7 @@
                     <module>org.jbpm.console.ng.FastCompiledjBPMShowcase</module>
                     <logLevel>INFO</logLevel>
                     <compileSourcesArtifacts>
+            <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:security-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:security-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-api</compileSourcesArtifact>
@@ -253,7 +267,7 @@
 
                     </compileSourcesArtifacts>
                     <runTarget>org.jbpm.console.ng.jBPMShowcase/jBPM.html</runTarget>
-                    <extraJvmArgs>-Xmx1024m -XX:MaxPermSize=256m</extraJvmArgs>
+                    <extraJvmArgs>-Xmx1024m -XX:MaxPermSize=256m -Derrai.compile.perf.perform_reachability_analysis=true</extraJvmArgs>
                     <soyc>false</soyc>
                     <server>org.jboss.errai.cdi.server.gwt.JettyLauncher</server>
                     <!-- drools-compiler has dependency on org.eclipse.jdt.core.compiler:ecj:jar:3.5.1:compile, 
@@ -401,11 +415,5 @@
             </plugins>
         </pluginManagement>
     </build>
-    <repositories>
-        <repository>
-            <id>gwtbootstrap</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
 
 </project>

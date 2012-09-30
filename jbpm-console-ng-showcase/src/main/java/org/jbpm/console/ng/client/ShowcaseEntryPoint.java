@@ -79,6 +79,14 @@ public class ShowcaseEntryPoint {
                     });
             placesMenuBar.addItem(item);
         }
+        //Add places
+        final CommandMenuItem item = new CommandMenuItem("Logout", new Command() {
+            @Override
+            public void execute() {
+                redirect("/uf_logout");
+            }
+        });
+        placesMenuBar.addItem(item);
         menubar.addMenuItem(placesMenu);
     }
 
@@ -98,4 +106,8 @@ public class ShowcaseEntryPoint {
             }
         }.run(500);
     }
+
+    public static native void redirect(String url)/*-{
+     $wnd.location = url;
+     }-*/;
 }

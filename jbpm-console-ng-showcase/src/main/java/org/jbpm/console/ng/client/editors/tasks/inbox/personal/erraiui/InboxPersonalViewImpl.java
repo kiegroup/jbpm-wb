@@ -38,10 +38,8 @@ import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
@@ -51,7 +49,9 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -59,6 +59,7 @@ import com.google.gwt.view.client.SelectionModel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.client.util.ResizableHeader;
 
 @Dependent
 @Templated(value = "InboxPersonalViewImpl.html")
@@ -102,6 +103,8 @@ public class InboxPersonalViewImpl extends Composite
     private Event<NotificationEvent>           notification;
     @Inject
     private Event<TaskSelectionEvent>          taskSelection;
+    
+    private ListHandler<TaskSummary>            sortHandler;
 
     @Override
     public void init(InboxPersonalPresenter presenter) {
@@ -109,16 +112,16 @@ public class InboxPersonalViewImpl extends Composite
 
         
         myTaskListGrid.setWidth( "100%" );
-        myTaskListGrid.setHeight( "300px" );
+        myTaskListGrid.setHeight("200px");
 
         // Set the message to display when the table is empty.
         myTaskListGrid.setEmptyTableWidget( new Label( "Hooray you don't have any pending Task!!" ) );
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
-        ListHandler<TaskSummary> sortHandler =
+        sortHandler =
                 new ListHandler<TaskSummary>( presenter.getDataProvider().getList() );
         myTaskListGrid.addColumnSortHandler( sortHandler );
-        myTaskListGrid.setPageSize( 6 );
+        
         // Create a Pager to control the table.
         
         pager.setDisplay( myTaskListGrid );
@@ -140,8 +143,7 @@ public class InboxPersonalViewImpl extends Composite
                                           DefaultSelectionEventManager
                                                   .<TaskSummary> createCheckboxManager() );
 
-        initTableColumns( selectionModel,
-                          sortHandler );
+        initTableColumns( selectionModel );
 
        
 
@@ -195,8 +197,7 @@ public class InboxPersonalViewImpl extends Composite
                                 userText.getText() );
     }
 
-    private void initTableColumns(final SelectionModel<TaskSummary> selectionModel,
-                                  ListHandler<TaskSummary> sortHandler) {
+    private void initTableColumns(final SelectionModel<TaskSummary> selectionModel) {
         // Checkbox column. This table will uses a checkbox column for selection.
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
         // mouse selection.
@@ -212,9 +213,7 @@ public class InboxPersonalViewImpl extends Composite
                 };
         myTaskListGrid.addColumn( checkColumn,
                                   SafeHtmlUtils.fromSafeConstant( "<br/>" ) );
-        myTaskListGrid.setColumnWidth( checkColumn,
-                                       40,
-                                       Unit.PCT );
+       
 
         // First name.
         Column<TaskSummary, Number> taskIdColumn =
@@ -233,19 +232,9 @@ public class InboxPersonalViewImpl extends Composite
                                        }
                                    } );
         myTaskListGrid.addColumn( taskIdColumn,
-                                  "Task Id" );
-        taskIdColumn.setFieldUpdater( new FieldUpdater<TaskSummary, Number>() {
-            public void update(int index,
-                               TaskSummary object,
-                               Number value) {
-                // Called when the user changes the value.
-                presenter.refreshData();
-            }
-        } );
-        myTaskListGrid.setColumnWidth( taskIdColumn,
-                                       40,
-                                       Unit.PCT );
-
+                                  new ResizableHeader("Id",myTaskListGrid, taskIdColumn ));
+       
+   
         // Task name.
         Column<TaskSummary, String> taskNameColumn =
                 new Column<TaskSummary, String>( new EditTextCell() ) {
@@ -263,20 +252,9 @@ public class InboxPersonalViewImpl extends Composite
                                        }
                                    } );
         myTaskListGrid.addColumn( taskNameColumn,
-                                  "Task Name" );
-        taskNameColumn.setFieldUpdater( new FieldUpdater<TaskSummary, String>() {
-            public void update(int index,
-                               TaskSummary object,
-                               String value) {
-                // Called when the user changes the value.
-                //                
-                presenter.refreshData();
-            }
-        } );
-        myTaskListGrid.setColumnWidth( taskNameColumn,
-                                       130,
-                                       Unit.PCT );
-
+                                  new ResizableHeader("Task",myTaskListGrid, taskNameColumn ));
+        
+       
         // Task priority.
         Column<TaskSummary, Number> taskPriorityColumn =
                 new Column<TaskSummary, Number>( new NumberCell() ) {
@@ -294,10 +272,8 @@ public class InboxPersonalViewImpl extends Composite
                                        }
                                    } );
         myTaskListGrid.addColumn( taskPriorityColumn,
-                                  new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Priority" ) ) );
-        myTaskListGrid.setColumnWidth( taskPriorityColumn,
-                                       40,
-                                       Unit.PCT );
+                                  new ResizableHeader("Priority",myTaskListGrid, taskPriorityColumn ));
+      
 
         // Status.
         Column<TaskSummary, String> statusColumn = new Column<TaskSummary, String>( new TextCell() ) {
@@ -316,10 +292,8 @@ public class InboxPersonalViewImpl extends Composite
                                    } );
 
         myTaskListGrid.addColumn( statusColumn,
-                                  new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Status" ) ) );
-        myTaskListGrid.setColumnWidth( statusColumn,
-                                       50,
-                                       Unit.PCT );
+                                  new ResizableHeader("Status",myTaskListGrid, statusColumn ));
+       
 
         // User.
         Column<TaskSummary, String> userColumn = new Column<TaskSummary, String>( new TextCell() ) {
@@ -338,25 +312,26 @@ public class InboxPersonalViewImpl extends Composite
                                    } );
 
         myTaskListGrid.addColumn( userColumn,
-                                  new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Actual Owner" ) ) );
-        myTaskListGrid.setColumnWidth( userColumn,
-                                       60,
-                                       Unit.PCT );
+                                  new ResizableHeader("Owner",myTaskListGrid, userColumn ));
+       
 
-        // Description.
-        Column<TaskSummary, String> descriptionColumn = new Column<TaskSummary, String>( new TextCell() ) {
+        
+        
+        // Due Date.
+        Column<TaskSummary, String> dueDateColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue(TaskSummary object) {
-                return object.getDescription();
+                if(object.getExpirationTime() != null){
+                    return object.getExpirationTime().toString();
+                }
+                return "";
             }
         };
-        descriptionColumn.setSortable( true );
+        dueDateColumn.setSortable( true );
 
-        myTaskListGrid.addColumn( descriptionColumn,
-                                  new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Description" ) ) );
-        myTaskListGrid.setColumnWidth( descriptionColumn,
-                                       140,
-                                       Unit.PCT );
+        myTaskListGrid.addColumn( dueDateColumn,
+                                  new ResizableHeader("Due On",myTaskListGrid, dueDateColumn ));
+       
 
         // Task parent id.
         Column<TaskSummary, String> taskParentIdColumn =
@@ -375,16 +350,14 @@ public class InboxPersonalViewImpl extends Composite
                                        }
                                    } );
         myTaskListGrid.addColumn( taskParentIdColumn,
-                                  new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Parent Id" ) ) );
-        myTaskListGrid.setColumnWidth( taskParentIdColumn,
-                                       50,
-                                       Unit.PCT );
+                                  new ResizableHeader("Parent",myTaskListGrid, taskParentIdColumn ));
+     
 
         Column<TaskSummary, String> editColumn =
                 new Column<TaskSummary, String>( new ButtonCell() ) {
                     @Override
                     public String getValue(TaskSummary task) {
-                        return String.valueOf( task.getId() );
+                        return "Edit";
                     }
 
                 };
@@ -395,22 +368,20 @@ public class InboxPersonalViewImpl extends Composite
                                TaskSummary task,
                                String value) {
                 placeManager.goTo( new PlaceRequest( "Task Edit Perspective Errai" ) );
-                taskSelection.fire( new TaskSelectionEvent( Long.parseLong( value ),
+                taskSelection.fire( new TaskSelectionEvent( task.getId() ,
                                                             userText.getText() ) );
             }
         } );
 
         myTaskListGrid.addColumn( editColumn,
                                   new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Edit" ) ) );
-        myTaskListGrid.setColumnWidth( editColumn,
-                                       50,
-                                       Unit.PCT );
+      
 
         Column<TaskSummary, String> workColumn =
                 new Column<TaskSummary, String>( new ButtonCell() ) {
                     @Override
                     public String getValue(TaskSummary task) {
-                        return String.valueOf( task.getId() );
+                        return "Work";
                     }
                 };
 
@@ -420,16 +391,14 @@ public class InboxPersonalViewImpl extends Composite
                                TaskSummary task,
                                String value) {
                 placeManager.goTo( new PlaceRequest( "Form Perspective Errai" ) );
-                taskSelection.fire( new TaskSelectionEvent( Long.parseLong( value ),
+                taskSelection.fire( new TaskSelectionEvent( task.getId(),
                                                             userText.getText() ) );
             }
         } );
 
         myTaskListGrid.addColumn( workColumn,
                                   new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Work" ) ) );
-        myTaskListGrid.setColumnWidth( workColumn,
-                                       50,
-                                       Unit.PCT );
+   
 
     }
 
@@ -451,5 +420,15 @@ public class InboxPersonalViewImpl extends Composite
     public CheckBox getShowCompletedCheck() {
         return showCompletedCheck;
     }
+
+    public DataGrid<TaskSummary> getDataGrid() {
+        return myTaskListGrid;
+    }
+
+    public ListHandler<TaskSummary> getSortHandler() {
+        return sortHandler;
+    }
+    
+    
 
 }
