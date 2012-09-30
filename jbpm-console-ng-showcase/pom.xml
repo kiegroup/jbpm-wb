@@ -250,17 +250,17 @@
                     <module>org.jbpm.console.ng.FastCompiledjBPMShowcase</module>
                     <logLevel>INFO</logLevel>
                     <compileSourcesArtifacts>
-            <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.uberfire:security-api</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.uberfire:security-client</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.uberfire:uberfire-api</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.uberfire:widgets-core</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.uberfire:widgets-commons</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.uberfire:uberfire-workbench</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.uberfire:vfs-model</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.uberfire:backend-api</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.uberfire:backend-commons</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-shared</compileSourcesArtifact>
+                      <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
+                      <compileSourcesArtifact>org.uberfire:security-api</compileSourcesArtifact>
+                      <compileSourcesArtifact>org.uberfire:security-client</compileSourcesArtifact>
+                      <compileSourcesArtifact>org.uberfire:uberfire-api</compileSourcesArtifact>
+                      <compileSourcesArtifact>org.uberfire:widgets-core</compileSourcesArtifact>
+                      <compileSourcesArtifact>org.uberfire:widgets-commons</compileSourcesArtifact>
+                      <compileSourcesArtifact>org.uberfire:uberfire-workbench</compileSourcesArtifact>
+                      <compileSourcesArtifact>org.uberfire:backend-api</compileSourcesArtifact>
+                      <compileSourcesArtifact>org.uberfire:vfs-model</compileSourcesArtifact>
+                      <compileSourcesArtifact>org.uberfire:backend-commons</compileSourcesArtifact>
+                      <compileSourcesArtifact>org.jbpm:jbpm-console-ng-shared</compileSourcesArtifact>
                         <!-- Form Builder Related -->
                         <compileSourcesArtifact>org.jbpm:form-builder-ng-model</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:form-builder-services-cdi</compileSourcesArtifact>

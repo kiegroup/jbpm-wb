@@ -24,6 +24,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
+import org.jbpm.console.ng.client.resources.ShowcaseResources;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.menu.Command;
 import org.uberfire.client.workbench.widgets.menu.CommandMenuItem;
@@ -57,7 +58,7 @@ public class ShowcaseEntryPoint {
 
     private void loadStyles() {
         //Ensure CSS has been loaded
-        //ShowcaseResources.INSTANCE.showcaseCss().ensureInjected();
+        ShowcaseResources.INSTANCE.showcaseCss().ensureInjected();
         //RoundedCornersResource.INSTANCE.roundCornersCss().ensureInjected();
     }
 
