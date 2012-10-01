@@ -35,21 +35,21 @@
         <!-- UberFire dependencies -->
         <dependency>
             <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-server</artifactId>
-    </dependency>
+            <artifactId>uberfire-server</artifactId>
+        </dependency>
 
-    <dependency>
-      <groupId>org.uberfire</groupId>
+        <dependency>
+            <groupId>org.uberfire</groupId>
             <artifactId>security-client</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.uberfire</groupId>
-      <artifactId>security-server</artifactId>
-    </dependency>
+            <artifactId>security-server</artifactId>
+        </dependency>
 
-    <dependency>
-      <groupId>org.uberfire</groupId>
+        <dependency>
+            <groupId>org.uberfire</groupId>
             <artifactId>backend-server</artifactId>
         </dependency>
 
@@ -83,11 +83,6 @@
             <groupId>org.uberfire</groupId>
             <artifactId>vfs-jgit</artifactId>
         </dependency>
-
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>vfs-fs</artifactId>
-    </dependency>
 
         <!-- Errai Core -->
         <dependency>
@@ -250,24 +245,24 @@
                     <module>org.jbpm.console.ng.FastCompiledjBPMShowcase</module>
                     <logLevel>INFO</logLevel>
                     <compileSourcesArtifacts>
-                      <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
-                      <compileSourcesArtifact>org.uberfire:security-api</compileSourcesArtifact>
-                      <compileSourcesArtifact>org.uberfire:security-client</compileSourcesArtifact>
-                      <compileSourcesArtifact>org.uberfire:uberfire-api</compileSourcesArtifact>
-                      <compileSourcesArtifact>org.uberfire:widgets-core</compileSourcesArtifact>
-                      <compileSourcesArtifact>org.uberfire:widgets-commons</compileSourcesArtifact>
-                      <compileSourcesArtifact>org.uberfire:uberfire-workbench</compileSourcesArtifact>
-                      <compileSourcesArtifact>org.uberfire:backend-api</compileSourcesArtifact>
-                      <compileSourcesArtifact>org.uberfire:vfs-model</compileSourcesArtifact>
-                      <compileSourcesArtifact>org.uberfire:backend-commons</compileSourcesArtifact>
-                      <compileSourcesArtifact>org.jbpm:jbpm-console-ng-shared</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:security-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:security-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:uberfire-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:widgets-core</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:widgets-commons</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:uberfire-workbench</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:vfs-model</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:backend-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:backend-commons</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-shared</compileSourcesArtifact>
                         <!-- Form Builder Related -->
                         <compileSourcesArtifact>org.jbpm:form-builder-ng-model</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:form-builder-services-cdi</compileSourcesArtifact>
 
                     </compileSourcesArtifacts>
                     <runTarget>org.jbpm.console.ng.jBPMShowcase/jBPM.html</runTarget>
-                    <extraJvmArgs>-Xmx1024m -XX:MaxPermSize=256m -Derrai.compile.perf.perform_reachability_analysis=true</extraJvmArgs>
+                    <extraJvmArgs>-Xmx1024m -XX:MaxPermSize=256m</extraJvmArgs>
                     <soyc>false</soyc>
                     <server>org.jboss.errai.cdi.server.gwt.JettyLauncher</server>
                     <!-- drools-compiler has dependency on org.eclipse.jdt.core.compiler:ecj:jar:3.5.1:compile, 

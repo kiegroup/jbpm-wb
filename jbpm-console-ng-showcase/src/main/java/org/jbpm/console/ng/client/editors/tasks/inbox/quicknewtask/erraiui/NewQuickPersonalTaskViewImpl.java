@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.quicknewtask.erraiui;
 
-
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -32,6 +31,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.uberfire.security.Identity;
 
 @Dependent
 @Templated(value = "NewQuickPersonalTaskViewImpl.html")
@@ -39,6 +39,8 @@ public class NewQuickPersonalTaskViewImpl extends Composite
         implements
         NewQuickPersonalTaskPresenter.InboxView {
 
+    @Inject
+    private Identity identity;
     @Inject
     private PlaceManager placeManager;
     private NewQuickPersonalTaskPresenter presenter;
@@ -59,7 +61,7 @@ public class NewQuickPersonalTaskViewImpl extends Composite
     @Override
     public void init(NewQuickPersonalTaskPresenter presenter) {
         this.presenter = presenter;
-
+        userText.setText(identity.getName());
     }
 
     @EventHandler("addTaskButton")

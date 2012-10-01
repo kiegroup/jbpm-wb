@@ -49,9 +49,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -60,6 +58,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.client.util.ResizableHeader;
+import org.uberfire.security.Identity;
 
 @Dependent
 @Templated(value = "InboxPersonalViewImpl.html")
@@ -67,6 +66,8 @@ public class InboxPersonalViewImpl extends Composite
     implements
     InboxPersonalPresenter.InboxView {
 
+    @Inject
+    private Identity identity;
    
 
     @Inject
@@ -145,7 +146,7 @@ public class InboxPersonalViewImpl extends Composite
 
         initTableColumns( selectionModel );
 
-       
+        userText.setText(identity.getName());
 
         presenter.addDataDisplay( myTaskListGrid );
 
