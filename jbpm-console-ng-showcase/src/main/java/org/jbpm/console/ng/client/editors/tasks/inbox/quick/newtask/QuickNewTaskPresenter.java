@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.pending;
+package org.jbpm.console.ng.client.editors.tasks.inbox.quick.newtask;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -30,12 +30,12 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 
 @Dependent
-@WorkbenchScreen(identifier = "Get Pending Tasks")
-public class GetPendingTasksPresenter {
+@WorkbenchScreen(identifier = "Quick New Task")
+public class QuickNewTaskPresenter {
 
     public interface InboxView
             extends
-            UberView<GetPendingTasksPresenter> {
+            UberView<QuickNewTaskPresenter> {
 
         void displayNotification(String text);
     }
@@ -46,30 +46,35 @@ public class GetPendingTasksPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Get Pending Tasks";
+        return "Quick New Task";
     }
 
     @WorkbenchPartView
-    public UberView<GetPendingTasksPresenter> getView() {
+    public UberView<QuickNewTaskPresenter> getView() {
         return view;
     }
 
-    public GetPendingTasksPresenter() {
+    public QuickNewTaskPresenter() {
     }
 
     @PostConstruct
     public void init() {
     }
 
-    public void getPendingTasks(final String userName) {
-        
-        taskServices.call(new RemoteCallback<Integer>() {
+    public void addQuickTask(final String userId, String taskName) {
+        String str = "(with (new Task()) { taskData = (with( new TaskData()) { expirationTime = new java.util.Date() } ), ";
+        str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
+        if (userId != null && !userId.equals("")) {
+            str += " [new User('" + userId + "')  ], }),";
+        }
+        str += "names = [ new I18NText( 'en-UK', '" + taskName + "')]})";
+        taskServices.call(new RemoteCallback<Long>() {
             @Override
-            public void callback(Integer pendingTasks) {
-                view.displayNotification("Pending Tasks " + pendingTasks + ")");
+            public void callback(Long taskId) {
+                view.displayNotification("Task Created (id = " + taskId + ")");
                 
             }
-        }).getPendingTaskByUserId(userName);
+        }).addTask(str, null);
 
     }
 }

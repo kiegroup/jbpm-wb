@@ -25,13 +25,13 @@ import javax.inject.Inject;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jbpm.console.ng.client.resources.ShowcaseResources;
+import org.uberfire.client.mvp.Command;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.widgets.menu.Command;
 import org.uberfire.client.workbench.widgets.menu.CommandMenuItem;
 import org.uberfire.client.workbench.widgets.menu.SubMenuItem;
 import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBar;
 import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
-import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.shared.mvp.impl.PlaceRequestImpl;
 
 /**
  *
@@ -44,9 +44,9 @@ public class ShowcaseEntryPoint {
     @Inject
     private WorkbenchMenuBarPresenter menubar;
     private String[] menuItems = new String[]{
-        "Errai UI - Quick New Task", "Errai UI - Personal Tasks", "Errai UI - Group Tasks",
-        "Errai UI - Quick New Sub Task", "Errai UI - Task Details", "Errai UI - Add Task Content",
-        "Errai UI - Form Display","Errai UI - Get Pending Tasks", "Form Builder"
+        "Quick New Task", "Personal Tasks", "Group Tasks",
+        "Quick New Sub Task", "Task Details", "Task Content",
+        "Form Display","Get Pending Tasks", "Form Builder"
     };
 
     @AfterInitialization
@@ -75,7 +75,7 @@ public class ShowcaseEntryPoint {
                     new Command() {
                         @Override
                         public void execute() {
-                            placeManager.goTo(new PlaceRequest(menuItem));
+                            placeManager.goTo(new PlaceRequestImpl(menuItem));
                         }
                     });
             placesMenuBar.addItem(item);

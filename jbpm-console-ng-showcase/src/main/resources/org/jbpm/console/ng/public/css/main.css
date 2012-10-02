@@ -100,7 +100,7 @@ textarea {
     margin: 2px;
 }
 .form .form-header {
-    padding: 20px;
+    padding: 10px 20px;
     position: relative;
     border-bottom: 1px solid;
 }
@@ -113,7 +113,7 @@ textarea {
 
 .form .form-header .header-actions {
     position: absolute;
-    top: 20px;
+    top: 10px;
     right: 20px;
     text-align: right;
 }
@@ -155,12 +155,14 @@ textarea {
     min-height: 25px; 
    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
    float: right;
+   vertical-align: middle;
 }
 .form .form-content .form-row input[type="file"] {
     padding-top: 3px;
     height:22px;
     background-color: #FFF;
     min-height: 22px;
+    vertical-align: middle;
 }
 .form .form-content .form-row .input-button  {
     width: 67%;
@@ -168,6 +170,7 @@ textarea {
     float: right;
     margin-right: 2px;
 }
+
 
 .form .form-content .form-row .input-button input[type="text"] {
     width: 72% !important;
@@ -233,6 +236,7 @@ textarea {
      line-height: 27px;
      padding: 0 15px;
          text-align: center;
+         vertical-align: middle;
 }
 
 a.button {
@@ -256,7 +260,7 @@ a.button {
 }
 
 .list .list-options {
-    padding: 20px;
+    padding: 10px 20px;
     position: relative;
     border-bottom: 1px solid;
     min-height: 25px;
@@ -265,12 +269,13 @@ a.button {
 }
 
 .list .list-options input[type="search"] {
-padding: 0 1%;
+    padding: 0 1%;
     border: 1px solid;
     -webkit-border-radius: 6px;
     border-radius: 6px;
     min-height: 25px; 
    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+   vertical-align: middle;
 }
 .list .list-options .option {
     display: inline-block;
@@ -315,6 +320,68 @@ padding: 0 1%;
 .list .list-content table td.checkbox-size, .list .list-content table th.checkbox-size {
     width: 10px;
 }
+
+
+/* FORM GROUP */
+
+.form-group {
+    border: 1px solid;
+    padding: 20px 20px ;
+    margin: 10px 0 20px;
+    position: relative;
+    min-width: 200px;
+    min-height: 20px;
+    vertical-align: top;
+}
+
+.form-group.inline {
+    display: inline-block;
+}
+
+.form-group .title {
+    position: absolute;
+    top:-10px;
+    height: 20px;
+    left: 20px;
+    display: inline-block;
+}
+.form-group .group-row {
+       width: 100%;
+        max-width: 900px;
+    
+        margin: 0 0 5px;
+}
+.form-group .group-row input[type="text"], form-group .group-row  input[type="date"], .form-group .group-row input[type="file"] {
+    padding: 0px;
+    margin: 0;
+    min-width: 100px;
+    vertical-align:top;
+    border: 1px solid;
+     -webkit-border-radius: 3px;
+              border-radius: 3px;
+    min-height: 25px; 
+   -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+   vertical-align: middle;
+   display: inline-block;
+    width: 98%;
+}
+
+.form-group .group-row.value-pair input[type="text"] {
+    width: 48%;
+       padding: 0px;
+    
+}
+.form-group .group-row.value-pair input[type="text"]:first-child {
+   -webkit-border-radius: 3px 0px 0px 3px;
+            border-radius: 3px 0px 0px 3px;
+            margin-right: -1px;
+}
+.form-group .group-row.value-pair input[type="text"]:last-child {
+   -webkit-border-radius: 0px 3px 3px 0px;
+            border-radius: 0px 3px 3px 0px;
+}
+
+
 
 /* ==========================================================================
    Helper classes

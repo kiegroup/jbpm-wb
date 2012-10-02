@@ -1,0 +1,143 @@
+/*
+ * Copyright 2012 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.jbpm.console.ng.client.editors.tasks.inbox.taskcontent;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.widgets.events.NotificationEvent;
+
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.uberfire.client.annotations.OnReveal;
+import org.uberfire.client.annotations.OnStart;
+import org.uberfire.security.Identity;
+import org.uberfire.shared.mvp.PlaceRequest;
+
+@Dependent
+@Templated(value="TaskContentViewImpl.html#form")
+public class TaskContentViewImpl extends Composite
+    implements
+    TaskContentPresenter.InboxView {
+
+    @Inject
+    private Identity identity;
+
+    @Inject
+    private PlaceManager                        placeManager;
+    private TaskContentPresenter             presenter;
+    @Inject
+    @DataField
+    public Button                               saveContentButton;
+    @Inject
+    @DataField
+    public Button                               addRowButton;
+    @Inject
+    @DataField
+    public Button                               refreshContentButton;
+    @Inject
+    @DataField
+    public TextBox                              taskIdText;
+    @Inject
+    @DataField
+    public VerticalPanel                       contentPanel;
+    @Inject
+    @DataField
+    public VerticalPanel                       outputPanel;
+    @Inject
+    private Event<NotificationEvent>            notification;
+    private Map<TextBox, TextBox>               textBoxs = new HashMap<TextBox, TextBox>();
+
+    @Override
+    public void init(TaskContentPresenter presenter) {
+        this.presenter = presenter;
+        
+    }
+    
+
+    @EventHandler("addRowButton")
+    public void addRowButton(ClickEvent e) {
+        FlowPanel flowPanel = new FlowPanel();
+        flowPanel.setStyleName("group-row value-pair");
+        TextBox keyTextBox = new TextBox();
+        
+        TextBox valueTextBox = new TextBox();
+        
+        flowPanel.add( keyTextBox );
+        flowPanel.add( valueTextBox );
+        textBoxs.put( keyTextBox,
+                      valueTextBox );
+        contentPanel.add( flowPanel );
+    }
+
+    @EventHandler("saveContentButton")
+    public void saveContentButton(ClickEvent e) {
+        Map<String, String> values = new HashMap<String, String>();
+        for ( Entry<TextBox, TextBox> entry : textBoxs.entrySet() ) {
+            values.put( entry.getKey().getText(),
+                        entry.getValue().getText() );
+        }
+        presenter.saveContent( new Long( taskIdText.getText() ),
+                               values );
+    }
+
+    @EventHandler("refreshContentButton")
+    public void getContentButton(ClickEvent e) {
+        presenter.getContentByTaskId( new Long( taskIdText.getText() ) );
+    }
+
+    public void displayNotification(String text) {
+        notification.fire( new NotificationEvent( text ) );
+    }
+    @OnStart
+    public void onStart(final PlaceRequest p) {
+        long taskId = Long.parseLong(p.getParameter("taskId","0"));
+        taskIdText.setText( String.valueOf( taskId ) );
+        presenter.getContentByTaskId( new Long( taskIdText.getText() ) );
+    }
+    
+    
+    @OnReveal
+    public void onReveal() {
+        final PlaceRequest p = placeManager.getCurrentPlaceRequest();
+        long taskId = Long.parseLong(p.getParameter("taskId","0"));
+        taskIdText.setText( String.valueOf( taskId ) );
+        presenter.getContentByTaskId( new Long( taskIdText.getText() ) );
+    }
+
+    public VerticalPanel getContentPanel() {
+        return contentPanel;
+    }
+
+    public VerticalPanel getOutputPanel() {
+        return outputPanel;
+    }
+
+}

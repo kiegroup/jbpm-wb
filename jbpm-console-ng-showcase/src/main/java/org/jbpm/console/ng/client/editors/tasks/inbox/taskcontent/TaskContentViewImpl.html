@@ -1,0 +1,47 @@
+<html>
+<head>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/skin.css">
+</head>
+<body>
+    <div class="form" data-field="form">
+
+        <div class="form-header">
+            <h2>Add Task Content</h2>
+            <div class="header-actions clearfix">
+                <button class="button main" data-field="refreshContentButton" id="refreshContentButton" >Refresh</button>
+                <button class="button main" data-field="addRowButton" id="addRowButton" >Add Row</button>
+                <button class="button main" data-field="saveContentButton" id="saveContentButton" >Save</button>
+            </div>
+        </div>
+
+
+        <div class="form-content">
+            <div class="form-row clearfix">
+                <label>Task Id</label>
+                <input type="text" data-field="taskIdText" id="taskIdText" />
+            </div>
+
+            <div class="form-group inline" >
+                <div class="title">
+                    Content
+                </div>
+                <div  data-field="contentPanel" id="contentPanel">
+
+                </div>
+            </div>
+
+            <div class="form-group inline" >
+                <div class="title">
+                    Output
+                </div>
+                <div data-field="outputPanel" id="outputPanel">
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</html>
