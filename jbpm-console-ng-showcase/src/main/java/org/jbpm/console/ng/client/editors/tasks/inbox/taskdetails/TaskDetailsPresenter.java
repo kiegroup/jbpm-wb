@@ -35,10 +35,14 @@ import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
 import org.jbpm.console.ng.client.model.TaskSummary;
+import org.uberfire.client.annotations.OnReveal;
+import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.shared.mvp.PlaceRequest;
 
 @Dependent
 @WorkbenchScreen(identifier = "Task Details")
@@ -71,6 +75,9 @@ public class TaskDetailsPresenter {
         public String[] getPriorities();
         
     }
+    
+    @Inject
+    private PlaceManager placeManager;
     @Inject
     InboxView view;
     @Inject
@@ -158,9 +165,6 @@ public class TaskDetailsPresenter {
                     i++;
                 }
                 i = 0;
-                
-                
-
             }
         }).getTaskDetails(taskId);
 
@@ -168,6 +172,20 @@ public class TaskDetailsPresenter {
     
     public void onTaskSelected(@Observes TaskSelectionEvent taskSelection){
         refreshTask(taskSelection.getTaskId());
+    }
+    @OnStart
+    public void onStart(final PlaceRequest p) {
+        long taskId = Long.parseLong(p.getParameter("taskId","0"));
+        view.getTaskIdText().setText(String.valueOf(taskId));
+        refreshTask(Long.parseLong(view.getTaskIdText().getText()));
+    }
+    
+    @OnReveal
+    public void onReveal() {
+        final PlaceRequest p = placeManager.getCurrentPlaceRequest();
+        long taskId = Long.parseLong(p.getParameter("taskId","0"));
+        view.getTaskIdText().setText(String.valueOf(taskId));
+        refreshTask(Long.parseLong(view.getTaskIdText().getText()));
     }
     
 }

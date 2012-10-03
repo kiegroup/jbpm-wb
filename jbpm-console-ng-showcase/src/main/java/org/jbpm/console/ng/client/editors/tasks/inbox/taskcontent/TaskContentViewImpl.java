@@ -50,8 +50,7 @@ public class TaskContentViewImpl extends Composite
     @Inject
     private Identity identity;
 
-    @Inject
-    private PlaceManager                        placeManager;
+    
     private TaskContentPresenter             presenter;
     @Inject
     @DataField
@@ -116,28 +115,17 @@ public class TaskContentViewImpl extends Composite
     public void displayNotification(String text) {
         notification.fire( new NotificationEvent( text ) );
     }
-    @OnStart
-    public void onStart(final PlaceRequest p) {
-        long taskId = Long.parseLong(p.getParameter("taskId","0"));
-        taskIdText.setText( String.valueOf( taskId ) );
-        presenter.getContentByTaskId( new Long( taskIdText.getText() ) );
-    }
-    
-    
-    @OnReveal
-    public void onReveal() {
-        final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        long taskId = Long.parseLong(p.getParameter("taskId","0"));
-        taskIdText.setText( String.valueOf( taskId ) );
-        presenter.getContentByTaskId( new Long( taskIdText.getText() ) );
-    }
-
+  
     public VerticalPanel getContentPanel() {
         return contentPanel;
     }
 
     public VerticalPanel getOutputPanel() {
         return outputPanel;
+    }
+
+    public TextBox getTaskIdText() {
+        return taskIdText;
     }
 
 }

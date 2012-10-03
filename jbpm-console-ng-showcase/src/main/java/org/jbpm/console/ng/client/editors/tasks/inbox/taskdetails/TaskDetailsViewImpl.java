@@ -45,8 +45,7 @@ public class TaskDetailsViewImpl extends Composite
         implements
         TaskDetailsPresenter.InboxView {
 
-    @Inject
-    private PlaceManager placeManager;
+    
     private TaskDetailsPresenter presenter;
     @Inject
     @DataField
@@ -112,21 +111,7 @@ public class TaskDetailsViewImpl extends Composite
                 taskPriorityListBox.getSelectedIndex());
 
     }
-    @OnStart
-    public void onStart(final PlaceRequest p) {
-        long taskId = Long.parseLong(p.getParameter("taskId","0"));
-        taskIdText.setText(String.valueOf(taskId));
-        presenter.refreshTask(Long.parseLong(taskIdText.getText()));
-    }
-    
-    @OnReveal
-    public void onReveal() {
-        final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        long taskId = Long.parseLong(p.getParameter("taskId","0"));
-        taskIdText.setText(String.valueOf(taskId));
-        presenter.refreshTask(Long.parseLong(taskIdText.getText()));
-    }
-
+   
     @EventHandler("refreshButton")
     public void refreshButton(ClickEvent e) {
         presenter.refreshTask(Long.parseLong(taskIdText.getText()));

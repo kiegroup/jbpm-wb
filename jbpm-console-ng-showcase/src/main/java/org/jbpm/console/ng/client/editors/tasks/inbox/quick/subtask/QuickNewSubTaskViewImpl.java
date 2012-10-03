@@ -20,7 +20,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 
@@ -31,9 +30,6 @@ import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.client.annotations.OnReveal;
-import org.uberfire.client.annotations.OnStart;
-import org.uberfire.shared.mvp.PlaceRequest;
 
 @Dependent
 @Templated(value = "QuickNewSubTaskViewImpl.html")
@@ -41,8 +37,7 @@ public class QuickNewSubTaskViewImpl extends Composite
         implements
         QuickNewSubTaskPresenter.InboxView {
 
-    @Inject
-    private PlaceManager placeManager;
+   
     private QuickNewSubTaskPresenter presenter;
     @Inject
     @DataField
@@ -83,16 +78,4 @@ public class QuickNewSubTaskViewImpl extends Composite
         notification.fire(new NotificationEvent(text));
     }
 
-    @OnStart
-    public void onStart(final PlaceRequest p) {
-        long taskId = Long.parseLong(p.getParameter("taskId", "0"));
-        parentTaskIdText.setText(String.valueOf(taskId));
-    }
-
-    @OnReveal
-    public void onReveal() {
-        final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        long taskId = Long.parseLong(p.getParameter("taskId", "0"));
-        parentTaskIdText.setText(String.valueOf(taskId));
-    }
 }
