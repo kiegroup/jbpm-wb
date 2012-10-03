@@ -21,7 +21,7 @@ import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.workbench.model.PerspectiveDefinition;
 import org.uberfire.client.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.client.workbench.model.impl.PerspectiveDefinitionImpl;
-import org.uberfire.shared.mvp.impl.PlaceRequestImpl;
+import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 /**
  * A Perspective to show File Explorer
@@ -33,7 +33,7 @@ public class FormPerspective {
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
         p.setName("Form Perspective");
-        p.getRoot().addPart(new PartDefinitionImpl(new PlaceRequestImpl("Form Display")));
+        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Form Display")));
         p.setTransient(true);
         return p;
 

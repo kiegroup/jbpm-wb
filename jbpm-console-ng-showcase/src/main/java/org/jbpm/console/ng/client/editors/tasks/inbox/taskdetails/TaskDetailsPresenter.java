@@ -65,17 +65,15 @@ public class TaskDetailsPresenter {
         ListBox getTaskPriorityListBox();
 
         DateBox getDueDate();
-        
+
         TextBox getUserText();
-        
+
         ListBox getSubTaskStrategyListBox();
-        
+
         public String[] getSubTaskStrategies();
-        
+
         public String[] getPriorities();
-        
     }
-    
     @Inject
     private PlaceManager placeManager;
     @Inject
@@ -93,9 +91,8 @@ public class TaskDetailsPresenter {
         return view;
     }
 
-   
-    public void updateTask(final long taskId, final String taskDescription, final String subTaskStrategy, 
-                          final Date dueDate, final int priority) {
+    public void updateTask(final long taskId, final String taskDescription, final String subTaskStrategy,
+            final Date dueDate, final int priority) {
 
         if (taskId > 0) {
 
@@ -116,7 +113,7 @@ public class TaskDetailsPresenter {
             List<String> descriptions = new ArrayList<String>();
             descriptions.
                     add(taskDescription);
-                
+
             taskServices.call(new RemoteCallback<Void>() {
                 @Override
                 public void callback(Void nothing) {
@@ -128,7 +125,7 @@ public class TaskDetailsPresenter {
             taskServices.call(new RemoteCallback<Void>() {
                 @Override
                 public void callback(Void nothing) {
-                    view.displayNotification("Task Expiration Date Updated for Task id = " + taskId + " -> "+dueDate.toString()+")");
+                    view.displayNotification("Task Expiration Date Updated for Task id = " + taskId + " -> " + dueDate.toString() + ")");
                 }
             }).setExpirationDate(taskId, dueDate);
 
@@ -145,21 +142,21 @@ public class TaskDetailsPresenter {
             public void callback(TaskSummary details) {
                 view.getTaskIdText().setText(String.valueOf(details.getId()));
                 view.getTaskNameText().setText(details.getName());
-                
+
                 view.getTaskDescriptionTextArea().setText(details.getDescription());
                 view.getDueDate().setValue(details.getExpirationTime());
-                
+
                 view.getUserText().setText(details.getActualOwner());
                 int i = 0;
-                for(String strategy : view.getSubTaskStrategies()){
-                    if(details.getSubTaskStrategy().equals(strategy)){
+                for (String strategy : view.getSubTaskStrategies()) {
+                    if (details.getSubTaskStrategy().equals(strategy)) {
                         view.getSubTaskStrategyListBox().setSelectedIndex(i);
                     }
                     i++;
                 }
                 i = 0;
-                for(String priority : view.getPriorities()){
-                    if(details.getPriority() == i){
+                for (String priority : view.getPriorities()) {
+                    if (details.getPriority() == i) {
                         view.getTaskPriorityListBox().setSelectedIndex(i);
                     }
                     i++;
@@ -169,23 +166,16 @@ public class TaskDetailsPresenter {
         }).getTaskDetails(taskId);
 
     }
-    
-    public void onTaskSelected(@Observes TaskSelectionEvent taskSelection){
+
+    public void onTaskSelected(@Observes TaskSelectionEvent taskSelection) {
         refreshTask(taskSelection.getTaskId());
     }
-    @OnStart
-    public void onStart(final PlaceRequest p) {
-        long taskId = Long.parseLong(p.getParameter("taskId","0"));
-        view.getTaskIdText().setText(String.valueOf(taskId));
-        refreshTask(Long.parseLong(view.getTaskIdText().getText()));
-    }
-    
+
     @OnReveal
     public void onReveal() {
         final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        long taskId = Long.parseLong(p.getParameter("taskId","0"));
+        long taskId = Long.parseLong(p.getParameter("taskId", "0"));
         view.getTaskIdText().setText(String.valueOf(taskId));
         refreshTask(Long.parseLong(view.getTaskIdText().getText()));
     }
-    
 }

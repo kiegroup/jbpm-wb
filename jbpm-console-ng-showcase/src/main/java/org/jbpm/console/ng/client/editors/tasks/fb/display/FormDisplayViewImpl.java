@@ -49,8 +49,7 @@ public class FormDisplayViewImpl extends Composite
     FormDisplayPresenter.FormBuilderView {
 
 
-    @Inject
-    private PlaceManager                     placeManager;
+    
     private FormDisplayPresenter             presenter;
     @Inject
     @DataField
@@ -67,8 +66,7 @@ public class FormDisplayViewImpl extends Composite
     @Inject
     private Event<NotificationEvent>         notification;
     
-    @Inject 
-    private Identity identity;
+  
 
     @EventHandler("renderButton")
     public void renderAction(ClickEvent e) {
@@ -80,23 +78,9 @@ public class FormDisplayViewImpl extends Composite
         formView.add( new HTMLPanel( formRendered.getForm() ) );
 
     }
-    @OnStart
-    public void onStart(final PlaceRequest p) {
-        
-        long taskId = Long.parseLong(p.getParameter("taskID","0"));
-        userIdText.setText( identity.getName() );
-        taskIdText.setText( String.valueOf( taskId ) );
-        presenter.renderForm( new Long( taskIdText.getText() ) );
-    }
+   
     
-    @OnReveal
-    public void onReveal() {
-        final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        long taskId = Long.parseLong(p.getParameter("taskID","0"));
-        userIdText.setText( identity.getName() );
-        taskIdText.setText( String.valueOf( taskId ) );
-        presenter.renderForm( new Long( taskIdText.getText() ) );
-    }
+  
 
     @Override
     public void init(FormDisplayPresenter presenter) {
@@ -110,5 +94,13 @@ public class FormDisplayViewImpl extends Composite
 
     public void displayNotification(String text) {
         notification.fire( new NotificationEvent( text ) );
+    }
+
+    public TextBox getUserIdText() {
+        return userIdText;
+    }
+
+    public TextBox getTaskIdText() {
+        return taskIdText;
     }
 }

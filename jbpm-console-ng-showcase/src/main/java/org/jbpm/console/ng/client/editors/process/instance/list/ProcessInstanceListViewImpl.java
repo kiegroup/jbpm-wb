@@ -58,8 +58,7 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.client.util.ResizableHeader;
 import org.uberfire.security.Identity;
-import org.uberfire.shared.mvp.PlaceRequest;
-import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.shared.mvp.impl.PlaceRequestImpl;
 
 @Dependent
 @Templated(value = "InboxPersonalViewImpl.html")
@@ -347,7 +346,7 @@ public class InboxPersonalViewImpl extends Composite
                                TaskSummary task,
                                String value) {
                 
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Task Edit Perspective" );  
+                PlaceRequestImpl placeRequestImpl = new PlaceRequestImpl( "Task Edit Perspective" );  
                 placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
                 placeManager.goTo( placeRequestImpl);
 
@@ -371,7 +370,7 @@ public class InboxPersonalViewImpl extends Composite
             public void update(int index,
                                TaskSummary task,
                                String value) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Perspective" ); 
+                PlaceRequestImpl placeRequestImpl = new PlaceRequestImpl( "Form Perspective" ); 
                 placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
                 
                 placeManager.goTo( placeRequestImpl);

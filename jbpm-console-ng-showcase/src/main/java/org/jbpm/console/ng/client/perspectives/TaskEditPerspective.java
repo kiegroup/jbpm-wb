@@ -24,7 +24,8 @@ import org.uberfire.client.workbench.model.PerspectiveDefinition;
 import org.uberfire.client.workbench.model.impl.PanelDefinitionImpl;
 import org.uberfire.client.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.client.workbench.model.impl.PerspectiveDefinitionImpl;
-import org.uberfire.shared.mvp.impl.PlaceRequestImpl;
+import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 /**
  * A Perspective to show File Explorer
@@ -37,14 +38,17 @@ public class TaskEditPerspective {
         
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
         p.setName( "Task Edit Perspective" );
-        p.getRoot().addPart( new PartDefinitionImpl( new PlaceRequestImpl( "Task Details" ) ) );
+        PlaceRequest taskDetails = new DefaultPlaceRequest( "Task Details" );
+        p.getRoot().addPart( new PartDefinitionImpl( taskDetails ) );
         final PanelDefinition eastPanel = new PanelDefinitionImpl();
         eastPanel.setWidth( 300 );
  	eastPanel.setMinWidth( 200 );
         eastPanel.setWidth(800);
-        eastPanel.addPart( new PartDefinitionImpl( new PlaceRequestImpl( "Task Content") ) );      
+        PlaceRequest taskContent = new DefaultPlaceRequest( "Task Content");
+        eastPanel.addPart( new PartDefinitionImpl( taskContent ) );      
         final PanelDefinition westPanelSouthPanel = new PanelDefinitionImpl();
-        westPanelSouthPanel.addPart( new PartDefinitionImpl( new PlaceRequestImpl(  "Quick New Sub Task" ) ) );
+        PlaceRequest subTasks = new DefaultPlaceRequest(  "Quick New Sub Task" );
+        westPanelSouthPanel.addPart( new PartDefinitionImpl( subTasks ) );
         westPanelSouthPanel.setHeight(400);
         westPanelSouthPanel.setMinHeight(200);
         westPanelSouthPanel.setWidth(800);

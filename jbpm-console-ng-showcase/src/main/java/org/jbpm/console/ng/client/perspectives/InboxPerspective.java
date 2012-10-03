@@ -24,7 +24,7 @@ import org.uberfire.client.workbench.model.PerspectiveDefinition;
 import org.uberfire.client.workbench.model.impl.PanelDefinitionImpl;
 import org.uberfire.client.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.client.workbench.model.impl.PerspectiveDefinitionImpl;
-import org.uberfire.shared.mvp.impl.PlaceRequestImpl;
+import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 
 /**
@@ -37,17 +37,17 @@ public class InboxPerspective {
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
         p.setName( "Inbox Perspective" );
-        p.getRoot().addPart( new PartDefinitionImpl( new PlaceRequestImpl( "Quick New Task"  ) ) );
+        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Quick New Task"  ) ) );
         final PanelDefinition eastPanel = new PanelDefinitionImpl();
         eastPanel.setHeight(400);
         eastPanel.setWidth(800);
         eastPanel.setMinHeight(200);
-        eastPanel.addPart( new PartDefinitionImpl( new PlaceRequestImpl(  "Personal Tasks" ) ) );      
+        eastPanel.addPart( new PartDefinitionImpl( new DefaultPlaceRequest(  "Personal Tasks" ) ) );      
         final PanelDefinition westPanelSouthPanel = new PanelDefinitionImpl();
         westPanelSouthPanel.setHeight(400);
         westPanelSouthPanel.setMinHeight(200);
         eastPanel.setWidth(800);
-        westPanelSouthPanel.addPart( new PartDefinitionImpl( new PlaceRequestImpl(  "Group Tasks" ) ) );
+        westPanelSouthPanel.addPart( new PartDefinitionImpl( new DefaultPlaceRequest(  "Group Tasks" ) ) );
         eastPanel.setChild( Position.SOUTH , westPanelSouthPanel);
         p.getRoot().setChild( Position.EAST , eastPanel );
         p.setTransient(true);

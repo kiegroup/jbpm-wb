@@ -31,7 +31,7 @@ import org.uberfire.client.workbench.widgets.menu.CommandMenuItem;
 import org.uberfire.client.workbench.widgets.menu.SubMenuItem;
 import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBar;
 import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
-import org.uberfire.shared.mvp.impl.PlaceRequestImpl;
+import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 /**
  *
@@ -75,7 +75,7 @@ public class ShowcaseEntryPoint {
                     new Command() {
                         @Override
                         public void execute() {
-                            placeManager.goTo(new PlaceRequestImpl(menuItem));
+                            placeManager.goTo(new DefaultPlaceRequest(menuItem));
                         }
                     });
             placesMenuBar.addItem(item);

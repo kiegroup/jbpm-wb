@@ -126,13 +126,6 @@ public class TaskContentPresenter {
         }).getTaskOutputContentByTaskId(taskId);
     }
     
-    @OnStart
-    public void onStart(final PlaceRequest p) {
-        long taskId = Long.parseLong(p.getParameter("taskId","0"));
-        view.getTaskIdText().setText( String.valueOf( taskId ) );
-        getContentByTaskId( new Long( view.getTaskIdText().getText() ) );
-    }
-
     @OnReveal
     public void onReveal() {
         final PlaceRequest p = placeManager.getCurrentPlaceRequest();

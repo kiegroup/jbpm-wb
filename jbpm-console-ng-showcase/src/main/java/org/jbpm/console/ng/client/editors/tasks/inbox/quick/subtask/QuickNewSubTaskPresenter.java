@@ -94,12 +94,6 @@ public class QuickNewSubTaskPresenter {
             }
         }).addTask(str, null);
     }
-    
-    @OnStart
-    public void onStart(final PlaceRequest p) {
-        long taskId = Long.parseLong(p.getParameter("taskId", "0"));
-        view.getParentTaskIdText().setText(String.valueOf(taskId));
-    }
 
     @OnReveal
     public void onReveal() {
