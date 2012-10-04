@@ -15,10 +15,6 @@
  */
 package org.jbpm.console.ng.client;
 
-import com.google.gwt.animation.client.Animation;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.RootPanel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,6 +23,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import javax.inject.Inject;
 
 import org.jboss.errai.ioc.client.api.AfterInitialization;
@@ -41,11 +38,16 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.menu.MenuBar;
 import org.uberfire.client.workbench.widgets.menu.MenuItemCommand;
 import org.uberfire.client.workbench.widgets.menu.MenuItemSubMenu;
+import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
+import org.uberfire.client.workbench.widgets.menu.impl.DefaultMenuBar;
 import org.uberfire.client.workbench.widgets.menu.impl.DefaultMenuItemCommand;
 import org.uberfire.client.workbench.widgets.menu.impl.DefaultMenuItemSubMenu;
-import org.uberfire.client.workbench.widgets.menu.impl.DefaultMenuBar;
-import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
+
+import com.google.gwt.animation.client.Animation;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  *
@@ -84,9 +86,10 @@ public class ShowcaseEntryPoint {
 
     private void setupMenu() {
         //Places sub-menu
-        final DefaultMenuBar placesMenuBar = new DefaultMenuBar();
-        final DefaultMenuItemSubMenu placesMenu = new DefaultMenuItemSubMenu("Places",
-                placesMenuBar);
+        final MenuBar placesMenuBar = new DefaultMenuBar();
+        final MenuItemSubMenu placesMenu = new DefaultMenuItemSubMenu("Places",
+        		placesMenuBar);
+        
          //Home
         final AbstractWorkbenchPerspectiveActivity defaultPerspective = getDefaultPerspectiveActivity();
         if ( defaultPerspective != null ) {
@@ -124,7 +127,7 @@ public class ShowcaseEntryPoint {
         //Add places
         Arrays.sort(menuItems);
         for (final String menuItem : menuItems) {
-            final DefaultMenuItemCommand item = new DefaultMenuItemCommand(menuItem,
+            final MenuItemCommand item = new DefaultMenuItemCommand(menuItem,
                     new Command() {
                         @Override
                         public void execute() {
@@ -134,7 +137,7 @@ public class ShowcaseEntryPoint {
             placesMenuBar.addItem(item);
         }
         //Add places
-        final DefaultMenuItemCommand item = new DefaultMenuItemCommand("Logout", new Command() {
+        final MenuItemCommand item = new DefaultMenuItemCommand("Logout", new Command() {
             @Override
             public void execute() {
                 redirect("/uf_logout");
