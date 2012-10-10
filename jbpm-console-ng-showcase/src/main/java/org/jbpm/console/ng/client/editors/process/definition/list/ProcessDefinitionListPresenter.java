@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.process.instance.list;
+package org.jbpm.console.ng.client.editors.process.definition.list;
 
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.ui.TextBox;
@@ -26,12 +26,13 @@ import javax.inject.Inject;
 
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
-import javax.enterprise.event.Observes;
+import javax.enterprise.event.Event;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.client.editors.tasks.inbox.events.ProcessInstanceCreated;
-import org.jbpm.console.ng.client.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.client.model.ProcessSummary;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
+import org.jbpm.console.ng.shared.StatefulKnowledgeSessionEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -39,37 +40,42 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 
 @Dependent
-@WorkbenchScreen(identifier = "Process Instance List")
-public class ProcessInstanceListPresenter {
+@WorkbenchScreen(identifier = "Process Definition List")
+public class ProcessDefinitionListPresenter {
 
     public interface InboxView
             extends
-            UberView<ProcessInstanceListPresenter> {
+            UberView<ProcessDefinitionListPresenter> {
 
         void displayNotification(String text);
 
         TextBox getSessionIdText();
 
-        DataGrid<ProcessInstanceSummary> getDataGrid();
-        
+        DataGrid<ProcessSummary> getDataGrid();
     }
     @Inject
     private InboxView view;
     @Inject
     private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
-    private ListDataProvider<ProcessInstanceSummary> dataProvider = new ListDataProvider<ProcessInstanceSummary>();
+    @Inject
+    Caller<StatefulKnowledgeSessionEntryPoint> ksessionServices;
+    
+    @Inject
+    Event<ProcessInstanceCreated> processInstanceCreatedEvents;
+    
+    private ListDataProvider<ProcessSummary> dataProvider = new ListDataProvider<ProcessSummary>();
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Process Instance List";
+        return "Process Definition List";
     }
 
     @WorkbenchPartView
-    public UberView<ProcessInstanceListPresenter> getView() {
+    public UberView<ProcessDefinitionListPresenter> getView() {
         return view;
     }
 
-    public ProcessInstanceListPresenter() {
+    public ProcessDefinitionListPresenter() {
     }
 
     @PostConstruct
@@ -78,40 +84,44 @@ public class ProcessInstanceListPresenter {
 
     public void refreshProcessList(final String sessionId) {
 
-        if(sessionId != null && !sessionId.equals("")){
-            knowledgeServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+        if (sessionId != null && !sessionId.equals("")) {
+            knowledgeServices.call(new RemoteCallback<List<ProcessSummary>>() {
                 @Override
-                public void callback(List<ProcessInstanceSummary> processInstances) {
+                public void callback(List<ProcessSummary> processes) {
                     dataProvider.getList().clear();
-                    dataProvider.getList().addAll(processInstances);
+                    dataProvider.getList().addAll(processes);
                     dataProvider.refresh();
                 }
-            }).getProcessInstancesBySessionId(sessionId);
-        }else{
-            knowledgeServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+            }).getProcessesBySessionId(sessionId);
+        } else {
+            knowledgeServices.call(new RemoteCallback<List<ProcessSummary>>() {
                 @Override
-                public void callback(List<ProcessInstanceSummary> processInstances) {
+                public void callback(List<ProcessSummary> processes) {
                     dataProvider.getList().clear();
-                    dataProvider.getList().addAll(processInstances);
+                    dataProvider.getList().addAll(processes);
                     dataProvider.refresh();
                 }
-            }).getProcessInstances();
+            }).getProcesses();
         }
-        
+    }
 
+    public void startProcessInstance(final String processId) {
 
+        ksessionServices.call(new RemoteCallback<Long>() {
+            @Override
+            public void callback(Long processId) {
+                view.displayNotification("Process Created (id = " + processId + ")");
+                processInstanceCreatedEvents.fire(new ProcessInstanceCreated());
+            }
+        }).startProcess(processId);
 
     }
-    
-    public void newInstanceCreated(@Observes ProcessInstanceCreated pi){
-        refreshProcessList("");
-    }
-    
-    public void addDataDisplay(HasData<ProcessInstanceSummary> display) {
+
+    public void addDataDisplay(HasData<ProcessSummary> display) {
         dataProvider.addDataDisplay(display);
     }
 
-    public ListDataProvider<ProcessInstanceSummary> getDataProvider() {
+    public ListDataProvider<ProcessSummary> getDataProvider() {
         return dataProvider;
     }
 
@@ -123,5 +133,4 @@ public class ProcessInstanceListPresenter {
     public void onReveal() {
        refreshProcessList("");
     }
-    
 }

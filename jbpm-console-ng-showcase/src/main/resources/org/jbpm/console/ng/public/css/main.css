@@ -98,6 +98,7 @@ textarea {
 .form {
     min-width: 250px;
     margin: 2px;
+    padding-bottom: 20px;
 }
 .form .form-header {
     padding: 10px 20px;
@@ -119,9 +120,19 @@ textarea {
 }
 
 .form .form-content {
-    padding: 20px;
+    padding: 20px 20px 0px;
     position: relative;
 }
+.form .form-content.small {
+    width: 50px;
+}
+.form .form-content.small input{
+    min-width: 50px !important;
+}
+.form .form-content.medium {
+    width: 30%;
+}
+
 .form .form-content .form-row {
     width: 100%;
     max-width: 900px;
@@ -225,6 +236,19 @@ textarea {
     background-color: #FFF;
 
 
+}
+
+.form-content.one-col .form-row label{
+    width: 100%;
+    text-align: left;
+}
+.form-content.one-col .form-row input[type="text"], .form-content.one-col .form-row input[type="date"], .form-content.one-col .form-row input[type="file"], .form-content.one-col .form-row textarea {
+    width: 98%;
+    float: none;
+}
+.form-content.one-col .form-row .select-container, .form-content.one-col .form-row .input-button {
+    width: 100%;
+    float: none;
 }
 
 /* BUTTONS */

@@ -108,11 +108,11 @@ public class InboxPersonalViewImpl extends Composite
     
     private ListHandler<TaskSummary>            sortHandler;
 
+    private MultiSelectionModel<TaskSummary> selectionModel;
+    
     @Override
     public void init(InboxPersonalPresenter presenter) {
         this.presenter = presenter;
-
-        
         myTaskListGrid.setWidth( "100%" );
         myTaskListGrid.setHeight("200px");
 
@@ -122,6 +122,7 @@ public class InboxPersonalViewImpl extends Composite
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler =
                 new ListHandler<TaskSummary>( presenter.getDataProvider().getList() );
+        
         myTaskListGrid.addColumnSortHandler( sortHandler );
         
         // Create a Pager to control the table.
@@ -130,7 +131,7 @@ public class InboxPersonalViewImpl extends Composite
         pager.setPageSize( 6 );
 
         // Add a selection model so we can select cells.
-        final MultiSelectionModel<TaskSummary> selectionModel =
+        selectionModel =
                 new MultiSelectionModel<TaskSummary>();
         selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
             public void onSelectionChange(SelectionChangeEvent event) {
@@ -140,7 +141,7 @@ public class InboxPersonalViewImpl extends Composite
                 }
             }
         } );
-
+        
         myTaskListGrid.setSelectionModel( selectionModel,
                                           DefaultSelectionEventManager
                                                   .<TaskSummary> createCheckboxManager() );
@@ -217,7 +218,7 @@ public class InboxPersonalViewImpl extends Composite
                                   SafeHtmlUtils.fromSafeConstant( "<br/>" ) );
        
 
-        // First name.
+        // Id 
         Column<TaskSummary, Number> taskIdColumn =
                 new Column<TaskSummary, Number>( new NumberCell() ) {
                     @Override
@@ -226,26 +227,29 @@ public class InboxPersonalViewImpl extends Composite
                     }
                 };
         taskIdColumn.setSortable( true );
-        sortHandler.setComparator( taskIdColumn,
+        
+        myTaskListGrid.addColumn( taskIdColumn,
+                                  new ResizableHeader("Id",myTaskListGrid, taskIdColumn ));
+       sortHandler.setComparator( taskIdColumn,
                                    new Comparator<TaskSummary>() {
                                        public int compare(TaskSummary o1,
                                                           TaskSummary o2) {
                                            return Long.valueOf( o1.getId() ).compareTo( Long.valueOf( o2.getId() ) );
                                        }
                                    } );
-        myTaskListGrid.addColumn( taskIdColumn,
-                                  new ResizableHeader("Id",myTaskListGrid, taskIdColumn ));
-       
    
         // Task name.
         Column<TaskSummary, String> taskNameColumn =
-                new Column<TaskSummary, String>( new EditTextCell() ) {
+                new Column<TaskSummary, String>( new TextCell() ) {
                     @Override
                     public String getValue(TaskSummary object) {
                         return object.getName();
                     }
                 };
         taskNameColumn.setSortable( true );
+        
+        myTaskListGrid.addColumn( taskNameColumn,
+                                  new ResizableHeader("Task",myTaskListGrid, taskNameColumn ));
         sortHandler.setComparator( taskNameColumn,
                                    new Comparator<TaskSummary>() {
                                        public int compare(TaskSummary o1,
@@ -253,9 +257,6 @@ public class InboxPersonalViewImpl extends Composite
                                            return o1.getName().compareTo( o2.getName() );
                                        }
                                    } );
-        myTaskListGrid.addColumn( taskNameColumn,
-                                  new ResizableHeader("Task",myTaskListGrid, taskNameColumn ));
-        
        
         // Task priority.
         Column<TaskSummary, Number> taskPriorityColumn =
@@ -266,6 +267,10 @@ public class InboxPersonalViewImpl extends Composite
                     }
                 };
         taskPriorityColumn.setSortable( true );
+        taskPriorityColumn.setSortable(true);
+        myTaskListGrid.addColumn( taskPriorityColumn,
+                                  new ResizableHeader("Priority", myTaskListGrid, taskPriorityColumn ));
+      
         sortHandler.setComparator( taskPriorityColumn,
                                    new Comparator<TaskSummary>() {
                                        public int compare(TaskSummary o1,
@@ -273,10 +278,6 @@ public class InboxPersonalViewImpl extends Composite
                                            return Integer.valueOf( o1.getPriority() ).compareTo( o2.getPriority() );
                                        }
                                    } );
-        myTaskListGrid.addColumn( taskPriorityColumn,
-                                  new ResizableHeader("Priority",myTaskListGrid, taskPriorityColumn ));
-      
-
         // Status.
         Column<TaskSummary, String> statusColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
@@ -285,6 +286,10 @@ public class InboxPersonalViewImpl extends Composite
             }
         };
         statusColumn.setSortable( true );
+        
+
+        myTaskListGrid.addColumn( statusColumn,
+                                  new ResizableHeader("Status",myTaskListGrid, statusColumn ));
         sortHandler.setComparator( statusColumn,
                                    new Comparator<TaskSummary>() {
                                        public int compare(TaskSummary o1,
@@ -292,9 +297,6 @@ public class InboxPersonalViewImpl extends Composite
                                            return o1.getStatus().compareTo( o2.getStatus() );
                                        }
                                    } );
-
-        myTaskListGrid.addColumn( statusColumn,
-                                  new ResizableHeader("Status",myTaskListGrid, statusColumn ));
                
         // Due Date.
         Column<TaskSummary, String> dueDateColumn = new Column<TaskSummary, String>( new TextCell() ) {
@@ -310,7 +312,16 @@ public class InboxPersonalViewImpl extends Composite
 
         myTaskListGrid.addColumn( dueDateColumn,
                                   new ResizableHeader("Due On",myTaskListGrid, dueDateColumn ));
-       
+       sortHandler.setComparator( dueDateColumn,
+                                   new Comparator<TaskSummary>() {
+                                       public int compare(TaskSummary o1,
+                                                          TaskSummary o2) {
+                                           if(o1.getExpirationTime() == null || o2.getExpirationTime() == null){
+                                               return 0;
+                                           }
+                                           return o1.getExpirationTime().compareTo( o2.getExpirationTime() );
+                                       }
+                                   } );
 
         // Task parent id.
         Column<TaskSummary, String> taskParentIdColumn =
@@ -321,16 +332,16 @@ public class InboxPersonalViewImpl extends Composite
                     }
                 };
         taskParentIdColumn.setSortable( true );
-        sortHandler.setComparator( taskParentIdColumn,
+        
+        myTaskListGrid.addColumn( taskParentIdColumn,
+                                  new ResizableHeader("Parent",myTaskListGrid, taskParentIdColumn ));
+     sortHandler.setComparator( taskParentIdColumn,
                                    new Comparator<TaskSummary>() {
                                        public int compare(TaskSummary o1,
                                                           TaskSummary o2) {
                                            return Integer.valueOf( o1.getParentId() ).compareTo( o2.getParentId() );
                                        }
                                    } );
-        myTaskListGrid.addColumn( taskParentIdColumn,
-                                  new ResizableHeader("Parent",myTaskListGrid, taskParentIdColumn ));
-     
 
         Column<TaskSummary, String> editColumn =
                 new Column<TaskSummary, String>( new ButtonCell() ) {
@@ -411,6 +422,12 @@ public class InboxPersonalViewImpl extends Composite
     public ListHandler<TaskSummary> getSortHandler() {
         return sortHandler;
     }
+
+    public MultiSelectionModel<TaskSummary> getSelectionModel() {
+        return selectionModel;
+    }
+
+    
     
     
 

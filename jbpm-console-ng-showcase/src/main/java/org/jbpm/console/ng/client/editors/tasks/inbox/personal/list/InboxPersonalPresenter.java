@@ -29,14 +29,19 @@ import javax.inject.Inject;
 
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.MultiSelectionModel;
+import com.google.gwt.view.client.ProvidesKey;
 import org.jbpm.console.ng.client.model.TaskSummary;
 import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.security.Identity;
+import org.uberfire.shared.mvp.PlaceRequest;
 
 @Dependent
 @WorkbenchScreen(identifier = "Personal Tasks")
@@ -55,13 +60,27 @@ public class InboxPersonalPresenter {
         DataGrid<TaskSummary> getDataGrid();
         
         ColumnSortEvent.ListHandler<TaskSummary> getSortHandler();
+        
+        MultiSelectionModel<TaskSummary> getSelectionModel();
     }
     @Inject
     private InboxView view;
+    
+    
+    @Inject
+    private Identity identity;
+    
+    
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
     private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
 
+    public static final ProvidesKey<TaskSummary> KEY_PROVIDER = new ProvidesKey<TaskSummary>() {
+      public Object getKey(TaskSummary item) {
+        return item == null ? null : item.getId();
+      }
+    };
+    
     @WorkbenchPartTitle
     public String getTitle() {
         return "Personal Tasks";
@@ -86,9 +105,11 @@ public class InboxPersonalPresenter {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                     view.getUserText().setText(userId);
-                    dataProvider.setList(tasks);
+                    dataProvider.getList().clear();
+                    dataProvider.getList().addAll(tasks);
                     dataProvider.refresh();
-                    view.getSortHandler().getList().addAll(dataProvider.getList());
+                    view.getSelectionModel().clear();
+                    //view.getSortHandler().getList().addAll(dataProvider.getList());
                     
                 }
             }).getTasksOwned(userId);
@@ -97,9 +118,11 @@ public class InboxPersonalPresenter {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                     view.getUserText().setText(userId);
-                    dataProvider.setList(tasks);
+                    dataProvider.getList().clear();
+                    dataProvider.getList().addAll(tasks);
                     dataProvider.refresh();
-                    view.getSortHandler().getList().addAll(dataProvider.getList());
+                    view.getSelectionModel().clear();
+                    //view.getSortHandler().getList().addAll(dataProvider.getList());
 
                 }
             }).getTasksAssignedAsPotentialOwner(userId, "en-UK");
@@ -159,4 +182,10 @@ public class InboxPersonalPresenter {
     public void refreshData() {
         dataProvider.refresh();
     }
+    
+    @OnReveal
+    public void onReveal() {
+       refreshTasks(identity.getName(), view.getShowCompletedCheck().getValue());
+    }
+    
 }

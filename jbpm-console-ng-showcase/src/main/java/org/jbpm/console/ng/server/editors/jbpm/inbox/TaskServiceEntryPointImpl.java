@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.server.editors.jbpm.inbox;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,10 +29,6 @@ import org.jbpm.task.Content;
 import org.jbpm.task.ContentData;
 import org.jbpm.task.SubTasksStrategy;
 import org.jbpm.task.Task;
-import org.jbpm.task.api.TaskContentService;
-import org.jbpm.task.api.TaskInstanceService;
-import org.jbpm.task.api.TaskQueryService;
-import org.jbpm.task.api.TaskStatisticsService;
 import org.jbpm.task.impl.factories.TaskFactory;
 import org.jbpm.task.utils.ContentMarshallerHelper;
 
@@ -46,138 +41,133 @@ import org.jbpm.task.utils.ContentMarshallerHelper;
 public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Inject
-    TaskQueryService taskQueryService;
-    @Inject
-    TaskInstanceService taskInstanceService;
-    @Inject
-    TaskContentService taskContentService;
-    @Inject
-    TaskStatisticsService taskStatisticsService;
+    private org.jbpm.task.api.TaskServiceEntryPoint taskService;
+   
 
     @Override
     public List<TaskSummary> getTasksAssignedAsBusinessAdministrator(String userId, String language) {
-        return TaskSummaryHelper.adapt(taskQueryService.getTasksAssignedAsBusinessAdministrator(userId, language));
+        return TaskSummaryHelper.adapt(taskService.getTasksAssignedAsBusinessAdministrator(userId, language));
     }
 
     @Override
     public List<TaskSummary> getTasksAssignedAsExcludedOwner(String userId, String language) {
-        return TaskSummaryHelper.adapt(taskQueryService.getTasksAssignedAsExcludedOwner(userId, language));
+        return TaskSummaryHelper.adapt(taskService.getTasksAssignedAsExcludedOwner(userId, language));
     }
 
     @Override
     public List<TaskSummary> getTasksAssignedAsPotentialOwner(String userId, String language) {
-        return TaskSummaryHelper.adapt(taskQueryService.getTasksAssignedAsPotentialOwner(userId, language));
+        return TaskSummaryHelper.adapt(taskService.getTasksAssignedAsPotentialOwner(userId, language));
     }
 
     @Override
     public List<TaskSummary> getTasksAssignedAsPotentialOwner(String userId, List<String> groupIds, String language) {
-        return TaskSummaryHelper.adapt(taskQueryService.getTasksAssignedAsPotentialOwner(userId, groupIds, language));
+        return TaskSummaryHelper.adapt(taskService.getTasksAssignedAsPotentialOwner(userId, groupIds, language));
     }
 
     @Override
     public List<TaskSummary> getTasksAssignedAsPotentialOwner(String userId, List<String> groupIds, String language, int firstResult, int maxResult) {
-        return TaskSummaryHelper.adapt(taskQueryService.getTasksAssignedAsPotentialOwner(userId, groupIds, language, firstResult, maxResult));
+        return TaskSummaryHelper.adapt(taskService.getTasksAssignedAsPotentialOwner(userId, groupIds, language, firstResult, maxResult));
     }
 
     @Override
     public List<TaskSummary> getTasksAssignedAsRecipient(String userId, String language) {
-        return TaskSummaryHelper.adapt(taskQueryService.getTasksAssignedAsRecipient(userId, language));
+        return TaskSummaryHelper.adapt(taskService.getTasksAssignedAsRecipient(userId, language));
     }
 
     @Override
     public List<TaskSummary> getTasksAssignedAsTaskInitiator(String userId, String language) {
-        return TaskSummaryHelper.adapt(taskQueryService.getTasksAssignedAsTaskInitiator(userId, language));
+        return TaskSummaryHelper.adapt(taskService.getTasksAssignedAsTaskInitiator(userId, language));
     }
 
     @Override
     public List<TaskSummary> getTasksAssignedAsTaskStakeholder(String userId, String language) {
-        return TaskSummaryHelper.adapt(taskQueryService.getTasksAssignedAsTaskStakeholder(userId, language));
+        return TaskSummaryHelper.adapt(taskService.getTasksAssignedAsTaskStakeholder(userId, language));
     }
 
     @Override
     public List<TaskSummary> getTasksOwned(String userId) {
-        return TaskSummaryHelper.adapt(taskQueryService.getTasksOwned(userId));
+        return TaskSummaryHelper.adapt(taskService.getTasksOwned(userId));
     }
 
     @Override
     public List<TaskSummary> getSubTasksAssignedAsPotentialOwner(long parentId, String userId, String language) {
-        return TaskSummaryHelper.adapt(taskQueryService.getSubTasksAssignedAsPotentialOwner(parentId, userId, language));
+        return TaskSummaryHelper.adapt(taskService.getSubTasksAssignedAsPotentialOwner(parentId, userId, language));
     }
 
     @Override
     public List<TaskSummary> getSubTasksByParent(long parentId) {
-        return TaskSummaryHelper.adapt(taskQueryService.getSubTasksByParent(parentId));
+        return TaskSummaryHelper.adapt(taskService.getSubTasksByParent(parentId));
     }
 
     @Override
     public long addTask(String taskString, Map<String, Object> params) {
         Task task = TaskFactory.evalTask(taskString, params, true);
-        return taskInstanceService.addTask(task, params);
+        return taskService.addTask(task, params);
     }
 
     @Override
     public void start(long taskId, String user) {
-        taskInstanceService.start(taskId, user);
+        taskService.start(taskId, user);
     }
 
     @Override
     public void complete(long taskId, String user, Map<String, Object> params) {
-        taskInstanceService.complete(taskId, user, params);
+        taskService.complete(taskId, user, params);
     }
 
     @Override
     public void claim(long taskId, String user) {
-        taskInstanceService.claim(taskId, user);
+        taskService.claim(taskId, user);
     }
 
     @Override
     public void release(long taskId, String user) {
-        taskInstanceService.release(taskId, user);
+        taskService.release(taskId, user);
     }
 
     public void setPriority(long taskId, int priority) {
-        taskInstanceService.setPriority(taskId, priority);
+        taskService.setPriority(taskId, priority);
     }
 
     public void setExpirationDate(long taskId, Date date) {        
-        taskInstanceService.setExpirationDate(taskId, date);
+        taskService.setExpirationDate(taskId, date);
     }
     
     public void setDescriptions(long taskId, List<String> descriptions) {
-        taskInstanceService.setDescriptions(taskId, TaskI18NHelper.adaptI18NList(descriptions));
+        taskService.setDescriptions(taskId, TaskI18NHelper.adaptI18NList(descriptions));
     }
 
     public void setSkipable(long taskId, boolean skipable) {
-        taskInstanceService.setSkipable(taskId, skipable);
+        taskService.setSkipable(taskId, skipable);
     }
 
     public void setSubTaskStrategy(long taskId, String strategy) {
-        taskInstanceService.setSubTaskStrategy(taskId, SubTasksStrategy.valueOf(strategy));
+        taskService.setSubTaskStrategy(taskId, SubTasksStrategy.valueOf(strategy));
     }
 
     public int getPriority(long taskId) {
-        return taskInstanceService.getPriority(taskId);
+        return taskService.getPriority(taskId);
     }
 
     public Date getExpirationDate(long taskId) {
-        return taskInstanceService.getExpirationDate(taskId);
+        return taskService.getExpirationDate(taskId);
     }
     
 
     public List<String> getDescriptions(long taskId) {
-        return TaskI18NHelper.adaptStringList(taskInstanceService.getDescriptions(taskId));
+        return TaskI18NHelper.adaptStringList(taskService.getDescriptions(taskId));
     }
 
     public boolean isSkipable(long taskId) {
-        return taskInstanceService.isSkipable(taskId);
+        return taskService.isSkipable(taskId);
     }
 
     public String getSubTaskStrategy(long taskId) {
-        return taskInstanceService.getSubTaskStrategy(taskId).name();
+        return taskService.getSubTaskStrategy(taskId).name();
     }
 
     public TaskSummary getTaskDetails(long taskId) {
-        Task task = taskQueryService.getTaskInstanceById(taskId);
+        Task task = taskService.getTaskById(taskId);
         return new TaskSummary(task.getId(),
                 task.getTaskData().getProcessInstanceId(),
                 ((task.getNames() != null && task.getNames().size() > 0)) ? task.getNames().get(0).getText() : "",
@@ -203,19 +193,19 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
 
     public long addContent(long taskId, Content content) {
-        return taskContentService.addContent(taskId, content);
+        return taskService.addContent(taskId, content);
     }
 
     public void deleteContent(long taskId, long contentId) {
-        taskContentService.deleteContent(taskId, contentId);
+        taskService.deleteContent(taskId, contentId);
     }
 
     public List<Content> getAllContentByTaskId(long taskId) {
-        return taskContentService.getAllContentByTaskId(taskId);
+        return taskService.getAllContentByTaskId(taskId);
     }
 
     public Content getContentById(long contentId) {
-        return taskContentService.getContentById(contentId);
+        return taskService.getContentById(contentId);
     }
 
     public Map<String, String> getContentListById(long contentId) {
@@ -225,18 +215,23 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
 
     public Map<String, String> getContentListByTaskId(long taskId) {
-        Task taskInstanceById = taskQueryService.getTaskInstanceById(taskId);
+        Task taskInstanceById = taskService.getTaskById(taskId);
         long documentContentId = taskInstanceById.getTaskData().getDocumentContentId();
         Content contentById = getContentById(documentContentId);
         if (contentById == null) {
             return new HashMap<String, String>();
         }
         Object unmarshall = ContentMarshallerHelper.unmarshall(contentById.getContent(), null);
+        if(unmarshall instanceof String){
+            if(((String)unmarshall).equals("")){
+                return new HashMap<String, String>();
+            }
+        }
         return (Map<String, String>) unmarshall;
     }
 
     public Map<String, String> getTaskOutputContentByTaskId(long taskId) {
-        Task taskInstanceById = taskQueryService.getTaskInstanceById(taskId);
+        Task taskInstanceById = taskService.getTaskById(taskId);
         long documentContentId = taskInstanceById.getTaskData().getOutputContentId();
         Content contentById = getContentById(documentContentId);
         if (contentById == null) {
@@ -247,11 +242,11 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
 
     public int getCompletedTaskByUserId(String userId) {
-        return taskStatisticsService.getCompletedTaskByUserId(userId);
+        return taskService.getCompletedTaskByUserId(userId);
     }
 
     public int getPendingTaskByUserId(String userId) {
-        return taskStatisticsService.getPendingTaskByUserId(userId);
+        return taskService.getPendingTaskByUserId(userId);
     }
     
     
