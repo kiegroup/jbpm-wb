@@ -43,6 +43,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.shared.mvp.impl.PassThroughPlaceRequest;
 
 @Dependent
 @WorkbenchScreen(identifier = "Task Details")
@@ -174,7 +175,7 @@ public class TaskDetailsPresenter {
     @OnReveal
     public void onReveal() {
         final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        long taskId = Long.parseLong(p.getParameter("taskId", "0"));
+         long taskId = Long.parseLong(((PassThroughPlaceRequest)p).getPassThroughParameter("taskId", "0"));
         view.getTaskIdText().setText(String.valueOf(taskId));
         refreshTask(Long.parseLong(view.getTaskIdText().getText()));
     }

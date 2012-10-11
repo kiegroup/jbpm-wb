@@ -16,8 +16,9 @@
 package org.jbpm.console.ng.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
-
 import org.uberfire.client.annotations.Perspective;
+
+import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.Position;
 import org.uberfire.client.workbench.model.PanelDefinition;
 import org.uberfire.client.workbench.model.PerspectiveDefinition;
@@ -31,9 +32,10 @@ import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
+@WorkbenchPerspective(identifier = "Inbox Perspective", isDefault=true)
 public class InboxPerspective {
 
-    @Perspective(identifier = "Inbox Perspective", isDefault=true)
+    @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
         p.setName( "Inbox Perspective" );

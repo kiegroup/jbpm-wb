@@ -32,6 +32,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.shared.mvp.impl.PassThroughPlaceRequest;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Definition Details")
@@ -103,7 +104,7 @@ public class ProcessDefDetailsPresenter {
     @OnReveal
     public void onReveal() {
         final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        String processId = (String)p.getParameter("processId", "");
+        String processId = (String)((PassThroughPlaceRequest)p).getPassThroughParameter("processId", "");
         view.getProcessNameText().setText(processId);
         refreshProcessDef(processId);
     }

@@ -17,14 +17,6 @@
   
 
   
-  <!-- Form Builder Related -->
-  <!--inherits name="org.jbpm.form.builder.ng.FormBuilderShared"/>
-  <inherits name="org.jbpm.form.builder.services.FormBuilderServicesCDI"/>
-  <inherits name="org.jbpm.form.builder.ng.model.FormBuilderModel"/>
-  <inherits name="com.gwtent.GwtEnt" />
-  <inherits name="com.google.gwt.xml.XML" /-->
-  
-   
   <!-- Specify the application specific style sheet. -->
   <stylesheet src='css/uberfire-showcase.css'/>
   <stylesheet src='css/chome-override.css'/>

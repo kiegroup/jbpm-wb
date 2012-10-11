@@ -16,8 +16,9 @@
 package org.jbpm.console.ng.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
-
 import org.uberfire.client.annotations.Perspective;
+
+import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.model.PerspectiveDefinition;
 import org.uberfire.client.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.client.workbench.model.impl.PerspectiveDefinitionImpl;
@@ -28,9 +29,10 @@ import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
+@WorkbenchPerspective(identifier = "Process Instance Details Perspective", isDefault=false)
 public class ProcessInstanceDetailsPerspective {
 
-    @Perspective(identifier = "Process Instance Details Perspective", isDefault=false)
+    @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
         p.setName( "Process Instance Details Perspective" );

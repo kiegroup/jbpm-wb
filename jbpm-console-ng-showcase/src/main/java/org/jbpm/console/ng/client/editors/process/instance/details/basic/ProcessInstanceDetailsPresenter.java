@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.client.editors.process.instance.details.basic;
 
-import org.jbpm.console.ng.client.editors.process.definition.details.basic.*;
 import com.google.gwt.user.client.ui.TextBox;
 
 import javax.enterprise.context.Dependent;
@@ -33,6 +32,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.shared.mvp.impl.PassThroughPlaceRequest;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance Details")
@@ -104,7 +104,7 @@ public class ProcessInstanceDetailsPresenter {
     @OnReveal
     public void onReveal() {
         final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        String processId = (String)p.getParameter("processInstanceId", "");
+        String processId = (String)((PassThroughPlaceRequest)p).getPassThroughParameter("processInstanceId", "");
         view.getProcessNameText().setText(processId);
         refreshProcessDef(processId);
     }

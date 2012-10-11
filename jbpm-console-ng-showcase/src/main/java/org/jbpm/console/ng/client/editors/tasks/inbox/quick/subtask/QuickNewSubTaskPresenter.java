@@ -35,6 +35,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.shared.mvp.impl.PassThroughPlaceRequest;
 
 @Dependent
 @WorkbenchScreen(identifier = "Quick New Sub Task")
@@ -98,7 +99,7 @@ public class QuickNewSubTaskPresenter {
     @OnReveal
     public void onReveal() {
         final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        long taskId = Long.parseLong(p.getParameter("taskId", "0"));
+        long taskId = Long.parseLong(((PassThroughPlaceRequest)p).getPassThroughParameter("taskId", "0"));
         view.getParentTaskIdText().setText(String.valueOf(taskId));
     }
 }
