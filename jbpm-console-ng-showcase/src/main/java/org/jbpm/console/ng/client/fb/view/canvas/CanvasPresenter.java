@@ -51,10 +51,10 @@ public class CanvasPresenter {
     private final CanvasView layoutView;
     private final UndoRedoManager mgr = UndoRedoManager.getInstance();
     
-    public CanvasPresenter(CanvasView view) {
-        final PickupDragController dragController = CommonGlobals.getInstance().getDragController();
+    public CanvasPresenter(CanvasView view, PickupDragController dndController) {
+        
         this.layoutView = view;
-        this.layoutView.startDropController(dragController, layoutView);
+        this.layoutView.startDropController(dndController, layoutView);
         
 //        this.bus.addHandler(RegisterLayoutEvent.TYPE, new RegisterLayoutHandler() {
 //            @Override
@@ -252,23 +252,23 @@ public class CanvasPresenter {
 //        }
 //        return retval;
 //    }
-    
-    private void populateFormData(String action, String processId, 
-            String taskId, String name, String method, String enctype) {
-        
-        if (action != null && !"".equals(action)) {
-            layoutView.getFormDisplay().setAction(action);
-        }
-        if (taskId != null && !"".equals(taskId)) {
-            layoutView.getFormDisplay().setTaskId(taskId);
-        }
-        if (processId != null && !"".equals(processId)) {
-            layoutView.getFormDisplay().setProcessId(processId);
-        }
-        if (name != null && !"".equals(name)) {
-            layoutView.getFormDisplay().setName(name);
-        }
-        layoutView.getFormDisplay().setMethod(method);
-        layoutView.getFormDisplay().setEnctype(enctype);
-    }
+//    
+//    private void populateFormData(String action, String processId, 
+//            String taskId, String name, String method, String enctype) {
+//        
+//        if (action != null && !"".equals(action)) {
+//            layoutView.getFormDisplay().setAction(action);
+//        }
+//        if (taskId != null && !"".equals(taskId)) {
+//            layoutView.getFormDisplay().setTaskId(taskId);
+//        }
+//        if (processId != null && !"".equals(processId)) {
+//            layoutView.getFormDisplay().setProcessId(processId);
+//        }
+//        if (name != null && !"".equals(name)) {
+//            layoutView.getFormDisplay().setName(name);
+//        }
+//        layoutView.getFormDisplay().setMethod(method);
+//        layoutView.getFormDisplay().setEnctype(enctype);
+//    }
 }

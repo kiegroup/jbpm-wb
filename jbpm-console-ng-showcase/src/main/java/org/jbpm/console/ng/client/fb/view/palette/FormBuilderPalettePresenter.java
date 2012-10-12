@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.fb.view;
+package org.jbpm.console.ng.client.fb.view.palette;
 
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import java.util.Map;
@@ -30,34 +29,33 @@ import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.shared.fb.FormServiceEntryPoint;
 import org.jbpm.console.ng.client.fb.command.DisposeDropController;
-import org.jbpm.console.ng.client.fb.view.canvas.CanvasViewImpl;
 import org.jbpm.form.builder.ng.model.client.CommonGlobals;
-import org.jbpm.form.builder.ng.model.client.FormBuilderException;
 import org.jbpm.form.builder.ng.model.client.messages.I18NConstants;
-import org.jbpm.form.builder.ng.model.shared.api.FormRepresentation;
 import org.jbpm.form.builder.ng.model.shared.api.RepresentationFactory;
 import org.jbpm.form.builder.services.api.MenuServiceException;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.workbench.widgets.dnd.WorkbenchPickupDragController;
 
 @Dependent
-@WorkbenchScreen(identifier = "Form Builder")
-public class FormBuilderPresenter {
+@WorkbenchScreen(identifier = "Form Builder - Palette")
+public class FormBuilderPalettePresenter {
 
     @Inject
     private FormBuilderView view;
     @Inject
     private Caller<FormServiceEntryPoint> formServices;
+    
+    @Inject WorkbenchPickupDragController dndController;
 
     public interface FormBuilderView
             extends
-            UberView<FormBuilderPresenter> {
+            UberView<FormBuilderPalettePresenter> {
 
         ScrollPanel getMenuView();
 
-        ScrollPanel getLayoutView();
         
         AbsolutePanel getPanel();
     }
@@ -65,7 +63,7 @@ public class FormBuilderPresenter {
     @PostConstruct
     public void init() {
         CommonGlobals.getInstance().registerI18n((I18NConstants) GWT.create(I18NConstants.class));
-        PickupDragController dragController = new PickupDragController(view.getPanel(), true);
+        PickupDragController dragController = new PickupDragController(dndController.getBoundaryPanel(), true);
         dragController.registerDropController(new DisposeDropController(view.getPanel()));
         CommonGlobals.getInstance().registerDragController(dragController);
         try {
@@ -79,52 +77,30 @@ public class FormBuilderPresenter {
                 }
             }).getFormBuilderProperties();
             
-            System.out.println("XXXXX  Calling List Menu Items" + this.hashCode());
+            
             
             formServices.call(new RemoteCallback<Void>() {
                 @Override
                 public void callback(Void nothing) {
-                    System.out.println("XXXXX  RETURN List Menu Items");
+                    
                 }
             }).listMenuItems();
 
 
         } catch (MenuServiceException ex) {
-            Logger.getLogger(FormBuilderPresenter.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormBuilderPalettePresenter.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    @UiHandler(value="saveButton")
-    public void saveForm(FormRepresentation formRep){
-        
-        formServices.call(new RemoteCallback<String>() {
-                @Override
-                public void callback(String content) {
-                    System.out.println("XXXXX  RETURN List Menu Items"+content);
-                }
-        }).saveForm(formRep);
     
-    }
-    
-    
-    public void decodeForm(String jsonForm) {
-        
-        formServices.call(new RemoteCallback<FormRepresentation>() {
-                @Override
-                public void callback(FormRepresentation formRep) {
-                    ((CanvasViewImpl)view.getLayoutView()).getFormDisplay().populate(formRep);
-                }
-        }).loadForm(jsonForm);
-    
-    }
     
     
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Form Builder";
+        return "Form Builder - Palette";
     }
 
     @WorkbenchPartView
-    public UberView<FormBuilderPresenter> getView() {
+    public UberView<FormBuilderPalettePresenter> getView() {
         return view;
     }
 }

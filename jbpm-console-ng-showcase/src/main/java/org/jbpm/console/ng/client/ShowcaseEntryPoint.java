@@ -65,7 +65,7 @@ public class ShowcaseEntryPoint {
     private String[] menuItems = new String[]{
         "Quick New Task", "Personal Tasks", "Group Tasks",
         "Quick New Sub Task", "Task Details", "Task Content",
-        "Form Display","Get Pending Tasks", "Form Builder",
+        "Form Display","Get Pending Tasks", "Form Builder - Palette", "Form Builder - Canvas",
         "Process Instance List", "Quick New Process Instance", "Process Definition List"
     };
 

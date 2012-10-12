@@ -26,21 +26,15 @@
     
  
     <gwt:DockPanel>
-        <gwt:Dock direction="WEST" size="230px">   
-            <gwt:FlowPanel>
-                <gwt:ScrollPanel  ui:field="menuView">
-                
-                </gwt:ScrollPanel>
-             
-                <gwt:Button ui:field="saveButton">Save</gwt:Button>
-                <gwt:Button ui:field="clearButton">Clear</gwt:Button>
-            </gwt:FlowPanel>
-        </gwt:Dock>
         <gwt:Dock direction="SOUTH" size="760px">
-            
+            <gwt:FlowPanel>
             <gwt:ScrollPanel  ui:field="layoutView">
                 
             </gwt:ScrollPanel>
+            
+            <gwt:Button ui:field="saveButton">Save</gwt:Button>
+            <gwt:Button ui:field="clearButton">Clear</gwt:Button>
+            </gwt:FlowPanel>
         </gwt:Dock>
         
         

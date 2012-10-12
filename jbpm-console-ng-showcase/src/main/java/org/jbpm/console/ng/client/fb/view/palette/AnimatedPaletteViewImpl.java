@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.client.fb.view.palette;
 
+import com.allen_sauer.gwt.dnd.client.DragHandlerAdapter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,6 @@ import java.util.Map;
 
 
 
-import com.allen_sauer.gwt.dnd.client.DragHandlerAdapter;
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -32,6 +32,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.jbpm.console.ng.client.fb.command.DisposeDropController;
 import org.jbpm.form.builder.ng.model.client.CommonGlobals;
 import org.jbpm.form.builder.ng.model.client.menu.FBMenuItem;
+import org.uberfire.client.workbench.widgets.dnd.WorkbenchPickupDragController;
 
 public class AnimatedPaletteViewImpl extends ScrollPanel implements PaletteView {
 
@@ -64,6 +65,7 @@ public class AnimatedPaletteViewImpl extends ScrollPanel implements PaletteView 
         add(stackPanel);
         this.dragController = CommonGlobals.getInstance().getDragController();
         startDropController(this.dragController);
+        
 
     }
 

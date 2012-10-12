@@ -53,9 +53,6 @@
     <!-- Event Classes -->
     <class>org.jbpm.task.TaskEvent</class>
     
-    
- 
-   
     <properties>
       <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
       <property name="hibernate.connection.driver_class" value="org.h2.Driver" />

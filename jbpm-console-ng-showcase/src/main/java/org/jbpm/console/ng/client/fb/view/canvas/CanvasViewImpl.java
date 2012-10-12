@@ -27,6 +27,7 @@ import org.jbpm.console.ng.client.fb.command.DropFormItemController;
 import org.jbpm.form.builder.ng.model.client.CommonGlobals;
 import org.jbpm.form.builder.ng.model.client.form.FBForm;
 import org.jbpm.form.builder.ng.model.client.form.LayoutFormItem;
+import org.uberfire.client.workbench.widgets.dnd.WorkbenchPickupDragController;
 
 /**
  * layout view. Represents a single form
@@ -41,12 +42,16 @@ public class CanvasViewImpl extends ScrollPanel implements CanvasView {
         formDisplay.setSize("700px", "700px");
         add(formDisplay);
         CommonGlobals.getInstance().registerEventBus(new SimpleEventBus());
-        new CanvasPresenter(this);
+        
+        PickupDragController dragController = CommonGlobals.getInstance().getDragController();
+        new CanvasPresenter(this, dragController);
     }
+    
+    
 
     @Override
     public void startDropController(PickupDragController controller, IsWidget layout) {
-        controller.registerDropController(new DropFormItemController(layout.asWidget(), this));
+         controller.registerDropController(new DropFormItemController(layout.asWidget(), this));
     }
     
     @Override
