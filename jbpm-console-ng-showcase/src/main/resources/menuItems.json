@@ -318,7 +318,7 @@
                ],
                "output": null,
                "typeId": "flowPanel",
-               "@className": "org.jbpm.form.builder.ng.model.shared.api.items.FlowPanelRepresentation",
+               "@className": "org.jbpm.form.builder.ng.model.shared.api.items.VerticalPanelRepresentation",
                "cssClassName": ""
             },
             "effects": [
@@ -397,7 +397,7 @@
                ],
                "output": null,
                "typeId": "flowPanel",
-               "@className": "org.jbpm.form.builder.ng.model.shared.api.items.FlowPanelRepresentation",
+               "@className": "org.jbpm.form.builder.ng.model.shared.api.items.VerticalPanelRepresentation",
                "cssClassName": ""
             },
             "effects": [
@@ -477,7 +477,7 @@
                 ],
                 "output": null,
                 "typeId": "flowPanel",
-                "@className": "org.jbpm.form.builder.ng.model.shared.api.items.FlowPanelRepresentation",
+                "@className": "org.jbpm.form.builder.ng.model.shared.api.items.VerticalPanelRepresentation",
                 "cssClassName": ""
              },
              "effects": [
@@ -718,7 +718,7 @@
               ],
               "output": null,
               "typeId": "flowPanel",
-              "@className": "org.jbpm.form.builder.ng.model.shared.api.items.FlowPanelRepresentation",
+              "@className": "org.jbpm.form.builder.ng.model.shared.api.items.VerticalPanelRepresentation",
               "cssClassName": ""
            },
            "effects": [
@@ -959,7 +959,7 @@
               ],
               "output": null,
               "typeId": "flowPanel",
-              "@className": "org.jbpm.form.builder.ng.model.shared.api.items.FlowPanelRepresentation",
+              "@className": "org.jbpm.form.builder.ng.model.shared.api.items.VerticalPanelRepresentation",
               "cssClassName": ""
            },
            "effects": [
