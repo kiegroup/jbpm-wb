@@ -55,6 +55,7 @@ public class DomainKnowledgeServiceCDITest extends DomainKnowledgeServiceBaseTes
                 .addPackage("org.droolsjbpm.services.api")
                 .addPackage("org.droolsjbpm.services.impl")
                 .addPackage("org.droolsjbpm.services.test")
+                .addPackage("org.droolsjbpm.services.impl.event.listeners")
                 .addAsManifestResource("META-INF/persistence.xml", ArchivePaths.create("persistence.xml"))
                 .addAsManifestResource("META-INF/Taskorm.xml", ArchivePaths.create("Taskorm.xml"))
                 .addAsManifestResource("META-INF/beans.xml", ArchivePaths.create("beans.xml"));

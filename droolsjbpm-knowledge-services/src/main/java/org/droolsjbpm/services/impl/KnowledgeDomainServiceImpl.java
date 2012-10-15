@@ -15,10 +15,8 @@
  */
 package org.droolsjbpm.services.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -31,10 +29,10 @@ import org.drools.builder.ResourceType;
 import org.drools.io.impl.ClassPathResource;
 import org.drools.logger.KnowledgeRuntimeLoggerFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.process.ProcessInstance;
 import org.droolsjbpm.services.api.KnowledgeDomainService;
+import org.droolsjbpm.services.impl.event.listeners.CDIKbaseEventListener;
+import org.droolsjbpm.services.impl.event.listeners.CDIProcessEventListener;
 import org.jbpm.task.wih.CDIHTWorkItemHandler;
-import org.drools.definition.process.Process;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
@@ -48,21 +46,41 @@ public class KnowledgeDomainServiceImpl implements KnowledgeDomainService{
     
     @Inject 
     private CDIHTWorkItemHandler handler;
-    private Long   id;
+    
+    @Inject 
+    private CDIProcessEventListener processListener;
+    
+    @Inject
+    private CDIKbaseEventListener kbaseEventListener;
+    
+    private long   id;
     private String domainName;
-    private Long   parentId;
+    private long   parentId;
+
+    public KnowledgeDomainServiceImpl() {
+        this.id = 0;
+        this.domainName = "My Business Unit";
+    }
+    
     
     
     @PostConstruct
     public void init(){
+        kbaseEventListener.setDomainName(domainName);
+        processListener.setDomainName(domainName);
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        
+        
+        
         //kbuilder.add(new ClassPathResource(""), ResourceType.DRL);
         kbuilder.add(new ClassPathResource("example/humanTask.bpmn"), ResourceType.BPMN2);
         
         KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addEventListener(kbaseEventListener);
         kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
         StatefulKnowledgeSession ksession = kbase.newStatefulKnowledgeSession();
         
+        ksession.addEventListener(processListener);
         KnowledgeRuntimeLoggerFactory.newConsoleLogger(ksession);
         
         handler.setSession(ksession);
@@ -98,32 +116,6 @@ public class KnowledgeDomainServiceImpl implements KnowledgeDomainService{
     
     public int getAmountOfSessions() {
         return ksessions.size();
-    }
-    
-    public Collection<ProcessInstance> getProcessInstances(){
-        List<ProcessInstance> processInstances = new ArrayList<ProcessInstance>();
-        for(StatefulKnowledgeSession ksession : ksessions.values()){
-            processInstances.addAll(ksession.getProcessInstances());
-        }
-        return processInstances;
-    }
-    
-    public Collection<ProcessInstance> getProcessInstancesBySessionId(String sessionId){
-        StatefulKnowledgeSession ksession = ksessions.get(sessionId);
-        return ksession.getProcessInstances();
-    }
-    
-    public Collection<Process> getProcessesBySessionId(String sessionId){
-        StatefulKnowledgeSession ksession = ksessions.get(sessionId);
-        return ksession.getKnowledgeBase().getProcesses();
-    }
-    
-     public Collection<Process> getProcesses(){
-        List<Process> processes = new ArrayList<Process>();
-        for(StatefulKnowledgeSession ksession : ksessions.values()){
-            processes.addAll(ksession.getKnowledgeBase().getProcesses());
-        }
-        return processes;
     }
 
     public Long getId() {

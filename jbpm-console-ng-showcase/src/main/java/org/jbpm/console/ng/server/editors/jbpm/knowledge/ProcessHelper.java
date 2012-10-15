@@ -19,22 +19,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.jbpm.console.ng.client.model.ProcessSummary;
-import org.drools.definition.process.Process;
+import org.droolsjbpm.services.impl.model.ProcessDesc;
 /**
  *
  * @author salaboy
  */
 public class ProcessHelper {
-    public static Collection<ProcessSummary> adaptCollection(Collection<Process> processes){
+    public static Collection<ProcessSummary> adaptCollection(Collection<ProcessDesc> processes){
         List<ProcessSummary> processesSummary = new ArrayList<ProcessSummary>();
-        for(Process p : processes){
+        for(ProcessDesc p : processes){
             processesSummary.add(new ProcessSummary(p.getId(), p.getName(),p.getPackageName(), p.getType(), p.getVersion()));
         }
         
         return processesSummary;
     }
     
-    public static ProcessSummary adapt(Process p){
+    public static ProcessSummary adapt(ProcessDesc p){
         return new ProcessSummary(p.getId(), p.getName(),p.getPackageName(), p.getType(), p.getVersion());
     }
 }

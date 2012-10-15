@@ -45,10 +45,12 @@
     <class>org.jbpm.task.Status</class>
     <class>org.jbpm.task.Task</class>
     <class>org.jbpm.task.TaskData</class>
-    <!--class>org.jbpm.task.SubTasksStrategy</class>
-    <class>org.jbpm.task.OnParentAbortAllSubTasksEndStrategy</class>
-    <class>org.jbpm.task.OnAllSubTasksEndParentEndStrategy</class-->
     <class>org.jbpm.task.User</class>
+    
+    <class>org.droolsjbpm.services.impl.model.ProcessDesc</class>
+    <class>org.droolsjbpm.services.impl.model.ProcessInstanceDesc</class>
+    <class>org.droolsjbpm.services.impl.model.NodeInstanceDesc</class>
+    <class>org.droolsjbpm.services.impl.model.VariableStateDesc</class>
     
     <!-- Event Classes -->
     <class>org.jbpm.task.TaskEvent</class>

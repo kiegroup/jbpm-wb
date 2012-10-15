@@ -15,36 +15,11 @@
  */
 package org.droolsjbpm.services.api;
 
-import java.util.Collection;
-import org.drools.runtime.StatefulKnowledgeSession;
-
 /**
  *
  * @author salaboy
  */
-public interface KnowledgeDomainService {
-
-    void registerSession(String businessKey, StatefulKnowledgeSession ksession);
-
-    StatefulKnowledgeSession getSession(long sessionId);
-
-    StatefulKnowledgeSession getSessionByBusinessKey(String businessKey);
-
-    Collection<StatefulKnowledgeSession> getSessions();
-
-    int getAmountOfSessions();
-
-    Collection<String> getSessionsNames();
-    
-    Long getId();
-
-    void setId(Long id);
-
-    String getDomainName();
-
-    void setDomainName(String domainName);
-
-    Long getParentId();
-
-    void setParentId(Long parentId);
+public interface SessionLocator {
+    String getSessionName();
+    String getSessionAddress();
 }

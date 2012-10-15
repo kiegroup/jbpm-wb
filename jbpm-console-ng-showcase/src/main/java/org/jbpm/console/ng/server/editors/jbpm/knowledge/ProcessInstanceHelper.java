@@ -18,7 +18,7 @@ package org.jbpm.console.ng.server.editors.jbpm.knowledge;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.drools.runtime.process.ProcessInstance;
+import org.droolsjbpm.services.impl.model.ProcessInstanceDesc;
 import org.jbpm.console.ng.client.model.ProcessInstanceSummary;
 
 /**
@@ -26,9 +26,9 @@ import org.jbpm.console.ng.client.model.ProcessInstanceSummary;
  * @author salaboy
  */
 public class ProcessInstanceHelper {
-    public static Collection<ProcessInstanceSummary> adaptCollection(Collection<ProcessInstance> processInstances){
+    public static Collection<ProcessInstanceSummary> adaptCollection(Collection<ProcessInstanceDesc> processInstances){
         List<ProcessInstanceSummary> processInstancesSummary = new ArrayList<ProcessInstanceSummary>();
-        for(ProcessInstance pi : processInstances){
+        for(ProcessInstanceDesc pi : processInstances){
             processInstancesSummary.add(new ProcessInstanceSummary(pi.getId(), pi.getProcessId(), 
                     pi.getProcessName(), pi.getState()));
         }
@@ -36,7 +36,7 @@ public class ProcessInstanceHelper {
         return processInstancesSummary;
     }
     
-    public static ProcessInstanceSummary adapt(ProcessInstance processInstance){
+    public static ProcessInstanceSummary adapt(ProcessInstanceDesc processInstance){
         return new ProcessInstanceSummary(processInstance.getId(), processInstance.getProcessId(), 
                 processInstance.getProcessName(), processInstance.getState());
     }

@@ -18,6 +18,7 @@ package org.jbpm.console.ng.server.editors.jbpm.knowledge;
 import java.util.Collection;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import org.droolsjbpm.services.api.KnowledgeDataService;
 import org.droolsjbpm.services.api.KnowledgeDomainService;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.client.model.ProcessInstanceSummary;
@@ -36,6 +37,15 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     @Inject
     KnowledgeDomainService knowledgeService;
     
+    @Inject
+    KnowledgeDataService dataService;
+
+    public KnowledgeDomainServiceEntryPointImpl() {
+    }
+    
+    
+    
+    
     public StatefulKnowledgeSessionSummary getSession(long sessionId) {
         return StatefulKnowledgeSessionHelper.adapt(knowledgeService.getSession(sessionId));
     }
@@ -53,19 +63,19 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     }
 
     public Collection<ProcessInstanceSummary> getProcessInstances() {
-        return ProcessInstanceHelper.adaptCollection(knowledgeService.getProcessInstances());
+        return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstances());
     }
 
     public Collection<ProcessInstanceSummary> getProcessInstancesBySessionId(String sessionId) {
-        return ProcessInstanceHelper.adaptCollection(knowledgeService.getProcessInstancesBySessionId(sessionId));
+        return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstancesBySessionId(sessionId));
     }
 
     public Collection<ProcessSummary> getProcessesBySessionId(String sessionId) {
-        return ProcessHelper.adaptCollection(knowledgeService.getProcessesBySessionId(sessionId));
+        return ProcessHelper.adaptCollection(dataService.getProcessesBySessionId(sessionId));
     }
 
     public Collection<ProcessSummary> getProcesses() {
-        return ProcessHelper.adaptCollection(knowledgeService.getProcesses());
+        return ProcessHelper.adaptCollection(dataService.getProcesses());
     }
     
     

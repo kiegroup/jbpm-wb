@@ -31,6 +31,7 @@ import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.client.editors.tasks.inbox.events.ProcessInstanceCreated;
 import org.jbpm.console.ng.client.model.ProcessSummary;
+import org.jbpm.console.ng.client.model.StatefulKnowledgeSessionSummary;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.shared.StatefulKnowledgeSessionEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
@@ -80,6 +81,14 @@ public class ProcessDefinitionListPresenter {
 
     @PostConstruct
     public void init() {
+        // HACK TO INITIALIZE THE SERVICE
+        knowledgeServices.call(new RemoteCallback<StatefulKnowledgeSessionSummary>() {
+                @Override
+                public void callback(StatefulKnowledgeSessionSummary sessions) {
+                   
+                }
+            }).getSessionSummaryByBusinessKey("default");
+        
     }
 
     public void refreshProcessList(final String sessionId) {
