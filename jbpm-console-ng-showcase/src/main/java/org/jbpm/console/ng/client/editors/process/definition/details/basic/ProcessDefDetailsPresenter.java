@@ -15,16 +15,22 @@
  */
 package org.jbpm.console.ng.client.editors.process.definition.details.basic;
 
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
+import java.util.List;
+import java.util.Map;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import org.jboss.errai.bus.client.api.RemoteCallback;
 
 
 import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 
 
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.client.model.TaskDefSummary;
+import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -44,10 +50,11 @@ public class ProcessDefDetailsPresenter {
 
         void displayNotification(String text);
 
-
+        TextBox getNroOfHumanTasksText();
         TextBox getProcessNameText();
-
-      
+        ListBox getHumanTasksListBox();
+        ListBox getUsersGroupsListBox();
+        ListBox getStartDataListBox();
     }
     @Inject
     private PlaceManager placeManager;
@@ -55,6 +62,8 @@ public class ProcessDefDetailsPresenter {
     InboxView view;
     @Inject
     Caller<TaskServiceEntryPoint> taskServices;
+    @Inject
+    Caller<KnowledgeDomainServiceEntryPoint> domainServices;
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -66,46 +75,50 @@ public class ProcessDefDetailsPresenter {
         return view;
     }
 
-    
+    public void refreshProcessDef(final String processId) {
 
-    public void refreshProcessDef(String processId) {
-//        taskServices.call(new RemoteCallback<TaskSummary>() {
-//            @Override
-//            public void callback(TaskSummary details) {
-//                view.getTaskIdText().setText(String.valueOf(details.getId()));
-//                view.getTaskNameText().setText(details.getName());
-//
-//                view.getTaskDescriptionTextArea().setText(details.getDescription());
-//                view.getDueDate().setValue(details.getExpirationTime());
-//
-//                view.getUserText().setText(details.getActualOwner());
-//                int i = 0;
-//                for (String strategy : view.getSubTaskStrategies()) {
-//                    if (details.getSubTaskStrategy().equals(strategy)) {
-//                        view.getSubTaskStrategyListBox().setSelectedIndex(i);
-//                    }
-//                    i++;
-//                }
-//                i = 0;
-//                for (String priority : view.getPriorities()) {
-//                    if (details.getPriority() == i) {
-//                        view.getTaskPriorityListBox().setSelectedIndex(i);
-//                    }
-//                    i++;
-//                }
-//                i = 0;
-//            }
-//        }).getProcessDetails(taskId);
-
+        domainServices.call(new RemoteCallback<Map<String, String>>() {
+            @Override
+            public void callback(Map<String, String> availableProcesses) {
+                String processContent = availableProcesses.get(processId);
+                domainServices.call(new RemoteCallback<List<TaskDefSummary>>() {
+                    @Override
+                    public void callback(List<TaskDefSummary> tasks) {
+                        view.getNroOfHumanTasksText().setText(String.valueOf(tasks.size()));
+                        for(TaskDefSummary t : tasks){
+                            view.getHumanTasksListBox().addItem(t.getName(), String.valueOf(t.getId()));
+                        }
+                    }
+                }).getAllTasksDef(processContent);
+                domainServices.call(new RemoteCallback<Map<String, String>>() {
+                    @Override
+                    public void callback(Map<String, String> entities) {
+                        
+                        for(String key : entities.keySet()){
+                            view.getUsersGroupsListBox().addItem(key + "- "+ entities.get(key), key);
+                        }
+                    }
+                }).getAssociatedEntities(processContent);
+                domainServices.call(new RemoteCallback<Map<String, String>>() {
+                    @Override
+                    public void callback(Map<String, String> inputs) {
+                        
+                        for(String key : inputs.keySet()){
+                            view.getStartDataListBox().addItem(key + "- "+ inputs.get(key), key);
+                        }
+                    }
+                }).getRequiredInputData(processContent);
+            }
+        }).getAvailableProcesses();
+        
     }
-
-    
 
     @OnReveal
     public void onReveal() {
         final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        String processId = (String)((PassThroughPlaceRequest)p).getPassThroughParameter("processId", "");
+        String processId = (String) ((PassThroughPlaceRequest) p).getPassThroughParameter("processId", "");
         view.getProcessNameText().setText(processId);
+
         refreshProcessDef(processId);
     }
 }

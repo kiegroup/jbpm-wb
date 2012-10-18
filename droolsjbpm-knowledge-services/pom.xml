@@ -19,11 +19,21 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-human-task-services</artifactId>
+            
+            <type>jar</type>
+        </dependency>
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-human-task-workitems</artifactId>
-            <version>${jbpm.version}</version>
+            
+            <type>jar</type>
+        </dependency>
+         <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -71,6 +81,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            
         </dependency>
         <dependency>
             <groupId>org.drools</groupId>

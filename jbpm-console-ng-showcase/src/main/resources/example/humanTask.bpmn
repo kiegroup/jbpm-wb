@@ -10,7 +10,7 @@
     <bpmn2:property id="approval_document" itemSubjectRef="_approval_documentItem"/>
     <bpmn2:property id="approval_translatedDocument" itemSubjectRef="_approval_translatedDocumentItem"/>
     <bpmn2:property id="approval_reviewComment" itemSubjectRef="_approval_reviewCommentItem"/>
-    <bpmn2:startEvent id="_2E8E392C-31A0-4E34-8310-05EADDC4C2B5" drools:bgcolor="#ffffff" drools:selectable="true" name="">
+    <bpmn2:startEvent id="_2E8E392C-31A0-4E34-8310-05EADDC4C2B5" drools:bgcolor="#ffffff" drools:selectable="true" name="Start">
       <bpmn2:outgoing>_D7427C3E-3734-431B-A370-A2202883743F</bpmn2:outgoing>
     </bpmn2:startEvent>
     <bpmn2:userTask id="_B4912911-1965-4D1F-9532-81580D8200EE" drools:selectable="true" drools:taskName="Write a Document" drools:scriptFormat="http://www.java.com/java" name="Write a Document">
@@ -65,7 +65,7 @@
     </bpmn2:userTask>
     <bpmn2:sequenceFlow id="_D7427C3E-3734-431B-A370-A2202883743F" drools:bgcolor="#000000" drools:selectable="true" sourceRef="_2E8E392C-31A0-4E34-8310-05EADDC4C2B5" targetRef="_B4912911-1965-4D1F-9532-81580D8200EE"/>
     <bpmn2:sequenceFlow id="_77F451F8-F05C-427E-8638-F98FA1D22243" drools:bgcolor="#000000" drools:selectable="true" sourceRef="_B4912911-1965-4D1F-9532-81580D8200EE" targetRef="_0FA84C68-FDF4-4932-B02E-CF7BEACE4405"/>
-    <bpmn2:parallelGateway id="_0FA84C68-FDF4-4932-B02E-CF7BEACE4405" drools:bgcolor="#ffffff" drools:selectable="true" name="" gatewayDirection="Diverging">
+    <bpmn2:parallelGateway id="_0FA84C68-FDF4-4932-B02E-CF7BEACE4405" drools:bgcolor="#ffffff" drools:selectable="true" name="Review and Translate" gatewayDirection="Diverging">
       <bpmn2:incoming>_77F451F8-F05C-427E-8638-F98FA1D22243</bpmn2:incoming>
       <bpmn2:outgoing>_B46CE8E6-3CBC-469C-A21F-C8BE7EDDCFE0</bpmn2:outgoing>
       <bpmn2:outgoing>_2CD29278-55F0-428C-889B-19778AFECD07</bpmn2:outgoing>
@@ -138,12 +138,12 @@
     <bpmn2:sequenceFlow id="_2CD29278-55F0-428C-889B-19778AFECD07" drools:bgcolor="#000000" drools:selectable="true" sourceRef="_0FA84C68-FDF4-4932-B02E-CF7BEACE4405" targetRef="_406504CA-672D-4D8D-A344-4817683B167F"/>
     <bpmn2:sequenceFlow id="_536E813B-8A0A-4F44-B5C7-55C2B533B185" drools:bgcolor="#000000" drools:selectable="true" sourceRef="_04D27583-5419-42C8-A0B5-F85E5E35BAFC" targetRef="_4EC3DFFF-7756-4ADC-9FDB-7A1793ED5538"/>
     <bpmn2:sequenceFlow id="_EC3A423B-F064-442F-9C11-2B1943F08024" drools:bgcolor="#000000" drools:selectable="true" sourceRef="_406504CA-672D-4D8D-A344-4817683B167F" targetRef="_4EC3DFFF-7756-4ADC-9FDB-7A1793ED5538"/>
-    <bpmn2:parallelGateway id="_4EC3DFFF-7756-4ADC-9FDB-7A1793ED5538" drools:bgcolor="#ffffff" drools:selectable="true" name="" gatewayDirection="Converging">
+    <bpmn2:parallelGateway id="_4EC3DFFF-7756-4ADC-9FDB-7A1793ED5538" drools:bgcolor="#ffffff" drools:selectable="true" name="Reviewed and Translated" gatewayDirection="Converging">
       <bpmn2:incoming>_EC3A423B-F064-442F-9C11-2B1943F08024</bpmn2:incoming>
       <bpmn2:incoming>_536E813B-8A0A-4F44-B5C7-55C2B533B185</bpmn2:incoming>
       <bpmn2:outgoing>_0726EA4E-EB92-44AC-BED3-829FD12C6A7C</bpmn2:outgoing>
     </bpmn2:parallelGateway>
-    <bpmn2:endEvent id="_F9A29108-44D7-42AB-9A2D-F31EA512DC11" drools:bgcolor="#ffffff" drools:selectable="true" name="">
+    <bpmn2:endEvent id="_F9A29108-44D7-42AB-9A2D-F31EA512DC11" drools:bgcolor="#ffffff" drools:selectable="true" name="End">
       <bpmn2:incoming>_C25C2E01-02F5-45EE-84A3-A75727EAF8C0</bpmn2:incoming>
       <bpmn2:terminateEventDefinition id="_uzw2nRLxEeKB_ZcshzKPrQ"/>
     </bpmn2:endEvent>

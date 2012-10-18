@@ -76,7 +76,7 @@ public class CDIProcessEventListener implements ProcessEventListener {
         int sessionId = ((StatefulKnowledgeSession)pnte.getKnowledgeRuntime()).getId();
         long processInstanceId = pnte.getProcessInstance().getId();
         NodeInstance nodeInstance = pnte.getNodeInstance();
-        em.persist(NodeInstanceDescFactory.newNodeInstanceDesc(domainName, sessionId, processInstanceId, nodeInstance));
+        em.persist(NodeInstanceDescFactory.newNodeInstanceDesc(domainName, sessionId, processInstanceId, nodeInstance, false));
     }
 
     public void afterNodeTriggered(ProcessNodeTriggeredEvent pnte) {
@@ -88,7 +88,10 @@ public class CDIProcessEventListener implements ProcessEventListener {
     }
 
     public void afterNodeLeft(ProcessNodeLeftEvent pnle) {
-        //do nothing
+        int sessionId = ((StatefulKnowledgeSession)pnle.getKnowledgeRuntime()).getId();
+        long processInstanceId = pnle.getProcessInstance().getId();
+        NodeInstance nodeInstance = pnle.getNodeInstance();
+        em.persist(NodeInstanceDescFactory.newNodeInstanceDesc(domainName, sessionId, processInstanceId, nodeInstance, true));
     }
 
     public void beforeVariableChanged(ProcessVariableChangedEvent pvce) {

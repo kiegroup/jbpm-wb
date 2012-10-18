@@ -1,31 +1,46 @@
-/**
- * Copyright 2010 JBoss Inc
+/*
+ * Copyright 2012 JBoss by Red Hat.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.droolsjbpm.services.test;
 
+import java.io.IOException;
+import java.util.Collection;
+import javax.inject.Inject;
+import org.droolsjbpm.services.api.KnowledgeDomainService;
+import org.droolsjbpm.services.api.bpmn2.BPMN2DataService;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jbpm.task.TaskDef;
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.junit.Assert.*;
 
+/**
+ *
+ * @author salaboy
+ */
 @RunWith(Arquillian.class)
-public class DomainKnowledgeServiceCDITest extends DomainKnowledgeServiceBaseTest {
+public class BPMN2DataServicesTest {
 
     @Deployment()
     public static Archive<?> createDeployment() {
@@ -61,12 +76,41 @@ public class DomainKnowledgeServiceCDITest extends DomainKnowledgeServiceBaseTes
                 .addAsManifestResource("META-INF/beans.xml", ArchivePaths.create("beans.xml"));
 
     }
+    @Inject
+    private BPMN2DataService bpmn2Service;
     
+    @Inject
+    private KnowledgeDomainService knolwedgeService;
+
+    public BPMN2DataServicesTest() {
+    }
+
+    @BeforeClass
+    public static void setUpClass() {
+    }
+
+    @AfterClass
+    public static void tearDownClass() {
+    }
+
+    @Before
+    public void setUp() {
+    }
+
     @After
-    public void tearDown() throws Exception {
-        int removedTasks = taskService.removeAllTasks();
-        int removedLogs = adminDataService.removeAllData();
-        System.out.println(" --> Removed Tasks = "+removedTasks + " - ");
-        System.out.println(" --> Removed Logs = "+removedLogs + " - ");
+    public void tearDown() {
+    }
+
+    @Test
+    public void hello() throws IOException {
+        String theString = knolwedgeService.getAvailableProcesses().get("org.jbpm.writedocument");
+        
+
+        Collection<TaskDef> processTasks = bpmn2Service.getAllTasksDef(theString);
+        
+        assertEquals(3, processTasks.size());
+        
+        bpmn2Service.getRequiredInputData(theString);
+        
     }
 }

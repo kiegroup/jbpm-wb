@@ -16,14 +16,19 @@
 package org.jbpm.console.ng.server.editors.jbpm.knowledge;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.droolsjbpm.services.api.KnowledgeDataService;
 import org.droolsjbpm.services.api.KnowledgeDomainService;
+import org.droolsjbpm.services.api.bpmn2.BPMN2DataService;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.client.model.NodeInstanceSummary;
 import org.jbpm.console.ng.client.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.client.model.ProcessSummary;
 import org.jbpm.console.ng.client.model.StatefulKnowledgeSessionSummary;
+import org.jbpm.console.ng.client.model.TaskDefSummary;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 
 /**
@@ -40,12 +45,13 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     @Inject
     KnowledgeDataService dataService;
 
+    @Inject 
+    BPMN2DataService bpmn2Service;
+
     public KnowledgeDomainServiceEntryPointImpl() {
     }
     
-    
-    
-    
+
     public StatefulKnowledgeSessionSummary getSession(long sessionId) {
         return StatefulKnowledgeSessionHelper.adapt(knowledgeService.getSession(sessionId));
     }
@@ -77,8 +83,52 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     public Collection<ProcessSummary> getProcesses() {
         return ProcessHelper.adaptCollection(dataService.getProcesses());
     }
-    
-    
+
+   
+
+    public List<String> getAssociatedDomainObjects(String bpmn2Content) {
+        return bpmn2Service.getAssociatedDomainObjects(bpmn2Content);
+    }
+
+    public Map<String, String> getRequiredInputData(String bpmn2Content) {
+        return bpmn2Service.getRequiredInputData(bpmn2Content);
+    }
+
+    public List<String> getAssociatedForms(String bpmn2Content) {
+        return bpmn2Service.getAssociatedForms(bpmn2Content);
+    }
+
+    public Collection<TaskDefSummary> getAllTasksDef(String bpmn2Content) {
+        return TaskDefHelper.adaptCollection(bpmn2Service.getAllTasksDef(bpmn2Content));
+    }
+
+    public String getDomainName() {
+        return knowledgeService.getDomainName();
+    }
+
+    public Map<String, String> getAvailableProcesses() {
+        return knowledgeService.getAvailableProcesses();
+    }
+
+    public Map<String, String> getAssociatedEntities(String bpmn2Content) {
+        return bpmn2Service.getAssociatedEntities(bpmn2Content);
+    }
+
+    public Collection<NodeInstanceSummary> getProcessInstanceHistory(int sessionId, long id) {
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistory(sessionId, id));
+    }
+
+    public Collection<NodeInstanceSummary> getProcessInstanceHistory(int sessionId, long processId, boolean completed) {
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistory(sessionId, processId, completed));
+    }
+
+    public Collection<NodeInstanceSummary> getProcessInstanceFullHistory(int sessionId, long processId) {
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistory(sessionId, processId));
+    }
+
+    public Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(int sessionId, long processId) {
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceActiveNodes(sessionId, processId));
+    }
     
     
     

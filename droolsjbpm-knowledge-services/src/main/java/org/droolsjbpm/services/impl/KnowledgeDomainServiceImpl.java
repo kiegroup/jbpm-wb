@@ -15,17 +15,23 @@
  */
 package org.droolsjbpm.services.impl;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import org.apache.commons.io.IOUtils;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
+import org.drools.io.impl.ByteArrayResource;
 import org.drools.io.impl.ClassPathResource;
 import org.drools.logger.KnowledgeRuntimeLoggerFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
@@ -42,7 +48,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 @ApplicationScoped
 public class KnowledgeDomainServiceImpl implements KnowledgeDomainService{
 
-    Map<String, StatefulKnowledgeSession> ksessions = new HashMap<String, StatefulKnowledgeSession>();
+    private Map<String, StatefulKnowledgeSession> ksessions = new HashMap<String, StatefulKnowledgeSession>();
     
     @Inject 
     private CDIHTWorkItemHandler handler;
@@ -52,6 +58,8 @@ public class KnowledgeDomainServiceImpl implements KnowledgeDomainService{
     
     @Inject
     private CDIKbaseEventListener kbaseEventListener;
+    // This must be replaced by the VFS
+    private Map<String, String> availableProcesses = new HashMap<String, String>();
     
     private long   id;
     private String domainName;
@@ -69,11 +77,22 @@ public class KnowledgeDomainServiceImpl implements KnowledgeDomainService{
         kbaseEventListener.setDomainName(domainName);
         processListener.setDomainName(domainName);
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        String processLocation = "example/humanTask.bpmn";
+        String processId = "org.jbpm.writedocument";
         
         
+        ClassPathResource classPathResource = new ClassPathResource(processLocation);
         
-        //kbuilder.add(new ClassPathResource(""), ResourceType.DRL);
-        kbuilder.add(new ClassPathResource("example/humanTask.bpmn"), ResourceType.BPMN2);
+        StringWriter writer = new StringWriter();
+        try {
+            IOUtils.copy(classPathResource.getInputStream(), writer, "UTF-8");
+        } catch (IOException ex) {
+            Logger.getLogger(KnowledgeDomainServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String processString = writer.toString();
+        availableProcesses.put(processId, processString);
+        
+        kbuilder.add(new ByteArrayResource(processString.getBytes()), ResourceType.BPMN2);
         
         KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addEventListener(kbaseEventListener);
@@ -141,8 +160,9 @@ public class KnowledgeDomainServiceImpl implements KnowledgeDomainService{
     public void setParentId(Long parentId) {
         this.parentId = parentId;
     }
-     
-     
-    
-    
+
+    public Map<String, String> getAvailableProcesses() {
+        return availableProcesses;
+    }
+
 }

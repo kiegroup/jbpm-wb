@@ -26,6 +26,7 @@ import org.drools.logger.KnowledgeRuntimeLoggerFactory;
 
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.process.ProcessInstance;
+import org.droolsjbpm.services.api.KnowledgeAdminDataService;
 import org.droolsjbpm.services.api.KnowledgeDataService;
 import org.droolsjbpm.services.api.KnowledgeDomainService;
 import org.droolsjbpm.services.impl.model.NodeInstanceDesc;
@@ -44,7 +45,9 @@ public abstract class DomainKnowledgeServiceBaseTest {
     protected TaskServiceEntryPoint taskService;
     @Inject
     protected KnowledgeDataService dataService;
-    @Ignore
+    @Inject
+    protected KnowledgeAdminDataService adminDataService;
+    
     @Test
     public void testSimpleProcess() throws Exception {
         
@@ -69,7 +72,9 @@ public abstract class DomainKnowledgeServiceBaseTest {
         assertEquals(2, processInstanceHistory.size());
         assertEquals("Start", iterator.next().getName());
         assertEquals("Write a Document", iterator.next().getName());
-
+        Collection<NodeInstanceDesc> processInstanceActiveNodes = dataService.getProcessInstanceActiveNodes(0, processInstance.getId());
+        assertEquals(1, processInstanceActiveNodes.size());
+        assertEquals("Write a Document", processInstanceActiveNodes.iterator().next().getName());
 
         List<TaskSummary> tasksAssignedAsPotentialOwner = taskService.getTasksAssignedAsPotentialOwner("salaboy", "en-UK");
         Collection<ProcessInstance> processInstances = ksession.getProcessInstances();
@@ -106,11 +111,20 @@ public abstract class DomainKnowledgeServiceBaseTest {
         assertEquals("Start", iterator.next().getName());
         assertEquals("Write a Document", iterator.next().getName());
         assertEquals("Translate and Review", iterator.next().getName());
-        assertEquals("Translate Document", iterator.next().getName());
-        assertEquals("Review Document", iterator.next().getName());
-
-
-
+        String taskName = iterator.next().getName();
+        assertTrue(("Translate Document".equals(taskName) || "Review Document".equals(taskName)));
+        taskName = iterator.next().getName();
+        assertTrue(("Translate Document".equals(taskName) || "Review Document".equals(taskName)));
+        
+        processInstanceActiveNodes = dataService.getProcessInstanceActiveNodes(0, processInstance.getId());
+        assertEquals(2, processInstanceActiveNodes.size());
+        Iterator<NodeInstanceDesc> iteratorActiveNodes = processInstanceActiveNodes.iterator();
+        String nodeName = iteratorActiveNodes.next().getName();
+        assertTrue(("Translate Document".equals(nodeName) || "Review Document".equals(nodeName)));
+        nodeName = iteratorActiveNodes.next().getName();
+        assertTrue(("Translate Document".equals(nodeName) || "Review Document".equals(nodeName)));
+        
+        
         List<TaskSummary> reviewerTasks = taskService.getTasksAssignedAsPotentialOwner("reviewer", "en-UK");
         assertEquals(1, reviewerTasks.size());
 
@@ -124,9 +138,11 @@ public abstract class DomainKnowledgeServiceBaseTest {
         assertEquals("Start", iterator.next().getName());
         assertEquals("Write a Document", iterator.next().getName());
         assertEquals("Translate and Review", iterator.next().getName());
-        assertEquals("Translate Document", iterator.next().getName());
-        assertEquals("Review Document", iterator.next().getName());
-
+        taskName = iterator.next().getName();
+        assertTrue(("Translate Document".equals(taskName) || "Review Document".equals(taskName)));
+        taskName = iterator.next().getName();
+        assertTrue("Translate Document".equals(taskName) || "Review Document".equals(taskName));
+        
         assertEquals("Waiting for Translation and Revision", iterator.next().getName());
 
 
@@ -143,14 +159,17 @@ public abstract class DomainKnowledgeServiceBaseTest {
         assertEquals("Start", iterator.next().getName());
         assertEquals("Write a Document", iterator.next().getName());
         assertEquals("Translate and Review", iterator.next().getName());
-        assertEquals("Translate Document", iterator.next().getName());
-        assertEquals("Review Document", iterator.next().getName());
+        taskName = iterator.next().getName();
+        assertTrue("Translate Document".equals(taskName) || "Review Document".equals(taskName));
+        taskName = iterator.next().getName();
+        assertTrue("Translate Document".equals(taskName) || "Review Document".equals(taskName));
         assertEquals("Waiting for Translation and Revision", iterator.next().getName());
         assertEquals("Waiting for Translation and Revision", iterator.next().getName());
         assertEquals("Report", iterator.next().getName());
         assertEquals("End", iterator.next().getName());
 
-
+        processInstanceHistory = dataService.getProcessInstanceFullHistory(0, processInstance.getId());
+        assertEquals(18, processInstanceHistory.size());
 
        
 

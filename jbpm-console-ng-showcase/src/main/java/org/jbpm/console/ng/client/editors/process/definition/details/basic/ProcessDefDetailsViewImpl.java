@@ -26,6 +26,7 @@ import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -38,36 +39,39 @@ public class ProcessDefDetailsViewImpl extends Composite
         implements
         ProcessDefDetailsPresenter.InboxView {
 
-    
     private ProcessDefDetailsPresenter presenter;
-  
     @Inject
     @DataField
     public TextBox processNameText;
-
-  
+    @Inject
+    @DataField
+    public TextBox nroOfHumanTasksText;
+    @Inject
+    @DataField
+    public ListBox humanTasksListBox;
+    @Inject
+    @DataField
+    public ListBox usersGroupsListBox;
+    @Inject
+    @DataField
+    public ListBox startDataListBox;
     @Inject
     @DataField
     public Button refreshButton;
-    
-   
     @Inject
     private Event<NotificationEvent> notification;
 
     @Override
     public void init(ProcessDefDetailsPresenter presenter) {
         this.presenter = presenter;
-
-
-       
-
-     
+        this.humanTasksListBox.setVisibleItemCount(5);
+        this.usersGroupsListBox.setVisibleItemCount(5);
+        this.startDataListBox.setVisibleItemCount(5);
     }
 
-   
-   
     @EventHandler("refreshButton")
     public void refreshButton(ClickEvent e) {
+
         displayNotification(processNameText.getText());
     }
 
@@ -75,13 +79,25 @@ public class ProcessDefDetailsViewImpl extends Composite
         return processNameText;
     }
 
- 
+    public TextBox getNroOfHumanTasksText() {
+        return nroOfHumanTasksText;
+    }
+
+    public ListBox getHumanTasksListBox() {
+        return humanTasksListBox;
+    }
+
+    public ListBox getUsersGroupsListBox() {
+        return usersGroupsListBox;
+    }
+
+    public ListBox getStartDataListBox() {
+        return startDataListBox;
+    }
+    
+    
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
-
-
-
-  
 }

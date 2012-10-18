@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.client.editors.process.instance.details.basic;
 
-import org.jbpm.console.ng.client.editors.process.definition.details.basic.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -27,6 +26,8 @@ import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -44,9 +45,17 @@ public class ProcessInstanceDetailsViewImpl extends Composite
   
     @Inject
     @DataField
-    public TextBox processNameText;
+    public TextBox processIdText;
 
   
+    @Inject
+    @DataField
+    public ListBox currentActivitiesListBox;
+    
+    @Inject
+    @DataField
+    public TextArea logTextArea;
+    
     @Inject
     @DataField
     public Button refreshButton;
@@ -59,24 +68,26 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     public void init(ProcessInstanceDetailsPresenter presenter) {
         this.presenter = presenter;
 
-
-       
-
      
     }
 
    
-   
     @EventHandler("refreshButton")
     public void refreshButton(ClickEvent e) {
-        displayNotification(processNameText.getText());
+        displayNotification(processIdText.getText());
     }
 
-    public TextBox getProcessNameText() {
-        return processNameText;
+    public TextBox getProcessIdText() {
+        return processIdText;
     }
 
- 
+    public ListBox getCurrentActivitiesListBox() {
+        return currentActivitiesListBox;
+    }
+
+    public TextArea getLogTextArea() {
+        return logTextArea;
+    }
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));

@@ -15,16 +15,21 @@
  */
 package org.jbpm.console.ng.client.editors.process.instance.details.basic;
 
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+import java.util.List;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 
-import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
+import org.jboss.errai.bus.client.api.RemoteCallback;
 
 
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.client.model.NodeInstanceSummary;
+import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -44,17 +49,18 @@ public class ProcessInstanceDetailsPresenter {
 
         void displayNotification(String text);
 
+        ListBox getCurrentActivitiesListBox();
 
-        TextBox getProcessNameText();
+        TextArea getLogTextArea();
 
-      
+        TextBox getProcessIdText();
     }
     @Inject
     private PlaceManager placeManager;
     @Inject
     InboxView view;
-    @Inject
-    Caller<TaskServiceEntryPoint> taskServices;
+     @Inject
+    Caller<KnowledgeDomainServiceEntryPoint> domainServices;
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -66,46 +72,34 @@ public class ProcessInstanceDetailsPresenter {
         return view;
     }
 
-    
-
-    public void refreshProcessDef(String processId) {
-//        taskServices.call(new RemoteCallback<TaskSummary>() {
-//            @Override
-//            public void callback(TaskSummary details) {
-//                view.getTaskIdText().setText(String.valueOf(details.getId()));
-//                view.getTaskNameText().setText(details.getName());
-//
-//                view.getTaskDescriptionTextArea().setText(details.getDescription());
-//                view.getDueDate().setValue(details.getExpirationTime());
-//
-//                view.getUserText().setText(details.getActualOwner());
-//                int i = 0;
-//                for (String strategy : view.getSubTaskStrategies()) {
-//                    if (details.getSubTaskStrategy().equals(strategy)) {
-//                        view.getSubTaskStrategyListBox().setSelectedIndex(i);
-//                    }
-//                    i++;
-//                }
-//                i = 0;
-//                for (String priority : view.getPriorities()) {
-//                    if (details.getPriority() == i) {
-//                        view.getTaskPriorityListBox().setSelectedIndex(i);
-//                    }
-//                    i++;
-//                }
-//                i = 0;
-//            }
-//        }).getProcessDetails(taskId);
-
+    public void refreshProcessInstanceData(final String processId) {
+        domainServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
+            @Override
+            public void callback(List<NodeInstanceSummary> details) {
+               String fullLog = "";
+               for(NodeInstanceSummary nis : details){
+                   fullLog += nis.getTimestamp() + " - "+nis.getNodeName() + " (" + nis.getType() + ") \n"; 
+               }
+               view.getLogTextArea().setText(fullLog);
+            }
+        }).getProcessInstanceHistory(0, Long.parseLong(processId));
+        domainServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
+            @Override
+            public void callback(List<NodeInstanceSummary> details) {
+                for(NodeInstanceSummary nis : details){
+                    view.getCurrentActivitiesListBox().addItem(nis.getTimestamp() +":" + nis.getId() + "-" + nis.getNodeName(), 
+                                                                String.valueOf(nis.getId()) );
+                }
+            }
+        }).getProcessInstanceActiveNodes(0, Long.parseLong(processId));
+        
     }
-
-    
 
     @OnReveal
     public void onReveal() {
         final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        String processId = (String)((PassThroughPlaceRequest)p).getPassThroughParameter("processInstanceId", "");
-        view.getProcessNameText().setText(processId);
-        refreshProcessDef(processId);
+        String processId = (String) ((PassThroughPlaceRequest) p).getPassThroughParameter("processInstanceId", "");
+        view.getProcessIdText().setText(processId);
+        refreshProcessInstanceData(processId);
     }
 }

@@ -16,10 +16,13 @@
 package org.jbpm.console.ng.shared;
 
 import java.util.Collection;
+import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.console.ng.client.model.NodeInstanceSummary;
 import org.jbpm.console.ng.client.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.client.model.ProcessSummary;
 import org.jbpm.console.ng.client.model.StatefulKnowledgeSessionSummary;
+import org.jbpm.console.ng.client.model.TaskDefSummary;
 
 /**
  *
@@ -44,6 +47,20 @@ public interface KnowledgeDomainServiceEntryPoint {
     
     Collection<ProcessSummary> getProcesses();
     
+    Collection<TaskDefSummary> getAllTasksDef(String bpmn2Content);
     
+    Map<String, String> getAvailableProcesses();
+    
+    Map<String, String> getRequiredInputData(String bpmn2Content);
+    
+    Map<String, String> getAssociatedEntities(String bpmn2Content);
+    
+    Collection<NodeInstanceSummary> getProcessInstanceHistory(int sessionId, long id); 
+    
+    Collection<NodeInstanceSummary> getProcessInstanceHistory(int sessionId, long processId, boolean completed);
+
+    Collection<NodeInstanceSummary> getProcessInstanceFullHistory(int sessionId, long processId);
+
+    Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(int sessionId, long processId);
     
 }

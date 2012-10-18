@@ -23,10 +23,13 @@ import org.droolsjbpm.services.impl.model.NodeInstanceDesc;
  * @author salaboy
  */
 public class NodeInstanceDescFactory {
-    public static NodeInstanceDesc newNodeInstanceDesc(String domainName, int sessionId, long processInstanceId, NodeInstance nodeInstance){
+    public static NodeInstanceDesc newNodeInstanceDesc(String domainName, int sessionId, long processInstanceId, 
+                                                        NodeInstance nodeInstance, boolean completed){
         return new NodeInstanceDesc(nodeInstance.getId(),
-                                    nodeInstance.getNodeId(), 
+                                    nodeInstance.getNodeId(),
                                     nodeInstance.getNode().getName(), 
-                                    domainName, sessionId, processInstanceId);
+                                    nodeInstance.getNode().getClass().getSimpleName(),
+                                    domainName, sessionId, processInstanceId, completed);
     }
+    
 }

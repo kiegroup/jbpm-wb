@@ -33,7 +33,7 @@
         <drools.version>5.5.0-SNAPSHOT</drools.version>
         <jbpm.version>5.5.0-SNAPSHOT</jbpm.version>
         <form.builder.ng.version>0.1-SNAPSHOT</form.builder.ng.version>
-        <errai.version>2.1.0.Beta1</errai.version>
+        <errai.version>2.1.0.Final</errai.version>
         <uberfire.version>0.1-SNAPSHOT</uberfire.version>
         <seam.version>3.1.0.Final</seam.version>
         <weld.version>1.1.8.Final</weld.version>

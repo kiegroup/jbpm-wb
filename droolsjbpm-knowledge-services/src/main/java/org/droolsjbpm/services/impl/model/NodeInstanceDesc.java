@@ -38,7 +38,8 @@ public class NodeInstanceDesc implements Serializable{
     private String domainName;
     private int sessionId;
     private long processInstanceId;
-    
+    private String type;
+    private boolean completed;
     
     
     @Temporal(javax.persistence.TemporalType.DATE)
@@ -48,13 +49,22 @@ public class NodeInstanceDesc implements Serializable{
         this.dataTimeStamp = new Date();
     }
 
-    public NodeInstanceDesc(long id, long nodeId, String name, String domainName, int sessionId, long processInstanceId) {
+    public NodeInstanceDesc(long id, long nodeId, String name, String type, 
+                            String domainName, int sessionId, long processInstanceId){
+        this(id, nodeId, name, type, domainName, sessionId, processInstanceId, false);
+        
+    } 
+    public NodeInstanceDesc(long id, long nodeId, String name, String type,
+                            String domainName, int sessionId, long processInstanceId, 
+                            boolean completed) {
         this.id = id;
         this.nodeId = nodeId;
         this.name = name;
+        this.type = type;
         this.sessionId = sessionId;
         this.processInstanceId = processInstanceId;
         this.domainName = domainName;
+        this.completed = completed;
         this.dataTimeStamp = new Date();
     }
 
@@ -86,10 +96,18 @@ public class NodeInstanceDesc implements Serializable{
         return domainName;
     }
 
+    public String getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
-        return "NodeInstanceDesc["+dataTimeStamp.toString()+"]{" + "pk=" + pk + ", id=" + id + ", nodeId=" + nodeId + ", name=" + name + ", domainName=" + domainName + ", sessionId=" + sessionId + ", processInstanceId=" + processInstanceId + '}';
+        return "NodeInstanceDesc["+dataTimeStamp.toString()+"]{" + "pk=" + pk + ", id=" + id + ", nodeId=" + nodeId + ", name=" + name + ", domainName=" + domainName + ", sessionId=" + sessionId + ", processInstanceId=" + processInstanceId + ", type=" + type + '}';
     }
+    
+    
+
+   
 
     
   

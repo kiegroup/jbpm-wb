@@ -34,11 +34,17 @@ public interface KnowledgeDataService {
 
     Collection<ProcessDesc> getProcesses();
     
-    ProcessInstanceDesc getProcessInstanceById(int sessionId, long id);
+    ProcessInstanceDesc getProcessInstanceById(int sessionId, long processId);
     
-    Collection<NodeInstanceDesc> getProcessInstanceHistory(int sessionId, long id);
+    Collection<NodeInstanceDesc> getProcessInstanceHistory(int sessionId, long processId);
     
-    Collection<VariableStateDesc> getVariableHistory(long processInstanceId, long id);
+    Collection<NodeInstanceDesc> getProcessInstanceHistory(int sessionId, long processId, boolean completed);
+    
+    Collection<NodeInstanceDesc> getProcessInstanceFullHistory(int sessionId, long processId);
+    
+    Collection<NodeInstanceDesc> getProcessInstanceActiveNodes(int sessionId, long processId);
+    
+    Collection<VariableStateDesc> getVariableHistory(long processInstanceId, long processId);
     
     
 

@@ -15,6 +15,7 @@
  */
 package org.droolsjbpm.services.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -79,6 +80,24 @@ public class KnowledgeDataServiceImpl implements KnowledgeDataService {
     }
 
     public Collection<NodeInstanceDesc> getProcessInstanceHistory(int sessionId, long processId) {
+        return getProcessInstanceHistory(sessionId, processId, false);
+    }
+
+    public Collection<VariableStateDesc> getVariableHistory(long processInstanceId, long id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public Collection<NodeInstanceDesc> getProcessInstanceHistory(int sessionId, long processId, boolean completed) {
+        List<NodeInstanceDesc> nodeInstances = em.createQuery("select nid from NodeInstanceDesc nid where nid.processInstanceId=:processId AND nid.sessionId=:sessionId AND nid.completed =:completed ORDER BY nid.dataTimeStamp DESC")
+                .setParameter("processId", processId)
+                .setParameter("sessionId", sessionId)
+                .setParameter("completed", completed)
+                .getResultList();
+
+        return nodeInstances;
+    }
+
+    public Collection<NodeInstanceDesc> getProcessInstanceFullHistory(int sessionId, long processId) {
         List<NodeInstanceDesc> nodeInstances = em.createQuery("select nid from NodeInstanceDesc nid where nid.processInstanceId=:processId AND nid.sessionId=:sessionId ORDER BY nid.dataTimeStamp DESC")
                 .setParameter("processId", processId)
                 .setParameter("sessionId", sessionId)
@@ -87,7 +106,34 @@ public class KnowledgeDataServiceImpl implements KnowledgeDataService {
         return nodeInstances;
     }
 
-    public Collection<VariableStateDesc> getVariableHistory(long processInstanceId, long id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Collection<NodeInstanceDesc> getProcessInstanceActiveNodes(int sessionId, long processId) {
+        List<NodeInstanceDesc> completedNodeInstances = em.createQuery("select nid from NodeInstanceDesc nid where nid.processInstanceId=:processId AND nid.sessionId=:sessionId AND nid.completed =:completed ORDER BY nid.dataTimeStamp DESC")
+                .setParameter("processId", processId)
+                .setParameter("sessionId", sessionId)
+                .setParameter("completed", true)
+                .getResultList();
+        
+        List<NodeInstanceDesc> activeNodeInstances = em.createQuery("select nid from NodeInstanceDesc nid where nid.processInstanceId=:processId AND nid.sessionId=:sessionId AND nid.completed =:completed ORDER BY nid.dataTimeStamp DESC")
+                .setParameter("processId", processId)
+                .setParameter("sessionId", sessionId)
+                .setParameter("completed", false)
+                .getResultList();
+        
+        List<NodeInstanceDesc> uncompletedNodeInstances = new ArrayList<NodeInstanceDesc>(activeNodeInstances.size() - completedNodeInstances.size());
+        for(NodeInstanceDesc nid : activeNodeInstances){
+            boolean completed = false;
+            for(NodeInstanceDesc cnid : completedNodeInstances){
+                
+                if(nid.getNodeId() == cnid.getNodeId()){
+                    completed = true;
+                }
+            }
+            if(!completed){
+                uncompletedNodeInstances.add(nid);
+            } 
+        }
+        
+
+        return uncompletedNodeInstances;
     }
 }

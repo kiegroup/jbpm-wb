@@ -2,23 +2,36 @@
 <div class="form">
 
     <div class="form-header">
-        <h2>Task Details</h2>
+        <h2>Process Instance Details</h2>
         <div class="header-actions clearfix">
             <button class="button main" data-field="refreshButton" id="refreshButton">Refresh</button>
-            
+
         </div>
     </div>
 
     <div class="form-content">
 
-        
+
         <div class="form-row clearfix">
-            <label>Task</label>
-            <input type="text" data-field="processNameText"  id="processNameText"/>
+            <label>Process Instance Id</label>
+            <input type="text" data-field="processIdText"  id="processIdText"/>
         </div>
-       
 
 
+        <div class="form-row clearfix">
+            <label>Current Activities</label>
+            <div class="select-container">
+                <select data-field="currentActivitiesListBox" size="5" id="currentActivitiesListBox">
+
+                </select>
+            </div>
+
+        </div>    
+
+        <div class="form-row clearfix">
+            <label>Process Log</label>
+            <textarea data-field="logTextArea" id="logTextArea"></textarea>
+        </div>
 
     </div>
 
