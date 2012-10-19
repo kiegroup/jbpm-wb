@@ -15,11 +15,13 @@
  */
 package org.jbpm.console.ng.client.fb.view.properties;
 
-
-import apple.laf.JRSUIUtils;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.jbpm.console.ng.shared.fb.events.PaletteItemUpdatedEvent;
+import org.jbpm.form.builder.ng.model.client.bus.FormItemSelectionEvent;
 import org.uberfire.client.mvp.PlaceManager;
 
 import com.google.gwt.core.client.GWT;
@@ -44,9 +46,11 @@ public class FormBuilderPropertiesViewImpl extends AbsolutePanel
     private static FormBuilderViewImplBinder uiBinder = GWT.create(FormBuilderViewImplBinder.class);
     @Inject
     private PlaceManager placeManager;
+    @Inject
+    private Event<PaletteItemUpdatedEvent> itemUpdatedManager;
     private FormBuilderPropertiesPresenter presenter;
    
-    @UiField
+    @UiField(provided = true)
     public ScrollPanel propertiesView;
     
     
@@ -58,11 +62,17 @@ public class FormBuilderPropertiesViewImpl extends AbsolutePanel
     }
 
     protected final void init() {
-       
+    	propertiesView = new EditionViewImpl(itemUpdatedManager);
 
+    	add(uiBinder.createAndBindUi(this));
     }
 
-     
+    public void selectedItem(@Observes FormItemSelectionEvent event) {
+        if (event.isSelected()) {
+            ((EditionView) propertiesView).selectTab();
+            ((EditionView) propertiesView).populate(event.getContext());
+        }
+    }
 
    
     public ScrollPanel getPropertiesView() {

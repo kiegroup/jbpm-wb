@@ -337,6 +337,7 @@
                 { "className": "org.jbpm.formbuilder.parent.client.effect.IoBindingEffect" }
             ],
             "className": "org.jbpm.form.builder.ng.model.shared.menu.items.CustomMenuItem",
+            "iconUrl": "image/menuitems/single_line_text.png",
             "allowedEvents": [
                "onblur", "onchange", "onclick", "ondblclick", "onfocus",
                 "onmousedown", "onmousemove", "onmouseout", "onmouseover", "onmouseup",
@@ -416,6 +417,7 @@
                 { "className": "org.jbpm.formbuilder.parent.client.effect.IoBindingEffect" }
             ],
             "className": "org.jbpm.form.builder.ng.model.shared.menu.items.CustomMenuItem",
+            "iconUrl": "image/menuitems/number.png",
             "allowedEvents": [
                "onblur", "onchange", "onclick", "ondblclick", "onfocus",
                 "onmousedown", "onmousemove", "onmouseout", "onmouseover", "onmouseup",
@@ -496,6 +498,7 @@
                 { "className": "org.jbpm.formbuilder.parent.client.effect.IoBindingEffect" }
              ],
              "className": "org.jbpm.form.builder.ng.model.shared.menu.items.CustomMenuItem",
+             "iconUrl": "image/menuitems/paragraph_text.png",
              "allowedEvents": [
                  "onblur", "onchange", "onclick", "ondblclick", "onfocus",
                 "onmousedown", "onmousemove", "onmouseout", "onmouseover", "onmouseup",
@@ -737,6 +740,7 @@
                 { "className": "org.jbpm.formbuilder.parent.client.effect.IoBindingEffect" }
           ],
           "className": "org.jbpm.form.builder.ng.model.shared.menu.items.CustomMenuItem",
+          "iconUrl": "image/menuitems/checkboxes.png",
           "allowedEvents": [
              "onblur", "onchange", "onclick", "ondblclick", "onfocus",
                 "onmousedown", "onmousemove", "onmouseout", "onmouseover", "onmouseup",
@@ -978,6 +982,7 @@
                 { "className": "org.jbpm.formbuilder.parent.client.effect.IoBindingEffect" }
           ],
           "className": "org.jbpm.form.builder.ng.model.shared.menu.items.CustomMenuItem",
+          "iconUrl": "image/menuitems/multiple_choice.png",
           "allowedEvents": [
              "onblur", "onchange", "onclick", "ondblclick", "onfocus",
                 "onmousedown", "onmousemove", "onmouseout", "onmouseover", "onmouseup",
