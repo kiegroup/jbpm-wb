@@ -40,14 +40,21 @@ public class FormBuilderPerspective {
         
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
         p.setName( "Form Builder Perspective" );
-        PlaceRequest taskDetails = new DefaultPlaceRequest( "Form Builder - Palette" );
-        p.getRoot().addPart( new PartDefinitionImpl( taskDetails ) );
+        PlaceRequest palette = new DefaultPlaceRequest( "Form Builder - Palette" );
+        p.getRoot().addPart( new PartDefinitionImpl( palette ) );
         final PanelDefinition eastPanel = new PanelDefinitionImpl();
-        eastPanel.setWidth( 200 );
- 	eastPanel.setMinWidth( 180 );
-        PlaceRequest taskContent = new DefaultPlaceRequest( "Form Builder - Canvas");
-        eastPanel.addPart( new PartDefinitionImpl( taskContent ) );      
-       
+        eastPanel.setWidth( 800 );
+ 	eastPanel.setMinWidth( 480 );
+        PlaceRequest canvasContent = new DefaultPlaceRequest( "Form Builder - Canvas");
+        eastPanel.addPart( new PartDefinitionImpl( canvasContent ) );      
+        
+        final PanelDefinition east2Panel = new PanelDefinitionImpl();
+        east2Panel.setWidth( 200 );
+ 	east2Panel.setMinWidth( 180 );
+        PlaceRequest propertiesContent = new DefaultPlaceRequest( "Form Builder - Properties");
+        east2Panel.addPart( new PartDefinitionImpl( propertiesContent ) );      
+        
+        p.getRoot().setChild( Position.EAST , east2Panel );
         p.getRoot().setChild( Position.EAST , eastPanel );
         p.setTransient(true);
         return p;

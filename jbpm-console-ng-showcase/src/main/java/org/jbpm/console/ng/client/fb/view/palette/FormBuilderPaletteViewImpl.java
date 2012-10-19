@@ -68,7 +68,7 @@ public class FormBuilderPaletteViewImpl extends AbsolutePanel
     protected final void init() {
         menuView = new AnimatedPaletteViewImpl();
         
-        menuView.setAlwaysShowScrollBars(true);
+        
         menuView.setSize("235px",
                 "100%");
         
