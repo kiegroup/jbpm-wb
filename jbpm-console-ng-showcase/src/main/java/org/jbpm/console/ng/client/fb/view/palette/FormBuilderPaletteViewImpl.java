@@ -31,9 +31,13 @@ import org.jbpm.form.builder.ng.model.shared.menu.MenuItemDescription;
 import org.uberfire.client.mvp.PlaceManager;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.rg.ImageResourceGenerator;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.jbpm.form.builder.ng.model.shared.menu.items.CustomMenuItem;
@@ -91,7 +95,12 @@ public class FormBuilderPaletteViewImpl extends AbsolutePanel
                    customItem.setRepresentation(menuItemDescription.getItemRepresentation());
                    customItem.setOptionName(optionName);
                    customItem.setGroupName(event.getGroupName());
-                   
+                   if (menuItemDescription.getIconUrl() != null) {
+                	   //TODO sacarle la barra inicial a los iconUrl del menuItems.json
+                	   String baseUrl = GWT.getHostPageBaseURL().replace(GWT.getModuleName() + "/", "");
+                	   customItem.setIconUrlAsString(baseUrl + menuItemDescription.getIconUrl());
+                   }
+                   customItem.repaint();
                }
             FBMenuItem item = (FBMenuItem) newInstance;
 
