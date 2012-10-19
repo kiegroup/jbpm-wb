@@ -19,7 +19,15 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.jbpm.console.ng.shared.fb.events.FormLoadedEvent;
+import org.jbpm.console.ng.shared.fb.events.PaletteItemUpdatedEvent;
+import org.jbpm.form.builder.ng.model.client.form.EditionContext;
+import org.jbpm.form.builder.ng.model.client.form.FBCompositeItem;
+import org.jbpm.form.builder.ng.model.client.form.FBForm;
+import org.jbpm.form.builder.ng.model.client.form.FBFormItem;
+import org.jbpm.form.builder.ng.model.shared.api.FormRepresentation;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.widgets.dnd.WorkbenchPickupDragController;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -30,11 +38,6 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.jbpm.console.ng.client.fb.command.DropFormItemController;
-import org.jbpm.console.ng.shared.fb.events.FormLoadedEvent;
-import org.jbpm.form.builder.ng.model.client.form.FBForm;
-import org.jbpm.form.builder.ng.model.shared.api.FormRepresentation;
-import org.uberfire.client.workbench.widgets.dnd.WorkbenchPickupDragController;
 
 /**
  * Main view. Uses UIBinder to define the correct position of components
@@ -75,6 +78,22 @@ public class FormBuilderCanvasViewImpl extends AbsolutePanel
         
     }
 
+    public void updateItem(@Observes PaletteItemUpdatedEvent event) {
+    	FBForm form = ((CanvasViewImpl) layoutView).getFormDisplay();
+    	for (FBFormItem item : form.getItems()) {
+    		updateItem(item, event.getContext());
+    	}
+    }
+    
+    protected void updateItem(FBFormItem item, EditionContext context) {
+    	if (item instanceof FBCompositeItem) {
+    		FBCompositeItem compItem = (FBCompositeItem) item;
+    		for (FBFormItem subItem : compItem.getItems()) {
+    			updateItem(subItem, context);
+    		}
+    	}
+    	item.save(context);
+    }
 
     public ScrollPanel getLayoutView() {
         return layoutView;

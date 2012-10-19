@@ -19,28 +19,25 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.jbpm.console.ng.client.fb.view.palette.AnimatedPaletteViewImpl;
-import org.jbpm.console.ng.client.fb.view.palette.PaletteView;
 import org.jbpm.console.ng.shared.fb.events.PaletteItemAddedEvent;
+import org.jbpm.form.builder.ng.model.client.bus.FormItemSelectionEvent;
+import org.jbpm.form.builder.ng.model.client.bus.FormItemSelectionHandler;
 import org.jbpm.form.builder.ng.model.client.menu.FBMenuItem;
 import org.jbpm.form.builder.ng.model.common.reflect.ReflectionHelper;
 import org.jbpm.form.builder.ng.model.shared.menu.MenuItemDescription;
+import org.jbpm.form.builder.ng.model.shared.menu.items.CustomMenuItem;
 import org.uberfire.client.mvp.PlaceManager;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.rg.ImageResourceGenerator;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.jbpm.form.builder.ng.model.shared.menu.items.CustomMenuItem;
 
 /**
  * Main view. Uses UIBinder to define the correct position of components
@@ -57,11 +54,11 @@ public class FormBuilderPaletteViewImpl extends AbsolutePanel
     private static FormBuilderViewImplBinder uiBinder = GWT.create(FormBuilderViewImplBinder.class);
     @Inject
     private PlaceManager placeManager;
+    @Inject
+    private Event<FormItemSelectionEvent> eventSelection;
     private FormBuilderPalettePresenter presenter;
     public @UiField(provided = true)
     ScrollPanel menuView;
-    
-    
     
     @Override
     public void init(final FormBuilderPalettePresenter presenter) {
@@ -96,13 +93,18 @@ public class FormBuilderPaletteViewImpl extends AbsolutePanel
                    customItem.setOptionName(optionName);
                    customItem.setGroupName(event.getGroupName());
                    if (menuItemDescription.getIconUrl() != null) {
-                	   //TODO sacarle la barra inicial a los iconUrl del menuItems.json
                 	   String baseUrl = GWT.getHostPageBaseURL().replace(GWT.getModuleName() + "/", "");
                 	   customItem.setIconUrlAsString(baseUrl + menuItemDescription.getIconUrl());
                    }
                    customItem.repaint();
                }
             FBMenuItem item = (FBMenuItem) newInstance;
+            item.setItemSelectionHandler(new FormItemSelectionHandler() {
+				@Override
+				public void onEvent(FormItemSelectionEvent event) {
+					eventSelection.fire(event);
+				}
+			});
 
             ((PaletteView) menuView).addItem(group,
                     item);
