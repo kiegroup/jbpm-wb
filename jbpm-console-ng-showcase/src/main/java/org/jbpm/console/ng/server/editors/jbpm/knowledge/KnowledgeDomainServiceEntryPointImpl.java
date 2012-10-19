@@ -29,6 +29,7 @@ import org.jbpm.console.ng.client.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.client.model.ProcessSummary;
 import org.jbpm.console.ng.client.model.StatefulKnowledgeSessionSummary;
 import org.jbpm.console.ng.client.model.TaskDefSummary;
+import org.jbpm.console.ng.client.model.VariableSummary;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 
 /**
@@ -128,6 +129,14 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
 
     public Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(int sessionId, long processId) {
         return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceActiveNodes(sessionId, processId));
+    }
+
+    public ProcessSummary getProcessDesc(String bpmn2Content) {
+        return ProcessHelper.adapt(bpmn2Service.getProcessDesc(bpmn2Content));
+    } 
+
+    public Collection<VariableSummary> getVariablesCurrentState(long processInstanceId) {
+        return VariableHelper.adaptCollection(dataService.getVariablesCurrentState(processInstanceId));
     }
     
     

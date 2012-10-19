@@ -23,6 +23,7 @@ import org.jbpm.console.ng.client.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.client.model.ProcessSummary;
 import org.jbpm.console.ng.client.model.StatefulKnowledgeSessionSummary;
 import org.jbpm.console.ng.client.model.TaskDefSummary;
+import org.jbpm.console.ng.client.model.VariableSummary;
 
 /**
  *
@@ -62,5 +63,9 @@ public interface KnowledgeDomainServiceEntryPoint {
     Collection<NodeInstanceSummary> getProcessInstanceFullHistory(int sessionId, long processId);
 
     Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(int sessionId, long processId);
+    
+    ProcessSummary getProcessDesc(String bpmn2Content);
+    
+    Collection<VariableSummary> getVariablesCurrentState(long processInstanceId);
     
 }

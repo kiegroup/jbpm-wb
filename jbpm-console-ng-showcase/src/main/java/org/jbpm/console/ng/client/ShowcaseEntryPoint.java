@@ -62,7 +62,7 @@ public class ShowcaseEntryPoint {
     @Inject
     private IOCBeanManager                  iocManager;
     
-    private String[] menuItems = new String[]{
+    private String[] menuItems = new String[]{ "Home Screen",
         "Quick New Task", "Personal Tasks", "Group Tasks",
         "Quick New Sub Task", "Task Details", "Task Content",
         "Form Display","Get Pending Tasks", "Form Builder - Palette", "Form Builder - Canvas",
@@ -119,6 +119,8 @@ public class ShowcaseEntryPoint {
             perspectivesMenuBar.addItem( item );
         }
         menubar.addMenuItem( perspectivesMenu );
+        
+        
         //Add places
         Arrays.sort(menuItems);
         for (final String menuItem : menuItems) {

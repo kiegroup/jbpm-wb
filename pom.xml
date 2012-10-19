@@ -30,8 +30,8 @@
     <name>jBPM Console NG</name>
     <description>jBPM Console NG Modules</description>
     <properties>
-        <drools.version>5.5.0-SNAPSHOT</drools.version>
-        <jbpm.version>5.5.0-SNAPSHOT</jbpm.version>
+        <drools.version>6.0.0-SNAPSHOT</drools.version>
+        <jbpm.version>6.0.0-SNAPSHOT</jbpm.version>
         <form.builder.ng.version>0.1-SNAPSHOT</form.builder.ng.version>
         <errai.version>2.1.0.Final</errai.version>
         <uberfire.version>0.1-SNAPSHOT</uberfire.version>

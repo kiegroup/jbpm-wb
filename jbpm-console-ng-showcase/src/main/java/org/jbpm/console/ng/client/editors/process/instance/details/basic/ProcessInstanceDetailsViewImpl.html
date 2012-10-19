@@ -17,6 +17,11 @@
             <input type="text" data-field="processIdText"  id="processIdText"/>
         </div>
 
+        <div class="form-row clearfix">
+            <label>Process Definition Name</label>
+            <input type="text" data-field="processNameText"  id="processNameText"/>
+        </div>
+
 
         <div class="form-row clearfix">
             <label>Current Activities</label>
@@ -31,6 +36,15 @@
         <div class="form-row clearfix">
             <label>Process Log</label>
             <textarea data-field="logTextArea" id="logTextArea"></textarea>
+        </div>
+
+        <div class="list-content">
+
+            <table id="processDataGrid" data-field="processDataGrid">
+
+            </table>
+
+            <div id="pager" data-field="pager"></div>
         </div>
 
     </div>

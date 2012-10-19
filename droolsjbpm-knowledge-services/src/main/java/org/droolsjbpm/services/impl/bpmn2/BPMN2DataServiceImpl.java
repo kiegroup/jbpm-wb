@@ -30,6 +30,8 @@ import org.drools.compiler.PackageBuilder;
 import org.drools.compiler.PackageBuilderConfiguration;
 import org.drools.io.impl.ByteArrayResource;
 import org.droolsjbpm.services.api.bpmn2.BPMN2DataService;
+import org.droolsjbpm.services.impl.model.ProcessDesc;
+import org.droolsjbpm.services.impl.model.VariableStateDesc;
 import org.jbpm.task.TaskDef;
 import org.jbpm.task.api.TaskServiceEntryPoint;
 
@@ -110,8 +112,8 @@ public class BPMN2DataServiceImpl implements BPMN2DataService {
         return repo.getTaskAssignments();
     }
 
-    public List<String> getAssociatedDomainObjects(String processId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<String> getAssociatedDomainObjects(String bpmn2Content) {
+         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public Map<String, String> getRequiredInputData(String bpmn2Content) {
@@ -139,5 +141,25 @@ public class BPMN2DataServiceImpl implements BPMN2DataService {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public ProcessDesc getProcessDesc(String bpmn2Content){
+         if (bpmn2Content == null || "".equals(bpmn2Content)) {
+            throw new IllegalStateException("The Process Content cannot be Empty!");
+        }
+        BPMN2ProcessProvider originalProvider = BPMN2ProcessFactory.getBPMN2ProcessProvider();
+        if (originalProvider != provider) {
+            BPMN2ProcessFactory.setBPMN2ProcessProvider(provider);
+        }
+
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+       
+        kbuilder.add(new ByteArrayResource(bpmn2Content.getBytes()), ResourceType.BPMN2);
+        if (kbuilder.hasErrors()) {
+            throw new IllegalStateException("Process Cannot be Parsed!");
+        }
+        
+        BPMN2ProcessFactory.setBPMN2ProcessProvider(originalProvider);
+        
+        return repo.getProcess();
+    }
    
 }

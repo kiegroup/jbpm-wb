@@ -123,8 +123,7 @@ public class KnowledgeDomainServiceImpl implements KnowledgeDomainService{
     public StatefulKnowledgeSession getSessionByBusinessKey(String businessKey) {
         return ksessions.get(businessKey);
     }
-
-    
+ 
     public Collection<StatefulKnowledgeSession> getSessions() {
         return ksessions.values();
     }

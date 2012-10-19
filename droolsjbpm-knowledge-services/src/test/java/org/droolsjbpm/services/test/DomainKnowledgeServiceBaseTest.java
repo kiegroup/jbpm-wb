@@ -31,11 +31,11 @@ import org.droolsjbpm.services.api.KnowledgeDataService;
 import org.droolsjbpm.services.api.KnowledgeDomainService;
 import org.droolsjbpm.services.impl.model.NodeInstanceDesc;
 import org.droolsjbpm.services.impl.model.ProcessInstanceDesc;
+import org.droolsjbpm.services.impl.model.VariableStateDesc;
 import org.jbpm.task.api.TaskServiceEntryPoint;
 import org.jbpm.task.query.TaskSummary;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
 
 public abstract class DomainKnowledgeServiceBaseTest {
 
@@ -82,7 +82,8 @@ public abstract class DomainKnowledgeServiceBaseTest {
         assertEquals(1, processInstances.size());
 
         assertEquals(1, tasksAssignedAsPotentialOwner.size());
-
+        Collection<VariableStateDesc> variablesCurrentState = dataService.getVariablesCurrentState(processInstance.getId());
+        assertEquals(0, variablesCurrentState.size());
         // Get Twice to test duplicated items
         tasksAssignedAsPotentialOwner = taskService.getTasksAssignedAsPotentialOwner("salaboy", "en-UK");
 
@@ -100,11 +101,15 @@ public abstract class DomainKnowledgeServiceBaseTest {
 
 
 
-
+        
 
         List<TaskSummary> translatorTasks = taskService.getTasksAssignedAsPotentialOwner("translator", "en-UK");
         assertEquals(1, translatorTasks.size());
-
+        
+        variablesCurrentState = dataService.getVariablesCurrentState(processInstance.getId());
+        assertEquals(1, variablesCurrentState.size());
+        assertEquals("Initial Document", variablesCurrentState.iterator().next().getNewValue());
+        
         processInstanceHistory = dataService.getProcessInstanceHistory(0, processInstance.getId());
         assertEquals(5, processInstanceHistory.size());
         iterator = processInstanceHistory.iterator();
@@ -129,8 +134,9 @@ public abstract class DomainKnowledgeServiceBaseTest {
         assertEquals(1, reviewerTasks.size());
 
         taskService.start(reviewerTasks.get(0).getId(), "reviewer");
-
-        taskService.complete(reviewerTasks.get(0).getId(), "reviewer", null);
+        result = new HashMap<String, Object>();
+        result.put("Result", "Reviewed Document");
+        taskService.complete(reviewerTasks.get(0).getId(), "reviewer", result);
 
         processInstanceHistory = dataService.getProcessInstanceHistory(0, processInstance.getId());
         assertEquals(6, processInstanceHistory.size());
@@ -145,13 +151,19 @@ public abstract class DomainKnowledgeServiceBaseTest {
         
         assertEquals("Waiting for Translation and Revision", iterator.next().getName());
 
-
+        variablesCurrentState = dataService.getVariablesCurrentState(processInstance.getId());
+        assertEquals(2, variablesCurrentState.size());
+        Iterator<VariableStateDesc> variableIterator = variablesCurrentState.iterator();
+        assertEquals("Initial Document", variableIterator.next().getNewValue());
+        assertEquals("Reviewed Document", variableIterator.next().getNewValue());
+        
         translatorTasks = taskService.getTasksAssignedAsPotentialOwner("translator", "en-UK");
         assertEquals(1, translatorTasks.size());
 
         taskService.start(translatorTasks.get(0).getId(), "translator");
-
-        taskService.complete(translatorTasks.get(0).getId(), "translator", null);
+        result = new HashMap<String, Object>();
+        result.put("Result", "Translated Document");
+        taskService.complete(translatorTasks.get(0).getId(), "translator", result);
 
         processInstanceHistory = dataService.getProcessInstanceHistory(0, processInstance.getId());
         assertEquals(9, processInstanceHistory.size());
@@ -168,6 +180,14 @@ public abstract class DomainKnowledgeServiceBaseTest {
         assertEquals("Report", iterator.next().getName());
         assertEquals("End", iterator.next().getName());
 
+        variablesCurrentState = dataService.getVariablesCurrentState(processInstance.getId());
+        assertEquals(3, variablesCurrentState.size());
+        variableIterator = variablesCurrentState.iterator();
+        assertEquals("Initial Document", variableIterator.next().getNewValue());
+        assertEquals("Reviewed Document", variableIterator.next().getNewValue());
+        assertEquals("Translated Document", variableIterator.next().getNewValue());
+        
+        
         processInstanceHistory = dataService.getProcessInstanceFullHistory(0, processInstance.getId());
         assertEquals(18, processInstanceHistory.size());
 

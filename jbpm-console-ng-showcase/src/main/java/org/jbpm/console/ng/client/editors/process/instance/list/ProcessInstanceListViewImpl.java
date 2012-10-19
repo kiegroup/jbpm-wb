@@ -285,6 +285,7 @@ public class ProcessInstanceListViewImpl extends Composite
 
                 DefaultPlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance Details Perspective");
                 placeRequestImpl.addParameter("processInstanceId", Long.toString(process.getId()));
+                placeRequestImpl.addParameter("processDefId", process.getProcessId());
                 placeManager.goTo(placeRequestImpl);
 
             }

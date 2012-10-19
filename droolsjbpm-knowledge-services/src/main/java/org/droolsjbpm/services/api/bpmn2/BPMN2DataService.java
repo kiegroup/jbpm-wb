@@ -18,6 +18,7 @@ package org.droolsjbpm.services.api.bpmn2;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import org.droolsjbpm.services.impl.model.ProcessDesc;
 import org.jbpm.task.TaskDef;
 
 /**
@@ -30,4 +31,5 @@ public interface BPMN2DataService {
     Map<String, String> getRequiredInputData(String bpmn2Content);
     List<String> getAssociatedForms(String bpmn2Content);
     Collection<TaskDef> getAllTasksDef(String bpmn2Content);
+    ProcessDesc getProcessDesc(String bpmn2Content);
 }

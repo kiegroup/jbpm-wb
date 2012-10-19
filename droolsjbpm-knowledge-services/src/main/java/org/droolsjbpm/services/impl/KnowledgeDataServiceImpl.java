@@ -83,8 +83,12 @@ public class KnowledgeDataServiceImpl implements KnowledgeDataService {
         return getProcessInstanceHistory(sessionId, processId, false);
     }
 
-    public Collection<VariableStateDesc> getVariableHistory(long processInstanceId, long id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Collection<VariableStateDesc> getVariablesCurrentState(long processInstanceId) {
+        List<VariableStateDesc> variablesState = em.createQuery("select vs FROM VariableStateDesc vs where vs.processInstanceId =:processInstanceId AND vs.pk = (select max(vss.pk) FROM VariableStateDesc vss WHERE vss.id = vs.id ) ")
+                .setParameter("processInstanceId", processInstanceId)
+                .getResultList();
+
+        return variablesState;
     }
 
     public Collection<NodeInstanceDesc> getProcessInstanceHistory(int sessionId, long processId, boolean completed) {
