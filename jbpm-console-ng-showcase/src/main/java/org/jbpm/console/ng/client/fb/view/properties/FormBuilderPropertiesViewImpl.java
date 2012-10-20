@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.client.fb.view.properties;
 
 
-import apple.laf.JRSUIUtils;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
