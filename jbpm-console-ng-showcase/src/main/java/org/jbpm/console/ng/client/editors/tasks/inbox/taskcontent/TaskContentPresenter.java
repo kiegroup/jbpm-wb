@@ -53,6 +53,8 @@ public class TaskContentPresenter {
         VerticalPanel getOutputPanel();
 
         TextBox getTaskIdText();
+        
+        Map<TextBox, TextBox> getTextBoxs();
     }
     @Inject
     private PlaceManager placeManager;
@@ -103,6 +105,7 @@ public class TaskContentPresenter {
                     flowPanel.add(keyTextBox);
                     flowPanel.add(valueTextBox);
                     view.getContentPanel().add(flowPanel);
+                    view.getTextBoxs().put(keyTextBox, valueTextBox);
                 }
 
             }

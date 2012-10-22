@@ -15,13 +15,29 @@
  */
 package org.jbpm.console.ng.client;
 
+import com.google.gwt.animation.client.Animation;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.SuggestBox.DefaultSuggestionDisplay;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -42,6 +58,9 @@ import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
 import org.uberfire.client.workbench.widgets.menu.impl.DefaultMenuBar;
 import org.uberfire.client.workbench.widgets.menu.impl.DefaultMenuItemCommand;
 import org.uberfire.client.workbench.widgets.menu.impl.DefaultMenuItemSubMenu;
+import org.uberfire.client.workbench.widgets.menu.impl.DefaultMenuBar;
+import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
+import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 import com.google.gwt.animation.client.Animation;
@@ -60,22 +79,27 @@ public class ShowcaseEntryPoint {
     @Inject
     private WorkbenchMenuBarPresenter menubar;
     @Inject
-    private ActivityManager                 activityManager;
+    private ActivityManager activityManager;
     @Inject
-    private IOCBeanManager                  iocManager;
-    
-    private String[] menuItems = new String[]{ "Home Screen",
+    private IOCBeanManager iocManager;
+    private String[] menuItems = new String[]{"Home Screen",
         "Quick New Task", "Personal Tasks", "Group Tasks",
         "Quick New Sub Task", "Task Details", "Task Content",
-        "Form Display","Get Pending Tasks", "Form Builder - Palette", "Form Builder - Canvas",
+        "Form Display", "Get Pending Tasks", "Form Builder - Palette", "Form Builder - Canvas",
         "Process Instance List", "Quick New Process Instance", "Process Definition List"
     };
-
+    
+    private SuggestBox actionText;
+    private TextBox textSuggestBox ;
+    DefaultSuggestionDisplay suggestionDisplay ;
+    Map<String, String> actions = new HashMap<String, String>();
+    
     @AfterInitialization
     public void startApp() {
         loadStyles();
         setupMenu();
         hideLoadingPopup();
+        registerDoAction();
     }
 
     private void loadStyles() {
@@ -84,46 +108,68 @@ public class ShowcaseEntryPoint {
         //RoundedCornersResource.INSTANCE.roundCornersCss().ensureInjected();
     }
 
+    private void registerDoAction() {
+        actions.put("Show me my pending Tasks", "Personal Tasks");
+        actions.put("Show me my Inbox", "Inbox Perspective");
+        actions.put("I want to start a new Process", "Process Runtime Perspective");
+        actions.put("I want to design a new Process Model", "Process Designer Perspective");
+        actions.put("I want to create a Task", "Quick New Task");
+        actions.put("Show me all the pending tasks in my Group", "Group Tasks");
+        actions.put("I want to design a new Form", "Form Builder Perspective");
+        
+        KeyPressHandler keyPressHandler = new KeyPressHandler() {
+            public void onKeyPress(KeyPressEvent event) {
+                System.out.println("Open Do Action");
+                if (event.getUnicodeCharCode() == 160 && event.isAltKeyDown()) {
+                    final DialogBox dialogBox = createDialogBox();
+                    dialogBox.setGlassEnabled(true);
+                    dialogBox.setAnimationEnabled(true);
+                    dialogBox.center();
+                    dialogBox.show();
+                    actionText.setFocus(true);        
+                }
+            }
+        };
+        RootPanel.get().addDomHandler(keyPressHandler, KeyPressEvent.getType());
+    }
+
     private void setupMenu() {
         //Places sub-menu
-        final MenuBar placesMenuBar = new DefaultMenuBar();
-        final MenuItemSubMenu placesMenu = new DefaultMenuItemSubMenu("Places",
-        		placesMenuBar);
-        
-         //Home
+        final DefaultMenuBar placesMenuBar = new DefaultMenuBar();
+        final DefaultMenuItemSubMenu placesMenu = new DefaultMenuItemSubMenu("Places",
+                placesMenuBar);
+        //Home
         final AbstractWorkbenchPerspectiveActivity defaultPerspective = getDefaultPerspectiveActivity();
-        if ( defaultPerspective != null ) {
-            menubar.addMenuItem( new DefaultMenuItemCommand( "Home",
-                                                             new Command() {
-                                                                 @Override
-                                                                 public void execute() {
-                                                                     placeManager.goTo( new DefaultPlaceRequest( defaultPerspective.getIdentifier() ) );
-                                                                 }
-                                                             } ) );
+        if (defaultPerspective != null) {
+            menubar.addMenuItem(new DefaultMenuItemCommand("Home",
+                    new Command() {
+                        @Override
+                        public void execute() {
+                            placeManager.goTo(new DefaultPlaceRequest(defaultPerspective.getIdentifier()));
+                        }
+                    }));
         }
 
         //Perspectives
         final MenuBar perspectivesMenuBar = new DefaultMenuBar();
-        final MenuItemSubMenu perspectivesMenu = new DefaultMenuItemSubMenu( "Perspectives",
-                                                                             perspectivesMenuBar );
+        final MenuItemSubMenu perspectivesMenu = new DefaultMenuItemSubMenu("Perspectives",
+                perspectivesMenuBar);
         final List<AbstractWorkbenchPerspectiveActivity> perspectives = getPerspectiveActivities();
-        for ( final AbstractWorkbenchPerspectiveActivity perspective : perspectives ) {
+        for (final AbstractWorkbenchPerspectiveActivity perspective : perspectives) {
             final String name = perspective.getPerspective().getName();
             final Command cmd = new Command() {
-
                 @Override
                 public void execute() {
-                    placeManager.goTo( new DefaultPlaceRequest( perspective.getIdentifier() ) );
+                    placeManager.goTo(new DefaultPlaceRequest(perspective.getIdentifier()));
                 }
-
             };
-            final MenuItemCommand item = new DefaultMenuItemCommand( name,
-                                                                     cmd );
-            perspectivesMenuBar.addItem( item );
+            final MenuItemCommand item = new DefaultMenuItemCommand(name,
+                    cmd);
+            perspectivesMenuBar.addItem(item);
         }
-        menubar.addMenuItem( perspectivesMenu );
-        
-        
+        menubar.addMenuItem(perspectivesMenu);
+
+
         //Add places
         Arrays.sort(menuItems);
         for (final String menuItem : menuItems) {
@@ -149,16 +195,17 @@ public class ShowcaseEntryPoint {
 
     private AbstractWorkbenchPerspectiveActivity getDefaultPerspectiveActivity() {
         AbstractWorkbenchPerspectiveActivity defaultPerspective = null;
-        final Collection<IOCBeanDef<AbstractWorkbenchPerspectiveActivity>> perspectives = iocManager.lookupBeans( AbstractWorkbenchPerspectiveActivity.class );
+        final Collection<IOCBeanDef<AbstractWorkbenchPerspectiveActivity>> perspectives = iocManager.lookupBeans(AbstractWorkbenchPerspectiveActivity.class);
         final Iterator<IOCBeanDef<AbstractWorkbenchPerspectiveActivity>> perspectivesIterator = perspectives.iterator();
-        outer_loop : while ( perspectivesIterator.hasNext() ) {
+        outer_loop:
+        while (perspectivesIterator.hasNext()) {
             final IOCBeanDef<AbstractWorkbenchPerspectiveActivity> perspective = perspectivesIterator.next();
             final AbstractWorkbenchPerspectiveActivity instance = perspective.getInstance();
-            if ( instance.isDefault() ) {
+            if (instance.isDefault()) {
                 defaultPerspective = instance;
                 break outer_loop;
             } else {
-                iocManager.destroyBean( instance );
+                iocManager.destroyBean(instance);
             }
         }
         return defaultPerspective;
@@ -167,24 +214,23 @@ public class ShowcaseEntryPoint {
     private List<AbstractWorkbenchPerspectiveActivity> getPerspectiveActivities() {
 
         //Get Perspective Providers
-        final Set<AbstractWorkbenchPerspectiveActivity> activities = activityManager.getActivities( AbstractWorkbenchPerspectiveActivity.class );
+        final Set<AbstractWorkbenchPerspectiveActivity> activities = activityManager.getActivities(AbstractWorkbenchPerspectiveActivity.class);
 
         //Sort Perspective Providers so they're always in the same sequence!
-        List<AbstractWorkbenchPerspectiveActivity> sortedActivities = new ArrayList<AbstractWorkbenchPerspectiveActivity>( activities );
-        Collections.sort( sortedActivities,
-                          new Comparator<AbstractWorkbenchPerspectiveActivity>() {
-
-                              @Override
-                              public int compare(AbstractWorkbenchPerspectiveActivity o1,
-                                                 AbstractWorkbenchPerspectiveActivity o2) {
-                                  return o1.getPerspective().getName().compareTo( o2.getPerspective().getName() );
-                              }
-
-                          } );
+        List<AbstractWorkbenchPerspectiveActivity> sortedActivities = new ArrayList<AbstractWorkbenchPerspectiveActivity>(activities);
+        Collections.sort(sortedActivities,
+                new Comparator<AbstractWorkbenchPerspectiveActivity>() {
+                    @Override
+                    public int compare(AbstractWorkbenchPerspectiveActivity o1,
+                            AbstractWorkbenchPerspectiveActivity o2) {
+                        return o1.getPerspective().getName().compareTo(o2.getPerspective().getName());
+                    }
+                });
 
         return sortedActivities;
     }
     //Fade out the "Loading application" pop-up
+
     private void hideLoadingPopup() {
         final Element e = RootPanel.get("loading").getElement();
 
@@ -204,4 +250,79 @@ public class ShowcaseEntryPoint {
     public static native void redirect(String url)/*-{
      $wnd.location = url;
      }-*/;
+
+    private DialogBox createDialogBox() {
+        // Create a dialog box and set the caption text
+        final DialogBox dialogBox = new DialogBox();
+        dialogBox.ensureDebugId("cwDialogBox");
+        dialogBox.setText("Do Action");
+
+        // Create a table to layout the content
+        VerticalPanel dialogContents = new VerticalPanel();
+        dialogContents.setSpacing(4);
+        dialogBox.setWidget(dialogContents);
+
+        // Add some text to the top of the dialog
+        HTML details = new HTML("What do you want to do now?");
+        dialogContents.add(details);
+        dialogContents.setCellHorizontalAlignment(
+                details, HasHorizontalAlignment.ALIGN_CENTER);
+
+        MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
+        String[] words = {"Show me my pending Tasks",
+            "I want to start a new Process",
+            "I want to design a new Process Model",
+            "I want to design a new Form",
+            "I want to create a Task",
+            "Show me all the pending tasks in my Group",
+            "Show me my Inbox"
+        };
+        for (int i = 0; i < words.length; ++i) {
+            oracle.add(words[i]);
+        }
+        // Create the suggest box
+        textSuggestBox = new TextBox();
+        suggestionDisplay = new DefaultSuggestionDisplay();
+        actionText = new SuggestBox(oracle, textSuggestBox, suggestionDisplay);
+        
+         KeyPressHandler keyPressHandler = new KeyPressHandler() {
+            public void onKeyPress(KeyPressEvent event) {
+                if (event.getNativeEvent().getKeyCode() == 27) {
+                    System.out.println("Hide Do Action");
+                    dialogBox.hide();
+                    suggestionDisplay.hideSuggestions();
+                    
+                }
+                if (event.getNativeEvent().getKeyCode() == 13) {
+                    System.out.println("Execute Do Action");
+                    doAction(actionText.getText());
+                    dialogBox.hide();
+                }
+            }
+        };
+        
+        actionText.addHandler(keyPressHandler, KeyPressEvent.getType());
+        
+        dialogContents.add(actionText);
+        
+       
+
+       
+
+
+        // Return the dialog box
+        return dialogBox;
+    }
+    
+    public void doAction(String action) {
+        String locatedAction = actions.get(action);
+        if(locatedAction == null || locatedAction.equals("")){
+            
+            return;
+        }
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(locatedAction);
+//        placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
+
+        placeManager.goTo(placeRequestImpl);
+    }
 }

@@ -96,7 +96,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         processDataGrid.setHeight("200px");
 
         // Set the message to display when the table is empty.
-        processDataGrid.setEmptyTableWidget(new Label("Hooray you don't have any pending Task!!"));
+        processDataGrid.setEmptyTableWidget(new Label("There is no variable information to show"));
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler =

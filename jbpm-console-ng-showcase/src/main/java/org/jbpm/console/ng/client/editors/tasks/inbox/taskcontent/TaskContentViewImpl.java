@@ -128,4 +128,9 @@ public class TaskContentViewImpl extends Composite
         return taskIdText;
     }
 
+    public Map<TextBox, TextBox> getTextBoxs() {
+        return textBoxs;
+    }
+    
+
 }

@@ -238,6 +238,18 @@ textarea {
 
 }
 
+.form .form-content .form-row .select-container.multi {
+     min-height: 25px;
+     height: auto; 
+}
+
+.form .form-content .form-row .select-container.multi select {
+
+  min-height: 25px;
+  height: auto; 
+
+}
+
 .form-content.one-col .form-row label{
     width: 100%;
     text-align: left;

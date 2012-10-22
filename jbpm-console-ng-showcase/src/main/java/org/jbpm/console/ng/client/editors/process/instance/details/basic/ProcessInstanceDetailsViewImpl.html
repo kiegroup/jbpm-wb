@@ -25,7 +25,7 @@
 
         <div class="form-row clearfix">
             <label>Current Activities</label>
-            <div class="select-container">
+            <div class="select-container multi">
                 <select data-field="currentActivitiesListBox" size="5" id="currentActivitiesListBox">
 
                 </select>
@@ -37,14 +37,15 @@
             <label>Process Log</label>
             <textarea data-field="logTextArea" id="logTextArea"></textarea>
         </div>
+        <div class="list">
+            <div class="list-content">
 
-        <div class="list-content">
+                <table id="processDataGrid" data-field="processDataGrid">
 
-            <table id="processDataGrid" data-field="processDataGrid">
+                </table>
 
-            </table>
-
-            <div id="pager" data-field="pager"></div>
+                <div id="pager" data-field="pager"></div>
+            </div>
         </div>
 
     </div>

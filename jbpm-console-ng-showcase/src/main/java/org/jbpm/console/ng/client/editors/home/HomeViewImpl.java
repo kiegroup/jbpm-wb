@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.client.editors.home;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -28,7 +29,7 @@ import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 
@@ -51,11 +52,14 @@ public class HomeViewImpl extends Composite
 //    @Inject
 //    @DataField
 //    public Label userLabel;
+    @DataField
+    public Image avatar;
     @Inject
     @DataField
     public Button goButton;
     @Inject
     private Event<NotificationEvent> notification;
+    
 
     public HomeViewImpl() {
         MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
@@ -72,13 +76,16 @@ public class HomeViewImpl extends Composite
         }
         // Create the suggest box
         actionText = new SuggestBox(oracle);
+        avatar = new Image();
 
     }
 
     @Override
     public void init(HomePresenter presenter) {
         this.presenter = presenter;
-
+        String url = GWT.getHostPageBaseURL();
+        avatar.setUrl(url+"images/avatars/"+identity.getName()+".png");
+        avatar.setSize("64px", "64px");
         //userLabel.setText(identity.getName());
 
     }
