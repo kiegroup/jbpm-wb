@@ -86,7 +86,6 @@ public class HomePresenter {
         actions.put("I want to design a new Process Model", "Process Designer Perspective");
         actions.put("I want to create a Task", "Quick New Task");
         actions.put("Show me all the pending tasks in my Group", "Group Tasks");
-        actions.put("I want to design a new Form", "Form Builder Perspective");
         
     }
 }
