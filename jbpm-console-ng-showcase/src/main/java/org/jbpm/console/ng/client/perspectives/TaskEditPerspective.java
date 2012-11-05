@@ -46,16 +46,17 @@ public class TaskEditPerspective {
         eastPanel.setWidth( 300 );
  	eastPanel.setMinWidth( 200 );
         eastPanel.setWidth(800);
+        eastPanel.setHeight(400);
         PlaceRequest taskContent = new DefaultPlaceRequest( "Task Content");
         eastPanel.addPart( new PartDefinitionImpl( taskContent ) );      
         final PanelDefinition westPanelSouthPanel = new PanelDefinitionImpl();
         PlaceRequest subTasks = new DefaultPlaceRequest(  "Quick New Sub Task" );
         westPanelSouthPanel.addPart( new PartDefinitionImpl( subTasks ) );
-        westPanelSouthPanel.setHeight(400);
+        westPanelSouthPanel.setHeight(300);
         westPanelSouthPanel.setMinHeight(200);
         westPanelSouthPanel.setWidth(800);
-        eastPanel.setChild( Position.SOUTH , westPanelSouthPanel);
-        p.getRoot().setChild( Position.EAST , eastPanel );
+        eastPanel.insertChild( Position.SOUTH , westPanelSouthPanel);
+        p.getRoot().insertChild( Position.EAST , eastPanel );
         p.setTransient(true);
         return p;
   

@@ -116,9 +116,7 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
         return displayService.getFormDisplay(taskId);
     }
 
-    public void completeForm(long id, String userId, Map<String, String> params) {
-        displayService.completeForm(id, userId, params);
-    }
+  
 
     public String saveForm(FormRepresentation form) {
         try {

@@ -28,8 +28,9 @@ import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.client.model.TaskSummary;
+import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
-import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -52,9 +53,12 @@ public class TaskContentPresenter {
 
         VerticalPanel getOutputPanel();
 
-        TextBox getTaskIdText();
-        
+        long getTaskId();
+        void setTaskId(long taskId);
+
         Map<TextBox, TextBox> getTextBoxs();
+        
+        void saveContent(boolean notify) throws NumberFormatException;
     }
     @Inject
     private PlaceManager placeManager;
@@ -62,6 +66,8 @@ public class TaskContentPresenter {
     InboxView view;
     @Inject
     Caller<TaskServiceEntryPoint> taskServices;
+    @Inject
+    Caller<KnowledgeDomainServiceEntryPoint> domainServices;
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -80,11 +86,13 @@ public class TaskContentPresenter {
     public void init() {
     }
 
-    public void saveContent(Long taskId, Map<String, String> values) {
+    public void saveContent(Long taskId, Map<String, String> values, final boolean notify) {
         taskServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long taskId) {
-                view.displayNotification("Content Saved for Task " + taskId + "");
+                if(notify){
+                    view.displayNotification("Content Saved for Task " + taskId + "");
+                }
 
             }
         }).saveContent(taskId, values);
@@ -111,6 +119,48 @@ public class TaskContentPresenter {
             }
         }).getContentListByTaskId(taskId);
 
+
+
+        taskServices.call(new RemoteCallback<TaskSummary>() {
+            @Override
+            public void callback(final TaskSummary task) {
+                final String processId = task.getProcessId();
+                domainServices.call(new RemoteCallback<Map<String, String>>() {
+                    @Override
+                    public void callback(Map<String, String> processes) {
+                        
+                        if (processId != null && !processId.equals("")) {
+                            String processXML = processes.get(processId);
+                            domainServices.call(new RemoteCallback<Map<String, String>>() {
+                                @Override
+                                public void callback(Map<String, String> outputMappings) {
+                                    for (String key : outputMappings.keySet()) {
+                                        FlowPanel flowPanel = new FlowPanel();
+                                        flowPanel.setStyleName("group-row value-pair");
+                                        TextBox keyTextBox = new TextBox();
+                                        keyTextBox.setText(outputMappings.get(key));
+                                        TextBox valueTextBox = new TextBox();
+                                        valueTextBox.setText("");
+                                        flowPanel.add(keyTextBox);
+                                        flowPanel.add(valueTextBox);
+                                        view.getContentPanel().add(flowPanel);
+                                        view.getTextBoxs().put(keyTextBox, valueTextBox);
+                                    }
+
+                                }
+                            }).getTaskOutputMappings(processXML, task.getName());
+                        }
+                    }
+                }).getAvailableProcesses();
+
+            }
+        }).getTaskDetails(taskId);
+
+
+
+
+
+
         taskServices.call(new RemoteCallback<Map<String, String>>() {
             @Override
             public void callback(Map<String, String> content) {
@@ -129,12 +179,12 @@ public class TaskContentPresenter {
             }
         }).getTaskOutputContentByTaskId(taskId);
     }
-    
+
     @OnReveal
     public void onReveal() {
         final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        long taskId = Long.parseLong(((PassThroughPlaceRequest)p).getPassThroughParameter("taskId", "0"));
-        view.getTaskIdText().setText(String.valueOf(taskId));
-        getContentByTaskId(new Long(view.getTaskIdText().getText()));
+        long taskId = Long.parseLong(((PassThroughPlaceRequest) p).getPassThroughParameter("taskId", "0"));
+        view.setTaskId(taskId);
+        getContentByTaskId(view.getTaskId());
     }
 }

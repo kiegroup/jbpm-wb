@@ -117,7 +117,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
 
     @EventHandler("refreshButton")
     public void refreshButton(ClickEvent e) {
-        displayNotification(processIdText.getText());
+        presenter.refreshProcessInstanceData(processIdText.getText(),processNameText.getText());
     }
 
     public TextBox getProcessIdText() {
@@ -157,7 +157,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         variableId.setSortable(true);
 
         processDataGrid.addColumn(variableId,
-                new ResizableHeader("Id", processDataGrid, variableId));
+                new ResizableHeader("Variable", processDataGrid, variableId));
         sortHandler.setComparator(variableId,
                 new Comparator<VariableSummary>() {
                     public int compare(VariableSummary o1,
@@ -187,27 +187,9 @@ public class ProcessInstanceDetailsViewImpl extends Composite
                 });
 
 
-        // Status.
-        Column<VariableSummary, String> instanceIdColumn = new Column<VariableSummary, String>(new TextCell()) {
-            @Override
-            public String getValue(VariableSummary object) {
-                return object.getVariableInstanceId();
-            }
-        };
-        instanceIdColumn.setSortable(true);
+        
 
-
-        processDataGrid.addColumn(instanceIdColumn,
-                new ResizableHeader("Instance Id", processDataGrid, instanceIdColumn));
-        sortHandler.setComparator(instanceIdColumn,
-                new Comparator<VariableSummary>() {
-                    public int compare(VariableSummary o1,
-                            VariableSummary o2) {
-                        return o1.getVariableInstanceId().compareTo(o2.getVariableInstanceId());
-                    }
-                });
-
-        // Due Date.
+        // Last Time Changed Date.
         Column<VariableSummary, String> dueDateColumn = new Column<VariableSummary, String>(new TextCell()) {
             @Override
             public String getValue(VariableSummary object) {

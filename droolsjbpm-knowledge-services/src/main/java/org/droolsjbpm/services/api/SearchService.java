@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 JBoss Inc 
+ * Copyright 2012 JBoss by Red Hat.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.fb.view.canvas;
+package org.droolsjbpm.services.api;
 
-
-import com.allen_sauer.gwt.dnd.client.PickupDragController;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.IsWidget;
-import org.jbpm.form.builder.ng.model.client.form.FBForm;
-
-public interface CanvasView extends IsWidget {
-
-    FBForm getFormDisplay();
-
-    void startDropController(PickupDragController controller, IsWidget widget);
+/**
+ *
+ * @author salaboy
+ */
+public class SearchService {
     
-    HasWidgets getUnderlyingLayout(Integer x, Integer y);
 }

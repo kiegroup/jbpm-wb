@@ -15,6 +15,8 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.personal.list;
 
+import com.google.gwt.cell.client.ActionCell;
+import com.google.gwt.cell.client.ActionCell.Delegate;
 import java.util.Comparator;
 import java.util.Set;
 
@@ -32,14 +34,15 @@ import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 
 import com.google.gwt.cell.client.ButtonCell;
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CheckboxCell;
+import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
@@ -49,18 +52,16 @@ import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
-import org.jboss.errai.ui.shared.api.annotations.SinkNative;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.client.util.ResizableHeader;
 import org.uberfire.security.Identity;
@@ -87,12 +88,7 @@ public class InboxPersonalViewImpl extends Composite
     @Inject
     @DataField
     public Button completeTaskButton;
-    @Inject
-    @DataField
-    public Button releaseTaskButton;
-    @Inject
-    @DataField
-    public TextBox userText;
+   
     @Inject
     @DataField
     public DataGrid<TaskSummary> myTaskListGrid;
@@ -102,9 +98,12 @@ public class InboxPersonalViewImpl extends Composite
     @Inject
     @DataField
     public CheckBox showCompletedCheck;
-    
-    
-    
+    @Inject
+    @DataField
+    public CheckBox showPersonalTasksCheck;
+    @Inject
+    @DataField
+    public CheckBox showGroupTasksCheck;
     private Set<TaskSummary> selectedTasks;
     @Inject
     private Event<NotificationEvent> notification;
@@ -151,30 +150,22 @@ public class InboxPersonalViewImpl extends Composite
 
         initTableColumns(selectionModel);
 
-        userText.setText(identity.getName());
+
 
         presenter.addDataDisplay(myTaskListGrid);
 
 
-
+        refreshTasks();
     }
 
-   
-
-
     public void recieveStatusChanged(@Observes UserTaskEvent event) {
-        Boolean isChecked = showCompletedCheck.getValue();
+        refreshTasks();
 
-        presenter.refreshTasks(event.getUserId(),
-                isChecked);
-        userText.setText(event.getUserId());
     }
 
     @EventHandler("refreshTasksButton")
     public void refreshTasksButton(ClickEvent e) {
-        Boolean isChecked = showCompletedCheck.getValue();
-        presenter.refreshTasks(userText.getText(),
-                isChecked);
+        refreshTasks();
     }
 
     @EventHandler("startTaskButton")
@@ -184,7 +175,7 @@ public class InboxPersonalViewImpl extends Composite
             return;
         }
         presenter.startTasks(selectedTasks,
-                userText.getText());
+                identity.getName());
     }
 
     @EventHandler("completeTaskButton")
@@ -194,19 +185,11 @@ public class InboxPersonalViewImpl extends Composite
             return;
         }
         presenter.completeTasks(selectedTasks,
-                userText.getText());
+                identity.getName());
 
     }
 
-    @EventHandler("releaseTaskButton")
-    public void releaseTaskButton(ClickEvent e) {
-        if (selectedTasks.isEmpty()) {
-            displayNotification("Please Select at least one Task to Execute a Quick Action");
-            return;
-        }
-        presenter.releaseTasks(selectedTasks,
-                userText.getText());
-    }
+   
 
     private void initTableColumns(final SelectionModel<TaskSummary> selectionModel) {
         // Checkbox column. This table will uses a checkbox column for selection.
@@ -331,6 +314,7 @@ public class InboxPersonalViewImpl extends Composite
                     }
                 });
 
+
         // Task parent id.
         Column<TaskSummary, String> taskParentIdColumn =
                 new Column<TaskSummary, String>(new TextCell()) {
@@ -351,54 +335,55 @@ public class InboxPersonalViewImpl extends Composite
                     }
                 });
 
-        Column<TaskSummary, String> editColumn =
-                new Column<TaskSummary, String>(new ButtonCell()) {
-                    @Override
-                    public String getValue(TaskSummary task) {
-                        return "Edit";
-                    }
-                };
 
-        editColumn.setFieldUpdater(new FieldUpdater<TaskSummary, String>() {
+
+//   
+
+
+        List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
+        cells.add(new ClaimActionHasCell("Claim", new Delegate<TaskSummary>() {
             @Override
-            public void update(int index,
-                    TaskSummary task,
-                    String value) {
-
+            public void execute(TaskSummary task) {
+                Set<TaskSummary> tasks = new HashSet<TaskSummary>(1);
+                tasks.add(task);
+                presenter.claimTasks(tasks, identity.getName());
+            }
+        }));
+        
+        cells.add(new ReleaseActionHasCell("Release", new Delegate<TaskSummary>() {
+            @Override
+            public void execute(TaskSummary task) {
+                Set<TaskSummary> tasks = new HashSet<TaskSummary>(1);
+                tasks.add(task);
+                presenter.releaseTasks(tasks, identity.getName());
+            }
+        }));
+        cells.add(new ActionHasCell("Edit", new Delegate<TaskSummary>() {
+            @Override
+            public void execute(TaskSummary task) {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Edit Perspective");
                 placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
                 placeManager.goTo(placeRequestImpl);
-
             }
-        });
-
-        myTaskListGrid.addColumn(editColumn,
-                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Edit")));
-
-
-        Column<TaskSummary, String> workColumn =
-                new Column<TaskSummary, String>(new ButtonCell()) {
-                    @Override
-                    public String getValue(TaskSummary task) {
-                        return "Work";
-                    }
-                };
-
-        workColumn.setFieldUpdater(new FieldUpdater<TaskSummary, String>() {
+        }));
+        cells.add(new WorkActionHasCell("Work", new Delegate<TaskSummary>() {
             @Override
-            public void update(int index,
-                    TaskSummary task,
-                    String value) {
+            public void execute(TaskSummary task) {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Perspective");
                 placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
 
                 placeManager.goTo(placeRequestImpl);
-
             }
-        });
+        }));
 
-        myTaskListGrid.addColumn(workColumn,
-                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Work")));
+        CompositeCell<TaskSummary> cell = new CompositeCell<TaskSummary>(cells);
+        myTaskListGrid.addColumn(new Column<TaskSummary, TaskSummary>(cell) {
+            @Override
+            public TaskSummary getValue(TaskSummary object) {
+                return object;
+            }
+        }, "Actions");
+
 
 
     }
@@ -407,14 +392,11 @@ public class InboxPersonalViewImpl extends Composite
         notification.fire(new NotificationEvent(text));
     }
 
-    public TextBox getUserText() {
-        return userText;
-    }
-
     public void onTaskSelected(@Observes TaskChangedEvent taskChanged) {
-        Boolean isChecked = showCompletedCheck.getValue();
-        presenter.refreshTasks(taskChanged.getUserId(),
-                isChecked);
+        Boolean isCheckedCompleted = showCompletedCheck.getValue();
+        Boolean isCheckedGroupTasks = showGroupTasksCheck.getValue();
+//        presenter.refreshTasks(taskChanged.getUserId(),
+//                isCheckedCompleted, isCheckedGroupTasks);
 
     }
 
@@ -432,5 +414,133 @@ public class InboxPersonalViewImpl extends Composite
 
     public MultiSelectionModel<TaskSummary> getSelectionModel() {
         return selectionModel;
+    }
+
+    public CheckBox getShowGroupTasksCheck() {
+        return showGroupTasksCheck;
+    }
+
+    public void refreshTasks() {
+        Boolean isCheckedCompleted = showCompletedCheck.getValue();
+        Boolean isCheckedGroupTasks = showGroupTasksCheck.getValue();
+        Boolean isCheckedPersonalTasks = showPersonalTasksCheck.getValue();
+        presenter.refreshTasks(identity.getName(), isCheckedPersonalTasks,
+                isCheckedCompleted, isCheckedGroupTasks);
+    }
+
+    private class ActionHasCell implements HasCell<TaskSummary, TaskSummary> {
+
+        private ActionCell<TaskSummary> cell;
+
+        public ActionHasCell(String text, Delegate<TaskSummary> delegate) {
+            cell = new ActionCell<TaskSummary>(text, delegate);
+        }
+
+        @Override
+        public Cell<TaskSummary> getCell() {
+            return cell;
+        }
+
+        @Override
+        public FieldUpdater<TaskSummary, TaskSummary> getFieldUpdater() {
+            return null;
+        }
+
+        @Override
+        public TaskSummary getValue(TaskSummary object) {
+            return object;
+        }
+    }
+    
+    private class WorkActionHasCell implements HasCell<TaskSummary, TaskSummary> {
+
+        private ActionCell<TaskSummary> cell;
+
+        public WorkActionHasCell(String text, Delegate<TaskSummary> delegate) {
+            cell = new ActionCell<TaskSummary>(text, delegate){
+                @Override
+                public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
+                    if (value.getActualOwner() != null && (value.getStatus().equals("Reserved") || value.getStatus().equals("InProgress"))) {
+                        super.render(context, value, sb);
+                    }
+                }
+            };
+        }
+
+        @Override
+        public Cell<TaskSummary> getCell() {
+            return cell;
+        }
+
+        @Override
+        public FieldUpdater<TaskSummary, TaskSummary> getFieldUpdater() {
+            return null;
+        }
+
+        @Override
+        public TaskSummary getValue(TaskSummary object) {
+            return object;
+        }
+    }
+
+    private class ClaimActionHasCell implements HasCell<TaskSummary, TaskSummary> {
+
+        private ActionCell<TaskSummary> cell;
+
+        public ClaimActionHasCell(String text, Delegate<TaskSummary> delegate) {
+            cell = new ActionCell<TaskSummary>(text, delegate) {
+                @Override
+                public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
+                    if (value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty() && value.getStatus().equals("Ready")) {
+                        super.render(context, value, sb);
+                    }
+                }
+            };
+        }
+
+        @Override
+        public Cell<TaskSummary> getCell() {
+            return cell;
+        }
+
+        @Override
+        public FieldUpdater<TaskSummary, TaskSummary> getFieldUpdater() {
+            return null;
+        }
+
+        @Override
+        public TaskSummary getValue(TaskSummary object) {
+            return object;
+        }
+    }
+    private class ReleaseActionHasCell implements HasCell<TaskSummary, TaskSummary> {
+
+        private ActionCell<TaskSummary> cell;
+
+        public ReleaseActionHasCell(String text, Delegate<TaskSummary> delegate) {
+            cell = new ActionCell<TaskSummary>(text, delegate) {
+                @Override
+                public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
+                    if (value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty() && !value.getPotentialOwners().contains(identity.getName()) && value.getStatus().equals("Reserved")) {
+                        super.render(context, value, sb);
+                    }
+                }
+            };
+        }
+
+        @Override
+        public Cell<TaskSummary> getCell() {
+            return cell;
+        }
+
+        @Override
+        public FieldUpdater<TaskSummary, TaskSummary> getFieldUpdater() {
+            return null;
+        }
+
+        @Override
+        public TaskSummary getValue(TaskSummary object) {
+            return object;
+        }
     }
 }

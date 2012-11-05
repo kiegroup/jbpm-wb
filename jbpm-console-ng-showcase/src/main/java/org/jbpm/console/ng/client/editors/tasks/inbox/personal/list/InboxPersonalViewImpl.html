@@ -1,14 +1,15 @@
 <div class="list" data-field="parent">
     <div class="list-options">
-        <input type="search" id="userText" data-field="userText" /> 
         <button class="button" id="refreshTasksButton" data-field="refreshTasksButton">Refresh</button> 
         <button class="button" id="startTaskButton" data-field="startTaskButton">Start</button> 
         <button class="button" id="completeTaskButton" data-field="completeTaskButton">Complete</button> 
-        <button class="button" id="releaseTaskButton" data-field="releaseTaskButton">Release</button> 
-        <div class="option"><input type="checkbox"   id="showCompletedCheck" data-field="showCompletedCheck"/> Show completed?</div>
+        <div class="option"><input type="checkbox"   id="showCompletedCheck" data-field="showCompletedCheck"/> Owned</div>
+        <div class="option"><input type="checkbox"   id="showGroupTasksCheck" data-field="showGroupTasksCheck"/> Group Only </div>
+        <div class="option"><input type="checkbox"   id="showPersonalTasksCheck" data-field="showPersonalTasksCheck"/> Personal Only</div>
+        
     </div>
     <div class="list-content">
-
+        
         <table id="myTaskListGrid" data-field="myTaskListGrid">
 
         </table>

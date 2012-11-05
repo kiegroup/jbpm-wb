@@ -17,7 +17,7 @@
         </div>
         <div class="form-row clearfix">
             <label>Task</label>
-            <input type="text" data-field="taskNameText" />
+            <input type="text" data-field="taskNameText"/>
         </div>
         <div class="form-row clearfix">
             <label>Description</label>
@@ -28,8 +28,15 @@
             <input type="text" data-field="userText" id="userText" />
         </div>
         <div class="form-row clearfix">
-            <label>Group</label>
-            <input type="text" data-field="groupText" id="groupText"/>
+            <label>Potential Owners</label>
+            <div class="input-button">
+                <div class="select-container multi" >
+                    <select data-field="groupListBox" size="5" id="groupListBox">
+
+                    </select>
+                </div>
+                <button class="button main" data-field="forwardButton" id="forwardButton" >Forward</button>    
+            </div>
         </div>
         <div class="form-row clearfix">
             <label>Priority</label>

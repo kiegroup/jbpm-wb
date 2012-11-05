@@ -25,7 +25,7 @@ import org.jbpm.console.ng.client.model.TaskSummary;
 
  */
 public class TaskSummaryHelper {
-    public static List<TaskSummary> adapt(List<org.jbpm.task.query.TaskSummary> taskSums){
+    public static List<TaskSummary> adaptCollection(List<org.jbpm.task.query.TaskSummary> taskSums){
         List<TaskSummary> taskSummaries = new ArrayList<TaskSummary>(taskSums.size());
         for(org.jbpm.task.query.TaskSummary taskSum : taskSums){
             taskSummaries.add(new TaskSummary(taskSum.getId(), 
@@ -44,7 +44,7 @@ public class TaskSummaryHelper {
                                 taskSum.getProcessId(), 
                                 taskSum.getProcessSessionId(),
                                 taskSum.getSubTaskStrategy().name(),
-                                (int)taskSum.getParentId()));
+                                (int)taskSum.getParentId(), taskSum.getPotentialOwners()));
         }
         return taskSummaries;
     }

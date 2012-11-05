@@ -36,18 +36,21 @@ import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
 import org.jbpm.console.ng.client.model.TaskSummary;
 import org.uberfire.client.annotations.OnReveal;
-import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.security.Identity;
+import org.uberfire.security.Role;
 import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.PassThroughPlaceRequest;
 
 @Dependent
 @WorkbenchScreen(identifier = "Task Details")
 public class TaskDetailsPresenter {
+
+   
 
     public interface InboxView
             extends
@@ -57,7 +60,7 @@ public class TaskDetailsPresenter {
 
         TextBox getTaskIdText();
 
-        TextBox getGroupText();
+        ListBox getGroupListBox();
 
         TextBox getTaskNameText();
 
@@ -80,6 +83,8 @@ public class TaskDetailsPresenter {
     @Inject
     InboxView view;
     @Inject
+    Identity identity;
+    @Inject
     Caller<TaskServiceEntryPoint> taskServices;
 
     @WorkbenchPartTitle
@@ -92,7 +97,26 @@ public class TaskDetailsPresenter {
         return view;
     }
 
-    public void updateTask(final long taskId, final String taskDescription, final String subTaskStrategy,
+    public void forwardTask(final long taskId, final String userId, final String entityId) {
+        taskServices.call(new RemoteCallback<TaskSummary>() {
+                @Override
+                public void callback(TaskSummary details) {
+                            if (entityId != null && !entityId.equals("")) {
+                                taskServices.call(new RemoteCallback<Void>() {
+                                    @Override
+                                    public void callback(Void nothing) {
+                                        view.displayNotification("Task Forwarded from = " + userId + " -(to)-> " + entityId + ")");
+                                        view.getUserText().setText("");
+                                    }
+                                }).forward(taskId, userId, entityId);
+                            }
+                        }
+                    
+                
+            }).getTaskDetails(taskId);
+    }
+    
+    public void updateTask(final long taskId, final String taskDescription, final String userId, final String entityId, final String subTaskStrategy,
             final Date dueDate, final int priority) {
 
         if (taskId > 0) {
@@ -130,8 +154,7 @@ public class TaskDetailsPresenter {
                 }
             }).setExpirationDate(taskId, dueDate);
 
-
-
+            
 
         }
 
@@ -143,11 +166,10 @@ public class TaskDetailsPresenter {
             public void callback(TaskSummary details) {
                 view.getTaskIdText().setText(String.valueOf(details.getId()));
                 view.getTaskNameText().setText(details.getName());
-
                 view.getTaskDescriptionTextArea().setText(details.getDescription());
                 view.getDueDate().setValue(details.getExpirationTime());
-
                 view.getUserText().setText(details.getActualOwner());
+
                 int i = 0;
                 for (String strategy : view.getSubTaskStrategies()) {
                     if (details.getSubTaskStrategy().equals(strategy)) {
@@ -163,6 +185,19 @@ public class TaskDetailsPresenter {
                     i++;
                 }
                 i = 0;
+                for (String owner : details.getPotentialOwners()) {
+                    view.getGroupListBox().addItem(owner, owner);
+
+                }
+                for (Role role : identity.getRoles()) {
+                    if (!details.getPotentialOwners().contains(role.getName())) {
+                        view.getGroupListBox().addItem(role.getName(), role.getName());
+                    }
+                }
+                
+                for(i = 0; i < view.getGroupListBox().getItemCount(); i++){
+                    details.getPotentialOwners().contains(view.getGroupListBox().getItemText(i));
+                }
             }
         }).getTaskDetails(taskId);
 
@@ -175,7 +210,7 @@ public class TaskDetailsPresenter {
     @OnReveal
     public void onReveal() {
         final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-         long taskId = Long.parseLong(((PassThroughPlaceRequest)p).getPassThroughParameter("taskId", "0"));
+        long taskId = Long.parseLong(((PassThroughPlaceRequest) p).getPassThroughParameter("taskId", "0"));
         view.getTaskIdText().setText(String.valueOf(taskId));
         refreshTask(Long.parseLong(view.getTaskIdText().getText()));
     }

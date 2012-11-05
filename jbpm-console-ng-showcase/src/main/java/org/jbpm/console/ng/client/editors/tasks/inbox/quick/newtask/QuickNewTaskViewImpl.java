@@ -47,9 +47,7 @@ public class QuickNewTaskViewImpl extends Composite
     @Inject
     @DataField
     public Button addTaskButton;
-    @Inject
-    @DataField
-    public TextBox userText;
+    
     @Inject
     @DataField
     public TextBox taskNameText;
@@ -61,17 +59,17 @@ public class QuickNewTaskViewImpl extends Composite
     @Override
     public void init(QuickNewTaskPresenter presenter) {
         this.presenter = presenter;
-        userText.setText(identity.getName());
+        
     }
 
     @EventHandler("addTaskButton")
     public void addTaskButton(ClickEvent e) {
-        presenter.addQuickTask(userText.getText(),
+        presenter.addQuickTask(identity.getName(),
                 taskNameText.getText());
     }
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
-        userTaskChanges.fire(new UserTaskEvent(userText.getText()));
+        userTaskChanges.fire(new UserTaskEvent(identity.getName()));
     }
 }

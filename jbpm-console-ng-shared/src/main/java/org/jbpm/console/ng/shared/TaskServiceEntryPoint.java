@@ -9,7 +9,6 @@ import org.jbpm.console.ng.client.model.TaskSummary;
 import java.util.List;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.jbpm.task.Content;
 
 /**
  *
@@ -32,30 +31,38 @@ public interface TaskServiceEntryPoint {
     List<TaskSummary> getTasksAssignedAsTaskInitiator(String userId, String language);
 
     List<TaskSummary> getTasksAssignedAsTaskStakeholder(String userId, String language);
+    
+    List<TaskSummary> getTasksAssignedByGroup(String groupId, String language); 
+    
+    List<TaskSummary> getTasksAssignedByGroups(List<String> groupsId, String language); 
 
     List<TaskSummary> getTasksOwned(String userId);
-
+    
+    List<TaskSummary> getTasksOwned(String userId, List<String> status, String language);
+    
     List<TaskSummary> getSubTasksAssignedAsPotentialOwner(long parentId, String userId, String language);
 
     List<TaskSummary> getSubTasksByParent(long parentId);
 
-    public long addTask(String taskString, Map<String, Object> params);
+    long addTask(String taskString, Map<String, Object> params);
 
-    public void start(long taskId, String user);
+    void start(long taskId, String user);
 
-    public void claim(long taskId, String user);
+    void claim(long taskId, String user);
 
-    public void complete(long taskId, String user, Map<String, Object> params);
+    void complete(long taskId, String user, Map<String, Object> params);
 
-    public void release(long taskId, String user);
+    void release(long taskId, String user);
 
+    void forward(long taskId, String userId, String targetEntityId);
+    
     void setPriority(long taskId, int priority);
 
     void setExpirationDate(long taskId, Date date);
    
-    public void setDescriptions(long taskId, List<String> descriptions);
+    void setDescriptions(long taskId, List<String> descriptions);
 
-    public void setSkipable(long taskId, boolean skipable);
+    void setSkipable(long taskId, boolean skipable);
 
     void setSubTaskStrategy(long taskId, String strategy);
 
@@ -71,15 +78,19 @@ public interface TaskServiceEntryPoint {
 
     TaskSummary getTaskDetails(long taskId);
 
-    public long saveContent(long taskId, Map<String, String> values);
+    long saveContent(long taskId, Map<String, String> values);
 
-    public Map<String, String> getContentListById(long contentId);
+    Map<String, String> getContentListById(long contentId);
 
-    public Map<String, String> getTaskOutputContentByTaskId(long taskId);
+    Map<String, String> getTaskOutputContentByTaskId(long taskId);
 
-    public Map<String, String> getContentListByTaskId(long taskId);
+    Map<String, String> getContentListByTaskId(long taskId);
 
-    public int getCompletedTaskByUserId(String userId);
+    int getCompletedTaskByUserId(String userId);
 
-    public int getPendingTaskByUserId(String userId);
+    int getPendingTaskByUserId(String userId);
+    
+    List<TaskSummary> getTasksAssignedPersonalAndGroupTasks(String userId, String groupId, String language);
+    
+    List<TaskSummary> getTasksAssignedPersonalAndGroupsTasks(String userId, List<String> groupIds, String language);
 }

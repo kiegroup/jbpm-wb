@@ -68,7 +68,48 @@ public class BPMN2DataServiceImpl implements BPMN2DataService {
         };
     }
 
-   
+    public Map<String, String> getTaskInputMappings(String bpmn2Content, String taskName){
+         if (bpmn2Content == null || "".equals(bpmn2Content)) {
+            throw new IllegalStateException("The Process Content cannot be Empty!");
+        }
+        BPMN2ProcessProvider originalProvider = BPMN2ProcessFactory.getBPMN2ProcessProvider();
+        if (originalProvider != provider) {
+            BPMN2ProcessFactory.setBPMN2ProcessProvider(provider);
+        }
+
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+       
+        kbuilder.add(new ByteArrayResource(bpmn2Content.getBytes()), ResourceType.BPMN2);
+        if (kbuilder.hasErrors()) {
+            throw new IllegalStateException("Process Cannot be Parsed!");
+        }
+        
+        BPMN2ProcessFactory.setBPMN2ProcessProvider(originalProvider);
+        
+        return repo.getTaskInputMappings().get(taskName);
+    }
+    
+     public Map<String, String> getTaskOutputMappings(String bpmn2Content, String taskName){
+         if (bpmn2Content == null || "".equals(bpmn2Content)) {
+            throw new IllegalStateException("The Process Content cannot be Empty!");
+        }
+        BPMN2ProcessProvider originalProvider = BPMN2ProcessFactory.getBPMN2ProcessProvider();
+        if (originalProvider != provider) {
+            BPMN2ProcessFactory.setBPMN2ProcessProvider(provider);
+        }
+
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+       
+        kbuilder.add(new ByteArrayResource(bpmn2Content.getBytes()), ResourceType.BPMN2);
+        if (kbuilder.hasErrors()) {
+            throw new IllegalStateException("Process Cannot be Parsed!");
+        }
+        
+        BPMN2ProcessFactory.setBPMN2ProcessProvider(originalProvider);
+        
+        return repo.getTaskOutputMappings().get(taskName);
+    }
+
 
     public Collection<TaskDef> getAllTasksDef(String bpmn2Content){
          if (bpmn2Content == null || "".equals(bpmn2Content)) {
@@ -116,7 +157,7 @@ public class BPMN2DataServiceImpl implements BPMN2DataService {
          throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Map<String, String> getRequiredInputData(String bpmn2Content) {
+    public Map<String, String> getProcessData(String bpmn2Content) {
          if (bpmn2Content == null || "".equals(bpmn2Content)) {
             throw new IllegalStateException("The Process Content cannot be Empty!");
         }

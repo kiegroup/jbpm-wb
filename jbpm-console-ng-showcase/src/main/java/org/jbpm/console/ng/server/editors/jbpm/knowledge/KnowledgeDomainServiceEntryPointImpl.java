@@ -92,7 +92,7 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     }
 
     public Map<String, String> getRequiredInputData(String bpmn2Content) {
-        return bpmn2Service.getRequiredInputData(bpmn2Content);
+        return bpmn2Service.getProcessData(bpmn2Content);
     }
 
     public List<String> getAssociatedForms(String bpmn2Content) {
@@ -138,6 +138,15 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     public Collection<VariableSummary> getVariablesCurrentState(long processInstanceId) {
         return VariableHelper.adaptCollection(dataService.getVariablesCurrentState(processInstanceId));
     }
+
+    public Map<String, String> getTaskInputMappings(String bpmn2Content, String taskName) {
+        return bpmn2Service.getTaskInputMappings(bpmn2Content, taskName);
+    }
+
+    public Map<String, String> getTaskOutputMappings(String bpmn2Content, String taskName) {
+        return bpmn2Service.getTaskOutputMappings(bpmn2Content, taskName);
+    }
+    
     
     
     

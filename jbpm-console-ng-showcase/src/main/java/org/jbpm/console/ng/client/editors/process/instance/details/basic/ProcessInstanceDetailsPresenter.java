@@ -152,6 +152,7 @@ public class ProcessInstanceDetailsPresenter {
         String processId = (String) ((PassThroughPlaceRequest) p).getPassThroughParameter("processInstanceId", "");
         String processDefId = (String) ((PassThroughPlaceRequest) p).getPassThroughParameter("processDefId", "");
         view.getProcessIdText().setText(processId);
+        view.getProcessNameText().setText(processDefId);
         refreshProcessInstanceData(processId, processDefId);
     }
 }

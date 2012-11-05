@@ -68,4 +68,8 @@ public interface KnowledgeDomainServiceEntryPoint {
     
     Collection<VariableSummary> getVariablesCurrentState(long processInstanceId);
     
+    public Map<String, String> getTaskInputMappings(String bpmn2Content, String taskName);
+
+    public Map<String, String> getTaskOutputMappings(String bpmn2Content, String taskName);
+    
 }

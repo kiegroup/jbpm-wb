@@ -23,7 +23,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 
@@ -36,86 +35,72 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.client.annotations.OnReveal;
-import org.uberfire.client.annotations.OnStart;
 import org.uberfire.security.Identity;
-import org.uberfire.shared.mvp.PlaceRequest;
 
 @Dependent
-@Templated(value="TaskContentViewImpl.html#form")
+@Templated(value = "TaskContentViewImpl.html#form")
 public class TaskContentViewImpl extends Composite
-    implements
-    TaskContentPresenter.InboxView {
+        implements
+        TaskContentPresenter.InboxView {
 
     @Inject
     private Identity identity;
-
-    
-    private TaskContentPresenter             presenter;
+    private TaskContentPresenter presenter;
     @Inject
     @DataField
-    public Button                               saveContentButton;
+    public Button saveContentButton;
     @Inject
     @DataField
-    public Button                               addRowButton;
+    public Button addRowButton;
     @Inject
     @DataField
-    public Button                               refreshContentButton;
+    public Button refreshContentButton;
+    public long taskId;
     @Inject
     @DataField
-    public TextBox                              taskIdText;
+    public VerticalPanel contentPanel;
     @Inject
     @DataField
-    public VerticalPanel                       contentPanel;
+    public VerticalPanel outputPanel;
     @Inject
-    @DataField
-    public VerticalPanel                       outputPanel;
-    @Inject
-    private Event<NotificationEvent>            notification;
-    private Map<TextBox, TextBox>               textBoxs = new HashMap<TextBox, TextBox>();
+    private Event<NotificationEvent> notification;
+    private Map<TextBox, TextBox> textBoxs = new HashMap<TextBox, TextBox>();
 
     @Override
     public void init(TaskContentPresenter presenter) {
         this.presenter = presenter;
-        
+
     }
-    
 
     @EventHandler("addRowButton")
     public void addRowButton(ClickEvent e) {
         FlowPanel flowPanel = new FlowPanel();
         flowPanel.setStyleName("group-row value-pair");
         TextBox keyTextBox = new TextBox();
-        
+
         TextBox valueTextBox = new TextBox();
-        
-        flowPanel.add( keyTextBox );
-        flowPanel.add( valueTextBox );
-        textBoxs.put( keyTextBox,
-                      valueTextBox );
-        contentPanel.add( flowPanel );
+
+        flowPanel.add(keyTextBox);
+        flowPanel.add(valueTextBox);
+        textBoxs.put(keyTextBox,
+                valueTextBox);
+        contentPanel.add(flowPanel);
     }
 
     @EventHandler("saveContentButton")
     public void saveContentButton(ClickEvent e) {
-        Map<String, String> values = new HashMap<String, String>();
-        for ( Entry<TextBox, TextBox> entry : textBoxs.entrySet() ) {
-            values.put( entry.getKey().getText(),
-                        entry.getValue().getText() );
-        }
-        presenter.saveContent( new Long( taskIdText.getText() ),
-                               values );
+        saveContent(true);
     }
 
     @EventHandler("refreshContentButton")
     public void getContentButton(ClickEvent e) {
-        presenter.getContentByTaskId( new Long( taskIdText.getText() ) );
+        presenter.getContentByTaskId(taskId);
     }
 
     public void displayNotification(String text) {
-        notification.fire( new NotificationEvent( text ) );
+        notification.fire(new NotificationEvent(text));
     }
-  
+
     public VerticalPanel getContentPanel() {
         return contentPanel;
     }
@@ -124,13 +109,25 @@ public class TaskContentViewImpl extends Composite
         return outputPanel;
     }
 
-    public TextBox getTaskIdText() {
-        return taskIdText;
+    public long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(long taskId) {
+        this.taskId = taskId;
     }
 
     public Map<TextBox, TextBox> getTextBoxs() {
         return textBoxs;
     }
-    
 
+    public void saveContent(boolean notify) throws NumberFormatException {
+        Map<String, String> values = new HashMap<String, String>();
+        for (Entry<TextBox, TextBox> entry : textBoxs.entrySet()) {
+            values.put(entry.getKey().getText(),
+                    entry.getValue().getText());
+        }
+        presenter.saveContent(taskId,
+                values, notify);
+    }
 }

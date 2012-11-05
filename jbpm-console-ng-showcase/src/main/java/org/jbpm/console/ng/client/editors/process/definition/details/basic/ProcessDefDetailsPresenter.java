@@ -54,7 +54,7 @@ public class ProcessDefDetailsPresenter {
         TextBox getProcessNameText();
         ListBox getHumanTasksListBox();
         ListBox getUsersGroupsListBox();
-        ListBox getStartDataListBox();
+        ListBox getProcessDataListBox();
     }
     @Inject
     private PlaceManager placeManager;
@@ -95,7 +95,7 @@ public class ProcessDefDetailsPresenter {
                     public void callback(Map<String, String> entities) {
                         
                         for(String key : entities.keySet()){
-                            view.getUsersGroupsListBox().addItem(key + "- "+ entities.get(key), key);
+                            view.getUsersGroupsListBox().addItem(entities.get(key) + "- "+ key, key);
                         }
                     }
                 }).getAssociatedEntities(processContent);
@@ -104,7 +104,7 @@ public class ProcessDefDetailsPresenter {
                     public void callback(Map<String, String> inputs) {
                         
                         for(String key : inputs.keySet()){
-                            view.getStartDataListBox().addItem(key + "- "+ inputs.get(key), key);
+                            view.getProcessDataListBox().addItem(key + "- "+ inputs.get(key), key);
                         }
                     }
                 }).getRequiredInputData(processContent);

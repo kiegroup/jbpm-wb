@@ -17,6 +17,7 @@ package org.droolsjbpm.services.test;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 import javax.inject.Inject;
 import org.droolsjbpm.services.api.KnowledgeDomainService;
 import org.droolsjbpm.services.api.bpmn2.BPMN2DataService;
@@ -109,8 +110,16 @@ public class BPMN2DataServicesTest {
         Collection<TaskDef> processTasks = bpmn2Service.getAllTasksDef(theString);
         
         assertEquals(3, processTasks.size());
+        Map<String, String> processData = bpmn2Service.getProcessData(theString);
         
-        bpmn2Service.getRequiredInputData(theString);
+        assertEquals(3, processData.keySet().size());
+        Map<String, String> taskInputMappings = bpmn2Service.getTaskInputMappings(theString, "Write a Document" );
+        
+        assertEquals(5, taskInputMappings.keySet().size());
+        
+        Map<String, String> taskOutputMappings = bpmn2Service.getTaskOutputMappings(theString, "Write a Document" );
+        
+        assertEquals(1, taskOutputMappings.keySet().size());
         
     }
 }

@@ -30,13 +30,17 @@ import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.security.Identity;
+import org.uberfire.security.Role;
 
 @Dependent
 @Templated(value = "HomeViewImpl.html")
@@ -49,9 +53,9 @@ public class HomeViewImpl extends Composite
     public SuggestBox actionText;
     @Inject
     public Identity identity;
-//    @Inject
-//    @DataField
-//    public Label userLabel;
+    @Inject
+    @DataField
+    public Label userRolesLabel;
     @DataField
     public Image avatar;
     @Inject
@@ -77,7 +81,7 @@ public class HomeViewImpl extends Composite
         // Create the suggest box
         actionText = new SuggestBox(oracle);
         avatar = new Image();
-
+        
     }
 
     @Override
@@ -86,7 +90,12 @@ public class HomeViewImpl extends Composite
         String url = GWT.getHostPageBaseURL();
         avatar.setUrl(url+"images/avatars/"+identity.getName()+".png");
         avatar.setSize("64px", "64px");
-        //userLabel.setText(identity.getName());
+        List<Role> roles = identity.getRoles();
+        List<String> stringRoles = new ArrayList<String>(roles.size());
+        for(Role r : roles){
+            stringRoles.add(r.getName()); 
+        }
+        userRolesLabel.setText(stringRoles.toString());
 
     }
 

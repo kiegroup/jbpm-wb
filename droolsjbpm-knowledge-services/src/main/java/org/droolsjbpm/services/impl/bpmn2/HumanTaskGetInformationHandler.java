@@ -73,20 +73,21 @@ public class HumanTaskGetInformationHandler extends UserTaskHandler {
         TaskDef task = new TaskDef();
         task.setName(name);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, String> inputParams = new HashMap<String, String>();
+        
 
         for (Map.Entry<String, String> in : dataInputs.entrySet()) {
-
-            params.put(in.getKey(), in.getValue());
+            inputParams.put(in.getKey(), in.getValue());
 
         }
+        Map<String, String> outputParams = new HashMap<String, String>();
         for (Map.Entry<String, String> out : dataOutputs.entrySet()) {
-
-            params.put(out.getKey(), out.getValue());
+            outputParams.put(out.getKey(), out.getValue());
         }
 
         repo.getTasks().put(task.getName(), task);
-        repo.getTaskMappings().put(task.getName(), params);
+        repo.getTaskInputMappings().put(task.getName(), inputParams);
+        repo.getTaskOutputMappings().put(task.getName(), outputParams);
     }
 
     @Override

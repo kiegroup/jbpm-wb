@@ -20,7 +20,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 
@@ -35,9 +34,7 @@ import com.google.gwt.user.datepicker.client.DateBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.client.annotations.OnReveal;
-import org.uberfire.client.annotations.OnStart;
-import org.uberfire.shared.mvp.PlaceRequest;
+import org.jbpm.console.ng.client.i18n.Constants;
 
 @Dependent
 @Templated(value = "TaskDetailsViewImpl.html")
@@ -55,7 +52,7 @@ public class TaskDetailsViewImpl extends Composite
     public TextBox userText;
     @Inject
     @DataField
-    public TextBox groupText;
+    public ListBox groupListBox;
     @Inject
     @DataField
     public TextBox taskNameText;
@@ -75,6 +72,11 @@ public class TaskDetailsViewImpl extends Composite
     @Inject
     @DataField
     public Button updateButton;
+    
+    @Inject
+    @DataField
+    public Button forwardButton;
+    
     @Inject
     @DataField
     public Button refreshButton;
@@ -105,7 +107,8 @@ public class TaskDetailsViewImpl extends Composite
     @EventHandler("updateButton")
     public void updateTaskButton(ClickEvent e) {
         presenter.updateTask(Long.parseLong(taskIdText.getText()),
-                taskDescriptionTextArea.getText(),
+                taskDescriptionTextArea.getText(), userText.getText(),
+                groupListBox.getItemText(groupListBox.getSelectedIndex()),
                 subTaskStrategyListBox.getItemText(subTaskStrategyListBox.getSelectedIndex()),
                 dueDate.getValue(), 
                 taskPriorityListBox.getSelectedIndex());
@@ -116,6 +119,13 @@ public class TaskDetailsViewImpl extends Composite
     public void refreshButton(ClickEvent e) {
         presenter.refreshTask(Long.parseLong(taskIdText.getText()));
     }
+    
+    
+    @EventHandler("forwardButton")
+    public void forwardButton(ClickEvent e) {
+        presenter.forwardTask(Long.parseLong(taskIdText.getText()), userText.getText(), groupListBox.getItemText(groupListBox.getSelectedIndex()));
+        
+    }
 
     public TextBox getUserText() {
         return userText;
@@ -125,8 +135,8 @@ public class TaskDetailsViewImpl extends Composite
         return taskIdText;
     }
 
-    public TextBox getGroupText() {
-        return groupText;
+    public ListBox getGroupListBox() {
+        return groupListBox;
     }
 
     public TextBox getTaskNameText() {

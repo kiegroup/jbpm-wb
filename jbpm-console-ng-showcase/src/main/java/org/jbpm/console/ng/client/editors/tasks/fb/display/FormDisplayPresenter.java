@@ -59,13 +59,14 @@ public class FormDisplayPresenter {
             extends
             UberView<FormDisplayPresenter> {
 
-        String getUserId();
+       
 
         void displayNotification(String text);
         
-        TextBox getUserIdText();
+ 
         
-        TextBox getTaskIdText();
+        long getTaskId();
+        void setTaskId(long taskId);
     }
 
     @PostConstruct
@@ -96,25 +97,40 @@ public class FormDisplayPresenter {
         return view;
     }
 
-    public void completeForm(String values) {
-        final Map<String, String> params = getUrlParameters(values);
-        formServices.call(new RemoteCallback<Void>() {
+    public void completeTask(String values) {
+        final Map<String, Object> params = getUrlParameters(values);
+        taskServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
                 view.displayNotification("Form for Task Id: " + params.get("taskId") + " was completed!");
 
             }
-        }).completeForm(Long.parseLong(params.get("taskId")), view.getUserId(), params);
+        }).complete(Long.parseLong(params.get("taskId").toString()), identity.getName(), params);
+
+    }
+    
+    public void startTask(String values) {
+        final Map<String, Object> params = getUrlParameters(values);
+        taskServices.call(new RemoteCallback<Void>() {
+            @Override
+            public void callback(Void nothing) {
+                view.displayNotification("Task Id: " + params.get("taskId") + " was started!");
+
+            }
+        }).start(Long.parseLong(params.get("taskId").toString()), identity.getName());
 
     }
 
     // Set up the JS-callable signature as a global JS function.
     private native void publish(FormDisplayPresenter fdp) /*-{
      
-     $wnd.completeForm = function(from) {
-     fdp.@org.jbpm.console.ng.client.editors.tasks.fb.display.FormDisplayPresenter::completeForm(Ljava/lang/String;)(from);
+     $wnd.completeTask = function(from) {
+     fdp.@org.jbpm.console.ng.client.editors.tasks.fb.display.FormDisplayPresenter::completeTask(Ljava/lang/String;)(from);
      }
      
+     $wnd.startTask = function(from) {
+     fdp.@org.jbpm.console.ng.client.editors.tasks.fb.display.FormDisplayPresenter::startTask(Ljava/lang/String;)(from);
+     }
         
      }-*/;
 
@@ -129,10 +145,11 @@ public class FormDisplayPresenter {
      }
      return params;
      };
+      
      }-*/;
 
-    public static Map<String, String> getUrlParameters(String values) {
-        Map<String, String> params = new HashMap<String, String>();
+    public static Map<String, Object> getUrlParameters(String values) {
+        Map<String, Object> params = new HashMap<String, Object>();
         for (String param : values.split("&")) {
             String pair[] = param.split("=");
             String key = pair[0];
@@ -149,8 +166,7 @@ public class FormDisplayPresenter {
     public void onReveal() {
         final PlaceRequest p = placeManager.getCurrentPlaceRequest();
         long taskId = Long.parseLong(((PassThroughPlaceRequest)p).getPassThroughParameter("taskId", "0"));
-        view.getUserIdText().setText(identity.getName());
-        view.getTaskIdText().setText(String.valueOf(taskId));
+        view.setTaskId(taskId);
         renderForm(taskId);
     }
 }

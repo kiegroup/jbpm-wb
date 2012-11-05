@@ -17,6 +17,7 @@ package org.jbpm.console.ng.client.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
@@ -44,6 +45,9 @@ public class TaskSummary
     private String processId;
     private int processSessionId;
     private String subTaskStrategy;
+    
+    private boolean isGroupTask;
+    private List<String> potentialOwners;
 
     public TaskSummary(long id,
             long processInstanceId,
@@ -61,7 +65,7 @@ public class TaskSummary
             String processId,
             int processSessionId,
             String subTaskStrategy,
-            int parentId) {
+            int parentId, List<String> potentialOwners) {
         super();
         this.id = id;
         this.processInstanceId = processInstanceId;
@@ -80,7 +84,9 @@ public class TaskSummary
         this.processSessionId = processSessionId;
         this.subTaskStrategy = subTaskStrategy;
         this.parentId = parentId;
+        this.potentialOwners = potentialOwners;
     }
+    
 
     public TaskSummary() {
     }
@@ -221,26 +227,36 @@ public class TaskSummary
         this.parentId = parentId;
     }
 
+    public List<String> getPotentialOwners() {
+        return potentialOwners;
+    }
+
+    public void setPotentialOwners(List<String> potentialOwners) {
+        this.potentialOwners = potentialOwners;
+    }
+
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 89 * hash + (int) (this.id ^ (this.id >>> 32));
-        hash = 89 * hash + (this.name != null ? this.name.hashCode() : 0);
-        hash = 89 * hash + (this.subject != null ? this.subject.hashCode() : 0);
-        hash = 89 * hash + (this.description != null ? this.description.hashCode() : 0);
-        hash = 89 * hash + (this.status != null ? this.status.hashCode() : 0);
-        hash = 89 * hash + this.priority;
-        hash = 89 * hash + this.parentId;
-        hash = 89 * hash + (this.skipable ? 1 : 0);
-        hash = 89 * hash + (this.actualOwner != null ? this.actualOwner.hashCode() : 0);
-        hash = 89 * hash + (this.createdBy != null ? this.createdBy.hashCode() : 0);
-        hash = 89 * hash + (this.createdOn != null ? this.createdOn.hashCode() : 0);
-        hash = 89 * hash + (this.activationTime != null ? this.activationTime.hashCode() : 0);
-        hash = 89 * hash + (this.expirationTime != null ? this.expirationTime.hashCode() : 0);
-        hash = 89 * hash + (int) (this.processInstanceId ^ (this.processInstanceId >>> 32));
-        hash = 89 * hash + (this.processId != null ? this.processId.hashCode() : 0);
-        hash = 89 * hash + this.processSessionId;
-        hash = 89 * hash + (this.subTaskStrategy != null ? this.subTaskStrategy.hashCode() : 0);
+        int hash = 3;
+        hash = 11 * hash + (int) (this.id ^ (this.id >>> 32));
+        hash = 11 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 11 * hash + (this.subject != null ? this.subject.hashCode() : 0);
+        hash = 11 * hash + (this.description != null ? this.description.hashCode() : 0);
+        hash = 11 * hash + (this.status != null ? this.status.hashCode() : 0);
+        hash = 11 * hash + this.priority;
+        hash = 11 * hash + this.parentId;
+        hash = 11 * hash + (this.skipable ? 1 : 0);
+        hash = 11 * hash + (this.actualOwner != null ? this.actualOwner.hashCode() : 0);
+        hash = 11 * hash + (this.createdBy != null ? this.createdBy.hashCode() : 0);
+        hash = 11 * hash + (this.createdOn != null ? this.createdOn.hashCode() : 0);
+        hash = 11 * hash + (this.activationTime != null ? this.activationTime.hashCode() : 0);
+        hash = 11 * hash + (this.expirationTime != null ? this.expirationTime.hashCode() : 0);
+        hash = 11 * hash + (int) (this.processInstanceId ^ (this.processInstanceId >>> 32));
+        hash = 11 * hash + (this.processId != null ? this.processId.hashCode() : 0);
+        hash = 11 * hash + this.processSessionId;
+        hash = 11 * hash + (this.subTaskStrategy != null ? this.subTaskStrategy.hashCode() : 0);
+        hash = 11 * hash + (this.isGroupTask ? 1 : 0);
+        hash = 11 * hash + (this.potentialOwners != null ? this.potentialOwners.hashCode() : 0);
         return hash;
     }
 
@@ -304,9 +320,26 @@ public class TaskSummary
         if ((this.subTaskStrategy == null) ? (other.subTaskStrategy != null) : !this.subTaskStrategy.equals(other.subTaskStrategy)) {
             return false;
         }
+        if (this.isGroupTask != other.isGroupTask) {
+            return false;
+        }
+        if (this.potentialOwners != other.potentialOwners && (this.potentialOwners == null || !this.potentialOwners.equals(other.potentialOwners))) {
+            return false;
+        }
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "TaskSummary{" + "id=" + id + ", name=" + name + ", subject=" + subject + ", description=" + description + ", status=" + status + ", priority=" + priority + ", parentId=" + parentId + ", skipable=" + skipable + ", actualOwner=" + actualOwner + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", activationTime=" + activationTime + ", expirationTime=" + expirationTime + ", processInstanceId=" + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", subTaskStrategy=" + subTaskStrategy + ", isGroupTask=" + isGroupTask + ", potentialOwners=" + potentialOwners + '}';
+    }
     
+    
+
+    
+    
+
+
+
     
 }

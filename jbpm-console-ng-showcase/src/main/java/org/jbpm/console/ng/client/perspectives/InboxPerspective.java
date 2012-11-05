@@ -41,17 +41,17 @@ public class InboxPerspective {
         p.setName( "Inbox Perspective" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Quick New Task"  ) ) );
         final PanelDefinition eastPanel = new PanelDefinitionImpl();
-        eastPanel.setHeight(400);
+        eastPanel.setHeight(500);
         eastPanel.setWidth(800);
         eastPanel.setMinHeight(200);
         eastPanel.addPart( new PartDefinitionImpl( new DefaultPlaceRequest(  "Personal Tasks" ) ) );      
-        final PanelDefinition westPanelSouthPanel = new PanelDefinitionImpl();
-        westPanelSouthPanel.setHeight(400);
-        westPanelSouthPanel.setMinHeight(200);
-        eastPanel.setWidth(800);
-        westPanelSouthPanel.addPart( new PartDefinitionImpl( new DefaultPlaceRequest(  "Group Tasks" ) ) );
-        eastPanel.setChild( Position.SOUTH , westPanelSouthPanel);
-        p.getRoot().setChild( Position.EAST , eastPanel );
+//        final PanelDefinition westPanelSouthPanel = new PanelDefinitionImpl();
+//        westPanelSouthPanel.setHeight(400);
+//        westPanelSouthPanel.setMinHeight(200);
+//        eastPanel.setWidth(800);
+//        westPanelSouthPanel.addPart( new PartDefinitionImpl( new DefaultPlaceRequest(  "Group Tasks" ) ) );
+//        eastPanel.setChild( Position.SOUTH , westPanelSouthPanel);
+        p.getRoot().insertChild( Position.EAST , eastPanel );
         p.setTransient(true);
         return p;
     }

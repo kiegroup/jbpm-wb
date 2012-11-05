@@ -15,9 +15,7 @@
  */
 package org.droolsjbpm.services.impl.bpmn2;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.droolsjbpm.services.impl.model.ProcessDesc;
 import org.jbpm.task.TaskDef;
@@ -30,7 +28,8 @@ public class ProcessDescRepoHelper {
 
     private ProcessDesc process;
     private Map<String, TaskDef> tasks = new HashMap<String, TaskDef>();
-    private Map<String, Map<String, Object>> taskMappings = new HashMap<String, Map<String, Object>>();
+    private Map<String, Map<String, String>> taskInputMappings = new HashMap<String, Map<String, String>>();
+    private Map<String, Map<String, String>> taskOutputMappings = new HashMap<String, Map<String, String>>();
     private Map<String, String> inputs = new HashMap<String, String>();
     private Map<String, String> taskAssignments = new HashMap<String, String>();
 
@@ -50,8 +49,12 @@ public class ProcessDescRepoHelper {
         return tasks;
     }
 
-    public Map<String, Map<String, Object>> getTaskMappings() {
-        return taskMappings;
+    public Map<String, Map<String, String>> getTaskInputMappings() {
+        return taskInputMappings;
+    }
+    
+    public Map<String, Map<String, String>> getTaskOutputMappings() {
+        return taskOutputMappings;
     }
 
     public Map<String, String> getInputs() {

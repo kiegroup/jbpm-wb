@@ -48,8 +48,6 @@ public interface FormServiceEntryPoint {
 
     public String getFormDisplay(long taskId);
 
-    public void completeForm(long id, String userId, Map<String, String> params);
-
     public String saveForm(FormRepresentation form);
     
     public FormRepresentation loadForm(String json) ;

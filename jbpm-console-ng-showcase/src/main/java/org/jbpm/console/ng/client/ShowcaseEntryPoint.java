@@ -15,16 +15,12 @@
  */
 package org.jbpm.console.ng.client;
 
-import com.google.gwt.animation.client.Animation;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.SuggestBox.DefaultSuggestionDisplay;
 import com.google.gwt.user.client.ui.TextBox;
@@ -54,8 +50,6 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.menu.MenuBar;
 import org.uberfire.client.workbench.widgets.menu.MenuItemCommand;
 import org.uberfire.client.workbench.widgets.menu.MenuItemSubMenu;
-import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
-import org.uberfire.client.workbench.widgets.menu.impl.DefaultMenuBar;
 import org.uberfire.client.workbench.widgets.menu.impl.DefaultMenuItemCommand;
 import org.uberfire.client.workbench.widgets.menu.impl.DefaultMenuItemSubMenu;
 import org.uberfire.client.workbench.widgets.menu.impl.DefaultMenuBar;
@@ -85,7 +79,7 @@ public class ShowcaseEntryPoint {
     private String[] menuItems = new String[]{"Home Screen",
         "Quick New Task", "Personal Tasks", "Group Tasks",
         "Quick New Sub Task", "Task Details", "Task Content",
-        "Form Display", "Get Pending Tasks", "Form Builder - Palette", "Form Builder - Canvas",
+        "Form Display", "Get Pending Tasks",
         "Process Instance List", "Quick New Process Instance", "Process Definition List"
     };
     
@@ -115,7 +109,7 @@ public class ShowcaseEntryPoint {
         actions.put("I want to design a new Process Model", "Process Designer Perspective");
         actions.put("I want to create a Task", "Quick New Task");
         actions.put("Show me all the pending tasks in my Group", "Group Tasks");
-        actions.put("I want to design a new Form", "Form Builder Perspective");
+        actions.put("Logout", "Logout");
         
         KeyPressHandler keyPressHandler = new KeyPressHandler() {
             public void onKeyPress(KeyPressEvent event) {
@@ -141,7 +135,7 @@ public class ShowcaseEntryPoint {
         //Home
         final AbstractWorkbenchPerspectiveActivity defaultPerspective = getDefaultPerspectiveActivity();
         if (defaultPerspective != null) {
-            menubar.addMenuItem(new DefaultMenuItemCommand("Home",
+            menubar.addWorkbenchItem(new DefaultMenuItemCommand("Home",
                     new Command() {
                         @Override
                         public void execute() {
@@ -167,7 +161,7 @@ public class ShowcaseEntryPoint {
                     cmd);
             perspectivesMenuBar.addItem(item);
         }
-        menubar.addMenuItem(perspectivesMenu);
+        menubar.addWorkbenchItem(perspectivesMenu);
 
 
         //Add places
@@ -190,7 +184,7 @@ public class ShowcaseEntryPoint {
             }
         });
         placesMenuBar.addItem(item);
-        menubar.addMenuItem(placesMenu);
+        menubar.addWorkbenchItem(placesMenu);
     }
 
     private AbstractWorkbenchPerspectiveActivity getDefaultPerspectiveActivity() {
@@ -275,7 +269,7 @@ public class ShowcaseEntryPoint {
             "I want to design a new Form",
             "I want to create a Task",
             "Show me all the pending tasks in my Group",
-            "Show me my Inbox"
+            "Show me my Inbox", "Logout"
         };
         for (int i = 0; i < words.length; ++i) {
             oracle.add(words[i]);

@@ -54,7 +54,7 @@ public class ProcessDefDetailsViewImpl extends Composite
     public ListBox usersGroupsListBox;
     @Inject
     @DataField
-    public ListBox startDataListBox;
+    public ListBox processDataListBox;
     @Inject
     @DataField
     public Button refreshButton;
@@ -66,13 +66,12 @@ public class ProcessDefDetailsViewImpl extends Composite
         this.presenter = presenter;
         this.humanTasksListBox.setVisibleItemCount(5);
         this.usersGroupsListBox.setVisibleItemCount(5);
-        this.startDataListBox.setVisibleItemCount(5);
+        this.processDataListBox.setVisibleItemCount(5);
     }
 
     @EventHandler("refreshButton")
     public void refreshButton(ClickEvent e) {
-
-        displayNotification(processNameText.getText());
+        presenter.refreshProcessDef(processNameText.getText());
     }
 
     public TextBox getProcessNameText() {
@@ -91,8 +90,8 @@ public class ProcessDefDetailsViewImpl extends Composite
         return usersGroupsListBox;
     }
 
-    public ListBox getStartDataListBox() {
-        return startDataListBox;
+    public ListBox getProcessDataListBox() {
+        return processDataListBox;
     }
     
     

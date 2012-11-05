@@ -21,23 +21,16 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jbpm.console.ng.shared.fb.events.FormRenderedEvent;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.client.annotations.OnReveal;
-import org.uberfire.client.annotations.OnStart;
-import org.uberfire.security.Identity;
-import org.uberfire.shared.mvp.PlaceRequest;
 
 /**
  * Main view. 
@@ -54,28 +47,18 @@ public class FormDisplayViewImpl extends Composite
     @Inject
     @DataField
     public VerticalPanel                    formView;
-    @Inject
-    @DataField
-    public TextBox                           userIdText;
-    @Inject
-    @DataField
-    public TextBox                           taskIdText;
-    @Inject
-    @DataField
-    public Button                            renderButton;
+    
+    public long taskId;
+    
     @Inject
     private Event<NotificationEvent>         notification;
     
   
 
-    @EventHandler("renderButton")
-    public void renderAction(ClickEvent e) {
-        presenter.renderForm( new Long( taskIdText.getText() ) );
-
-    }
+  
 
     public void renderForm(@Observes FormRenderedEvent formRendered) {
-        formView.add( new HTMLPanel( formRendered.getForm() ) );
+        formView.add(new HTMLPanel(formRendered.getForm()));
 
     }
    
@@ -88,19 +71,21 @@ public class FormDisplayViewImpl extends Composite
 
     }
 
-    public String getUserId() {
-        return userIdText.getText();
-    }
 
     public void displayNotification(String text) {
         notification.fire( new NotificationEvent( text ) );
     }
 
-    public TextBox getUserIdText() {
-        return userIdText;
+   
+
+    public long getTaskId() {
+        return taskId;
     }
 
-    public TextBox getTaskIdText() {
-        return taskIdText;
+    public void setTaskId(long taskId) {
+        this.taskId = taskId;
     }
+
+   
+    
 }

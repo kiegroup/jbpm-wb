@@ -266,7 +266,7 @@ public class ProcessDefinitionListViewImpl extends Composite
                 new Column<ProcessSummary, String>(new ButtonCell()) {
                     @Override
                     public String getValue(ProcessSummary task) {
-                        return "New Instance";
+                        return "Start Process";
                     }
                 };
 

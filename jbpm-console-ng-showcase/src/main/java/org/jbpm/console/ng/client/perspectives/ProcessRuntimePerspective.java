@@ -44,7 +44,7 @@ public class ProcessRuntimePerspective {
         southPanel.setHeight(400);
         southPanel.setMinHeight(200);
         southPanel.addPart( new PartDefinitionImpl( new DefaultPlaceRequest(   "Process Instance List" ) ) );      
-        p.getRoot().setChild( Position.SOUTH , southPanel );
+        p.getRoot().insertChild( Position.SOUTH , southPanel );
         p.setTransient(true);
         return p;
     }
