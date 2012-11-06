@@ -18,7 +18,7 @@
   <dependencySets>
     <dependencySet>
       <includes>
-        <include>org.uberfire:showcase-webapp:war</include>
+        <include>org.jbpm:jbpm-console-ng-showcase:war</include>
       </includes>
       <outputDirectory>.</outputDirectory>
       <unpack>true</unpack>

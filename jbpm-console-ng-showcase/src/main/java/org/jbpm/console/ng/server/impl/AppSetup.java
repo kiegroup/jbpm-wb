@@ -32,6 +32,7 @@ import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.FileSystems;
 
 import static java.util.Arrays.*;
+import javax.inject.Named;
 
 @Singleton
 public class AppSetup {
@@ -57,9 +58,10 @@ public class AppSetup {
         fileSystems.addBootstrapFileSystem(new FileSystemImpl(asList(root)));
     }
 
-    @Produces
+    @Produces @Named("fs")
     public ActiveFileSystems fileSystems() {
         return fileSystems;
     }
 
+   
 }

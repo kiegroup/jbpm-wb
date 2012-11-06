@@ -34,7 +34,7 @@
   <dependencySets>
     <dependencySet>
       <includes>
-        <include>org.uberfire:showcase-webapp:war</include>
+        <include>org.jbpm:jbpm-console-ng-showcase:war</include>
       </includes>
       <outputDirectory>.</outputDirectory>
       <unpack>true</unpack>
@@ -42,7 +42,11 @@
         <excludes>
           <exclude>WEB-INF/jetty-env.xml</exclude>
           <exclude>WEB-INF/web.xml</exclude>
-
+          <exclude>WEB-INF/beans.xml</exclude>
+          <exclude>WEB-INF/classes/META-INF/persistence.xml</exclude>
+          <!-- Dom4j on as 7.1.1 breaks the PU--> 
+          <exclude>WEB-INF/lib/dom4j*.jar</exclude>
+          
           <!-- UF Client Related -->
           <exclude>WEB-INF/lib/widget-markdown-*.jar</exclude>
           <exclude>WEB-INF/lib/widgets-commons-*.jar</exclude>
