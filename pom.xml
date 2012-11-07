@@ -120,6 +120,12 @@
                 <groupId>org.uberfire</groupId>
                 <artifactId>uberfire-workbench</artifactId>
                 <version>${uberfire.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.freemarker</groupId>
+                        <artifactId>freemarker</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             
             <dependency>

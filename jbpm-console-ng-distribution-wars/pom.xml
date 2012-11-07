@@ -9,7 +9,7 @@
     <version>0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>showcase-distribution-wars</artifactId>
+  <artifactId>jbpm-console-ng-distribution-wars</artifactId>
   <packaging>pom</packaging>
 
   <name>Showcase distribution wars</name>
