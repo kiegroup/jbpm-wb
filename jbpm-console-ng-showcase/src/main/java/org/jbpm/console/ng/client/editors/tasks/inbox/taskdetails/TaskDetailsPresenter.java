@@ -219,7 +219,7 @@ public class TaskDetailsPresenter {
     @OnReveal
     public void onReveal() {
         final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        long taskId = Long.parseLong(((PassThroughPlaceRequest) p).getPassThroughParameter("taskId", "0"));
+        long taskId = Long.parseLong(((PassThroughPlaceRequest) p).getPassThroughParameter("taskId", "0").toString());
         view.getTaskIdText().setText(String.valueOf(taskId));
         refreshTask(Long.parseLong(view.getTaskIdText().getText()));
     }
