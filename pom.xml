@@ -237,11 +237,6 @@
                 <artifactId>form-builder-services-cdi</artifactId>
                 <version>${form.builder.ng.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.jbpm</groupId>
-                <artifactId>form-builder-ng-model</artifactId>
-                <version>${form.builder.ng.version}</version>
-            </dependency>
             <!-- ERRAI --> 
             <dependency>
                 <groupId>org.jboss.errai</groupId>

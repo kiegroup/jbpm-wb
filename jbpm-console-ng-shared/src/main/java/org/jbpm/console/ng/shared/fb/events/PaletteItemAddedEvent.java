@@ -16,18 +16,19 @@
 package org.jbpm.console.ng.shared.fb.events;
 
 import java.io.Serializable;
+import java.util.Map;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jbpm.form.builder.ng.model.shared.menu.MenuItemDescription;
 
 /**
  *
  */
 @Portable
 public class PaletteItemAddedEvent implements Serializable{
-    private MenuItemDescription menuItemDesc;
+    private Map<String, Object> menuItemDesc;
     private String groupName;
 
-    public PaletteItemAddedEvent(MenuItemDescription menuItem, String groupName) {
+    public PaletteItemAddedEvent(Map<String, Object> menuItem, String groupName) {
         this.menuItemDesc = menuItem;
         this.groupName = groupName;
     }
@@ -35,7 +36,7 @@ public class PaletteItemAddedEvent implements Serializable{
     public PaletteItemAddedEvent() {
     }
 
-    public MenuItemDescription getMenuItemDescription() {
+    public Map<String, Object> getMenuItemDescriptionMap() {
         return menuItemDesc;
     }
 

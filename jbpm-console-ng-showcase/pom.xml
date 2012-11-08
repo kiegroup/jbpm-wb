@@ -284,7 +284,6 @@
                         <compileSourcesArtifact>org.uberfire:backend-commons</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-shared</compileSourcesArtifact>
                         <!-- Form Builder Related -->
-                        <compileSourcesArtifact>org.jbpm:form-builder-ng-model</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:form-builder-services-cdi</compileSourcesArtifact>
                     </compileSourcesArtifacts>
                     <runTarget>org.jbpm.console.ng.jBPMShowcase/jBPM.html</runTarget>

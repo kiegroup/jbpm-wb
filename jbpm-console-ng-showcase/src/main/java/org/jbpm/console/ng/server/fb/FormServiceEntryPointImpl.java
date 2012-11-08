@@ -15,31 +15,25 @@
  */
 package org.jbpm.console.ng.server.fb;
 
-import org.jbpm.console.ng.shared.fb.FormServiceEntryPoint;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
+
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.form.builder.services.api.MenuService;
-import org.jbpm.form.builder.services.api.MenuServiceException;
-import org.jbpm.form.builder.services.encoders.FormRepresentationDecoderImpl;
-import org.jbpm.form.builder.services.encoders.FormRepresentationEncoderImpl;
-import org.jbpm.console.ng.shared.fb.events.PaletteItemAddedEvent;
 import javax.enterprise.event.Event;
-import org.jbpm.form.builder.ng.model.client.FormBuilderException;
-import org.jbpm.form.builder.ng.model.shared.api.FormItemRepresentation;
-import org.jbpm.form.builder.ng.model.shared.api.FormRepresentation;
-import org.jbpm.form.builder.ng.model.shared.form.FormEncodingFactory;
-import org.jbpm.form.builder.ng.model.shared.menu.MenuItemDescription;
-import org.jbpm.form.builder.ng.model.shared.menu.MenuOptionDescription;
+import javax.inject.Inject;
+
+import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.shared.fb.FormServiceEntryPoint;
+import org.jbpm.console.ng.shared.fb.events.PaletteItemAddedEvent;
 import org.jbpm.form.builder.services.api.FileException;
 import org.jbpm.form.builder.services.api.FileService;
 import org.jbpm.form.builder.services.api.FormBuilderService;
+import org.jbpm.form.builder.services.api.FormBuilderServiceException;
 import org.jbpm.form.builder.services.api.FormDisplayService;
+import org.jbpm.form.builder.services.api.MenuService;
+import org.jbpm.form.builder.services.api.MenuServiceException;
 
 /**
  *
@@ -62,25 +56,18 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
     @Inject
     Event<PaletteItemAddedEvent> itemAddedEvents;
     
-
-    @PostConstruct
-    public void init() {
-        FormEncodingFactory.register(new FormRepresentationEncoderImpl(), new FormRepresentationDecoderImpl());
-        
-    }
-
     @Override
-    public List<MenuOptionDescription> listOptions() throws MenuServiceException {
-        return menuService.listOptions();
+    public List<Map<String, Object>> listOptions() throws MenuServiceException {
+        return menuService.listOptionsGWT();
     }
 
     @Override
     public void listMenuItems() throws MenuServiceException {
-        Map<String, List<MenuItemDescription>> listMenuItems = menuService.listMenuItems();
+        Map<String, List<Map<String, Object>>> listMenuItems = menuService.listMenuItemsGWT();
         
         try {
             for (String groupName : listMenuItems.keySet()) {
-                for (MenuItemDescription itemDesc : listMenuItems.get(groupName)) {
+                for (Map<String, Object> itemDesc : listMenuItems.get(groupName)) {
                         itemAddedEvents.fire(new PaletteItemAddedEvent(itemDesc, groupName));
                 }
             }
@@ -118,24 +105,24 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
 
   
 
-    public String saveForm(FormRepresentation form) {
+    public String saveForm(Map<String, Object> form) {
         try {
-            return formService.saveForm(form);
-        } catch (FormBuilderException ex) {
+            return formService.saveFormGWT(form);
+        } catch (FormBuilderServiceException ex) {
             Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
 
-    public void saveFormItem(FormItemRepresentation formItem, String formItemName) {
+    public void saveFormItem(Map<String, Object> formItem, String formItemName) {
         try {
-            formService.saveFormItem(formItem, formItemName);
-        } catch (FormBuilderException ex) {
+            formService.saveFormItemGWT(formItem, formItemName);
+        } catch (FormBuilderServiceException ex) {
             Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public FormRepresentation loadForm(String json)  {
+    public Map<String, Object> loadForm(String json)  {
         return formService.loadForm(json);
     }
     
