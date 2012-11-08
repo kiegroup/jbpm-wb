@@ -282,12 +282,15 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     public Map<String, String> getTaskOutputContentByTaskId(long taskId) {
         Task taskInstanceById = taskService.getTaskById(taskId);
         long documentContentId = taskInstanceById.getTaskData().getOutputContentId();
-        Content contentById = getContentById(documentContentId);
-        if (contentById == null) {
-            return new HashMap<String, String>();
+        if(documentContentId > 0){
+            Content contentById = getContentById(documentContentId);
+            if (contentById == null) {
+                return new HashMap<String, String>();
+            }
+            Object unmarshall = ContentMarshallerHelper.unmarshall(contentById.getContent(), null);
+            return (Map<String, String>) unmarshall;
         }
-        Object unmarshall = ContentMarshallerHelper.unmarshall(contentById.getContent(), null);
-        return (Map<String, String>) unmarshall;
+        return new HashMap<String, String>();
     }
     
     public int getCompletedTaskByUserId(String userId) {

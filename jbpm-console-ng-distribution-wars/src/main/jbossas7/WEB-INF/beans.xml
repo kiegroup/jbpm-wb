@@ -24,7 +24,6 @@
   <alternatives>
     <class>org.jbpm.task.lifecycle.listeners.JPATaskLifeCycleEventListener</class>
     <!--class>org.jbpm.task.impl.CommandBasedTaskInstanceServiceImpl</class-->
-    <class>org.jbpm.task.wih.ExternalTaskEventListener</class>
   </alternatives>
   <decorators>
     <class>org.jbpm.task.identity.UserGroupLifeCycleManagerDecorator</class>
@@ -36,14 +35,6 @@
     <class>org.uberfire.security.server.authz.cdi.TraitInterceptor</class>
   </interceptors>
 
-  <!--t:SeSynchronizations>
-      <s:modifies/>
-  </t:SeSynchronizations>
-
-  <t:EntityTransaction>
-      <s:modifies />
-
-  </t:EntityTransaction-->
 
 </beans>
 

@@ -13,34 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.inbox.events;
+package org.jbpm.console.ng.shared.events;
+
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  *
+ * @author salaboy
  */
-public class TaskSelectionEvent {
-    private long taskId;
-    // This should be removed from here 
-    private String userId;
+@Portable
+public class ProcessDefSelectionEvent {
+    private String processId;
 
-    public TaskSelectionEvent() {
+    public ProcessDefSelectionEvent() {
     }
 
-    public TaskSelectionEvent(long taskId) {
-        this.taskId = taskId;
+    public ProcessDefSelectionEvent(String processId) {
+        this.processId = processId;
     }
 
-    public TaskSelectionEvent(long taskId, String userId) {
-        this.taskId = taskId;
-        this.userId = userId;
+    public String getProcessId() {
+        return processId;
     }
 
-    public String getUserId() {
-        return userId;
+    public void setProcessId(String processId) {
+        this.processId = processId;
     }
     
-    public long getTaskId() {
-        return taskId;
-    }
+    
+    
+    
     
 }

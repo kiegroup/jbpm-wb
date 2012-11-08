@@ -70,6 +70,9 @@
           <exclude>WEB-INF/lib/el-api-*.jar</exclude>
           <exclude>WEB-INF/lib/xml-apis-*.jar</exclude>
           <exclude>WEB-INF/lib/junit-*.jar</exclude>
+          <exclude>WEB-INF/lib/h2*.jar</exclude>
+          <exclude>WEB-INF/lib/weld-se*.jar</exclude>
+          <exclude>WEB-INF/lib/hibernate*.jar</exclude>
 
           <!-- Jetty -->
           <exclude>WEB-INF/lib/jetty-*.jar</exclude>
@@ -77,7 +80,7 @@
           <exclude>WEB-INF/lib/mail-*.jar</exclude>
           <exclude>WEB-INF/lib/geronimo-spec-jta-*.jar</exclude>
           <exclude>WEB-INF/lib/servlet-api-*.jar</exclude>
-
+          <exclude>WEB-INF/lib/jboss-servlet*.jar</exclude>
           <!-- Errai -->
           <exclude>WEB-INF/lib/errai-jaxrs-client-*.jar</exclude>
 

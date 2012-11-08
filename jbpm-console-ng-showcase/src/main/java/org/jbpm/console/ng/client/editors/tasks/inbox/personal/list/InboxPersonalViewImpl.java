@@ -25,9 +25,9 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.UserTaskEvent;
+import org.jbpm.console.ng.shared.events.TaskChangedEvent;
+import org.jbpm.console.ng.shared.events.TaskSelectionEvent;
+import org.jbpm.console.ng.shared.events.UserTaskEvent;
 import org.jbpm.console.ng.client.model.TaskSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
@@ -153,9 +153,9 @@ public class InboxPersonalViewImpl extends Composite
 
 
         presenter.addDataDisplay(myTaskListGrid);
-
-
+        
         refreshTasks();
+
     }
 
     public void recieveStatusChanged(@Observes UserTaskEvent event) {
@@ -421,6 +421,7 @@ public class InboxPersonalViewImpl extends Composite
     }
 
     public void refreshTasks() {
+        System.out.println("Refreshing Tasks!");
         Boolean isCheckedCompleted = showCompletedCheck.getValue();
         Boolean isCheckedGroupTasks = showGroupTasksCheck.getValue();
         Boolean isCheckedPersonalTasks = showPersonalTasksCheck.getValue();

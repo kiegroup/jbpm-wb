@@ -29,7 +29,7 @@ import com.google.gwt.view.client.ListDataProvider;
 import javax.enterprise.event.Observes;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.ProcessInstanceCreated;
+import org.jbpm.console.ng.shared.events.ProcessInstanceCreated;
 import org.jbpm.console.ng.client.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 import org.uberfire.client.annotations.OnReveal;

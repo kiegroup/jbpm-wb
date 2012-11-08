@@ -78,7 +78,7 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     }
 
     public Collection<ProcessSummary> getProcessesBySessionId(String sessionId) {
-        return ProcessHelper.adaptCollection(dataService.getProcessesBySessionId(sessionId));
+        return ProcessHelper.adaptCollection(dataService.getProcessesByDomainName(sessionId));
     }
 
     public Collection<ProcessSummary> getProcesses() {

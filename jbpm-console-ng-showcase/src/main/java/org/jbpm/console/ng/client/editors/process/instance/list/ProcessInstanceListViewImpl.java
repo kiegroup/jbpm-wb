@@ -50,7 +50,7 @@ import com.google.gwt.view.client.SelectionModel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.ProcessSelectionEvent;
+import org.jbpm.console.ng.shared.events.ProcessSelectionEvent;
 import org.jbpm.console.ng.client.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.client.util.ResizableHeader;
 import org.uberfire.security.Identity;

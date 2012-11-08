@@ -33,7 +33,7 @@ import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
+import org.jbpm.console.ng.shared.events.TaskSelectionEvent;
 import org.jbpm.console.ng.client.model.TaskSummary;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -49,33 +49,31 @@ import org.uberfire.shared.mvp.impl.PassThroughPlaceRequest;
 @Dependent
 @WorkbenchScreen(identifier = "Task Details")
 public class TaskDetailsPresenter {
-
-   
-
+    
     public interface InboxView
             extends
             UberView<TaskDetailsPresenter> {
-
+        
         void displayNotification(String text);
-
+        
         TextBox getTaskIdText();
-
+        
         ListBox getGroupListBox();
-
+        
         TextBox getTaskNameText();
-
+        
         TextArea getTaskDescriptionTextArea();
-
+        
         ListBox getTaskPriorityListBox();
-
+        
         DateBox getDueDate();
-
+        
         TextBox getUserText();
-
+        
         ListBox getSubTaskStrategyListBox();
-
+        
         public String[] getSubTaskStrategies();
-
+        
         public String[] getPriorities();
     }
     @Inject
@@ -86,81 +84,85 @@ public class TaskDetailsPresenter {
     Identity identity;
     @Inject
     Caller<TaskServiceEntryPoint> taskServices;
-
+    
     @WorkbenchPartTitle
     public String getTitle() {
         return "Task Details";
     }
-
+    
     @WorkbenchPartView
     public UberView<TaskDetailsPresenter> getView() {
         return view;
     }
-
+    
     public void forwardTask(final long taskId, final String userId, final String entityId) {
         taskServices.call(new RemoteCallback<TaskSummary>() {
-                @Override
-                public void callback(TaskSummary details) {
-                            if (entityId != null && !entityId.equals("")) {
-                                taskServices.call(new RemoteCallback<Void>() {
-                                    @Override
-                                    public void callback(Void nothing) {
-                                        view.displayNotification("Task Forwarded from = " + userId + " -(to)-> " + entityId + ")");
-                                        view.getUserText().setText("");
-                                    }
-                                }).forward(taskId, userId, entityId);
-                            }
+            @Override
+            public void callback(TaskSummary details) {
+                if (entityId != null && !entityId.equals("")) {
+                    taskServices.call(new RemoteCallback<Void>() {
+                        @Override
+                        public void callback(Void nothing) {
+                            view.displayNotification("Task Forwarded from = " + userId + " -(to)-> " + entityId + ")");
+                            view.getUserText().setText("");
                         }
-                    
-                
-            }).getTaskDetails(taskId);
+                    }).forward(taskId, userId, entityId);
+                }
+            }
+        }).getTaskDetails(taskId);
     }
     
     public void updateTask(final long taskId, final String taskDescription, final String userId, final String entityId, final String subTaskStrategy,
             final Date dueDate, final int priority) {
-
+        
         if (taskId > 0) {
-
+            
             taskServices.call(new RemoteCallback<Void>() {
                 @Override
                 public void callback(Void nothing) {
                     view.displayNotification("Task Priority Updated for Task id = " + taskId + ")");
-
+                    
                 }
             }).setPriority(taskId, Integer.valueOf(priority));
             taskServices.call(new RemoteCallback<Void>() {
                 @Override
                 public void callback(Void nothing) {
                     view.displayNotification("Task Sub Task Strategy Updated for Task id = " + taskId + ")");
-
+                    
                 }
             }).setSubTaskStrategy(taskId, subTaskStrategy);
             List<String> descriptions = new ArrayList<String>();
             descriptions.
                     add(taskDescription);
-
+            
             taskServices.call(new RemoteCallback<Void>() {
                 @Override
                 public void callback(Void nothing) {
                     view.displayNotification("Task Description Updated for Task id = " + taskId + ")");
-
+                    
                 }
             }).setDescriptions(taskId, descriptions);
-
+            
             taskServices.call(new RemoteCallback<Void>() {
                 @Override
                 public void callback(Void nothing) {
                     view.displayNotification("Task Expiration Date Updated for Task id = " + taskId + " -> " + dueDate.toString() + ")");
                 }
             }).setExpirationDate(taskId, dueDate);
-
             
-
+            
+            
         }
-
+        
     }
-
+    
     public void refreshTask(long taskId) {
+        List<Role> roles = identity.getRoles();
+        final List<String> stringRoles = new ArrayList<String>(roles.size());
+        for (Role r : roles) {
+            stringRoles.add(r.getName());
+        }
+        
         taskServices.call(new RemoteCallback<TaskSummary>() {
             @Override
             public void callback(TaskSummary details) {
@@ -169,7 +171,8 @@ public class TaskDetailsPresenter {
                 view.getTaskDescriptionTextArea().setText(details.getDescription());
                 view.getDueDate().setValue(details.getExpirationTime());
                 view.getUserText().setText(details.getActualOwner());
-
+                
+                
                 int i = 0;
                 for (String strategy : view.getSubTaskStrategies()) {
                     if (details.getSubTaskStrategy().equals(strategy)) {
@@ -184,29 +187,35 @@ public class TaskDetailsPresenter {
                     }
                     i++;
                 }
-                i = 0;
-                for (String owner : details.getPotentialOwners()) {
-                    view.getGroupListBox().addItem(owner, owner);
-
+                List<String> stringPotentialOwners = details.getPotentialOwners();
+                List<String> forwardBox = new ArrayList<String>();
+                
+                for (String owner : stringPotentialOwners) {
+                    if (!stringRoles.contains(owner) && !forwardBox.contains(owner)) {
+                        forwardBox.add(owner);
+                    }
+                    
                 }
                 for (Role role : identity.getRoles()) {
-                    if (!details.getPotentialOwners().contains(role.getName())) {
-                        view.getGroupListBox().addItem(role.getName(), role.getName());
+                    if (!forwardBox.contains(role.getName())) {
+                        forwardBox.add(role.getName());
                     }
                 }
                 
-                for(i = 0; i < view.getGroupListBox().getItemCount(); i++){
-                    details.getPotentialOwners().contains(view.getGroupListBox().getItemText(i));
+                for (String item : forwardBox) {
+                    view.getGroupListBox().addItem(item, item);
                 }
+                
+                
             }
         }).getTaskDetails(taskId);
-
+        
     }
-
+    
     public void onTaskSelected(@Observes TaskSelectionEvent taskSelection) {
         refreshTask(taskSelection.getTaskId());
     }
-
+    
     @OnReveal
     public void onReveal() {
         final PlaceRequest p = placeManager.getCurrentPlaceRequest();

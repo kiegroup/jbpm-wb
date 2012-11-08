@@ -24,8 +24,8 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskSelectionEvent;
+import org.jbpm.console.ng.shared.events.TaskChangedEvent;
+import org.jbpm.console.ng.shared.events.TaskSelectionEvent;
 import org.jbpm.console.ng.client.model.TaskSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;

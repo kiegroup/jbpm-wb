@@ -29,7 +29,7 @@ import com.google.gwt.view.client.ListDataProvider;
 import javax.enterprise.event.Event;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.ProcessInstanceCreated;
+import org.jbpm.console.ng.shared.events.ProcessInstanceCreated;
 import org.jbpm.console.ng.client.model.ProcessSummary;
 import org.jbpm.console.ng.client.model.StatefulKnowledgeSessionSummary;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
@@ -81,13 +81,7 @@ public class ProcessDefinitionListPresenter {
 
     @PostConstruct
     public void init() {
-        // HACK TO INITIALIZE THE SERVICE
-        knowledgeServices.call(new RemoteCallback<StatefulKnowledgeSessionSummary>() {
-                @Override
-                public void callback(StatefulKnowledgeSessionSummary sessions) {
-                   
-                }
-            }).getSessionSummaryByBusinessKey("default");
+        
         
     }
 

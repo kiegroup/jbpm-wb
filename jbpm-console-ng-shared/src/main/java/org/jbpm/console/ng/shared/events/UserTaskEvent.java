@@ -13,46 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.inbox.events;
+package org.jbpm.console.ng.shared.events;
 
+import java.io.Serializable;
 import java.util.List;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  *
  */
-public class TaskChangedEvent {
-    private long taskId;
+@Portable
+public class UserTaskEvent implements Serializable{
+
     private String userId;
     private List<String> groupsId;
 
-    public TaskChangedEvent(long taskId, String userId, List<String> groupsId) {
-        this.taskId = taskId;
+    public UserTaskEvent(String userId, List<String> groupsId) {
+
         this.userId = userId;
         this.groupsId = groupsId;
     }
 
-    public TaskChangedEvent(long taskId, String userId) {
-        this.taskId = taskId;
+    public UserTaskEvent(String userId) {
+
         this.userId = userId;
     }
 
-   
-    
-    public TaskChangedEvent() {
+    public UserTaskEvent() {
     }
 
-    public long getTaskId() {
-        return taskId;
+    public List<String> getGroupsId() {
+        return groupsId;
     }
 
     public String getUserId() {
         return userId;
     }
 
-    public List<String> getGroupsId() {
-        return groupsId;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
-    
+
+    public void setGroupsId(List<String> groupsId) {
+        this.groupsId = groupsId;
+    }
     
     
     

@@ -13,39 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.inbox.events;
+package org.jbpm.console.ng.shared.events;
 
-import java.util.List;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  *
+ * @author salaboy
  */
-public class UserTaskEvent {
+@Portable
+public class ProcessSelectionEvent {
+    private long processId;
 
-    private String userId;
-    private List<String> groupsId;
-
-    public UserTaskEvent(String userId, List<String> groupsId) {
-
-        this.userId = userId;
-        this.groupsId = groupsId;
+    public ProcessSelectionEvent() {
     }
 
-    public UserTaskEvent(String userId) {
-
-        this.userId = userId;
+    public ProcessSelectionEvent(long processId) {
+        this.processId = processId;
     }
 
-    public UserTaskEvent() {
+    public long getProcessId() {
+        return processId;
     }
 
-    public List<String> getGroupsId() {
-        return groupsId;
+    public void setProcessId(long processId) {
+        this.processId = processId;
     }
-
-    public String getUserId() {
-        return userId;
-    }
+    
     
     
 }

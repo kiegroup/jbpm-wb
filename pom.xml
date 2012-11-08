@@ -213,7 +213,7 @@
             <dependency>
                 <groupId>org.jbpm</groupId>
                 <artifactId>droolsjbpm-knowledge-services</artifactId>
-                <version>${project.version}</version>
+                <version>${jbpm.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jbpm</groupId>

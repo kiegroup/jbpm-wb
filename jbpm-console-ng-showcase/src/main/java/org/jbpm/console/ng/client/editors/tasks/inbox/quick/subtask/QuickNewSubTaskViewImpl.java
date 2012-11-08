@@ -19,7 +19,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
+import org.jbpm.console.ng.shared.events.TaskChangedEvent;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 

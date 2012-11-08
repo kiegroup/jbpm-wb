@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.inbox.events;
+package org.jbpm.console.ng.shared.events;
+
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  *
  * @author salaboy
  */
-public class ProcessSelectionEvent {
-    private long processId;
+@Portable
+public class ProcessInstanceCreated {
 
-    public ProcessSelectionEvent() {
+    public ProcessInstanceCreated() {
     }
-
-    public ProcessSelectionEvent(long processId) {
-        this.processId = processId;
-    }
-
-    public long getProcessId() {
-        return processId;
-    }
+    
+    
     
 }

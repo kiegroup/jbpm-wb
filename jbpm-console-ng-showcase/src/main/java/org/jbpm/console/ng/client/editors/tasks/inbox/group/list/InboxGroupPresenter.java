@@ -34,7 +34,7 @@ import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.TaskChangedEvent;
+import org.jbpm.console.ng.shared.events.TaskChangedEvent;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;

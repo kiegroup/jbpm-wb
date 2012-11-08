@@ -233,6 +233,6 @@ public class InboxPersonalPresenter {
 
     @OnReveal
     public void onReveal() {
-        //view.refreshTasks();
+        
     }
 }
