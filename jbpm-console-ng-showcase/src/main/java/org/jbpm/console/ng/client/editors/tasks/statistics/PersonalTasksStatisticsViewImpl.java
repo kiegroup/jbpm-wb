@@ -21,7 +21,7 @@ import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 
-import org.jbpm.console.ng.client.editors.tasks.inbox.events.ChartPopulateEvent;
+import org.jbpm.console.ng.shared.events.ChartPopulateEvent;
 
 
 import com.google.gwt.core.client.GWT;

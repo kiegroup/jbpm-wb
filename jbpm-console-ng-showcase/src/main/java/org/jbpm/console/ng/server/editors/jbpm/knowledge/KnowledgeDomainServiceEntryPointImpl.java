@@ -24,12 +24,12 @@ import org.droolsjbpm.services.api.KnowledgeDataService;
 import org.droolsjbpm.services.api.KnowledgeDomainService;
 import org.droolsjbpm.services.api.bpmn2.BPMN2DataService;
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.client.model.NodeInstanceSummary;
-import org.jbpm.console.ng.client.model.ProcessInstanceSummary;
-import org.jbpm.console.ng.client.model.ProcessSummary;
-import org.jbpm.console.ng.client.model.StatefulKnowledgeSessionSummary;
-import org.jbpm.console.ng.client.model.TaskDefSummary;
-import org.jbpm.console.ng.client.model.VariableSummary;
+import org.jbpm.console.ng.shared.model.NodeInstanceSummary;
+import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.shared.model.ProcessSummary;
+import org.jbpm.console.ng.shared.model.StatefulKnowledgeSessionSummary;
+import org.jbpm.console.ng.shared.model.TaskDefSummary;
+import org.jbpm.console.ng.shared.model.VariableSummary;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 
 /**

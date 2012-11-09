@@ -17,7 +17,7 @@ package org.jbpm.console.ng.client.editors.tasks.inbox.group.list;
 
 import com.google.gwt.user.client.ui.TextBox;
 
-import org.jbpm.console.ng.client.model.TaskSummary;
+import org.jbpm.console.ng.shared.model.TaskSummary;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;

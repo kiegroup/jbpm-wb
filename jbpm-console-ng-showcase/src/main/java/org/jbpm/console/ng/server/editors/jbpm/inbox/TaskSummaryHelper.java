@@ -18,7 +18,7 @@ package org.jbpm.console.ng.server.editors.jbpm.inbox;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jbpm.console.ng.client.model.TaskSummary;
+import org.jbpm.console.ng.shared.model.TaskSummary;
 
 /**
  *

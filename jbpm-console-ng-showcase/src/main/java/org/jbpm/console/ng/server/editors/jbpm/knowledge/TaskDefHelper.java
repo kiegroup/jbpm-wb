@@ -18,7 +18,7 @@ package org.jbpm.console.ng.server.editors.jbpm.knowledge;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.jbpm.console.ng.client.model.TaskDefSummary;
+import org.jbpm.console.ng.shared.model.TaskDefSummary;
 import org.jbpm.task.TaskDef;
 /**
  *

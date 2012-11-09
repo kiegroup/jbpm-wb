@@ -28,7 +28,7 @@ import javax.inject.Inject;
 import org.jbpm.console.ng.shared.events.TaskChangedEvent;
 import org.jbpm.console.ng.shared.events.TaskSelectionEvent;
 import org.jbpm.console.ng.shared.events.UserTaskEvent;
-import org.jbpm.console.ng.client.model.TaskSummary;
+import org.jbpm.console.ng.shared.model.TaskSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
@@ -153,18 +153,20 @@ public class InboxPersonalViewImpl extends Composite
 
 
         presenter.addDataDisplay(myTaskListGrid);
-        
+        System.out.println(" {{{{{{{{{{{{{{{{{{{{{{{{{{{{ - init REFRESH TASKS ");
         refreshTasks();
 
     }
 
     public void recieveStatusChanged(@Observes UserTaskEvent event) {
+        System.out.println(" {{{{{{{{{{{{{{{{{{{{{{{{{{{{ - recieveStatusChanged REFRESH TASKS");
         refreshTasks();
 
     }
 
     @EventHandler("refreshTasksButton")
     public void refreshTasksButton(ClickEvent e) {
+        System.out.println(" {{{{{{{{{{{{{{{{{{{{{{{{{{{{ - BUTTON CALLING REFRESH TASKS");
         refreshTasks();
     }
 

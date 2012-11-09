@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.droolsjbpm.services.impl.model.ProcessInstanceDesc;
-import org.jbpm.console.ng.client.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
 
 /**
  *

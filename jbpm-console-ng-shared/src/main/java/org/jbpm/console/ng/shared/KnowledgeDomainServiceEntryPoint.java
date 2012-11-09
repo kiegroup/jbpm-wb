@@ -18,12 +18,12 @@ package org.jbpm.console.ng.shared;
 import java.util.Collection;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.jbpm.console.ng.client.model.NodeInstanceSummary;
-import org.jbpm.console.ng.client.model.ProcessInstanceSummary;
-import org.jbpm.console.ng.client.model.ProcessSummary;
-import org.jbpm.console.ng.client.model.StatefulKnowledgeSessionSummary;
-import org.jbpm.console.ng.client.model.TaskDefSummary;
-import org.jbpm.console.ng.client.model.VariableSummary;
+import org.jbpm.console.ng.shared.model.NodeInstanceSummary;
+import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.shared.model.ProcessSummary;
+import org.jbpm.console.ng.shared.model.StatefulKnowledgeSessionSummary;
+import org.jbpm.console.ng.shared.model.TaskDefSummary;
+import org.jbpm.console.ng.shared.model.VariableSummary;
 
 /**
  *

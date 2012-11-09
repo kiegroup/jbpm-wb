@@ -24,7 +24,7 @@ import javax.annotation.PostConstruct;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.client.model.ProcessSummary;
+import org.jbpm.console.ng.shared.model.ProcessSummary;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.shared.StatefulKnowledgeSessionEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.model;
+package org.jbpm.console.ng.shared.model;
 
 import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;

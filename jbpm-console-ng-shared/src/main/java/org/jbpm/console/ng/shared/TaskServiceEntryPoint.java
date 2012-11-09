@@ -5,7 +5,7 @@
 package org.jbpm.console.ng.shared;
 
 import java.util.Date;
-import org.jbpm.console.ng.client.model.TaskSummary;
+import org.jbpm.console.ng.shared.model.TaskSummary;
 import java.util.List;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
