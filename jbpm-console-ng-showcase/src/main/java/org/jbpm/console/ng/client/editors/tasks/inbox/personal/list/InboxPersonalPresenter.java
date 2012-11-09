@@ -31,7 +31,7 @@ import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.ProvidesKey;
 import java.util.ArrayList;
-import org.jbpm.console.ng.client.model.TaskSummary;
+import org.jbpm.console.ng.shared.model.TaskSummary;
 import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
@@ -171,6 +171,7 @@ public class InboxPersonalPresenter {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                     view.displayNotification("Task(s) Started");
+                    System.out.println(" {{{{{{{{{{{{{{{{{{{{{{{{{{{{ - TASK STARTED REFRESH TASKS ");
                     view.refreshTasks();
                 }
             }).start(ts.getId(), userId);
@@ -185,6 +186,7 @@ public class InboxPersonalPresenter {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                     view.displayNotification("Task(s) Released");
+                    System.out.println(" {{{{{{{{{{{{{{{{{{{{{{{{{{{{ - TASK RELEASED REFRESH TASKS ");
                     view.refreshTasks();
                 }
             }).release(ts.getId(), userId);
@@ -197,6 +199,7 @@ public class InboxPersonalPresenter {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                     view.displayNotification("Task(s) Completed");
+                    System.out.println(" {{{{{{{{{{{{{{{{{{{{{{{{{{{{ - TASK COMPLETED REFRESH TASKS ");
                     view.refreshTasks();
                 }
             }).complete(ts.getId(), userId, null);
@@ -210,6 +213,7 @@ public class InboxPersonalPresenter {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                     view.displayNotification("Task (Id = " + ts.getId() + ") Claimed");
+                    System.out.println(" {{{{{{{{{{{{{{{{{{{{{{{{{{{{ - TASK CLAIMED REFRESH TASKS ");
                     view.refreshTasks();
 
                 }

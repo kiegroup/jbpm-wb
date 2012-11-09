@@ -45,7 +45,7 @@ import java.util.Comparator;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.client.model.VariableSummary;
+import org.jbpm.console.ng.shared.model.VariableSummary;
 import org.jbpm.console.ng.client.util.ResizableHeader;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.security.Identity;

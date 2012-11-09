@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jbpm.console.ng.client.model;
+package org.jbpm.console.ng.shared.model;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -46,7 +46,7 @@ public class TaskSummary
     private int processSessionId;
     private String subTaskStrategy;
     
-    private boolean isGroupTask;
+
     private List<String> potentialOwners;
 
     public TaskSummary(long id,
@@ -238,25 +238,24 @@ public class TaskSummary
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 11 * hash + (int) (this.id ^ (this.id >>> 32));
-        hash = 11 * hash + (this.name != null ? this.name.hashCode() : 0);
-        hash = 11 * hash + (this.subject != null ? this.subject.hashCode() : 0);
-        hash = 11 * hash + (this.description != null ? this.description.hashCode() : 0);
-        hash = 11 * hash + (this.status != null ? this.status.hashCode() : 0);
-        hash = 11 * hash + this.priority;
-        hash = 11 * hash + this.parentId;
-        hash = 11 * hash + (this.skipable ? 1 : 0);
-        hash = 11 * hash + (this.actualOwner != null ? this.actualOwner.hashCode() : 0);
-        hash = 11 * hash + (this.createdBy != null ? this.createdBy.hashCode() : 0);
-        hash = 11 * hash + (this.createdOn != null ? this.createdOn.hashCode() : 0);
-        hash = 11 * hash + (this.activationTime != null ? this.activationTime.hashCode() : 0);
-        hash = 11 * hash + (this.expirationTime != null ? this.expirationTime.hashCode() : 0);
-        hash = 11 * hash + (int) (this.processInstanceId ^ (this.processInstanceId >>> 32));
-        hash = 11 * hash + (this.processId != null ? this.processId.hashCode() : 0);
-        hash = 11 * hash + this.processSessionId;
-        hash = 11 * hash + (this.subTaskStrategy != null ? this.subTaskStrategy.hashCode() : 0);
-        hash = 11 * hash + (this.isGroupTask ? 1 : 0);
-        hash = 11 * hash + (this.potentialOwners != null ? this.potentialOwners.hashCode() : 0);
+        hash = 17 * hash + (int) (this.id ^ (this.id >>> 32));
+        hash = 17 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 17 * hash + (this.subject != null ? this.subject.hashCode() : 0);
+        hash = 17 * hash + (this.description != null ? this.description.hashCode() : 0);
+        hash = 17 * hash + (this.status != null ? this.status.hashCode() : 0);
+        hash = 17 * hash + this.priority;
+        hash = 17 * hash + this.parentId;
+        hash = 17 * hash + (this.skipable ? 1 : 0);
+        hash = 17 * hash + (this.actualOwner != null ? this.actualOwner.hashCode() : 0);
+        hash = 17 * hash + (this.createdBy != null ? this.createdBy.hashCode() : 0);
+        hash = 17 * hash + (this.createdOn != null ? this.createdOn.hashCode() : 0);
+        hash = 17 * hash + (this.activationTime != null ? this.activationTime.hashCode() : 0);
+        hash = 17 * hash + (this.expirationTime != null ? this.expirationTime.hashCode() : 0);
+        hash = 17 * hash + (int) (this.processInstanceId ^ (this.processInstanceId >>> 32));
+        hash = 17 * hash + (this.processId != null ? this.processId.hashCode() : 0);
+        hash = 17 * hash + this.processSessionId;
+        hash = 17 * hash + (this.subTaskStrategy != null ? this.subTaskStrategy.hashCode() : 0);
+        hash = 17 * hash + (this.potentialOwners != null ? this.potentialOwners.hashCode() : 0);
         return hash;
     }
 
@@ -320,9 +319,6 @@ public class TaskSummary
         if ((this.subTaskStrategy == null) ? (other.subTaskStrategy != null) : !this.subTaskStrategy.equals(other.subTaskStrategy)) {
             return false;
         }
-        if (this.isGroupTask != other.isGroupTask) {
-            return false;
-        }
         if (this.potentialOwners != other.potentialOwners && (this.potentialOwners == null || !this.potentialOwners.equals(other.potentialOwners))) {
             return false;
         }
@@ -331,8 +327,11 @@ public class TaskSummary
 
     @Override
     public String toString() {
-        return "TaskSummary{" + "id=" + id + ", name=" + name + ", subject=" + subject + ", description=" + description + ", status=" + status + ", priority=" + priority + ", parentId=" + parentId + ", skipable=" + skipable + ", actualOwner=" + actualOwner + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", activationTime=" + activationTime + ", expirationTime=" + expirationTime + ", processInstanceId=" + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", subTaskStrategy=" + subTaskStrategy + ", isGroupTask=" + isGroupTask + ", potentialOwners=" + potentialOwners + '}';
+        return "TaskSummary{" + "id=" + id + ", name=" + name + ", subject=" + subject + ", description=" + description + ", status=" + status + ", priority=" + priority + ", parentId=" + parentId + ", skipable=" + skipable + ", actualOwner=" + actualOwner + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", activationTime=" + activationTime + ", expirationTime=" + expirationTime + ", processInstanceId=" + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", subTaskStrategy=" + subTaskStrategy + ", potentialOwners=" + potentialOwners + '}';
     }
+
+    
+    
     
     
 

@@ -24,7 +24,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 
-import org.jbpm.console.ng.client.model.TaskSummary;
+import org.jbpm.console.ng.shared.model.TaskSummary;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.task.Content;
 import org.jbpm.task.ContentData;
@@ -124,12 +124,14 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     
     public List<TaskSummary> getTasksAssignedPersonalAndGroupsTasks(String userId, List<String> groupIds, String language) {
         List<TaskSummary> groupTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroups(groupIds, language));
+        System.out.println("XXXXXXXXXXXXXXXXXXXX  GROUP TASKS -> "+groupTasks.size());
         List<Status> statuses = new ArrayList<Status>();
         statuses.add(Status.Ready);
         statuses.add(Status.InProgress);
         statuses.add(Status.Reserved);
         statuses.add(Status.Created);
         List<TaskSummary> personalTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwned(userId, statuses, language));
+        System.out.println("XXXXXXXXXXXXXXXXXXXX Personal TASKS -> "+personalTasks.size());
         groupTasks.addAll(personalTasks);
         return groupTasks;
     }

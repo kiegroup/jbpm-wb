@@ -26,7 +26,7 @@ import javax.inject.Inject;
 
 import org.jbpm.console.ng.shared.events.TaskChangedEvent;
 import org.jbpm.console.ng.shared.events.TaskSelectionEvent;
-import org.jbpm.console.ng.client.model.TaskSummary;
+import org.jbpm.console.ng.shared.model.TaskSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 import com.google.gwt.cell.client.CheckboxCell;
