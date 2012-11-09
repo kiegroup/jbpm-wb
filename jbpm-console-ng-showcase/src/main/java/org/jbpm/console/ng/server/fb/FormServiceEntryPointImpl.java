@@ -15,11 +15,13 @@
  */
 package org.jbpm.console.ng.server.fb;
 
+import java.util.ArrayList; 
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -34,6 +36,14 @@ import org.jbpm.form.builder.services.api.FormBuilderServiceException;
 import org.jbpm.form.builder.services.api.FormDisplayService;
 import org.jbpm.form.builder.services.api.MenuService;
 import org.jbpm.form.builder.services.api.MenuServiceException;
+import org.jbpm.form.builder.services.encoders.FormRepresentationDecoderImpl;
+import org.jbpm.form.builder.services.encoders.FormRepresentationEncoderImpl;
+import org.jbpm.form.builder.services.model.FormItemRepresentation;
+import org.jbpm.form.builder.services.model.FormRepresentation;
+import org.jbpm.form.builder.services.model.forms.FormEncodingException;
+import org.jbpm.form.builder.services.model.forms.FormEncodingFactory;
+import org.jbpm.form.builder.services.model.menu.MenuItemDescription;
+import org.jbpm.form.builder.services.model.menu.MenuOptionDescription;
 
 /**
  *
@@ -56,77 +66,128 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
     @Inject
     Event<PaletteItemAddedEvent> itemAddedEvents;
     
+    @PostConstruct
+    public void init() {
+        FormEncodingFactory.register(new FormRepresentationEncoderImpl(), new FormRepresentationDecoderImpl());
+        
+    }
+    
     @Override
-    public List<Map<String, Object>> listOptions() throws MenuServiceException {
-        return menuService.listOptionsGWT();
+    public List<Map<String, Object>> listOptions() {
+    	try {
+    		List<MenuOptionDescription> options = menuService.listOptions();
+    		List<Map<String, Object>> retval = new ArrayList<Map<String, Object>>();
+    		for (MenuOptionDescription option : options) {
+    			retval.add(option.getDataMap());
+    		}
+    		return retval;
+    	} catch (Exception ex) {
+    		ex.printStackTrace();
+            Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+    	}
+    	return null;
     }
 
     @Override
-    public void listMenuItems() throws MenuServiceException {
-        Map<String, List<Map<String, Object>>> listMenuItems = menuService.listMenuItemsGWT();
-        
+    public void listMenuItems() {
         try {
+        	Map<String, List<MenuItemDescription>> listMenuItems = menuService.listMenuItems();
             for (String groupName : listMenuItems.keySet()) {
-                for (Map<String, Object> itemDesc : listMenuItems.get(groupName)) {
-                        itemAddedEvents.fire(new PaletteItemAddedEvent(itemDesc, groupName));
+                for (MenuItemDescription itemDesc : listMenuItems.get(groupName)) {
+                		Map<String, Object> itemDescMap = itemDesc.getDataMap();
+                        itemAddedEvents.fire(new PaletteItemAddedEvent(itemDescMap, groupName));
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
             Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
     @Override
-    public Map<String, String> getFormBuilderProperties() throws MenuServiceException {
-        return menuService.getFormBuilderProperties();
+    public Map<String, String> getFormBuilderProperties() {
+    	try {
+    		return menuService.getFormBuilderProperties();
+    	} catch (MenuServiceException ex) {
+    		ex.printStackTrace();
+            Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+    	}
+    	return null;
     }
 
-    public String storeFile(String packageName, String fileName, byte[] content) throws FileException {
-        return fileService.storeFile(packageName, fileName, content);
+    public String storeFile(String packageName, String fileName, byte[] content) {
+    	try {
+    		return fileService.storeFile(packageName, fileName, content);
+    	} catch (FileException ex) {
+    		ex.printStackTrace();
+            Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+    	}
+    	return null;
     }
 
-    public void deleteFile(String packageName, String fileName) throws FileException {
-        fileService.deleteFile(packageName, fileName);
+    public void deleteFile(String packageName, String fileName) {
+    	try {
+    		fileService.deleteFile(packageName, fileName);
+    	} catch (FileException ex) {
+    		ex.printStackTrace();
+    		Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+    	}
     }
 
-    public List<String> loadFilesByType(String packageName, String fileType) throws FileException {
-        return fileService.loadFilesByType(packageName, fileType);
+    public List<String> loadFilesByType(String packageName, String fileType) {
+    	try {
+    		return fileService.loadFilesByType(packageName, fileType);
+    	} catch (FileException ex) {
+    		ex.printStackTrace();
+    		Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+    	}
+    	return null;
     }
 
-    public byte[] loadFile(String packageName, String fileName) throws FileException {
-        return fileService.loadFile(packageName, fileName);
+    public byte[] loadFile(String packageName, String fileName) {
+    	try {
+    		return fileService.loadFile(packageName, fileName);
+    	} catch (FileException ex) {
+    		ex.printStackTrace();
+            Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+    	}
+    	return null;
     }
 
     public String getFormDisplay(long taskId) {
         return displayService.getFormDisplay(taskId);
     }
 
-  
-
     public String saveForm(Map<String, Object> form) {
         try {
-            return formService.saveFormGWT(form);
+        	Object obj = FormEncodingFactory.getDecoder().decode(form);
+        	if (obj != null && obj instanceof FormRepresentation) {
+        		return formService.saveForm((FormRepresentation) form);
+        	}
         } catch (FormBuilderServiceException ex) {
             Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FormEncodingException ex) {
+        	Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
 
     public void saveFormItem(Map<String, Object> formItem, String formItemName) {
         try {
-            formService.saveFormItemGWT(formItem, formItemName);
+        	Object obj = FormEncodingFactory.getDecoder().decode(formItem);
+        	if (obj != null && obj instanceof FormItemRepresentation) {
+        		formService.saveFormItem((FormItemRepresentation) obj, formItemName);
+        	}
         } catch (FormBuilderServiceException ex) {
             Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FormEncodingException ex) {
+        	Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public Map<String, Object> loadForm(String json)  {
-        return formService.loadForm(json);
+    public Map<String, Object> loadForm(String json) {
+    	FormRepresentation form = formService.loadForm(json);
+    	Map<String, Object> formMap = form == null ? null : form.getDataMap();
+        return formMap;
     }
-    
-   
-    
-    
 }
