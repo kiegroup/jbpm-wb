@@ -61,6 +61,8 @@
 //import org.uberfire.security.Identity;
 //import org.uberfire.shared.mvp.impl.PlaceRequestImpl;
 //
+//import org.jbpm.console.ng.client.i18n.Constants;
+//
 //@Dependent
 //@Templated(value = "KBasesListViewImpl.html")
 //public class KBasesListViewImpl extends Composite
@@ -97,6 +99,8 @@
 //    private Event<KBaseSelectionEvent> taskSelection;
 //    private ListHandler<KBaseSummary> sortHandler;
 //
+//    private Constants constants = GWT.create(Constants.class);
+//
 //    @Override
 //    public void init(KBasesListPresenter presenter) {
 //        this.presenter = presenter;
@@ -106,7 +110,7 @@
 //        kbasesListGrid.setHeight("200px");
 //
 //        // Set the message to display when the table is empty.
-//        kbasesListGrid.setEmptyTableWidget(new Label("No KBases Available"));
+//        kbasesListGrid.setEmptyTableWidget(new Label(constants.No_KBases_Available()));
 //
 //        // Attach a column sort handler to the ListDataProvider to sort the list.
 //        sortHandler =
@@ -160,7 +164,7 @@
 //    @EventHandler("startTaskButton")
 //    public void startTaskButton(ClickEvent e) {
 //        if (selectedKBases.isEmpty()) {
-//            displayNotification("Please Select at least one Task to Execute a Quick Action");
+//            displayNotification(constants.Please_Select_at_least_one_Task_to_Execute_a_Quick_Action());
 //            return;
 //        }
 //        presenter.startTasks(selectedKBases,
@@ -170,7 +174,7 @@
 //    @EventHandler("completeTaskButton")
 //    public void completeTaskButton(ClickEvent e) {
 //        if (selectedKBases.isEmpty()) {
-//            displayNotification("Please Select at least one Task to Execute a Quick Action");
+//            displayNotification(constants.Please_Select_at_least_one_Task_to_Execute_a_Quick_Action());
 //            return;
 //        }
 //        presenter.completeTasks(selectedKBases,
@@ -181,7 +185,7 @@
 //    @EventHandler("releaseTaskButton")
 //    public void releaseTaskButton(ClickEvent e) {
 //        if (selectedKBases.isEmpty()) {
-//            displayNotification("Please Select at least one Task to Execute a Quick Action");
+//            displayNotification(constants.Please_Select_at_least_one_Task_to_Execute_a_Quick_Action());
 //            return;
 //        }
 //        presenter.releaseTasks(selectedKBases,
@@ -223,7 +227,7 @@
 //                    }
 //                });
 //        kbasesListGrid.addColumn(taskIdColumn,
-//                new ResizableHeader("Id", kbasesListGrid, taskIdColumn));
+//                new ResizableHeader(constants.Id(), kbasesListGrid, taskIdColumn));
 //
 //
 //        // Task name.
@@ -243,7 +247,7 @@
 //                    }
 //                });
 //        kbasesListGrid.addColumn(taskNameColumn,
-//                new ResizableHeader("Task", kbasesListGrid, taskNameColumn));
+//                new ResizableHeader(constants.Task(), kbasesListGrid, taskNameColumn));
 //
 //
 //        // Task priority.
@@ -263,7 +267,7 @@
 //                    }
 //                });
 //        kbasesListGrid.addColumn(taskPriorityColumn,
-//                new ResizableHeader("Priority", kbasesListGrid, taskPriorityColumn));
+//                new ResizableHeader(constants.Priority(), kbasesListGrid, taskPriorityColumn));
 //
 //
 //        // Status.
@@ -283,7 +287,7 @@
 //                });
 //
 //        kbasesListGrid.addColumn(statusColumn,
-//                new ResizableHeader("Status", kbasesListGrid, statusColumn));
+//                new ResizableHeader(constants.Status(), kbasesListGrid, statusColumn));
 //
 //        // Due Date.
 //        Column<TaskSummary, String> dueDateColumn = new Column<TaskSummary, String>(new TextCell()) {
@@ -298,7 +302,7 @@
 //        dueDateColumn.setSortable(true);
 //
 //        kbasesListGrid.addColumn(dueDateColumn,
-//                new ResizableHeader("Due On", kbasesListGrid, dueDateColumn));
+//                new ResizableHeader(constants.Due_On(), kbasesListGrid, dueDateColumn));
 //
 //
 //        // Task parent id.
@@ -306,7 +310,7 @@
 //                new Column<TaskSummary, String>(new TextCell()) {
 //                    @Override
 //                    public String getValue(TaskSummary object) {
-//                        return (object.getParentId() > 0) ? String.valueOf(object.getParentId()) : "No Parent";
+//                        return (object.getParentId() > 0) ? String.valueOf(object.getParentId()) : constants.No_Parent();
 //                    }
 //                };
 //        taskParentIdColumn.setSortable(true);
@@ -318,7 +322,7 @@
 //                    }
 //                });
 //        kbasesListGrid.addColumn(taskParentIdColumn,
-//                new ResizableHeader("Parent", kbasesListGrid, taskParentIdColumn));
+//                new ResizableHeader(constants.Parent(), kbasesListGrid, taskParentIdColumn));
 //
 //
 //        Column<TaskSummary, String> editColumn =
@@ -335,7 +339,7 @@
 //                    TaskSummary task,
 //                    String value) {
 //
-//                PlaceRequestImpl placeRequestImpl = new PlaceRequestImpl("Task Edit Perspective");
+//                PlaceRequestImpl placeRequestImpl = new PlaceRequestImpl(constants.Task_Edit_Perspective());
 //                placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
 //                placeManager.goTo(placeRequestImpl);
 //
@@ -343,7 +347,7 @@
 //        });
 //
 //        kbasesListGrid.addColumn(editColumn,
-//                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Edit")));
+//                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant(constants.Edit())));
 //
 //
 //        Column<TaskSummary, String> workColumn =
@@ -359,7 +363,7 @@
 //            public void update(int index,
 //                    TaskSummary task,
 //                    String value) {
-//                PlaceRequestImpl placeRequestImpl = new PlaceRequestImpl("Form Perspective");
+//                PlaceRequestImpl placeRequestImpl = new PlaceRequestImpl(constants.Form_Perspective());
 //                placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
 //
 //                placeManager.goTo(placeRequestImpl);
@@ -368,7 +372,7 @@
 //        });
 //
 //        kbasesListGrid.addColumn(workColumn,
-//                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Work")));
+//                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant(constants.Work())));
 //
 //
 //    }

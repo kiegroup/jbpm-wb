@@ -33,6 +33,8 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.security.Identity;
 
+import org.jbpm.console.ng.client.i18n.Constants;
+
 @Dependent
 @Templated(value = "QuickNewTaskViewImpl.html")
 public class QuickNewTaskViewImpl extends Composite
@@ -55,6 +57,8 @@ public class QuickNewTaskViewImpl extends Composite
     private Event<NotificationEvent> notification;
     @Inject
     private Event<UserTaskEvent> userTaskChanges;
+
+    private Constants constants = GWT.create(Constants.class);
 
     @Override
     public void init(QuickNewTaskPresenter presenter) {

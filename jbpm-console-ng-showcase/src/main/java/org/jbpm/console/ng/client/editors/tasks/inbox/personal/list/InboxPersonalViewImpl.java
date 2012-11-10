@@ -68,6 +68,8 @@ import org.uberfire.security.Identity;
 import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
+import org.jbpm.console.ng.client.i18n.Constants;
+
 @Dependent
 @Templated(value = "InboxPersonalViewImpl.html")
 public class InboxPersonalViewImpl extends Composite
@@ -112,6 +114,8 @@ public class InboxPersonalViewImpl extends Composite
     private ListHandler<TaskSummary> sortHandler;
     private MultiSelectionModel<TaskSummary> selectionModel;
 
+    private Constants constants = GWT.create(Constants.class);
+    
     @Override
     public void init(InboxPersonalPresenter presenter) {
         this.presenter = presenter;
@@ -119,7 +123,7 @@ public class InboxPersonalViewImpl extends Composite
         myTaskListGrid.setHeight("200px");
 
         // Set the message to display when the table is empty.
-        myTaskListGrid.setEmptyTableWidget(new Label("Hooray you don't have any pending Task!!"));
+        myTaskListGrid.setEmptyTableWidget(new Label(constants.Hooray_you_don_t_have_any_pending_Task__()));
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler =
@@ -173,7 +177,7 @@ public class InboxPersonalViewImpl extends Composite
     @EventHandler("startTaskButton")
     public void startTaskButton(ClickEvent e) {
         if (selectedTasks.isEmpty()) {
-            displayNotification("Please Select at least one Task to Execute a Quick Action");
+            displayNotification(constants.Please_Select_at_least_one_Task_to_Execute_a_Quick_Action());
             return;
         }
         presenter.startTasks(selectedTasks,
@@ -183,7 +187,7 @@ public class InboxPersonalViewImpl extends Composite
     @EventHandler("completeTaskButton")
     public void completeTaskButton(ClickEvent e) {
         if (selectedTasks.isEmpty()) {
-            displayNotification("Please Select at least one Task to Execute a Quick Action");
+            displayNotification(constants.Please_Select_at_least_one_Task_to_Execute_a_Quick_Action());
             return;
         }
         presenter.completeTasks(selectedTasks,
@@ -222,7 +226,7 @@ public class InboxPersonalViewImpl extends Composite
         taskIdColumn.setSortable(true);
 
         myTaskListGrid.addColumn(taskIdColumn,
-                new ResizableHeader("Id", myTaskListGrid, taskIdColumn));
+                new ResizableHeader(constants.Id(), myTaskListGrid, taskIdColumn));
         sortHandler.setComparator(taskIdColumn,
                 new Comparator<TaskSummary>() {
                     public int compare(TaskSummary o1,
@@ -242,7 +246,7 @@ public class InboxPersonalViewImpl extends Composite
         taskNameColumn.setSortable(true);
 
         myTaskListGrid.addColumn(taskNameColumn,
-                new ResizableHeader("Task", myTaskListGrid, taskNameColumn));
+                new ResizableHeader(constants.Task(), myTaskListGrid, taskNameColumn));
         sortHandler.setComparator(taskNameColumn,
                 new Comparator<TaskSummary>() {
                     public int compare(TaskSummary o1,
@@ -262,7 +266,7 @@ public class InboxPersonalViewImpl extends Composite
         taskPriorityColumn.setSortable(true);
         taskPriorityColumn.setSortable(true);
         myTaskListGrid.addColumn(taskPriorityColumn,
-                new ResizableHeader("Priority", myTaskListGrid, taskPriorityColumn));
+                new ResizableHeader(constants.Priority(), myTaskListGrid, taskPriorityColumn));
 
         sortHandler.setComparator(taskPriorityColumn,
                 new Comparator<TaskSummary>() {
@@ -282,7 +286,7 @@ public class InboxPersonalViewImpl extends Composite
 
 
         myTaskListGrid.addColumn(statusColumn,
-                new ResizableHeader("Status", myTaskListGrid, statusColumn));
+                new ResizableHeader(constants.Status(), myTaskListGrid, statusColumn));
         sortHandler.setComparator(statusColumn,
                 new Comparator<TaskSummary>() {
                     public int compare(TaskSummary o1,
@@ -304,7 +308,7 @@ public class InboxPersonalViewImpl extends Composite
         dueDateColumn.setSortable(true);
 
         myTaskListGrid.addColumn(dueDateColumn,
-                new ResizableHeader("Due On", myTaskListGrid, dueDateColumn));
+                new ResizableHeader(constants.Due_On(), myTaskListGrid, dueDateColumn));
         sortHandler.setComparator(dueDateColumn,
                 new Comparator<TaskSummary>() {
                     public int compare(TaskSummary o1,
@@ -322,13 +326,13 @@ public class InboxPersonalViewImpl extends Composite
                 new Column<TaskSummary, String>(new TextCell()) {
                     @Override
                     public String getValue(TaskSummary object) {
-                        return (object.getParentId() > 0) ? String.valueOf(object.getParentId()) : "No Parent";
+                        return (object.getParentId() > 0) ? String.valueOf(object.getParentId()) : constants.No_Parent();
                     }
                 };
         taskParentIdColumn.setSortable(true);
 
         myTaskListGrid.addColumn(taskParentIdColumn,
-                new ResizableHeader("Parent", myTaskListGrid, taskParentIdColumn));
+                new ResizableHeader(constants.Parent(), myTaskListGrid, taskParentIdColumn));
         sortHandler.setComparator(taskParentIdColumn,
                 new Comparator<TaskSummary>() {
                     public int compare(TaskSummary o1,

@@ -55,6 +55,8 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+import org.jbpm.console.ng.client.i18n.Constants;
+
 @Dependent
 @Templated(value="InboxGroupViewImpl.html")
 public class InboxGroupViewImpl extends Composite
@@ -96,6 +98,8 @@ public class InboxGroupViewImpl extends Composite
                                                                   }
                                                               };
 
+    private Constants constants = GWT.create(Constants.class);                                                              
+                                                              
     @EventHandler("refreshTasksButton")
     public void refreshTasksButton(ClickEvent e) {
         presenter.refreshGroupTasks( userText.getText(),
@@ -118,7 +122,7 @@ public class InboxGroupViewImpl extends Composite
         myGroupTaskListGrid.setHeight( "300px" );
 
         // Set the message to display when the table is empty.
-        myGroupTaskListGrid.setEmptyTableWidget( new Label( "Hooray you don't have any Group Task to Claim!!" ) );
+        myGroupTaskListGrid.setEmptyTableWidget( new Label( constants.Hooray_you_don_t_have_any_Group_Task_to_Claim__() ) );
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
         ListHandler<TaskSummary> sortHandler =
@@ -190,7 +194,7 @@ public class InboxGroupViewImpl extends Composite
                                        }
                                    } );
         myGroupTaskListGrid.addColumn( taskIdColumn,
-                                       "Task Id" );
+        							   constants.Task_Id() );
         taskIdColumn.setFieldUpdater( new FieldUpdater<TaskSummary, Number>() {
             public void update(int index,
                                TaskSummary object,
@@ -220,7 +224,7 @@ public class InboxGroupViewImpl extends Composite
                                        }
                                    } );
         myGroupTaskListGrid.addColumn( taskNameColumn,
-                                       "Task Name" );
+        							   constants.Task_Name() );
         taskNameColumn.setFieldUpdater( new FieldUpdater<TaskSummary, String>() {
             public void update(int index,
                                TaskSummary object,
@@ -251,7 +255,7 @@ public class InboxGroupViewImpl extends Composite
                                        }
                                    } );
         myGroupTaskListGrid.addColumn( taskPriorityColumn,
-                                       new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Priority" ) ) );
+                                       new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( constants.Priority() ) ) );
         myGroupTaskListGrid.setColumnWidth( taskPriorityColumn,
                                             40,
                                             Unit.PCT );
@@ -273,7 +277,7 @@ public class InboxGroupViewImpl extends Composite
                                    } );
 
         myGroupTaskListGrid.addColumn( statusColumn,
-                                       new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Status" ) ) );
+                                       new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( constants.Status() ) ) );
         myGroupTaskListGrid.setColumnWidth( statusColumn,
                                             50,
                                             Unit.PCT );
@@ -295,7 +299,7 @@ public class InboxGroupViewImpl extends Composite
                                    } );
 
         myGroupTaskListGrid.addColumn( userColumn,
-                                       new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Actual Owner" ) ) );
+                                       new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( constants.Actual_Owner() ) ) );
         myGroupTaskListGrid.setColumnWidth( userColumn,
                                             50,
                                             Unit.PCT );
@@ -310,7 +314,7 @@ public class InboxGroupViewImpl extends Composite
         descriptionColumn.setSortable( true );
 
         myGroupTaskListGrid.addColumn( descriptionColumn,
-                                       new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Description" ) ) );
+                                       new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( constants.Description() ) ) );
         myGroupTaskListGrid.setColumnWidth( descriptionColumn,
                                             150,
                                             Unit.PCT );

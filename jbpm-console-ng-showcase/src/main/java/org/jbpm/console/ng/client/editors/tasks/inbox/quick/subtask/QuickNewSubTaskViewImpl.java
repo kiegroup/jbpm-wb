@@ -31,6 +31,8 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+import org.jbpm.console.ng.client.i18n.Constants;
+
 @Dependent
 @Templated(value = "QuickNewSubTaskViewImpl.html")
 public class QuickNewSubTaskViewImpl extends Composite
@@ -56,6 +58,8 @@ public class QuickNewSubTaskViewImpl extends Composite
     @Inject
     private Event<TaskChangedEvent> taskChanged;
 
+    private Constants constants = GWT.create(Constants.class);
+    
     @Override
     public void init(QuickNewSubTaskPresenter presenter) {
         this.presenter = presenter;

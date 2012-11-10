@@ -37,5 +37,71 @@ public interface Constants
     String SignOut();
 
     String WelcomeUser();
+    
 
+    There_is_no_variable_information_to_show();
+    Variable();
+    Value();
+    Last_Time_Changed();
+    View_History();
+    Variable_History_Perspective();
+        
+    Show_me_my_pending_Tasks();
+    I_want_to_start_a_new_Process();
+    I_want_to_design_a_new_Process_Model();
+    I_want_to_design_a_new_Form();
+    I_want_to_create_a_Task();
+    Show_me_all_the_pending_tasks_in_my_Group();
+    Show_me_my_Inbox();
+    
+    Hooray_you_don_t_have_any_pending_Task__();
+    Id();
+    Task();
+    Status();
+    Due_On();
+    Details();
+    Request_Details_Perspective_Errai();
+    
+    No_KBases_Available();
+	Please_Select_at_least_one_Task_to_Execute_a_Quick_Action();
+	Priority();
+	Status();
+	No_Parent();
+	Parent();
+	Edit();
+	Task_Edit_Perspective();
+	Work();
+	Form_Perspective();
+	
+	No_Process_Definitions_Available();
+	Name();
+	Package();
+	Type();
+	Version();
+	Start_Process();
+	Actions();
+	Process_Definition_Details_Perspective();
+
+	No_Process_Instances_Available();
+	Deleting_Process_Instance();
+	Terminating_Process_Instance();
+	Signaling_Process_Instance();
+	Process_Id();
+	Process_Name();
+	State();
+	Process_Instance_Details_Perspective();
+	
+	Hooray_you_don_t_have_any_Group_Task_to_Claim__();
+	Task_Id();
+	Task_Name();
+	Priority();
+	Actual_Owner();
+	Description();
+
+	Hooray_you_don_t_have_any_pending_Task__();
+	Please_Select_at_least_one_Task_to_Execute_a_Quick_Action();
+
+	Completed();
+	Pending();
+	Personal_Task_Statistics();
 }
