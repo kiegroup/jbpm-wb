@@ -42,6 +42,8 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.security.Identity;
 import org.uberfire.security.Role;
 
+import org.jbpm.console.ng.client.i18n.Constants;
+
 @Dependent
 @Templated(value = "HomeViewImpl.html")
 public class HomeViewImpl extends Composite
@@ -64,16 +66,18 @@ public class HomeViewImpl extends Composite
     @Inject
     private Event<NotificationEvent> notification;
     
+    private Constants constants = GWT.create(Constants.class);    
 
     public HomeViewImpl() {
         MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
-        String[] words = {"Show me my pending Tasks",
-            "I want to start a new Process",
-            "I want to design a new Process Model",
-            "I want to design a new Form",
-            "I want to create a Task",
-            "Show me all the pending tasks in my Group",
-            "Show me my Inbox"
+        String[] words = {
+        		constants.Show_me_my_pending_Tasks(),
+        		constants.I_want_to_start_a_new_Process(),
+        		constants.I_want_to_design_a_new_Process_Model(),
+        		constants.I_want_to_design_a_new_Form(),
+        		constants.I_want_to_create_a_Task(),
+        		constants.Show_me_all_the_pending_tasks_in_my_Group(),
+        		constants.Show_me_my_Inbox()        		
         };
         for (int i = 0; i < words.length; ++i) {
             oracle.add(words[i]);

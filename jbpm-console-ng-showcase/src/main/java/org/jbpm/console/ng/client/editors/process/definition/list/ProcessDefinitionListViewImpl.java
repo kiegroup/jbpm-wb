@@ -55,6 +55,8 @@ import org.uberfire.security.Identity;
 import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
+import org.jbpm.console.ng.client.i18n.Constants;
+
 @Dependent
 @Templated(value = "ProcessDefinitionListViewImpl.html")
 public class ProcessDefinitionListViewImpl extends Composite
@@ -92,6 +94,8 @@ public class ProcessDefinitionListViewImpl extends Composite
     private Event<ProcessDefSelectionEvent> processSelection;
     private ListHandler<ProcessSummary> sortHandler;
 
+    private Constants constants = GWT.create(Constants.class);
+
     @Override
     public void init(ProcessDefinitionListPresenter presenter) {
         this.presenter = presenter;
@@ -101,7 +105,7 @@ public class ProcessDefinitionListViewImpl extends Composite
         processdefListGrid.setHeight("200px");
 
         // Set the message to display when the table is empty.
-        processdefListGrid.setEmptyTableWidget(new Label("No Process Definitions Available"));
+        processdefListGrid.setEmptyTableWidget(new Label(constants.No_Process_Definitions_Available()));
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler =
@@ -180,7 +184,7 @@ public class ProcessDefinitionListViewImpl extends Composite
                     }
                 });
         processdefListGrid.addColumn(processIdColumn,
-                new ResizableHeader("Id", processdefListGrid, processIdColumn));
+                new ResizableHeader(constants.Id(), processdefListGrid, processIdColumn));
 
 
         // Process Id String.
@@ -200,7 +204,7 @@ public class ProcessDefinitionListViewImpl extends Composite
                     }
                 });
         processdefListGrid.addColumn(processNameColumn,
-                new ResizableHeader("Name", processdefListGrid, processNameColumn));
+                new ResizableHeader(constants.Name(), processdefListGrid, processNameColumn));
 
          // Process Name.
         Column<ProcessSummary, String> processPkgColumn =
@@ -219,7 +223,7 @@ public class ProcessDefinitionListViewImpl extends Composite
                     }
                 });
         processdefListGrid.addColumn(processPkgColumn,
-                new ResizableHeader("Package", processdefListGrid, processPkgColumn));
+                new ResizableHeader(constants.Package(), processdefListGrid, processPkgColumn));
         
         
         // Process Type 
@@ -239,7 +243,7 @@ public class ProcessDefinitionListViewImpl extends Composite
                     }
                 });
         processdefListGrid.addColumn(processTypeColumn,
-                new ResizableHeader("Type", processdefListGrid, processTypeColumn));
+                new ResizableHeader(constants.Type(), processdefListGrid, processTypeColumn));
 
         
          // Version Type 
@@ -259,7 +263,7 @@ public class ProcessDefinitionListViewImpl extends Composite
                     }
                 });
         processdefListGrid.addColumn(versionColumn,
-                new ResizableHeader("Version", processdefListGrid, versionColumn));
+                new ResizableHeader(constants.Version(), processdefListGrid, versionColumn));
 
 
         Column<ProcessSummary, String> newInstanceColumn =
@@ -281,7 +285,7 @@ public class ProcessDefinitionListViewImpl extends Composite
         });
 
         processdefListGrid.addColumn(newInstanceColumn,
-                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Actions")));
+                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant(constants.Actions())));
 
         Column<ProcessSummary, String> detailsColumn =
                 new Column<ProcessSummary, String>(new ButtonCell()) {
@@ -297,7 +301,7 @@ public class ProcessDefinitionListViewImpl extends Composite
                     ProcessSummary process,
                     String value) {
                 
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Definition Details Perspective" );  
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( constants.Process_Definition_Details_Perspective() );  
                 placeRequestImpl.addParameter("processId", process.getId());
                 placeManager.goTo( placeRequestImpl);
 
@@ -305,7 +309,7 @@ public class ProcessDefinitionListViewImpl extends Composite
         });
 
         processdefListGrid.addColumn(detailsColumn,
-                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Details")));
+                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant(constants.Details())));
         
 
 

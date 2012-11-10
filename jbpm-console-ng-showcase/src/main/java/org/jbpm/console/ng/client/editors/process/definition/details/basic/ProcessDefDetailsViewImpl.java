@@ -33,6 +33,8 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+import org.jbpm.console.ng.client.i18n.Constants;
+
 @Dependent
 @Templated(value = "ProcessDefDetailsViewImpl.html")
 public class ProcessDefDetailsViewImpl extends Composite
@@ -60,6 +62,8 @@ public class ProcessDefDetailsViewImpl extends Composite
     public Button refreshButton;
     @Inject
     private Event<NotificationEvent> notification;
+
+    private Constants constants = GWT.create(Constants.class);    
 
     @Override
     public void init(ProcessDefDetailsPresenter presenter) {

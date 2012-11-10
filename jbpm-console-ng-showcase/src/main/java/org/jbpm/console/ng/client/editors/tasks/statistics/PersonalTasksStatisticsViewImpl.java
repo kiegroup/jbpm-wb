@@ -36,6 +36,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.gchart.client.GChart;
 
+import org.jbpm.console.ng.client.i18n.Constants;
+
 @Dependent
 public class PersonalTasksStatisticsViewImpl
         extends Composite
@@ -64,6 +66,8 @@ public class PersonalTasksStatisticsViewImpl
     private int                                          position = 1;
     private Column                                       completed;
     private Column                                       pending;
+    
+    private Constants constants = GWT.create(Constants.class);
 
     @Override
     public void init(PersonalTasksStatisticsPresenter presenter) {
@@ -91,7 +95,7 @@ public class PersonalTasksStatisticsViewImpl
         gChart.setChartSize( 300,
                              200 );
         gChart.setChartTitle( "<b><big><big>"
-                              + "Personal Task Statistics"
+                              + constants.Personal_Task_Statistics()
                               + "</big></big><br>&nbsp;</b>" );
         gChart.addCurve();
         gChart.getCurve().getSymbol().setSymbolType(

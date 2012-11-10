@@ -56,6 +56,8 @@ import org.jbpm.console.ng.client.util.ResizableHeader;
 import org.uberfire.security.Identity;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
+import org.jbpm.console.ng.client.i18n.Constants;
+
 @Dependent
 @Templated(value = "ProcessInstanceListViewImpl.html")
 public class ProcessInstanceListViewImpl extends Composite
@@ -105,6 +107,8 @@ public class ProcessInstanceListViewImpl extends Composite
     private Event<ProcessSelectionEvent> processSelection;
     private ListHandler<ProcessInstanceSummary> sortHandler;
 
+    private Constants constants = GWT.create(Constants.class);
+    
     @Override
     public void init(ProcessInstanceListPresenter presenter) {
         this.presenter = presenter;
@@ -114,7 +118,7 @@ public class ProcessInstanceListViewImpl extends Composite
         processInstanceListGrid.setHeight("200px");
 
         // Set the message to display when the table is empty.
-        processInstanceListGrid.setEmptyTableWidget(new Label("No Process Instances Available"));
+        processInstanceListGrid.setEmptyTableWidget(new Label(constants.No_Process_Instances_Available()));
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler =
@@ -159,17 +163,17 @@ public class ProcessInstanceListViewImpl extends Composite
     
     @EventHandler("deleteButton")
     public void deleteButton(ClickEvent e) {
-        displayNotification("Deleting Process Instance");
+        displayNotification(constants.Deleting_Process_Instance());
     }
     
     @EventHandler("terminateButton")
     public void terminateButton(ClickEvent e) {
-        displayNotification("Terminating Process Instance");
+        displayNotification(constants.Terminating_Process_Instance());
     }
     
     @EventHandler("signalButton")
     public void signalButton(ClickEvent e) {
-        displayNotification("Signaling Process Instance");
+        displayNotification(constants.Signaling_Process_Instance());
     }
 
    
@@ -208,7 +212,7 @@ public class ProcessInstanceListViewImpl extends Composite
                     }
                 });
         processInstanceListGrid.addColumn(processInstanceIdColumn,
-                new ResizableHeader("Id", processInstanceListGrid, processInstanceIdColumn));
+                new ResizableHeader(constants.Id(), processInstanceListGrid, processInstanceIdColumn));
 
 
         // Process Id String.
@@ -228,7 +232,7 @@ public class ProcessInstanceListViewImpl extends Composite
                     }
                 });
         processInstanceListGrid.addColumn(processIdColumn,
-                new ResizableHeader("Process Id", processInstanceListGrid, processIdColumn));
+                new ResizableHeader(constants.Process_Id(), processInstanceListGrid, processIdColumn));
 
          // Process Name.
         Column<ProcessInstanceSummary, String> processNameColumn =
@@ -247,7 +251,7 @@ public class ProcessInstanceListViewImpl extends Composite
                     }
                 });
         processInstanceListGrid.addColumn(processNameColumn,
-                new ResizableHeader("Process Name", processInstanceListGrid, processNameColumn));
+                new ResizableHeader(constants.Process_Name, processInstanceListGrid, processNameColumn));
         
         
         // Process State 
@@ -267,7 +271,7 @@ public class ProcessInstanceListViewImpl extends Composite
                     }
                 });
         processInstanceListGrid.addColumn(processStateColumn,
-                new ResizableHeader("State", processInstanceListGrid, processStateColumn));
+                new ResizableHeader(constants.State(), processInstanceListGrid, processStateColumn));
 
         Column<ProcessInstanceSummary, String> detailsColumn =
                 new Column<ProcessInstanceSummary, String>(new ButtonCell()) {
@@ -283,7 +287,7 @@ public class ProcessInstanceListViewImpl extends Composite
                     ProcessInstanceSummary process,
                     String value) {
 
-                DefaultPlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance Details Perspective");
+                DefaultPlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Instance_Details_Perspective());
                 placeRequestImpl.addParameter("processInstanceId", Long.toString(process.getId()));
                 placeRequestImpl.addParameter("processDefId", process.getProcessId());
                 placeManager.goTo(placeRequestImpl);
@@ -292,7 +296,7 @@ public class ProcessInstanceListViewImpl extends Composite
         });
         
         processInstanceListGrid.addColumn(detailsColumn,
-                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("Details")));
+                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant(constants.Details())));
 
 
     }

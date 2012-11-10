@@ -52,6 +52,8 @@ import org.uberfire.security.Identity;
 import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
+import org.jbpm.console.ng.client.i18n.Constants;
+
 @Dependent
 @Templated(value = "ProcessInstanceDetailsViewImpl.html")
 public class ProcessInstanceDetailsViewImpl extends Composite
@@ -88,6 +90,8 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     @Inject
     private Event<NotificationEvent> notification;
 
+    private Constants constants = GWT.create(Constants.class);    
+    
     @Override
     public void init(ProcessInstanceDetailsPresenter presenter) {
         this.presenter = presenter;
@@ -96,7 +100,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         processDataGrid.setHeight("200px");
 
         // Set the message to display when the table is empty.
-        processDataGrid.setEmptyTableWidget(new Label("There is no variable information to show"));
+        processDataGrid.setEmptyTableWidget(new Label(constants.There_is_no_variable_information_to_show()));
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler =
@@ -157,7 +161,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         variableId.setSortable(true);
 
         processDataGrid.addColumn(variableId,
-                new ResizableHeader("Variable", processDataGrid, variableId));
+                new ResizableHeader(constants.Variable(), processDataGrid, variableId));
         sortHandler.setComparator(variableId,
                 new Comparator<VariableSummary>() {
                     public int compare(VariableSummary o1,
@@ -177,7 +181,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         valueColumn.setSortable(true);
 
         processDataGrid.addColumn(valueColumn,
-                new ResizableHeader("Value", processDataGrid, valueColumn));
+                new ResizableHeader(constants.Value(), processDataGrid, valueColumn));
         sortHandler.setComparator(valueColumn,
                 new Comparator<VariableSummary>() {
                     public int compare(VariableSummary o1,
@@ -201,7 +205,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         dueDateColumn.setSortable(true);
 
         processDataGrid.addColumn(dueDateColumn,
-                new ResizableHeader("Last Time Changed", processDataGrid, dueDateColumn));
+                new ResizableHeader(constants.Last_Time_Changed(), processDataGrid, dueDateColumn));
         sortHandler.setComparator(dueDateColumn,
                 new Comparator<VariableSummary>() {
                     public int compare(VariableSummary o1,
@@ -225,7 +229,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
                     VariableSummary task,
                     String value) {
 
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Variable History Perspective");
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Variable_History_Perspective());
                 placeRequestImpl.addParameter("variableId", task.getVariableId());
                 placeManager.goTo(placeRequestImpl);
 
@@ -233,7 +237,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         });
 
         processDataGrid.addColumn(editColumn,
-                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant("View History")));
+                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant(constants.View_History())));
 
 
 

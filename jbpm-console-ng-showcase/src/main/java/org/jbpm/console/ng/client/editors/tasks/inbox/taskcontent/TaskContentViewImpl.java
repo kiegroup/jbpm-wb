@@ -37,6 +37,8 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.security.Identity;
 
+import org.jbpm.console.ng.client.i18n.Constants;
+
 @Dependent
 @Templated(value = "TaskContentViewImpl.html#form")
 public class TaskContentViewImpl extends Composite
@@ -65,6 +67,8 @@ public class TaskContentViewImpl extends Composite
     @Inject
     private Event<NotificationEvent> notification;
     private Map<TextBox, TextBox> textBoxs = new HashMap<TextBox, TextBox>();
+
+    private Constants constants = GWT.create(Constants.class);
 
     @Override
     public void init(TaskContentPresenter presenter) {
