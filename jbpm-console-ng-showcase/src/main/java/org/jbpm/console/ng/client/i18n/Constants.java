@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.client.i18n;
 
 import com.google.gwt.core.client.GWT;
@@ -32,76 +31,116 @@ public interface Constants
         extends
         Messages {
 
-    Constants INSTANCE = GWT.create( Constants.class );
+    Constants INSTANCE = GWT.create(Constants.class);
 
     String SignOut();
 
     String WelcomeUser();
-    
 
-    There_is_no_variable_information_to_show();
-    Variable();
-    Value();
-    Last_Time_Changed();
-    View_History();
-    Variable_History_Perspective();
-        
-    Show_me_my_pending_Tasks();
-    I_want_to_start_a_new_Process();
-    I_want_to_design_a_new_Process_Model();
-    I_want_to_design_a_new_Form();
-    I_want_to_create_a_Task();
-    Show_me_all_the_pending_tasks_in_my_Group();
-    Show_me_my_Inbox();
-    
-    Hooray_you_don_t_have_any_pending_Task__();
-    Id();
-    Task();
-    Status();
-    Due_On();
-    Details();
-    Request_Details_Perspective_Errai();
-    
-    No_KBases_Available();
-	Please_Select_at_least_one_Task_to_Execute_a_Quick_Action();
-	Priority();
-	Status();
-	No_Parent();
-	Parent();
-	Edit();
-	Task_Edit_Perspective();
-	Work();
-	Form_Perspective();
-	
-	No_Process_Definitions_Available();
-	Name();
-	Package();
-	Type();
-	Version();
-	Start_Process();
-	Actions();
-	Process_Definition_Details_Perspective();
+    String There_is_no_variable_information_to_show();
 
-	No_Process_Instances_Available();
-	Deleting_Process_Instance();
-	Terminating_Process_Instance();
-	Signaling_Process_Instance();
-	Process_Id();
-	Process_Name();
-	State();
-	Process_Instance_Details_Perspective();
-	
-	Hooray_you_don_t_have_any_Group_Task_to_Claim__();
-	Task_Id();
-	Task_Name();
-	Priority();
-	Actual_Owner();
-	Description();
+    String Variable();
 
-	Hooray_you_don_t_have_any_pending_Task__();
-	Please_Select_at_least_one_Task_to_Execute_a_Quick_Action();
+    String Value();
 
-	Completed();
-	Pending();
-	Personal_Task_Statistics();
+    String Last_Time_Changed();
+
+    String View_History ();
+
+    String Variable_History_Perspective ();
+
+    String Show_me_my_pending_Tasks ();
+
+    String I_want_to_start_a_new_Process ();
+
+    String I_want_to_design_a_new_Process_Model ();
+
+    String I_want_to_design_a_new_Form();
+
+    String I_want_to_create_a_Task();
+
+    String Show_me_all_the_pending_tasks_in_my_Group();
+
+    String Show_me_my_Inbox();
+
+    String Hooray_you_don_t_have_any_pending_Task__ ();
+
+    String Id();
+
+    String Task();
+
+    String Status();
+
+    String Due_On();
+
+    String Details();
+
+    String Request_Details_Perspective_Errai();
+
+    String No_KBases_Available();
+
+    String Please_Select_at_least_one_Task_to_Execute_a_Quick_Action();
+
+    String Priority();
+
+
+    String No_Parent();
+
+    String Parent();
+
+    String Edit();
+
+    String Task_Edit_Perspective();
+
+    String Work ();
+
+    String Form_Perspective ();
+
+    String No_Process_Definitions_Available ();
+
+    String Name ();
+
+    String Package ();
+
+    String Type ();
+
+    String Version ();
+
+    String Start_Process ();
+
+    String Actions ();
+
+    String Process_Definition_Details_Perspective ();
+
+    String No_Process_Instances_Available ();
+
+    String Deleting_Process_Instance ();
+
+    String Terminating_Process_Instance ();
+
+    String Signaling_Process_Instance ();
+
+    String Process_Id ();
+
+    String Process_Name ();
+
+    String State ();
+
+    String Process_Instance_Details_Perspective();
+
+    String Hooray_you_don_t_have_any_Group_Task_to_Claim__();
+
+    String Task_Id ();
+
+    String Task_Name ();
+
+    String Actual_Owner ();
+
+    String Description ();
+
+    String Completed ();
+
+    String Pending ();
+
+    String Personal_Task_Statistics ();
 }

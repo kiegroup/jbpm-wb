@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.gchart.client.GChart;
+import javax.inject.Inject;
 
 import org.jbpm.console.ng.client.i18n.Constants;
 

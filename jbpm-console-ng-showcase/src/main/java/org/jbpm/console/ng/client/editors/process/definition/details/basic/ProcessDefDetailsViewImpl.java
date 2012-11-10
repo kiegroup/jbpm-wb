@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.client.editors.process.definition.details.basic;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -62,8 +63,8 @@ public class ProcessDefDetailsViewImpl extends Composite
     public Button refreshButton;
     @Inject
     private Event<NotificationEvent> notification;
-
-    private Constants constants = GWT.create(Constants.class);    
+    
+    private Constants constants = GWT.create(Constants.class);
 
     @Override
     public void init(ProcessDefDetailsPresenter presenter) {

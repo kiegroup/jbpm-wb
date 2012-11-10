@@ -34,6 +34,7 @@ import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -97,8 +98,8 @@ public class InboxGroupViewImpl extends Composite
                                                                       return item == null ? null : item.getId();
                                                                   }
                                                               };
-
-    private Constants constants = GWT.create(Constants.class);                                                              
+    
+    private Constants constants = GWT.create(Constants.class);
                                                               
     @EventHandler("refreshTasksButton")
     public void refreshTasksButton(ClickEvent e) {

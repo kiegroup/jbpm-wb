@@ -30,6 +30,7 @@ import com.google.gwt.cell.client.ButtonCell;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
@@ -93,7 +94,6 @@ public class ProcessDefinitionListViewImpl extends Composite
     @Inject
     private Event<ProcessDefSelectionEvent> processSelection;
     private ListHandler<ProcessSummary> sortHandler;
-
     private Constants constants = GWT.create(Constants.class);
 
     @Override

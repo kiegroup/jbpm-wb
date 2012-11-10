@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.quick.subtask;
 
+import com.google.gwt.core.client.GWT;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -57,7 +58,7 @@ public class QuickNewSubTaskViewImpl extends Composite
     private Event<NotificationEvent> notification;
     @Inject
     private Event<TaskChangedEvent> taskChanged;
-
+    
     private Constants constants = GWT.create(Constants.class);
     
     @Override

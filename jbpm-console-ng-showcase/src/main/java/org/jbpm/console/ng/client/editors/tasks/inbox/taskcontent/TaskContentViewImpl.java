@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.taskcontent;
 
+import com.google.gwt.core.client.GWT;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -67,7 +68,7 @@ public class TaskContentViewImpl extends Composite
     @Inject
     private Event<NotificationEvent> notification;
     private Map<TextBox, TextBox> textBoxs = new HashMap<TextBox, TextBox>();
-
+    
     private Constants constants = GWT.create(Constants.class);
 
     @Override

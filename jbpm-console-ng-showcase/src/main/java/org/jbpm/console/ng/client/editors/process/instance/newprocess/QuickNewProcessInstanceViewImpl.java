@@ -15,12 +15,11 @@
  */
 package org.jbpm.console.ng.client.editors.process.instance.newprocess;
 
-import org.jbpm.console.ng.client.editors.tasks.inbox.quick.newtask.*;
+import com.google.gwt.core.client.GWT;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.jbpm.console.ng.shared.events.UserTaskEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
@@ -58,7 +57,7 @@ public class QuickNewProcessInstanceViewImpl extends Composite
     public TextBox processIdText;
     @Inject
     private Event<NotificationEvent> notification;
-
+    
     private Constants constants = GWT.create(Constants.class);
 
     @Override

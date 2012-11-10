@@ -28,10 +28,10 @@ import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 import com.google.gwt.cell.client.ButtonCell;
 import com.google.gwt.cell.client.CheckboxCell;
-import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
@@ -106,7 +106,6 @@ public class ProcessInstanceListViewImpl extends Composite
     @Inject
     private Event<ProcessSelectionEvent> processSelection;
     private ListHandler<ProcessInstanceSummary> sortHandler;
-
     private Constants constants = GWT.create(Constants.class);
     
     @Override
@@ -251,7 +250,7 @@ public class ProcessInstanceListViewImpl extends Composite
                     }
                 });
         processInstanceListGrid.addColumn(processNameColumn,
-                new ResizableHeader(constants.Process_Name, processInstanceListGrid, processNameColumn));
+                new ResizableHeader(constants.Process_Name(), processInstanceListGrid, processNameColumn));
         
         
         // Process State 

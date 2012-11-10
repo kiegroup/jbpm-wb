@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.fb.display;
 
+import com.google.gwt.core.client.GWT;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -55,7 +56,7 @@ public class FormDisplayViewImpl extends Composite
     @Inject
     private Event<NotificationEvent>         notification;
     
-    private Constants constants = GWT.create(Constants.class);    
+    private Constants constants = GWT.create(Constants.class);
 
     
   
