@@ -86,6 +86,8 @@ public class TaskDetailsViewImpl extends Composite
     @Inject
     private Event<NotificationEvent> notification;
 
+    private Constants constants = GWT.create(Constants.class);
+    
     @Override
     public void init(TaskDetailsPresenter presenter) {
         this.presenter = presenter;

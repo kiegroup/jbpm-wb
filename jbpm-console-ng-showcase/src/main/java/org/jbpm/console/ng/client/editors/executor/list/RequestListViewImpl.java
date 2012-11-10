@@ -60,6 +60,7 @@
 //import org.jbpm.console.ng.client.model.RequestSummary;
 //import org.jbpm.console.ng.client.util.ResizableHeader;
 //
+//import org.jbpm.console.ng.client.i18n.Constants;
 //
 //@Dependent
 //@Templated(value = "RequestListViewImpl.html")
@@ -95,6 +96,8 @@
 //    
 //    private ListHandler<RequestSummary>            sortHandler;
 //
+//    private Constants constants = GWT.create(Constants.class);
+//
 //    @Override
 //    public void init(RequestListPresenter presenter) {
 //        this.presenter = presenter;
@@ -104,7 +107,7 @@
 //        myRequestListGrid.setHeight("200px");
 //
 //        // Set the message to display when the table is empty.
-//        myRequestListGrid.setEmptyTableWidget( new Label( "Hooray you don't have any pending Task!!" ) );
+//        myRequestListGrid.setEmptyTableWidget( new Label( constants.Hooray_you_don_t_have_any_pending_Task__() ) );
 //
 //        // Attach a column sort handler to the ListDataProvider to sort the list.
 //        sortHandler =
@@ -194,7 +197,7 @@
 //                                       }
 //                                   } );
 //        myRequestListGrid.addColumn( taskIdColumn,
-//                                  new ResizableHeader("Id",myRequestListGrid, taskIdColumn ));
+//                                  new ResizableHeader(constants.Id(),myRequestListGrid, taskIdColumn ));
 //       
 //   
 //        // Task name.
@@ -214,7 +217,7 @@
 //                                       }
 //                                   } );
 //        myRequestListGrid.addColumn( taskNameColumn,
-//                                  new ResizableHeader("Task",myRequestListGrid, taskNameColumn ));
+//                                  new ResizableHeader(constants.Task(),myRequestListGrid, taskNameColumn ));
 //        
 //       
 //      
@@ -236,7 +239,7 @@
 //                                   } );
 //
 //        myRequestListGrid.addColumn( statusColumn,
-//                                  new ResizableHeader("Status",myRequestListGrid, statusColumn ));
+//                                  new ResizableHeader(constants.Status(),myRequestListGrid, statusColumn ));
 //       
 //
 //       
@@ -256,7 +259,7 @@
 //        dueDateColumn.setSortable( true );
 //
 //        myRequestListGrid.addColumn( dueDateColumn,
-//                                  new ResizableHeader("Due On",myRequestListGrid, dueDateColumn ));
+//                                  new ResizableHeader(constants.Due_On(),myRequestListGrid, dueDateColumn ));
 //       
 //
 //       
@@ -276,13 +279,13 @@
 //            public void update(int index,
 //                               RequestSummary request,
 //                               String value) {
-//                placeManager.goTo( new PlaceRequest( "Request Details Perspective Errai" ) );
+//                placeManager.goTo( new PlaceRequest( constants.Request_Details_Perspective_Errai() ) );
 //                taskSelection.fire( new RequestSelectionEvent( request.getId() ) );
 //            }
 //        } );
 //
 //        myRequestListGrid.addColumn( editColumn,
-//                                  new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( "Details" ) ) );
+//                                  new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( constants.Details() ) ) );
 //      
 //   
 //

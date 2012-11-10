@@ -34,6 +34,8 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.security.Identity;
 
+import org.jbpm.console.ng.client.i18n.Constants;
+
 @Dependent
 @Templated(value = "QuickNewProcessInstanceViewImpl.html")
 public class QuickNewProcessInstanceViewImpl extends Composite
@@ -56,6 +58,8 @@ public class QuickNewProcessInstanceViewImpl extends Composite
     public TextBox processIdText;
     @Inject
     private Event<NotificationEvent> notification;
+
+    private Constants constants = GWT.create(Constants.class);
 
     @Override
     public void init(QuickNewProcessInstancePresenter presenter) {
