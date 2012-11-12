@@ -5,6 +5,8 @@
 package org.jbpm.console.ng.shared;
 
 import java.util.Date;
+
+import org.jbpm.console.ng.shared.model.IdentitySummary;
 import org.jbpm.console.ng.shared.model.TaskSummary;
 import java.util.List;
 import java.util.Map;
@@ -93,4 +95,8 @@ public interface TaskServiceEntryPoint {
     List<TaskSummary> getTasksAssignedPersonalAndGroupTasks(String userId, String groupId, String language);
     
     List<TaskSummary> getTasksAssignedPersonalAndGroupsTasks(String userId, List<String> groupIds, String language);
+    
+    IdentitySummary getOrganizationalEntityById(String entityId);
+    
+    List<IdentitySummary> getOrganizationalEntities();
 }

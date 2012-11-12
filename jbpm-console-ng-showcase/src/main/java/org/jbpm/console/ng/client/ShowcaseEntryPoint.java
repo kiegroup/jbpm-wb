@@ -80,7 +80,7 @@ public class ShowcaseEntryPoint {
         "Quick New Task", "Personal Tasks", "Group Tasks",
         "Quick New Sub Task", "Task Details", "Task Content",
         "Form Display", 
-        "Process Instance List", "Quick New Process Instance", "Process Definition List"
+        "Process Instance List", "Quick New Process Instance", "Process Definition List", "Users and groups List"
     };
     
     private SuggestBox actionText;

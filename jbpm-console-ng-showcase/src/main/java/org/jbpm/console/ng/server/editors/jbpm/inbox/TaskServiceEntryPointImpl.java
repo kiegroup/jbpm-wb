@@ -24,14 +24,17 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 
+import org.jbpm.console.ng.shared.model.IdentitySummary;
 import org.jbpm.console.ng.shared.model.TaskSummary;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.task.Content;
 import org.jbpm.task.ContentData;
+import org.jbpm.task.Group;
 import org.jbpm.task.OrganizationalEntity;
 import org.jbpm.task.Status;
 import org.jbpm.task.SubTasksStrategy;
 import org.jbpm.task.Task;
+import org.jbpm.task.User;
 import org.jbpm.task.impl.factories.TaskFactory;
 import org.jbpm.task.utils.ContentMarshallerHelper;
 
@@ -303,5 +306,39 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return taskService.getPendingTaskByUserId(userId);
     }
     
+    public IdentitySummary getOrganizationalEntityById(String entityId) {
+        OrganizationalEntity entity = taskService.getOrganizationalEntityById(entityId);
+        if (entity != null) {
+            IdentitySummary idSummary = new IdentitySummary(entity.getId(), "");
+            if (entity instanceof User) {
+                idSummary.setType("user");
+            } else {
+                idSummary.setType("group");
+            }
+            
+            return idSummary;
+        }
+        
+        return null;
+    }
+
+    @Override
+    public List<IdentitySummary> getOrganizationalEntities() {
+        List<User> users = taskService.getUsers();
+        List<Group> groups = taskService.getGroups();
+        
+        List<IdentitySummary> allEntitites = new ArrayList<IdentitySummary>();
+        if (users != null) {
+            for (User user : users) {
+                allEntitites.add(new IdentitySummary(user.getId(), "user"));
+            }
+        }
+        if (users != null) {
+            for (Group group : groups) {
+                allEntitites.add(new IdentitySummary(group.getId(), "group"));
+            }
+        }
+        return allEntitites;
+    }
     
 }
