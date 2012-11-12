@@ -26,7 +26,6 @@
     <properties>
         <drools.version>6.0.0-SNAPSHOT</drools.version>
         <jbpm.version>6.0.0-SNAPSHOT</jbpm.version>
-        <form.builder.ng.version>0.1-SNAPSHOT</form.builder.ng.version>
         <errai.version>2.1.0.Final</errai.version>
         <seam.version>3.1.0.Final</seam.version>
         <weld.version>1.1.8.Final</weld.version>
@@ -202,8 +201,6 @@
                 <version>7.2.1.v20101111</version>
             </dependency>
 
-          
-            
             <dependency>
                 <groupId>org.jbpm</groupId>
                 <artifactId>jbpm-console-ng-shared</artifactId>
@@ -233,8 +230,8 @@
             </dependency>
             <dependency>
                 <groupId>org.jbpm</groupId>
-                <artifactId>form-builder-services-cdi</artifactId>
-                <version>${form.builder.ng.version}</version>
+                <artifactId>form-services</artifactId>
+                <version>${jbpm.version}</version>
             </dependency>
             <!-- ERRAI --> 
             <dependency>
