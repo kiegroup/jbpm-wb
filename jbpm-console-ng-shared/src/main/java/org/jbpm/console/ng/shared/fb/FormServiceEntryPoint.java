@@ -32,13 +32,13 @@ public interface FormServiceEntryPoint {
 
     List<Map<String, Object>> listOptions();
 
-    public String storeFile(String packageName, String fileName, byte[] content);
+    public String storeFile(String fileName, byte[] content);
 
-    public void deleteFile(String packageName, String fileName);
+    public void deleteFile(String fileName);
 
-    public List<String> loadFilesByType(String packageName, String fileType);
+    public List<String> loadFilesByType(String fileType);
 
-    public byte[] loadFile(String packageName, String fileName);
+    public byte[] loadFile(String fileName);
 
     public String getFormDisplay(long taskId);
 
