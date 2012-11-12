@@ -1,4 +1,4 @@
-package org.jbpm.console.ng.client.editors.tasks.indentity;
+package org.jbpm.console.ng.client.editors.tasks.identity;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;

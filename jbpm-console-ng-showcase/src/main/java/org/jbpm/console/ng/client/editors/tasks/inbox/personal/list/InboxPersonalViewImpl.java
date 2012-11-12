@@ -158,20 +158,17 @@ public class InboxPersonalViewImpl extends Composite
 
 
         presenter.addDataDisplay(myTaskListGrid);
-        System.out.println(" {{{{{{{{{{{{{{{{{{{{{{{{{{{{ - init REFRESH TASKS ");
         refreshTasks();
 
     }
 
     public void recieveStatusChanged(@Observes UserTaskEvent event) {
-        System.out.println(" {{{{{{{{{{{{{{{{{{{{{{{{{{{{ - recieveStatusChanged REFRESH TASKS");
         refreshTasks();
 
     }
 
     @EventHandler("refreshTasksButton")
     public void refreshTasksButton(ClickEvent e) {
-        System.out.println(" {{{{{{{{{{{{{{{{{{{{{{{{{{{{ - BUTTON CALLING REFRESH TASKS");
         refreshTasks();
     }
 
@@ -377,6 +374,15 @@ public class InboxPersonalViewImpl extends Composite
             @Override
             public void execute(TaskSummary task) {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Perspective");
+                placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
+
+                placeManager.goTo(placeRequestImpl);
+            }
+        }));
+        cells.add(new WorkActionHasCell("Work Popup", new Delegate<TaskSummary>() {
+            @Override
+            public void execute(TaskSummary task) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display Popup");
                 placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
 
                 placeManager.goTo(placeRequestImpl);

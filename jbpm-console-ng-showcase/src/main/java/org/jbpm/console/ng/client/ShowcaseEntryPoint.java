@@ -79,8 +79,8 @@ public class ShowcaseEntryPoint {
     private String[] menuItems = new String[]{"Home Screen",
         "Quick New Task", "Personal Tasks", "Group Tasks",
         "Quick New Sub Task", "Task Details", "Task Content",
-        "Form Display", 
-        "Process Instance List", "Quick New Process Instance", "Process Definition List", "Users and groups List"
+        "Form Display", "Form Display Popup",
+        "Process Instance List", "Quick New Process Instance", "Process Definition List", "Users and Groups List"
     };
     
     private SuggestBox actionText;

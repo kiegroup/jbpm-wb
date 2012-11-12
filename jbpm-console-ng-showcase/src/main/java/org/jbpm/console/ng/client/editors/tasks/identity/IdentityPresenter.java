@@ -1,4 +1,4 @@
-package org.jbpm.console.ng.client.editors.tasks.indentity;
+package org.jbpm.console.ng.client.editors.tasks.identity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 
 @Dependent
-@WorkbenchScreen(identifier = "Users and groups List")
+@WorkbenchScreen(identifier = "Users and Groups List")
 public class IdentityPresenter {
 
     public interface InboxView extends UberView<IdentityPresenter> {
