@@ -27,6 +27,8 @@ import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 import org.jbpm.console.ng.shared.model.IdentitySummary;
 import org.jbpm.console.ng.shared.model.TaskSummary;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.shared.model.CommentSummary;
+import org.jbpm.task.Comment;
 import org.jbpm.task.Content;
 import org.jbpm.task.ContentData;
 import org.jbpm.task.Group;
@@ -339,6 +341,26 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
             }
         }
         return allEntitites;
+    }
+
+    public long addComment(long taskId, String text, String addedBy, Date addedOn) {
+        Comment comment = new Comment();
+        comment.setText(text);
+        comment.setAddedAt(addedOn);
+        comment.setAddedBy(new User(addedBy));
+        return taskService.addComment(taskId, comment);
+    }
+
+    public void deleteComment(long taskId, long commentId) {
+        taskService.deleteComment(taskId, commentId);
+    }
+
+    public List<CommentSummary> getAllCommentsByTaskId(long taskId) {
+        return CommentSummaryHelper.adaptCollection(taskService.getAllCommentsByTaskId(taskId));
+    }
+
+    public CommentSummary getCommentById(long commentId) {
+        return CommentSummaryHelper.adapt(taskService.getCommentById(commentId));
     }
     
 }

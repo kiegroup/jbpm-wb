@@ -11,6 +11,7 @@ import org.jbpm.console.ng.shared.model.TaskSummary;
 import java.util.List;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.console.ng.shared.model.CommentSummary;
 
 /**
  *
@@ -99,4 +100,14 @@ public interface TaskServiceEntryPoint {
     IdentitySummary getOrganizationalEntityById(String entityId);
     
     List<IdentitySummary> getOrganizationalEntities();
+    
+    long addComment(long taskId, String text, String addedBy, Date addedOn);
+
+    void deleteComment(long taskId, long commentId);
+
+    List<CommentSummary> getAllCommentsByTaskId(long taskId);
+
+    CommentSummary getCommentById(long commentId);
+    
+    
 }

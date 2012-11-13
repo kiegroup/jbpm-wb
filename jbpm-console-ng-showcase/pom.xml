@@ -271,6 +271,7 @@
                     <module>org.jbpm.console.ng.FastCompiledjBPMShowcase</module>
                     <logLevel>INFO</logLevel>
                     <compileSourcesArtifacts>
+                        <compileSourcesArtifact>org.kie:kie-commons</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:security-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:security-client</compileSourcesArtifact>

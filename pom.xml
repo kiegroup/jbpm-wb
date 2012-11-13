@@ -38,6 +38,7 @@
         <uberfire.version>0.2.0-SNAPSHOT</uberfire.version>
         <gwt.maven.version>2.5.0</gwt.maven.version>
         <mvel.version>2.1.Beta8</mvel.version>
+        <kie-commons.version>0.1.0-SNAPSHOT</kie-commons.version>
     </properties>
     <modules>
         <module>jbpm-console-ng-shared</module>
@@ -124,6 +125,14 @@
                         <artifactId>freemarker</artifactId>
                     </exclusion>
                 </exclusions>
+            
+            </dependency>
+            
+            <!-- KIE Commons -->
+            <dependency>
+                <groupId>org.kie</groupId>
+                <artifactId>kie-commons</artifactId>
+                <version>${kie-commons.version}</version>
             </dependency>
             
             <dependency>
@@ -131,6 +140,7 @@
                 <artifactId>errai-cdi-jetty</artifactId>
                 <version>${errai.version}</version>
             </dependency>
+            
             
             <!-- Errai Core -->
            
@@ -331,7 +341,7 @@
                 <artifactId>hibernate-core</artifactId>
                 <version>4.1.7.Final</version>
             </dependency>
-             <dependency>
+            <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>4.2.0.Final</version>
