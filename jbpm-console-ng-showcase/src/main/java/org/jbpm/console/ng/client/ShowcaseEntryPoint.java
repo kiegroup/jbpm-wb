@@ -180,7 +180,7 @@ public class ShowcaseEntryPoint {
         final MenuItemCommand item = new DefaultMenuItemCommand("Logout", new Command() {
             @Override
             public void execute() {
-                redirect("/uf_logout");
+                redirect("uf_logout");
             }
         });
         placesMenuBar.addItem(item);
