@@ -16,15 +16,25 @@
 package org.jbpm.console.ng.client.editors.process.instance.list;
 
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Set;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.drools.runtime.process.ProcessInstance;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.client.i18n.Constants;
+import org.jbpm.console.ng.client.util.ResizableHeader;
+import org.jbpm.console.ng.shared.events.ProcessSelectionEvent;
+import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-
+import org.uberfire.security.Identity;
+import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 import com.google.gwt.cell.client.ButtonCell;
 import com.google.gwt.cell.client.CheckboxCell;
@@ -47,16 +57,6 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.shared.events.ProcessSelectionEvent;
-import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
-import org.jbpm.console.ng.client.util.ResizableHeader;
-import org.uberfire.security.Identity;
-import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
-
-import org.jbpm.console.ng.client.i18n.Constants;
 
 @Dependent
 @Templated(value = "ProcessInstanceListViewImpl.html")
@@ -252,13 +252,53 @@ public class ProcessInstanceListViewImpl extends Composite
         processInstanceListGrid.addColumn(processNameColumn,
                 new ResizableHeader(constants.Process_Name(), processInstanceListGrid, processNameColumn));
         
+        // Process Version.
+        Column<ProcessInstanceSummary, String> processVersionColumn =
+                new Column<ProcessInstanceSummary, String>(new TextCell()) {
+                    @Override
+                    public String getValue(ProcessInstanceSummary object) {
+                        return object.getProcessVersion();
+                    }
+                };
+                processVersionColumn.setSortable(true);
+        sortHandler.setComparator(processVersionColumn,
+                new Comparator<ProcessInstanceSummary>() {
+                    public int compare(ProcessInstanceSummary o1,
+                            ProcessInstanceSummary o2) {
+                        return o1.getProcessVersion().compareTo(o2.getProcessVersion());
+                    }
+                });
+        processInstanceListGrid.addColumn(processVersionColumn,
+                new ResizableHeader(constants.Process_Version(), processInstanceListGrid, processVersionColumn));
         
         // Process State 
-        Column<ProcessInstanceSummary, Number> processStateColumn =
-                new Column<ProcessInstanceSummary, Number>(new NumberCell()) {
+        Column<ProcessInstanceSummary, String> processStateColumn =
+                new Column<ProcessInstanceSummary, String>(new TextCell()) {
                     @Override
-                    public Number getValue(ProcessInstanceSummary object) {
-                        return object.getState();
+                    public String getValue(ProcessInstanceSummary object) {
+                        String statusStr = "Unknown";
+                        switch (object.getState()) {
+                        case ProcessInstance.STATE_ACTIVE:
+                            statusStr = "Active";
+                            break;
+                        case ProcessInstance.STATE_ABORTED:
+                            statusStr = "Aborted";
+                            break;
+                        case ProcessInstance.STATE_COMPLETED:
+                            statusStr = "Completed";
+                            break;
+                        case ProcessInstance.STATE_PENDING:
+                            statusStr = "Pending";
+                            break;
+                        case ProcessInstance.STATE_SUSPENDED:
+                            statusStr = "Suspended";
+                            break;
+
+                        default:
+                            break;
+                        }
+                        
+                        return statusStr;
                     }
                 };
         processStateColumn.setSortable(true);
@@ -271,6 +311,26 @@ public class ProcessInstanceListViewImpl extends Composite
                 });
         processInstanceListGrid.addColumn(processStateColumn,
                 new ResizableHeader(constants.State(), processInstanceListGrid, processStateColumn));
+        
+        // start time
+       Column<ProcessInstanceSummary, String> startTimeColumn =
+               new Column<ProcessInstanceSummary, String>(new TextCell()) {
+                   @Override
+                   public String getValue(ProcessInstanceSummary object) {
+                       return new Date(object.getStartTime()).toString();
+                   }
+               };
+       startTimeColumn.setSortable(true);
+       sortHandler.setComparator(startTimeColumn,
+               new Comparator<ProcessInstanceSummary>() {
+                   public int compare(ProcessInstanceSummary o1,
+                           ProcessInstanceSummary o2) {
+                       return Long.valueOf(o1.getStartTime()).compareTo(Long.valueOf(o2.getStartTime()));
+                   }
+               });
+       processInstanceListGrid.addColumn(startTimeColumn,
+               new ResizableHeader(constants.Process_Instance_Start_Time(), processInstanceListGrid, startTimeColumn));
+        
 
         Column<ProcessInstanceSummary, String> detailsColumn =
                 new Column<ProcessInstanceSummary, String>(new ButtonCell()) {
@@ -279,6 +339,8 @@ public class ProcessInstanceListViewImpl extends Composite
                         return "Details";
                     }
                 };
+                
+
 
         detailsColumn.setFieldUpdater(new FieldUpdater<ProcessInstanceSummary, String>() {
             @Override

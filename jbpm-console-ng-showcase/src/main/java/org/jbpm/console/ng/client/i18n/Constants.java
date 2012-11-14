@@ -123,8 +123,12 @@ public interface Constants
     String Process_Id ();
 
     String Process_Name ();
+    
+    String Process_Version ();
 
     String State ();
+    
+    String Process_Instance_Start_Time();
 
     String Process_Instance_Details_Perspective();
 

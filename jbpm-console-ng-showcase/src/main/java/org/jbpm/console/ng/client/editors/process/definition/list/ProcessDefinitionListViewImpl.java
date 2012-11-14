@@ -224,26 +224,6 @@ public class ProcessDefinitionListViewImpl extends Composite
                 });
         processdefListGrid.addColumn(processPkgColumn,
                 new ResizableHeader(constants.Package(), processdefListGrid, processPkgColumn));
-        
-        
-        // Process Type 
-        Column<ProcessSummary, String> processTypeColumn =
-                new Column<ProcessSummary, String>(new EditTextCell()) {
-                    @Override
-                    public String getValue(ProcessSummary object) {
-                        return object.getType();
-                    }
-                };
-        processTypeColumn.setSortable(true);
-        sortHandler.setComparator(processTypeColumn,
-                new Comparator<ProcessSummary>() {
-                    public int compare(ProcessSummary o1,
-                            ProcessSummary o2) {
-                        return o1.getType().compareTo(o2.getType());
-                    }
-                });
-        processdefListGrid.addColumn(processTypeColumn,
-                new ResizableHeader(constants.Type(), processdefListGrid, processTypeColumn));
 
         
          // Version Type 
