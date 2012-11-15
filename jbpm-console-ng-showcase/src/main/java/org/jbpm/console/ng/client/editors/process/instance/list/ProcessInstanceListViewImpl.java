@@ -17,6 +17,8 @@ package org.jbpm.console.ng.client.editors.process.instance.list;
 
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.Dependent;
@@ -27,6 +29,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.client.i18n.Constants;
+import org.jbpm.console.ng.client.resources.ShowcaseImages;
 import org.jbpm.console.ng.client.util.ResizableHeader;
 import org.jbpm.console.ng.shared.events.ProcessSelectionEvent;
 import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
@@ -36,19 +39,24 @@ import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 import org.uberfire.security.Identity;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
-import com.google.gwt.cell.client.ButtonCell;
+import com.google.gwt.cell.client.ActionCell;
+import com.google.gwt.cell.client.ActionCell.Delegate;
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CheckboxCell;
+import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -111,6 +119,7 @@ public class ProcessInstanceListViewImpl extends Composite
     private Event<ProcessSelectionEvent> processSelection;
     private ListHandler<ProcessInstanceSummary> sortHandler;
     private Constants constants = GWT.create(Constants.class);
+    private ShowcaseImages images = GWT.create(ShowcaseImages.class);
     
     @Override
     public void init(ProcessInstanceListPresenter presenter) {
@@ -345,34 +354,43 @@ public class ProcessInstanceListViewImpl extends Composite
                new ResizableHeader(constants.Process_Instance_Start_Time(), processInstanceListGrid, startTimeColumn));
         
 
-        Column<ProcessInstanceSummary, String> detailsColumn =
-                new Column<ProcessInstanceSummary, String>(new ButtonCell()) {
-                    @Override
-                    public String getValue(ProcessInstanceSummary task) {
-                        return "Details";
-                    }
-                };
-                
 
-
-        detailsColumn.setFieldUpdater(new FieldUpdater<ProcessInstanceSummary, String>() {
-            @Override
-            public void update(int index,
-                    ProcessInstanceSummary process,
-                    String value) {
-
-                DefaultPlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Instance_Details_Perspective());
-                placeRequestImpl.addParameter("processInstanceId", Long.toString(process.getId()));
-                placeRequestImpl.addParameter("processDefId", process.getProcessId());
-                placeManager.goTo(placeRequestImpl);
-
-            }
-        });
-        
-        processInstanceListGrid.addColumn(detailsColumn,
-                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant(constants.Details())));
-
-
+       List<HasCell<ProcessInstanceSummary, ?>> cells = new LinkedList<HasCell<ProcessInstanceSummary, ?>>();
+       
+       cells.add(new DetailsActionHasCell("Details", new Delegate<ProcessInstanceSummary>() {
+           @Override
+           public void execute(ProcessInstanceSummary processInstance) {
+               
+             DefaultPlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Instance_Details_Perspective());
+             placeRequestImpl.addParameter("processInstanceId", Long.toString(processInstance.getId()));
+             placeRequestImpl.addParameter("processDefId", processInstance.getProcessId());
+             placeManager.goTo(placeRequestImpl);
+           }
+       }));
+       
+       cells.add(new SignalActionHasCell("Singal", new Delegate<ProcessInstanceSummary>() {
+           @Override
+           public void execute(ProcessInstanceSummary processInstance) {
+               
+               
+           }
+       }));
+       
+       cells.add(new AbortActionHasCell("Abort", new Delegate<ProcessInstanceSummary>() {
+           @Override
+           public void execute(ProcessInstanceSummary processInstance) {
+               
+               presenter.abortProcessInstance(processInstance.getId());
+           }
+       }));
+       
+       CompositeCell<ProcessInstanceSummary> cell = new CompositeCell<ProcessInstanceSummary>(cells);
+       processInstanceListGrid.addColumn(new Column<ProcessInstanceSummary, ProcessInstanceSummary>(cell) {
+           @Override
+           public ProcessInstanceSummary getValue(ProcessInstanceSummary object) {
+               return object;
+           }
+       }, "Actions");
     }
 
     public void displayNotification(String text) {
@@ -400,6 +418,99 @@ public class ProcessInstanceListViewImpl extends Composite
     @Override
     public Boolean isShowAborted() {
         return showAbortedCheck.getValue();
+    }
+    
+    private class DetailsActionHasCell implements HasCell<ProcessInstanceSummary, ProcessInstanceSummary> {
+
+        private ActionCell<ProcessInstanceSummary> cell;
+
+        public DetailsActionHasCell(String text, Delegate<ProcessInstanceSummary> delegate) {
+            cell = new ActionCell<ProcessInstanceSummary>(text, delegate) {
+                @Override
+                public void render(Cell.Context context, ProcessInstanceSummary value, SafeHtmlBuilder sb) {
+                    
+                        sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.detailsIcon()).getHTML()));
+                    
+                }
+            };
+        }
+
+        @Override
+        public Cell<ProcessInstanceSummary> getCell() {
+            return cell;
+        }
+
+        @Override
+        public FieldUpdater<ProcessInstanceSummary, ProcessInstanceSummary> getFieldUpdater() {
+            return null;
+        }
+
+        @Override
+        public ProcessInstanceSummary getValue(ProcessInstanceSummary object) {
+            return object;
+        }
+    }
+    
+    private class AbortActionHasCell implements HasCell<ProcessInstanceSummary, ProcessInstanceSummary> {
+
+        private ActionCell<ProcessInstanceSummary> cell;
+
+        public AbortActionHasCell(String text, Delegate<ProcessInstanceSummary> delegate) {
+            cell = new ActionCell<ProcessInstanceSummary>(text, delegate) {
+                @Override
+                public void render(Cell.Context context, ProcessInstanceSummary value, SafeHtmlBuilder sb) {
+                    if (value.getState() == ProcessInstance.STATE_ACTIVE) {
+                        sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.abortIcon()).getHTML()));
+                    }
+                }
+            };
+        }
+
+        @Override
+        public Cell<ProcessInstanceSummary> getCell() {
+            return cell;
+        }
+
+        @Override
+        public FieldUpdater<ProcessInstanceSummary, ProcessInstanceSummary> getFieldUpdater() {
+            return null;
+        }
+
+        @Override
+        public ProcessInstanceSummary getValue(ProcessInstanceSummary object) {
+            return object;
+        }
+    }
+    
+    private class SignalActionHasCell implements HasCell<ProcessInstanceSummary, ProcessInstanceSummary> {
+
+        private ActionCell<ProcessInstanceSummary> cell;
+
+        public SignalActionHasCell(String text, Delegate<ProcessInstanceSummary> delegate) {
+            cell = new ActionCell<ProcessInstanceSummary>(text, delegate) {
+                @Override
+                public void render(Cell.Context context, ProcessInstanceSummary value, SafeHtmlBuilder sb) {
+                    if (value.getState() == ProcessInstance.STATE_ACTIVE) {
+                        sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.signalIcon()).getHTML()));
+                    }
+                }
+            };
+        }
+
+        @Override
+        public Cell<ProcessInstanceSummary> getCell() {
+            return cell;
+        }
+
+        @Override
+        public FieldUpdater<ProcessInstanceSummary, ProcessInstanceSummary> getFieldUpdater() {
+            return null;
+        }
+
+        @Override
+        public ProcessInstanceSummary getValue(ProcessInstanceSummary object) {
+            return object;
+        }
     }
     
 }

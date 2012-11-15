@@ -52,5 +52,14 @@ public interface ShowcaseImages
 
     @Source("images/icons/start.png")
     public ImageResource startIcon();
+    
+    @Source("images/icons/details.png")
+    public ImageResource detailsIcon();
+    
+    @Source("images/icons/abort.png")
+    public ImageResource abortIcon();
+    
+    @Source("images/icons/signal.png")
+    public ImageResource signalIcon();
 
 }
