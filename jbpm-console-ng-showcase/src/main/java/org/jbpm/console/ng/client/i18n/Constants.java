@@ -114,9 +114,7 @@ public interface Constants
 
     String No_Process_Instances_Available ();
 
-    String Deleting_Process_Instance ();
-
-    String Terminating_Process_Instance ();
+    String Aborting_Process_Instance ();
 
     String Signaling_Process_Instance ();
 
@@ -147,4 +145,6 @@ public interface Constants
     String Pending ();
 
     String Personal_Task_Statistics ();
+
+    String Aborting_Process_Instance_Not_Allowed();
 }

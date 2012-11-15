@@ -17,6 +17,7 @@ package org.jbpm.console.ng.server.editors.jbpm.knowledge;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
 import org.droolsjbpm.services.api.KnowledgeDomainService;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.shared.StatefulKnowledgeSessionEntryPoint;

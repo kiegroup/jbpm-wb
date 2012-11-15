@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.server.editors.jbpm.knowledge;
 
+
 import org.jbpm.console.ng.shared.model.StatefulKnowledgeSessionSummary;
 import org.kie.runtime.StatefulKnowledgeSession;
 

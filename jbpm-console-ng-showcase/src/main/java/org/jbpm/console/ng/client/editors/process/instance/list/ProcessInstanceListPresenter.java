@@ -18,6 +18,7 @@ package org.jbpm.console.ng.client.editors.process.instance.list;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.ui.TextBox;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -27,11 +28,13 @@ import javax.inject.Inject;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import javax.enterprise.event.Observes;
+
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.shared.events.ProcessInstanceCreated;
 import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
+import org.kie.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -51,6 +54,10 @@ public class ProcessInstanceListPresenter {
         TextBox getSessionIdText();
 
         DataGrid<ProcessInstanceSummary> getDataGrid();
+        
+        Boolean isShowCompleted();
+        
+        Boolean isShowAborted();
         
     }
     @Inject
@@ -77,7 +84,14 @@ public class ProcessInstanceListPresenter {
     }
 
     public void refreshProcessList(final String sessionId) {
-
+        List<Integer> states = new ArrayList<Integer>();
+        states.add(ProcessInstance.STATE_ACTIVE);
+        if (view.isShowAborted()) {
+            states.add(ProcessInstance.STATE_ABORTED);    
+        }
+        if (view.isShowCompleted()) {
+            states.add(ProcessInstance.STATE_COMPLETED);    
+        }
         if(sessionId != null && !sessionId.equals("")){
             knowledgeServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
                 @Override
@@ -95,7 +109,7 @@ public class ProcessInstanceListPresenter {
                     dataProvider.getList().addAll(processInstances);
                     dataProvider.refresh();
                 }
-            }).getProcessInstances();
+            }).getProcessInstances(states);
         }
         
 
@@ -122,6 +136,16 @@ public class ProcessInstanceListPresenter {
     @OnReveal
     public void onReveal() {
        refreshProcessList("");
+    }
+    
+    public void abortProcessInstance(long processInstanceId) {
+        knowledgeServices.call(new RemoteCallback<Void>() {
+            @Override
+            public void callback(Void v) {
+                refreshProcessList("");
+                
+            }// TODO do not hardcode business key for session
+        }).abortProcessInstance("default", processInstanceId);
     }
     
 }

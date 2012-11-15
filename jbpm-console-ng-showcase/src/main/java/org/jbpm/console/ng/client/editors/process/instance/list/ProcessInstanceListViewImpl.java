@@ -23,7 +23,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.drools.runtime.process.ProcessInstance;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -31,6 +30,7 @@ import org.jbpm.console.ng.client.i18n.Constants;
 import org.jbpm.console.ng.client.util.ResizableHeader;
 import org.jbpm.console.ng.shared.events.ProcessSelectionEvent;
 import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
+import org.kie.runtime.process.ProcessInstance;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 import org.uberfire.security.Identity;
@@ -50,6 +50,7 @@ import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
@@ -81,15 +82,18 @@ public class ProcessInstanceListViewImpl extends Composite
     
     @Inject
     @DataField
-    public Button deleteButton;
-    
-    @Inject
-    @DataField
-    public Button terminateButton;
+    public Button abortButton;
     
     @Inject
     @DataField
     public Button signalButton;
+    
+    @Inject
+    @DataField
+    public CheckBox showCompletedCheck;
+    @Inject
+    @DataField
+    public CheckBox showAbortedCheck;
 
     @Inject
     @DataField
@@ -139,6 +143,8 @@ public class ProcessInstanceListViewImpl extends Composite
                     processSelection.fire(new ProcessSelectionEvent(ts.getId()));
                 }
             }
+
+            
         });
 
         processInstanceListGrid.setSelectionModel(selectionModel,
@@ -153,22 +159,29 @@ public class ProcessInstanceListViewImpl extends Composite
 
     }
 
-    
-
     @EventHandler("filterKSessionButton")
     public void filterKSessionButton(ClickEvent e) {
         presenter.refreshProcessList(filterKSessionText.getText());
     }
     
-    @EventHandler("deleteButton")
-    public void deleteButton(ClickEvent e) {
-        displayNotification(constants.Deleting_Process_Instance());
+    @EventHandler("abortButton")
+    public void abortButton(ClickEvent e) {
+        
+        if (selectedProcessInstances != null) {
+            
+            for (ProcessInstanceSummary selected : selectedProcessInstances) { 
+                if (selected.getState() != ProcessInstance.STATE_ACTIVE) {
+                    displayNotification(constants.Aborting_Process_Instance_Not_Allowed() + "(id="+ selected.getId()+")");
+                    continue;
+                }
+                presenter.abortProcessInstance(selected.getId());
+                processInstanceListGrid.getSelectionModel().setSelected(selected, false);
+                displayNotification(constants.Aborting_Process_Instance() + "(id="+ selected.getId()+")");
+            }
+        }
+        
     }
-    
-    @EventHandler("terminateButton")
-    public void terminateButton(ClickEvent e) {
-        displayNotification(constants.Terminating_Process_Instance());
-    }
+
     
     @EventHandler("signalButton")
     public void signalButton(ClickEvent e) {
@@ -377,6 +390,16 @@ public class ProcessInstanceListViewImpl extends Composite
 
     public TextBox getSessionIdText() {
        return filterKSessionText;
+    }
+
+    @Override
+    public Boolean isShowCompleted() {
+        return showCompletedCheck.getValue();
+    }
+
+    @Override
+    public Boolean isShowAborted() {
+        return showAbortedCheck.getValue();
     }
     
 }

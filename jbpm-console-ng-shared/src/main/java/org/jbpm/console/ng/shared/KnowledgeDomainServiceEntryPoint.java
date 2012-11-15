@@ -16,6 +16,7 @@
 package org.jbpm.console.ng.shared;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.shared.model.NodeInstanceSummary;
@@ -41,6 +42,8 @@ public interface KnowledgeDomainServiceEntryPoint {
     int getAmountOfSessions();
     
     Collection<ProcessInstanceSummary> getProcessInstances();
+    
+    Collection<ProcessInstanceSummary> getProcessInstances(List<Integer> states);
 
     Collection<ProcessInstanceSummary> getProcessInstancesBySessionId(String sessionId);
     
@@ -71,5 +74,8 @@ public interface KnowledgeDomainServiceEntryPoint {
     public Map<String, String> getTaskInputMappings(String bpmn2Content, String taskName);
 
     public Map<String, String> getTaskOutputMappings(String bpmn2Content, String taskName);
+    
+    void abortProcessInstance(String businessKey, long processInstanceId);
+    
     
 }

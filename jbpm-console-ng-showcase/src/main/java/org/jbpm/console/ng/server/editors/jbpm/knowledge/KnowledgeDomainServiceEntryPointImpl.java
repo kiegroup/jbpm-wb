@@ -146,6 +146,19 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     public Map<String, String> getTaskOutputMappings(String bpmn2Content, String taskName) {
         return bpmn2Service.getTaskOutputMappings(bpmn2Content, taskName);
     }
+
+
+    @Override
+    public void abortProcessInstance(String businessKey, long processInstanceId) {
+        knowledgeService.getSessionByBusinessKey(businessKey).abortProcessInstance(processInstanceId);
+        
+    }
+
+
+    @Override
+    public Collection<ProcessInstanceSummary> getProcessInstances(List<Integer> states) {
+        return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstances(states));
+    }
     
     
     
