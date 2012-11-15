@@ -16,28 +16,47 @@
 package org.jbpm.console.ng.client.editors.process.definition.list;
 
 import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.client.i18n.Constants;
+import org.jbpm.console.ng.client.resources.ShowcaseImages;
+import org.jbpm.console.ng.client.util.ResizableHeader;
+import org.jbpm.console.ng.shared.events.ProcessDefSelectionEvent;
+import org.jbpm.console.ng.shared.model.ProcessSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
+import org.uberfire.security.Identity;
+import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
-
+import com.google.gwt.cell.client.ActionCell;
+import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.ButtonCell;
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CheckboxCell;
+import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
@@ -46,17 +65,6 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.shared.events.ProcessDefSelectionEvent;
-import org.jbpm.console.ng.shared.model.ProcessSummary;
-import org.jbpm.console.ng.client.util.ResizableHeader;
-import org.uberfire.security.Identity;
-import org.uberfire.shared.mvp.PlaceRequest;
-import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
-
-import org.jbpm.console.ng.client.i18n.Constants;
 
 @Dependent
 @Templated(value = "ProcessDefinitionListViewImpl.html")
@@ -95,6 +103,7 @@ public class ProcessDefinitionListViewImpl extends Composite
     private Event<ProcessDefSelectionEvent> processSelection;
     private ListHandler<ProcessSummary> sortHandler;
     private Constants constants = GWT.create(Constants.class);
+    private ShowcaseImages images = GWT.create(ShowcaseImages.class);
 
     @Override
     public void init(ProcessDefinitionListPresenter presenter) {
@@ -246,53 +255,34 @@ public class ProcessDefinitionListViewImpl extends Composite
                 new ResizableHeader(constants.Version(), processdefListGrid, versionColumn));
 
 
-        Column<ProcessSummary, String> newInstanceColumn =
-                new Column<ProcessSummary, String>(new ButtonCell()) {
-                    @Override
-                    public String getValue(ProcessSummary task) {
-                        return "Start Process";
-                    }
-                };
-
-        newInstanceColumn.setFieldUpdater(new FieldUpdater<ProcessSummary, String>() {
+        // actions (icons)
+        List<HasCell<ProcessSummary, ?>> cells = new LinkedList<HasCell<ProcessSummary, ?>>();
+        
+        cells.add(new StartActionHasCell("Start process", new Delegate<ProcessSummary>() {
             @Override
-            public void update(int index,
-                    ProcessSummary process,
-                    String value) {
+            public void execute(ProcessSummary process) {
+                
                 presenter.startProcessInstance(process.getId());
-
             }
-        });
-
-        processdefListGrid.addColumn(newInstanceColumn,
-                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant(constants.Actions())));
-
-        Column<ProcessSummary, String> detailsColumn =
-                new Column<ProcessSummary, String>(new ButtonCell()) {
-                    @Override
-                    public String getValue(ProcessSummary task) {
-                        return "Details";
-                    }
-                };
-
-        detailsColumn.setFieldUpdater(new FieldUpdater<ProcessSummary, String>() {
+        }));
+        
+        cells.add(new DetailsActionHasCell("Details", new Delegate<ProcessSummary>() {
             @Override
-            public void update(int index,
-                    ProcessSummary process,
-                    String value) {
+            public void execute(ProcessSummary process) {
                 
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest( constants.Process_Definition_Details_Perspective() );  
                 placeRequestImpl.addParameter("processId", process.getId());
                 placeManager.goTo( placeRequestImpl);
-
             }
-        });
-
-        processdefListGrid.addColumn(detailsColumn,
-                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant(constants.Details())));
+        }));
         
-
-
+        CompositeCell<ProcessSummary> cell = new CompositeCell<ProcessSummary>(cells);
+        processdefListGrid.addColumn(new Column<ProcessSummary, ProcessSummary>(cell) {
+            @Override
+            public ProcessSummary getValue(ProcessSummary object) {
+                return object;
+            }
+        }, "Actions");
     }
 
     public void displayNotification(String text) {
@@ -310,5 +300,65 @@ public class ProcessDefinitionListViewImpl extends Composite
 
     public TextBox getSessionIdText() {
        return filterKSessionText;
+    }
+    
+    private class StartActionHasCell implements HasCell<ProcessSummary, ProcessSummary> {
+
+        private ActionCell<ProcessSummary> cell;
+
+        public StartActionHasCell(String text, Delegate<ProcessSummary> delegate) {
+            cell = new ActionCell<ProcessSummary>(text, delegate) {
+                @Override
+                public void render(Cell.Context context, ProcessSummary value, SafeHtmlBuilder sb) {
+
+                    sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.startIcon()).getHTML()));
+                }
+            };
+        }
+
+        @Override
+        public Cell<ProcessSummary> getCell() {
+            return cell;
+        }
+
+        @Override
+        public FieldUpdater<ProcessSummary, ProcessSummary> getFieldUpdater() {
+            return null;
+        }
+
+        @Override
+        public ProcessSummary getValue(ProcessSummary object) {
+            return object;
+        }
+    }
+    
+    private class DetailsActionHasCell implements HasCell<ProcessSummary, ProcessSummary> {
+
+        private ActionCell<ProcessSummary> cell;
+
+        public DetailsActionHasCell(String text, Delegate<ProcessSummary> delegate) {
+            cell = new ActionCell<ProcessSummary>(text, delegate) {
+                @Override
+                public void render(Cell.Context context, ProcessSummary value, SafeHtmlBuilder sb) {
+
+                    sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.detailsIcon()).getHTML()));
+                }
+            };
+        }
+
+        @Override
+        public Cell<ProcessSummary> getCell() {
+            return cell;
+        }
+
+        @Override
+        public FieldUpdater<ProcessSummary, ProcessSummary> getFieldUpdater() {
+            return null;
+        }
+
+        @Override
+        public ProcessSummary getValue(ProcessSummary object) {
+            return object;
+        }
     }
 }
