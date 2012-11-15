@@ -19,10 +19,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.uberfire.client.annotations.Perspective;
 
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.client.workbench.Position;
-import org.uberfire.client.workbench.model.PanelDefinition;
 import org.uberfire.client.workbench.model.PerspectiveDefinition;
-import org.uberfire.client.workbench.model.impl.PanelDefinitionImpl;
 import org.uberfire.client.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.client.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
@@ -39,13 +36,7 @@ public class InboxPerspective {
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
         p.setName( "Inbox Perspective" );
-        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Quick New Task"  ) ) );
-        final PanelDefinition eastPanel = new PanelDefinitionImpl();
-        eastPanel.setHeight(500);
-        eastPanel.setWidth(800);
-        eastPanel.setMinHeight(200);
-        eastPanel.addPart( new PartDefinitionImpl( new DefaultPlaceRequest(  "Personal Tasks" ) ) );      
-        p.getRoot().insertChild( Position.EAST , eastPanel );
+        p.getRoot().addPart( new PartDefinitionImpl(  new DefaultPlaceRequest(  "Personal Tasks" ) ) );
         p.setTransient(true);
         return p;
     }

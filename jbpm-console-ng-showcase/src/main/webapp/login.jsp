@@ -158,10 +158,12 @@
         <input name="j_password" class="text-input" type="password"/>
       </p>
       <br style="clear: both;"/>
-
+      
       <p>
+        <input class="button" type="button" value="Help" onclick="alert('Users: salaboy/salaboy, maciej/maciej, kris/kris, tiho/tiho, marco/marco')"/>  
         <input class="button" type="submit" value="Sign In"/>
       </p>
+      
     </form>
   </div>
 </div>

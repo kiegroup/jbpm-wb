@@ -15,14 +15,13 @@
  */
 package org.jbpm.console.ng.server.editors.jbpm.knowledge;
 
-import java.util.Collection;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.process.ProcessInstance;
 import org.droolsjbpm.services.api.KnowledgeDomainService;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.shared.StatefulKnowledgeSessionEntryPoint;
+import org.kie.runtime.StatefulKnowledgeSession;
+import org.kie.runtime.process.ProcessInstance;
 
 /**
  *

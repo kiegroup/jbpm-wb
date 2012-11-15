@@ -418,79 +418,68 @@ a.button {
 }
 
 #container {
-    width: 500px;
-    height: 500px;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    height: 300px;
     position: relative;
+    width: 300px;
+    margin:0 auto;
 }
-
 .image {
+    left: 0;
     position: absolute;
     top: 0;
-    left: 0;
-    z-index: 1;
+    z-index: 0;
 }
-
 .link-1, .link-2, .link-3, .link-4, .link-5, .link-6 {
-    position: absolute;
+    color: #FFFFFF;
     font-size: 18px;
-    color: #FFF;
-    z-index: 10;
+    position: absolute;
+    z-index: 0;
 }
 .link-1 a, .link-2 a, .link-3 a, .link-4 a, .link-5 a, .link-6 a {
-    color: #FFF;
-    text-decoration: none;
+    color: #FFFFFF;
     display: block;
-    width: 140px;
     height: 80px;
-    line-height:80px;
-    
-    text-align: center;    
-}
-
-.link-1  a:hover, .link-2  a:hover, .link-3  a:hover, .link-4  a:hover, .link-5  a:hover, .link-6 a:hover {
+    line-height: 80px;
+    text-align: center;
     text-decoration: none;
-    text-shadow: 0px 1px 5px rgba(0,0,0,0.5);
+    width: 140px;
 }
-
+.link-1 a:hover, .link-2 a:hover, .link-3 a:hover, .link-4 a:hover, .link-5 a:hover, .link-6 a:hover {
+    text-decoration: none;
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+}
 .title {
-    z-index: 5;
+    color: #1B75BB;
+    font-size: 30px;
+    left: 110px;
     position: absolute;
-    font-size: 50px;
-    color: #1b75bb;
-    top: 220px;
-    left: 197px;
+    top: 120px;
+    z-index: 0;
 }
-
 .link-1 {
-    top: 64px;
-    left: 100px;
+    left: 42px;
+    top: 15px;
 }
-
 .link-2 {
-    top: 80px;
-    left: 284px;
+    left: 138px;
+    top: 15px;
 }
-
 .link-3 {
-     top: 234px;
-     left: 359px;
+    left: 188px;
+    top: 115px;
 }
-
 .link-4 {
-    top: 384px;
-    left: 260px;
-}
-
-.link-5 {
-   top: 370px;
-   left: 70px;
-}
-
-
-.link-6 {
+    left: 130px;
     top: 200px;
-    left: 5px;
+}
+.link-5 {
+    left: 30px;
+    top: 200px;
+}
+.link-6 {
+    left: -20px;
+    top: 100px;
 }
 
 

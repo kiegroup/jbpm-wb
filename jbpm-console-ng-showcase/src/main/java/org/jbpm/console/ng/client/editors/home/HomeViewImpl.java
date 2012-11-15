@@ -97,7 +97,9 @@ public class HomeViewImpl extends Composite
         List<Role> roles = identity.getRoles();
         List<String> stringRoles = new ArrayList<String>(roles.size());
         for(Role r : roles){
-            stringRoles.add(r.getName()); 
+            if(!r.getName().equals("IS_REMEMBER_ME")){
+                stringRoles.add(r.getName()); 
+            }
         }
         userRolesLabel.setText(stringRoles.toString());
 

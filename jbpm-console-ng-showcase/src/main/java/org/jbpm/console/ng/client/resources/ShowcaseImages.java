@@ -31,5 +31,26 @@ public interface ShowcaseImages
 
     @Source("images/hdrlogo_drools.gif")
     ImageResource hdrlogoDrools();
+    
+    @Source("images/icons/edit.png")
+    ImageResource editIcon();
+
+    @Source("images/icons/popup.png")
+    public ImageResource popupIcon();
+
+    @Source("images/icons/lock.png")
+    public ImageResource lockIcon();
+
+    @Source("images/icons/unlock.png")
+    public ImageResource unlockIcon();
+
+    @Source("images/icons/details.png")
+    public ImageResource workIcon();
+
+    @Source("images/icons/complete.png")
+    public ImageResource completeIcon();
+
+    @Source("images/icons/start.png")
+    public ImageResource startIcon();
 
 }

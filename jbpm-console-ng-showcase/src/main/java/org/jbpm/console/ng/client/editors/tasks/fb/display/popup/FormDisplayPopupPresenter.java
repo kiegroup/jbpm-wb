@@ -15,6 +15,9 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.fb.display.popup;
 
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -26,12 +29,15 @@ import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 import org.jbpm.console.ng.shared.fb.FormServiceEntryPoint;
 import org.jbpm.console.ng.shared.fb.events.FormRenderedEvent;
+import org.jbpm.console.ng.shared.model.TaskSummary;
 import org.uberfire.client.annotations.OnReveal;
+import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
 import org.uberfire.security.Identity;
 import org.uberfire.shared.mvp.PlaceRequest;
 
@@ -50,36 +56,54 @@ public class FormDisplayPopupPresenter {
     @Inject
     private Identity identity;
     @Inject
-    private PlaceManager                     placeManager;
-    
-    
+    private PlaceManager placeManager;
+    @Inject
+    private Event<BeforeClosePlaceEvent> closePlaceEvent;
+    private PlaceRequest place;
+
     public interface FormBuilderView
             extends
             UberView<FormDisplayPopupPresenter> {
 
-       
-
         void displayNotification(String text);
-        
- 
-        
+
         long getTaskId();
+
         void setTaskId(long taskId);
+
+        VerticalPanel getFormView();
+
+        Label getTaskNameText();
+        
+        Label getTaskDescriptionText();
     }
 
     @PostConstruct
     public void init() {
         publish(this);
         publishGetFormValues();
+
     }
 
-    public void renderForm(long taskId) {
+    @OnStart
+    public void onStart(final PlaceRequest place) {
+        this.place = place;
+    }
+
+    public void renderForm(final long taskId) {
 
         formServices.call(new RemoteCallback<String>() {
             @Override
             public void callback(String form) {
-
-                formRendered.fire(new FormRenderedEvent(form));
+                view.getFormView().add(new HTMLPanel(form));
+                taskServices.call(new RemoteCallback<TaskSummary>() {
+                    @Override
+                    public void callback(TaskSummary task) {
+                        view.getTaskNameText().setText(task.getName());
+                        view.getTaskDescriptionText().setText(task.getDescription());
+                    }
+                }).getTaskDetails(taskId);
+                
             }
         }).getFormDisplay(taskId);
 
@@ -101,12 +125,12 @@ public class FormDisplayPopupPresenter {
             @Override
             public void callback(Void nothing) {
                 view.displayNotification("Form for Task Id: " + params.get("taskId") + " was completed!");
-
+                close();
             }
         }).complete(Long.parseLong(params.get("taskId").toString()), identity.getName(), params);
 
     }
-    
+
     public void startTask(String values) {
         final Map<String, Object> params = getUrlParameters(values);
         taskServices.call(new RemoteCallback<Void>() {
@@ -120,7 +144,21 @@ public class FormDisplayPopupPresenter {
     }
 
     // Set up the JS-callable signature as a global JS function.
-    private native void publish(FormDisplayPopupPresenter fdp);
+    private native void publish(FormDisplayPopupPresenter fdp)/*-{
+     
+     $wnd.completeTask = function(from) {
+     fdp.@org.jbpm.console.ng.client.editors.tasks.fb.display.popup.FormDisplayPopupPresenter::completeTask(Ljava/lang/String;)(from);
+     }
+     
+     $wnd.startTask = function(from) {
+     fdp.@org.jbpm.console.ng.client.editors.tasks.fb.display.popup.FormDisplayPopupPresenter::startTask(Ljava/lang/String;)(from);
+     }
+      
+     $wnd.close = function(from) {
+     fdp.@org.jbpm.console.ng.client.editors.tasks.fb.display.popup.FormDisplayPopupPresenter::close()(from);
+     }
+        
+     }-*/;
 
     private native void publishGetFormValues() /*-{
      $wnd.getFormValues = function(form){
@@ -156,5 +194,9 @@ public class FormDisplayPopupPresenter {
         long taskId = Long.parseLong(p.getParameter("taskId", "0").toString());
         view.setTaskId(taskId);
         renderForm(taskId);
+    }
+
+    public void close() {
+        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
 }

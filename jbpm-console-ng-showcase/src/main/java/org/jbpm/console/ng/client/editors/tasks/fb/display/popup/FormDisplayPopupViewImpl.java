@@ -16,58 +16,50 @@
 package org.jbpm.console.ng.client.editors.tasks.fb.display.popup;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.Button;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.jbpm.console.ng.shared.fb.events.FormRenderedEvent;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import org.jbpm.console.ng.client.i18n.Constants;
 
 /**
- * Main view. 
+ * Main view.
  */
 @Dependent
-@Templated(value="FormDisplayPopupViewImpl.html")
+@Templated(value = "FormDisplayPopupViewImpl.html")
 public class FormDisplayPopupViewImpl extends Composite
-    implements
-    FormDisplayPopupPresenter.FormBuilderView {
+        implements
+        FormDisplayPopupPresenter.FormBuilderView {
 
-
-    
-    private FormDisplayPopupPresenter             presenter;
+    private FormDisplayPopupPresenter presenter;
     @Inject
     @DataField
-    public VerticalPanel                    formView;
-    
-    public long taskId;
-    
+    public VerticalPanel formView;
     @Inject
-    private Event<NotificationEvent>         notification;
-    
+    @DataField
+    public Label taskNameText;
+    @Inject
+    @DataField
+    public Label taskDescriptionText;
+    @Inject
+    @DataField
+    public Button closeButton;
+    public long taskId;
+    @Inject
+    private Event<NotificationEvent> notification;
     private Constants constants = GWT.create(Constants.class);
-
-    
-  
-
-  
-
-    public void renderForm(@Observes FormRenderedEvent formRendered) {
-        formView.add(new HTMLPanel(formRendered.getForm()));
-
-    }
-   
-    
-  
 
     @Override
     public void init(FormDisplayPopupPresenter presenter) {
@@ -75,12 +67,9 @@ public class FormDisplayPopupViewImpl extends Composite
 
     }
 
-
     public void displayNotification(String text) {
-        notification.fire( new NotificationEvent( text ) );
+        notification.fire(new NotificationEvent(text));
     }
-
-   
 
     public long getTaskId() {
         return taskId;
@@ -90,6 +79,22 @@ public class FormDisplayPopupViewImpl extends Composite
         this.taskId = taskId;
     }
 
-   
+    public VerticalPanel getFormView() {
+        return formView;
+    }
+
+    public Label getTaskNameText() {
+        return taskNameText;
+    }
+
+    public Label getTaskDescriptionText() {
+        return taskDescriptionText;
+    }
+
+    @EventHandler("closeButton")
+    public void closeButton(ClickEvent e) {
+        presenter.close();
+    }
+    
     
 }

@@ -15,22 +15,28 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.quick.newtask;
 
+import com.google.gwt.user.client.ui.TextBox;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
 import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.uberfire.client.annotations.OnReveal;
+import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
-import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
+import org.uberfire.shared.mvp.PlaceRequest;
 
 @Dependent
-@WorkbenchScreen(identifier = "Quick New Task")
+@WorkbenchPopup(identifier = "Quick New Task")
 public class QuickNewTaskPresenter {
 
     public interface InboxView
@@ -38,11 +44,21 @@ public class QuickNewTaskPresenter {
             UberView<QuickNewTaskPresenter> {
 
         void displayNotification(String text);
+
+        TextBox getTaskNameText();
     }
     @Inject
     InboxView view;
     @Inject
     Caller<TaskServiceEntryPoint> taskServices;
+    @Inject
+    private Event<BeforeClosePlaceEvent> closePlaceEvent;
+    private PlaceRequest place;
+
+    @OnStart
+    public void onStart(final PlaceRequest place) {
+        this.place = place;
+    }
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -72,9 +88,19 @@ public class QuickNewTaskPresenter {
             @Override
             public void callback(Long taskId) {
                 view.displayNotification("Task Created (id = " + taskId + ")");
-                
+                close();
             }
         }).addTask(str, null);
 
+    }
+
+    @OnReveal
+    public void onReveal() {
+        view.getTaskNameText().setFocus(true);
+
+    }
+
+    public void close() {
+        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
 }

@@ -26,6 +26,8 @@ import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 //
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextBox;
@@ -50,7 +52,9 @@ public class QuickNewTaskViewImpl extends Composite
     @Inject
     @DataField
     public Button addTaskButton;
-    
+    @Inject
+    @DataField
+    public Button closeButton;
     @Inject
     @DataField
     public TextBox taskNameText;
@@ -58,23 +62,52 @@ public class QuickNewTaskViewImpl extends Composite
     private Event<NotificationEvent> notification;
     @Inject
     private Event<UserTaskEvent> userTaskChanges;
-    
     private Constants constants = GWT.create(Constants.class);
 
     @Override
     public void init(QuickNewTaskPresenter presenter) {
         this.presenter = presenter;
-        
+
+        KeyPressHandler keyPressHandler = new KeyPressHandler() {
+            public void onKeyPress(KeyPressEvent event) {
+                if (event.getNativeEvent().getKeyCode() == 27) {
+                    close();
+
+                }
+                if (event.getNativeEvent().getKeyCode() == 13) {
+                    addTask();
+                }
+            }
+        };
+
+        taskNameText.addKeyPressHandler(keyPressHandler);
     }
 
     @EventHandler("addTaskButton")
     public void addTaskButton(ClickEvent e) {
-        presenter.addQuickTask(identity.getName(),
-                taskNameText.getText());
+        addTask();
+    }
+
+    @EventHandler("closeButton")
+    public void closeButton(ClickEvent e) {
+        close();
     }
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
         userTaskChanges.fire(new UserTaskEvent(identity.getName()));
+    }
+
+    public TextBox getTaskNameText() {
+        return taskNameText;
+    }
+
+    private void addTask() {
+        presenter.addQuickTask(identity.getName(),
+                taskNameText.getText());
+    }
+
+    private void close() {
+        presenter.close();
     }
 }

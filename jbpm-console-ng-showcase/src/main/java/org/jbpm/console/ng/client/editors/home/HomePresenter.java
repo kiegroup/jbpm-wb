@@ -15,10 +15,22 @@
  */
 package org.jbpm.console.ng.client.editors.home;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -29,7 +41,6 @@ import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 
 
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.shared.model.ProcessSummary;
 import org.jbpm.console.ng.shared.model.TaskSummary;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
@@ -63,6 +74,11 @@ public class HomePresenter {
     private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
     // Retrieve the actions from a service
     Map<String, String> actions = new HashMap<String, String>();
+
+    @PostConstruct
+    public void init() {
+        publish(this);
+    }
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -109,5 +125,330 @@ public class HomePresenter {
         }).getTasksOwned("");
 
 
+    }
+
+    // Set up the JS-callable signature as a global JS function.
+    private native void publish(HomePresenter hp) /*-{
+     
+     $wnd.discover = function(from) {
+     hp.@org.jbpm.console.ng.client.editors.home.HomePresenter::discover()(from);
+     }
+     
+     $wnd.design = function(from) {
+     hp.@org.jbpm.console.ng.client.editors.home.HomePresenter::design()(from);
+     }
+     
+     $wnd.deploy = function(from) {
+     hp.@org.jbpm.console.ng.client.editors.home.HomePresenter::deploy()(from);
+     }
+     
+     $wnd.work = function(from) {
+     hp.@org.jbpm.console.ng.client.editors.home.HomePresenter::work()(from);
+     }
+     
+     $wnd.monitor = function(from) {
+     hp.@org.jbpm.console.ng.client.editors.home.HomePresenter::monitor()(from);
+     }
+     
+     $wnd.improve = function(from) {
+     hp.@org.jbpm.console.ng.client.editors.home.HomePresenter::improve()(from);
+     }
+      
+     }-*/;
+
+    public void discover() {
+
+        final DialogBox dialogBox = new DialogBox();
+        dialogBox.ensureDebugId("cwDialogBox");
+        dialogBox.setText("Discover");
+        dialogBox.setPopupPosition(500, 200);
+        // Create a table to layout the content
+        VerticalPanel dialogContents = new VerticalPanel();
+        dialogContents.setSpacing(4);
+        dialogBox.setWidget(dialogContents);
+
+        // Add some text to the top of the dialog
+        HTML details = new HTML("What kind of behavior do you want define?");
+        dialogContents.add(details);
+        dialogContents.setCellHorizontalAlignment(
+                details, HasHorizontalAlignment.ALIGN_CENTER);
+
+        KeyPressHandler keyPressHandler = new KeyPressHandler() {
+            public void onKeyPress(KeyPressEvent event) {
+                if (event.getNativeEvent().getKeyCode() == 27) {
+
+                    dialogBox.hide();
+
+
+                }
+            }
+        };
+        Button processesButton = new Button("Processes");
+        dialogContents.add(processesButton);
+        Button rulesButton = new Button("Rules");
+        dialogContents.add(rulesButton);
+
+        Button closeButton = new Button(
+                "Close", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                dialogBox.hide();
+            }
+        });
+        dialogContents.add(closeButton);
+
+        dialogBox.addHandler(keyPressHandler, KeyPressEvent.getType());
+
+        dialogBox.show();
+    }
+
+    public void design() {
+        final DialogBox dialogBox = new DialogBox();
+        dialogBox.ensureDebugId("cwDialogBox");
+        dialogBox.setText("Design");
+        dialogBox.setPopupPosition(500, 200);
+
+        // Create a table to layout the content
+        VerticalPanel dialogContents = new VerticalPanel();
+
+        HorizontalPanel options = new HorizontalPanel();
+        
+        dialogContents.setSpacing(4);
+        dialogBox.setWidget(dialogContents);
+
+        // Add some text to the top of the dialog
+        HTML details = new HTML("What kind of model do you want to create?");
+        dialogContents.add(details);
+        
+
+
+        Button processesButton = new Button("Processes");
+        options.add(processesButton);
+        Button rulesButton = new Button("Rules");
+        options.add(rulesButton);
+        Button formsButton = new Button("Forms");
+        options.add(formsButton);
+        Button dataButton = new Button("Data Models");
+        options.add(dataButton);
+        
+       
+
+        dialogContents.add(options);
+        
+        Button closeButton = new Button(
+                "Close", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                dialogBox.hide();
+            }
+        });
+        dialogContents.add(closeButton);
+
+        dialogBox.show();
+
+    }
+
+    public void deploy() {
+       final DialogBox dialogBox = new DialogBox();
+        dialogBox.ensureDebugId("cwDialogBox");
+        dialogBox.setText("Deploy");
+        dialogBox.setPopupPosition(500, 200);
+
+        // Create a table to layout the content
+        VerticalPanel dialogContents = new VerticalPanel();
+
+        HorizontalPanel options = new HorizontalPanel();
+        
+        dialogContents.setSpacing(4);
+        dialogBox.setWidget(dialogContents);
+
+        // Add some text to the top of the dialog
+        HTML details = new HTML("What kind runtime configurations do you want to define?");
+        dialogContents.add(details);
+        
+
+
+        Button processesButton = new Button("Process Runtime");
+        options.add(processesButton);
+        Button rulesButton = new Button("Rules Runtime");
+        options.add(rulesButton);
+        Button eventsButton = new Button("Events Runtime");
+        options.add(eventsButton);
+        Button serviceButton = new Button("Service Connectors");
+        options.add(serviceButton);
+        Button datasourcesButton = new Button("Data Sources");
+        options.add(datasourcesButton);
+        
+       
+
+        dialogContents.add(options);
+        
+        Button closeButton = new Button(
+                "Close", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                dialogBox.hide();
+            }
+        });
+        dialogContents.add(closeButton);
+
+        dialogBox.show();
+
+    }
+
+    public void work() {
+        final DialogBox dialogBox = new DialogBox();
+        dialogBox.ensureDebugId("cwDialogBox");
+        dialogBox.setText("Work");
+        dialogBox.setPopupPosition(500, 200);
+
+        // Create a table to layout the content
+        VerticalPanel dialogContents = new VerticalPanel();
+
+        HorizontalPanel options = new HorizontalPanel();
+        
+        dialogContents.setSpacing(4);
+        dialogBox.setWidget(dialogContents);
+
+        // Add some text to the top of the dialog
+        HTML details = new HTML("What do you want to do?");
+        dialogContents.add(details);
+        
+
+        Button tasksButton = new Button("Tasks Inbox", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                dialogBox.hide();
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Inbox Perspective");
+                placeManager.goTo(placeRequestImpl);
+            }
+        });
+        options.add(tasksButton);
+        
+        Button processesButton = new Button("Manage & Start Process Instances", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                dialogBox.hide();
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Runtime Perspective");
+                placeManager.goTo(placeRequestImpl);
+            }
+        });
+        options.add(processesButton);
+        
+        
+        
+       
+
+        dialogContents.add(options);
+        
+        Button closeButton = new Button(
+                "Close", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                dialogBox.hide();
+            }
+        });
+        dialogContents.add(closeButton);
+
+        dialogBox.show();
+
+    }
+
+    public void monitor() {
+         final DialogBox dialogBox = new DialogBox();
+        dialogBox.ensureDebugId("cwDialogBox");
+        dialogBox.setText("Monitor");
+        dialogBox.setPopupPosition(500, 200);
+
+        // Create a table to layout the content
+        VerticalPanel dialogContents = new VerticalPanel();
+
+        HorizontalPanel options = new HorizontalPanel();
+        
+        dialogContents.setSpacing(4);
+        dialogBox.setWidget(dialogContents);
+
+        // Add some text to the top of the dialog
+        HTML details = new HTML("What do you want to do?");
+        dialogContents.add(details);
+        
+
+        Button tasksButton = new Button("Personal Statistics", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                dialogBox.hide();
+                
+            }
+        });
+        options.add(tasksButton);
+        
+        Button processesButton = new Button("Business Activity Monitoring", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                dialogBox.hide();
+                
+            }
+        });
+        options.add(processesButton);
+        
+        
+        
+       
+
+        dialogContents.add(options);
+        
+        Button closeButton = new Button(
+                "Close", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                dialogBox.hide();
+            }
+        });
+        dialogContents.add(closeButton);
+
+        dialogBox.show();
+    }
+
+    public void improve() {
+        final DialogBox dialogBox = new DialogBox();
+        dialogBox.ensureDebugId("cwDialogBox");
+        dialogBox.setText("Improve");
+        dialogBox.setPopupPosition(500, 200);
+
+        // Create a table to layout the content
+        VerticalPanel dialogContents = new VerticalPanel();
+
+        HorizontalPanel options = new HorizontalPanel();
+        
+        dialogContents.setSpacing(4);
+        dialogBox.setWidget(dialogContents);
+
+        // Add some text to the top of the dialog
+        HTML details = new HTML("What do you want to do?");
+        dialogContents.add(details);
+        
+
+        Button tasksButton = new Button("Write Notes", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                dialogBox.hide();
+                
+            }
+        });
+        options.add(tasksButton);
+        
+        Button processesButton = new Button("Data Mining", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                dialogBox.hide();
+                
+            }
+        });
+        options.add(processesButton);
+        
+        
+        
+       
+
+        dialogContents.add(options);
+        
+        Button closeButton = new Button(
+                "Close", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                dialogBox.hide();
+            }
+        });
+        dialogContents.add(closeButton);
+
+        dialogBox.show();
     }
 }
