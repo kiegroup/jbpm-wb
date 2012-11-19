@@ -20,6 +20,9 @@ import java.util.Collection;
 import java.util.List;
 import org.droolsjbpm.services.impl.model.ProcessInstanceDesc;
 import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
+import org.jbpm.workflow.instance.node.CompositeNodeInstance;
+import org.jbpm.workflow.instance.node.EventNodeInstance;
+import org.kie.runtime.process.NodeInstance;
 
 /**
  *
@@ -40,5 +43,26 @@ public class ProcessInstanceHelper {
         return new ProcessInstanceSummary(processInstance.getId(), processInstance.getProcessId(), 
                 processInstance.getProcessName(), processInstance.getProcessVersion(), processInstance.getState(), 
                 processInstance.getDataTimeStamp().getTime());
+    }
+    
+    public static Collection<String> collectActiveSignals(Collection<NodeInstance> activeNodes) {
+        Collection<String> activeNodesComposite = new ArrayList<String>();
+        for (NodeInstance nodeInstance : activeNodes) {
+            if (nodeInstance instanceof EventNodeInstance) {
+                String type = ((EventNodeInstance)nodeInstance).getEventNode().getType();
+                if (type != null && !type.startsWith("Message-")) {
+                    activeNodesComposite.add(type);
+                }
+                
+            }
+            if (nodeInstance instanceof CompositeNodeInstance) {
+                Collection<NodeInstance> currentNodeInstances = ((CompositeNodeInstance) nodeInstance).getNodeInstances();
+                
+                // recursively check current nodes
+                activeNodesComposite.addAll(collectActiveSignals(currentNodeInstances));
+            }
+        }
+        
+        return activeNodesComposite;
     }
 }

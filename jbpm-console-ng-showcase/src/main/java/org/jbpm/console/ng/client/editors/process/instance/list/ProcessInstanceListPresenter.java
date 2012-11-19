@@ -138,14 +138,15 @@ public class ProcessInstanceListPresenter {
        refreshProcessList("");
     }
     
-    public void abortProcessInstance(long processInstanceId) {
+    public void abortProcessInstance(String sessionId, long processInstanceId) {
         knowledgeServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void v) {
                 refreshProcessList("");
                 
-            }// TODO do not hardcode business key for session
-        }).abortProcessInstance("default", processInstanceId);
+            }
+        }).abortProcessInstance(sessionId, processInstanceId);
     }
+    
     
 }

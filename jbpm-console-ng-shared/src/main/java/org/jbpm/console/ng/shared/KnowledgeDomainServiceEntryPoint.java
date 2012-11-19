@@ -77,5 +77,8 @@ public interface KnowledgeDomainServiceEntryPoint {
     
     void abortProcessInstance(String businessKey, long processInstanceId);
     
+    void signalProcessInstance(String businessKey, String signalName, Object event, long processInstanceId);
+    
+    Collection<String> getAvailableSignals(String businessKey, long processInstanceId);
     
 }

@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.server.editors.jbpm.knowledge;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,13 @@ import org.jbpm.console.ng.shared.model.StatefulKnowledgeSessionSummary;
 import org.jbpm.console.ng.shared.model.TaskDefSummary;
 import org.jbpm.console.ng.shared.model.VariableSummary;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
+import org.jbpm.process.instance.impl.ProcessInstanceImpl;
+import org.jbpm.workflow.instance.WorkflowProcessInstance;
+import org.jbpm.workflow.instance.node.CompositeNodeInstance;
+import org.jbpm.workflow.instance.node.EventNodeInstance;
+import org.kie.runtime.StatefulKnowledgeSession;
+import org.kie.runtime.process.NodeInstance;
+import org.kie.runtime.process.ProcessInstance;
 
 /**
  *
@@ -159,6 +167,37 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     public Collection<ProcessInstanceSummary> getProcessInstances(List<Integer> states) {
         return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstances(states));
     }
+
+
+    @Override
+    public void signalProcessInstance(String businessKey, String signalName, Object event, long processInstanceId) {
+        StatefulKnowledgeSession ksession = knowledgeService.getSessionByBusinessKey(businessKey);
+        if (processInstanceId == -1) {
+            ksession.signalEvent(signalName, event);
+        } else {
+            ksession.signalEvent(signalName, event, processInstanceId);
+        }
+        
+    }
+
+
+    @Override
+    public Collection<String> getAvailableSignals(String businessKey, long processInstanceId) {
+        StatefulKnowledgeSession ksession = knowledgeService.getSessionByBusinessKey(businessKey);
+        ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
+        Collection<String> activeSignals = new ArrayList<String>();
+        
+        if (processInstance != null){
+            ((ProcessInstanceImpl)processInstance).setProcess(ksession.getKnowledgeBase().getProcess(processInstance.getProcessId()));
+            Collection<NodeInstance> activeNodes = ((WorkflowProcessInstance)processInstance).getNodeInstances();
+            
+            activeSignals.addAll(ProcessInstanceHelper.collectActiveSignals(activeNodes));
+        }
+        
+        return activeSignals;
+    }
+    
+
     
     
     

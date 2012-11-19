@@ -23,6 +23,7 @@ import java.util.Set;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -35,8 +36,10 @@ import org.jbpm.console.ng.shared.events.ProcessSelectionEvent;
 import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
 import org.kie.runtime.process.ProcessInstance;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 import org.uberfire.security.Identity;
+import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 import com.google.gwt.cell.client.ActionCell;
@@ -183,7 +186,8 @@ public class ProcessInstanceListViewImpl extends Composite
                     displayNotification(constants.Aborting_Process_Instance_Not_Allowed() + "(id="+ selected.getId()+")");
                     continue;
                 }
-                presenter.abortProcessInstance(selected.getId());
+                // TODO do not hardcode business key for session
+                presenter.abortProcessInstance("default", selected.getId());
                 processInstanceListGrid.getSelectionModel().setSelected(selected, false);
                 displayNotification(constants.Aborting_Process_Instance() + "(id="+ selected.getId()+")");
             }
@@ -194,6 +198,29 @@ public class ProcessInstanceListViewImpl extends Composite
     
     @EventHandler("signalButton")
     public void signalButton(ClickEvent e) {
+        
+        StringBuffer processIdsParam = new StringBuffer();
+        if (selectedProcessInstances != null) {
+            
+            for (ProcessInstanceSummary selected : selectedProcessInstances) { 
+                if (selected.getState() != ProcessInstance.STATE_ACTIVE) {
+                    displayNotification(constants.Signaling_Process_Instance_Not_Allowed() + "(id="+ selected.getId()+")");
+                    continue;
+                }
+                processIdsParam.append(selected.getId() + ",");
+                processInstanceListGrid.getSelectionModel().setSelected(selected, false);
+            }
+            // remove last ,
+            if (processIdsParam.length() > 0) {
+                processIdsParam.deleteCharAt(processIdsParam.length()-1);
+            }
+        } else {
+            processIdsParam.append("-1");
+        }
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Signal Process Popup");
+        placeRequestImpl.addParameter("processInstanceId", processIdsParam.toString());
+
+        placeManager.goTo(placeRequestImpl);
         displayNotification(constants.Signaling_Process_Instance());
     }
 
@@ -372,15 +399,18 @@ public class ProcessInstanceListViewImpl extends Composite
            @Override
            public void execute(ProcessInstanceSummary processInstance) {
                
-               
+               PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Signal Process Popup");
+               placeRequestImpl.addParameter("processInstanceId", Long.toString(processInstance.getId()));
+
+               placeManager.goTo(placeRequestImpl);
            }
        }));
        
        cells.add(new AbortActionHasCell("Abort", new Delegate<ProcessInstanceSummary>() {
            @Override
            public void execute(ProcessInstanceSummary processInstance) {
-               
-               presenter.abortProcessInstance(processInstance.getId());
+               // TODO do not hardcode business key for session
+               presenter.abortProcessInstance("default", processInstance.getId());
            }
        }));
        
@@ -510,6 +540,12 @@ public class ProcessInstanceListViewImpl extends Composite
         @Override
         public ProcessInstanceSummary getValue(ProcessInstanceSummary object) {
             return object;
+        }
+    }
+    
+    public void formClosed(@Observes BeforeClosePlaceEvent closed){
+        if ("Signal Process Popup".equals(closed.getPlace().getIdentifier())) {
+            presenter.refreshProcessList("");
         }
     }
     

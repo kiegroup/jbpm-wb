@@ -147,4 +147,6 @@ public interface Constants
     String Personal_Task_Statistics ();
 
     String Aborting_Process_Instance_Not_Allowed();
+
+    String Signaling_Process_Instance_Not_Allowed();
 }

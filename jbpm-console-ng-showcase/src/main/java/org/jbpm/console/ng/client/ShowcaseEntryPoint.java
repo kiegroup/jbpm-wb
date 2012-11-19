@@ -58,6 +58,7 @@ import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 import com.google.gwt.animation.client.Animation;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -113,7 +114,6 @@ public class ShowcaseEntryPoint {
         
         KeyPressHandler keyPressHandler = new KeyPressHandler() {
             public void onKeyPress(KeyPressEvent event) {
-                System.out.println("Open Do Action");
                 if (event.getUnicodeCharCode() == 160 && event.isAltKeyDown()) {
                     final DialogBox dialogBox = createDialogBox();
                     dialogBox.setGlassEnabled(true);
@@ -180,6 +180,7 @@ public class ShowcaseEntryPoint {
         final MenuItemCommand item = new DefaultMenuItemCommand("Logout", new Command() {
             @Override
             public void execute() {
+                
                 redirect("uf_logout");
             }
         });
