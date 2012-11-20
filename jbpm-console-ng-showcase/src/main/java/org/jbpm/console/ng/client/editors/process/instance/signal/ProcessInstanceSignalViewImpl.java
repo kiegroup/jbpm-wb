@@ -18,6 +18,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
+import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextBox;
 
 @Dependent
@@ -35,22 +37,26 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
     @Inject
     @DataField
     public Button clearButton;
-    @Inject
-    @DataField
-    public TextBox signalRefText;
+//    @Inject
+//    @DataField
+//    public TextBox signalRefText;
     @Inject
     @DataField
     public TextBox eventText;
     
-//    public SuggestBox suggestSignalBox;
-    
+    @DataField
+    public SuggestBox signalRefText;
     @Inject
     private Event<NotificationEvent> notification;
-    
     public List<Long> processInstanceIds = new ArrayList<Long>();
-    
     private Constants constants = GWT.create(Constants.class);
-    
+    private MultiWordSuggestOracle oracle;
+
+    public ProcessInstanceSignalViewImpl() {
+        oracle = new MultiWordSuggestOracle();
+        signalRefText = new SuggestBox(oracle);
+    }
+
     @Override
     public void init(ProcessInstanceSignalPresenter presenter) {
         this.presenter = presenter;
@@ -63,14 +69,14 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
 
     @EventHandler("signalButton")
     public void signalButton(ClickEvent e) {
-        
+
         for (Long processInstanceId : this.processInstanceIds) {
             // TODO do not hardcode business key for session
             presenter.signalProcessInstance("default", processInstanceId);
             displayNotification("Signal of process instance " + processInstanceId + " signal " + signalRefText.getText() + " event " + eventText.getText());
         }
     }
-    
+
     @EventHandler("clearButton")
     public void clearButton(ClickEvent e) {
         signalRefText.setValue("");
@@ -86,7 +92,6 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
     public void addProcessInstanceId(long processInstanceId) {
         this.processInstanceIds.add(processInstanceId);
     }
-    
 
     public String getSignalRefText() {
         return signalRefText.getText();
@@ -98,14 +103,8 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
 
     @Override
     public void setAvailableSignals(Collection<String> signals) {
-//      MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
-//
-//      oracle.addAll(signals);
-//      // Create the suggest box
-//      suggestSignalBox = new SuggestBox(oracle);
-        
+        oracle.addAll(signals);
     }
-    
 //    @EventHandler("signalRefText")
 //    public void enterHit(KeyPressEvent e) {
 //        suggestSignalBox.showSuggestionList();
