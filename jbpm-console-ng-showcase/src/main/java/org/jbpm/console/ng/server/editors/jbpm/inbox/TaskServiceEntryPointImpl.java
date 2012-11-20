@@ -151,8 +151,22 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
     
     @Override
+    public long addTaskAndStart(String taskString, Map<String, Object> params, String userId) {
+        Task task = TaskFactory.evalTask(taskString, params, true);
+        long taskId = taskService.addTask(task, params);
+        taskService.start(taskId, userId);
+        return taskId;
+    }
+    
+    @Override
     public void start(long taskId, String user) {
         taskService.start(taskId, user);
+    }
+    
+    public void startBatch(List<Long> taskIds, String user){
+        for(Long taskId : taskIds){
+            taskService.start(taskId, user);
+        }
     }
 
     @Override
@@ -177,6 +191,10 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     
     public void setPriority(long taskId, int priority) {
         taskService.setPriority(taskId, priority);
+    }
+    
+    public void setTaskNames(long taskId, List<String> taskNames) {
+        taskService.setTaskNames(taskId, TaskI18NHelper.adaptI18NList(taskNames) );
     }
     
     public void setExpirationDate(long taskId, Date date) {        
@@ -359,6 +377,33 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     public CommentSummary getCommentById(long commentId) {
         return CommentSummaryHelper.adapt(taskService.getCommentById(commentId));
+    }
+
+    public void updateSimpleTaskDetails(long taskId, List<String> taskNames, int priority, List<String> taskDescription, String subTaskStrategy, Date dueDate) {
+        //TODO: update only the changed bits
+        setPriority(taskId, priority);
+        setTaskNames(taskId, taskNames);
+        setDescriptions(taskId, taskDescription);
+        setSubTaskStrategy(taskId, subTaskStrategy);
+        setExpirationDate(taskId, dueDate);
+    }
+
+    public void claimBatch(List<Long> taskIds, String user) {
+        for(Long taskId : taskIds){
+            taskService.claim(taskId, user);
+        }
+    }
+
+    public void completeBatch(List<Long> taskIds, String user, Map<String, Object> params) {
+        for(Long taskId : taskIds){
+            taskService.complete(taskId, user, params);
+        }
+    }
+
+    public void releaseBatch(List<Long> taskIds, String user) {
+        for(Long taskId : taskIds){
+            taskService.release(taskId, user);
+        }
     }
     
 }

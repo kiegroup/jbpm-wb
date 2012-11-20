@@ -114,6 +114,8 @@ public class ShowcaseEntryPoint {
         
         KeyPressHandler keyPressHandler = new KeyPressHandler() {
             public void onKeyPress(KeyPressEvent event) {
+//                System.out.println("event.getUnicodeCharCode() -> "+event.getUnicodeCharCode());
+//                System.out.println("event.getNativeEvent().getKeyCode() = "+event.getNativeEvent().getKeyCode());
                 if (event.getUnicodeCharCode() == 160 && event.isAltKeyDown()) {
                     final DialogBox dialogBox = createDialogBox();
                     dialogBox.setGlassEnabled(true);
@@ -122,8 +124,21 @@ public class ShowcaseEntryPoint {
                     dialogBox.show();
                     actionText.setFocus(true);        
                 }
+                if(event.isControlKeyDown() && event.getUnicodeCharCode() == 116){
+                    PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Quick New Task");
+                    placeManager.goTo(placeRequestImpl);
+                }
+                
+                if(event.isControlKeyDown() && event.getUnicodeCharCode() == 104){
+                    PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Home Perspective");
+                    placeManager.goTo(placeRequestImpl);
+                }
+                
+                
             }
         };
+        
+        
         RootPanel.get().addDomHandler(keyPressHandler, KeyPressEvent.getType());
     }
 
@@ -283,13 +298,13 @@ public class ShowcaseEntryPoint {
          KeyPressHandler keyPressHandler = new KeyPressHandler() {
             public void onKeyPress(KeyPressEvent event) {
                 if (event.getNativeEvent().getKeyCode() == 27) {
-                    System.out.println("Hide Do Action");
+                    
                     dialogBox.hide();
                     suggestionDisplay.hideSuggestions();
                     
                 }
                 if (event.getNativeEvent().getKeyCode() == 13) {
-                    System.out.println("Execute Do Action");
+                    
                     doAction(actionText.getText());
                     dialogBox.hide();
                 }
@@ -300,10 +315,6 @@ public class ShowcaseEntryPoint {
         
         dialogContents.add(actionText);
         
-       
-
-       
-
 
         // Return the dialog box
         return dialogBox;

@@ -33,6 +33,9 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import org.jbpm.console.ng.client.i18n.Constants;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 /**
  * Main view.
@@ -56,7 +59,16 @@ public class FormDisplayPopupViewImpl extends Composite
     @Inject
     @DataField
     public Button closeButton;
+    
+    @Inject
+    @DataField
+    public Button fullButton;
+   
     public long taskId;
+    
+    @Inject
+    private PlaceManager placeManager;
+    
     @Inject
     private Event<NotificationEvent> notification;
     private Constants constants = GWT.create(Constants.class);
@@ -97,4 +109,14 @@ public class FormDisplayPopupViewImpl extends Composite
     }
     
     
+    @EventHandler("fullButton")
+    public void fullButton(ClickEvent e) {
+        presenter.close();
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Perspective");
+        placeRequestImpl.addParameter("taskId", Long.toString(taskId));
+        placeManager.goTo(placeRequestImpl);
+    }
+ 
+    
+ 
 }

@@ -15,7 +15,10 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.fb.display;
 
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -27,6 +30,7 @@ import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 import org.jbpm.console.ng.shared.fb.FormServiceEntryPoint;
 import org.jbpm.console.ng.shared.fb.events.FormRenderedEvent;
+import org.jbpm.console.ng.shared.model.TaskSummary;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -67,6 +71,12 @@ public class FormDisplayPresenter {
         
         long getTaskId();
         void setTaskId(long taskId);
+        
+        VerticalPanel getFormView();
+
+        Label getTaskNameText();
+        
+        Label getTaskDescriptionText();
     }
 
     @PostConstruct
@@ -75,13 +85,20 @@ public class FormDisplayPresenter {
         publishGetFormValues();
     }
 
-    public void renderForm(long taskId) {
+    public void renderForm(final long taskId) {
 
         formServices.call(new RemoteCallback<String>() {
             @Override
             public void callback(String form) {
-
-                formRendered.fire(new FormRenderedEvent(form));
+                view.getFormView().clear();
+                view.getFormView().add(new HTMLPanel(form));
+                taskServices.call(new RemoteCallback<TaskSummary>() {
+                    @Override
+                    public void callback(TaskSummary task) {
+                        view.getTaskNameText().setText(task.getName());
+                        view.getTaskDescriptionText().setText(task.getDescription());
+                    }
+                }).getTaskDetails(taskId);
             }
         }).getFormDisplay(taskId);
 
@@ -98,26 +115,39 @@ public class FormDisplayPresenter {
     }
 
     public void completeTask(String values) {
-        final Map<String, Object> params = getUrlParameters(values);
+        final Map<String, String> params = getUrlParameters(values);
+        final Map<String, Object> objParams = new HashMap<String, Object>(params);
         taskServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
                 view.displayNotification("Form for Task Id: " + params.get("taskId") + " was completed!");
 
             }
-        }).complete(Long.parseLong(params.get("taskId").toString()), identity.getName(), params);
+        }).complete(Long.parseLong(params.get("taskId")), identity.getName(), objParams);
 
     }
     
     public void startTask(String values) {
-        final Map<String, Object> params = getUrlParameters(values);
+        final Map<String, String> params = getUrlParameters(values);
         taskServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
                 view.displayNotification("Task Id: " + params.get("taskId") + " was started!");
-
+                renderForm(Long.parseLong(params.get("taskId").toString()));
             }
-        }).start(Long.parseLong(params.get("taskId").toString()), identity.getName());
+        }).start(Long.parseLong(params.get("taskId")), identity.getName());
+
+    }
+    
+      public void saveTaskState(String values) {
+        final Map<String, String> params = getUrlParameters(values);
+        taskServices.call(new RemoteCallback<Long>() {
+            @Override
+            public void callback(Long contentId) {
+                view.displayNotification("Task Id: " + params.get("taskId") + " State was Saved! ContentId : "+contentId);
+                renderForm(Long.parseLong(params.get("taskId").toString()));
+            }
+        }).saveContent(Long.parseLong(params.get("taskId").toString()), params);
 
     }
 
@@ -130,6 +160,9 @@ public class FormDisplayPresenter {
      
      $wnd.startTask = function(from) {
      fdp.@org.jbpm.console.ng.client.editors.tasks.fb.display.FormDisplayPresenter::startTask(Ljava/lang/String;)(from);
+     }
+     $wnd.saveTaskState = function(from) {
+     fdp.@org.jbpm.console.ng.client.editors.tasks.fb.display.FormDisplayPresenter::saveTaskState(Ljava/lang/String;)(from);
      }
         
      }-*/;
@@ -148,8 +181,8 @@ public class FormDisplayPresenter {
       
      }-*/;
 
-    public static Map<String, Object> getUrlParameters(String values) {
-        Map<String, Object> params = new HashMap<String, Object>();
+    public static Map<String, String> getUrlParameters(String values) {
+        Map<String, String> params = new HashMap<String, String>();
         for (String param : values.split("&")) {
             String pair[] = param.split("=");
             String key = pair[0];

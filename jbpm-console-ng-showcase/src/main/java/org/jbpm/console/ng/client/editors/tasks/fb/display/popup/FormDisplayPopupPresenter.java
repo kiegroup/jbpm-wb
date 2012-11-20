@@ -76,6 +76,7 @@ public class FormDisplayPopupPresenter {
         Label getTaskNameText();
         
         Label getTaskDescriptionText();
+      
     }
 
     @PostConstruct
@@ -95,6 +96,7 @@ public class FormDisplayPopupPresenter {
         formServices.call(new RemoteCallback<String>() {
             @Override
             public void callback(String form) {
+                view.getFormView().clear();
                 view.getFormView().add(new HTMLPanel(form));
                 taskServices.call(new RemoteCallback<TaskSummary>() {
                     @Override
@@ -103,7 +105,6 @@ public class FormDisplayPopupPresenter {
                         view.getTaskDescriptionText().setText(task.getDescription());
                     }
                 }).getTaskDetails(taskId);
-                
             }
         }).getFormDisplay(taskId);
 
@@ -120,24 +121,37 @@ public class FormDisplayPopupPresenter {
     }
 
     public void completeTask(String values) {
-        final Map<String, Object> params = getUrlParameters(values);
+        final Map<String, String> params = getUrlParameters(values);
+        final Map<String, Object> objParams = new HashMap<String, Object>(params);
         taskServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
                 view.displayNotification("Form for Task Id: " + params.get("taskId") + " was completed!");
                 close();
             }
-        }).complete(Long.parseLong(params.get("taskId").toString()), identity.getName(), params);
+        }).complete(Long.parseLong(params.get("taskId")), identity.getName(), objParams);
 
     }
 
+    public void saveTaskState(String values) {
+        final Map<String, String> params = getUrlParameters(values);
+        taskServices.call(new RemoteCallback<Long>() {
+            @Override
+            public void callback(Long contentId) {
+                view.displayNotification("Task Id: " + params.get("taskId") + " State was Saved! ContentId : "+contentId);
+                renderForm(Long.parseLong(params.get("taskId").toString()));
+            }
+        }).saveContent(Long.parseLong(params.get("taskId").toString()), params);
+
+    }
+    
     public void startTask(String values) {
-        final Map<String, Object> params = getUrlParameters(values);
+        final Map<String, String> params = getUrlParameters(values);
         taskServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
                 view.displayNotification("Task Id: " + params.get("taskId") + " was started!");
-
+                renderForm(Long.parseLong(params.get("taskId").toString()));
             }
         }).start(Long.parseLong(params.get("taskId").toString()), identity.getName());
 
@@ -154,28 +168,33 @@ public class FormDisplayPopupPresenter {
      fdp.@org.jbpm.console.ng.client.editors.tasks.fb.display.popup.FormDisplayPopupPresenter::startTask(Ljava/lang/String;)(from);
      }
       
-     $wnd.close = function(from) {
-     fdp.@org.jbpm.console.ng.client.editors.tasks.fb.display.popup.FormDisplayPopupPresenter::close()(from);
+     $wnd.saveTaskState = function(from) {
+     fdp.@org.jbpm.console.ng.client.editors.tasks.fb.display.popup.FormDisplayPopupPresenter::saveTaskState(Ljava/lang/String;)(from);
      }
+     
         
      }-*/;
 
     private native void publishGetFormValues() /*-{
      $wnd.getFormValues = function(form){
      var params = '';
+     
      for(i=0; i<form.elements.length; i++)
      {
      var fieldName = form.elements[i].name;
      var fieldValue = form.elements[i].value;
-     params += fieldName + '=' + fieldValue + '&';
+      if(fieldName != ''){
+        params += fieldName + '=' + fieldValue + '&';
+      }
      }
+     
      return params;
      };
       
      }-*/;
 
-    public static Map<String, Object> getUrlParameters(String values) {
-        Map<String, Object> params = new HashMap<String, Object>();
+    public static Map<String, String> getUrlParameters(String values) {
+        Map<String, String> params = new HashMap<String, String>();
         for (String param : values.split("&")) {
             String pair[] = param.split("=");
             String key = pair[0];
@@ -185,6 +204,7 @@ public class FormDisplayPopupPresenter {
             }
             params.put(key, value);
         }
+        
         return params;
     }
 

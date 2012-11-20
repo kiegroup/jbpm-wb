@@ -43,6 +43,11 @@ import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
@@ -53,7 +58,11 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -95,7 +104,6 @@ public class InboxPersonalViewImpl extends Composite
     @Inject
     @DataField
     public Button quickTaskButton;
-    
     @Inject
     @DataField
     public DataGrid<TaskSummary> myTaskListGrid;
@@ -121,13 +129,11 @@ public class InboxPersonalViewImpl extends Composite
     private Constants constants = GWT.create(Constants.class);
     ShowcaseImages images = GWT.create(ShowcaseImages.class);
 
-    
-
     @Override
     public void init(InboxPersonalPresenter presenter) {
         this.presenter = presenter;
-        
-        myTaskListGrid.setHeight( "400px");
+
+        myTaskListGrid.setHeight("400px");
         // Set the message to display when the table is empty.
         myTaskListGrid.setEmptyTableWidget(new Label(constants.Hooray_you_don_t_have_any_pending_Task__()));
 
@@ -154,15 +160,28 @@ public class InboxPersonalViewImpl extends Composite
             }
         });
 
+        
         myTaskListGrid.setSelectionModel(selectionModel,
                 DefaultSelectionEventManager
                 .<TaskSummary>createCheckboxManager());
 
         initTableColumns(selectionModel);
-
-
-
         presenter.addDataDisplay(myTaskListGrid);
+        
+         KeyPressHandler refreshPressHandler = new KeyPressHandler() {
+            public void onKeyPress(KeyPressEvent event) {
+//                System.out.println("event.getUnicodeCharCode() -> "+event.getUnicodeCharCode());
+//                System.out.println("event.getNativeEvent().getKeyCode() = "+event.getNativeEvent().getKeyCode());
+                if(event.isControlKeyDown() && event.getUnicodeCharCode() == 114 ){
+                   refreshTasks();
+                }
+                
+                
+            }
+        };
+        
+        
+        refreshTasksButton.addDomHandler(refreshPressHandler, KeyPressEvent.getType());
         
         refreshTasks();
 
@@ -396,10 +415,10 @@ public class InboxPersonalViewImpl extends Composite
         }));
 
 
-        cells.add(new ActionHasCell("Edit", new Delegate<TaskSummary>() {
+        cells.add(new EditHasCell("Edit", new Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Edit Perspective");
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Popup");
                 placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
                 placeManager.goTo(placeRequestImpl);
             }
@@ -475,15 +494,22 @@ public class InboxPersonalViewImpl extends Composite
                 isCheckedCompleted, isCheckedGroupTasks);
     }
 
-    private class ActionHasCell implements HasCell<TaskSummary, TaskSummary> {
+    private class EditHasCell implements HasCell<TaskSummary, TaskSummary> {
 
         private ActionCell<TaskSummary> cell;
 
-        public ActionHasCell(String text, Delegate<TaskSummary> delegate) {
+        public EditHasCell(String text, Delegate<TaskSummary> delegate) {
             cell = new ActionCell<TaskSummary>(text, delegate) {
                 @Override
                 public void render(Context context, TaskSummary value, SafeHtmlBuilder sb) {
-                    sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.editIcon()).getHTML()));
+
+                    ImageResource editIcon = images.editIcon();
+                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(editIcon);
+                    SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                    mysb.appendHtmlConstant("<span title='Details'>");
+                    mysb.append(imageProto.getSafeHtml());
+                    mysb.appendHtmlConstant("</span>");
+                    sb.append(mysb.toSafeHtml());
                 }
             };
 
@@ -514,10 +540,17 @@ public class InboxPersonalViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
                     if (value.getActualOwner() != null && (value.getStatus().equals("Reserved") || value.getStatus().equals("InProgress"))) {
-                        sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.workIcon()).getHTML()));
+                        ImageResource workIcon = images.workIcon();
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(workIcon);
+                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                        mysb.appendHtmlConstant("<span title='Work Full Screen'>");
+                        mysb.append(imageProto.getSafeHtml());
+                        mysb.appendHtmlConstant("</span>");
+                        sb.append(mysb.toSafeHtml());
                     }
                 }
             };
+
         }
 
         @Override
@@ -545,7 +578,13 @@ public class InboxPersonalViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
                     if (value.getActualOwner() != null && (value.getStatus().equals("Reserved"))) {
-                        sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.startIcon()).getHTML()));
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.startIcon());
+                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                        mysb.appendHtmlConstant("<span title='Start'>");
+                        mysb.append(imageProto.getSafeHtml());
+                        mysb.appendHtmlConstant("</span>");
+                        sb.append(mysb.toSafeHtml());
+
                     }
                 }
             };
@@ -576,7 +615,13 @@ public class InboxPersonalViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
                     if (value.getActualOwner() != null && value.getStatus().equals("InProgress")) {
-                        sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.completeIcon()).getHTML()));
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.completeIcon());
+                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                        mysb.appendHtmlConstant("<span title='Complete'>");
+                        mysb.append(imageProto.getSafeHtml());
+                        mysb.appendHtmlConstant("</span>");
+                        sb.append(mysb.toSafeHtml());
+
                     }
                 }
             };
@@ -607,7 +652,13 @@ public class InboxPersonalViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
                     if (value.getActualOwner() != null && (value.getStatus().equals("Reserved") || value.getStatus().equals("InProgress"))) {
-                        sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.popupIcon()).getHTML()));
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.popupIcon());
+                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                        mysb.appendHtmlConstant("<span title='Work in Pop Up'>");
+                        mysb.append(imageProto.getSafeHtml());
+                        mysb.appendHtmlConstant("</span>");
+                        sb.append(mysb.toSafeHtml());
+
                     }
                 }
             };
@@ -638,7 +689,14 @@ public class InboxPersonalViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
                     if (value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty() && value.getStatus().equals("Ready")) {
-                        sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.unlockIcon()).getHTML()));
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.unlockIcon());
+                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                        mysb.appendHtmlConstant("<span title='Claim'>");
+                        mysb.append(imageProto.getSafeHtml());
+                        mysb.appendHtmlConstant("</span>");
+                        sb.append(mysb.toSafeHtml());
+
+
                     }
                 }
             };
@@ -669,7 +727,13 @@ public class InboxPersonalViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
                     if (value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty() && !value.getPotentialOwners().contains(identity.getName()) && value.getStatus().equals("Reserved")) {
-                        sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.lockIcon()).getHTML()));
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.lockIcon());
+                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                        mysb.appendHtmlConstant("<span title='Release'>");
+                        mysb.append(imageProto.getSafeHtml());
+                        mysb.appendHtmlConstant("</span>");
+                        sb.append(mysb.toSafeHtml());
+
                     }
                 }
             };

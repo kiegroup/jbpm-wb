@@ -48,14 +48,24 @@ public interface TaskServiceEntryPoint {
     List<TaskSummary> getSubTasksByParent(long parentId);
 
     long addTask(String taskString, Map<String, Object> params);
+    
+    long addTaskAndStart(String taskString, Map<String, Object> params, String userId);
 
     void start(long taskId, String user);
+    
+    void startBatch(List<Long> taskIds, String user);
 
     void claim(long taskId, String user);
+    
+    void claimBatch(List<Long> taskIds, String user);
 
     void complete(long taskId, String user, Map<String, Object> params);
+    
+    void completeBatch(List<Long> taskIds, String user, Map<String, Object> params);
 
     void release(long taskId, String user);
+    
+    void releaseBatch(List<Long> taskIds, String user);
 
     void forward(long taskId, String userId, String targetEntityId);
     
@@ -109,5 +119,6 @@ public interface TaskServiceEntryPoint {
 
     CommentSummary getCommentById(long commentId);
     
+    void updateSimpleTaskDetails(long taskId, List<String> taskNames, int priority, List<String> taskDescription, String subTaskStrategy, Date dueDate);
     
 }

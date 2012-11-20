@@ -1,19 +1,3 @@
-<%--
-  ~ Copyright 2012 JBoss Inc
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~       http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  --%>
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -142,7 +126,7 @@
 
 <div id="login-wrapper" class="png_bg">
   <div id="login-top">
-    <img src="<%=request.getContextPath()%>/org.jbpm.console.ng.jBPMShowcase/images/uf_logo.png" alt="UberFire Logo" title="Powered By Uberfire"/>
+    <img src="<%=request.getContextPath()%>/org.jbpm.console.ng.jBPMShowcase/images/jbpm-console-ng.png" alt="jBPM Console NG Logo" title="Powered By jBPM"/>
   </div>
 
   <div id="login-content">
@@ -160,7 +144,8 @@
       <br style="clear: both;"/>
       
       <p>
-        <input class="button" type="button" value="Help" onclick="alert('Users: salaboy/salaboy, maciej/maciej, kris/kris, tiho/tiho, marco/marco')"/>  
+        <input class="button" type="button" value="Help" onclick="alert('Users: kris/kris, tiho/tiho, salaboy/salaboy, maciej/maciej, marco/marco')"/>  
+        
         <input class="button" type="submit" value="Sign In"/>
       </p>
       

@@ -64,7 +64,7 @@ public class InboxPersonalPresenter {
         ColumnSortEvent.ListHandler<TaskSummary> getSortHandler();
 
         MultiSelectionModel<TaskSummary> getSelectionModel();
-        
+
         public void refreshTasks();
     }
     @Inject
@@ -143,7 +143,7 @@ public class InboxPersonalPresenter {
                     view.getSelectionModel().clear();
 
                 }
-            }).getTasksOwned(userId, statuses,  "en-UK");
+            }).getTasksOwned(userId, statuses, "en-UK");
 
 
 
@@ -168,55 +168,70 @@ public class InboxPersonalPresenter {
     }
 
     public void startTasks(final Set<TaskSummary> selectedTasks, final String userId) {
+        List<Long> tasksIds = new ArrayList<Long>(selectedTasks.size());
         for (TaskSummary ts : selectedTasks) {
-            taskServices.call(new RemoteCallback<List<TaskSummary>>() {
-                @Override
-                public void callback(List<TaskSummary> tasks) {
-                    view.displayNotification("Task(s) Started");
-                    view.refreshTasks();
-                }
-            }).start(ts.getId(), userId);
+            tasksIds.add(ts.getId());
         }
+        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
+            @Override
+            public void callback(List<TaskSummary> tasks) {
+                view.displayNotification("Task(s) Started");
+                view.refreshTasks();
+            }
+        }).startBatch(tasksIds, userId);
+
 
 
     }
 
     public void releaseTasks(Set<TaskSummary> selectedTasks, final String userId) {
+        List<Long> tasksIds = new ArrayList<Long>(selectedTasks.size());
         for (TaskSummary ts : selectedTasks) {
-            taskServices.call(new RemoteCallback<List<TaskSummary>>() {
-                @Override
-                public void callback(List<TaskSummary> tasks) {
-                    view.displayNotification("Task(s) Released");
-                    view.refreshTasks();
-                }
-            }).release(ts.getId(), userId);
+            tasksIds.add(ts.getId());
         }
+
+        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
+            @Override
+            public void callback(List<TaskSummary> tasks) {
+                view.displayNotification("Task(s) Released");
+                view.refreshTasks();
+            }
+        }).releaseBatch(tasksIds, userId);
+
     }
 
     public void completeTasks(Set<TaskSummary> selectedTasks, final String userId) {
+        List<Long> tasksIds = new ArrayList<Long>(selectedTasks.size());
         for (TaskSummary ts : selectedTasks) {
-            taskServices.call(new RemoteCallback<List<TaskSummary>>() {
-                @Override
-                public void callback(List<TaskSummary> tasks) {
-                    view.displayNotification("Task(s) Completed");
-                    view.refreshTasks();
-                }
-            }).complete(ts.getId(), userId, null);
+            tasksIds.add(ts.getId());
         }
+
+        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
+            @Override
+            public void callback(List<TaskSummary> tasks) {
+                view.displayNotification("Task(s) Completed");
+                view.refreshTasks();
+            }
+        }).completeBatch(tasksIds, userId, null);
+
+
 
     }
 
     public void claimTasks(Set<TaskSummary> selectedTasks, final String userId) {
-        for (final TaskSummary ts : selectedTasks) {
-            taskServices.call(new RemoteCallback<List<TaskSummary>>() {
-                @Override
-                public void callback(List<TaskSummary> tasks) {
-                    view.displayNotification("Task (Id = " + ts.getId() + ") Claimed");
-                    view.refreshTasks();
-
-                }
-            }).claim(ts.getId(), userId);
+        List<Long> tasksIds = new ArrayList<Long>(selectedTasks.size());
+        for (TaskSummary ts : selectedTasks) {
+            tasksIds.add(ts.getId());
         }
+        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
+            @Override
+            public void callback(List<TaskSummary> tasks) {
+                view.displayNotification("Task(s) Claimed");
+                view.refreshTasks();
+
+            }
+        }).claimBatch(tasksIds, userId);
+
 
 
     }
@@ -235,11 +250,9 @@ public class InboxPersonalPresenter {
 
     @OnReveal
     public void onReveal() {
-        
     }
-    
-    
-    public void formClosed(@Observes BeforeClosePlaceEvent closed){
+
+    public void formClosed(@Observes BeforeClosePlaceEvent closed) {
         view.refreshTasks();
     }
 }

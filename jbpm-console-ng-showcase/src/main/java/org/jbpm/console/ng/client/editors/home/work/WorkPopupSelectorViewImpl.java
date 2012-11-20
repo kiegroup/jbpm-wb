@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.client.editors.tasks.inbox.quick.newtask;
+package org.jbpm.console.ng.client.editors.home.work;
 
 import com.google.gwt.core.client.GWT;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.jbpm.console.ng.shared.events.UserTaskEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
@@ -29,72 +28,64 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.TextBox;
-import java.util.Date;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.security.Identity;
 
 import org.jbpm.console.ng.client.i18n.Constants;
+import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
-@Templated(value = "QuickNewTaskViewImpl.html")
-public class QuickNewTaskViewImpl extends Composite
+@Templated(value = "WorkPopupSelectorViewImpl.html")
+public class WorkPopupSelectorViewImpl extends Composite
         implements
-        QuickNewTaskPresenter.InboxView {
+        WorkPopupSelectorPresenter.InboxView {
 
     @Inject
     private Identity identity;
     @Inject
     private PlaceManager placeManager;
-    private QuickNewTaskPresenter presenter;
+    private WorkPopupSelectorPresenter presenter;
     @Inject
     @DataField
-    public Button addTaskButton;
+    public Button inboxButton;
+    @Inject
+    @DataField
+    public Button processMgmtButton;
     @Inject
     @DataField
     public Button closeButton;
     @Inject
-    @DataField
-    public TextBox taskNameText;
-    @Inject
-    @DataField
-    public CheckBox quickTaskCheck;
-    @Inject
     private Event<NotificationEvent> notification;
-    @Inject
-    private Event<UserTaskEvent> userTaskChanges;
     private Constants constants = GWT.create(Constants.class);
 
     @Override
-    public void init(QuickNewTaskPresenter presenter) {
+    public void init(WorkPopupSelectorPresenter presenter) {
         this.presenter = presenter;
-        KeyPressHandler keyPressHandlerText = new KeyPressHandler() {
+        
+        KeyPressHandler keyPressHandlerInbox = new KeyPressHandler() {
             public void onKeyPress(KeyPressEvent event) {
                 if (event.getNativeEvent().getKeyCode() == 13) {
-                    addTask();
+                    goToInbox();
+                    close();
                 }
             }
         };
-        taskNameText.addKeyPressHandler(keyPressHandlerText);
+        inboxButton.addKeyPressHandler(keyPressHandlerInbox);
         
-        KeyPressHandler keyPressHandlerCheck = new KeyPressHandler() {
+         KeyPressHandler keyPressHandlerProcess = new KeyPressHandler() {
             public void onKeyPress(KeyPressEvent event) {
                 if (event.getNativeEvent().getKeyCode() == 13) {
-                    addTask();
+                    goToProcessMgmt();
+                    close();
                 }
             }
         };
-        quickTaskCheck.addKeyPressHandler(keyPressHandlerCheck);
+        processMgmtButton.addKeyPressHandler(keyPressHandlerProcess);
         
-    }
-
-    @EventHandler("addTaskButton")
-    public void addTaskButton(ClickEvent e) {
-        addTask();
     }
 
     @EventHandler("closeButton")
@@ -102,22 +93,39 @@ public class QuickNewTaskViewImpl extends Composite
         close();
     }
 
+    @EventHandler("inboxButton")
+    public void inboxButton(ClickEvent e) {
+        goToInbox();
+        close();
+    }
+
+    @EventHandler("processMgmtButton")
+    public void processMgmtButton(ClickEvent e) {
+        goToProcessMgmt();
+        close();
+    }
+
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
-        userTaskChanges.fire(new UserTaskEvent(identity.getName()));
-    }
-
-    public TextBox getTaskNameText() {
-        return taskNameText;
-    }
-
-    private void addTask() {
-        presenter.addTask(identity.getName(),
-                taskNameText.getText(), quickTaskCheck.getValue(), new Date());
-
     }
 
     private void close() {
         presenter.close();
     }
+
+    public Button getInboxButton() {
+        return inboxButton;
+    }
+
+    private void goToInbox() {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Inbox Perspective");
+        placeManager.goTo(placeRequestImpl);
+    }
+
+    private void goToProcessMgmt() {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Runtime Perspective");
+        placeManager.goTo(placeRequestImpl);
+    }
+    
+    
 }

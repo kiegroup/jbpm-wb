@@ -294,57 +294,8 @@ public class HomePresenter {
     }
 
     public void work() {
-        final DialogBox dialogBox = new DialogBox();
-        dialogBox.ensureDebugId("cwDialogBox");
-        dialogBox.setText("Work");
-        dialogBox.setPopupPosition(500, 200);
-
-        // Create a table to layout the content
-        VerticalPanel dialogContents = new VerticalPanel();
-
-        HorizontalPanel options = new HorizontalPanel();
-        
-        dialogContents.setSpacing(4);
-        dialogBox.setWidget(dialogContents);
-
-        // Add some text to the top of the dialog
-        HTML details = new HTML("What do you want to do?");
-        dialogContents.add(details);
-        
-
-        Button tasksButton = new Button("Tasks Inbox", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                dialogBox.hide();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Inbox Perspective");
-                placeManager.goTo(placeRequestImpl);
-            }
-        });
-        options.add(tasksButton);
-        
-        Button processesButton = new Button("Manage & Start Process Instances", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                dialogBox.hide();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Runtime Perspective");
-                placeManager.goTo(placeRequestImpl);
-            }
-        });
-        options.add(processesButton);
-        
-        
-        
-       
-
-        dialogContents.add(options);
-        
-        Button closeButton = new Button(
-                "Close", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                dialogBox.hide();
-            }
-        });
-        dialogContents.add(closeButton);
-
-        dialogBox.show();
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Work Popup Selector");
+        placeManager.goTo(placeRequestImpl);
 
     }
 

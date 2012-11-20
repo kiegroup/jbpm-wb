@@ -25,12 +25,11 @@ import org.jbpm.console.ng.shared.fb.events.FormRenderedEvent;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import org.jbpm.console.ng.client.i18n.Constants;
@@ -58,6 +57,12 @@ public class FormDisplayViewImpl extends Composite
     
     private Constants constants = GWT.create(Constants.class);
 
+    @Inject
+    @DataField
+    public Label taskNameText;
+    @Inject
+    @DataField
+    public Label taskDescriptionText;
     
   
 
@@ -92,6 +97,19 @@ public class FormDisplayViewImpl extends Composite
         this.taskId = taskId;
     }
 
+    public Label getTaskNameText() {
+        return taskNameText;
+    }
+
+    public Label getTaskDescriptionText() {
+        return taskDescriptionText;
+    }
+
+    public VerticalPanel getFormView() {
+        return formView;
+    }
+
+    
    
     
 }

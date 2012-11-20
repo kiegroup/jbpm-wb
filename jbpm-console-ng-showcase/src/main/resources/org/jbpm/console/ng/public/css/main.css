@@ -452,33 +452,33 @@ a.button {
 .title {
     color: #1B75BB;
     font-size: 30px;
-    left: 110px;
+    left: 95px;
     position: absolute;
-    top: 120px;
+    top: 128px;
     z-index: 0;
 }
 .link-1 {
-    left: 42px;
-    top: 15px;
+    left: 38px;
+    top: 12px;
 }
 .link-2 {
-    left: 138px;
-    top: 15px;
+    left: 142px;
+    top: 22px;
 }
 .link-3 {
     left: 188px;
     top: 115px;
 }
 .link-4 {
-    left: 130px;
-    top: 200px;
+    left: 125px;
+    top: 207px;
 }
 .link-5 {
-    left: 30px;
-    top: 200px;
+    left: 23px;
+    top: 192px;
 }
 .link-6 {
-    left: -20px;
+    left: -23px;
     top: 100px;
 }
 
