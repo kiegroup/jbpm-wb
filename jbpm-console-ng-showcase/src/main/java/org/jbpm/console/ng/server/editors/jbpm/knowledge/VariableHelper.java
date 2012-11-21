@@ -18,6 +18,9 @@ package org.jbpm.console.ng.server.editors.jbpm.knowledge;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.droolsjbpm.services.impl.model.VariableStateDesc;
 import org.jbpm.console.ng.shared.model.VariableSummary;
 
@@ -26,11 +29,32 @@ import org.jbpm.console.ng.shared.model.VariableSummary;
  * @author salaboy
  */
 public class VariableHelper {
+    
     public static Collection<VariableSummary> adaptCollection(Collection<VariableStateDesc> variables){
         List<VariableSummary> variablesSummary = new ArrayList<VariableSummary>();
         for(VariableStateDesc v : variables){
+            
             variablesSummary.add(new VariableSummary(v.getVariableId(), v.getVariableInstanceId(), 
-                    v.getProcessInstanceId(), v.getOldValue(), v.getNewValue(),  v.getDataTimeStamp().toString()));
+                    v.getProcessInstanceId(), v.getOldValue(), v.getNewValue(),  v.getDataTimeStamp().toString(), ""));
+            
+        }
+        
+        return variablesSummary;
+    }
+    
+    public static Collection<VariableSummary> adaptCollection(Collection<VariableStateDesc> variables, Map<String, String> properties, long processInstanceId){
+        List<VariableSummary> variablesSummary = new ArrayList<VariableSummary>();
+        for(VariableStateDesc v : variables){
+            String type = properties.remove(v.getVariableId());
+            variablesSummary.add(new VariableSummary(v.getVariableId(), v.getVariableInstanceId(), 
+                    v.getProcessInstanceId(), v.getOldValue(), v.getNewValue(),  v.getDataTimeStamp().toString(), type));
+            
+        }
+        if (!properties.isEmpty()) {
+            for(Entry<String, String> entry : properties.entrySet()) {
+                variablesSummary.add(new VariableSummary(entry.getKey(), "", 
+                        processInstanceId, "", "",  "", entry.getValue()));
+            }
         }
         
         return variablesSummary;
@@ -38,6 +62,6 @@ public class VariableHelper {
     
     public static VariableSummary adapt(VariableStateDesc v){
         return new VariableSummary(v.getVariableId(), v.getVariableInstanceId(), 
-                    v.getProcessInstanceId(), v.getOldValue(), v.getNewValue(),  v.getDataTimeStamp().toString());
+                    v.getProcessInstanceId(), v.getOldValue(), v.getNewValue(),  v.getDataTimeStamp().toString(), "");
     }
 }

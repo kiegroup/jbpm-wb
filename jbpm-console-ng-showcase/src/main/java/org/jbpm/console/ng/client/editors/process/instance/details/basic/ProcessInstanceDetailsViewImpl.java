@@ -15,45 +15,53 @@
  */
 package org.jbpm.console.ng.client.editors.process.instance.details.basic;
 
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.client.i18n.Constants;
+import org.jbpm.console.ng.client.resources.ShowcaseImages;
+import org.jbpm.console.ng.client.util.ResizableHeader;
+import org.jbpm.console.ng.shared.model.VariableSummary;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
+import org.uberfire.client.workbench.widgets.events.NotificationEvent;
+import org.uberfire.security.Identity;
+import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
+
+import com.google.gwt.cell.client.ActionCell;
+import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.ButtonCell;
+import com.google.gwt.cell.client.Cell;
+import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.FieldUpdater;
-import com.google.gwt.cell.client.NumberCell;
+import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-
-
-
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
-import java.util.Comparator;
-
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.shared.model.VariableSummary;
-import org.jbpm.console.ng.client.util.ResizableHeader;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.security.Identity;
-import org.uberfire.shared.mvp.PlaceRequest;
-import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
-
-import org.jbpm.console.ng.client.i18n.Constants;
 
 @Dependent
 @Templated(value = "ProcessInstanceDetailsViewImpl.html")
@@ -92,6 +100,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     private Event<NotificationEvent> notification;
     
     private Constants constants = GWT.create(Constants.class);
+    private ShowcaseImages images = GWT.create(ShowcaseImages.class);
     
     @Override
     public void init(ProcessInstanceDetailsPresenter presenter) {
@@ -191,7 +200,25 @@ public class ProcessInstanceDetailsViewImpl extends Composite
                     }
                 });
 
+        // Type.
+        Column<VariableSummary, String> typeColumn =
+                new Column<VariableSummary, String>(new TextCell()) {
+                    @Override
+                    public String getValue(VariableSummary object) {
+                        return object.getType();
+                    }
+                };
+                typeColumn.setSortable(true);
 
+        processDataGrid.addColumn(typeColumn,
+                new ResizableHeader(constants.Type(), processDataGrid, typeColumn));
+        sortHandler.setComparator(typeColumn,
+                new Comparator<VariableSummary>() {
+                    public int compare(VariableSummary o1,
+                            VariableSummary o2) {
+                        return o1.getType().compareTo(o2.getType());
+                    }
+                });
         
 
         // Last Time Changed Date.
@@ -216,32 +243,106 @@ public class ProcessInstanceDetailsViewImpl extends Composite
                     }
                 });
 
-        Column<VariableSummary, String> editColumn =
-                new Column<VariableSummary, String>(new ButtonCell()) {
-                    @Override
-                    public String getValue(VariableSummary task) {
-                        return "View History";
-                    }
-                };
-
-        editColumn.setFieldUpdater(new FieldUpdater<VariableSummary, String>() {
+        List<HasCell<VariableSummary, ?>> cells = new LinkedList<HasCell<VariableSummary, ?>>();
+        
+        
+        cells.add(new EditVariableActionHasCell("Edit Variable", new Delegate<VariableSummary>() {
             @Override
-            public void update(int index,
-                    VariableSummary task,
-                    String value) {
+            public void execute(VariableSummary variable) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Edit Variable Popup");
+                placeRequestImpl.addParameter("processInstanceId", Long.toString(variable.getProcessInstanceId()));
+                placeRequestImpl.addParameter("variableId", variable.getVariableId());
+                placeRequestImpl.addParameter("value", variable.getNewValue());
 
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Variable_History_Perspective());
-                placeRequestImpl.addParameter("variableId", task.getVariableId());
                 placeManager.goTo(placeRequestImpl);
-
             }
-        });
+        }));
+        
+        cells.add(new VariableHistoryActionHasCell("Variable History", new Delegate<VariableSummary>() {
+            @Override
+            public void execute(VariableSummary variable) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Variable History Popup");
+                placeRequestImpl.addParameter("processInstanceId", Long.toString(variable.getProcessInstanceId()));
+                placeRequestImpl.addParameter("variableId", variable.getVariableId());
 
-        processDataGrid.addColumn(editColumn,
-                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant(constants.View_History())));
+                placeManager.goTo(placeRequestImpl);
+            }
+        }));
+        
+        CompositeCell<VariableSummary> cell = new CompositeCell<VariableSummary>(cells);
+        processDataGrid.addColumn(new Column<VariableSummary, VariableSummary>(cell) {
+            @Override
+            public VariableSummary getValue(VariableSummary object) {
+                return object;
+            }
+        }, "Actions");
 
+    }
+    
+    private class EditVariableActionHasCell implements HasCell<VariableSummary, VariableSummary> {
 
+        private ActionCell<VariableSummary> cell;
 
+        public EditVariableActionHasCell(String text, Delegate<VariableSummary> delegate) {
+            cell = new ActionCell<VariableSummary>(text, delegate) {
+                @Override
+                public void render(Cell.Context context, VariableSummary value, SafeHtmlBuilder sb) {
+                    
+                    sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.editIcon()).getHTML()));
+                    
+                }
+            };
+        }
 
+        @Override
+        public Cell<VariableSummary> getCell() {
+            return cell;
+        }
+
+        @Override
+        public FieldUpdater<VariableSummary, VariableSummary> getFieldUpdater() {
+            return null;
+        }
+
+        @Override
+        public VariableSummary getValue(VariableSummary object) {
+            return object;
+        }
+    }
+    
+    private class VariableHistoryActionHasCell implements HasCell<VariableSummary, VariableSummary> {
+
+        private ActionCell<VariableSummary> cell;
+
+        public VariableHistoryActionHasCell(String text, Delegate<VariableSummary> delegate) {
+            cell = new ActionCell<VariableSummary>(text, delegate) {
+                @Override
+                public void render(Cell.Context context, VariableSummary value, SafeHtmlBuilder sb) {
+                    
+                    sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.detailsIcon()).getHTML()));
+                }
+            };
+        }
+
+        @Override
+        public Cell<VariableSummary> getCell() {
+            return cell;
+        }
+
+        @Override
+        public FieldUpdater<VariableSummary, VariableSummary> getFieldUpdater() {
+            return null;
+        }
+
+        @Override
+        public VariableSummary getValue(VariableSummary object) {
+            return object;
+        }
+    }
+    
+    public void formClosed(@Observes BeforeClosePlaceEvent closed){
+        if ("Edit Variable Popup".equals(closed.getPlace().getIdentifier())) {
+            presenter.loadVariables(processIdText.getText(), processNameText.getText());
+        }
     }
 }

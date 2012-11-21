@@ -69,7 +69,7 @@ public interface KnowledgeDomainServiceEntryPoint {
     
     ProcessSummary getProcessDesc(String bpmn2Content);
     
-    Collection<VariableSummary> getVariablesCurrentState(long processInstanceId);
+    Collection<VariableSummary> getVariablesCurrentState(long processInstanceId, String processId);
     
     public Map<String, String> getTaskInputMappings(String bpmn2Content, String taskName);
 
@@ -81,4 +81,7 @@ public interface KnowledgeDomainServiceEntryPoint {
     
     Collection<String> getAvailableSignals(String businessKey, long processInstanceId);
     
+    void setProcessVariable(String businessKey, long processInstanceId, String variableId, Object value);
+
+    Collection<VariableSummary> getVariableHistory(long processInstanceId, String variableId);
 }

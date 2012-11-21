@@ -122,14 +122,7 @@ public class ProcessInstanceDetailsPresenter {
             }
         }).getAvailableProcesses();
 
-        domainServices.call(new RemoteCallback<List<VariableSummary>>() {
-            @Override
-            public void callback(List<VariableSummary> variables) {
-                dataProvider.getList().clear();
-                    dataProvider.getList().addAll(variables);
-                    dataProvider.refresh();
-            }
-        }).getVariablesCurrentState(Long.parseLong(processId));
+        loadVariables(processId, processDefId);
 
 
     }
@@ -154,5 +147,16 @@ public class ProcessInstanceDetailsPresenter {
         view.getProcessIdText().setText(processId);
         view.getProcessNameText().setText(processDefId);
         refreshProcessInstanceData(processId, processDefId);
+    }
+    
+    public void loadVariables(final String processId, final String processDefId) {
+        domainServices.call(new RemoteCallback<List<VariableSummary>>() {
+            @Override
+            public void callback(List<VariableSummary> variables) {
+                dataProvider.getList().clear();
+                    dataProvider.getList().addAll(variables);
+                    dataProvider.refresh();
+            }
+        }).getVariablesCurrentState(Long.parseLong(processId), processDefId);
     }
 }

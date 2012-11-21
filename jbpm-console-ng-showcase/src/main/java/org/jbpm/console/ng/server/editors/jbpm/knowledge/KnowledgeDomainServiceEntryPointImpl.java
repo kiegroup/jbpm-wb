@@ -143,8 +143,10 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         return ProcessHelper.adapt(bpmn2Service.getProcessDesc(bpmn2Content));
     } 
 
-    public Collection<VariableSummary> getVariablesCurrentState(long processInstanceId) {
-        return VariableHelper.adaptCollection(dataService.getVariablesCurrentState(processInstanceId));
+    public Collection<VariableSummary> getVariablesCurrentState(long processInstanceId, String processId) {
+        String processString = knowledgeService.getAvailableProcesses().get(processId);
+        Map<String, String> properties = bpmn2Service.getProcessData(processString);
+        return VariableHelper.adaptCollection(dataService.getVariablesCurrentState(processInstanceId), properties, processInstanceId);
     }
 
     public Map<String, String> getTaskInputMappings(String bpmn2Content, String taskName) {
@@ -196,10 +198,22 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         
         return activeSignals;
     }
-    
 
-    
-    
-    
+
+    @Override
+    public void setProcessVariable(String businessKey, long processInstanceId, String variableId, Object value) {
+        StatefulKnowledgeSession ksession = knowledgeService.getSessionByBusinessKey(businessKey);
+        ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
+        
+        ((WorkflowProcessInstance)processInstance).setVariable(variableId, value);
+        
+    }
+
+
+    @Override
+    public Collection<VariableSummary> getVariableHistory(long processInstanceId, String variableId) {
+        return VariableHelper.adaptCollection(dataService.getVariableHistory(processInstanceId, variableId));
+    }
+
     
 }

@@ -149,4 +149,6 @@ public interface Constants
     String Aborting_Process_Instance_Not_Allowed();
 
     String Signaling_Process_Instance_Not_Allowed();
+
+    String Old_Value();
 }
