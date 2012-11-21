@@ -260,12 +260,15 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
     
     public long saveContent(long taskId, Map<String, String> values) {
-        ContentData contentData = ContentMarshallerHelper.marshal(values, null);
-        return addContent(taskId, new Content(contentData.getContent()));
+        return addContent(taskId, (Map)values);
     }
     
     public long addContent(long taskId, Content content) {
         return taskService.addContent(taskId, content);
+    }
+    
+    public long addContent(long taskId, Map<String, Object> values) {
+        return taskService.addContent(taskId, values);
     }
     
     public void deleteContent(long taskId, long contentId) {
