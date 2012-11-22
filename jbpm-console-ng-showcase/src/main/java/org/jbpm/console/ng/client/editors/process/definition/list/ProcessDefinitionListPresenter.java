@@ -39,6 +39,8 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Definition List")
@@ -60,10 +62,8 @@ public class ProcessDefinitionListPresenter {
     private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
     @Inject
     Caller<StatefulKnowledgeSessionEntryPoint> ksessionServices;
-    
     @Inject
     Event<ProcessInstanceCreated> processInstanceCreatedEvents;
-    
     private ListDataProvider<ProcessSummary> dataProvider = new ListDataProvider<ProcessSummary>();
 
     @WorkbenchPartTitle
@@ -81,8 +81,6 @@ public class ProcessDefinitionListPresenter {
 
     @PostConstruct
     public void init() {
-        
-        
     }
 
     public void refreshProcessList(final String sessionId) {
@@ -108,6 +106,8 @@ public class ProcessDefinitionListPresenter {
         }
     }
 
+  
+
     public void startProcessInstance(final String processId) {
 
         ksessionServices.call(new RemoteCallback<Long>() {
@@ -131,9 +131,9 @@ public class ProcessDefinitionListPresenter {
     public void refreshData() {
         dataProvider.refresh();
     }
-    
+
     @OnReveal
     public void onReveal() {
-       refreshProcessList("");
+        refreshProcessList("");
     }
 }

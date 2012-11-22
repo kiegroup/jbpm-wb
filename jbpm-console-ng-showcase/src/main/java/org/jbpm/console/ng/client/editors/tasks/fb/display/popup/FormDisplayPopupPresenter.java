@@ -26,9 +26,13 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
+import org.jbpm.console.ng.shared.StatefulKnowledgeSessionEntryPoint;
 import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
+import org.jbpm.console.ng.shared.events.ProcessInstanceCreated;
 import org.jbpm.console.ng.shared.fb.FormServiceEntryPoint;
 import org.jbpm.console.ng.shared.fb.events.FormRenderedEvent;
+import org.jbpm.console.ng.shared.model.ProcessSummary;
 import org.jbpm.console.ng.shared.model.TaskSummary;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
@@ -50,9 +54,15 @@ public class FormDisplayPopupPresenter {
     @Inject
     private Caller<FormServiceEntryPoint> formServices;
     @Inject
+    private Caller<KnowledgeDomainServiceEntryPoint> domainServices;
+    @Inject
+    Caller<StatefulKnowledgeSessionEntryPoint> ksessionServices;
+    @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
     @Inject
     private Event<FormRenderedEvent> formRendered;
+    @Inject
+    Event<ProcessInstanceCreated> processInstanceCreatedEvents;
     @Inject
     private Identity identity;
     @Inject
@@ -71,12 +81,15 @@ public class FormDisplayPopupPresenter {
 
         void setTaskId(long taskId);
 
+        String getProcessId();
+        
+        void setProcessId(String processId);
+        
         VerticalPanel getFormView();
 
-        Label getTaskNameText();
-        
-        Label getTaskDescriptionText();
-      
+        Label getNameText();
+
+        Label getDescriptionText();
     }
 
     @PostConstruct
@@ -91,7 +104,7 @@ public class FormDisplayPopupPresenter {
         this.place = place;
     }
 
-    public void renderForm(final long taskId) {
+    public void renderTaskForm(final long taskId) {
 
         formServices.call(new RemoteCallback<String>() {
             @Override
@@ -101,12 +114,41 @@ public class FormDisplayPopupPresenter {
                 taskServices.call(new RemoteCallback<TaskSummary>() {
                     @Override
                     public void callback(TaskSummary task) {
-                        view.getTaskNameText().setText(task.getName());
-                        view.getTaskDescriptionText().setText(task.getDescription());
+                        view.getNameText().setText(task.getName());
+                        view.getDescriptionText().setText(task.getDescription());
                     }
                 }).getTaskDetails(taskId);
             }
-        }).getFormDisplay(taskId);
+        }).getFormDisplayTask(taskId);
+
+    }
+
+    public void renderProcessForm(final String processId) {
+
+        formServices.call(new RemoteCallback<String>() {
+            @Override
+            public void callback(String form) {
+                view.getFormView().clear();
+                view.getFormView().add(new HTMLPanel(form));
+
+                domainServices.call(new RemoteCallback<Map<String, String>>() {
+                    @Override
+                    public void callback(Map<String, String> availableProcesses) {
+                        String processContent = availableProcesses.get(processId);
+                        domainServices.call(new RemoteCallback<ProcessSummary>() {
+                            @Override
+                            public void callback(ProcessSummary summary) {
+                                view.getNameText().setText(summary.getName());
+                                view.getDescriptionText().setText(summary.getPackageName());
+
+                            }
+                        }).getProcessDesc(processContent);
+
+                        
+                    }
+                }).getAvailableProcesses();
+            }
+        }).getFormDisplayProcess(processId);
 
     }
 
@@ -138,22 +180,36 @@ public class FormDisplayPopupPresenter {
         taskServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long contentId) {
-                view.displayNotification("Task Id: " + params.get("taskId") + " State was Saved! ContentId : "+contentId);
-                renderForm(Long.parseLong(params.get("taskId").toString()));
+                view.displayNotification("Task Id: " + params.get("taskId") + " State was Saved! ContentId : " + contentId);
+                renderTaskForm(Long.parseLong(params.get("taskId").toString()));
             }
         }).saveContent(Long.parseLong(params.get("taskId").toString()), params);
 
     }
-    
+
     public void startTask(String values) {
         final Map<String, String> params = getUrlParameters(values);
         taskServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
                 view.displayNotification("Task Id: " + params.get("taskId") + " was started!");
-                renderForm(Long.parseLong(params.get("taskId").toString()));
+                renderTaskForm(Long.parseLong(params.get("taskId").toString()));
             }
         }).start(Long.parseLong(params.get("taskId").toString()), identity.getName());
+
+    }
+
+    public void startProcess(String values) {
+        final Map<String, String> params = getUrlParameters(values);
+        
+        ksessionServices.call(new RemoteCallback<Long>() {
+            @Override
+            public void callback(Long processId) {
+                view.displayNotification("Process Id: " + processId + " started!");
+                processInstanceCreatedEvents.fire(new ProcessInstanceCreated());
+                close();
+            }
+        }).startProcess(params.get("processId").toString(), params);
 
     }
 
@@ -172,6 +228,9 @@ public class FormDisplayPopupPresenter {
      fdp.@org.jbpm.console.ng.client.editors.tasks.fb.display.popup.FormDisplayPopupPresenter::saveTaskState(Ljava/lang/String;)(from);
      }
      
+     $wnd.startProcess = function(from) {
+     fdp.@org.jbpm.console.ng.client.editors.tasks.fb.display.popup.FormDisplayPopupPresenter::startProcess(Ljava/lang/String;)(from);
+     }
         
      }-*/;
 
@@ -183,9 +242,9 @@ public class FormDisplayPopupPresenter {
      {
      var fieldName = form.elements[i].name;
      var fieldValue = form.elements[i].value;
-      if(fieldName != ''){
-        params += fieldName + '=' + fieldValue + '&';
-      }
+     if(fieldName != ''){
+     params += fieldName + '=' + fieldValue + '&';
+     }
      }
      
      return params;
@@ -202,18 +261,26 @@ public class FormDisplayPopupPresenter {
             if (pair.length > 1) {
                 value = pair[1];
             }
-            params.put(key, value);
+            if(!key.startsWith("btn_")){
+                params.put(key, value);
+            }
         }
-        
+
         return params;
     }
 
     @OnReveal
     public void onReveal() {
         final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        long taskId = Long.parseLong(p.getParameter("taskId", "0").toString());
-        view.setTaskId(taskId);
-        renderForm(taskId);
+        long taskId = Long.parseLong(p.getParameter("taskId", "-1").toString());
+        String processId = p.getParameter("processId", "none").toString();
+        if (taskId != -1) {
+            view.setTaskId(taskId);
+            renderTaskForm(taskId);
+        } else if (!processId.equals("none")) {
+            view.setProcessId(processId);
+            renderProcessForm(processId);
+        }
     }
 
     public void close() {

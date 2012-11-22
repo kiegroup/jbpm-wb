@@ -52,10 +52,10 @@ public class FormDisplayPopupViewImpl extends Composite
     public VerticalPanel formView;
     @Inject
     @DataField
-    public Label taskNameText;
+    public Label nameText;
     @Inject
     @DataField
-    public Label taskDescriptionText;
+    public Label descriptionText;
     @Inject
     @DataField
     public Button closeButton;
@@ -65,6 +65,8 @@ public class FormDisplayPopupViewImpl extends Composite
     public Button fullButton;
    
     public long taskId;
+    
+    public String processId;
     
     @Inject
     private PlaceManager placeManager;
@@ -91,16 +93,24 @@ public class FormDisplayPopupViewImpl extends Composite
         this.taskId = taskId;
     }
 
+    public String getProcessId() {
+        return processId;
+    }
+
+    public void setProcessId(String processId) {
+        this.processId = processId;
+    }
+    
     public VerticalPanel getFormView() {
         return formView;
     }
 
-    public Label getTaskNameText() {
-        return taskNameText;
+    public Label getNameText() {
+        return nameText;
     }
 
-    public Label getTaskDescriptionText() {
-        return taskDescriptionText;
+    public Label getDescriptionText() {
+        return descriptionText;
     }
 
     @EventHandler("closeButton")
@@ -114,6 +124,7 @@ public class FormDisplayPopupViewImpl extends Composite
         presenter.close();
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Perspective");
         placeRequestImpl.addParameter("taskId", Long.toString(taskId));
+        placeRequestImpl.addParameter("processId", processId);
         placeManager.goTo(placeRequestImpl);
     }
  

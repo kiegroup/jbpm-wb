@@ -15,6 +15,8 @@
  */
 package org.jbpm.console.ng.server.editors.jbpm.knowledge;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -38,6 +40,12 @@ public class StatefulKnowledgeSessionEntryPointImpl implements StatefulKnowledge
     public long startProcess(String processId) {
         StatefulKnowledgeSession ksession = knowledgeService.getSessionByBusinessKey("default");
         ProcessInstance pi = ksession.startProcess(processId);
+        return pi.getId();
+    }
+    
+    public long startProcess(String processId, Map<String, String> params) {
+        StatefulKnowledgeSession ksession = knowledgeService.getSessionByBusinessKey("default");
+        ProcessInstance pi = ksession.startProcess(processId, new HashMap<String, Object>(params));
         return pi.getId();
     }
 

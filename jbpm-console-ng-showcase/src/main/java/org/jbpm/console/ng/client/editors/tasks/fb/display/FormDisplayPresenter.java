@@ -100,7 +100,7 @@ public class FormDisplayPresenter {
                     }
                 }).getTaskDetails(taskId);
             }
-        }).getFormDisplay(taskId);
+        }).getFormDisplayTask(taskId);
 
     }
 

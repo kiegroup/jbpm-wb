@@ -95,9 +95,9 @@ input[type="text"].inactive, input[type="date"].inactive, textarea.inactive, .se
 }
 
 .button.full {
-    background-color: #deeece;
-    border-color: #7cbb3d;
-    color: #172a03;
+    background-color: #7cbb3d;
+    border-color: #172a03;
+    color: #deeece;
     text-shadow: 0 1px 0 rgba(0,0,0,0.2);
 }
 

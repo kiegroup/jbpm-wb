@@ -108,6 +108,9 @@ public class ProcessInstanceSignalPresenter {
         knowledgeServices.call(new RemoteCallback<Collection<String>>() {
             @Override
             public void callback(Collection<String> signals) {
+                for(String s: signals){
+                    System.out.println("Signal: ");
+                }
                 view.setAvailableSignals(signals);
                 
             }

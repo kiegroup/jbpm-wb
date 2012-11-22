@@ -154,8 +154,8 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
     	return null;
     }
 
-    public String getFormDisplay(long taskId) {
-        return displayService.getFormDisplay(taskId);
+    public String getFormDisplayTask(long taskId) {
+        return displayService.getFormDisplayTask(taskId);
     }
 
     public String saveForm(Map<String, Object> form) {
@@ -189,5 +189,9 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
     	FormRepresentation form = formService.loadForm(json);
     	Map<String, Object> formMap = form == null ? null : form.getDataMap();
         return formMap;
+    }
+
+    public String getFormDisplayProcess(String processId) {
+        return displayService.getFormDisplayProcess(processId);
     }
 }

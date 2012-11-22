@@ -40,7 +40,6 @@ import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
-import com.google.gwt.cell.client.ButtonCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
@@ -54,7 +53,6 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
@@ -76,26 +74,19 @@ public class ProcessDefinitionListViewImpl extends Composite
     private Identity identity;
     @Inject
     private PlaceManager placeManager;
-    
     private ProcessDefinitionListPresenter presenter;
-    
     @Inject
     @DataField
     public TextBox filterKSessionText;
-    
     @Inject
     @DataField
     public Button filterKSessionButton;
-
     @Inject
     @DataField
     public DataGrid<ProcessSummary> processdefListGrid;
-
     @Inject
     @DataField
     public SimplePager pager;
-    
-    
     private Set<ProcessSummary> selectedProcessDef;
     @Inject
     private Event<NotificationEvent> notification;
@@ -144,20 +135,17 @@ public class ProcessDefinitionListViewImpl extends Composite
 
         initTableColumns(selectionModel);
 
-        
+
 
         presenter.addDataDisplay(processdefListGrid);
 
     }
-
-    
 
     @EventHandler("filterKSessionButton")
     public void filterKSessionButton(ClickEvent e) {
         presenter.refreshProcessList(filterKSessionText.getText());
     }
 
-   
     private void initTableColumns(final SelectionModel<ProcessSummary> selectionModel) {
         // Checkbox column. This table will uses a checkbox column for selection.
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
@@ -166,12 +154,12 @@ public class ProcessDefinitionListViewImpl extends Composite
         Column<ProcessSummary, Boolean> checkColumn =
                 new Column<ProcessSummary, Boolean>(new CheckboxCell(true,
                 false)) {
-                    @Override
-                    public Boolean getValue(ProcessSummary object) {
-                        // Get the value from the selection model.
-                        return selectionModel.isSelected(object);
-                    }
-                };
+            @Override
+            public Boolean getValue(ProcessSummary object) {
+                // Get the value from the selection model.
+                return selectionModel.isSelected(object);
+            }
+        };
         processdefListGrid.addColumn(checkColumn,
                 SafeHtmlUtils.fromSafeConstant("<br/>"));
 
@@ -179,19 +167,19 @@ public class ProcessDefinitionListViewImpl extends Composite
         // Id.
         Column<ProcessSummary, String> processIdColumn =
                 new Column<ProcessSummary, String>(new EditTextCell()) {
-                    @Override
-                    public String getValue(ProcessSummary object) {
-                        return object.getId();
-                    }
-                };
+            @Override
+            public String getValue(ProcessSummary object) {
+                return object.getId();
+            }
+        };
         processIdColumn.setSortable(true);
         sortHandler.setComparator(processIdColumn,
                 new Comparator<ProcessSummary>() {
-                    public int compare(ProcessSummary o1,
-                            ProcessSummary o2) {
-                        return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
-                    }
-                });
+            public int compare(ProcessSummary o1,
+                    ProcessSummary o2) {
+                return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
+            }
+        });
         processdefListGrid.addColumn(processIdColumn,
                 new ResizableHeader(constants.Id(), processdefListGrid, processIdColumn));
 
@@ -199,83 +187,85 @@ public class ProcessDefinitionListViewImpl extends Composite
         // Process Id String.
         Column<ProcessSummary, String> processNameColumn =
                 new Column<ProcessSummary, String>(new EditTextCell()) {
-                    @Override
-                    public String getValue(ProcessSummary object) {
-                        return object.getName();
-                    }
-                };
+            @Override
+            public String getValue(ProcessSummary object) {
+                return object.getName();
+            }
+        };
         processNameColumn.setSortable(true);
         sortHandler.setComparator(processNameColumn,
                 new Comparator<ProcessSummary>() {
-                    public int compare(ProcessSummary o1,
-                            ProcessSummary o2) {
-                        return o1.getName().compareTo(o2.getName());
-                    }
-                });
+            public int compare(ProcessSummary o1,
+                    ProcessSummary o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
         processdefListGrid.addColumn(processNameColumn,
                 new ResizableHeader(constants.Name(), processdefListGrid, processNameColumn));
 
-         // Process Name.
+        // Process Name.
         Column<ProcessSummary, String> processPkgColumn =
                 new Column<ProcessSummary, String>(new EditTextCell()) {
-                    @Override
-                    public String getValue(ProcessSummary object) {
-                        return object.getPackageName();
-                    }
-                };
+            @Override
+            public String getValue(ProcessSummary object) {
+                return object.getPackageName();
+            }
+        };
         processPkgColumn.setSortable(true);
         sortHandler.setComparator(processPkgColumn,
                 new Comparator<ProcessSummary>() {
-                    public int compare(ProcessSummary o1,
-                            ProcessSummary o2) {
-                        return o1.getPackageName().compareTo(o2.getPackageName());
-                    }
-                });
+            public int compare(ProcessSummary o1,
+                    ProcessSummary o2) {
+                return o1.getPackageName().compareTo(o2.getPackageName());
+            }
+        });
         processdefListGrid.addColumn(processPkgColumn,
                 new ResizableHeader(constants.Package(), processdefListGrid, processPkgColumn));
 
-        
-         // Version Type 
+
+        // Version Type 
         Column<ProcessSummary, String> versionColumn =
                 new Column<ProcessSummary, String>(new EditTextCell()) {
-                    @Override
-                    public String getValue(ProcessSummary object) {
-                        return object.getVersion();
-                    }
-                };
+            @Override
+            public String getValue(ProcessSummary object) {
+                return object.getVersion();
+            }
+        };
         versionColumn.setSortable(true);
         sortHandler.setComparator(versionColumn,
                 new Comparator<ProcessSummary>() {
-                    public int compare(ProcessSummary o1,
-                            ProcessSummary o2) {
-                        return o1.getVersion().compareTo(o2.getVersion());
-                    }
-                });
+            public int compare(ProcessSummary o1,
+                    ProcessSummary o2) {
+                return o1.getVersion().compareTo(o2.getVersion());
+            }
+        });
         processdefListGrid.addColumn(versionColumn,
                 new ResizableHeader(constants.Version(), processdefListGrid, versionColumn));
 
 
         // actions (icons)
         List<HasCell<ProcessSummary, ?>> cells = new LinkedList<HasCell<ProcessSummary, ?>>();
-        
+
         cells.add(new StartActionHasCell("Start process", new Delegate<ProcessSummary>() {
             @Override
             public void execute(ProcessSummary process) {
-                
-                presenter.startProcessInstance(process.getId());
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display Popup");
+                System.out.println("Opening form for process id = "+process.getId());
+                placeRequestImpl.addParameter("processId", process.getId());
+                placeManager.goTo(placeRequestImpl);
             }
         }));
-        
+
         cells.add(new DetailsActionHasCell("Details", new Delegate<ProcessSummary>() {
             @Override
             public void execute(ProcessSummary process) {
-                
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( constants.Process_Definition_Details_Perspective() );  
+
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Definition_Details_Perspective());
                 placeRequestImpl.addParameter("processId", process.getId());
-                placeManager.goTo( placeRequestImpl);
+                placeManager.goTo(placeRequestImpl);
             }
         }));
-        
+
         CompositeCell<ProcessSummary> cell = new CompositeCell<ProcessSummary>(cells);
         processdefListGrid.addColumn(new Column<ProcessSummary, ProcessSummary>(cell) {
             @Override
@@ -289,7 +279,6 @@ public class ProcessDefinitionListViewImpl extends Composite
         notification.fire(new NotificationEvent(text));
     }
 
-
     public DataGrid<ProcessSummary> getDataGrid() {
         return processdefListGrid;
     }
@@ -299,9 +288,9 @@ public class ProcessDefinitionListViewImpl extends Composite
     }
 
     public TextBox getSessionIdText() {
-       return filterKSessionText;
+        return filterKSessionText;
     }
-    
+
     private class StartActionHasCell implements HasCell<ProcessSummary, ProcessSummary> {
 
         private ActionCell<ProcessSummary> cell;
@@ -331,7 +320,7 @@ public class ProcessDefinitionListViewImpl extends Composite
             return object;
         }
     }
-    
+
     private class DetailsActionHasCell implements HasCell<ProcessSummary, ProcessSummary> {
 
         private ActionCell<ProcessSummary> cell;

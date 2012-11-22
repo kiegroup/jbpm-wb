@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.shared;
 
+import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
 
 /**
@@ -24,5 +25,6 @@ import org.jboss.errai.bus.server.annotations.Remote;
 @Remote
 public interface StatefulKnowledgeSessionEntryPoint {
     public long startProcess(String processId);
+    public long startProcess(String processId, Map<String, String> params);
     
 }

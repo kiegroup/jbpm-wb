@@ -40,7 +40,9 @@ public interface FormServiceEntryPoint {
 
     public byte[] loadFile(String fileName);
 
-    public String getFormDisplay(long taskId);
+    public String getFormDisplayTask(long taskId);
+    
+    public String getFormDisplayProcess(String processId);
 
     public String saveForm(Map<String, Object> form);
     
