@@ -15,25 +15,27 @@
  */
 package org.jbpm.console.ng.client.editors.process.instance.newprocess;
 
-import com.google.gwt.core.client.GWT;
+import java.util.Collection;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-
-//
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.client.i18n.Constants;
+import org.jbpm.console.ng.shared.model.ProcessSummary;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 import org.uberfire.security.Identity;
 
-import org.jbpm.console.ng.client.i18n.Constants;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
+import com.google.gwt.user.client.ui.SuggestBox;
 
 @Dependent
 @Templated(value = "QuickNewProcessInstanceViewImpl.html")
@@ -49,16 +51,20 @@ public class QuickNewProcessInstanceViewImpl extends Composite
     @Inject
     @DataField
     public Button startProcessInstanceButton;
-    @Inject
+   
     @DataField
-    public Button listProcessesButton;
-    @Inject
-    @DataField
-    public TextBox processIdText;
+    public SuggestBox processIdText;
     @Inject
     private Event<NotificationEvent> notification;
     
+    private MultiWordSuggestOracle oracle;
+    
     private Constants constants = GWT.create(Constants.class);
+    
+    public QuickNewProcessInstanceViewImpl() {
+        oracle = new MultiWordSuggestOracle();
+        processIdText = new SuggestBox(oracle);
+    }
 
     @Override
     public void init(QuickNewProcessInstancePresenter presenter) {
@@ -70,13 +76,15 @@ public class QuickNewProcessInstanceViewImpl extends Composite
     public void startProcessInstanceButton(ClickEvent e) {
         presenter.startProcessInstance(processIdText.getText());
     }
-    
-    @EventHandler("listProcessesButton")
-    public void listProcessesButton(ClickEvent e) {
-        presenter.listProcesses();
-    }
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
+    }
+    
+    public void setAvailableProcesses(Collection<ProcessSummary> processes) {
+        
+        for (ProcessSummary process : processes) {
+            oracle.add(process.getId());
+        }
     }
 }

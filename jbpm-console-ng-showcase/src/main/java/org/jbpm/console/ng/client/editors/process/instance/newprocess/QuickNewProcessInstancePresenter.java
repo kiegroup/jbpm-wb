@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.client.editors.process.instance.newprocess;
 
+import java.util.Collection;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -27,6 +28,7 @@ import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.shared.model.ProcessSummary;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.shared.StatefulKnowledgeSessionEntryPoint;
+import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -41,6 +43,8 @@ public class QuickNewProcessInstancePresenter {
             UberView<QuickNewProcessInstancePresenter> {
 
         void displayNotification(String text);
+        
+        void setAvailableProcesses(Collection<ProcessSummary> processes);
     }
     @Inject
     InboxView view;
@@ -67,6 +71,11 @@ public class QuickNewProcessInstancePresenter {
     @PostConstruct
     public void init() {
     }
+    
+    @OnReveal
+    public void onReveal() {
+        listProcesses();
+    }
 
     public void startProcessInstance(final String processId) {
         
@@ -85,9 +94,7 @@ public class QuickNewProcessInstancePresenter {
         domainServices.call(new RemoteCallback<List<ProcessSummary>>() {
             @Override
             public void callback(List<ProcessSummary> processes) {
-                for(ProcessSummary ps : processes){
-                    view.displayNotification("Process (id = " + ps.getId() + " - name = "+ps.getName()+")");
-                }
+                view.setAvailableProcesses(processes);
                 
             }
         }).getProcesses();

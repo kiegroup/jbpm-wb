@@ -37,9 +37,6 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
     @Inject
     @DataField
     public Button clearButton;
-//    @Inject
-//    @DataField
-//    public TextBox signalRefText;
     @Inject
     @DataField
     public TextBox eventText;
@@ -105,8 +102,4 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
     public void setAvailableSignals(Collection<String> signals) {
         oracle.addAll(signals);
     }
-//    @EventHandler("signalRefText")
-//    public void enterHit(KeyPressEvent e) {
-//        suggestSignalBox.showSuggestionList();
-//    }
 }
