@@ -19,6 +19,7 @@ import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.ui.TextBox;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -33,6 +34,7 @@ import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.shared.events.ProcessInstanceCreated;
 import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.shared.model.ProcessSummary;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 import org.kie.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.OnReveal;
@@ -40,6 +42,7 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.security.Identity;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance List")
@@ -51,7 +54,7 @@ public class ProcessInstanceListPresenter {
 
         void displayNotification(String text);
 
-        TextBox getSessionIdText();
+        TextBox getFilterProcessText();
 
         DataGrid<ProcessInstanceSummary> getDataGrid();
         
@@ -59,11 +62,22 @@ public class ProcessInstanceListPresenter {
         
         Boolean isShowAborted();
         
+        Boolean isShowRelatedToMe();
+        
+        int getFilterType();
+        
+        void setAvailableProcesses(Collection<ProcessSummary> processes);
+        
     }
+    
+    @Inject
+    private Identity identity;
     @Inject
     private InboxView view;
     @Inject
     private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
+    @Inject
+    Caller<KnowledgeDomainServiceEntryPoint> domainServices;
     private ListDataProvider<ProcessInstanceSummary> dataProvider = new ListDataProvider<ProcessInstanceSummary>();
 
     @WorkbenchPartTitle
@@ -92,6 +106,12 @@ public class ProcessInstanceListPresenter {
         if (view.isShowCompleted()) {
             states.add(ProcessInstance.STATE_COMPLETED);    
         }
+        
+        String initiator = null;
+        if (view.isShowRelatedToMe()) {
+            initiator = identity.getName();
+        }
+        
         if(sessionId != null && !sessionId.equals("")){
             knowledgeServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
                 @Override
@@ -109,7 +129,7 @@ public class ProcessInstanceListPresenter {
                     dataProvider.getList().addAll(processInstances);
                     dataProvider.refresh();
                 }
-            }).getProcessInstances(states);
+            }).getProcessInstances(states, view.getFilterProcessText().getText(), view.getFilterType(), initiator);
         }
         
 
@@ -135,7 +155,8 @@ public class ProcessInstanceListPresenter {
     
     @OnReveal
     public void onReveal() {
-       refreshProcessList("");
+        listProcesses();
+        refreshProcessList("");
     }
     
     public void abortProcessInstance(String sessionId, long processInstanceId) {
@@ -148,5 +169,15 @@ public class ProcessInstanceListPresenter {
         }).abortProcessInstance(sessionId, processInstanceId);
     }
     
-    
+    public void listProcesses() {
+        
+        domainServices.call(new RemoteCallback<List<ProcessSummary>>() {
+            @Override
+            public void callback(List<ProcessSummary> processes) {
+                view.setAvailableProcesses(processes);
+                
+            }
+        }).getProcesses();
+
+    }
 }

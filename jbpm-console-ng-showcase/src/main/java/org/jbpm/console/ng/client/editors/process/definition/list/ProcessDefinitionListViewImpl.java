@@ -300,7 +300,12 @@ public class ProcessDefinitionListViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, ProcessSummary value, SafeHtmlBuilder sb) {
 
-                    sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.startIcon()).getHTML()));
+                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.startIcon());
+                    SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                    mysb.appendHtmlConstant("<span title='Start'>");
+                    mysb.append(imageProto.getSafeHtml());
+                    mysb.appendHtmlConstant("</span>");
+                    sb.append(mysb.toSafeHtml());
                 }
             };
         }
@@ -330,7 +335,12 @@ public class ProcessDefinitionListViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, ProcessSummary value, SafeHtmlBuilder sb) {
 
-                    sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.detailsIcon()).getHTML()));
+                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.detailsIcon());
+                    SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                    mysb.appendHtmlConstant("<span title='Details'>");
+                    mysb.append(imageProto.getSafeHtml());
+                    mysb.appendHtmlConstant("</span>");
+                    sb.append(mysb.toSafeHtml());
                 }
             };
         }

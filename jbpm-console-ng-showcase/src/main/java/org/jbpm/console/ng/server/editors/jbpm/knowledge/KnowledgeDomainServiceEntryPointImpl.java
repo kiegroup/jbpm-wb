@@ -19,23 +19,24 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
 import org.droolsjbpm.services.api.KnowledgeDataService;
 import org.droolsjbpm.services.api.KnowledgeDomainService;
 import org.droolsjbpm.services.api.bpmn2.BPMN2DataService;
+import org.droolsjbpm.services.impl.model.ProcessInstanceDesc;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.shared.model.NodeInstanceSummary;
 import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.shared.model.ProcessSummary;
 import org.jbpm.console.ng.shared.model.StatefulKnowledgeSessionSummary;
 import org.jbpm.console.ng.shared.model.TaskDefSummary;
 import org.jbpm.console.ng.shared.model.VariableSummary;
-import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
-import org.jbpm.workflow.instance.node.CompositeNodeInstance;
-import org.jbpm.workflow.instance.node.EventNodeInstance;
 import org.kie.runtime.StatefulKnowledgeSession;
 import org.kie.runtime.process.NodeInstance;
 import org.kie.runtime.process.ProcessInstance;
@@ -166,8 +167,20 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
 
 
     @Override
-    public Collection<ProcessInstanceSummary> getProcessInstances(List<Integer> states) {
-        return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstances(states));
+    public Collection<ProcessInstanceSummary> getProcessInstances(List<Integer> states, String filterText,
+            int filterType, String initiator) {
+        Collection<ProcessInstanceDesc> result = null;
+        if (filterType == 0){
+            // search by process id
+            result = dataService.getProcessInstancesByProcessId(states, filterText, initiator);
+        } else if (filterType == 1) {
+            // search by process name
+            result = dataService.getProcessInstancesByProcessName(states, filterText, initiator);
+        } else {
+            result = dataService.getProcessInstances(states, initiator);
+        }
+        
+        return ProcessInstanceHelper.adaptCollection(result);
     }
 
 

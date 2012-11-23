@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.client.editors.process.instance.list;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
@@ -34,6 +35,7 @@ import org.jbpm.console.ng.client.resources.ShowcaseImages;
 import org.jbpm.console.ng.client.util.ResizableHeader;
 import org.jbpm.console.ng.shared.events.ProcessSelectionEvent;
 import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.shared.model.ProcessSummary;
 import org.kie.runtime.process.ProcessInstance;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
@@ -52,6 +54,8 @@ import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -64,6 +68,9 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
+import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -83,13 +90,16 @@ public class ProcessInstanceListViewImpl extends Composite
     
     private ProcessInstanceListPresenter presenter;
     
-    @Inject
     @DataField
-    public TextBox filterKSessionText;
+    public SuggestBox filterProcessText;
     
     @Inject
     @DataField
-    public Button filterKSessionButton;
+    public Button filterButton;
+    
+    @Inject
+    @DataField
+    public ListBox filterTypeListBox;
     
     @Inject
     @DataField
@@ -105,6 +115,10 @@ public class ProcessInstanceListViewImpl extends Composite
     @Inject
     @DataField
     public CheckBox showAbortedCheck;
+    
+    @Inject
+    @DataField
+    public CheckBox showRelatedToMe;
 
     @Inject
     @DataField
@@ -113,6 +127,8 @@ public class ProcessInstanceListViewImpl extends Composite
     @Inject
     @DataField
     public SimplePager pager;
+    
+    private MultiWordSuggestOracle oracle;
     
     
     private Set<ProcessInstanceSummary> selectedProcessInstances;
@@ -124,10 +140,27 @@ public class ProcessInstanceListViewImpl extends Composite
     private Constants constants = GWT.create(Constants.class);
     private ShowcaseImages images = GWT.create(ShowcaseImages.class);
     
+    public ProcessInstanceListViewImpl() {
+        oracle = new MultiWordSuggestOracle();
+        filterProcessText = new SuggestBox(oracle);
+    }
+    
     @Override
-    public void init(ProcessInstanceListPresenter presenter) {
+    public void init(final ProcessInstanceListPresenter presenter) {
         this.presenter = presenter;
 
+        this.filterTypeListBox.addItem("-------", "no-filter");
+        this.filterTypeListBox.addItem("By Process Id", "by-process-id");
+        this.filterTypeListBox.addItem("By Process Name", "by-process-name");
+        
+        this.filterTypeListBox.addChangeHandler(new ChangeHandler() {
+            
+            @Override
+            public void onChange(ChangeEvent event) {
+                presenter.listProcesses();
+                
+            }
+        });
 
         processInstanceListGrid.setWidth("100%");
         processInstanceListGrid.setHeight("200px");
@@ -171,9 +204,9 @@ public class ProcessInstanceListViewImpl extends Composite
 
     }
 
-    @EventHandler("filterKSessionButton")
+    @EventHandler("filterButton")
     public void filterKSessionButton(ClickEvent e) {
-        presenter.refreshProcessList(filterKSessionText.getText());
+        presenter.refreshProcessList("");
     }
     
     @EventHandler("abortButton")
@@ -436,8 +469,8 @@ public class ProcessInstanceListViewImpl extends Composite
         return sortHandler;
     }
 
-    public TextBox getSessionIdText() {
-       return filterKSessionText;
+    public TextBox getFilterProcessText() {
+       return (TextBox) filterProcessText.getValueBox();
     }
 
     @Override
@@ -458,8 +491,12 @@ public class ProcessInstanceListViewImpl extends Composite
             cell = new ActionCell<ProcessInstanceSummary>(text, delegate) {
                 @Override
                 public void render(Cell.Context context, ProcessInstanceSummary value, SafeHtmlBuilder sb) {
-                    
-                        sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.detailsIcon()).getHTML()));
+                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.detailsIcon());
+                    SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                    mysb.appendHtmlConstant("<span title='Details'>");
+                    mysb.append(imageProto.getSafeHtml());
+                    mysb.appendHtmlConstant("</span>");
+                    sb.append(mysb.toSafeHtml());
                     
                 }
             };
@@ -490,7 +527,12 @@ public class ProcessInstanceListViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, ProcessInstanceSummary value, SafeHtmlBuilder sb) {
                     if (value.getState() == ProcessInstance.STATE_ACTIVE) {
-                        sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.abortIcon()).getHTML()));
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.abortIcon());
+                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                        mysb.appendHtmlConstant("<span title='Abort'>");
+                        mysb.append(imageProto.getSafeHtml());
+                        mysb.appendHtmlConstant("</span>");
+                        sb.append(mysb.toSafeHtml());
                     }
                 }
             };
@@ -521,7 +563,12 @@ public class ProcessInstanceListViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, ProcessInstanceSummary value, SafeHtmlBuilder sb) {
                     if (value.getState() == ProcessInstance.STATE_ACTIVE) {
-                        sb.append(SafeHtmlUtils.fromTrustedString(AbstractImagePrototype.create(images.signalIcon()).getHTML()));
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.signalIcon());
+                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                        mysb.appendHtmlConstant("<span title='Signal'>");
+                        mysb.append(imageProto.getSafeHtml());
+                        mysb.appendHtmlConstant("</span>");
+                        sb.append(mysb.toSafeHtml());
                     }
                 }
             };
@@ -547,6 +594,36 @@ public class ProcessInstanceListViewImpl extends Composite
         if ("Signal Process Popup".equals(closed.getPlace().getIdentifier())) {
             presenter.refreshProcessList("");
         }
+    }
+    
+    public void setAvailableProcesses(Collection<ProcessSummary> processes) {
+        String value = filterTypeListBox.getValue(filterTypeListBox.getSelectedIndex());
+        oracle.clear();
+        for (ProcessSummary process : processes) {
+            if ("by-process-id".equals(value)) {
+                oracle.add(process.getId());
+            } else if ("by-process-name".equals(value)) {
+                oracle.add(process.getName());
+            }
+            
+        }
+    }
+
+    @Override
+    public Boolean isShowRelatedToMe() {
+        return this.showRelatedToMe.getValue();
+    }
+
+    @Override
+    public int getFilterType() {
+        String value = filterTypeListBox.getValue(filterTypeListBox.getSelectedIndex());
+        if ("by-process-id".equals(value)) {
+            return 0;
+        } else if ("by-process-name".equals(value)) {
+            return 1;
+        }
+        
+        return -1;
     }
     
 }
