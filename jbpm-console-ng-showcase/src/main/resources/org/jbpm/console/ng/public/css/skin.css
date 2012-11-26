@@ -32,6 +32,13 @@
         border-color: #999;
 }
 
+.list .list-options  .select-container {
+
+-webkit-box-shadow: inset 0px 1px 2px 0px rgba(0,0,0,0.2), 0px -1px 0px 0px rgba(255,255,255,0.8); 
+        box-shadow: inset 0px 1px 2px 0px rgba(0,0,0,0.2), 0px -1px 0px 0px rgba(255,255,255,0.8); 
+        border-color: #999;
+}
+
 label {
     font-weight: bold;
     color: #555;
