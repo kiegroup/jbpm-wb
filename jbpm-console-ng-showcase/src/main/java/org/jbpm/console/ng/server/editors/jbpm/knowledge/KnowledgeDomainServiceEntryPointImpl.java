@@ -89,12 +89,14 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     public Collection<ProcessSummary> getProcessesBySessionId(String sessionId) {
         return ProcessHelper.adaptCollection(dataService.getProcessesByDomainName(sessionId));
     }
+    
+    public ProcessInstanceSummary getProcessInstanceById(int sessionId, long processInstanceId) {
+        return ProcessInstanceHelper.adapt(dataService.getProcessInstanceById(sessionId, processInstanceId));
+    }
 
     public Collection<ProcessSummary> getProcesses() {
         return ProcessHelper.adaptCollection(dataService.getProcesses());
     }
-
-   
 
     public List<String> getAssociatedDomainObjects(String bpmn2Content) {
         return bpmn2Service.getAssociatedDomainObjects(bpmn2Content);
@@ -226,6 +228,10 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     @Override
     public Collection<VariableSummary> getVariableHistory(long processInstanceId, String variableId) {
         return VariableHelper.adaptCollection(dataService.getVariableHistory(processInstanceId, variableId));
+    }
+
+    public ProcessSummary getProcessesById(long processInstanceId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     

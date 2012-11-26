@@ -35,7 +35,9 @@ import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.shared.events.TaskSelectionEvent;
+import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.shared.model.TaskSummary;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
@@ -47,6 +49,7 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
 import org.uberfire.security.Identity;
 import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
 @WorkbenchPopup(identifier = "Task Details Popup")
@@ -60,7 +63,6 @@ public class TaskDetailsPopupPresenter {
 
         TextBox getTaskIdText();
 
-
         TextBox getTaskNameText();
 
         TextArea getTaskDescriptionTextArea();
@@ -71,16 +73,19 @@ public class TaskDetailsPopupPresenter {
 
         TextBox getUserText();
 
+        TextBox getProcessInstanceIdText();
+
         ListBox getSubTaskStrategyListBox();
 
         public String[] getSubTaskStrategies();
 
         public String[] getPriorities();
-        
+
         TextBox getTaskStatusText();
-        
+
         Button getUpdateButton();
         
+        Button getpIDetailsButton();
     }
     @Inject
     private PlaceManager placeManager;
@@ -90,6 +95,8 @@ public class TaskDetailsPopupPresenter {
     Identity identity;
     @Inject
     Caller<TaskServiceEntryPoint> taskServices;
+    @Inject
+    private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
     private PlaceRequest place;
@@ -109,7 +116,21 @@ public class TaskDetailsPopupPresenter {
         return view;
     }
 
-   
+    public void goToProcessInstanceDetails() {
+
+        knowledgeServices.call(new RemoteCallback<ProcessInstanceSummary>() {
+            @Override
+            public void callback(ProcessInstanceSummary processInstance) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance Details Perspective");
+                placeRequestImpl.addParameter("processInstanceId", view.getProcessInstanceIdText().getText());
+                placeRequestImpl.addParameter("processDefId", processInstance.getProcessName());
+                placeManager.goTo(placeRequestImpl);
+            }
+        }).getProcessInstanceById(0, Long.parseLong(view.getProcessInstanceIdText().getText()));
+
+
+
+    }
 
     public void updateTask(final long taskId, final String taskName, final String taskDescription, final String userId, final String subTaskStrategy,
             final Date dueDate, final int priority) {
@@ -117,10 +138,10 @@ public class TaskDetailsPopupPresenter {
         if (taskId > 0) {
             List<String> descriptions = new ArrayList<String>();
             descriptions.add(taskDescription);
-            
+
             List<String> names = new ArrayList<String>();
             names.add(taskName);
-            
+
             taskServices.call(new RemoteCallback<Void>() {
                 @Override
                 public void callback(Void nothing) {
@@ -134,12 +155,12 @@ public class TaskDetailsPopupPresenter {
     }
 
     public void refreshTask(long taskId) {
-        
+
         taskServices.call(new RemoteCallback<TaskSummary>() {
             @Override
             public void callback(TaskSummary details) {
-                if(details.getStatus().equals("Completed")){
-                    
+                if (details.getStatus().equals("Completed")) {
+
                     view.getTaskIdText().setEnabled(false);
                     view.getTaskNameText().setEnabled(false);
                     view.getTaskDescriptionTextArea().setEnabled(false);
@@ -147,8 +168,9 @@ public class TaskDetailsPopupPresenter {
                     view.getUserText().setEnabled(false);
                     view.getTaskStatusText().setEnabled(false);
                     view.getUpdateButton().setEnabled(false);
+                    view.getProcessInstanceIdText().setEnabled(false);
                 }
-                
+
                 view.getTaskIdText().setText(String.valueOf(details.getId()));
                 view.getTaskIdText().setEnabled(false);
                 view.getTaskNameText().setText(details.getName());
@@ -158,6 +180,15 @@ public class TaskDetailsPopupPresenter {
                 view.getUserText().setEnabled(false);
                 view.getTaskStatusText().setText(details.getStatus());
                 view.getTaskStatusText().setEnabled(false);
+                if(details.getProcessInstanceId() == -1 ){
+                    view.getProcessInstanceIdText().setText("None");
+                    view.getpIDetailsButton().setEnabled(false);
+                }else{
+                    view.getProcessInstanceIdText().setText(String.valueOf(details.getProcessInstanceId()));
+                }
+                
+                view.getProcessInstanceIdText().setEnabled(false);
+                
 
                 int i = 0;
                 for (String strategy : view.getSubTaskStrategies()) {
@@ -173,7 +204,7 @@ public class TaskDetailsPopupPresenter {
                     }
                     i++;
                 }
-               
+
 
 
             }

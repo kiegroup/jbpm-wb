@@ -124,7 +124,7 @@ public class FormDisplayPopupViewImpl extends Composite
         presenter.close();
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Perspective");
         placeRequestImpl.addParameter("taskId", Long.toString(taskId));
-        placeRequestImpl.addParameter("processId", processId);
+        
         placeManager.goTo(placeRequestImpl);
     }
  

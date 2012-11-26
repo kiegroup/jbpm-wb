@@ -50,6 +50,8 @@ public interface KnowledgeDomainServiceEntryPoint {
     
     Collection<ProcessSummary> getProcessesBySessionId(String sessionId);
     
+    ProcessInstanceSummary getProcessInstanceById(int sessionId, long processInstanceId);
+    
     Collection<ProcessSummary> getProcesses();
     
     Collection<TaskDefSummary> getAllTasksDef(String bpmn2Content);

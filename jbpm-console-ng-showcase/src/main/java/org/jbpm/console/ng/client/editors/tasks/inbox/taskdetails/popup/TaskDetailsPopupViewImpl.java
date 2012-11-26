@@ -58,6 +58,9 @@ public class TaskDetailsPopupViewImpl extends Composite
     public TextBox taskNameText;
     @Inject
     @DataField
+    public TextBox processInstanceIdText;
+    @Inject
+    @DataField
     public TextBox taskStatusText;
     @Inject
     @DataField
@@ -80,6 +83,10 @@ public class TaskDetailsPopupViewImpl extends Composite
     @Inject
     @DataField
     public Button closeButton;
+     @Inject
+    @DataField
+    public Button pIDetailsButton;
+    
     @Inject
     private PlaceManager placeManager;
     private String[] subTaskStrategies = {"NoAction", "EndParentOnAllSubTasksEnd", "SkipAllSubTasksOnParentSkip"};
@@ -128,6 +135,14 @@ public class TaskDetailsPopupViewImpl extends Composite
         placeRequestImpl.addParameter("taskId", taskIdText.getText());
         placeManager.goTo(placeRequestImpl);
     }
+    
+    @EventHandler("pIDetailsButton")
+    public void pIDetailsButton(ClickEvent e) {
+        presenter.close();
+        presenter.goToProcessInstanceDetails();
+    }
+    
+    
 
     public TextBox getUserText() {
         return userText;
@@ -177,6 +192,14 @@ public class TaskDetailsPopupViewImpl extends Composite
 
     public Button getUpdateButton() {
         return updateButton;
+    }
+
+    public TextBox getProcessInstanceIdText() {
+        return processInstanceIdText;
+    }
+
+    public Button getpIDetailsButton() {
+        return pIDetailsButton;
     }
     
     
