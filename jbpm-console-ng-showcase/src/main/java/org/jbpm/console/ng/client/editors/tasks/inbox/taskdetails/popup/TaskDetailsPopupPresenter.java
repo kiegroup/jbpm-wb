@@ -123,7 +123,7 @@ public class TaskDetailsPopupPresenter {
             public void callback(ProcessInstanceSummary processInstance) {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance Details Perspective");
                 placeRequestImpl.addParameter("processInstanceId", view.getProcessInstanceIdText().getText());
-                placeRequestImpl.addParameter("processDefId", processInstance.getProcessName());
+                placeRequestImpl.addParameter("processDefId", processInstance.getProcessId());
                 placeManager.goTo(placeRequestImpl);
             }
         }).getProcessInstanceById(0, Long.parseLong(view.getProcessInstanceIdText().getText()));
