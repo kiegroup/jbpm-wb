@@ -92,27 +92,15 @@
             </dependency>
             
             <dependency>
-                <groupId>org.uberfire</groupId>
-                <artifactId>uberfire-vfs-api</artifactId>
-                <version>${uberfire.version}</version>
-            </dependency>
-            
-            <dependency>
-                <groupId>org.uberfire</groupId>
-                <artifactId>uberfire-vfs-model</artifactId>
-                <version>${uberfire.version}</version>
-            </dependency>
-            
-            <dependency>
-                <groupId>org.uberfire</groupId>
-                <artifactId>uberfire-vfs-jgit</artifactId>
-                <version>${uberfire.version}</version>
+                <groupId>org.kie.commons</groupId>
+                <artifactId>kie-nio2-jgit</artifactId>
+                <version>${kie-commons.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.uberfire</groupId>
-                <artifactId>uberfire-vfs-fs</artifactId>
-                <version>${uberfire.version}</version>
+                <groupId>org.kie.commons</groupId>
+                <artifactId>kie-nio2-fs</artifactId>
+                <version>${kie-commons.version}</version>
             </dependency>
 
             <dependency>
@@ -248,6 +236,11 @@
             <dependency>
                 <groupId>org.jbpm</groupId>
                 <artifactId>jbpm-human-task-workitems</artifactId>
+                <version>${jbpm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jbpm</groupId>
+                <artifactId>executor-services</artifactId>
                 <version>${jbpm.version}</version>
             </dependency>
             <dependency>

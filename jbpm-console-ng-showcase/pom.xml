@@ -89,23 +89,13 @@
         </dependency>
 
         <dependency>
-          <groupId>org.uberfire</groupId>
-          <artifactId>uberfire-vfs-model</artifactId>
+             <groupId>org.kie.commons</groupId>
+             <artifactId>kie-nio2-jgit</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-vfs-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-vfs-jgit</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-vfs-fs</artifactId>
+            <groupId>org.kie.commons</groupId>
+            <artifactId>kie-nio2-fs</artifactId>
         </dependency>
 
         <!-- Errai Core -->
@@ -204,6 +194,12 @@
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-human-task-workitems</artifactId>
+            
+        </dependency>
+        
+         <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>executor-services</artifactId>
             
         </dependency>
 
@@ -315,7 +311,8 @@
                     <module>org.jbpm.console.ng.FastCompiledjBPMShowcase</module>
                     <logLevel>INFO</logLevel>
                     <compileSourcesArtifacts>
-                        <compileSourcesArtifact>org.kie:kie-commons</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.commons:kie-commons-data</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.commons:kie-commons-validation</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-security-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-security-client</compileSourcesArtifact>
@@ -324,9 +321,9 @@
                         <compileSourcesArtifact>org.uberfire:uberfire-widgets-commons</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-workbench</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-backend-api</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.uberfire:uberfire-vfs-model</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-backend-commons</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-shared</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.commons:kie-nio2-model</compileSourcesArtifact>
                     </compileSourcesArtifacts>
                     <runTarget>org.jbpm.console.ng.jBPMShowcase/jBPM.html</runTarget>
                     <extraJvmArgs>-Xmx1024m -XX:MaxPermSize=256m</extraJvmArgs>
@@ -403,7 +400,7 @@
                             <directory>${basedir}</directory>
                             <includes>
                                 <include>.errai/**</include>
-                                <include>.vfsjgit/**</include>
+                                <include>.niogit/**</include>
                             </includes>
                         </fileset>
                     </filesets>

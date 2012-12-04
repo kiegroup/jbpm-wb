@@ -78,9 +78,9 @@ public class ShowcaseEntryPoint {
     @Inject
     private IOCBeanManager iocManager;
     private String[] menuItems = new String[]{"Home Screen",
-        "Quick New Task", "Personal Tasks", "Group Tasks",
+        "Quick New Task", "Personal Tasks", 
         "Quick New Sub Task", "Task Details", "Task Content",
-        "Form Display", "Form Display Popup",
+        "Form Display", "Form Display Popup", "Requests List", 
         "Process Instance List", "Quick New Process Instance", "Process Definition List", "Users and Groups List"
     };
     

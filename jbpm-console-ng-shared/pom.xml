@@ -35,6 +35,10 @@
             <groupId>org.jbpm</groupId>
             <artifactId>form-services</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>executor-services</artifactId>
+        </dependency>
         <!-- Errai -->
         <dependency>
             <groupId>org.jboss.errai</groupId>

@@ -25,6 +25,8 @@ import org.jbpm.console.ng.shared.model.ProcessSummary;
 import org.jbpm.console.ng.shared.model.StatefulKnowledgeSessionSummary;
 import org.jbpm.console.ng.shared.model.TaskDefSummary;
 import org.jbpm.console.ng.shared.model.VariableSummary;
+import org.kie.commons.java.nio.file.Path;
+
 
 /**
  *
@@ -89,4 +91,15 @@ public interface KnowledgeDomainServiceEntryPoint {
     Collection<VariableSummary> getVariableHistory(long processInstanceId, String variableId);
     
     Collection<String> getReusableSubProcesses(String  processId);
+
+    public void checkFileSystem();
+
+    public void fetchChanges();
+
+    public byte[] loadFile(Path file);
+
+    public Iterable<Path> loadFilesByType(String path, String fileType);
+    
+    public void createDomain();
+
 }

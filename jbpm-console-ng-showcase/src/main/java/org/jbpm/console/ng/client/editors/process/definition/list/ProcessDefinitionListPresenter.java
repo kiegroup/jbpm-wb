@@ -83,6 +83,23 @@ public class ProcessDefinitionListPresenter {
     public void init() {
     }
 
+    public void fetchProcessDefs() {
+        knowledgeServices.call(new RemoteCallback<Void>() {
+            @Override
+            public void callback(Void nothing) {
+                view.displayNotification(" Repository Updated! ");
+                knowledgeServices.call(new RemoteCallback<Void>() {
+                    @Override
+                    public void callback(Void nothing) {
+                        view.displayNotification(" KSession recreated! ");
+                        refreshProcessList(view.getSessionIdText().getText());
+
+                    }
+                }).createDomain();
+            }
+        }).fetchChanges();
+    }
+
     public void refreshProcessList(final String sessionId) {
 
         if (sessionId != null && !sessionId.equals("")) {
@@ -105,8 +122,6 @@ public class ProcessDefinitionListPresenter {
             }).getProcesses();
         }
     }
-
-  
 
     public void startProcessInstance(final String processId) {
 

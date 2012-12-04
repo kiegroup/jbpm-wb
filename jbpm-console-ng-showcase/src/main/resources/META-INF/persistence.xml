@@ -24,6 +24,7 @@
     <persistence-unit name="org.jbpm.task" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <mapping-file>META-INF/Taskorm.xml</mapping-file>
+        <mapping-file>META-INF/Executor-orm.xml</mapping-file>
         <!--mapping-file>META-INF/TaskEventsorm.xml</mapping-file-->
 
         <class>org.jbpm.task.Attachment</class>
@@ -54,6 +55,10 @@
     
         <!-- Event Classes -->
         <class>org.jbpm.task.TaskEvent</class>
+        
+         
+        <class>org.jbpm.executor.entities.ErrorInfo</class>
+        <class>org.jbpm.executor.entities.RequestInfo</class>
     
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>

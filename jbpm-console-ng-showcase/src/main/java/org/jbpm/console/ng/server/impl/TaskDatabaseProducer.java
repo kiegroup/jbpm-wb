@@ -11,13 +11,13 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import org.jboss.solder.core.ExtensionManaged;
-
+import javax.inject.Singleton;
 /**
  *
  */
+@Singleton
 public class TaskDatabaseProducer {
 
-    
     @PersistenceUnit(unitName = "org.jbpm.task")
     @ExtensionManaged
     @ApplicationScoped
@@ -29,4 +29,6 @@ public class TaskDatabaseProducer {
         return Logger.getLogger(injectionPoint.getMember()
                 .getDeclaringClass().getName());
     }
+
+   
 }

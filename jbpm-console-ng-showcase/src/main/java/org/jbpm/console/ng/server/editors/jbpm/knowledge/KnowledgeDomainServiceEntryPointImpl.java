@@ -19,9 +19,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import org.droolsjbpm.services.api.FileException;
+import org.droolsjbpm.services.api.FileService;
 
 import org.droolsjbpm.services.api.KnowledgeDataService;
 import org.droolsjbpm.services.api.KnowledgeDomainService;
@@ -37,6 +41,7 @@ import org.jbpm.console.ng.shared.model.TaskDefSummary;
 import org.jbpm.console.ng.shared.model.VariableSummary;
 import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
+import org.kie.commons.java.nio.file.Path;
 import org.kie.runtime.StatefulKnowledgeSession;
 import org.kie.runtime.process.NodeInstance;
 import org.kie.runtime.process.ProcessInstance;
@@ -47,20 +52,19 @@ import org.kie.runtime.process.ProcessInstance;
  */
 @Service
 @ApplicationScoped
-public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServiceEntryPoint{
+public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServiceEntryPoint {
 
     @Inject
     KnowledgeDomainService knowledgeService;
-    
     @Inject
     KnowledgeDataService dataService;
-
-    @Inject 
+    @Inject
     BPMN2DataService bpmn2Service;
+    @Inject
+    FileService fs;
 
     public KnowledgeDomainServiceEntryPointImpl() {
     }
-    
 
     public StatefulKnowledgeSessionSummary getSession(long sessionId) {
         return StatefulKnowledgeSessionHelper.adapt(knowledgeService.getSession(sessionId));
@@ -89,7 +93,7 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     public Collection<ProcessSummary> getProcessesBySessionId(String sessionId) {
         return ProcessHelper.adaptCollection(dataService.getProcessesByDomainName(sessionId));
     }
-    
+
     public ProcessInstanceSummary getProcessInstanceById(int sessionId, long processInstanceId) {
         return ProcessInstanceHelper.adapt(dataService.getProcessInstanceById(sessionId, processInstanceId));
     }
@@ -159,19 +163,17 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         return bpmn2Service.getTaskOutputMappings(processId, taskName);
     }
 
-
     @Override
     public void abortProcessInstance(String businessKey, long processInstanceId) {
         knowledgeService.getSessionByBusinessKey(businessKey).abortProcessInstance(processInstanceId);
-        
-    }
 
+    }
 
     @Override
     public Collection<ProcessInstanceSummary> getProcessInstances(List<Integer> states, String filterText,
             int filterType, String initiator) {
         Collection<ProcessInstanceDesc> result = null;
-        if (filterType == 0){
+        if (filterType == 0) {
             // search by process id
             result = dataService.getProcessInstancesByProcessId(states, filterText, initiator);
         } else if (filterType == 1) {
@@ -180,10 +182,9 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         } else {
             result = dataService.getProcessInstances(states, initiator);
         }
-        
+
         return ProcessInstanceHelper.adaptCollection(result);
     }
-
 
     @Override
     public void signalProcessInstance(String businessKey, String signalName, Object event, long processInstanceId) {
@@ -193,36 +194,33 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         } else {
             ksession.signalEvent(signalName, event, processInstanceId);
         }
-        
-    }
 
+    }
 
     @Override
     public Collection<String> getAvailableSignals(String businessKey, long processInstanceId) {
         StatefulKnowledgeSession ksession = knowledgeService.getSessionByBusinessKey(businessKey);
         ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
         Collection<String> activeSignals = new ArrayList<String>();
-        
-        if (processInstance != null){
-            ((ProcessInstanceImpl)processInstance).setProcess(ksession.getKnowledgeBase().getProcess(processInstance.getProcessId()));
-            Collection<NodeInstance> activeNodes = ((WorkflowProcessInstance)processInstance).getNodeInstances();
-            
+
+        if (processInstance != null) {
+            ((ProcessInstanceImpl) processInstance).setProcess(ksession.getKnowledgeBase().getProcess(processInstance.getProcessId()));
+            Collection<NodeInstance> activeNodes = ((WorkflowProcessInstance) processInstance).getNodeInstances();
+
             activeSignals.addAll(ProcessInstanceHelper.collectActiveSignals(activeNodes));
         }
-        
+
         return activeSignals;
     }
-
 
     @Override
     public void setProcessVariable(String businessKey, long processInstanceId, String variableId, Object value) {
         StatefulKnowledgeSession ksession = knowledgeService.getSessionByBusinessKey(businessKey);
         ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
-        
-        ((WorkflowProcessInstance)processInstance).setVariable(variableId, value);
-        
-    }
 
+        ((WorkflowProcessInstance) processInstance).setVariable(variableId, value);
+
+    }
 
     @Override
     public Collection<VariableSummary> getVariableHistory(long processInstanceId, String variableId) {
@@ -241,4 +239,39 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     }
 
     
+
+    public void checkFileSystem() {
+//        try {
+            fs.fetchChanges();
+//        } catch (FileException ex) {
+//            Logger.getLogger(KnowledgeDomainServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+    }
+
+    public void fetchChanges() {
+        fs.fetchChanges();
+    }
+
+    public byte[] loadFile(Path file) {
+        try {
+            return fs.loadFile(file);
+        } catch (FileException ex) {
+            Logger.getLogger(KnowledgeDomainServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public Iterable<Path> loadFilesByType(String path, String fileType) {
+        try {
+            return fs.loadFilesByType(path, fileType);
+        } catch (FileException ex) {
+            Logger.getLogger(KnowledgeDomainServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public void createDomain() {
+        knowledgeService.createDomain();
+    }
+
 }
