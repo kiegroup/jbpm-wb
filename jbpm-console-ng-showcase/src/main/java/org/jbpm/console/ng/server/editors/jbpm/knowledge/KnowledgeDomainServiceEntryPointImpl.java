@@ -98,20 +98,20 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         return ProcessHelper.adaptCollection(dataService.getProcesses());
     }
 
-    public List<String> getAssociatedDomainObjects(String bpmn2Content) {
-        return bpmn2Service.getAssociatedDomainObjects(bpmn2Content);
+    public List<String> getAssociatedDomainObjects(String processId) {
+        return bpmn2Service.getAssociatedDomainObjects(processId);
     }
 
-    public Map<String, String> getRequiredInputData(String bpmn2Content) {
-        return bpmn2Service.getProcessData(bpmn2Content);
+    public Map<String, String> getRequiredInputData(String processId) {
+        return bpmn2Service.getProcessData(processId);
     }
 
-    public List<String> getAssociatedForms(String bpmn2Content) {
-        return bpmn2Service.getAssociatedForms(bpmn2Content);
+    public List<String> getAssociatedForms(String processId) {
+        return bpmn2Service.getAssociatedForms(processId);
     }
 
-    public Collection<TaskDefSummary> getAllTasksDef(String bpmn2Content) {
-        return TaskDefHelper.adaptCollection(bpmn2Service.getAllTasksDef(bpmn2Content));
+    public Collection<TaskDefSummary> getAllTasksDef(String processId) {
+        return TaskDefHelper.adaptCollection(bpmn2Service.getAllTasksDef(processId));
     }
 
     public String getDomainName() {
@@ -122,8 +122,8 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         return knowledgeService.getAvailableProcesses();
     }
 
-    public Map<String, String> getAssociatedEntities(String bpmn2Content) {
-        return bpmn2Service.getAssociatedEntities(bpmn2Content);
+    public Map<String, String> getAssociatedEntities(String processId) {
+        return bpmn2Service.getAssociatedEntities(processId);
     }
 
     public Collection<NodeInstanceSummary> getProcessInstanceHistory(int sessionId, long id) {
@@ -142,22 +142,21 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceActiveNodes(sessionId, processId));
     }
 
-    public ProcessSummary getProcessDesc(String bpmn2Content) {
-        return ProcessHelper.adapt(bpmn2Service.getProcessDesc(bpmn2Content));
+    public ProcessSummary getProcessDesc(String processId) {
+        return ProcessHelper.adapt(bpmn2Service.getProcessDesc(processId));
     } 
 
     public Collection<VariableSummary> getVariablesCurrentState(long processInstanceId, String processId) {
-        String processString = knowledgeService.getAvailableProcesses().get(processId);
-        Map<String, String> properties = bpmn2Service.getProcessData(processString);
+        Map<String, String> properties = bpmn2Service.getProcessData(processId);
         return VariableHelper.adaptCollection(dataService.getVariablesCurrentState(processInstanceId), properties, processInstanceId);
     }
 
-    public Map<String, String> getTaskInputMappings(String bpmn2Content, String taskName) {
-        return bpmn2Service.getTaskInputMappings(bpmn2Content, taskName);
+    public Map<String, String> getTaskInputMappings(String processId, String taskName) {
+        return bpmn2Service.getTaskInputMappings(processId, taskName);
     }
 
-    public Map<String, String> getTaskOutputMappings(String bpmn2Content, String taskName) {
-        return bpmn2Service.getTaskOutputMappings(bpmn2Content, taskName);
+    public Map<String, String> getTaskOutputMappings(String processId, String taskName) {
+        return bpmn2Service.getTaskOutputMappings(processId, taskName);
     }
 
 

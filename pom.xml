@@ -93,6 +93,18 @@
             
             <dependency>
                 <groupId>org.uberfire</groupId>
+                <artifactId>uberfire-vfs-api</artifactId>
+                <version>${uberfire.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.uberfire</groupId>
+                <artifactId>uberfire-vfs-model</artifactId>
+                <version>${uberfire.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.uberfire</groupId>
                 <artifactId>uberfire-vfs-jgit</artifactId>
                 <version>${uberfire.version}</version>
             </dependency>

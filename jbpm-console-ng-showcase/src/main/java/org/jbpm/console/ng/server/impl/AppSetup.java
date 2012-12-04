@@ -17,23 +17,22 @@
 package org.jbpm.console.ng.server.impl;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Produces;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.kie.commons.java.nio.file.FileSystemAlreadyExistsException;
 import org.uberfire.backend.vfs.ActiveFileSystems;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.impl.ActiveFileSystemsImpl;
 import org.uberfire.backend.vfs.impl.FileSystemImpl;
 import org.uberfire.backend.vfs.impl.PathImpl;
-import org.uberfire.java.nio.file.FileSystem;
-import org.uberfire.java.nio.file.FileSystemAlreadyExistsException;
 import org.uberfire.java.nio.file.FileSystems;
-
-import static java.util.Arrays.*;
-import javax.inject.Named;
 
 @Singleton
 public class AppSetup {
@@ -59,7 +58,7 @@ public class AppSetup {
 
         final Path root = new PathImpl("uf-playground", "default://jbpm-playground");
 
-        fileSystems.addBootstrapFileSystem(new FileSystemImpl(asList(root)));
+        fileSystems.addBootstrapFileSystem(new FileSystemImpl(Arrays.asList(root)));
     }
 
     @Produces @Named("fs")

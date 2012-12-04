@@ -54,13 +54,13 @@ public interface KnowledgeDomainServiceEntryPoint {
     
     Collection<ProcessSummary> getProcesses();
     
-    Collection<TaskDefSummary> getAllTasksDef(String bpmn2Content);
+    Collection<TaskDefSummary> getAllTasksDef(String processId);
     
     Map<String, String> getAvailableProcesses();
     
-    Map<String, String> getRequiredInputData(String bpmn2Content);
+    Map<String, String> getRequiredInputData(String processId);
     
-    Map<String, String> getAssociatedEntities(String bpmn2Content);
+    Map<String, String> getAssociatedEntities(String processId);
     
     Collection<NodeInstanceSummary> getProcessInstanceHistory(int sessionId, long id); 
     
@@ -70,13 +70,13 @@ public interface KnowledgeDomainServiceEntryPoint {
 
     Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(int sessionId, long processId);
     
-    ProcessSummary getProcessDesc(String bpmn2Content);
+    ProcessSummary getProcessDesc(String processId);
     
     Collection<VariableSummary> getVariablesCurrentState(long processInstanceId, String processId);
     
-    public Map<String, String> getTaskInputMappings(String bpmn2Content, String taskName);
+    public Map<String, String> getTaskInputMappings(String processId, String taskName);
 
-    public Map<String, String> getTaskOutputMappings(String bpmn2Content, String taskName);
+    public Map<String, String> getTaskOutputMappings(String processId, String taskName);
     
     void abortProcessInstance(String businessKey, long processInstanceId);
     

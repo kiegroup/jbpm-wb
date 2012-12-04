@@ -77,40 +77,33 @@ public class ProcessDefDetailsPresenter {
 
     public void refreshProcessDef(final String processId) {
 
+        domainServices.call(new RemoteCallback<List<TaskDefSummary>>() {
+            @Override
+            public void callback(List<TaskDefSummary> tasks) {
+                view.getNroOfHumanTasksText().setText(String.valueOf(tasks.size()));
+                for(TaskDefSummary t : tasks){
+                    view.getHumanTasksListBox().addItem(t.getName(), String.valueOf(t.getId()));
+                }
+            }
+        }).getAllTasksDef(processId);
         domainServices.call(new RemoteCallback<Map<String, String>>() {
             @Override
-            public void callback(Map<String, String> availableProcesses) {
-                String processContent = availableProcesses.get(processId);
-                domainServices.call(new RemoteCallback<List<TaskDefSummary>>() {
-                    @Override
-                    public void callback(List<TaskDefSummary> tasks) {
-                        view.getNroOfHumanTasksText().setText(String.valueOf(tasks.size()));
-                        for(TaskDefSummary t : tasks){
-                            view.getHumanTasksListBox().addItem(t.getName(), String.valueOf(t.getId()));
-                        }
-                    }
-                }).getAllTasksDef(processContent);
-                domainServices.call(new RemoteCallback<Map<String, String>>() {
-                    @Override
-                    public void callback(Map<String, String> entities) {
-                        
-                        for(String key : entities.keySet()){
-                            view.getUsersGroupsListBox().addItem(entities.get(key) + "- "+ key, key);
-                        }
-                    }
-                }).getAssociatedEntities(processContent);
-                domainServices.call(new RemoteCallback<Map<String, String>>() {
-                    @Override
-                    public void callback(Map<String, String> inputs) {
-                        
-                        for(String key : inputs.keySet()){
-                            view.getProcessDataListBox().addItem(key + "- "+ inputs.get(key), key);
-                        }
-                    }
-                }).getRequiredInputData(processContent);
+            public void callback(Map<String, String> entities) {
+                
+                for(String key : entities.keySet()){
+                    view.getUsersGroupsListBox().addItem(entities.get(key) + "- "+ key, key);
+                }
             }
-        }).getAvailableProcesses();
-        
+        }).getAssociatedEntities(processId);
+        domainServices.call(new RemoteCallback<Map<String, String>>() {
+            @Override
+            public void callback(Map<String, String> inputs) {
+                
+                for(String key : inputs.keySet()){
+                    view.getProcessDataListBox().addItem(key + "- "+ inputs.get(key), key);
+                }
+            }
+        }).getRequiredInputData(processId);        
     }
 
     @OnReveal
