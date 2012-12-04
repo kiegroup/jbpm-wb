@@ -15,22 +15,18 @@
  */
 package org.jbpm.console.ng.client.editors.process.definition.details.basic;
 
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextBox;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+
 import org.jboss.errai.bus.client.api.RemoteCallback;
-
-
-import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
-
-
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.shared.model.TaskDefSummary;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
+import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
+import org.jbpm.console.ng.shared.model.TaskDefSummary;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -39,6 +35,9 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.PassThroughPlaceRequest;
+
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TextBox;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Definition Details")
@@ -55,6 +54,7 @@ public class ProcessDefDetailsPresenter {
         ListBox getHumanTasksListBox();
         ListBox getUsersGroupsListBox();
         ListBox getProcessDataListBox();
+        ListBox getSubprocessListBox();
     }
     @Inject
     private PlaceManager placeManager;
@@ -103,7 +103,17 @@ public class ProcessDefDetailsPresenter {
                     view.getProcessDataListBox().addItem(key + "- "+ inputs.get(key), key);
                 }
             }
-        }).getRequiredInputData(processId);        
+        }).getRequiredInputData(processId);
+        
+        domainServices.call(new RemoteCallback<Collection<String>>() {
+            @Override
+            public void callback(Collection<String> subprocesses) {
+                
+                for(String key : subprocesses){
+                    view.getSubprocessListBox().addItem(key, key);
+                }
+            }
+        }).getReusableSubProcesses(processId);   
     }
 
     @OnReveal

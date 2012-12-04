@@ -17,11 +17,17 @@ package org.jbpm.console.ng.client.editors.process.definition.details.basic;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
+import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 
 
@@ -42,6 +48,9 @@ public class ProcessDefDetailsViewImpl extends Composite
         implements
         ProcessDefDetailsPresenter.InboxView {
 
+    @Inject
+    private PlaceManager placeManager;
+    
     private ProcessDefDetailsPresenter presenter;
     @Inject
     @DataField
@@ -57,7 +66,10 @@ public class ProcessDefDetailsViewImpl extends Composite
     public ListBox usersGroupsListBox;
     @Inject
     @DataField
-    public ListBox processDataListBox;
+    public ListBox processDataListBox;    
+    @Inject
+    @DataField
+    public ListBox subprocessListBox;
     @Inject
     @DataField
     public Button refreshButton;
@@ -72,6 +84,18 @@ public class ProcessDefDetailsViewImpl extends Composite
         this.humanTasksListBox.setVisibleItemCount(5);
         this.usersGroupsListBox.setVisibleItemCount(5);
         this.processDataListBox.setVisibleItemCount(5);
+        
+        this.subprocessListBox.addDoubleClickHandler(new DoubleClickHandler() {
+            
+            @Override
+            public void onDoubleClick(DoubleClickEvent event) {
+                ListBox source = (ListBox) event.getSource();
+                String processId = source.getValue(source.getSelectedIndex());
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Definition_Details_Perspective());
+                placeRequestImpl.addParameter("processId", processId);
+                placeManager.goTo(placeRequestImpl);
+            }
+        });
     }
 
     @EventHandler("refreshButton")
@@ -99,7 +123,9 @@ public class ProcessDefDetailsViewImpl extends Composite
         return processDataListBox;
     }
     
-    
+    public ListBox getSubprocessListBox() {
+        return subprocessListBox;
+    }
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));

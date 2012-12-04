@@ -87,4 +87,6 @@ public interface KnowledgeDomainServiceEntryPoint {
     void setProcessVariable(String businessKey, long processInstanceId, String variableId, Object value);
 
     Collection<VariableSummary> getVariableHistory(long processInstanceId, String variableId);
+    
+    Collection<String> getReusableSubProcesses(String  processId);
 }
