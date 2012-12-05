@@ -30,7 +30,9 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.client.i18n.Constants;
 import org.jbpm.console.ng.client.resources.ShowcaseImages;
 import org.jbpm.console.ng.client.util.ResizableHeader;
+import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.shared.model.VariableSummary;
+import org.kie.runtime.process.ProcessInstance;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
@@ -78,6 +80,9 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     public TextBox processNameText;
     @Inject
     @DataField
+    public TextBox stateText;
+    @Inject
+    @DataField
     public ListBox currentActivitiesListBox;
     @Inject
     @DataField
@@ -101,6 +106,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     
     private Constants constants = GWT.create(Constants.class);
     private ShowcaseImages images = GWT.create(ShowcaseImages.class);
+    private ProcessInstanceSummary processInstance;
     
     @Override
     public void init(ProcessInstanceDetailsPresenter presenter) {
@@ -287,13 +293,14 @@ public class ProcessInstanceDetailsViewImpl extends Composite
             cell = new ActionCell<VariableSummary>(text, delegate) {
                 @Override
                 public void render(Cell.Context context, VariableSummary value, SafeHtmlBuilder sb) {
-                    
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.editIcon());
-                    SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='Edit'>");
-                    mysb.append(imageProto.getSafeHtml());
-                    mysb.appendHtmlConstant("</span>");
-                    sb.append(mysb.toSafeHtml());
+                    if (processInstance.getState() == ProcessInstance.STATE_ACTIVE) {
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.editIcon());
+                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                        mysb.appendHtmlConstant("<span title='Edit'>");
+                        mysb.append(imageProto.getSafeHtml());
+                        mysb.appendHtmlConstant("</span>");
+                        sb.append(mysb.toSafeHtml());
+                    }
                 }
             };
         }
@@ -353,5 +360,14 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         if ("Edit Variable Popup".equals(closed.getPlace().getIdentifier())) {
             presenter.loadVariables(processIdText.getText(), processNameText.getText());
         }
+    }
+
+    @Override
+    public void setProcessINstance(ProcessInstanceSummary processInstance) {
+        this.processInstance = processInstance;
+    }
+
+    public TextBox getStateText() {
+        return this.stateText;
     }
 }

@@ -17,6 +17,7 @@ package org.jbpm.console.ng.server.editors.jbpm.knowledge;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -151,7 +152,7 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     } 
 
     public Collection<VariableSummary> getVariablesCurrentState(long processInstanceId, String processId) {
-        Map<String, String> properties = bpmn2Service.getProcessData(processId);
+        Map<String, String> properties = new HashMap<String, String>(bpmn2Service.getProcessData(processId));
         return VariableHelper.adaptCollection(dataService.getVariablesCurrentState(processInstanceId), properties, processInstanceId);
     }
 

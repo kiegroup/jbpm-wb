@@ -33,9 +33,11 @@ import org.jboss.errai.bus.client.api.RemoteCallback;
 
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.shared.model.NodeInstanceSummary;
+import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.shared.model.ProcessSummary;
 import org.jbpm.console.ng.shared.model.VariableSummary;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
+import org.kie.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -62,6 +64,10 @@ public class ProcessInstanceDetailsPresenter {
         TextBox getProcessIdText();
 
         TextBox getProcessNameText();
+        
+        TextBox getStateText();
+        
+        void setProcessINstance(ProcessInstanceSummary processInstance);
     }
     @Inject
     private PlaceManager placeManager;
@@ -107,22 +113,44 @@ public class ProcessInstanceDetailsPresenter {
             }
         }).getProcessInstanceActiveNodes(0, Long.parseLong(processId));
 
-        domainServices.call(new RemoteCallback<Map<String, String>>() {
+       domainServices.call(new RemoteCallback<ProcessSummary>() {
             @Override
-            public void callback(Map<String, String> processes) {
-                String processDef = processes.get(processDefId);
-                domainServices.call(new RemoteCallback<ProcessSummary>() {
-                    @Override
-                    public void callback(ProcessSummary process) {
-                        view.getProcessNameText().setText(process.getId());
-                    }
-                }).getProcessDesc(processDef);
-
-
+            public void callback(ProcessSummary process) {
+                view.getProcessNameText().setText(process.getId());
             }
-        }).getAvailableProcesses();
+        }).getProcessDesc(processDefId);
 
-        loadVariables(processId, processDefId);
+       domainServices.call(new RemoteCallback<ProcessInstanceSummary>() {
+           @Override
+           public void callback(ProcessInstanceSummary process) {
+               view.setProcessINstance(process);
+               
+               String statusStr = "Unknown";
+               switch (process.getState()) {
+               case ProcessInstance.STATE_ACTIVE:
+                   statusStr = "Active";
+                   break;
+               case ProcessInstance.STATE_ABORTED:
+                   statusStr = "Aborted";
+                   break;
+               case ProcessInstance.STATE_COMPLETED:
+                   statusStr = "Completed";
+                   break;
+               case ProcessInstance.STATE_PENDING:
+                   statusStr = "Pending";
+                   break;
+               case ProcessInstance.STATE_SUSPENDED:
+                   statusStr = "Suspended";
+                   break;
+               default:
+                   break;
+               }
+               
+               view.getStateText().setText(statusStr);
+           }
+       }).getProcessInstanceById(0, Long.parseLong(processId));
+       
+       loadVariables(processId, processDefId);
 
 
     }
