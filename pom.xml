@@ -223,6 +223,11 @@
             </dependency>
             <dependency>
                 <groupId>org.jbpm</groupId>
+                <artifactId>jbpm-shared-services</artifactId>
+                <version>${jbpm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jbpm</groupId>
                 <artifactId>jbpm-human-task-services</artifactId>
                 <version>${jbpm.version}</version>
                 <exclusions>

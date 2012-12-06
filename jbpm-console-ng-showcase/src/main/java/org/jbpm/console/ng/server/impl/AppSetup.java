@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 
 import javax.inject.Inject;
-import org.droolsjbpm.services.api.FileService;
+import org.jbpm.shared.services.api.FileService;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.shared.ExecutorServiceEntryPoint;

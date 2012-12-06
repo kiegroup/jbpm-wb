@@ -15,8 +15,6 @@
  */
 package org.jbpm.console.ng.shared.fb;
 
-import java.util.List; 
-import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
 
 /**
@@ -26,27 +24,8 @@ import org.jboss.errai.bus.server.annotations.Remote;
 @Remote
 public interface FormServiceEntryPoint {
 
-    Map<String, String> getFormBuilderProperties();
-
-    void listMenuItems();
-
-    List<Map<String, Object>> listOptions();
-
-    public String storeFile(String fileName, byte[] content);
-
-    public void deleteFile(String fileName);
-
-    public List<String> loadFilesByType(String fileType);
-
-    public byte[] loadFile(String fileName);
-
     public String getFormDisplayTask(long taskId);
     
     public String getFormDisplayProcess(String processId);
 
-    public String saveForm(Map<String, Object> form);
-    
-    public Map<String, Object> loadForm(String json) ;
-
-    public void saveFormItem(Map<String, Object> formItem, String formItemName) ;
 }
