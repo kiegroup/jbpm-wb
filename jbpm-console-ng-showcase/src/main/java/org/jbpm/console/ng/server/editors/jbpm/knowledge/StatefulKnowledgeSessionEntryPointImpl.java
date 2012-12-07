@@ -35,16 +35,18 @@ import org.kie.runtime.process.ProcessInstance;
 public class StatefulKnowledgeSessionEntryPointImpl implements StatefulKnowledgeSessionEntryPoint{
 
     @Inject
-    KnowledgeDomainService knowledgeService;
+    KnowledgeDomainService domainService;
 
     public long startProcess(String processId) {
-        StatefulKnowledgeSession ksession = knowledgeService.getSessionByBusinessKey("default");
+        
+                
+        StatefulKnowledgeSession ksession = domainService.getSessionByName(domainService.getProcessInSessionByName(processId));
         ProcessInstance pi = ksession.startProcess(processId);
         return pi.getId();
     }
     
     public long startProcess(String processId, Map<String, String> params) {
-        StatefulKnowledgeSession ksession = knowledgeService.getSessionByBusinessKey("default");
+        StatefulKnowledgeSession ksession = domainService.getSessionByName(domainService.getProcessInSessionByName(processId));
         ProcessInstance pi = ksession.startProcess(processId, new HashMap<String, Object>(params));
         return pi.getId();
     }

@@ -56,7 +56,7 @@ import org.kie.runtime.process.ProcessInstance;
 public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServiceEntryPoint {
 
     @Inject
-    KnowledgeDomainService knowledgeService;
+    KnowledgeDomainService domainService;
     @Inject
     KnowledgeDataService dataService;
     @Inject
@@ -67,20 +67,12 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     public KnowledgeDomainServiceEntryPointImpl() {
     }
 
-    public StatefulKnowledgeSessionSummary getSession(long sessionId) {
-        return StatefulKnowledgeSessionHelper.adapt(knowledgeService.getSession(sessionId));
-    }
-
-    public StatefulKnowledgeSessionSummary getSessionSummaryByBusinessKey(String businessKey) {
-        return StatefulKnowledgeSessionHelper.adapt(knowledgeService.getSessionByBusinessKey(businessKey));
-    }
-
     public Collection<String> getSessionsNames() {
-        return knowledgeService.getSessionsNames();
+        return domainService.getSessionsNames();
     }
 
     public int getAmountOfSessions() {
-        return knowledgeService.getAmountOfSessions();
+        return domainService.getAmountOfSessions();
     }
 
     public Collection<ProcessInstanceSummary> getProcessInstances() {
@@ -119,12 +111,8 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         return TaskDefHelper.adaptCollection(bpmn2Service.getAllTasksDef(processId));
     }
 
-    public String getDomainName() {
-        return knowledgeService.getDomainName();
-    }
-
     public Map<String, String> getAvailableProcesses() {
-        return knowledgeService.getAvailableProcesses();
+        return domainService.getAvailableProcesses();
     }
 
     public Map<String, String> getAssociatedEntities(String processId) {
@@ -149,7 +137,7 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
 
     public ProcessSummary getProcessDesc(String processId) {
         return ProcessHelper.adapt(bpmn2Service.getProcessDesc(processId));
-    } 
+    }
 
     public Collection<VariableSummary> getVariablesCurrentState(long processInstanceId, String processId) {
         Map<String, String> properties = new HashMap<String, String>(bpmn2Service.getProcessData(processId));
@@ -166,7 +154,7 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
 
     @Override
     public void abortProcessInstance(String businessKey, long processInstanceId) {
-        knowledgeService.getSessionByBusinessKey(businessKey).abortProcessInstance(processInstanceId);
+        domainService.getSessionByName(businessKey).abortProcessInstance(processInstanceId);
 
     }
 
@@ -189,7 +177,7 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
 
     @Override
     public void signalProcessInstance(String businessKey, String signalName, Object event, long processInstanceId) {
-        StatefulKnowledgeSession ksession = knowledgeService.getSessionByBusinessKey(businessKey);
+        StatefulKnowledgeSession ksession = domainService.getSessionByName(businessKey);
         if (processInstanceId == -1) {
             ksession.signalEvent(signalName, event);
         } else {
@@ -200,7 +188,7 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
 
     @Override
     public Collection<String> getAvailableSignals(String businessKey, long processInstanceId) {
-        StatefulKnowledgeSession ksession = knowledgeService.getSessionByBusinessKey(businessKey);
+        StatefulKnowledgeSession ksession = domainService.getSessionByName(businessKey);
         ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
         Collection<String> activeSignals = new ArrayList<String>();
 
@@ -216,7 +204,7 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
 
     @Override
     public void setProcessVariable(String businessKey, long processInstanceId, String variableId, Object value) {
-        StatefulKnowledgeSession ksession = knowledgeService.getSessionByBusinessKey(businessKey);
+        StatefulKnowledgeSession ksession = domainService.getSessionByName(businessKey);
         ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
 
         ((WorkflowProcessInstance) processInstance).setVariable(variableId, value);
@@ -232,21 +220,14 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-
     @Override
     public Collection<String> getReusableSubProcesses(String processId) {
-   
+
         return bpmn2Service.getReusableSubProcesses(processId);
     }
 
-    
-
     public void checkFileSystem() {
-//        try {
-            fs.fetchChanges();
-//        } catch (FileException ex) {
-//            Logger.getLogger(KnowledgeDomainServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        fs.fetchChanges();
     }
 
     public void fetchChanges() {
@@ -272,7 +253,12 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     }
 
     public void createDomain() {
-        knowledgeService.createDomain();
+        domainService.createDomain();
     }
 
+    public StatefulKnowledgeSessionSummary getSessionSummaryByName(String kSessionName) {
+        return StatefulKnowledgeSessionHelper.adapt(domainService.getSessionByName(kSessionName));
+    }
+
+    
 }

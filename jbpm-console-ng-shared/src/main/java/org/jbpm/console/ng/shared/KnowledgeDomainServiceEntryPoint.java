@@ -35,9 +35,9 @@ import org.kie.commons.java.nio.file.Path;
 @Remote
 public interface KnowledgeDomainServiceEntryPoint {
     
-    StatefulKnowledgeSessionSummary getSession(long sessionId);
     
-    StatefulKnowledgeSessionSummary getSessionSummaryByBusinessKey(String businessKey);
+    
+    StatefulKnowledgeSessionSummary getSessionSummaryByName(String kSessionName);
     
     Collection<String> getSessionsNames();
     

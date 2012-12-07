@@ -475,9 +475,9 @@ a.button {
 .title {
     color: #1B75BB;
     font-size: 30px;
-    left: 95px;
+    left: 110px;
     position: absolute;
-    top: 128px;
+    top: 130px;
     z-index: 0;
 }
 .link-1 {
