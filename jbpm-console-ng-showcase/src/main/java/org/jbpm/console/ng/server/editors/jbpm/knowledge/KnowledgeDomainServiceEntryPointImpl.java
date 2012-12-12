@@ -30,6 +30,7 @@ import org.jbpm.shared.services.api.FileService;
 
 import org.droolsjbpm.services.api.KnowledgeDataService;
 import org.droolsjbpm.services.api.KnowledgeDomainService;
+import org.droolsjbpm.services.api.RulesNotificationService;
 import org.droolsjbpm.services.api.bpmn2.BPMN2DataService;
 import org.droolsjbpm.services.impl.model.ProcessInstanceDesc;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -37,6 +38,7 @@ import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.shared.model.NodeInstanceSummary;
 import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.shared.model.ProcessSummary;
+import org.jbpm.console.ng.shared.model.RuleNotificationSummary;
 import org.jbpm.console.ng.shared.model.StatefulKnowledgeSessionSummary;
 import org.jbpm.console.ng.shared.model.TaskDefSummary;
 import org.jbpm.console.ng.shared.model.VariableSummary;
@@ -57,6 +59,8 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
 
     @Inject
     KnowledgeDomainService domainService;
+    @Inject
+    RulesNotificationService rulesNotificationService;
     @Inject
     KnowledgeDataService dataService;
     @Inject
@@ -193,7 +197,7 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         Collection<String> activeSignals = new ArrayList<String>();
 
         if (processInstance != null) {
-            ((ProcessInstanceImpl) processInstance).setProcess(ksession.getKnowledgeBase().getProcess(processInstance.getProcessId()));
+            ((ProcessInstanceImpl) processInstance).setProcess(ksession.getKieBase().getProcess(processInstance.getProcessId()));
             Collection<NodeInstance> activeNodes = ((WorkflowProcessInstance) processInstance).getNodeInstances();
 
             activeSignals.addAll(ProcessInstanceHelper.collectActiveSignals(activeNodes));
@@ -259,6 +263,21 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     public StatefulKnowledgeSessionSummary getSessionSummaryByName(String kSessionName) {
         return StatefulKnowledgeSessionHelper.adapt(domainService.getSessionByName(kSessionName));
     }
+
+    public void insertNotification(int sessionId, String notification) {
+        rulesNotificationService.insertNotification(sessionId, notification);
+    }
+
+    public Collection<RuleNotificationSummary> getAllNotificationInstance() {
+        return RuleNotificationHelper.adaptCollection(rulesNotificationService.getAllNotificationInstance());
+    }
+
+    public Collection<RuleNotificationSummary> getAllNotificationInstanceBySessionId(int sessionId) {
+        return RuleNotificationHelper.adaptCollection(rulesNotificationService.getAllNotificationInstanceBySessionId(sessionId));
+    }
+    
+    
+    
 
     
 }

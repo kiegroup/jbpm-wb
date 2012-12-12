@@ -92,6 +92,9 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     public Button refreshButton;
     @Inject
     @DataField
+    public Button viewSessionNotificationsButton;
+    @Inject
+    @DataField
     public DataGrid<VariableSummary> processDataGrid;
     @Inject
     @DataField
@@ -139,7 +142,13 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     public void refreshButton(ClickEvent e) {
         presenter.refreshProcessInstanceData(processIdText.getText(),processNameText.getText());
     }
-
+    @EventHandler("viewSessionNotificationsButton")
+    public void viewSessionNotificationsButton(ClickEvent e){
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Session Notifications Popup");
+        placeRequestImpl.addParameter("sessionId", Integer.toString(0));
+        placeManager.goTo(placeRequestImpl);
+    }
+    
     public TextBox getProcessIdText() {
         return processIdText;
     }
