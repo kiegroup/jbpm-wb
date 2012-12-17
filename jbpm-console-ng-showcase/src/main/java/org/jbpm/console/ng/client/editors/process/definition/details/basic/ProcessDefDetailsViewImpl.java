@@ -50,7 +50,6 @@ public class ProcessDefDetailsViewImpl extends Composite
 
     @Inject
     private PlaceManager placeManager;
-    
     private ProcessDefDetailsPresenter presenter;
     @Inject
     @DataField
@@ -66,7 +65,7 @@ public class ProcessDefDetailsViewImpl extends Composite
     public ListBox usersGroupsListBox;
     @Inject
     @DataField
-    public ListBox processDataListBox;    
+    public ListBox processDataListBox;
     @Inject
     @DataField
     public ListBox subprocessListBox;
@@ -74,8 +73,10 @@ public class ProcessDefDetailsViewImpl extends Composite
     @DataField
     public Button refreshButton;
     @Inject
+    @DataField
+    public Button createProcessInstanceButton;
+    @Inject
     private Event<NotificationEvent> notification;
-    
     private Constants constants = GWT.create(Constants.class);
 
     @Override
@@ -84,9 +85,8 @@ public class ProcessDefDetailsViewImpl extends Composite
         this.humanTasksListBox.setVisibleItemCount(5);
         this.usersGroupsListBox.setVisibleItemCount(5);
         this.processDataListBox.setVisibleItemCount(5);
-        
+
         this.subprocessListBox.addDoubleClickHandler(new DoubleClickHandler() {
-            
             @Override
             public void onDoubleClick(DoubleClickEvent event) {
                 ListBox source = (ListBox) event.getSource();
@@ -101,6 +101,13 @@ public class ProcessDefDetailsViewImpl extends Composite
     @EventHandler("refreshButton")
     public void refreshButton(ClickEvent e) {
         presenter.refreshProcessDef(processNameText.getText());
+    }
+    @EventHandler("createProcessInstanceButton")
+    public void createProcessInstance(ClickEvent e) {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display Popup");
+        System.out.println("Opening form for process id = " + processNameText.getText());
+        placeRequestImpl.addParameter("processId", processNameText.getText());
+        placeManager.goTo(placeRequestImpl);
     }
 
     public TextBox getProcessNameText() {
@@ -122,7 +129,7 @@ public class ProcessDefDetailsViewImpl extends Composite
     public ListBox getProcessDataListBox() {
         return processDataListBox;
     }
-    
+
     public ListBox getSubprocessListBox() {
         return subprocessListBox;
     }

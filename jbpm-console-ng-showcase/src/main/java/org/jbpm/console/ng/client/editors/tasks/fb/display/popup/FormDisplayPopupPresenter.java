@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.fb.display.popup;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -26,6 +27,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.client.i18n.Constants;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.shared.StatefulKnowledgeSessionEntryPoint;
 import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
@@ -44,6 +46,7 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
 import org.uberfire.security.Identity;
 import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
 @WorkbenchPopup(identifier = "Form Display Popup")
@@ -70,6 +73,8 @@ public class FormDisplayPopupPresenter {
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
     private PlaceRequest place;
+    
+    private Constants constants = GWT.create(Constants.class);
 
     public interface FormBuilderView
             extends
@@ -82,9 +87,9 @@ public class FormDisplayPopupPresenter {
         void setTaskId(long taskId);
 
         String getProcessId();
-        
+
         void setProcessId(String processId);
-        
+
         VerticalPanel getFormView();
 
         Label getNameText();
@@ -131,22 +136,16 @@ public class FormDisplayPopupPresenter {
                 view.getFormView().clear();
                 view.getFormView().add(new HTMLPanel(form));
 
-                domainServices.call(new RemoteCallback<Map<String, String>>() {
+
+                domainServices.call(new RemoteCallback<ProcessSummary>() {
                     @Override
-                    public void callback(Map<String, String> availableProcesses) {
-                        String processContent = availableProcesses.get(processId);
-                        domainServices.call(new RemoteCallback<ProcessSummary>() {
-                            @Override
-                            public void callback(ProcessSummary summary) {
-                                view.getNameText().setText(summary.getName());
-                                view.getDescriptionText().setText(summary.getPackageName());
+                    public void callback(ProcessSummary summary) {
+                        view.getNameText().setText(summary.getName());
+                        view.getDescriptionText().setText(summary.getPackageName());
 
-                            }
-                        }).getProcessDesc(processContent);
-
-                        
                     }
-                }).getAvailableProcesses();
+                }).getProcessDesc(processId);
+
             }
         }).getFormDisplayProcess(processId);
 
@@ -201,13 +200,16 @@ public class FormDisplayPopupPresenter {
 
     public void startProcess(String values) {
         final Map<String, String> params = getUrlParameters(values);
-        
+
         ksessionServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long processId) {
                 view.displayNotification("Process Id: " + processId + " started!");
                 processInstanceCreatedEvents.fire(new ProcessInstanceCreated());
                 close();
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Definition_Details_Perspective());
+                placeRequestImpl.addParameter("processId", params.get("processId").toString());
+                placeManager.goTo(placeRequestImpl);
             }
         }).startProcess(params.get("processId").toString(), params);
 
@@ -261,7 +263,7 @@ public class FormDisplayPopupPresenter {
             if (pair.length > 1) {
                 value = pair[1];
             }
-            if(!key.startsWith("btn_")){
+            if (!key.startsWith("btn_")) {
                 params.put(key, value);
             }
         }

@@ -19,7 +19,10 @@ import javax.enterprise.context.ApplicationScoped;
 import org.uberfire.client.annotations.Perspective;
 
 import org.uberfire.client.annotations.WorkbenchPerspective;
+import org.uberfire.client.workbench.Position;
+import org.uberfire.client.workbench.model.PanelDefinition;
 import org.uberfire.client.workbench.model.PerspectiveDefinition;
+import org.uberfire.client.workbench.model.impl.PanelDefinitionImpl;
 import org.uberfire.client.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.client.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
@@ -37,6 +40,11 @@ public class ProcessDefinitionDetailsPerspective {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
         p.setName( "Process Definition Details Perspective" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Process Definition Details" ) ) );
+        final PanelDefinition southPanel = new PanelDefinitionImpl();
+        southPanel.setHeight(400);
+        southPanel.setMinHeight(200);
+        southPanel.addPart( new PartDefinitionImpl( new DefaultPlaceRequest(   "Process Instance List" ) ) );      
+        p.getRoot().insertChild( Position.SOUTH , southPanel );
         p.setTransient(true);
         return p;
     }

@@ -40,11 +40,6 @@ public class ProcessRuntimePerspective {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
         p.setName( "Process Runtime Perspective" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Process Definition List" ) ) );
-        final PanelDefinition southPanel = new PanelDefinitionImpl();
-        southPanel.setHeight(400);
-        southPanel.setMinHeight(200);
-        southPanel.addPart( new PartDefinitionImpl( new DefaultPlaceRequest(   "Process Instance List" ) ) );      
-        p.getRoot().insertChild( Position.SOUTH , southPanel );
         p.setTransient(true);
         return p;
     }
