@@ -13,64 +13,67 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.server.impl;
 
+
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Produces;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
-import javax.inject.Inject;
-import org.jbpm.shared.services.api.FileService;
+import org.kie.commons.io.IOService;
+import org.kie.commons.io.impl.IOServiceDotFileImpl;
+import org.kie.commons.java.nio.file.FileSystemAlreadyExistsException;
+import org.uberfire.backend.vfs.ActiveFileSystems;
+import org.uberfire.backend.vfs.Path;
+import org.uberfire.backend.vfs.impl.ActiveFileSystemsImpl;
+import org.uberfire.backend.vfs.impl.FileSystemImpl;
+
+import static java.util.Arrays.*;
+import static org.kie.commons.io.FileSystemType.Bootstrap.*;
+import static org.uberfire.backend.vfs.PathFactory.*;
 
 @Singleton
 public class AppSetup {
 
-    //private ActiveFileSystems fileSystems = new ActiveFileSystemsImpl();
+    private final IOService         ioService         = new IOServiceDotFileImpl();
+    private final ActiveFileSystems activeFileSystems = new ActiveFileSystemsImpl();
 
-    @Inject
-    private FileService fs;
-    
-//    @Inject
-//    private Caller<ExecutorServiceEntryPoint> executorServices;
-    
     @PostConstruct
     public void onStartup() {
-//        System.out.println("Starting Executor Service ...");
-//        executorServices.call(new RemoteCallback<Void>() {
-//            @Override
-//            public void callback(Void nothing) {
-//                System.out.println("Executor Service Started ...");
-//            }
-//        }).init();
-//        try {
-//        //    fs.checkFileSystem();
-//    //        final String gitURL = "https://github.com/guvnorngtestuser1/jbpm-console-ng-playground.git";
-//    //        final String userName = "guvnorngtestuser1";
-//    //        final String password = "test1234";
-//    //        final URI fsURI = URI.create("git://jbpm-playground");
-//    //
-//    //        final Map<String, Object> env = new HashMap<String, Object>();
-//    //        env.put("username", userName);
-//    //        env.put("password", password);
-//    //        env.put("origin", gitURL);
-//    //
-//    //        try {
-//    //            FileSystems.newFileSystem(fsURI, env);
-//    //        } catch (FileSystemAlreadyExistsException ex) {
-//    //        }
-//    //
-//    //        final Path root = new PathImpl("jbpm-playground", "default://jbpm-playground");
-//    //        fileSystems.addBootstrapFileSystem(new FileSystemImpl(asList(root)));
-//    
-//        } catch (FileException ex) {
-//            Logger.getLogger(AppSetup.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        final String gitURL = "https://github.com/guvnorngtestuser1/guvnorng-playground.git";
+        final String userName = "guvnorngtestuser1";
+        final String password = "test1234";
+        final URI fsURI = URI.create( "git://uf-playground" );
+
+        final Map<String, Object> env = new HashMap<String, Object>() {{
+            put( "username", userName );
+            put( "password", password );
+            put( "origin", gitURL );
+        }};
+
+        try {
+            ioService.newFileSystem( fsURI, env, BOOTSTRAP_INSTANCE );
+        } catch ( FileSystemAlreadyExistsException ex ) {
+        }
+
+        final Path root = newPath( "uf-playground", "default://uf-playground" );
+        activeFileSystems.addBootstrapFileSystem( new FileSystemImpl( asList( root ) ) );
     }
 
-//    @Produces @Named("fs")
-//    public ActiveFileSystems fileSystems() {
-//        return fileSystems;
-//    }
+    @Produces
+    @Named("ioStrategy")
+    public IOService ioService() {
+        return ioService;
+    }
 
-   
+    @Produces
+    @Named("fs")
+    public ActiveFileSystems fileSystems() {
+        return activeFileSystems;
+    }
+
 }
