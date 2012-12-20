@@ -16,16 +16,11 @@
 
 package org.jbpm.console.ng.server.impl;
 
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 
 import javax.inject.Inject;
 import org.jbpm.shared.services.api.FileService;
-import org.jboss.errai.bus.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.shared.ExecutorServiceEntryPoint;
-import org.jbpm.console.ng.shared.model.RequestSummary;
 
 @Singleton
 public class AppSetup {
@@ -35,18 +30,18 @@ public class AppSetup {
     @Inject
     private FileService fs;
     
-    @Inject
-    private Caller<ExecutorServiceEntryPoint> executorServices;
+//    @Inject
+//    private Caller<ExecutorServiceEntryPoint> executorServices;
     
     @PostConstruct
     public void onStartup() {
-        System.out.println("Starting Executor Service ...");
-        executorServices.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void nothing) {
-                System.out.println("Executor Service Started ...");
-            }
-        }).init();
+//        System.out.println("Starting Executor Service ...");
+//        executorServices.call(new RemoteCallback<Void>() {
+//            @Override
+//            public void callback(Void nothing) {
+//                System.out.println("Executor Service Started ...");
+//            }
+//        }).init();
 //        try {
 //        //    fs.checkFileSystem();
 //    //        final String gitURL = "https://github.com/guvnorngtestuser1/jbpm-console-ng-playground.git";

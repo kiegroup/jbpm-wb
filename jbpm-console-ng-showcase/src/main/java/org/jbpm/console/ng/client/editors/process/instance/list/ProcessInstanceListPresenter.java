@@ -159,14 +159,14 @@ public class ProcessInstanceListPresenter {
         refreshProcessList("");
     }
     
-    public void abortProcessInstance(String sessionId, long processInstanceId) {
+    public void abortProcessInstance(String processDefId, long processInstanceId) {
         knowledgeServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void v) {
                 refreshProcessList("");
                 
             }
-        }).abortProcessInstance(sessionId, processInstanceId);
+        }).abortProcessInstance(processDefId, processInstanceId);
     }
     
     public void listProcesses() {

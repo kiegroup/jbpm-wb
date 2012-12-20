@@ -157,8 +157,9 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     }
 
     @Override
-    public void abortProcessInstance(String businessKey, long processInstanceId) {
-        domainService.getSessionByName(businessKey).abortProcessInstance(processInstanceId);
+    public void abortProcessInstance(String processDefId, long processInstanceId) {
+        String sessionName = domainService.getProcessInSessionByName(processDefId);
+        domainService.getSessionByName(sessionName).abortProcessInstance(processInstanceId);
 
     }
 

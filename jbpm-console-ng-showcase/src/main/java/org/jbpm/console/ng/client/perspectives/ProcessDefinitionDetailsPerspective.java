@@ -41,7 +41,7 @@ public class ProcessDefinitionDetailsPerspective {
         p.setName( "Process Definition Details Perspective" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Process Definition Details" ) ) );
         final PanelDefinition southPanel = new PanelDefinitionImpl();
-        southPanel.setHeight(400);
+        southPanel.setHeight(250);
         southPanel.setMinHeight(200);
         southPanel.addPart( new PartDefinitionImpl( new DefaultPlaceRequest(   "Process Instance List" ) ) );      
         p.getRoot().insertChild( Position.SOUTH , southPanel );

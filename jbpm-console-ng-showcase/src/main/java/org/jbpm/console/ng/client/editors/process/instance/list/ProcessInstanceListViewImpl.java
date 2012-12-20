@@ -219,8 +219,8 @@ public class ProcessInstanceListViewImpl extends Composite
                     displayNotification(constants.Aborting_Process_Instance_Not_Allowed() + "(id="+ selected.getId()+")");
                     continue;
                 }
-                // TODO do not hardcode business key for session
-                presenter.abortProcessInstance("default", selected.getId());
+                
+                presenter.abortProcessInstance(selected.getProcessName(), selected.getId());
                 processInstanceListGrid.getSelectionModel().setSelected(selected, false);
                 displayNotification(constants.Aborting_Process_Instance() + "(id="+ selected.getId()+")");
             }
@@ -442,8 +442,8 @@ public class ProcessInstanceListViewImpl extends Composite
        cells.add(new AbortActionHasCell("Abort", new Delegate<ProcessInstanceSummary>() {
            @Override
            public void execute(ProcessInstanceSummary processInstance) {
-               // TODO do not hardcode business key for session
-               presenter.abortProcessInstance("default", processInstance.getId());
+               
+               presenter.abortProcessInstance(processInstance.getProcessName(), processInstance.getId());
            }
        }));
        

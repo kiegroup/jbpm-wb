@@ -78,7 +78,7 @@ public interface KnowledgeDomainServiceEntryPoint {
 
     public Map<String, String> getTaskOutputMappings(String processId, String taskName);
 
-    void abortProcessInstance(String businessKey, long processInstanceId);
+    void abortProcessInstance(String processDefId, long processInstanceId);
 
     void signalProcessInstance(String businessKey, String signalName, Object event, long processInstanceId);
 
