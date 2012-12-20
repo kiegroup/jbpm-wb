@@ -28,10 +28,6 @@
         <!--class>org.jbpm.task.impl.CommandBasedTaskInstanceServiceImpl</class-->
         <class>org.jbpm.task.wih.ExternalTaskEventListener</class>
     </alternatives>
-    <decorators>
-        <class>org.jbpm.task.identity.UserGroupLifeCycleManagerDecorator</class>
-        <class>org.jbpm.task.subtask.SubTaskDecorator</class>
-    </decorators>
     <interceptors>
         <class>org.jboss.seam.transaction.TransactionInterceptor</class>
         <class>org.uberfire.security.server.authz.cdi.RolesInterceptor</class>

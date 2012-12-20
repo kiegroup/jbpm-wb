@@ -25,10 +25,6 @@
     <class>org.jbpm.task.lifecycle.listeners.JPATaskLifeCycleEventListener</class>
     <!--class>org.jbpm.task.impl.CommandBasedTaskInstanceServiceImpl</class-->
   </alternatives>
-  <decorators>
-    <class>org.jbpm.task.identity.UserGroupLifeCycleManagerDecorator</class>
-    <class>org.jbpm.task.subtask.SubTaskDecorator</class>
-  </decorators>
   <interceptors>
     <class>org.jboss.seam.transaction.TransactionInterceptor</class>
     <class>org.uberfire.security.server.authz.cdi.RolesInterceptor</class>
