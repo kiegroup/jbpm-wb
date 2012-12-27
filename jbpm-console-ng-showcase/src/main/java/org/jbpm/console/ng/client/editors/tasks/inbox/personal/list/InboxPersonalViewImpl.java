@@ -365,9 +365,6 @@ public class InboxPersonalViewImpl extends Composite
         });
 
 
-
-//   
-
         List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
         cells.add(new StartActionHasCell("Start", new Delegate<TaskSummary>() {
             @Override

@@ -77,7 +77,7 @@ public class ShowcaseEntryPoint {
     private ActivityManager activityManager;
     @Inject
     private IOCBeanManager iocManager;
-    private String[] menuItems = new String[]{"Home Screen",
+    private String[] menuItems = new String[]{"Home Screen","Tasks List",
         "Quick New Task", "Personal Tasks", 
         "Quick New Sub Task", "Task Details", "Task Content",
         "Form Display", "Form Display Popup", "Requests List", 
