@@ -1123,6 +1123,48 @@ a.button {
 }
 
 
+.task-block input[type="text"].date-input{
+
+    width: 420px;
+    padding: 0 30px 0 10px;
+    background-image: url(../images/date-input.png);
+    background-repeat: no-repeat;
+    background-position: top right;
+    
+}
+
+.task-block .file-container {
+    background-color: #e5e5e5;
+    -webkit-border-radius: 3px;
+    border-radius: 3px; 
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+     padding: 7px 10px;
+     height: 20px;
+     line-height: 20px;
+}
+.task-block input[type="file"]{
+    border: none;
+
+    width: 440px;
+    padding: 0px ;
+    height: 20px;
+    line-height: 20px;
+    color: #666;
+ 
+}
+
+.task-block select{
+    border: none;
+    background-color: #e5e5e5;
+    width: 460px;
+    padding: 0 10px;
+    height: 33px;
+    line-height: 34px;
+    color: #666;
+    -webkit-border-radius: 3px;
+    border-radius: 3px; 
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+}
 
 
 /* ==========================================================================
