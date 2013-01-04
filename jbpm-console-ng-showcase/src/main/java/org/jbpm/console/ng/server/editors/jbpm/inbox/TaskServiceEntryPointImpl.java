@@ -121,7 +121,6 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     
     public List<TaskSummary> getTasksAssignedPersonalAndGroupTasks(String userId, String groupId, String language) {
         List<TaskSummary> groupTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroup(groupId, language));
-       
         List<TaskSummary> personalTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedAsPotentialOwner(userId, language));
         groupTasks.addAll(personalTasks);
         return groupTasks;

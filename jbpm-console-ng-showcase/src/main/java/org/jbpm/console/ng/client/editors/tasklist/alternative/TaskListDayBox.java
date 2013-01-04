@@ -20,46 +20,45 @@ import org.uberfire.security.Identity;
  *
  * @author salaboy
  */
-public class TaskListBox extends Composite implements RequiresResize{
-   
-    
-    private List<TaskSummary> taskSummaries = new ArrayList<TaskSummary>();
+public class TaskListDayBox extends Composite implements RequiresResize {
+
+    private List<TaskSummary> taskSummaries;
     private FlowPanel taskListBox = new FlowPanel();
     private FlowPanel dayTaskContainer = new FlowPanel();
     private FlowPanel top = new FlowPanel();
     private Label dayLabel = new Label();
     private TasksListPresenter presenter;
     private Identity identity;
-    @Inject
     private PlaceManager placeManager;
-    
-    public TaskListBox() {
+
+    public TaskListDayBox(String day, List<TaskSummary> taskSummaries, Identity identity, PlaceManager placeManager, TasksListPresenter presenter) {
+
         taskListBox.setStyleName("tasks-list");
         dayTaskContainer.setStyleName("day-tasks-container");
         top.setStyleName("top");
-        dayLabel.setText("Today");
+        dayLabel.setText(day);
         top.add(dayLabel);
         dayTaskContainer.add(top);
         dayTaskContainer.add(taskListBox);
         initWidget(dayTaskContainer);
+        this.taskSummaries = taskSummaries;
+        taskListBox.clear();
+        for (TaskSummary ts : this.taskSummaries) {
+            taskListBox.add(new TaskBox(placeManager, presenter, identity, ts.getId(), ts.getName(), ts.getActualOwner(), ts.getPotentialOwners(), ts.getStatus()));
+        }
     }
 
     public void setPresenter(TasksListPresenter presenter) {
         this.presenter = presenter;
     }
 
-    public void setIdentity(Identity identity) {
-        this.identity = identity;
+ 
+    public Identity getIdentity() {
+        return identity;
     }
 
-    
-    public void refresh(){
-        taskListBox.clear();
-        
-        for(TaskSummary ts : this.taskSummaries){
-           taskListBox.add(new TaskBox(placeManager, presenter, identity,  ts.getId(), ts.getName(), ts.getActualOwner(), ts.getPotentialOwners(), ts.getStatus()));
-        }
-        
+    public void setIdentity(Identity identity) {
+        this.identity = identity;
     }
 
     public void setTaskSummaries(List<TaskSummary> taskSummaries) {
@@ -69,19 +68,15 @@ public class TaskListBox extends Composite implements RequiresResize{
     public List<TaskSummary> getTaskSummaries() {
         return taskSummaries;
     }
-    
-    
-    
-    public void onClick(ClickEvent event) {
-       
+
+    public PlaceManager getPlaceManager() {
+        return placeManager;
+    }
+
+    public void setPlaceManager(PlaceManager placeManager) {
+        this.placeManager = placeManager;
     }
 
     public void onResize() {
-        
     }
-
-    
-
-   
-    
 }

@@ -41,18 +41,18 @@ import org.uberfire.security.Role;
 @WorkbenchScreen(identifier = "Tasks List")
 public class TasksListPresenter {
 
-    public interface InboxView
+    public interface TaskListView
             extends
             UberView<TasksListPresenter> {
 
         void displayNotification(String text);
 
-        TaskListBox getTaskListBox();
+        TaskListMultiDayBox getTaskListMultiDayBox();
         
         void refreshTasks();
     }
     @Inject
-    private InboxView view;
+    private TaskListView view;
     @Inject
     private Identity identity;
     @Inject
@@ -85,8 +85,8 @@ public class TasksListPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
-                    view.getTaskListBox().setTaskSummaries(tasks);
-                    view.getTaskListBox().refresh();
+                    view.getTaskListMultiDayBox().addTasksByDay("today", tasks);
+                    view.getTaskListMultiDayBox().refresh();
 
 
 
@@ -97,8 +97,8 @@ public class TasksListPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
-                    view.getTaskListBox().setTaskSummaries(tasks);
-                    view.getTaskListBox().refresh();
+                    view.getTaskListMultiDayBox().addTasksByDay("today", tasks);
+                    view.getTaskListMultiDayBox().refresh();
 
 
                 }
@@ -113,8 +113,8 @@ public class TasksListPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
-                    view.getTaskListBox().setTaskSummaries(tasks);
-                    view.getTaskListBox().refresh();
+                    view.getTaskListMultiDayBox().addTasksByDay("today", tasks);
+                    view.getTaskListMultiDayBox().refresh();
 
 
                 }
@@ -127,8 +127,8 @@ public class TasksListPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
-                    view.getTaskListBox().setTaskSummaries(tasks);
-                    view.getTaskListBox().refresh();
+                    view.getTaskListMultiDayBox().addTasksByDay("today", tasks);
+                    view.getTaskListMultiDayBox().refresh();
 
 
                 }
@@ -202,6 +202,6 @@ public class TasksListPresenter {
     }
 
     public void formClosed(@Observes BeforeClosePlaceEvent closed) {
-//        view.refreshTasks();
+        view.refreshTasks();
     }
 }

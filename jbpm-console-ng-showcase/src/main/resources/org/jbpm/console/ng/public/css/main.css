@@ -120,7 +120,7 @@ textarea {
 }
 
 .form .form-content {
-    min-width: 500px;
+    width: 460px;
     padding: 20px 20px 0px;
     position: relative;
 }
@@ -162,12 +162,12 @@ textarea {
     min-width: 200px;
     vertical-align:top;
     border: 1px solid;
-     -webkit-border-radius: 3px;
-              border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
     min-height: 25px; 
-   -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
-   float: right;
-   vertical-align: middle;
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+    float: right;
+    vertical-align: middle;
 }
 .form .form-content .form-row input[type="file"] {
     padding-top: 3px;
@@ -178,7 +178,7 @@ textarea {
 }
 .form .form-content .form-row .input-button  {
     width: 67%;
-     padding: 0;
+    padding: 0;
     float: right;
     margin-right: 2px;
 }
@@ -206,25 +206,25 @@ textarea {
     min-width: 200px;
     vertical-align:top;
     border: 1px solid;
-     -webkit-border-radius: 3px;
-              border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
     min-height: 100px; 
-   -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
-   float: right;
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+    float: right;
 }
 .form .form-content .form-row .select-container {
     width: 67%;
     min-width: 200px;
     background-color: #FFF;
-  padding: 1px 0 0;
+    padding: 1px 0 0;
     min-width: 200px;
     vertical-align:top;
     border: 1px solid;
-     -webkit-border-radius: 3px;
+    -webkit-border-radius: 3px;
     border-radius: 3px;
-     height: 25px; 
-     display: inline-block;
-     float: right;
+    height: 25px; 
+    display: inline-block;
+    float: right;
 }
 
 .form .form-content .form-row .select-container select {
@@ -240,14 +240,14 @@ textarea {
 }
 
 .form .form-content .form-row .select-container.multi {
-     min-height: 25px;
-     height: auto; 
+    min-height: 25px;
+    height: auto; 
 }
 
 .form .form-content .form-row .select-container.multi select {
 
-  min-height: 25px;
-  height: auto; 
+    min-height: 25px;
+    height: auto; 
 
 }
 
@@ -269,11 +269,11 @@ textarea {
 .button {
     display: inline-block;
     cursor: pointer; 
-     height: 27px;
-     line-height: 27px;
-     padding: 0 15px;
-         text-align: center;
-         vertical-align: middle;
+    height: 27px;
+    line-height: 27px;
+    padding: 0 15px;
+    text-align: center;
+    vertical-align: middle;
 }
 
 a.button {
@@ -285,15 +285,15 @@ a.button {
 .list .list-options  .select-container {
 
     background-color: #FFF;
-  padding: 1px 4px 0;
+    padding: 1px 4px 0;
     vertical-align:middle;
     border: 1px solid;
-     -webkit-border-radius: 6px;
+    -webkit-border-radius: 6px;
     border-radius: 6px;
-     height: 24px; 
-     display: inline-block;
-  
-        -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+    height: 24px; 
+    display: inline-block;
+
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
 }
 
 .list .list-options  .select-container select {
@@ -301,7 +301,7 @@ a.button {
     width: 100%;
     height:20px;
     background-color: #FFF;
-	
+
 
 }
 
@@ -334,8 +334,8 @@ a.button {
     -webkit-border-radius: 6px;
     border-radius: 6px;
     min-height: 25px; 
-   -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
-   vertical-align: middle;
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+    vertical-align: middle;
 }
 .list .list-options .option {
     display: inline-block;
@@ -350,7 +350,7 @@ a.button {
     font-size: 12px;
 }
 .list .list-content table {
-   width: 100%;
+    width: 100%;
 
 }
 .list .list-content table thead{
@@ -363,7 +363,7 @@ a.button {
     text-overflow: ellipsis;
     white-space:nowrap;
 
-    
+
 }
 .list .list-content table tbody tr{
 
@@ -406,10 +406,10 @@ a.button {
     display: inline-block;
 }
 .form-group .group-row {
-       width: 100%;
-        max-width: 900px;
-    
-        margin: 0 0 5px;
+    width: 100%;
+    max-width: 900px;
+
+    margin: 0 0 5px;
 }
 .form-group .group-row input[type="text"], form-group .group-row  input[type="date"], .form-group .group-row input[type="file"] {
     padding: 0px;
@@ -417,28 +417,28 @@ a.button {
     min-width: 100px;
     vertical-align:top;
     border: 1px solid;
-     -webkit-border-radius: 3px;
-              border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
     min-height: 25px; 
-   -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
-   vertical-align: middle;
-   display: inline-block;
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+    vertical-align: middle;
+    display: inline-block;
     width: 98%;
 }
 
 .form-group .group-row.value-pair input[type="text"] {
     width: 48%;
-       padding: 0px;
-    
+    padding: 0px;
+
 }
 .form-group .group-row.value-pair input[type="text"]:first-child {
-   -webkit-border-radius: 3px 0px 0px 3px;
-            border-radius: 3px 0px 0px 3px;
-            margin-right: -1px;
+    -webkit-border-radius: 3px 0px 0px 3px;
+    border-radius: 3px 0px 0px 3px;
+    margin-right: -1px;
 }
 .form-group .group-row.value-pair input[type="text"]:last-child {
-   -webkit-border-radius: 0px 3px 3px 0px;
-            border-radius: 0px 3px 3px 0px;
+    -webkit-border-radius: 0px 3px 3px 0px;
+    border-radius: 0px 3px 3px 0px;
 }
 
 #container {
@@ -473,7 +473,7 @@ a.button {
     text-decoration: none;
     text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
 }
-.title {
+.title-jbpm {
     color: #1B75BB;
     font-size: 30px;
     left: 110px;
@@ -537,9 +537,9 @@ a.button {
 }
 
 .task:hover {
-   -webkit-box-shadow: 0px 2px 5px 0px rgba(0,0,0,.2); 
-   box-shadow: 0px 2px 5px 0px rgba(0,0,0,.2); 
-   background-color: #e9faff;
+    -webkit-box-shadow: 0px 2px 5px 0px rgba(0,0,0,.2); 
+    box-shadow: 0px 2px 5px 0px rgba(0,0,0,.2); 
+    background-color: #e9faff;
 }
 
 .task .priority {
@@ -574,7 +574,7 @@ a.button {
     display:inline-block;
     height: 10px;
     -webkit-border-radius: 5px;
-            border-radius: 5px; 
+    border-radius: 5px; 
 }
 
 .task .hour {
@@ -644,17 +644,17 @@ a.button {
 
 
 .task .task-options .start {
-   background-image: url(../images/start-icon.png); 
+    background-image: url(../images/start-icon.png); 
 } 
 .task .task-options .claim {
-   background-image: url(../images/claim-icon.png); 
+    background-image: url(../images/claim-icon.png); 
 }
 .task .task-options .release {
-   background-image: url(../images/release-icon.png); 
+    background-image: url(../images/release-icon.png); 
 }
 
 .task .task-options .complete {
-   background-image: url(../images/complete-icon.png); 
+    background-image: url(../images/complete-icon.png); 
 }  
 
 .task .task-options .sub-options {
@@ -707,12 +707,12 @@ a.button {
     padding-left: 55px;
 }
 
-.day .task .task-name a {
+.day .task .task-name div {
     color: #666; 
     text-decoration: none;
     display: block;
 }
-.day .task .task-name a:hover {
+.day .task .task-name div:hover {
     color: #3a4041;
 }
 
@@ -734,7 +734,7 @@ a.button {
     padding: 5px 5px 100px 5px;
     overflow-y: auto;
     overflow-x: hidden;
-    
+
 }
 
 .week #task-container {
@@ -747,14 +747,14 @@ a.button {
 
 .week .task .task-options {
     display: none;
-   
+
 }
 
 .week .task:hover .task-options {
     display: block;
-     z-index: 20;
-     background-color: #FFF;
-     padding-left: 1px;
+    z-index: 20;
+    background-color: #FFF;
+    padding-left: 1px;
 }
 
 .week .task .priority {
@@ -778,25 +778,352 @@ a.button {
     top: 0;
 }
 
-.week .task .task-name a {
+.week .task .task-name div {
     color: #666; 
     text-decoration: none;
     display: block;
     padding-left: 10px;
 }
-.week .task .task-name a:hover {
+.week .task .task-name div:hover {
     color: #000;
 }
 
 
 .week .task.active {
-       border-right: 10px solid #66cc00;
+    border-right: 10px solid #66cc00;
 }
 
 
 .week .task.active:hover .task-options {
 
 }
+
+
+
+/* DETAIL CONTAINER */
+
+#detail-container {
+    position: fixed;
+    z-index: 50;
+    right: 0;
+    top: 0;
+    background-color: #FFF;
+    -webkit-box-shadow:  -2px 0px 30px 0px rgba(0,0,0,.7); 
+    box-shadow:  -2px 0px 30px 0px rgba(0,0,0,.7);
+    height: 100%;
+}
+
+#detail-container #task-details-container {
+    height: 100%;
+
+}
+
+#detail-container.half {
+    width: 500px;
+    overflow: hidden;
+}
+
+#detail-container.full {
+    width: 100%;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    background-image: url(../images/detail-container-bgr.png);
+}
+
+.task-block {
+    width: 500px;
+    margin: 0;
+    float: left;
+    height: 100%;
+    position:relative;
+    background-color: #FFF;
+    overflow: hidden;
+}
+.full .task-block{
+    border-right: 10px solid #b1b1b1;
+    margin:  0;
+    
+
+}
+.full .task-block:first-child {
+    border-left: 10px solid #b1b1b1;
+}
+.full .task-block:hover {
+    
+}
+.task-block > .close {
+    top: 10px;
+    left: 10px;
+    position: absolute;
+
+}
+
+.task-block > .close button {
+    display: block;
+    width: 28px;
+    height: 28px;
+    opacity: .5;
+    background-color: #000;
+    border: none;
+    overflow: hidden;
+    text-indent: -9000px;
+    -webkit-border-radius: 14px;
+    border-radius: 14px; 
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+    background-image: url(../images/close-detail.png);
+    background-repeat: no-repeat;
+}
+
+.task-block > .close button:hover {
+    opacity: 1;
+}
+
+.task-block .title  {
+    height: 47px;
+    line-height: 48px;
+    font-size: 14px;
+    padding: 0 20px 0 51px;
+    
+
+}
+.task-block .title div {
+    display: inline-block;
+}
+
+
+.task-block .detail-nav {
+
+    padding: 0;
+    margin: 0;
+
+    height: 40px;
+    border-bottom: 1px solid #b1b1b1;
+    border-top: 1px solid #b1b1b1;
+
+    -webkit-box-shadow:  0px 2px 10px 0px rgba(0,0,0,.3); 
+    box-shadow:  0px 2px 10px 0px rgba(0,0,0,.3);
+    overflow: hidden;
+
+}
+.task-block .detail-nav div {
+    float: left;
+    height: 40px;
+    display: block;
+    line-height: 42px;
+    padding: 0 20px;
+    color: #999;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.task-block .detail-nav div:hover{
+    color: #000;
+}
+
+.task-block .detail-nav div.active{
+    background-color: #FFF;
+    height: 41px;
+    border-left: 1px solid #b1b1b1;
+    border-right: 1px solid #b1b1b1;
+    color: #000;
+}
+
+.task-block .detail-nav div:first-child.active {
+    border-left: none !important;
+}
+.task-block .options {
+    position: absolute;
+    bottom: 0;
+    background-color: #FFF;
+    border-top: 1px solid #b1b1b1;
+    width: 500px;
+    height: 100px;
+    -webkit-box-shadow:  0px -2px 10px 0px rgba(0,0,0,.3); 
+    box-shadow:  0px -2px 10px 0px rgba(0,0,0,.3);
+}
+
+
+
+.task-block .options div{
+    float: left;
+    width: 25%;
+    display: block;
+    border-right: 1px solid #b1b1b1;
+    height: 98px;
+    background-repeat: no-repeat;
+    background-position: top center;
+    text-indent: -9000px;
+    opacity: .5;
+}
+
+.task-block .options div:hover{
+    opacity: 1;
+}
+
+.task-block .options .start{
+    background-image: url(../images/start-icon-big.png);
+
+}
+
+.task-block .options .abort{
+    background-image: url(../images/abort-icon-big.png);        
+}
+
+.task-block .options .foward{
+    background-image: url(../images/foward-icon-big.png);        
+}
+
+.task-block .options .save{
+    background-image: url(../images/save-icon-big.png);        
+}
+
+.task-block .options .complete{
+    background-image: url(../images/complete-icon-big.png);        
+}
+
+
+
+.task-block .options .user{
+    background-image: url(../images/user-icon-big.png);        
+}
+
+.task-block .options .attach{
+    background-image: url(../images/attach-icon-big.png);        
+}
+
+.task-block .options .sub-task{
+    background-image: url(../images/sub-task-icon-big.png);        
+}
+
+.task-block .options .notes{
+    background-image: url(../images/notes-icon-big.png);        
+}
+
+
+
+.task-block .options ul li:last-child  a {
+    border: none;
+}
+
+.task-block.active .options {
+    background-color: #d2f0b2;
+}
+
+.task-block .content {
+    padding: 20px 20px 120px 20px;
+    overflow-y: auto;
+    max-height: 70%;
+    font-size: 12px;
+    line-height: 17px;
+    color: #555;
+}
+.task-block .content .sub-section  {
+    border-bottom: 1px solid #b1b1b1;
+    margin: 0 -20px;
+    padding: 0 20px;
+    overflow: hidden;
+    -webkit-box-shadow:  0px 3px 5px 0px rgba(0,0,0,.2); 
+    box-shadow:  0px 3px 5px 0px rgba(0,0,0,.2);
+    -webkit-transition: height .25s;
+    transition: height .25s;
+}
+.sub-section.collapsed {
+
+    height: 60px;
+}
+
+.task-block .content .sub-section:last-child {
+    -webkit-box-shadow:  none; 
+    box-shadow:  none;
+    border-bottom: none;
+}
+
+.task-block .content .sub-section .top {
+    height: 60px;
+    line-height: 60px;
+    font-weight: bold;
+    position: relative;
+    color: #000;
+    border-bottom: 1px solid #CCC;
+    margin-bottom: 10px;
+
+}
+
+.task-block .content .sub-section .top .collapse{
+    position: absolute;
+    right: 0;
+    top: 17px;
+}
+
+.task-block .content .sub-section .top .collapse div{
+    display: block;
+    width: 25px;
+    height: 25px;
+    overflow: hidden;
+    text-indent: -9000;
+    background-repeat: no-repeat;
+    background-position: top left;
+    opacity: .5;
+}
+
+.task-block .content .sub-section .top .collapse div:hover {
+    opacity: 1;
+}
+
+.task-block .content .sub-section .top .collapse div {
+    background-image: url(../images/sub-content-close.png);
+}
+
+.task-block .content .sub-section.collapsed .top .collapse div {
+    background-image: url(../images/sub-content-open.png);
+}
+
+.task-block .content .sub-section .sub-section-content {
+    padding: 0 0 30px 0;
+}
+
+
+
+/*FORM*/
+
+.task-block label{
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    color: #000;        
+}
+.task-block input[type="text"]{
+    border: none;
+    background-color: #e5e5e5;
+    width: 440px;
+    padding: 0 10px;
+    height: 33px;
+    line-height: 34px;
+    color: #666;
+    -webkit-border-radius: 3px;
+    border-radius: 3px; 
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+}
+
+.task-block textarea{
+    border: none;
+    background-color: #e5e5e5;
+    width: 440px;
+    padding: 10px;
+    height: 150px;
+    line-height: 17px;
+    color: #666;
+    -webkit-border-radius: 3px;
+    border-radius: 3px; 
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+}
+
+.task-block .form-row {
+    padding-bottom: 10px;
+}
+
+
+
 
 /* ==========================================================================
    Helper classes
@@ -900,8 +1227,8 @@ a.button {
 }
 
 .gradient {
-       filter: none;
-    }
+    filter: none;
+}
 
 /* ==========================================================================
    EXAMPLE Media Queries for Responsive Design.
@@ -938,7 +1265,7 @@ a.button {
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5),
-       only screen and (min-resolution: 144dpi) {
+only screen and (min-resolution: 144dpi) {
     /* Style adjustments for high resolution devices */
 }
 

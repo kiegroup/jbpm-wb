@@ -27,6 +27,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import javax.enterprise.event.Observes;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -36,12 +37,14 @@ import org.uberfire.security.Identity;
 import org.jbpm.console.ng.client.i18n.Constants;
 import org.jbpm.console.ng.client.resources.ShowcaseImages;
 import org.jbpm.console.ng.shared.events.UserTaskEvent;
+import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
 @Templated(value = "TasksListViewImpl.html")
 public class TasksListViewImpl extends Composite
         implements
-        TasksListPresenter.InboxView {
+        TasksListPresenter.TaskListView {
 
     @Inject
     private Identity identity;
@@ -51,11 +54,22 @@ public class TasksListViewImpl extends Composite
     private TasksListPresenter presenter;
     @Inject
     @DataField
-    public Button refreshTasksButton;
+    public Button dayViewTasksButton;
     
     @Inject
     @DataField
-    public TaskListBox taskListBox;
+    public Button weekViewTasksButton;
+    
+    @Inject
+    @DataField
+    public Button createQuickTaskButton;
+    
+    @Inject
+    @DataField
+    public FlowPanel tasksViewContainer;
+    
+    @Inject
+    private  TaskListMultiDayBox taskListMultiDayBox;
     @Inject
     private Event<NotificationEvent> notification;
     private Constants constants = GWT.create(Constants.class);
@@ -65,11 +79,15 @@ public class TasksListViewImpl extends Composite
     public void init(TasksListPresenter presenter) {
         this.presenter = presenter;
 
-        taskListBox.setPresenter(presenter);
+        taskListMultiDayBox.setPresenter(presenter);
 
-        taskListBox.setIdentity(identity);
+        
 
         refreshTasks();
+        // By Default we will start in Day View
+        tasksViewContainer.setStyleName("day");
+        tasksViewContainer.add(taskListMultiDayBox);
+        
 
     }
 
@@ -90,12 +108,27 @@ public class TasksListViewImpl extends Composite
         presenter.refreshTasks(identity.getName(), false, false, false);
     }
 
-    public TaskListBox getTaskListBox() {
-        return taskListBox;
+    public TaskListMultiDayBox getTaskListMultiDayBox() {
+        return taskListMultiDayBox;
     }
 
-    @EventHandler("refreshTasksButton")
-    public void refreshTasksButton(ClickEvent e) {
+   
+
+    @EventHandler("dayViewTasksButton")
+    public void dayViewTasksButton(ClickEvent e) {
+        tasksViewContainer.setStyleName("day");
         refreshTasks();
+    }
+    
+    @EventHandler("weekViewTasksButton")
+    public void weekViewTasksButton(ClickEvent e) {
+        tasksViewContainer.setStyleName("week");
+        refreshTasks();
+    }
+    
+    @EventHandler("createQuickTaskButton")
+    public void createQuickTaskButton(ClickEvent e) {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Quick New Task");
+        placeManager.goTo(placeRequestImpl);
     }
 }
