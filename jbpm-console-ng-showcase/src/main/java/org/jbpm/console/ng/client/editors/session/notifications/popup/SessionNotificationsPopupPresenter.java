@@ -15,18 +15,14 @@
  */
 package org.jbpm.console.ng.client.editors.session.notifications.popup;
 
+import java.util.List;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
-import java.util.List;
-
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-
-
-import javax.enterprise.event.Event;
-
-
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
@@ -50,7 +46,7 @@ public class SessionNotificationsPopupPresenter {
             extends
             UberView<SessionNotificationsPopupPresenter> {
 
-        void displayNotification(String text);
+        void displayNotification( String text );
 
         TextBox getSessionIdText();
 
@@ -58,21 +54,22 @@ public class SessionNotificationsPopupPresenter {
 
         Button getUpdateButton();
     }
+
     @Inject
     private PlaceManager placeManager;
     @Inject
     InboxView view;
     @Inject
-    Identity identity;
-    
+    Identity  identity;
+
     @Inject
     private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
     @Inject
-    private Event<BeforeClosePlaceEvent> closePlaceEvent;
-    private PlaceRequest place;
+    private Event<BeforeClosePlaceEvent>             closePlaceEvent;
+    private PlaceRequest                             place;
 
     @OnStart
-    public void onStart(final PlaceRequest place) {
+    public void onStart( final PlaceRequest place ) {
         this.place = place;
     }
 
@@ -86,35 +83,32 @@ public class SessionNotificationsPopupPresenter {
         return view;
     }
 
-    public void getSessionNotifications(final int sessionId) {
+    public void getSessionNotifications( final int sessionId ) {
 
-
-        knowledgeServices.call(new RemoteCallback<List<RuleNotificationSummary>>() {
+        knowledgeServices.call( new RemoteCallback<List<RuleNotificationSummary>>() {
             @Override
-            public void callback(List<RuleNotificationSummary> notifications) {
+            public void callback( List<RuleNotificationSummary> notifications ) {
                 String notificationsText = "";
-                for(RuleNotificationSummary n : notifications){
-                    notificationsText += n.getDataTimeStamp().toString() + " - " +n.getNotification() +"\n";
+                for ( RuleNotificationSummary n : notifications ) {
+                    notificationsText += n.getDataTimeStamp().toString() + " - " + n.getNotification() + "\n";
                 }
-                view.getSessionNotificationsTextArea().setText("");
-                view.getSessionNotificationsTextArea().setText(notificationsText);
-                view.displayNotification(" Session Notifications updated");
+                view.getSessionNotificationsTextArea().setText( "" );
+                view.getSessionNotificationsTextArea().setText( notificationsText );
+                view.displayNotification( " Session Notifications updated" );
 
             }
-        }).getAllNotificationInstance();
-
+        } ).getAllNotificationInstance();
 
     }
 
     @OnReveal
     public void onReveal() {
-        final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        int taskId = Integer.parseInt(p.getParameter("sessionId", "0").toString());
-        view.getSessionIdText().setText(String.valueOf(taskId));
-        getSessionNotifications(Integer.parseInt(view.getSessionIdText().getText()));
+        int taskId = Integer.parseInt( place.getParameter( "sessionId", "0" ).toString() );
+        view.getSessionIdText().setText( String.valueOf( taskId ) );
+        getSessionNotifications( Integer.parseInt( view.getSessionIdText().getText() ) );
     }
 
     public void close() {
-        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
+        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }
 }

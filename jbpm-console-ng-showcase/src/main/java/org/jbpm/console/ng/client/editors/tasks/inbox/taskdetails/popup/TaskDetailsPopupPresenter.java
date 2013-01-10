@@ -84,7 +84,7 @@ public class TaskDetailsPopupPresenter {
         TextBox getTaskStatusText();
 
         Button getUpdateButton();
-        
+
         Button getpIDetailsButton();
     }
     @Inject
@@ -186,9 +186,9 @@ public class TaskDetailsPopupPresenter {
                 }else{
                     view.getProcessInstanceIdText().setText(String.valueOf(details.getProcessInstanceId()));
                 }
-                
+
                 view.getProcessInstanceIdText().setEnabled(false);
-                
+
 
                 int i = 0;
                 for (String strategy : view.getSubTaskStrategies()) {
@@ -218,8 +218,7 @@ public class TaskDetailsPopupPresenter {
 
     @OnReveal
     public void onReveal() {
-        final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        long taskId = Long.parseLong(p.getParameter("taskId", "0").toString());
+        long taskId = Long.parseLong(place.getParameter("taskId", "0").toString());
         view.getTaskIdText().setText(String.valueOf(taskId));
         refreshTask(Long.parseLong(view.getTaskIdText().getText()));
     }

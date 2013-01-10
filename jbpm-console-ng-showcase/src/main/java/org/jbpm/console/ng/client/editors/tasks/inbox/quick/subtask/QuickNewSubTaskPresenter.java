@@ -15,17 +15,15 @@
  */
 package org.jbpm.console.ng.client.editors.tasks.inbox.quick.subtask;
 
-import com.google.gwt.user.client.ui.TextBox;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Event;
-import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
-
-
+import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.shared.TaskServiceEntryPoint;
 import org.jbpm.console.ng.shared.events.TaskChangedEvent;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
@@ -35,33 +33,38 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.shared.mvp.PlaceRequest;
-import org.uberfire.shared.mvp.impl.PassThroughPlaceRequest;
 
 @Dependent
 @WorkbenchScreen(identifier = "Quick New Sub Task")
 public class QuickNewSubTaskPresenter {
 
+    private PlaceRequest place;
+
     public interface InboxView
             extends
             UberView<QuickNewSubTaskPresenter> {
 
-        void displayNotification(String text);
-        
+        void displayNotification( String text );
+
         TextBox getParentTaskIdText();
-        
+
     }
-    
+
     @Inject
-    private PlaceManager placeManager;
+    private PlaceManager                  placeManager;
     @Inject
-    private InboxView view;
+    private InboxView                     view;
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
 
-    
     @Inject
     private Event<TaskChangedEvent> taskChanged;
-    
+
+    @OnStart
+    public void onStart( final PlaceRequest place ) {
+        this.place = place;
+    }
+
     @WorkbenchPartTitle
     public String getTitle() {
         return "Quick New Sub Task";
@@ -79,27 +82,27 @@ public class QuickNewSubTaskPresenter {
     public void init() {
     }
 
-   
-    public void addSubTask(final long parentId, final String assignee, String taskName) {
-        String str = "(with (new Task()) { taskData = (with( new TaskData( )) { parentId = "+parentId+" } ), ";
+    public void addSubTask( final long parentId,
+                            final String assignee,
+                            String taskName ) {
+        String str = "(with (new Task()) { taskData = (with( new TaskData( )) { parentId = " + parentId + " } ), ";
         str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
-        if (assignee != null && !assignee.equals("")) {
+        if ( assignee != null && !assignee.equals( "" ) ) {
             str += " [new User('" + assignee + "')  ], }),";
         }
         str += "names = [ new I18NText( 'en-UK', '" + taskName + "')] })";
-        taskServices.call(new RemoteCallback<Long>() {
+        taskServices.call( new RemoteCallback<Long>() {
             @Override
-            public void callback(Long taskId) {
-                view.displayNotification("Sub Task Created (id = " + taskId + " for parent: "+parentId+")");
+            public void callback( Long taskId ) {
+                view.displayNotification( "Sub Task Created (id = " + taskId + " for parent: " + parentId + ")" );
                 //taskChanged.fire(new TaskChangedEvent(taskId, assignee));
             }
-        }).addTask(str, null);
+        } ).addTask( str, null );
     }
 
     @OnReveal
     public void onReveal() {
-        final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        long taskId = Long.parseLong(((PassThroughPlaceRequest)p).getPassThroughParameter("taskId", "0").toString());
-        view.getParentTaskIdText().setText(String.valueOf(taskId));
+        long taskId = Long.parseLong( place.getParameter( "taskId", "0" ).toString() );
+        view.getParentTaskIdText().setText( String.valueOf( taskId ) );
     }
 }

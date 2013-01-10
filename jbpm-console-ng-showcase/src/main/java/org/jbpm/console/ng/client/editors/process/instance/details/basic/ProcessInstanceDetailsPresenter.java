@@ -39,23 +39,25 @@ import org.jbpm.console.ng.shared.model.VariableSummary;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
 import org.kie.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.OnReveal;
+import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.shared.mvp.PlaceRequest;
-import org.uberfire.shared.mvp.impl.PassThroughPlaceRequest;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance Details")
 public class ProcessInstanceDetailsPresenter {
 
+    private PlaceRequest place;
+
     public interface InboxView
             extends
             UberView<ProcessInstanceDetailsPresenter> {
 
-        void displayNotification(String text);
+        void displayNotification( String text );
 
         ListBox getCurrentActivitiesListBox();
 
@@ -64,20 +66,21 @@ public class ProcessInstanceDetailsPresenter {
         TextBox getProcessIdText();
 
         TextBox getProcessNameText();
-        
+
         TextBox getStateText();
-        
-        void setProcessINstance(ProcessInstanceSummary processInstance);
+
+        void setProcessINstance( ProcessInstanceSummary processInstance );
     }
+
     @Inject
     private PlaceManager placeManager;
     @Inject
-    InboxView view;
+    InboxView                                view;
     @Inject
     Caller<KnowledgeDomainServiceEntryPoint> domainServices;
-    private ListDataProvider<VariableSummary> dataProvider = new ListDataProvider<VariableSummary>();
-    public static final ProvidesKey<VariableSummary> KEY_PROVIDER = new ProvidesKey<VariableSummary>() {
-        public Object getKey(VariableSummary item) {
+    private             ListDataProvider<VariableSummary> dataProvider = new ListDataProvider<VariableSummary>();
+    public static final ProvidesKey<VariableSummary>      KEY_PROVIDER = new ProvidesKey<VariableSummary>() {
+        public Object getKey( VariableSummary item ) {
             return item == null ? null : item.getVariableId();
         }
     };
@@ -92,41 +95,42 @@ public class ProcessInstanceDetailsPresenter {
         return view;
     }
 
-    public void refreshProcessInstanceData(final String processId, final String processDefId) {
-        domainServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
+    public void refreshProcessInstanceData( final String processId,
+                                            final String processDefId ) {
+        domainServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
-            public void callback(List<NodeInstanceSummary> details) {
+            public void callback( List<NodeInstanceSummary> details ) {
                 String fullLog = "";
-                for (NodeInstanceSummary nis : details) {
+                for ( NodeInstanceSummary nis : details ) {
                     fullLog += nis.getTimestamp() + " - " + nis.getNodeName() + " (" + nis.getType() + ") \n";
                 }
-                view.getLogTextArea().setText(fullLog);
+                view.getLogTextArea().setText( fullLog );
             }
-        }).getProcessInstanceHistory(0, Long.parseLong(processId));
-        domainServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
+        } ).getProcessInstanceHistory( 0, Long.parseLong( processId ) );
+        domainServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
-            public void callback(List<NodeInstanceSummary> details) {
-                for (NodeInstanceSummary nis : details) {
-                    view.getCurrentActivitiesListBox().addItem(nis.getTimestamp() + ":" + nis.getId() + "-" + nis.getNodeName(),
-                            String.valueOf(nis.getId()));
+            public void callback( List<NodeInstanceSummary> details ) {
+                for ( NodeInstanceSummary nis : details ) {
+                    view.getCurrentActivitiesListBox().addItem( nis.getTimestamp() + ":" + nis.getId() + "-" + nis.getNodeName(),
+                                                                String.valueOf( nis.getId() ) );
                 }
             }
-        }).getProcessInstanceActiveNodes(0, Long.parseLong(processId));
+        } ).getProcessInstanceActiveNodes( 0, Long.parseLong( processId ) );
 
-       domainServices.call(new RemoteCallback<ProcessSummary>() {
+        domainServices.call( new RemoteCallback<ProcessSummary>() {
             @Override
-            public void callback(ProcessSummary process) {
-                view.getProcessNameText().setText(process.getId());
+            public void callback( ProcessSummary process ) {
+                view.getProcessNameText().setText( process.getId() );
             }
-        }).getProcessDesc(processDefId);
+        } ).getProcessDesc( processDefId );
 
-       domainServices.call(new RemoteCallback<ProcessInstanceSummary>() {
-           @Override
-           public void callback(ProcessInstanceSummary process) {
-               view.setProcessINstance(process);
-               
-               String statusStr = "Unknown";
-               switch (process.getState()) {
+        domainServices.call( new RemoteCallback<ProcessInstanceSummary>() {
+            @Override
+            public void callback( ProcessInstanceSummary process ) {
+                view.setProcessINstance( process );
+
+                String statusStr = "Unknown";
+                switch ( process.getState()) {
                case ProcessInstance.STATE_ACTIVE:
                    statusStr = "Active";
                    break;
@@ -167,11 +171,15 @@ public class ProcessInstanceDetailsPresenter {
         dataProvider.refresh();
     }
 
+    @OnStart
+    public void onStart(final PlaceRequest place) {
+        this.place = place;
+    }
+
     @OnReveal
     public void onReveal() {
-        final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        String processId = (String) ((PassThroughPlaceRequest) p).getPassThroughParameter("processInstanceId", "");
-        String processDefId = (String) ((PassThroughPlaceRequest) p).getPassThroughParameter("processDefId", "");
+        String processId = place.getParameter("processInstanceId", "");
+        String processDefId = place.getParameter("processDefId", "");
         view.getProcessIdText().setText(processId);
         view.getProcessNameText().setText(processDefId);
         refreshProcessInstanceData(processId, processDefId);

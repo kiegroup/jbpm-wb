@@ -74,15 +74,12 @@ public class VariableEditPresenter {
     public UberView<VariableEditPresenter> getView() {
         return view;
     }
-    
+
     @OnReveal
     public void onReveal() {
-        final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        view.setProcessInstanceId(Long.parseLong(p.getParameter("processInstanceId", "-1").toString()));
-        view.setVariableId(p.getParameter("variableId", "-1").toString());
-        view.setVariableText(p.getParameter("value", "-1").toString());
-        
-
+        view.setProcessInstanceId(Long.parseLong(place.getParameter("processInstanceId", "-1").toString()));
+        view.setVariableId(place.getParameter("variableId", "-1").toString());
+        view.setVariableText(place.getParameter("value", "-1").toString());
     }
 
     public void close() {

@@ -77,7 +77,7 @@ public class TaskBox extends Composite {
             @Override
             public void onClick(ClickEvent event) {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Alternative Popup");
-                placeRequestImpl.addParameter("taskId", taskId);
+                placeRequestImpl.addParameter("taskId", String.valueOf( taskId ) );
                 placeManager.goTo(placeRequestImpl);
             }
         });

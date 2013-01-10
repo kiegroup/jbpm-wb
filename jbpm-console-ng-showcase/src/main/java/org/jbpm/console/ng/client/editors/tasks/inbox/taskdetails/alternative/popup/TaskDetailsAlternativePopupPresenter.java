@@ -215,8 +215,7 @@ public class TaskDetailsAlternativePopupPresenter {
 
     @OnReveal
     public void onReveal() {
-        final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        long taskId = Long.parseLong(p.getParameter("taskId", "0").toString());
+        long taskId = Long.parseLong(place.getParameter("taskId", "0").toString());
         view.getTaskIdText().setText(String.valueOf(taskId));
         refreshTask(Long.parseLong(view.getTaskIdText().getText()));
     }

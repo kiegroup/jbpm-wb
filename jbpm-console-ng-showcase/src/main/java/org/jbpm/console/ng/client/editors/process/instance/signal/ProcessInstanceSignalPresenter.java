@@ -86,8 +86,7 @@ public class ProcessInstanceSignalPresenter {
     
     @OnReveal
     public void onReveal() {
-        final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        String processInstanceIds = p.getParameter("processInstanceId", "-1").toString();
+        String processInstanceIds = place.getParameter("processInstanceId", "-1").toString();
         String[] ids = processInstanceIds.split(",");
         for (String id : ids) {
             long processInstanceId = Long.parseLong(id);

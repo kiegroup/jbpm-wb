@@ -1,16 +1,16 @@
 package org.jbpm.console.ng.client.editors.process.instance.details.variable.history;
 
 import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.ListDataProvider;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.shared.KnowledgeDomainServiceEntryPoint;
-import org.jbpm.console.ng.shared.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.shared.model.VariableSummary;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
@@ -23,53 +23,48 @@ import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
 import org.uberfire.security.Identity;
 import org.uberfire.shared.mvp.PlaceRequest;
 
-import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
-
 @Dependent
 @WorkbenchPopup(identifier = "Variable History Popup")
 public class VariableHistoryPresenter {
 
     public interface PopupView extends UberView<VariableHistoryPresenter> {
 
-        void displayNotification(String text);
+        void displayNotification( String text );
 
-        void setProcessInstanceId(long processInstanceId);
-        
+        void setProcessInstanceId( long processInstanceId );
+
         long getProcessInstanceId();
-        
-        void setVariableId(String variableId);
-        
+
+        void setVariableId( String variableId );
+
         String getVariableId();
     }
-    
 
     @Inject
-    private PopupView view;
+    private PopupView                    view;
     @Inject
-    private Identity identity;
+    private Identity                     identity;
     @Inject
-    private PlaceManager placeManager;
+    private PlaceManager                 placeManager;
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
-    private PlaceRequest place;
-    
+    private PlaceRequest                 place;
+
     private ListDataProvider<VariableSummary> dataProvider = new ListDataProvider<VariableSummary>();
-    
+
     @Inject
     private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
-    
+
     @PostConstruct
     public void init() {
-     
 
     }
 
     @OnStart
-    public void onStart(final PlaceRequest place) {
+    public void onStart( final PlaceRequest place ) {
         this.place = place;
     }
-    
+
     @WorkbenchPartTitle
     public String getTitle() {
         return "Process variable history";
@@ -79,33 +74,32 @@ public class VariableHistoryPresenter {
     public UberView<VariableHistoryPresenter> getView() {
         return view;
     }
-    
+
     @OnReveal
     public void onReveal() {
-        final PlaceRequest p = placeManager.getCurrentPlaceRequest();
-        view.setProcessInstanceId(Long.parseLong(p.getParameter("processInstanceId", "-1").toString()));
-        view.setVariableId(p.getParameter("variableId", "-1").toString());
-        
+        view.setProcessInstanceId( Long.parseLong( place.getParameter( "processInstanceId", "-1" ).toString() ) );
+        view.setVariableId( place.getParameter( "variableId", "-1" ).toString() );
+
         loadVariableHistory();
     }
 
     public void close() {
-        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
+        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }
-    
+
     public void loadVariableHistory() {
-        knowledgeServices.call(new RemoteCallback<List<VariableSummary>>() {
+        knowledgeServices.call( new RemoteCallback<List<VariableSummary>>() {
             @Override
-            public void callback(List<VariableSummary> processInstances) {
+            public void callback( List<VariableSummary> processInstances ) {
                 dataProvider.getList().clear();
-                dataProvider.getList().addAll(processInstances);
+                dataProvider.getList().addAll( processInstances );
                 dataProvider.refresh();
             }
-        }).getVariableHistory(view.getProcessInstanceId(), view.getVariableId());
+        } ).getVariableHistory( view.getProcessInstanceId(), view.getVariableId() );
     }
-    
-    public void addDataDisplay(HasData<VariableSummary> display) {
-        dataProvider.addDataDisplay(display);
+
+    public void addDataDisplay( HasData<VariableSummary> display ) {
+        dataProvider.addDataDisplay( display );
     }
 
     public ListDataProvider<VariableSummary> getDataProvider() {
