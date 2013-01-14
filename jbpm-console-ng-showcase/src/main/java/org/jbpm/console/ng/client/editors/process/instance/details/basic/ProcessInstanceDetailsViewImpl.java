@@ -93,6 +93,10 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     @Inject
     @DataField
     public Button viewSessionNotificationsButton;
+    
+    @Inject
+    @DataField
+    public Button viewProcessDiagramButton;
     @Inject
     @DataField
     public DataGrid<VariableSummary> processDataGrid;
@@ -148,6 +152,16 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         placeRequestImpl.addParameter("sessionId", Integer.toString(0));
         placeManager.goTo(placeRequestImpl);
     }
+    
+    @EventHandler("viewProcessDiagramButton")
+    public void viewProcessDiagramButton(ClickEvent e){
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Diagram Popup");
+        placeRequestImpl.addParameter("processDefId", processNameText.getText());
+        placeRequestImpl.addParameter("processInstanceId", processIdText.getText());
+        placeManager.goTo(placeRequestImpl);
+    }
+    
+    
     
     public TextBox getProcessIdText() {
         return processIdText;

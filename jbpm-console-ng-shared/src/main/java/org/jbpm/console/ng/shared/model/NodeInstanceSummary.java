@@ -28,14 +28,16 @@ public class NodeInstanceSummary implements Serializable {
     private long id;
     private long processId;
     private String nodeName;
+    private String nodeUniqueName;
     private String type;
     private String timestamp;
     
-    public NodeInstanceSummary(long id, long processId, String nodeName, String type, String timestamp) {
+    public NodeInstanceSummary(long id, long processId, String nodeName, String nodeUniqueName, String type, String timestamp) {
         super();
         this.id = id;
         this.processId = processId;
         this.nodeName = nodeName;
+        this.nodeUniqueName = nodeUniqueName;
         this.type = type;
         this.timestamp = timestamp;
 
@@ -83,6 +85,9 @@ public class NodeInstanceSummary implements Serializable {
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
-    
+
+    public String getNodeUniqueName() {
+        return nodeUniqueName;
+    }
     
 }
