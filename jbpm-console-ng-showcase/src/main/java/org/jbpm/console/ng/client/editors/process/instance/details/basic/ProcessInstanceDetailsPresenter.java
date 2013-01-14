@@ -69,7 +69,11 @@ public class ProcessInstanceDetailsPresenter {
 
         TextBox getStateText();
 
-        void setProcessINstance( ProcessInstanceSummary processInstance );
+        void setProcessInstance( ProcessInstanceSummary processInstance );
+        
+        TextBox getProcessPackageText();
+        
+        TextBox getProcessVersionText();
     }
 
     @Inject
@@ -121,13 +125,15 @@ public class ProcessInstanceDetailsPresenter {
             @Override
             public void callback( ProcessSummary process ) {
                 view.getProcessNameText().setText( process.getId() );
+                view.getProcessPackageText().setText(process.getPackageName());
+                view.getProcessVersionText().setText(process.getVersion());
             }
         } ).getProcessDesc( processDefId );
 
         domainServices.call( new RemoteCallback<ProcessInstanceSummary>() {
             @Override
             public void callback( ProcessInstanceSummary process ) {
-                view.setProcessINstance( process );
+                view.setProcessInstance( process );
 
                 String statusStr = "Unknown";
                 switch ( process.getState()) {

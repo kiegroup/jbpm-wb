@@ -42,7 +42,6 @@ import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
-import com.google.gwt.cell.client.ButtonCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -51,11 +50,9 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
@@ -78,6 +75,15 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     @Inject
     @DataField
     public TextBox processNameText;
+    
+    @Inject
+    @DataField
+    public TextBox processPackageText;
+    
+    @Inject
+    @DataField
+    public TextBox processVersionText;
+    
     @Inject
     @DataField
     public TextBox stateText;
@@ -158,6 +164,8 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Diagram Popup");
         placeRequestImpl.addParameter("processDefId", processNameText.getText());
         placeRequestImpl.addParameter("processInstanceId", processIdText.getText());
+        placeRequestImpl.addParameter("processPackage", processPackageText.getText());
+        placeRequestImpl.addParameter("processVersion", processVersionText.getText());
         placeManager.goTo(placeRequestImpl);
     }
     
@@ -386,11 +394,21 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     }
 
     @Override
-    public void setProcessINstance(ProcessInstanceSummary processInstance) {
+    public void setProcessInstance(ProcessInstanceSummary processInstance) {
         this.processInstance = processInstance;
     }
 
     public TextBox getStateText() {
         return this.stateText;
     }
+
+    public TextBox getProcessPackageText() {
+        return processPackageText;
+    }
+
+    public TextBox getProcessVersionText() {
+        return processVersionText;
+    }
+    
+    
 }

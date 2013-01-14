@@ -55,6 +55,14 @@ public class ProcessDiagramPopupViewImpl extends Composite
     
     @Inject
     @DataField
+    public TextBox processPackageNameText;
+
+    @Inject
+    @DataField
+    public TextBox processVersionText;
+    
+    @Inject
+    @DataField
     public TextBox processDiagramURLText;
 
     @Inject
@@ -85,7 +93,8 @@ public class ProcessDiagramPopupViewImpl extends Composite
 
     @EventHandler("generateUrlButton")
     public void generateUrlButton(ClickEvent e) {
-        presenter.generateURL(processDefIdText.getText() ,Long.parseLong(processInstanceIdText.getText()));
+        presenter.generateURL(processDefIdText.getText() ,Long.parseLong(processInstanceIdText.getText()), 
+                                processPackageNameText.getText(), processVersionText.getText() );
     }
 
     @EventHandler("closeButton")
@@ -105,7 +114,13 @@ public class ProcessDiagramPopupViewImpl extends Composite
         return processDiagramURLText;
     }
 
-   
+    public TextBox getProcessPackageNameText() {
+        return processPackageNameText;
+    }
+
+    public TextBox getProcessVersionText() {
+        return processVersionText;
+    }
 
     public Button getGenerateUrlButton() {
         return generateUrlButton;

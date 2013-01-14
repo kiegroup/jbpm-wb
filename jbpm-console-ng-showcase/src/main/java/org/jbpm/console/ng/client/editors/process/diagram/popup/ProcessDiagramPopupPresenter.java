@@ -54,6 +54,10 @@ public class ProcessDiagramPopupPresenter {
         Button getGenerateUrlButton();
         
         TextBox getProcessInstanceIdText();
+        
+        TextBox getProcessPackageNameText();
+
+        TextBox getProcessVersionText();
     }
     @Inject
     private PlaceManager placeManager;
@@ -83,11 +87,15 @@ public class ProcessDiagramPopupPresenter {
         return view;
     }
 
-    public void generateURL(final String processDefinitionId, Long processInstanceId) {
+    public void generateURL(final String processDefinitionId, final Long processInstanceId, 
+                            final String packageName, final String version) {
         knowledgeServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
             public void callback( List<NodeInstanceSummary> details ) {
-                String fullLog = "?processDefId="+processDefinitionId+"?nodeIds=";
+                String fullLog = "?processDefId="+processDefinitionId+""
+                         + "?processPackage="+packageName
+                        + "?processVersion="+version
+                        + "?nodeIds=";
                 for ( NodeInstanceSummary nis : details ) {
                     fullLog +=  nis.getNodeUniqueName()+ ",";
                 }
@@ -101,10 +109,13 @@ public class ProcessDiagramPopupPresenter {
     public void onReveal() {
         String processDefinitionId = place.getParameter("processDefId", "").toString();
         Long processInstanceId = Long.parseLong( place.getParameter("processInstanceId", "0").toString());
-        
+        String packageName = place.getParameter("processPackage", "").toString();
+        String version = place.getParameter("processVersion", "0").toString();
         view.getProcessDefIdText().setText(processDefinitionId);
         view.getProcessInstanceIdText().setText(processInstanceId.toString());
-        generateURL(processDefinitionId, processInstanceId);
+        view.getProcessPackageNameText().setText(packageName);
+        view.getProcessVersionText().setText(version);
+        generateURL(processDefinitionId, processInstanceId, packageName, version);
     }
 
     public void close() {
