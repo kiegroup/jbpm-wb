@@ -42,7 +42,7 @@ import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.IOCBeanManager;
-import org.jbpm.console.ng.client.resources.ShowcaseResources;
+import org.jbpm.console.ng.pr.client.resources.ShowcaseResources;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.Command;
@@ -77,11 +77,13 @@ public class ShowcaseEntryPoint {
     private ActivityManager activityManager;
     @Inject
     private IOCBeanManager iocManager;
-    private String[] menuItems = new String[]{"Home Screen","Tasks List",
-        "Quick New Task", "Personal Tasks", 
-        "Quick New Sub Task", "Task Details", "Task Content",
-        "Form Display", "Form Display Popup", "Requests List", 
-        "Process Instance List", "Quick New Process Instance", "Process Definition List", "Users and Groups List"
+    private String[] menuItems = new String[]{
+        "Home Screen",
+        "Tasks List",
+        "Quick New Task", 
+        "Jobs/Requests List", 
+        "Process Definition List", 
+        "Users and Groups List"
     };
     
     private SuggestBox actionText;

@@ -17,11 +17,18 @@ package org.jbpm.console.ng.server.impl;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import org.jboss.errai.bus.client.api.RemoteCallback;
+import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
+import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 
 import org.kie.commons.io.IOService;
 import org.kie.commons.io.impl.IOServiceDotFileImpl;
@@ -38,7 +45,7 @@ public class AppSetup {
 
     private final IOService         ioService         = new IOServiceDotFileImpl();
     private final ActiveFileSystems activeFileSystems = new ActiveFileSystemsImpl();
-
+    
     @PostConstruct
     public void onStartup() {
         final String gitURL = "https://github.com/guvnorngtestuser1/guvnorng-playground.git";
@@ -63,6 +70,10 @@ public class AppSetup {
         activeFileSystems.addBootstrapFileSystem( FileSystemFactory.newFS( new HashMap<String, String>() {{
             put( "default://uf-playground", "uf-playground" );
         }}, fs.supportedFileAttributeViews() ) );
+        
+        
+
+        
     }
 
     @Produces

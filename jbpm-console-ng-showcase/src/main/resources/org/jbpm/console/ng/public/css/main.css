@@ -460,7 +460,7 @@ a.button {
     position: absolute;
     z-index: 0;
 }
-.link-1 a, .link-2 a, .link-3 a, .link-4 a, .link-5 a, .link-6 a {
+.link-1 div, .link-2 div, .link-3 div, .link-4 div, .link-5 div, .link-6 div {
     color: #FFFFFF;
     display: block;
     height: 80px;
@@ -469,7 +469,7 @@ a.button {
     text-decoration: none;
     width: 140px;
 }
-.link-1 a:hover, .link-2 a:hover, .link-3 a:hover, .link-4 a:hover, .link-5 a:hover, .link-6 a:hover {
+.link-1 div:hover, .link-2 div:hover, .link-3 div:hover, .link-4 div:hover, .link-5 div:hover, .link-6 div:hover {
     text-decoration: none;
     text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
 }
