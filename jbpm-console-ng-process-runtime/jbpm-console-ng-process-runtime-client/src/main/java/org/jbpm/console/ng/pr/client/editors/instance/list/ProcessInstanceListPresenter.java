@@ -179,6 +179,7 @@ public class ProcessInstanceListPresenter {
   }
 
   public void listProcesses() {
+    System.out.println("############# Current Process Instance Definition! "+this.currentProcessDefinition);
     if (!this.currentProcessDefinition.equals("")) {
       domainServices.call(new RemoteCallback<List<ProcessSummary>>() {
         @Override

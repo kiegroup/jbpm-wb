@@ -178,6 +178,15 @@ public class FormDisplayAlternativePopupPresenter {
                     public void callback( ProcessSummary summary ) {
                         view.getNameText().setText( summary.getName() );
                         view.getTaskIdText().setText( String.valueOf( summary.getId() ) );
+                        FocusPanel startFlowPanel = new FocusPanel();
+                            startFlowPanel.setStyleName( "start" );
+                            startFlowPanel.addClickHandler( new ClickHandler() {
+
+                                public native void onClick( ClickEvent event )/*-{
+                                    $wnd.startProcess($wnd.getFormValues($doc.getElementById("form-data")));
+                                }-*/;
+                            } );
+                            view.getOptionsDiv().add( startFlowPanel );
 
                     }
                 } ).getProcessDesc( processId );
