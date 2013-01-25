@@ -22,7 +22,8 @@
     </Set>
   </Call>
     
-  <New class="org.mortbay.jetty.plus.naming.Transaction">
+  <New id="tx" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>java:comp/UserTransaction</Arg>
     <Arg>
       <Call name="getTransactionManager" class="bitronix.tm.TransactionManagerServices" />
     </Arg>
