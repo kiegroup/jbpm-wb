@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.pr.client.editors.definition.details;
 
+import com.google.gwt.user.client.Window;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,8 @@ import org.uberfire.shared.mvp.PlaceRequest;
 public class ProcessDefDetailsPresenter {
 
     private PlaceRequest place;
+
+  
 
     public interface InboxView
             extends
@@ -85,6 +88,18 @@ public class ProcessDefDetailsPresenter {
     public UberView<ProcessDefDetailsPresenter> getView() {
         return view;
     }
+    
+    void openProcessDiagram(final String processDefId) {
+      
+      domainServices.call( new RemoteCallback<Map<String, String>>() {
+            @Override
+            public void callback( Map<String, String> availableProcessesPaths ) {
+               Window.open("http://localhost:8080/designer/editor?profile=jbpm&pp=&uuid=git://jbpm-playground" 
+                       +availableProcessesPaths.get(processDefId), "_blank", "");
+            }
+        } ).getAvailableProcessesPath();
+    
+  }
 
     public void refreshProcessDef( final String processId ) {
 

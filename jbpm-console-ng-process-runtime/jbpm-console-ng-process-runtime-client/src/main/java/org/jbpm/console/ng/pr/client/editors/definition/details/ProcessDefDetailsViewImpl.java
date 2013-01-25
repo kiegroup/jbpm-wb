@@ -19,6 +19,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
+import com.google.gwt.user.client.Window;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -79,6 +80,9 @@ public class ProcessDefDetailsViewImpl extends Composite
   @DataField
   public Button createProcessInstanceButton;
   @Inject
+  @DataField
+  public Button openProcessDesignerButton;
+  @Inject
   private Event<NotificationEvent> notification;
   private Constants constants = GWT.create(Constants.class);
 
@@ -119,6 +123,15 @@ public class ProcessDefDetailsViewImpl extends Composite
     PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance List");
     placeRequestImpl.addParameter("processDefId", processNameText.getText());
     placeManager.goTo(placeRequestImpl);
+
+  }
+
+  //http://localhost:8080/designer/editor?profile=jbpm&pp=&uuid=git://designer-repo/examples/release/release.bpmn
+  @EventHandler("openProcessDesignerButton")
+  public void openProcessDesignerButton(ClickEvent e) {
+    presenter.openProcessDiagram(processNameText.getText());
+      
+     
 
   }
 

@@ -18,7 +18,7 @@ import javax.inject.Singleton;
 @Singleton
 public class TaskDatabaseProducer {
 
-    @PersistenceUnit(unitName = "org.jbpm.task")
+    @PersistenceUnit(unitName = "org.jbpm.domain")
     @ExtensionManaged
     @ApplicationScoped
     @Produces

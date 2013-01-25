@@ -49,7 +49,7 @@ public class DomainPresenter {
        
     }
     @Inject
-    InboxView view;
+    DomainView view;
     @Inject
     Identity identity;
     @Inject

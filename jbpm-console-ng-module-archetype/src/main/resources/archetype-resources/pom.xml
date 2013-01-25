@@ -24,10 +24,9 @@
 
   <artifactId>${artifactId}</artifactId>
 
-  <groupId>${groupId}</groupId>
+  
   <packaging>pom</packaging>
 
   <name>jBPM Console NG - ${artifactId} Panels</name>
 
-  <version>${version}</version>
 </project>

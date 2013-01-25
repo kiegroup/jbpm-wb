@@ -15,20 +15,14 @@
  */
 package org.jbpm.console.ng.server.impl;
 
+import bitronix.tm.resource.jdbc.PoolingDataSource;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import org.jboss.errai.bus.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
-import org.jbpm.console.ng.ht.model.TaskSummary;
-import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 
 import org.kie.commons.io.IOService;
 import org.kie.commons.io.impl.IOServiceDotFileImpl;
@@ -75,6 +69,8 @@ public class AppSetup {
 
         
     }
+    
+    // @PreDestroy -> ds.close();???
 
     @Produces
     @Named("ioStrategy")

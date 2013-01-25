@@ -129,6 +129,10 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         return domainService.getAvailableProcesses();
     }
 
+    public Map<String, String> getAvailableProcessesPath() {
+        return domainService.getAvailableProcessesPaths();
+    }
+
     public Map<String, String> getAssociatedEntities(String processId) {
         return bpmn2Service.getAssociatedEntities(processId);
     }
@@ -245,6 +249,10 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         fs.fetchChanges();
     }
 
+    public String createProcessDefinitionFile(String name) {
+      return fs.createFile(name).toString();
+    }
+    
     public void fetchChanges() {
         fs.fetchChanges();
     }

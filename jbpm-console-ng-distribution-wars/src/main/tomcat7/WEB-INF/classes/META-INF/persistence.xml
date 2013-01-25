@@ -59,8 +59,7 @@
         
         <class>org.droolsjbpm.services.impl.model.BAMProcessSummary</class>
         <class>org.droolsjbpm.services.impl.model.BAMTaskSummary</class>
-        <!-- Event Classes -->
-        <class>org.jbpm.task.TaskEvent</class>
+        
     
          
         <class>org.jbpm.executor.entities.ErrorInfo</class>

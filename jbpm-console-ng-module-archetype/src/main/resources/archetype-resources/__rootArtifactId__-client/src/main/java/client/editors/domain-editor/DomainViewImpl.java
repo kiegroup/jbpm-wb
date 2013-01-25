@@ -95,7 +95,6 @@ public class DomainViewImpl extends Composite
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
-        userTaskChanges.fire(new UserTaskEvent(identity.getName()));
     }
 
     public TextBox getHelloText() {

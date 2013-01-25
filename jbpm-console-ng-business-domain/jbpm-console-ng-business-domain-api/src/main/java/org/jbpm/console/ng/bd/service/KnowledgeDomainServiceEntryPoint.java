@@ -60,6 +60,10 @@ public interface KnowledgeDomainServiceEntryPoint {
     Collection<TaskDefSummary> getAllTasksDef(String processId);
 
     Map<String, String> getAvailableProcesses();
+    
+    Map<String, String> getAvailableProcessesPath();
+    
+    String createProcessDefinitionFile(String name);
 
     Map<String, String> getRequiredInputData(String processId);
 
