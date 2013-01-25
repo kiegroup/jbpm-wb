@@ -37,7 +37,7 @@
       <New class="bitronix.tm.resource.jdbc.PoolingDataSource">
         <Set name="uniqueName">jbpmConsoleDS</Set>
         <Set name="className">org.h2.jdbcx.JdbcDataSource</Set>
-        <Set name="maxPoolSize">3</Set>
+        <Set name="maxPoolSize">50</Set>
         <Set name="allowLocalTransactions">true</Set>
         <Get name="driverProperties">
           <Put name="user">sa</Put>
