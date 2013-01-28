@@ -86,6 +86,9 @@ public class TaskDetailsAlternativePopupViewImpl extends Composite
     public TextBox processInstanceIdText;
     @Inject
     @DataField
+    public TextBox processIdText;
+    @Inject
+    @DataField
     public TextBox taskStatusText;
     @Inject
     @DataField
@@ -240,6 +243,10 @@ public class TaskDetailsAlternativePopupViewImpl extends Composite
         return processInstanceIdText;
     }
 
+    public TextBox getProcessIdText() {
+        return processIdText;
+    }
+    
     public Button getpIDetailsButton() {
         return pIDetailsButton;
     }

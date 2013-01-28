@@ -77,6 +77,8 @@ public class TaskDetailsAlternativePopupPresenter {
         TextBox getUserText();
 
         TextBox getProcessInstanceIdText();
+        
+        TextBox getProcessIdText();
 
         ListBox getSubTaskStrategyListBox();
 
@@ -128,7 +130,7 @@ public class TaskDetailsAlternativePopupPresenter {
                 placeRequestImpl.addParameter("processDefId", processInstance.getProcessId());
                 placeManager.goTo(placeRequestImpl);
             }
-        }).getProcessInstanceById(0, Long.parseLong(view.getProcessInstanceIdText().getText()));
+        }).getProcessInstanceById(view.getProcessIdText().getText(), Long.parseLong(view.getProcessInstanceIdText().getText()));
 
 
 
@@ -181,9 +183,11 @@ public class TaskDetailsAlternativePopupPresenter {
                 view.getTaskStatusText().setEnabled(false);
                 if(details.getProcessInstanceId() == -1 ){
                     view.getProcessInstanceIdText().setText("None");
+                    view.getProcessIdText().setText("None");
                     view.getpIDetailsButton().setEnabled(false);
                 }else{
                     view.getProcessInstanceIdText().setText(String.valueOf(details.getProcessInstanceId()));
+                    view.getProcessIdText().setText(details.getProcessId());
                 }
                 
                 view.getProcessInstanceIdText().setEnabled(false);

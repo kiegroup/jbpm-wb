@@ -28,6 +28,7 @@
     
     <alternatives>
         <class>org.jbpm.task.lifecycle.listeners.JPATaskLifeCycleEventListener</class>
+        <class>org.droolsjbpm.services.impl.util.BTMTransactionManagerSynchronizations</class>
         <!--class>org.jbpm.task.impl.CommandBasedTaskInstanceServiceImpl</class-->
     </alternatives>
    

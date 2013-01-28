@@ -97,9 +97,12 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         return ProcessHelper.adaptCollection(dataService.getProcessesByDomainName(sessionId));
     }
 
-    public ProcessInstanceSummary getProcessInstanceById(int sessionId, long processInstanceId) {
+    public ProcessInstanceSummary getProcessInstanceById(String processDefId, long processInstanceId) {
+        int sessionId = getSessionIdForProcessDef(processDefId);
+        
         return ProcessInstanceHelper.adapt(dataService.getProcessInstanceById(sessionId, processInstanceId));
     }
+
 
     public Collection<ProcessSummary> getProcesses() {
         return ProcessHelper.adaptCollection(dataService.getProcesses());
@@ -137,19 +140,23 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         return bpmn2Service.getAssociatedEntities(processId);
     }
 
-    public Collection<NodeInstanceSummary> getProcessInstanceHistory(int sessionId, long id) {
+    public Collection<NodeInstanceSummary> getProcessInstanceHistory(String processDefId, long id) {
+        int sessionId = getSessionIdForProcessDef(processDefId);
         return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistory(sessionId, id));
     }
 
-    public Collection<NodeInstanceSummary> getProcessInstanceHistory(int sessionId, long processId, boolean completed) {
+    public Collection<NodeInstanceSummary> getProcessInstanceHistory(String processDefId, long processId, boolean completed) {
+        int sessionId = getSessionIdForProcessDef(processDefId);
         return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistory(sessionId, processId, completed));
     }
 
-    public Collection<NodeInstanceSummary> getProcessInstanceFullHistory(int sessionId, long processId) {
+    public Collection<NodeInstanceSummary> getProcessInstanceFullHistory(String processDefId, long processId) {
+        int sessionId = getSessionIdForProcessDef(processDefId);
         return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistory(sessionId, processId));
     }
 
-    public Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(int sessionId, long processId) {
+    public Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(String processDefId, long processId) {
+        int sessionId = getSessionIdForProcessDef(processDefId);
         return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceActiveNodes(sessionId, processId));
     }
 
@@ -295,7 +302,9 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         return RuleNotificationHelper.adaptCollection(rulesNotificationService.getAllNotificationInstanceBySessionId(sessionId));
     }
 
-  
-
+    private int getSessionIdForProcessDef(String processDefId) {
+        String sessionName = domainService.getProcessInSessionByName(processDefId);
+        return domainService.getSessionByName(sessionName).getId();
+    }
     
 }

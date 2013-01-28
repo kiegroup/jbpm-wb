@@ -220,7 +220,7 @@ public class ProcessInstanceListViewImpl extends Composite
                     continue;
                 }
                 
-                presenter.abortProcessInstance(selected.getProcessName(), selected.getId());
+                presenter.abortProcessInstance(selected.getProcessId(), selected.getId());
                 processInstanceListGrid.getSelectionModel().setSelected(selected, false);
                 displayNotification(constants.Aborting_Process_Instance() + "(id="+ selected.getId()+")");
             }
@@ -443,7 +443,7 @@ public class ProcessInstanceListViewImpl extends Composite
            @Override
            public void execute(ProcessInstanceSummary processInstance) {
                
-               presenter.abortProcessInstance(processInstance.getProcessName(), processInstance.getId());
+               presenter.abortProcessInstance(processInstance.getProcessId(), processInstance.getId());
            }
        }));
        
