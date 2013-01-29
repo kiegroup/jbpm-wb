@@ -86,7 +86,7 @@ public class VariableEditPresenter {
         closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
     
-    public void setProcessVariable(String sessionId, Object value) {
+    public void setProcessVariable(Object value) {
 
         knowledgeServices.call(new RemoteCallback<Void>() {
             @Override
@@ -94,6 +94,6 @@ public class VariableEditPresenter {
                 close();
                 
             }
-        }).setProcessVariable(sessionId, view.getProcessInstanceId(), view.getVariableId(), value);
+        }).setProcessVariable( view.getProcessInstanceId(), view.getVariableId(), value);
     }
 }

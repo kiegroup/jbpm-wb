@@ -29,13 +29,15 @@ public class ProcessSummary {
     private String packageName;
     private String type;
     private String version;
+    private int sessionId;
 
     public ProcessSummary() {
     }
 
-    public ProcessSummary(String id, String name, String packageName, String type, String version) {
+    public ProcessSummary(String id, String name, int sessionId, String packageName, String type, String version) {
         this.id = id;
         this.name = name;
+        this.sessionId = sessionId;
         this.packageName = packageName;
         this.type = type;
         this.version = version;
@@ -81,4 +83,14 @@ public class ProcessSummary {
     public void setVersion(String version) {
         this.version = version;
     }
+
+    public int getSessionId() {
+      return sessionId;
+    }
+
+    public void setSessionId(int sessionId) {
+      this.sessionId = sessionId;
+    }
+    
+    
 }

@@ -24,7 +24,9 @@ import org.jboss.errai.bus.server.annotations.Remote;
  */
 @Remote
 public interface StatefulKnowledgeSessionEntryPoint {
-    public long startProcess(String processId);
-    public long startProcess(String processId, Map<String, String> params);
+    public long startProcess(int sessionId, String processId);
+    public long startProcess(int sessionId, String processId, Map<String, String> params);
+    public void abortProcessInstance(long processInstanceId);
+    public void signalProcessInstance(long processInstanceId, String signalName, Object event);
     
 }

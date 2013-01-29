@@ -42,7 +42,7 @@
         <Get name="driverProperties">
           <Put name="user">sa</Put>
           <Put name="password">sasa</Put>
-          <Put name="URL">jdbc:h2:mem:mydb</Put>
+          <Put name="URL">jdbc:h2:~/jbpm-console-ng</Put>
         </Get>
         <Call name="init" />
       </New>

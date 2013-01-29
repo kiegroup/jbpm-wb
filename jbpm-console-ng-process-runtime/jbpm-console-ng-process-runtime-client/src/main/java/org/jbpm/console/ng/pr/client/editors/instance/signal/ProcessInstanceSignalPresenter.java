@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
+import org.jbpm.console.ng.bd.service.StatefulKnowledgeSessionEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -52,6 +53,9 @@ public class ProcessInstanceSignalPresenter {
     @Inject
     private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
     
+    @Inject 
+    private Caller<StatefulKnowledgeSessionEntryPoint> sessionServices;
+    
     @PostConstruct
     public void init() {
      
@@ -75,13 +79,13 @@ public class ProcessInstanceSignalPresenter {
     
     public void signalProcessInstance(String sessionId, long processInstanceId) {
 
-        knowledgeServices.call(new RemoteCallback<Void>() {
+        sessionServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void v) {
                 close();
                 
             }
-        }).signalProcessInstance(sessionId, view.getSignalRefText(), view.getEventText(), processInstanceId);
+        }).signalProcessInstance(processInstanceId, view.getSignalRefText(), view.getEventText());
     }
     
     @OnReveal

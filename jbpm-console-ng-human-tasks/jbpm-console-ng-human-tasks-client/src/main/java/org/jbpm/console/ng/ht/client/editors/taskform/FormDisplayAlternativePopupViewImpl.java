@@ -78,9 +78,9 @@ public class FormDisplayAlternativePopupViewImpl extends Composite
 //    @DataField
 //    public Button fullButton;
    
-    public long taskId;
-    
-    public String processId;
+    private long taskId;
+    private int sessionId;
+    private String processId;
     
     @Inject
     private PlaceManager placeManager;
@@ -150,16 +150,25 @@ public class FormDisplayAlternativePopupViewImpl extends Composite
         placeManager.goTo(placeRequestImpl);
 
     }
-    
-//    
-//    @EventHandler("fullButton")
-//    public void fullButton(ClickEvent e) {
-//        presenter.close();
-//        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Perspective");
-//        placeRequestImpl.addParameter("taskId", Long.toString(taskId));
-//        
-//        placeManager.goTo(placeRequestImpl);
-//    }
+
+  //
+  //    @EventHandler("fullButton")
+  //    public void fullButton(ClickEvent e) {
+  //        presenter.close();
+  //        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Perspective");
+  //        placeRequestImpl.addParameter("taskId", Long.toString(taskId));
+  //
+  //        placeManager.goTo(placeRequestImpl);
+  //    }
+    public int getSessionId() {
+      return sessionId;
+    }
+
+    public void setSessionId(int sessionId) {
+      this.sessionId = sessionId;
+    }
+
+   
  
     
  

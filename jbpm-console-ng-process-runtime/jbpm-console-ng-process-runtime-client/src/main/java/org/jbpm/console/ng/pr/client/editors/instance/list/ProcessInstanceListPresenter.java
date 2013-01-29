@@ -33,6 +33,7 @@ import javax.enterprise.event.Observes;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
+import org.jbpm.console.ng.bd.service.StatefulKnowledgeSessionEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
@@ -78,8 +79,10 @@ public class ProcessInstanceListPresenter {
   private InboxView view;
   @Inject
   private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
-  @Inject
-  Caller<KnowledgeDomainServiceEntryPoint> domainServices;
+  
+  @Inject 
+  private Caller<StatefulKnowledgeSessionEntryPoint> sessionServices;
+  
   private ListDataProvider<ProcessInstanceSummary> dataProvider = new ListDataProvider<ProcessInstanceSummary>();
 
   @WorkbenchPartTitle
@@ -169,19 +172,19 @@ public class ProcessInstanceListPresenter {
   }
 
   public void abortProcessInstance(String processDefId, long processInstanceId) {
-    knowledgeServices.call(new RemoteCallback<Void>() {
+    sessionServices.call(new RemoteCallback<Void>() {
       @Override
       public void callback(Void v) {
         refreshProcessList("");
 
       }
-    }).abortProcessInstance(processDefId, processInstanceId);
+    }).abortProcessInstance(processInstanceId);
   }
 
   public void listProcesses() {
     System.out.println("############# Current Process Instance Definition! "+this.currentProcessDefinition);
     if (!this.currentProcessDefinition.equals("")) {
-      domainServices.call(new RemoteCallback<List<ProcessSummary>>() {
+      knowledgeServices.call(new RemoteCallback<List<ProcessSummary>>() {
         @Override
         public void callback(List<ProcessSummary> processes) {
           view.setAvailableProcesses(processes);
@@ -189,7 +192,7 @@ public class ProcessInstanceListPresenter {
         }
       }).getProcessInstancesByProcessDefinition(this.currentProcessDefinition);
     } else {
-      domainServices.call(new RemoteCallback<List<ProcessSummary>>() {
+      knowledgeServices.call(new RemoteCallback<List<ProcessSummary>>() {
         @Override
         public void callback(List<ProcessSummary> processes) {
           view.setAvailableProcesses(processes);

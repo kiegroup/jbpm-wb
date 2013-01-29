@@ -128,7 +128,7 @@ public class ProcessDefinitionListPresenter {
                 view.displayNotification("Process Created (id = " + processId + ")");
                 processInstanceCreatedEvents.fire(new ProcessInstanceCreated());
             }
-        }).startProcess(processId);
+        }).startProcess(0 , processId);
 
     }
 

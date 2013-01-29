@@ -36,7 +36,7 @@ import org.kie.commons.java.nio.file.Path;
 @Remote
 public interface KnowledgeDomainServiceEntryPoint {
 
-    StatefulKnowledgeSessionSummary getSessionSummaryByName(String kSessionName);
+    StatefulKnowledgeSessionSummary getSessionSummaryByName(int kSessionId);
 
     Collection<String> getSessionsNames();
 
@@ -85,13 +85,10 @@ public interface KnowledgeDomainServiceEntryPoint {
 
     public Map<String, String> getTaskOutputMappings(String processId, String taskName);
 
-    void abortProcessInstance(String processDefId, long processInstanceId);
-
-    void signalProcessInstance(String businessKey, String signalName, Object event, long processInstanceId);
 
     Collection<String> getAvailableSignals(String businessKey, long processInstanceId);
 
-    void setProcessVariable(String businessKey, long processInstanceId, String variableId, Object value);
+    void setProcessVariable(long processInstanceId, String variableId, Object value);
 
     Collection<VariableSummary> getVariableHistory(long processInstanceId, String variableId);
 

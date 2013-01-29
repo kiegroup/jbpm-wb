@@ -28,13 +28,13 @@ public class ProcessHelper {
     public static Collection<ProcessSummary> adaptCollection(Collection<ProcessDesc> processes){
         List<ProcessSummary> processesSummary = new ArrayList<ProcessSummary>();
         for(ProcessDesc p : processes){
-            processesSummary.add(new ProcessSummary(p.getId(), p.getName(),p.getPackageName(), p.getType(), p.getVersion()));
+            processesSummary.add(new ProcessSummary(p.getId(), p.getName(),p.getSessionId(), p.getPackageName(), p.getType(), p.getVersion()));
         }
         
         return processesSummary;
     }
     
     public static ProcessSummary adapt(ProcessDesc p){
-        return new ProcessSummary(p.getId(), p.getName(),p.getPackageName(), p.getType(), p.getVersion());
+        return new ProcessSummary(p.getId(), p.getName(), p.getSessionId(), p.getPackageName(), p.getType(), p.getVersion());
     }
 }

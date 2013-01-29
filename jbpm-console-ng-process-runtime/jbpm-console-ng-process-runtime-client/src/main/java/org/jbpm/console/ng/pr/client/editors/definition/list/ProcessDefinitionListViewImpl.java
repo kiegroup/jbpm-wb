@@ -43,6 +43,7 @@ import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
+import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -214,7 +215,7 @@ public class ProcessDefinitionListViewImpl extends Composite
         processdefListGrid.addColumn(processNameColumn,
                 new ResizableHeader(constants.Name(), processdefListGrid, processNameColumn));
 
-        // Process Name.
+        // Process PKG.
         Column<ProcessSummary, String> processPkgColumn =
                 new Column<ProcessSummary, String>(new EditTextCell()) {
             @Override
@@ -232,6 +233,25 @@ public class ProcessDefinitionListViewImpl extends Composite
         });
         processdefListGrid.addColumn(processPkgColumn,
                 new ResizableHeader(constants.Package(), processdefListGrid, processPkgColumn));
+        
+         // Process Session Id.
+        Column<ProcessSummary, Number> processSessionIdColumn =
+                new Column<ProcessSummary, Number>(new NumberCell()) {
+            @Override
+            public Number getValue(ProcessSummary object) {
+                return object.getSessionId();
+            }
+        };
+        processSessionIdColumn.setSortable(true);
+        sortHandler.setComparator(processSessionIdColumn,
+                new Comparator<ProcessSummary>() {
+            public int compare(ProcessSummary o1,
+                    ProcessSummary o2) {
+                return (o1.getSessionId() == o2.getSessionId())?0:1;
+            }
+        });
+        processdefListGrid.addColumn(processSessionIdColumn,
+                new ResizableHeader("Session Id", processdefListGrid, processSessionIdColumn));
 
 
         // Version Type 
@@ -263,6 +283,7 @@ public class ProcessDefinitionListViewImpl extends Composite
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
                 System.out.println("Opening form for process id = "+process.getId());
                 placeRequestImpl.addParameter("processId", process.getId());
+                placeRequestImpl.addParameter("sessionId", String.valueOf(process.getSessionId()));
                 placeManager.goTo(placeRequestImpl);
             }
         }));

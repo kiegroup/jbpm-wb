@@ -37,20 +37,36 @@ public class StatefulKnowledgeSessionEntryPointImpl implements StatefulKnowledge
     @Inject
     KnowledgeDomainService domainService;
 
-    public long startProcess(String processId) {
+    public long startProcess(int sessionId, String processId) {
         
                 
-        StatefulKnowledgeSession ksession = domainService.getSessionByName(domainService.getProcessInSessionByName(processId));
+        StatefulKnowledgeSession ksession = domainService.getSessionsByName(domainService.getProcessInSessionByName(processId)).get(sessionId);
         ProcessInstance pi = ksession.startProcess(processId);
         return pi.getId();
     }
     
-    public long startProcess(String processId, Map<String, String> params) {
-        StatefulKnowledgeSession ksession = domainService.getSessionByName(domainService.getProcessInSessionByName(processId));
+    public long startProcess(int sessionId, String processId, Map<String, String> params) {
+        StatefulKnowledgeSession ksession = domainService.getSessionsByName(domainService.getProcessInSessionByName(processId)).get(sessionId);
         ProcessInstance pi = ksession.startProcess(processId, new HashMap<String, Object>(params));
         return pi.getId();
     }
 
-   
+    @Override
+    public void abortProcessInstance(long processInstanceId) {
+        domainService.getSessionById(domainService.getSessionForProcessInstanceId(processInstanceId)).abortProcessInstance(processInstanceId);
+
+    }
+    
+    
+    @Override
+    public void signalProcessInstance(long processInstanceId, String signalName, Object event) {
+        StatefulKnowledgeSession ksession = domainService.getSessionById(domainService.getSessionForProcessInstanceId(processInstanceId));
+        if (processInstanceId == -1) {
+            ksession.signalEvent(signalName, event);
+        } else {
+            ksession.signalEvent(signalName, event, processInstanceId);
+        }
+
+    }
     
 }

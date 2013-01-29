@@ -100,7 +100,7 @@ public class VariableEditViewImpl extends Composite implements
     public void saveButton(ClickEvent e) {
 
         // TODO do not hardcode business key for session
-        presenter.setProcessVariable("generalSession", variableTextBox.getText());
+        presenter.setProcessVariable(variableTextBox.getText());
         displayNotification("Variable updated " + variableId);
         
     }

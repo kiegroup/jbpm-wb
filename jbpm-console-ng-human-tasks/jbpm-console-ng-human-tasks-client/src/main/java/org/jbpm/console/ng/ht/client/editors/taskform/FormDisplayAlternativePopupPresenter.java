@@ -63,7 +63,7 @@ public class FormDisplayAlternativePopupPresenter {
     @Inject
     private Caller<KnowledgeDomainServiceEntryPoint> domainServices;
     @Inject
-    Caller<StatefulKnowledgeSessionEntryPoint> ksessionServices;
+    Caller<StatefulKnowledgeSessionEntryPoint> sessionServices;
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
     @Inject
@@ -91,6 +91,10 @@ public class FormDisplayAlternativePopupPresenter {
         String getProcessId();
 
         void setProcessId( String processId );
+        
+        void setSessionId( int sessionId );
+        
+        int getSessionId();
 
         VerticalPanel getFormView();
 
@@ -268,7 +272,7 @@ public class FormDisplayAlternativePopupPresenter {
     public void startProcess( String values ) {
         final Map<String, String> params = getUrlParameters( values );
 
-        ksessionServices.call( new RemoteCallback<Long>() {
+        sessionServices.call( new RemoteCallback<Long>() {
             @Override
             public void callback( Long processId ) {
                 view.displayNotification( "Process Id: " + processId + " started!" );
@@ -278,7 +282,7 @@ public class FormDisplayAlternativePopupPresenter {
                 placeRequestImpl.addParameter( "processId", params.get( "processId" ).toString() );
                 placeManager.goTo( placeRequestImpl );
             }
-        } ).startProcess( params.get( "processId" ).toString(), params );
+        } ).startProcess(view.getSessionId(), params.get( "processId" ).toString(), params );
 
     }
 
@@ -341,11 +345,13 @@ public class FormDisplayAlternativePopupPresenter {
     public void onReveal() {
         long taskId = Long.parseLong( place.getParameter( "taskId", "-1" ).toString() );
         String processId = place.getParameter( "processId", "none" ).toString();
+        String sessionId = place.getParameter("sessionId", "0").toString();
         if ( taskId != -1 ) {
             view.setTaskId( taskId );
             renderTaskForm( taskId );
         } else if ( !processId.equals( "none" ) ) {
             view.setProcessId( processId );
+            view.setSessionId( Integer.parseInt(sessionId) );
             renderProcessForm( processId );
         }
     }
