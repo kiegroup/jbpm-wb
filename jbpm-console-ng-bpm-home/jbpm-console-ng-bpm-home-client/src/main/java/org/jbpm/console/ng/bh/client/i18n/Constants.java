@@ -110,7 +110,7 @@ public interface Constants
 
     String Actions ();
 
-    String Process_Definition_Details_Perspective ();
+    String Process_Definition_Details ();
 
     String No_Process_Instances_Available ();
 
@@ -128,7 +128,7 @@ public interface Constants
     
     String Process_Instance_Start_Time();
 
-    String Process_Instance_Details_Perspective();
+    String Process_Instance_Details();
 
     String Hooray_you_don_t_have_any_Group_Task_to_Claim__();
 

@@ -77,12 +77,11 @@ public class ShowcaseEntryPoint {
     @Inject
     private IOCBeanManager iocManager;
     private String[] menuItems = new String[]{
-        "Home Screen",
-        "Tasks List",
-        "Quick New Task", 
-        "Jobs/Requests List", 
-        "Process Definition List", 
-        "Users and Groups List"
+        
+        "Tasks",
+        "Process Runtime", 
+        "Jobs", 
+        "Users and Groups"
     };
     
     private SuggestBox actionText;
@@ -115,8 +114,7 @@ public class ShowcaseEntryPoint {
         
         KeyPressHandler keyPressHandler = new KeyPressHandler() {
             public void onKeyPress(KeyPressEvent event) {
-//                System.out.println("event.getUnicodeCharCode() -> "+event.getUnicodeCharCode());
-//                System.out.println("event.getNativeEvent().getKeyCode() = "+event.getNativeEvent().getKeyCode());
+
                 if (event.getUnicodeCharCode() == 160 && event.isAltKeyDown()) {
                     final DialogBox dialogBox = createDialogBox();
                     dialogBox.setGlassEnabled(true);
@@ -146,7 +144,7 @@ public class ShowcaseEntryPoint {
     private void setupMenu() {
         //Places sub-menu
         final DefaultMenuBar placesMenuBar = new DefaultMenuBar();
-        final DefaultMenuItemSubMenu placesMenu = new DefaultMenuItemSubMenu("Places",
+        final DefaultMenuItemSubMenu placesMenu = new DefaultMenuItemSubMenu("Views",
                 placesMenuBar);
         //Home
         final AbstractWorkbenchPerspectiveActivity defaultPerspective = getDefaultPerspectiveActivity();
@@ -160,24 +158,7 @@ public class ShowcaseEntryPoint {
                     }));
         }
 
-        //Perspectives
-        final MenuBar perspectivesMenuBar = new DefaultMenuBar();
-        final MenuItemSubMenu perspectivesMenu = new DefaultMenuItemSubMenu("Perspectives",
-                perspectivesMenuBar);
-        final List<AbstractWorkbenchPerspectiveActivity> perspectives = getPerspectiveActivities();
-        for (final AbstractWorkbenchPerspectiveActivity perspective : perspectives) {
-            final String name = perspective.getPerspective().getName();
-            final Command cmd = new Command() {
-                @Override
-                public void execute() {
-                    placeManager.goTo(new DefaultPlaceRequest(perspective.getIdentifier()));
-                }
-            };
-            final MenuItemCommand item = new DefaultMenuItemCommand(name,
-                    cmd);
-            perspectivesMenuBar.addItem(item);
-        }
-        menubar.addWorkbenchItem(perspectivesMenu);
+       
 
 
         //Add places
@@ -192,16 +173,18 @@ public class ShowcaseEntryPoint {
                     });
             placesMenuBar.addItem(item);
         }
-        //Add places
-        final MenuItemCommand item = new DefaultMenuItemCommand("Logout", new Command() {
+        //Add Logout
+        final MenuItemCommand logoutItem = new DefaultMenuItemCommand("Logout", new Command() {
             @Override
             public void execute() {
-                
                 redirect("uf_logout");
             }
         });
-        placesMenuBar.addItem(item);
         menubar.addWorkbenchItem(placesMenu);
+        
+        //TODO:  Add Settings HERE
+        
+        menubar.addWorkbenchItem(logoutItem);
     }
 
     private AbstractWorkbenchPerspectiveActivity getDefaultPerspectiveActivity() {

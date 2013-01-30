@@ -29,13 +29,13 @@ import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Process Runtime Perspective", isDefault=false)
+@WorkbenchPerspective(identifier = "Process Runtime", isDefault=false)
 public class ProcessRuntimePerspective {
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
-        p.setName( "Process Runtime Perspective" );
+        p.setName( "Process Runtime" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Process Definition List" ) ) );
         p.setTransient(true);
         return p;

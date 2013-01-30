@@ -84,7 +84,7 @@ public class TasksListPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
-                    view.getTaskListMultiDayBox().addTasksByDay("today", tasks);
+                    view.getTaskListMultiDayBox().addTasksByDay("Today", tasks);
                     view.getTaskListMultiDayBox().refresh();
 
 
@@ -96,7 +96,7 @@ public class TasksListPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
-                    view.getTaskListMultiDayBox().addTasksByDay("today", tasks);
+                    view.getTaskListMultiDayBox().addTasksByDay("Today", tasks);
                     view.getTaskListMultiDayBox().refresh();
 
 
@@ -112,7 +112,7 @@ public class TasksListPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
-                    view.getTaskListMultiDayBox().addTasksByDay("today", tasks);
+                    view.getTaskListMultiDayBox().addTasksByDay("Today", tasks);
                     view.getTaskListMultiDayBox().refresh();
 
 
@@ -126,7 +126,7 @@ public class TasksListPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
-                    view.getTaskListMultiDayBox().addTasksByDay("today", tasks);
+                    view.getTaskListMultiDayBox().addTasksByDay("Today", tasks);
                     view.getTaskListMultiDayBox().refresh();
 
 
@@ -198,6 +198,7 @@ public class TasksListPresenter {
 
     @OnReveal
     public void onReveal() {
+        view.refreshTasks();
     }
 
     public void formClosed(@Observes BeforeClosePlaceEvent closed) {

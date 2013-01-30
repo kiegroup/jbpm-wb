@@ -109,7 +109,7 @@ public class ProcessInstanceDetailsPresenter {
                 }
                 view.getLogTextArea().setText( fullLog );
             }
-        } ).getProcessInstanceHistory( processDefId, Long.parseLong( processId ) );
+        } ).getProcessInstanceHistory( Long.parseLong( processId ) );
         domainServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
             public void callback( List<NodeInstanceSummary> details ) {
@@ -118,7 +118,7 @@ public class ProcessInstanceDetailsPresenter {
                                                                 String.valueOf( nis.getId() ) );
                 }
             }
-        } ).getProcessInstanceActiveNodes( processDefId, Long.parseLong( processId ) );
+        } ).getProcessInstanceActiveNodes( Long.parseLong( processId ) );
 
         domainServices.call( new RemoteCallback<ProcessSummary>() {
             @Override
@@ -157,7 +157,7 @@ public class ProcessInstanceDetailsPresenter {
                
                view.getStateText().setText(statusStr);
            }
-       }).getProcessInstanceById(processDefId, Long.parseLong(processId));
+       }).getProcessInstanceById( Long.parseLong(processId));
        
        loadVariables(processId, processDefId);
 

@@ -29,13 +29,13 @@ import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Tasks List Perspective", isDefault=false)
+@WorkbenchPerspective(identifier = "Tasks", isDefault=false)
 public class TasksListPerspective {
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
-        p.setName( "Tasks List Perspective" );
+        p.setName( "Tasks" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Tasks List" ) ) );
         p.setTransient(true);
         return p;

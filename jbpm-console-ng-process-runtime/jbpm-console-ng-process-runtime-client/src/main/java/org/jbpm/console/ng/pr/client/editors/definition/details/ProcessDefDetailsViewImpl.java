@@ -98,7 +98,7 @@ public class ProcessDefDetailsViewImpl extends Composite
       public void onDoubleClick(DoubleClickEvent event) {
         ListBox source = (ListBox) event.getSource();
         String processId = source.getValue(source.getSelectedIndex());
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Definition_Details_Perspective());
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Definition_Details());
         placeRequestImpl.addParameter("processId", processId);
         placeManager.goTo(placeRequestImpl);
       }

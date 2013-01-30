@@ -101,7 +101,7 @@ public class ProcessDiagramPopupPresenter {
                 }
                 view.getProcessDiagramURLText().setText( fullLog );
             }
-        } ).getProcessInstanceHistory( processDefinitionId,  processInstanceId );
+        } ).getProcessInstanceHistory( processInstanceId );
 
     }
 

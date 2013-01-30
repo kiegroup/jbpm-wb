@@ -421,7 +421,7 @@ public class ProcessInstanceListViewImpl extends Composite
            @Override
            public void execute(ProcessInstanceSummary processInstance) {
                
-             DefaultPlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Instance_Details_Perspective());
+             DefaultPlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Instance_Details());
              placeRequestImpl.addParameter("processInstanceId", Long.toString(processInstance.getId()));
              placeRequestImpl.addParameter("processDefId", processInstance.getProcessId());
              placeManager.goTo(placeRequestImpl);

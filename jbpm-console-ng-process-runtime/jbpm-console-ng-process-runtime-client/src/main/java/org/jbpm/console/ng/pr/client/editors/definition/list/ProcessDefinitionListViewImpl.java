@@ -55,6 +55,7 @@ import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
@@ -91,6 +92,9 @@ public class ProcessDefinitionListViewImpl extends Composite
     @DataField
     public DataGrid<ProcessSummary> processdefListGrid;
     @Inject
+    @DataField 
+    public FlowPanel listContainer;
+    @Inject
     @DataField
     public SimplePager pager;
     private Set<ProcessSummary> selectedProcessDef;
@@ -107,9 +111,10 @@ public class ProcessDefinitionListViewImpl extends Composite
     public void init(ProcessDefinitionListPresenter presenter) {
         this.presenter = presenter;
 
-
+        listContainer.setSize("100%", "100%");
+        listContainer.add(processdefListGrid);
         processdefListGrid.setWidth("100%");
-        processdefListGrid.setHeight("200px");
+        processdefListGrid.setHeight("400px");
 
         // Set the message to display when the table is empty.
         processdefListGrid.setEmptyTableWidget(new Label(constants.No_Process_Definitions_Available()));
@@ -122,7 +127,7 @@ public class ProcessDefinitionListViewImpl extends Composite
         // Create a Pager to control the table.
 
         pager.setDisplay(processdefListGrid);
-        pager.setPageSize(6);
+        pager.setPageSize(12);
 
         // Add a selection model so we can select cells.
         final MultiSelectionModel<ProcessSummary> selectionModel =
@@ -292,7 +297,7 @@ public class ProcessDefinitionListViewImpl extends Composite
             @Override
             public void execute(ProcessSummary process) {
 
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Definition_Details_Perspective());
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Definition_Details());
                 placeRequestImpl.addParameter("processId", process.getId());
                 placeManager.goTo(placeRequestImpl);
             }

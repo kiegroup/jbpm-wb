@@ -278,7 +278,7 @@ public class FormDisplayAlternativePopupPresenter {
                 view.displayNotification( "Process Id: " + processId + " started!" );
                 processInstanceCreatedEvents.fire( new ProcessInstanceCreated() );
                 close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Definition Details Perspective" );
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Definition Details" );
                 placeRequestImpl.addParameter( "processId", params.get( "processId" ).toString() );
                 placeManager.goTo( placeRequestImpl );
             }

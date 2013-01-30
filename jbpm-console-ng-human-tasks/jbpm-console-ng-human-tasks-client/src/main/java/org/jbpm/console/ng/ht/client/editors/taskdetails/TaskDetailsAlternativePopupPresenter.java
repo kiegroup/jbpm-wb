@@ -125,12 +125,12 @@ public class TaskDetailsAlternativePopupPresenter {
         knowledgeServices.call(new RemoteCallback<ProcessInstanceSummary>() {
             @Override
             public void callback(ProcessInstanceSummary processInstance) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance Details Perspective");
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance Details");
                 placeRequestImpl.addParameter("processInstanceId", view.getProcessInstanceIdText().getText());
                 placeRequestImpl.addParameter("processDefId", processInstance.getProcessId());
                 placeManager.goTo(placeRequestImpl);
             }
-        }).getProcessInstanceById(view.getProcessIdText().getText(), Long.parseLong(view.getProcessInstanceIdText().getText()));
+        }).getProcessInstanceById(Long.parseLong(view.getProcessInstanceIdText().getText()));
 
 
 

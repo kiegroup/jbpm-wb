@@ -23,7 +23,7 @@ import com.google.gwt.view.client.ListDataProvider;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 
 @Dependent
-@WorkbenchScreen(identifier = "Users and Groups List")
+@WorkbenchScreen(identifier = "Users and Groups")
 public class IdentityPresenter {
 
     public interface InboxView extends UberView<IdentityPresenter> {

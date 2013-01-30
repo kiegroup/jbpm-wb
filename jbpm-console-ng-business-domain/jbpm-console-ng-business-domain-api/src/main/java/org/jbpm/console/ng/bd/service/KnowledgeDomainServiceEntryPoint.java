@@ -51,7 +51,7 @@ public interface KnowledgeDomainServiceEntryPoint {
 
     Collection<ProcessSummary> getProcessesBySessionId(String sessionId);
 
-    ProcessInstanceSummary getProcessInstanceById(String processDefId, long processInstanceId);
+    ProcessInstanceSummary getProcessInstanceById(long processInstanceId);
 
     Collection<ProcessSummary> getProcesses();
 
@@ -69,13 +69,13 @@ public interface KnowledgeDomainServiceEntryPoint {
 
     Map<String, String> getAssociatedEntities(String processId);
 
-    Collection<NodeInstanceSummary> getProcessInstanceHistory(String processDefId, long id);
+    Collection<NodeInstanceSummary> getProcessInstanceHistory(long processInstanceId);
 
-    Collection<NodeInstanceSummary> getProcessInstanceHistory(String processDefId, long processId, boolean completed);
+    Collection<NodeInstanceSummary> getProcessInstanceHistory(long processInstanceId, boolean completed);
 
-    Collection<NodeInstanceSummary> getProcessInstanceFullHistory(String processDefId, long processId);
+    Collection<NodeInstanceSummary> getProcessInstanceFullHistory(long processInstanceId);
 
-    Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(String processDefId, long processId);
+    Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(long processInstanceId);
 
     ProcessSummary getProcessDesc(String processId);
 
