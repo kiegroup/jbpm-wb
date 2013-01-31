@@ -157,7 +157,7 @@ public class ProcessInstanceListViewImpl extends Composite
             
             @Override
             public void onChange(ChangeEvent event) {
-                presenter.listProcesses();
+                presenter.listProcessInstances();
                 
             }
         });
@@ -596,14 +596,14 @@ public class ProcessInstanceListViewImpl extends Composite
         }
     }
     
-    public void setAvailableProcesses(Collection<ProcessSummary> processes) {
+    public void setAvailableProcesses(Collection<ProcessInstanceSummary> processes) {
         String value = filterTypeListBox.getValue(filterTypeListBox.getSelectedIndex());
         oracle.clear();
-        for (ProcessSummary process : processes) {
+        for (ProcessInstanceSummary process : processes) {
             if ("by-process-id".equals(value)) {
-                oracle.add(process.getId());
+                oracle.add(process.getProcessId());
             } else if ("by-process-name".equals(value)) {
-                oracle.add(process.getName());
+                oracle.add(process.getProcessName());
             }
             
         }

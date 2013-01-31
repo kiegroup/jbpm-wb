@@ -69,7 +69,7 @@ public class ProcessInstanceListPresenter {
 
     int getFilterType();
 
-    void setAvailableProcesses(Collection<ProcessSummary> processes);
+    void setAvailableProcesses(Collection<ProcessInstanceSummary> processes);
   }
   private String currentProcessDefinition;
   private PlaceRequest place;
@@ -167,7 +167,7 @@ public class ProcessInstanceListPresenter {
   public void onReveal() {
 
     this.currentProcessDefinition = place.getParameter("processDefId", "");
-    listProcesses();
+    listProcessInstances();
     refreshProcessList("");
   }
 
@@ -181,20 +181,21 @@ public class ProcessInstanceListPresenter {
     }).abortProcessInstance(processInstanceId);
   }
 
-  public void listProcesses() {
+  public void listProcessInstances() {
     System.out.println("############# Current Process Instance Definition! "+this.currentProcessDefinition);
+    view.getFilterProcessText().setText(currentProcessDefinition);
     if (!this.currentProcessDefinition.equals("")) {
-      knowledgeServices.call(new RemoteCallback<List<ProcessSummary>>() {
+      knowledgeServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
         @Override
-        public void callback(List<ProcessSummary> processes) {
+        public void callback(List<ProcessInstanceSummary> processes) {
           view.setAvailableProcesses(processes);
 
         }
       }).getProcessInstancesByProcessDefinition(this.currentProcessDefinition);
     } else {
-      knowledgeServices.call(new RemoteCallback<List<ProcessSummary>>() {
+      knowledgeServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
         @Override
-        public void callback(List<ProcessSummary> processes) {
+        public void callback(List<ProcessInstanceSummary> processes) {
           view.setAvailableProcesses(processes);
 
         }

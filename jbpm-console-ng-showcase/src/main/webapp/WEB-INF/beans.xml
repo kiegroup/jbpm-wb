@@ -37,16 +37,14 @@
         <class>org.uberfire.security.server.authz.cdi.RolesInterceptor</class>
         <class>org.uberfire.security.server.authz.cdi.TraitInterceptor</class>
     </interceptors>
-    
-     <weld:scan>
-        <weld:exclude name="org.jboss.seam.transaction.DefaultSeamTransaction"/>
-        <weld:exclude name="org.jboss.seam.transaction.TransactionManagerSynchronizations"/>
-    </weld:scan>
-  
+   
     <m:CMTBTMTransaction>
         <s:modifies />
     </m:CMTBTMTransaction>
     
+    <m:BTMTransactionManagerSynchronizations>
+        <s:modifies />
+    </m:BTMTransactionManagerSynchronizations>
 </beans>
 
     

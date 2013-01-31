@@ -111,9 +111,9 @@ public class ProcessDefinitionListViewImpl extends Composite
     public void init(ProcessDefinitionListPresenter presenter) {
         this.presenter = presenter;
 
-        listContainer.setSize("100%", "100%");
+        listContainer.setSize("90%", "90%");
         listContainer.add(processdefListGrid);
-        processdefListGrid.setWidth("100%");
+        processdefListGrid.setWidth("98%");
         processdefListGrid.setHeight("400px");
 
         // Set the message to display when the table is empty.
