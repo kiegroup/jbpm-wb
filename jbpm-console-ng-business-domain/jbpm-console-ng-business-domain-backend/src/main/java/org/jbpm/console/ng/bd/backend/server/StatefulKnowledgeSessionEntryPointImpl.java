@@ -20,7 +20,9 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.droolsjbpm.services.api.KnowledgeDataService;
 import org.droolsjbpm.services.api.KnowledgeDomainService;
+import org.droolsjbpm.services.impl.model.ProcessInstanceDesc;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.bd.service.StatefulKnowledgeSessionEntryPoint;
@@ -38,6 +40,8 @@ public class StatefulKnowledgeSessionEntryPointImpl implements StatefulKnowledge
 
     @Inject
     KnowledgeDomainService domainService;
+    @Inject
+    KnowledgeDataService dataService;
 
     public long startProcess(int sessionId, String processId) {
         
@@ -55,14 +59,16 @@ public class StatefulKnowledgeSessionEntryPointImpl implements StatefulKnowledge
 
     @Override
     public void abortProcessInstance(long processInstanceId) {
-        domainService.getSessionById(domainService.getSessionForProcessInstanceId(processInstanceId)).abortProcessInstance(processInstanceId);
+        ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
+        domainService.getSessionById(piDesc.getSessionId()).abortProcessInstance(processInstanceId);
 
     }
     
     
     @Override
     public void signalProcessInstance(long processInstanceId, String signalName, Object event) {
-        StatefulKnowledgeSession ksession = domainService.getSessionById(domainService.getSessionForProcessInstanceId(processInstanceId));
+        ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
+        StatefulKnowledgeSession ksession = domainService.getSessionById(piDesc.getSessionId());
         if (processInstanceId == -1) {
             ksession.signalEvent(signalName, event);
         } else {

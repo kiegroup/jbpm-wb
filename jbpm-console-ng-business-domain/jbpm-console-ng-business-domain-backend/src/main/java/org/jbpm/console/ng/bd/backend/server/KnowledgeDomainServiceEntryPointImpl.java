@@ -100,8 +100,7 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     }
 
     public ProcessInstanceSummary getProcessInstanceById(long processInstanceId) {
-        int sessionId = domainService.getSessionForProcessInstanceId(processInstanceId);
-        return ProcessInstanceHelper.adapt(dataService.getProcessInstanceById(sessionId, processInstanceId));
+        return ProcessInstanceHelper.adapt(dataService.getProcessInstanceById(processInstanceId));
     }
 
 

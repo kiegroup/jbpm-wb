@@ -299,6 +299,7 @@ public class ProcessDefinitionListViewImpl extends Composite
 
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Definition_Details());
                 placeRequestImpl.addParameter("processId", process.getId());
+                placeRequestImpl.addParameter("sessionId", Integer.toString(process.getSessionId()));
                 placeManager.goTo(placeRequestImpl);
             }
         }));

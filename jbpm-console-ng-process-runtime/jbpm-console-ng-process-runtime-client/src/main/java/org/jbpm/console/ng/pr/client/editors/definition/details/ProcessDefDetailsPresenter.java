@@ -63,6 +63,8 @@ public class ProcessDefDetailsPresenter {
         ListBox getProcessDataListBox();
 
         ListBox getSubprocessListBox();
+        
+        TextBox getSessionIdText();
     }
 
     @Inject
@@ -107,6 +109,7 @@ public class ProcessDefDetailsPresenter {
             @Override
             public void callback( List<TaskDefSummary> tasks ) {
                 view.getNroOfHumanTasksText().setText( String.valueOf( tasks.size() ) );
+                view.getHumanTasksListBox().clear();
                 for ( TaskDefSummary t : tasks ) {
                     view.getHumanTasksListBox().addItem( t.getName(), String.valueOf( t.getId() ) );
                 }
@@ -115,7 +118,7 @@ public class ProcessDefDetailsPresenter {
         domainServices.call( new RemoteCallback<Map<String, String>>() {
             @Override
             public void callback( Map<String, String> entities ) {
-
+                view.getUsersGroupsListBox().clear();
                 for ( String key : entities.keySet() ) {
                     view.getUsersGroupsListBox().addItem( entities.get( key ) + "- " + key, key );
                 }
@@ -124,7 +127,7 @@ public class ProcessDefDetailsPresenter {
         domainServices.call( new RemoteCallback<Map<String, String>>() {
             @Override
             public void callback( Map<String, String> inputs ) {
-
+                view.getProcessDataListBox().clear();
                 for ( String key : inputs.keySet() ) {
                     view.getProcessDataListBox().addItem( key + "- " + inputs.get( key ), key );
                 }
@@ -134,7 +137,7 @@ public class ProcessDefDetailsPresenter {
         domainServices.call( new RemoteCallback<Collection<String>>() {
             @Override
             public void callback( Collection<String> subprocesses ) {
-
+                view.getSubprocessListBox().clear();
                 for ( String key : subprocesses ) {
                     view.getSubprocessListBox().addItem( key, key );
                 }
@@ -146,6 +149,9 @@ public class ProcessDefDetailsPresenter {
     public void onReveal() {
         String processId = place.getParameter( "processId", "" );
         view.getProcessNameText().setText( processId );
+        
+        String sessionId = place.getParameter( "sessionId", "" );
+        view.getSessionIdText().setText(sessionId);
 
         refreshProcessDef( processId );
     }

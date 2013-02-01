@@ -115,6 +115,10 @@ public class ProcessDefinitionListPresenter {
                     dataProvider.getList().clear();
                     dataProvider.getList().addAll(processes);
                     dataProvider.refresh();
+                    
+                    if (dataProvider.getList().isEmpty()) {
+                        fetchProcessDefs();
+                    }
                 }
             }).getProcesses();
         }

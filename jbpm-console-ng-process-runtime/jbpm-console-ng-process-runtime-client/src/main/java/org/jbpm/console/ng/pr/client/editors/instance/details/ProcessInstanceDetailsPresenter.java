@@ -113,6 +113,7 @@ public class ProcessInstanceDetailsPresenter {
         domainServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
             public void callback( List<NodeInstanceSummary> details ) {
+                view.getCurrentActivitiesListBox().clear();
                 for ( NodeInstanceSummary nis : details ) {
                     view.getCurrentActivitiesListBox().addItem( nis.getTimestamp() + ":" + nis.getId() + "-" + nis.getNodeName(),
                                                                 String.valueOf( nis.getId() ) );

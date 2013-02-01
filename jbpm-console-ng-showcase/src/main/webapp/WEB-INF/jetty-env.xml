@@ -29,6 +29,13 @@
     </Arg>
   </New>  
   
+  <New id="tx" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>java:comp/TransactionManager</Arg>
+    <Arg>
+      <Call name="getTransactionManager" class="bitronix.tm.TransactionManagerServices" />
+    </Arg>
+  </New> 
+  
    <New id="txsyncreg" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>java:comp/TransactionSynchronizationRegistry</Arg>
     <Arg>

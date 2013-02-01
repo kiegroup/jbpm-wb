@@ -280,6 +280,7 @@ public class FormDisplayAlternativePopupPresenter {
                 close();
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Definition Details" );
                 placeRequestImpl.addParameter( "processId", params.get( "processId" ).toString() );
+                placeRequestImpl.addParameter( "sessionId", Integer.toString(view.getSessionId()));
                 placeManager.goTo( placeRequestImpl );
             }
         } ).startProcess(view.getSessionId(), params.get( "processId" ).toString(), params );

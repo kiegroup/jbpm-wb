@@ -163,7 +163,7 @@ public class ProcessInstanceListViewImpl extends Composite
         });
 
         processInstanceListGrid.setWidth("100%");
-        processInstanceListGrid.setHeight("200px");
+        processInstanceListGrid.setHeight("400px");
 
         // Set the message to display when the table is empty.
         processInstanceListGrid.setEmptyTableWidget(new Label(constants.No_Process_Instances_Available()));
