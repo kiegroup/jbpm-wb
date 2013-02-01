@@ -39,6 +39,7 @@
     <module>jbpm-console-ng-process-modeling</module>
     <module>jbpm-console-ng-showcase</module>
     <module>jbpm-console-ng-distribution-wars</module>
+    <module>jbpm-console-ng-docs</module>
     
   </modules>
   <dependencyManagement>
