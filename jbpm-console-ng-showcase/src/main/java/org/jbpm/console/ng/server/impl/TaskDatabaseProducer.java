@@ -5,30 +5,39 @@
 package org.jbpm.console.ng.server.impl;
 
 import java.util.logging.Logger;
-import javax.enterprise.context.ApplicationScoped;
+
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
-import org.jboss.solder.core.ExtensionManaged;
-import javax.inject.Singleton;
+
 /**
  *
  */
-@Singleton
+@RequestScoped
 public class TaskDatabaseProducer {
 
-    @PersistenceUnit(unitName = "org.jbpm.domain")
-    @ExtensionManaged
-    @ApplicationScoped
-    @Produces
+    @Inject
     private EntityManagerFactory emf;
 
     @Produces
-    public Logger createLogger(InjectionPoint injectionPoint) {
-        return Logger.getLogger(injectionPoint.getMember()
-                .getDeclaringClass().getName());
+    @RequestScoped
+    public EntityManager getEntityManager() {
+        EntityManager em = emf.createEntityManager();
+        return em;
     }
 
-   
+    @Produces
+    public Logger createLogger(InjectionPoint injectionPoint) {
+        return Logger.getLogger(injectionPoint.getMember().getDeclaringClass()
+                .getName());
+    }
+    
+    public void close(@Disposes EntityManager em) {
+        em.close();
+    }
+
 }

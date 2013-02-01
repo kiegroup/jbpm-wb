@@ -29,7 +29,12 @@
     </Arg>
   </New>  
   
-   
+   <New id="txsyncreg" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>java:comp/TransactionSynchronizationRegistry</Arg>
+    <Arg>
+      <Call name="getTransactionSynchronizationRegistry" class="bitronix.tm.TransactionManagerServices" />
+    </Arg>
+  </New> 
     
   <New id="jbpmConsoleDS" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/jbpmConsoleDS</Arg>

@@ -31,6 +31,7 @@ import org.droolsjbpm.services.api.RulesNotificationService;
 import org.droolsjbpm.services.api.bpmn2.BPMN2DataService;
 import org.droolsjbpm.services.impl.model.ProcessInstanceDesc;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.bd.model.RuleNotificationSummary;
 import org.jbpm.console.ng.bd.model.StatefulKnowledgeSessionSummary;
 import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
@@ -61,6 +62,7 @@ import org.kie.runtime.process.ProcessInstance;
  */
 @Service
 @ApplicationScoped
+@Transactional
 public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServiceEntryPoint {
 
     @Inject

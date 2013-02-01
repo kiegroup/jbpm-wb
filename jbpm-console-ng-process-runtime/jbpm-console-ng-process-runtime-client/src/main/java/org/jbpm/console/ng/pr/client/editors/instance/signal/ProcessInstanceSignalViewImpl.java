@@ -69,7 +69,7 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
 
         for (Long processInstanceId : this.processInstanceIds) {
             // TODO do not hardcode business key for session
-            presenter.signalProcessInstance("generalSession", processInstanceId);
+            presenter.signalProcessInstance("general", processInstanceId);
             displayNotification("Signal of process instance " + processInstanceId + " signal " + signalRefText.getText() + " event " + eventText.getText());
         }
     }

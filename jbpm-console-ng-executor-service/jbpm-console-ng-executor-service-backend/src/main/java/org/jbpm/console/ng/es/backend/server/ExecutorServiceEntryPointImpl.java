@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.es.model.ErrorSummary;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
@@ -33,6 +34,7 @@ import org.jbpm.executor.api.CommandContext;
  */
 @Service
 @ApplicationScoped
+@Transactional
 public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint {
 
     @Inject

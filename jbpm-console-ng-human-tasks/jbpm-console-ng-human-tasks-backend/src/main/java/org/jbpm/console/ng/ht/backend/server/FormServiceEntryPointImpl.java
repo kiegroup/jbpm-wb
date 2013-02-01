@@ -28,6 +28,7 @@ import javax.inject.Inject;
 
 import org.droolsjbpm.services.api.FormProviderService;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.ht.model.fb.events.PaletteItemAddedEvent;
 import org.jbpm.console.ng.ht.service.FormServiceEntryPoint;
 import org.jbpm.form.builder.services.api.FormBuilderService;
@@ -50,6 +51,7 @@ import org.jbpm.shared.services.api.FileService;
  */
 @Service
 @ApplicationScoped
+@Transactional
 public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
 
     @Inject

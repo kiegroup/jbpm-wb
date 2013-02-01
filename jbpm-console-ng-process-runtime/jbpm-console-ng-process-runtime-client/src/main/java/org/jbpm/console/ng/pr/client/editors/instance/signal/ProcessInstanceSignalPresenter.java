@@ -99,7 +99,7 @@ public class ProcessInstanceSignalPresenter {
         
         // for single process instance load available signals
         if (ids.length == 1) {
-            getAvailableSignals("generalSession", Long.parseLong(ids[0]));
+            getAvailableSignals("general", Long.parseLong(ids[0]));
         }
     }
 

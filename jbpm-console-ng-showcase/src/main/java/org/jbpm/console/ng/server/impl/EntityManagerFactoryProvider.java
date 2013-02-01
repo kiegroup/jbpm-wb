@@ -1,0 +1,23 @@
+package org.jbpm.console.ng.server.impl;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.PersistenceUnit;
+
+@ApplicationScoped
+public class EntityManagerFactoryProvider {
+    
+    @PersistenceUnit(unitName = "org.jbpm.domain")
+    private EntityManagerFactory emf;
+    
+    @Produces
+    public EntityManagerFactory getEntityManagerFactory() {
+        if (this.emf == null) {
+            // this needs to be here for non EE containers
+            this.emf = Persistence.createEntityManagerFactory("org.jbpm.domain");
+        }
+        return this.emf;
+    }
+}

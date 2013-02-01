@@ -22,6 +22,7 @@ import javax.inject.Inject;
 
 import org.droolsjbpm.services.api.KnowledgeDomainService;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.bd.service.StatefulKnowledgeSessionEntryPoint;
 import org.kie.runtime.StatefulKnowledgeSession;
 import org.kie.runtime.process.ProcessInstance;
@@ -32,6 +33,7 @@ import org.kie.runtime.process.ProcessInstance;
  */
 @Service
 @ApplicationScoped
+@Transactional
 public class StatefulKnowledgeSessionEntryPointImpl implements StatefulKnowledgeSessionEntryPoint{
 
     @Inject

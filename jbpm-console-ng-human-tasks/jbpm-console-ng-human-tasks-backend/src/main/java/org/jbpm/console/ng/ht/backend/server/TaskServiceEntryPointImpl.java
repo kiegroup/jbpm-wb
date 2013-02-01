@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import org.jbpm.console.ng.ht.model.IdentitySummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.task.Comment;
@@ -46,6 +47,7 @@ import org.jbpm.task.utils.ContentMarshallerHelper;
  */
 @Service
 @ApplicationScoped
+@Transactional
 public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     
     @Inject
