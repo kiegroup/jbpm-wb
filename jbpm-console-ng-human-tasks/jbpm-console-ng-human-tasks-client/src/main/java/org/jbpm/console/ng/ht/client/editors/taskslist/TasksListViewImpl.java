@@ -26,13 +26,14 @@ import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.cellview.client.DataGrid;
+import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import javax.enterprise.event.Observes;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
 import org.uberfire.security.Identity;
 
@@ -54,7 +55,11 @@ public class TasksListViewImpl extends Composite
     @Inject
     @DataField
     public NavLink dayViewTasksNavLink;
-    // add click handler.. :(
+    
+    @Inject
+    @DataField
+    public NavLink advancedViewTasksNavLink;
+    
     @Inject
     @DataField
     public NavLink weekViewTasksNavLink;
@@ -71,6 +76,7 @@ public class TasksListViewImpl extends Composite
     private  TaskListMultiDayBox taskListMultiDayBox;
     @Inject
     private Event<NotificationEvent> notification;
+    
 
     @Override
     public void init(TasksListPresenter presenter) {
@@ -90,6 +96,8 @@ public class TasksListViewImpl extends Composite
             @Override
             public void onClick(ClickEvent event) {
               tasksViewContainer.setStyleName("day");
+              weekViewTasksNavLink.setStyleName("");
+              advancedViewTasksNavLink.setStyleName("");
               refreshTasks();
             }
         });
@@ -99,9 +107,26 @@ public class TasksListViewImpl extends Composite
           @Override
           public void onClick(ClickEvent event) {
             tasksViewContainer.setStyleName("week");
-              refreshTasks();
+            dayViewTasksNavLink.setStyleName("");
+            advancedViewTasksNavLink.setStyleName("");
+            weekViewTasksNavLink.setStyleName("active");
+            refreshTasks();
           }
         });
+        
+        advancedViewTasksNavLink.setText("Advanced");
+        advancedViewTasksNavLink.addClickHandler(new ClickHandler() {
+
+          @Override
+          public void onClick(ClickEvent event) {
+            dayViewTasksNavLink.setStyleName("");
+            weekViewTasksNavLink.setStyleName("");
+            advancedViewTasksNavLink.setStyleName("active");
+            PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Grid Tasks List");
+            placeManager.goTo(placeRequestImpl);
+          }
+        });
+        
         createQuickTaskNavLink.setText("New Task");
         createQuickTaskNavLink.addClickHandler(new ClickHandler() {
 
@@ -111,6 +136,17 @@ public class TasksListViewImpl extends Composite
               placeManager.goTo(placeRequestImpl);
           }
         });
+        
+        advancedViewTasksNavLink.setText("Advanced");
+        advancedViewTasksNavLink.addClickHandler(new ClickHandler() {
+
+          @Override
+          public void onClick(ClickEvent event) {
+              PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Grid Tasks List");
+              placeManager.goTo(placeRequestImpl);
+          }
+        });
+        
 
     }
 

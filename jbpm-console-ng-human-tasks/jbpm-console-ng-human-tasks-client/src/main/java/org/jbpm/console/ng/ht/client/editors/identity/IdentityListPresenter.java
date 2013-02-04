@@ -1,5 +1,6 @@
 package org.jbpm.console.ng.ht.client.editors.identity;
 
+import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,18 +16,16 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
-
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 
 @Dependent
 @WorkbenchScreen(identifier = "Users and Groups")
-public class IdentityPresenter {
+public class IdentityListPresenter {
 
-    public interface InboxView extends UberView<IdentityPresenter> {
+    public interface IdentityListView extends UberView<IdentityListPresenter> {
 
         void displayNotification(String text);
 
@@ -37,7 +36,7 @@ public class IdentityPresenter {
     }
 
     @Inject
-    private InboxView view;
+    private IdentityListView view;
     @Inject
     Caller<TaskServiceEntryPoint> taskServices;
     private ListDataProvider<IdentitySummary> dataProvider = new ListDataProvider<IdentitySummary>();
@@ -48,11 +47,11 @@ public class IdentityPresenter {
     }
 
     @WorkbenchPartView
-    public UberView<IdentityPresenter> getView() {
+    public UberView<IdentityListPresenter> getView() {
         return view;
     }
 
-    public IdentityPresenter() {
+    public IdentityListPresenter() {
     }
 
     @PostConstruct

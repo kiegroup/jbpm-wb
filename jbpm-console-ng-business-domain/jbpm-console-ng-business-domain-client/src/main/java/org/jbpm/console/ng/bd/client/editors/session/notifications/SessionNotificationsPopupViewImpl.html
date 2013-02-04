@@ -1,31 +1,29 @@
+<div id="myModal" class="modal modal-popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <!-- MODAL HEADER -->
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" data-field="closeButton" aria-hidden="true">x</button>
+    <h3 id="myModalLabel">Session Notification Logs</h3>
+  </div>
 
-<div class="form">
+  <!-- MODAL BODY -->     
+  <div class="modal-body">
+    <div class="row-fluid">
+      <div class="span12">
 
-    <div class="form-header">
-        <h2>Session Notification Logs</h2>
-        <div class="header-actions clearfix">
+        <fieldset>
+          <label>Session Id</label>
+          <input type="text" class="span12" data-field="sessionIdText" />
+          <label>Logs</label>
+          <textarea data-field="sessionNotificationsTextArea" class="span5" id="sessionNotificationsTextArea"></textarea>
+        </fieldset>
 
-            <button class="button main" data-field="updateButton" id="updateButton" >Update</button>
-            <button class="button close" data-field="closeButton" id="closeButton" >Close</button>
-        </div>
+      </div>
     </div>
+  </div>
 
-    <div class="form-content">
-
-       
-
-        <div class="form-row clearfix">
-            <label>Session Id</label>
-            <input type="text" data-field="sessionIdText"/>
-        </div>
-
-        <div class="form-row clearfix">
-            <label>Logs</label>
-            <textarea data-field="sessionNotificationsTextArea" id="sessionNotificationsTextArea"></textarea>
-        </div>
-       
-    </div>
-
-
+  <div class="modal-footer">
+    <button class="btn" data-field="clearButton" id="clearButton" >Clear</button>
+    <button class="btn" data-field="updateButton" id="updateButton" >Update</button>
+  </div>
 </div>
 

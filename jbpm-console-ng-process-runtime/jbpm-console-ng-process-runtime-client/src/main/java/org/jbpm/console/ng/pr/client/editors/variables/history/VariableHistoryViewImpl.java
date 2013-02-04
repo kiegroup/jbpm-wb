@@ -1,5 +1,8 @@
 package org.jbpm.console.ng.pr.client.editors.variables.history;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.SimplePager;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -15,10 +18,8 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.cellview.client.SimplePager;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import org.jbpm.console.ng.pr.model.VariableSummary;
 
@@ -39,6 +40,9 @@ public class VariableHistoryViewImpl extends Composite implements
     @DataField
     public Button closeButton;
     @Inject
+    @DataField 
+    public FlowPanel listContainer;
+    @Inject
     @DataField
     public DataGrid<VariableSummary> processVarListGrid;
     @Inject
@@ -54,7 +58,9 @@ public class VariableHistoryViewImpl extends Composite implements
     public void init(VariableHistoryPresenter presenter) {
         this.presenter = presenter;
         
-        processVarListGrid.setWidth("400px");
+        listContainer.add(processVarListGrid);
+        listContainer.add(pager);
+        
         processVarListGrid.setHeight("200px");
 
         // Set the message to display when the table is empty.
@@ -63,7 +69,7 @@ public class VariableHistoryViewImpl extends Composite implements
         // Create a Pager to control the table.
 
         pager.setDisplay(processVarListGrid);
-        pager.setPageSize(6);
+        pager.setPageSize(5);
         
         // Value.
         Column<VariableSummary, String> valueColumn =

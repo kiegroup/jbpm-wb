@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.0"
-             xmlns="http://java.sun.com/xml/ns/persistence" 
-             xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd 
-                      http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd">
-
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:orm="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd                        http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd">
   <persistence-unit name="org.jbpm.domain" transaction-type="JTA">
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
-    <jta-data-source>jdbc/jbpmConsoleDS</jta-data-source>       
+    <jta-data-source>jdbc/jbpmConsoleDS</jta-data-source>
     <mapping-file>META-INF/Taskorm.xml</mapping-file>
     <mapping-file>META-INF/JBPMorm.xml</mapping-file>
-
+    <mapping-file>META-INF/Executor-orm.xml</mapping-file>
     <class>org.jbpm.task.Attachment</class>
     <class>org.jbpm.task.Content</class>
     <class>org.jbpm.task.BooleanExpression</class>
@@ -34,7 +28,8 @@
     <class>org.jbpm.task.TaskData</class>
     <class>org.jbpm.task.SubTasksStrategy</class>
     <class>org.jbpm.task.User</class>
-    
+    <class>org.jbpm.executor.entities.ErrorInfo</class>
+    <class>org.jbpm.executor.entities.RequestInfo</class>
     <class>org.droolsjbpm.services.impl.model.ProcessDesc</class>
     <class>org.droolsjbpm.services.impl.model.ProcessInstanceDesc</class>
     <class>org.droolsjbpm.services.impl.model.NodeInstanceDesc</class>
@@ -43,28 +38,18 @@
     <class>org.droolsjbpm.services.impl.model.RuleNotificationInstanceDesc</class>
     <class>org.droolsjbpm.services.impl.model.BAMProcessSummary</class>
     <class>org.droolsjbpm.services.impl.model.BAMTaskSummary</class>
-
     <class>org.drools.persistence.info.SessionInfo</class>
     <class>org.jbpm.persistence.processinstance.ProcessInstanceInfo</class>
     <class>org.drools.persistence.info.WorkItemInfo</class>
-    
-   
+    <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
     <properties>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
-
-
-      <property name="hibernate.max_fetch_depth" value="3" />
-      <property name="hibernate.hbm2ddl.auto" value="create-drop" />
-      <property name="hibernate.show_sql" value="false" />
-
-    
-      <property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.BTMTransactionManagerLookup" />
-
-      <!-- BZ 841786: AS7/EAP 6/Hib 4 uses new (sequence) generators which seem to cause problems -->      
-      <property name="hibernate.id.new_generator_mappings" value="false" />
+      <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+      <property name="hibernate.max_fetch_depth" value="3"/>
+      <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+      <property name="hibernate.show_sql" value="false"/>
+      <property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.BTMTransactionManagerLookup"/>
+      <!-- BZ 841786: AS7/EAP 6/Hib 4 uses new (sequence) generators which seem to cause problems -->
+      <property name="hibernate.id.new_generator_mappings" value="false"/>
     </properties>
   </persistence-unit>
-
-
-
 </persistence>

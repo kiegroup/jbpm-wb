@@ -1,0 +1,35 @@
+<div class="container-fluid">
+  <br/>
+  <div class="row-fluid">
+    <form class="form-search">
+      <button class="btn" id="quickTaskButton"
+              data-field="quickTaskButton" title="Ctrl + T">New Task</button>
+      <button class="btn" id="startTaskButton"
+              data-field="startTaskButton">Start</button>
+      <button class="btn" id="completeTaskButton"
+              data-field="completeTaskButton">Complete</button>
+      <button class="btn" id="refreshTasksButton"
+              data-field="refreshTasksButton">Refresh</button>
+
+      <input type="checkbox" id="showCompletedCheck"
+             data-field="showCompletedCheck" /> Owned
+
+      <input type="checkbox" id="showGroupTasksCheck"
+             data-field="showGroupTasksCheck" /> Group Only
+
+      <input type="checkbox" id="showPersonalTasksCheck"
+             data-field="showPersonalTasksCheck" /> Personal Only
+
+    </form>
+  </div>
+  <div class="row-fluid">
+    <div data-field="listContainer" >
+
+      <table id="myTaskListGrid" data-field="myTaskListGrid" class="table table-bordered table-striped table-hover">
+
+      </table>
+
+      <div id="pager" class="pagination" data-field="pager"></div>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,9 @@
 package org.jbpm.console.ng.ht.client.editors.identity;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.SimplePager;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -17,24 +21,24 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.cellview.client.SimplePager;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
 
 @Dependent
-@Templated(value = "IdentityViewImpl.html")
-public class IdentityViewImpl extends Composite implements
-        IdentityPresenter.InboxView {
+@Templated(value = "IdentityListViewImpl.html")
+public class IdentityListViewImpl extends Composite implements
+        IdentityListPresenter.IdentityListView {
     
     @Inject
     private Identity identity;
     @Inject
     private PlaceManager placeManager;
     
-    private IdentityPresenter presenter;
+    private IdentityListPresenter presenter;
+    @Inject
+    @DataField
+    public FlowPanel listContainer;
     
     @Inject
     @DataField
@@ -57,12 +61,13 @@ public class IdentityViewImpl extends Composite implements
     private ListHandler<IdentitySummary> sortHandler;
 
     @Override
-    public void init(IdentityPresenter presenter) {
+    public void init(IdentityListPresenter presenter) {
         this.presenter = presenter;
 
-
-        identityListGrid.setWidth("100%");
-        identityListGrid.setHeight("200px");
+        listContainer.add(identityListGrid);
+        listContainer.add(pager);
+        
+        identityListGrid.setHeight("350px");
 
         // Set the message to display when the table is empty.
         identityListGrid.setEmptyTableWidget(new Label("No User/Groups Available"));

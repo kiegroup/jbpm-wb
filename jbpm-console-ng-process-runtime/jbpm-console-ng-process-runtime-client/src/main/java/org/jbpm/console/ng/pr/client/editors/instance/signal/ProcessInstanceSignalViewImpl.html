@@ -1,35 +1,28 @@
-<div class="form">
-    <form>
-        <div class="form-header">
-            <h2>Signal Process</h2>
-            <div class="header-actions clearfix">
-                <button class="button close" data-field="closeButton" id="closeButton" >Close</button>
-            </div>
-        </div>
-        <div class="form-content">
-	        <div class="form-row clearfix">
-	            <label>Signal Ref</label>
-	            <input type="text" placeholder="Write signal ref ... " data-field="signalRefText"  id="signalRefText"/>
-	        </div>
-	        <div class="form-row clearfix">
-	            <label>Event</label>
-	            <input type="text" data-field="eventText" id="eventText"/>
-	        </div>
-        </div>
-        <div class="form-footer">
-	        <div class="footer-actions clearfix">
-	            <button class="button main" data-field="signalButton" id="signalButton" >Signal</button>
-	            <button class="button" data-field="clearButton" id="clearButton" >Clear</button>
-	       </div>
-       </div>
-    </form>    
+<div id="myModal" class="modal modal-popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <!-- MODAL HEADER -->
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" data-field="closeButton" aria-hidden="true">x</button>
+    <h3 id="myModalLabel">Signal Process Instance</h3>
+  </div>
+
+  <!-- MODAL BODY -->     
+  <div class="modal-body">
+    <div class="row-fluid">
+      <div class="span12">
+
+        <fieldset>
+          <label>Signal Ref</label>
+          <input type="text" class="span12" data-field="signalRefText" />
+          <label>Event</label>
+          <input type="text" class="span12" data-field="eventText" />
+        </fieldset>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn" data-field="clearButton" id="clearButton" >Clear</button>
+    <button class="btn" data-field="signalButton" id="signalButton" >Signal</button>
+  </div>
 </div>
-
-
-
-
-
-
-
-
-

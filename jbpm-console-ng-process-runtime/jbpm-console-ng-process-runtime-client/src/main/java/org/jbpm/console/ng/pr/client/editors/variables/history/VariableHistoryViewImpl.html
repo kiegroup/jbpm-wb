@@ -1,26 +1,30 @@
-<div class="form">
-    <form>
-        <div class="form-header">
-            <h2>Process variable history for <label data-field="variableNameText" id="variableNameText"></label></h2>
-            <div class="header-actions clearfix">
-                <button class="button close" data-field="closeButton" id="closeButton" >Close</button>
+<div id="myModal" class="modal modal-popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <!-- MODAL HEADER -->
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" data-field="closeButton" aria-hidden="true">x</button>
+    <h3 id="myModalLabel">Variable History <label data-field="variableNameText" id="variableNameText"></label></h3>
+  </div>
+
+  <!-- MODAL BODY -->     
+  <div class="modal-body">
+    <div class="row-fluid">
+      <div class="span12">
+
+        <fieldset>
+          <div class="container-fluid">
+            <div class="row-fluid">
+              <div data-field="listContainer" >
+                <label>Variable History</label>  
+                <table id="processVarListGrid" data-field="processVarListGrid" class="table table-bordered table-striped table-hover">
+                </table>
+                <div id="pager" class="pagination" data-field="pager"></div>
+              </div>
             </div>
-        </div>
-        <div class="form-content">
-            
-			<div class="list">
-			    <div class="list-content">
-			
-			        <table id="processVarListGrid" data-field="processVarListGrid">
-			
-			        </table>
-			
-			        <div id="pager" data-field="pager"></div>
-			    </div>
-			
-			</div>
-        </div>
-        
-    </form>    
+        </fieldset>
+
+      </div>
+    </div>
+  </div>
+
 </div>
 

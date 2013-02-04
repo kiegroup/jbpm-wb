@@ -20,6 +20,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
 
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
@@ -32,6 +33,7 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
 import org.uberfire.security.Identity;
 import org.uberfire.shared.mvp.PlaceRequest;
 
@@ -53,6 +55,9 @@ public class NewProcessDefinitionPresenter {
     Identity identity;
     @Inject
     Caller<KnowledgeDomainServiceEntryPoint> domainService;
+    
+    @Inject
+    private Event<BeforeClosePlaceEvent> closePlaceEvent;
     
     private PlaceRequest place;
     
@@ -96,6 +101,9 @@ public class NewProcessDefinitionPresenter {
 
     }
 
+     public void close() {
+        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
+    }
    
 
    

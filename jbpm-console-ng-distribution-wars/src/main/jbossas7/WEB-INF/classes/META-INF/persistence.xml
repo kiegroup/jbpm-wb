@@ -19,7 +19,7 @@
     <jta-data-source>java:jboss/datasources/ExampleDS</jta-data-source>
     <mapping-file>META-INF/Taskorm.xml</mapping-file>
     <mapping-file>META-INF/JBPMorm.xml</mapping-file>
-    <!--mapping-file>META-INF/TaskEventsorm.xml</mapping-file -->
+    <mapping-file>META-INF/Executor-orm.xml</mapping-file>
 
     <class>org.jbpm.task.Attachment</class>
     <class>org.jbpm.task.Content</class>
@@ -43,7 +43,6 @@
     <class>org.jbpm.task.TaskData</class>
     <class>org.jbpm.task.SubTasksStrategy</class>
     <class>org.jbpm.task.User</class>
-
     <class>org.droolsjbpm.services.impl.model.ProcessDesc</class>
     <class>org.droolsjbpm.services.impl.model.ProcessInstanceDesc</class>
     <class>org.droolsjbpm.services.impl.model.NodeInstanceDesc</class>

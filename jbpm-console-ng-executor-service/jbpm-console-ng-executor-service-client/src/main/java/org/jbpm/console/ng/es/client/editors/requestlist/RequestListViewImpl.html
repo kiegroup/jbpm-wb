@@ -1,18 +1,22 @@
-<div class="list">
-    <div class="list-options">
-        <button class="button" id="refreshRequestsButton" data-field="refreshRequestsButton">Refresh</button> 
-        <button class="button" id="initButton" data-field="initButton">Init Service</button> 
-        <button class="button" id="createRequestButton" data-field="createRequestButton">Create Mock</button> 
-        <div class="option"><input type="checkbox"  id="showCompletedCheck" data-field="showCompletedCheck"/> Show completed?</div>
+<div class="container-fluid">
+  <br/>
+  <div class="row-fluid">
+    <form class="form-search">
+      <button class="btn" id="initButton" data-field="initButton">Init Service</button>
+      <button class="btn" id="refreshRequestsButton" data-field="refreshRequestsButton">Refresh</button>
+      <button class="btn" id="createRequestButton" data-field="createRequestButton">Create Mock Job</button>
+      <input type="checkbox"  id="showCompletedCheck" data-field="showCompletedCheck"/>
+      
+    </form>
+  </div>
+  <div class="row-fluid">
+    <div data-field="listContainer" >
+
+      <table id="myRequestListGrid" data-field="myRequestListGrid" class="table table-bordered table-striped table-hover">
+
+      </table>
+
+      <div id="pager" class="pagination" data-field="pager"></div>
     </div>
-    <div class="list-content">
-
-        <table id="myRequestListGrid" data-field="myRequestListGrid">
-
-        </table>
-
-        <div id="pager" data-field="pager"></div>
-    </div>
-
+  </div>
 </div>
-

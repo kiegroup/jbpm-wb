@@ -42,6 +42,7 @@ import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -75,6 +76,9 @@ public class RequestListViewImpl extends Composite
     @Inject
     @DataField
     public Button refreshRequestsButton;
+    @Inject
+    @DataField
+    public FlowPanel listContainer;
     
     @Inject
     @DataField
@@ -102,7 +106,10 @@ public class RequestListViewImpl extends Composite
     public void init(RequestListPresenter presenter) {
         this.presenter = presenter;
         
-        myRequestListGrid.setHeight("200px");
+        listContainer.add(myRequestListGrid);
+        listContainer.add(pager);
+        
+        myRequestListGrid.setHeight("350px");
 
 //         Set the message to display when the table is empty.
         myRequestListGrid.setEmptyTableWidget(new Label(constants.Hooray_you_don_t_have_any_pending_Task__()));
@@ -220,26 +227,6 @@ public class RequestListViewImpl extends Composite
 
 
 
-//        // Status.
-//        Column<RequestSummary, String> statusColumn = new Column<RequestSummary, String>(new TextCell()) {
-//            @Override
-//            public String getValue(RequestSummary object) {
-//                return object.getStatus().toString();
-//            }
-//        };
-//        statusColumn.setSortable(true);
-//        sortHandler.setComparator(statusColumn,
-//                new Comparator<RequestSummary>() {
-//            public int compare(RequestSummary o1,
-//                    RequestSummary o2) {
-//                return o1.getStatus().compareTo(o2.getStatus());
-//            }
-//        });
-//
-//        myRequestListGrid.addColumn(statusColumn,
-//                new ResizableHeader(constants.Status(), myRequestListGrid, statusColumn));
-//
-//
 
 
 
