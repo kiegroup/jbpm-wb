@@ -199,7 +199,7 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
 
     @Override
     public Collection<String> getAvailableSignals(String businessKey, long processInstanceId) {
-        StatefulKnowledgeSession ksession = domainService.getSessionsByName(businessKey).values().iterator().next();
+        StatefulKnowledgeSession ksession = domainService.getSessionById(domainService.getSessionForProcessInstanceId(processInstanceId));
         ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
         Collection<String> activeSignals = new ArrayList<String>();
 
