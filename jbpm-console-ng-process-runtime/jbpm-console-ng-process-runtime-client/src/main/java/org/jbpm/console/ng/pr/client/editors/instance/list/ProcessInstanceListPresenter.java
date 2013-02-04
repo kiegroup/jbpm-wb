@@ -15,9 +15,10 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.list;
 
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.ui.TextBox;
 
+
+import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -35,7 +36,6 @@ import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.StatefulKnowledgeSessionEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
-import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
 import org.kie.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.OnReveal;
@@ -51,13 +51,15 @@ import org.uberfire.shared.mvp.PlaceRequest;
 @WorkbenchScreen(identifier = "Process Instance List")
 public class ProcessInstanceListPresenter {
 
-  public interface InboxView
+  public interface ProcessInstanceListView
           extends
           UberView<ProcessInstanceListPresenter> {
 
     void displayNotification(String text);
 
-    TextBox getFilterProcessText();
+    String getFilterProcessText();
+    
+    void setFilterProcessText(String processText);
 
     DataGrid<ProcessInstanceSummary> getDataGrid();
 
@@ -76,7 +78,7 @@ public class ProcessInstanceListPresenter {
   @Inject
   private Identity identity;
   @Inject
-  private InboxView view;
+  private ProcessInstanceListView view;
   @Inject
   private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
   
@@ -134,7 +136,7 @@ public class ProcessInstanceListPresenter {
           dataProvider.getList().addAll(processInstances);
           dataProvider.refresh();
         }
-      }).getProcessInstances(states, view.getFilterProcessText().getText(), view.getFilterType(), initiator);
+      }).getProcessInstances(states, view.getFilterProcessText(), view.getFilterType(), initiator);
     }
 
 
@@ -182,8 +184,8 @@ public class ProcessInstanceListPresenter {
   }
 
   public void listProcessInstances() {
-    System.out.println("############# Current Process Instance Definition! "+this.currentProcessDefinition);
-    view.getFilterProcessText().setText(currentProcessDefinition);
+    
+    view.setFilterProcessText(currentProcessDefinition);
     if (!this.currentProcessDefinition.equals("")) {
       knowledgeServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
         @Override

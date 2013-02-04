@@ -53,7 +53,7 @@ public class HomePresenter {
 
     void displayNotification(String text);
 
-    SuggestBox getActionText();
+//    SuggestBox getActionText();
   }
   @Inject
   private PlaceManager placeManager;

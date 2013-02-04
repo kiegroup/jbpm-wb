@@ -15,6 +15,10 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskdetails;
 
+import com.github.gwtbootstrap.client.ui.NavLink;
+import com.github.gwtbootstrap.client.ui.base.UnorderedList;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -55,12 +59,12 @@ import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
-@WorkbenchPopup(identifier = "Task Details Alternative Popup")
-public class TaskDetailsAlternativePopupPresenter {
+@WorkbenchPopup(identifier = "Task Details Popup")
+public class TaskDetailsPopupPresenter {
 
-    public interface InboxView
+    public interface TaskDetailsPopupView
             extends
-            UberView<TaskDetailsAlternativePopupPresenter> {
+            UberView<TaskDetailsPopupPresenter> {
 
         void displayNotification(String text);
 
@@ -87,14 +91,15 @@ public class TaskDetailsAlternativePopupPresenter {
         public String[] getPriorities();
 
         TextBox getTaskStatusText();
-
         
         Button getpIDetailsButton();
+        
+        UnorderedList getNavBarUL();
     }
     @Inject
     private PlaceManager placeManager;
     @Inject
-    InboxView view;
+    TaskDetailsPopupView view;
     @Inject
     Identity identity;
     @Inject
@@ -112,11 +117,11 @@ public class TaskDetailsAlternativePopupPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Task Details Alternative Popup";
+        return "Task Details Popup";
     }
 
     @WorkbenchPartView
-    public UberView<TaskDetailsAlternativePopupPresenter> getView() {
+    public UberView<TaskDetailsPopupPresenter> getView() {
         return view;
     }
 
@@ -221,8 +226,28 @@ public class TaskDetailsAlternativePopupPresenter {
 
     @OnReveal
     public void onReveal() {
-        long taskId = Long.parseLong(place.getParameter("taskId", "0").toString());
+        final long taskId = Long.parseLong(place.getParameter("taskId", "0").toString());
         view.getTaskIdText().setText(String.valueOf(taskId));
+        view.getNavBarUL().clear();
+        NavLink detailsLink = new NavLink("Details");
+        detailsLink.setStyleName("active");
+        
+        NavLink workLink = new NavLink("Work");
+        
+        
+        workLink.addClickHandler(new ClickHandler(){
+
+            @Override
+            public void onClick(ClickEvent event) {
+              close();
+              PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
+              placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
+              placeManager.goTo(placeRequestImpl);
+            }
+        });
+        
+        view.getNavBarUL().add(workLink);
+        view.getNavBarUL().add(detailsLink);
         refreshTask(Long.parseLong(view.getTaskIdText().getText()));
     }
 

@@ -15,11 +15,13 @@
  */
 package org.jbpm.console.ng.pr.client.editors.definition.details;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.ListBox;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
-import com.google.gwt.user.client.Window;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -29,14 +31,7 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
-
-
-
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextBox;
-
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -47,7 +42,7 @@ import org.jbpm.console.ng.pr.client.i18n.Constants;
 @Templated(value = "ProcessDefDetailsViewImpl.html")
 public class ProcessDefDetailsViewImpl extends Composite
         implements
-        ProcessDefDetailsPresenter.InboxView {
+        ProcessDefDetailsPresenter.ProcessDefDetailsView {
 
   @Inject
   private PlaceManager placeManager;

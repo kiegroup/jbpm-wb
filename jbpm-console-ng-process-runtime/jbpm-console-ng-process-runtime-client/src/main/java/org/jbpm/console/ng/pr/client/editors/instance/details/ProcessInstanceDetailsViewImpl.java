@@ -15,6 +15,12 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.details;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.ListBox;
+import com.github.gwtbootstrap.client.ui.SimplePager;
+import com.github.gwtbootstrap.client.ui.TextArea;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,15 +56,11 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
+
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.VariableSummary;
 
@@ -66,7 +68,7 @@ import org.jbpm.console.ng.pr.model.VariableSummary;
 @Templated(value = "ProcessInstanceDetailsViewImpl.html")
 public class ProcessInstanceDetailsViewImpl extends Composite
         implements
-        ProcessInstanceDetailsPresenter.InboxView {
+        ProcessInstanceDetailsPresenter.ProcessInstanceDetailsView {
 
     private ProcessInstanceDetailsPresenter presenter;
     @Inject
@@ -79,6 +81,10 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     @Inject
     @DataField
     public TextBox processPackageText;
+    
+    @Inject
+    @DataField
+    public FlowPanel listContainer;
     
     @Inject
     @DataField
@@ -125,7 +131,8 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     public void init(ProcessInstanceDetailsPresenter presenter) {
         this.presenter = presenter;
 
-        processDataGrid.setWidth("100%");
+        listContainer.add(processDataGrid);
+        listContainer.add(pager);
         processDataGrid.setHeight("200px");
 
         // Set the message to display when the table is empty.

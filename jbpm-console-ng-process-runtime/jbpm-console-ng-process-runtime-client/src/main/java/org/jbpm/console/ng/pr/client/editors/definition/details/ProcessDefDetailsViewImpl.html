@@ -1,71 +1,57 @@
+<div class="row-fluid">
+  <div class="span12">
 
-<div class="form">
-
-    <div class="form-header">
-        <h2>Process Definition Details</h2>
-        <div class="header-actions clearfix">
-            <button class="button main" data-field="createProcessInstanceButton" id="createProcessInstanceButton">New Process Instance</button>
-            <button class="button main" data-field="viewProcessInstancesButton" id="viewProcessInstancesButton">View Process Instances</button>
-            <button class="button main" data-field="openProcessDesignerButton" id="openProcessDesignerButton">View Process Model</button>    
-            <button class="button main" data-field="refreshButton" id="refreshButton">Refresh</button>
-
+    <div class="form-horizontal">
+      <legend>Process Definition Details</legend>
+      <div class="control-group">
+        <label  class="control-label" for="processNameText">Process Definition Name</label>
+        <div class="controls">
+          <input type="text" data-field="processNameText"  id="processNameText" placeholder=""/>
         </div>
+      </div>
+      <div class="control-group">
+        <label  class="control-label" for="nroOfHumanTasksText">Human Tasks Count</label>
+        <div class="controls">
+          <input type="text" data-field="nroOfHumanTasksText"  id="nroOfHumanTasksText" placeholder=""/>
+        </div>
+      </div>
+      <div class="control-group">
+        <label  class="control-label" for="sessionIdText">Knowledge Session Id</label>
+        <div class="controls">
+          <input type="text" data-field="sessionIdText"  id="sessionIdText" placeholder=""/>
+        </div>
+      </div>
+      <div class="control-group">
+        <label  class="control-label" for="humanTasksListBox">Human Tasks</label>
+        <div class="controls">
+          <select data-field="humanTasksListBox" size="5" id="humanTasksListBox"></select>
+        </div>
+      </div>
+      <div class="control-group">
+        <label  class="control-label" for="usersGroupsListBox">User and Groups</label>
+        <div class="controls">
+          <select data-field="usersGroupsListBox" size="5" id="usersGroupsListBox"></select>
+        </div>
+      </div>
+      <div class="control-group">
+        <label  class="control-label" for="subprocessListBox">Sub Processes</label>
+        <div class="controls">
+          <select data-field="subprocessListBox" size="5" id="subprocessListBox"></select>
+        </div>
+      </div>
+      <div class="control-group">
+        <label  class="control-label" for="processDataListBox">Process Variables</label>
+        <div class="controls">
+          <select data-field="processDataListBox" size="5" id="processDataListBox"></select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn" data-field="createProcessInstanceButton" id="createProcessInstanceButton">New Process Instance</button>
+        <button class="btn" data-field="viewProcessInstancesButton" id="viewProcessInstancesButton">View Process Instances</button>
+        <button class="btn" data-field="openProcessDesignerButton" id="openProcessDesignerButton">View Process Model</button>    
+        <button class="btn" data-field="refreshButton" id="refreshButton">Refresh</button>
+
+      </div>
     </div>
-
-    <div class="form-content">
-
-
-        <div class="form-row clearfix">
-            <label>Process Name</label>
-            <input type="text" data-field="processNameText"  id="processNameText"/>
-        </div>
-        <div class="form-row clearfix">
-            <label>Human Tasks Count</label>
-            <input type="text" data-field="nroOfHumanTasksText" id="nroOfHumanTasksText"/>
-        </div>
-        <div class="form-row clearfix">
-            <label>Human Tasks List</label>
-            <div class="select-container multi">
-                <select data-field="humanTasksListBox" size="5" id="humanTasksListBox">
-
-                </select>
-            </div>
-
-        </div>    
-        <div class="form-row clearfix">
-            <label>User and Groups</label>
-            <div class="select-container multi">
-                <select data-field="usersGroupsListBox" size="5" id="usersGroupsListBox">
-
-                </select>
-            </div>
-
-        </div>
-         <div class="form-row clearfix">
-            <label>Sub processes</label>
-            <div class="select-container multi">
-                <select data-field="subprocessListBox" size="5" id="subprocessListBox">
-
-                </select>
-            </div>
-
-        </div>  
-        <div class="form-row clearfix">
-            <label>Process Data</label>
-            <div class="select-container multi">
-                <select data-field="processDataListBox" size="5" id="processDataListBox">
-
-                </select>
-            </div>
-
-        </div> 
-        <div class="form-row clearfix">
-            <label>Session id</label>
-            <input type="text" data-field="sessionIdText"  id="sessionIdText"/>
-        </div>   
-
-    </div>
-
-
+  </div>
 </div>
-

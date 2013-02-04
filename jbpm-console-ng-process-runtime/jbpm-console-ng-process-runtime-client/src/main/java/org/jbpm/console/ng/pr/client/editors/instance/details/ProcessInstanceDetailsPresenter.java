@@ -15,9 +15,10 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.details;
 
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
+
+import com.github.gwtbootstrap.client.ui.ListBox;
+import com.github.gwtbootstrap.client.ui.TextArea;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
@@ -52,7 +53,7 @@ public class ProcessInstanceDetailsPresenter {
 
     private PlaceRequest place;
 
-    public interface InboxView
+    public interface ProcessInstanceDetailsView
             extends
             UberView<ProcessInstanceDetailsPresenter> {
 
@@ -78,7 +79,7 @@ public class ProcessInstanceDetailsPresenter {
     @Inject
     private PlaceManager placeManager;
     @Inject
-    InboxView                                view;
+    ProcessInstanceDetailsView                                view;
     @Inject
     Caller<KnowledgeDomainServiceEntryPoint> domainServices;
     private             ListDataProvider<VariableSummary> dataProvider = new ListDataProvider<VariableSummary>();
@@ -103,6 +104,7 @@ public class ProcessInstanceDetailsPresenter {
         domainServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
             public void callback( List<NodeInstanceSummary> details ) {
+                view.getLogTextArea().setText("");
                 String fullLog = "";
                 for ( NodeInstanceSummary nis : details ) {
                     fullLog += nis.getTimestamp() + " - " + nis.getNodeName() + " (" + nis.getType() + ") \n";
@@ -195,7 +197,7 @@ public class ProcessInstanceDetailsPresenter {
         domainServices.call(new RemoteCallback<List<VariableSummary>>() {
             @Override
             public void callback(List<VariableSummary> variables) {
-                dataProvider.getList().clear();
+                    dataProvider.getList().clear();
                     dataProvider.getList().addAll(variables);
                     dataProvider.refresh();
             }

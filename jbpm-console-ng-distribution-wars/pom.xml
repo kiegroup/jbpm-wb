@@ -12,7 +12,7 @@
   <artifactId>jbpm-console-ng-distribution-wars</artifactId>
   <packaging>pom</packaging>
 
-  <name>jBPM Console NG Showcase Distribution Wars</name>
+  <name>jBPM Console NG - Showcase Distribution Wars</name>
   <description>
     This module builds the download wars for different application servers.
   </description>

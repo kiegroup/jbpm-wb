@@ -15,6 +15,10 @@
  */
 package org.jbpm.console.ng.pr.client.editors.definition.list;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.SimplePager;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,14 +54,10 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -111,10 +111,11 @@ public class ProcessDefinitionListViewImpl extends Composite
     public void init(ProcessDefinitionListPresenter presenter) {
         this.presenter = presenter;
 
-        listContainer.setSize("90%", "90%");
+       
         listContainer.add(processdefListGrid);
-        processdefListGrid.setWidth("98%");
-        processdefListGrid.setHeight("400px");
+        listContainer.add(pager);
+        
+        processdefListGrid.setHeight("350px");
 
         // Set the message to display when the table is empty.
         processdefListGrid.setEmptyTableWidget(new Label(constants.No_Process_Definitions_Available()));
@@ -127,7 +128,7 @@ public class ProcessDefinitionListViewImpl extends Composite
         // Create a Pager to control the table.
 
         pager.setDisplay(processdefListGrid);
-        pager.setPageSize(12);
+        pager.setPageSize(10);
 
         // Add a selection model so we can select cells.
         final MultiSelectionModel<ProcessSummary> selectionModel =
@@ -177,9 +178,10 @@ public class ProcessDefinitionListViewImpl extends Composite
                 return selectionModel.isSelected(object);
             }
         };
+        
         processdefListGrid.addColumn(checkColumn,
                 SafeHtmlUtils.fromSafeConstant("<br/>"));
-
+        processdefListGrid.setColumnWidth(checkColumn, "40px");
 
         // Id.
         Column<ProcessSummary, String> processIdColumn =
@@ -257,7 +259,7 @@ public class ProcessDefinitionListViewImpl extends Composite
         });
         processdefListGrid.addColumn(processSessionIdColumn,
                 new ResizableHeader("Session Id", processdefListGrid, processSessionIdColumn));
-
+        processdefListGrid.setColumnWidth(processSessionIdColumn, "90px");
 
         // Version Type 
         Column<ProcessSummary, String> versionColumn =
@@ -277,8 +279,8 @@ public class ProcessDefinitionListViewImpl extends Composite
         });
         processdefListGrid.addColumn(versionColumn,
                 new ResizableHeader(constants.Version(), processdefListGrid, versionColumn));
-
-
+        processdefListGrid.setColumnWidth(versionColumn, "90px");
+        
         // actions (icons)
         List<HasCell<ProcessSummary, ?>> cells = new LinkedList<HasCell<ProcessSummary, ?>>();
 
@@ -305,12 +307,14 @@ public class ProcessDefinitionListViewImpl extends Composite
         }));
 
         CompositeCell<ProcessSummary> cell = new CompositeCell<ProcessSummary>(cells);
-        processdefListGrid.addColumn(new Column<ProcessSummary, ProcessSummary>(cell) {
-            @Override
-            public ProcessSummary getValue(ProcessSummary object) {
-                return object;
-            }
-        }, "Actions");
+      Column<ProcessSummary, ProcessSummary> actionsColumn = new Column<ProcessSummary, ProcessSummary>(cell) {
+                                                        @Override
+                                                        public ProcessSummary getValue(ProcessSummary object) {
+                                                            return object;
+                                                        }
+                                                    };
+        processdefListGrid.addColumn(actionsColumn, "Actions");
+        processdefListGrid.setColumnWidth(actionsColumn, "70px");
     }
 
     public void displayNotification(String text) {

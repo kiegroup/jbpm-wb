@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
+import com.github.gwtbootstrap.client.ui.NavLink;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -23,8 +24,8 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -52,15 +53,15 @@ public class TasksListViewImpl extends Composite
     private TasksListPresenter presenter;
     @Inject
     @DataField
-    public Button dayViewTasksButton;
+    public NavLink dayViewTasksNavLink;
+    // add click handler.. :(
+    @Inject
+    @DataField
+    public NavLink weekViewTasksNavLink;
     
     @Inject
     @DataField
-    public Button weekViewTasksButton;
-    
-    @Inject
-    @DataField
-    public Button createQuickTaskButton;
+    public NavLink createQuickTaskNavLink;
     
     @Inject
     @DataField
@@ -83,7 +84,33 @@ public class TasksListViewImpl extends Composite
         // By Default we will start in Day View
         tasksViewContainer.setStyleName("day");
         tasksViewContainer.add(taskListMultiDayBox);
-        
+        dayViewTasksNavLink.setText("Day");
+        dayViewTasksNavLink.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+              tasksViewContainer.setStyleName("day");
+              refreshTasks();
+            }
+        });
+        weekViewTasksNavLink.setText("Week");
+        weekViewTasksNavLink.addClickHandler(new ClickHandler() {
+
+          @Override
+          public void onClick(ClickEvent event) {
+            tasksViewContainer.setStyleName("week");
+              refreshTasks();
+          }
+        });
+        createQuickTaskNavLink.setText("New Task");
+        createQuickTaskNavLink.addClickHandler(new ClickHandler() {
+
+          @Override
+          public void onClick(ClickEvent event) {
+              PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Quick New Task");
+              placeManager.goTo(placeRequestImpl);
+          }
+        });
 
     }
 
@@ -108,23 +135,4 @@ public class TasksListViewImpl extends Composite
         return taskListMultiDayBox;
     }
 
-   
-
-    @EventHandler("dayViewTasksButton")
-    public void dayViewTasksButton(ClickEvent e) {
-        tasksViewContainer.setStyleName("day");
-        refreshTasks();
-    }
-    
-    @EventHandler("weekViewTasksButton")
-    public void weekViewTasksButton(ClickEvent e) {
-        tasksViewContainer.setStyleName("week");
-        refreshTasks();
-    }
-    
-    @EventHandler("createQuickTaskButton")
-    public void createQuickTaskButton(ClickEvent e) {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Quick New Task");
-        placeManager.goTo(placeRequestImpl);
-    }
 }

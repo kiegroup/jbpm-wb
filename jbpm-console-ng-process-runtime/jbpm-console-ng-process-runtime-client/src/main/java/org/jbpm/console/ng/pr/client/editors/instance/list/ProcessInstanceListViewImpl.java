@@ -15,6 +15,12 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.list;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.CheckBox;
+import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.ListBox;
+import com.github.gwtbootstrap.client.ui.SimplePager;
+
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -59,29 +65,24 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.TextBox;
+
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
-import org.jbpm.console.ng.pr.model.ProcessSummary;
 
 @Dependent
 @Templated(value = "ProcessInstanceListViewImpl.html")
 public class ProcessInstanceListViewImpl extends Composite
         implements
-        ProcessInstanceListPresenter.InboxView {
+        ProcessInstanceListPresenter.ProcessInstanceListView {
 
     @Inject
     private Identity identity;
@@ -92,6 +93,10 @@ public class ProcessInstanceListViewImpl extends Composite
     
     @DataField
     public SuggestBox filterProcessText;
+    
+    @Inject
+    @DataField 
+    public FlowPanel listContainer;
     
     @Inject
     @DataField
@@ -162,8 +167,14 @@ public class ProcessInstanceListViewImpl extends Composite
             }
         });
 
-        processInstanceListGrid.setWidth("100%");
-        processInstanceListGrid.setHeight("400px");
+        listContainer.add(processInstanceListGrid);
+        listContainer.add(pager);
+        
+        processInstanceListGrid.setHeight("350px");
+        
+        showCompletedCheck.setText("Completed");
+        showAbortedCheck.setText("Aborted");
+        showRelatedToMe.setText("Related To Me");
 
         // Set the message to display when the table is empty.
         processInstanceListGrid.setEmptyTableWidget(new Label(constants.No_Process_Instances_Available()));
@@ -176,7 +187,7 @@ public class ProcessInstanceListViewImpl extends Composite
         // Create a Pager to control the table.
 
         pager.setDisplay(processInstanceListGrid);
-        pager.setPageSize(6);
+        pager.setPageSize(10);
 
         // Add a selection model so we can select cells.
         final MultiSelectionModel<ProcessInstanceSummary> selectionModel =
@@ -274,7 +285,7 @@ public class ProcessInstanceListViewImpl extends Composite
                 };
         processInstanceListGrid.addColumn(checkColumn,
                 SafeHtmlUtils.fromSafeConstant("<br/>"));
-
+        processInstanceListGrid.setColumnWidth(checkColumn, "40px");
 
         // Id.
         Column<ProcessInstanceSummary, Number> processInstanceIdColumn =
@@ -294,7 +305,7 @@ public class ProcessInstanceListViewImpl extends Composite
                 });
         processInstanceListGrid.addColumn(processInstanceIdColumn,
                 new ResizableHeader(constants.Id(), processInstanceListGrid, processInstanceIdColumn));
-
+        processInstanceListGrid.setColumnWidth(processInstanceIdColumn, "50px");
 
         // Process Id String.
         Column<ProcessInstanceSummary, String> processIdColumn =
@@ -352,7 +363,7 @@ public class ProcessInstanceListViewImpl extends Composite
                 });
         processInstanceListGrid.addColumn(processVersionColumn,
                 new ResizableHeader(constants.Process_Version(), processInstanceListGrid, processVersionColumn));
-        
+        processInstanceListGrid.setColumnWidth(processVersionColumn, "90px");
         // Process State 
         Column<ProcessInstanceSummary, String> processStateColumn =
                 new Column<ProcessInstanceSummary, String>(new TextCell()) {
@@ -393,7 +404,7 @@ public class ProcessInstanceListViewImpl extends Composite
                 });
         processInstanceListGrid.addColumn(processStateColumn,
                 new ResizableHeader(constants.State(), processInstanceListGrid, processStateColumn));
-        
+        processInstanceListGrid.setColumnWidth(processStateColumn, "100px");
         // start time
        Column<ProcessInstanceSummary, String> startTimeColumn =
                new Column<ProcessInstanceSummary, String>(new TextCell()) {
@@ -412,7 +423,7 @@ public class ProcessInstanceListViewImpl extends Composite
                });
        processInstanceListGrid.addColumn(startTimeColumn,
                new ResizableHeader(constants.Process_Instance_Start_Time(), processInstanceListGrid, startTimeColumn));
-        
+       processInstanceListGrid.setColumnWidth(startTimeColumn, "210px");
 
 
        List<HasCell<ProcessInstanceSummary, ?>> cells = new LinkedList<HasCell<ProcessInstanceSummary, ?>>();
@@ -448,12 +459,14 @@ public class ProcessInstanceListViewImpl extends Composite
        }));
        
        CompositeCell<ProcessInstanceSummary> cell = new CompositeCell<ProcessInstanceSummary>(cells);
-       processInstanceListGrid.addColumn(new Column<ProcessInstanceSummary, ProcessInstanceSummary>(cell) {
-           @Override
-           public ProcessInstanceSummary getValue(ProcessInstanceSummary object) {
-               return object;
-           }
-       }, "Actions");
+        Column<ProcessInstanceSummary, ProcessInstanceSummary> actionsColumn = new Column<ProcessInstanceSummary, ProcessInstanceSummary>(cell) {
+                                                                        @Override
+                                                                        public ProcessInstanceSummary getValue(ProcessInstanceSummary object) {
+                                                                            return object;
+                                                                        }
+                                                                    };
+       processInstanceListGrid.addColumn(actionsColumn, "Actions");
+       processInstanceListGrid.setColumnWidth(actionsColumn, "100px");
     }
 
     public void displayNotification(String text) {
@@ -469,10 +482,6 @@ public class ProcessInstanceListViewImpl extends Composite
         return sortHandler;
     }
 
-    public TextBox getFilterProcessText() {
-       return (TextBox) filterProcessText.getValueBox();
-    }
-
     @Override
     public Boolean isShowCompleted() {
         return showCompletedCheck.getValue();
@@ -481,6 +490,16 @@ public class ProcessInstanceListViewImpl extends Composite
     @Override
     public Boolean isShowAborted() {
         return showAbortedCheck.getValue();
+    }
+
+    @Override
+    public String getFilterProcessText() {
+      return this.filterProcessText.getText();
+    }
+
+    @Override
+    public void setFilterProcessText(String processText) {
+      this.filterProcessText.setText(processText);
     }
     
     private class DetailsActionHasCell implements HasCell<ProcessInstanceSummary, ProcessInstanceSummary> {

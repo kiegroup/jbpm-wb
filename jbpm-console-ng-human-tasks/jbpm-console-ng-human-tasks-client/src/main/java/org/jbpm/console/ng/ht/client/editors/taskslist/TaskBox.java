@@ -26,6 +26,7 @@ public class TaskBox extends Composite {
 
     private String taskName = "Default Task Name";
     private FocusPanel taskContainer = new FocusPanel();
+   
     private FlowPanel taskPanel = new FlowPanel();
     private FlowPanel hourPanel = new FlowPanel();
     private FlowPanel taskPriorityPanel = new FlowPanel();
@@ -42,8 +43,10 @@ public class TaskBox extends Composite {
     
 
     public TaskBox() {
-
+        
+        
         taskPanel.setStyleName("task");
+        
         taskNamePanel.add(taskNameLabel);
         hourPanel.setStyleName("hour");
         taskPanel.add(taskPriorityPanel);
@@ -76,7 +79,7 @@ public class TaskBox extends Composite {
         taskContainer.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Alternative Popup");
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Popup");
                 placeRequestImpl.addParameter("taskId", String.valueOf( taskId ) );
                 placeManager.goTo(placeRequestImpl);
             }

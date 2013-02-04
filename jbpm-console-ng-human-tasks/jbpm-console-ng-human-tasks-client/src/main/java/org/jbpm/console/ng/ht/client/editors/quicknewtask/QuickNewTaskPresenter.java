@@ -15,7 +15,8 @@
  */
 package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
-import com.google.gwt.user.client.ui.TextBox;
+
+import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.Date;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -42,7 +43,7 @@ import org.uberfire.shared.mvp.PlaceRequest;
 @WorkbenchPopup(identifier = "Quick New Task")
 public class QuickNewTaskPresenter {
 
-    public interface InboxView
+    public interface QuickNewTaskView
             extends
             UberView<QuickNewTaskPresenter> {
 
@@ -51,7 +52,7 @@ public class QuickNewTaskPresenter {
         TextBox getTaskNameText();
     }
     @Inject
-    InboxView view;
+    QuickNewTaskView view;
     @Inject
     Identity identity;
     @Inject

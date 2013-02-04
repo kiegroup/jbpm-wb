@@ -15,11 +15,13 @@
  */
 package org.jbpm.console.ng.bh.client.editors.home;
 
+import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.user.client.Window;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -45,6 +47,9 @@ import org.uberfire.security.Identity;
 import org.uberfire.security.Role;
 
 import org.jbpm.console.ng.bh.client.i18n.Constants;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
 @Templated(value = "HomeViewImpl.html")
@@ -53,8 +58,8 @@ public class HomeViewImpl extends Composite
         HomePresenter.HomeView {
 
   private HomePresenter presenter;
-  @DataField
-  public SuggestBox actionText;
+  @Inject
+  private PlaceManager placeManager;
   @Inject
   public Identity identity;
   @Inject
@@ -64,51 +69,44 @@ public class HomeViewImpl extends Composite
   public Image avatar;
   @Inject
   @DataField
-  public Button goButton;
+  public IconAnchor discoverLabel;
   @Inject
   @DataField
-  public FocusPanel discoverLabel;
+  public IconAnchor designLabel;
+  @Inject
+  @DataField
+  public IconAnchor deployLabel;
+  @Inject
+  @DataField
+  public IconAnchor workLabel;
+  @Inject
+  @DataField
+  public IconAnchor monitorLabel;
+  @Inject
+  @DataField
+  public IconAnchor improveLabel;
+  @Inject
+  @DataField
+  public IconAnchor modelProcessAnchor;
   
   @Inject
   @DataField
-  public FocusPanel designLabel;
+  public IconAnchor workTaskListAnchor;
   
   @Inject
   @DataField
-  public FocusPanel deployLabel;
+  public IconAnchor workProcessRuntimeAnchor;
   
   @Inject
   @DataField
-  public FocusPanel workLabel;
-  
-  @Inject
-  @DataField
-  public FocusPanel monitorLabel;
-  
-  @Inject
-  @DataField
-  public FocusPanel improveLabel;
+  public IconAnchor monitorBAMAnchor;
   
   @Inject
   private Event<NotificationEvent> notification;
   private Constants constants = GWT.create(Constants.class);
 
   public HomeViewImpl() {
-    MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
-    String[] words = {
-      constants.Show_me_my_pending_Tasks(),
-      constants.I_want_to_start_a_new_Process(),
-      constants.I_want_to_design_a_new_Process_Model(),
-      constants.I_want_to_design_a_new_Form(),
-      constants.I_want_to_create_a_Task(),
-      constants.Show_me_all_the_pending_tasks_in_my_Group(),
-      constants.Show_me_my_Inbox()
-    };
-    for (int i = 0; i < words.length; ++i) {
-      oracle.add(words[i]);
-    }
-    // Create the suggest box
-    actionText = new SuggestBox(oracle);
+
     avatar = new Image();
 
   }
@@ -127,42 +125,39 @@ public class HomeViewImpl extends Composite
       }
     }
     userRolesLabel.setText(stringRoles.toString());
-    discoverLabel.add(new Label("Discover"));
     discoverLabel.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         presenter.discover();
       }
     });
-    designLabel.add(new Label("Design"));
+
     designLabel.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         presenter.design();
       }
     });
-    deployLabel.add(new Label("Deploy"));
+
     deployLabel.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         presenter.deploy();
       }
     });
-    workLabel.add(new Label("Work"));
+
     workLabel.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         presenter.work();
       }
     });
-    monitorLabel.add(new Label("Monitor"));
     monitorLabel.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         presenter.monitor();
       }
     });
-    improveLabel.add(new Label("Improve"));
     improveLabel.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -170,22 +165,37 @@ public class HomeViewImpl extends Composite
       }
     });
 
-  }
+    modelProcessAnchor.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("New Process Definition");
+        placeManager.goTo(placeRequestImpl);
+      }
+    });
 
-  @EventHandler("goButton")
-  public void goButton(ClickEvent e) {
-    presenter.doAction(actionText.getText());
-  }
+    workTaskListAnchor.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Tasks List");
+        placeManager.goTo(placeRequestImpl);
+      }
+    });
+    
+    workProcessRuntimeAnchor.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Runtime");
+        placeManager.goTo(placeRequestImpl);
+      }
+    });
+    
+    monitorBAMAnchor.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        Window.open("http://localhost:8080/bam-app/", "_blank", "");
+      }
+    });
 
-  @EventHandler("actionText")
-  public void enterHit(KeyPressEvent e) {
-    if (e.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
-      presenter.doAction(actionText.getText());
-    }
-  }
-
-  public SuggestBox getActionText() {
-    return actionText;
   }
 
   public void displayNotification(String text) {

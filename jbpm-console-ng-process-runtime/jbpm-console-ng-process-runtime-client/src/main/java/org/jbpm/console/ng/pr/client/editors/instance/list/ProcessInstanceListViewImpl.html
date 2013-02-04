@@ -1,22 +1,25 @@
-<div class="list">
-    <div class="list-options">
-        <input type="search" id="filterProcessText" data-field="filterProcessText" /> 
-        <div class="select-container"><select data-field="filterTypeListBox" id="filterTypeListBox"></select></div>
-        <button class="button" id="filterButton" data-field="filterButton">Filter</button>
-        <button class="button" id="abortButton" data-field="abortButton">Abort</button>
-        <button class="button" id="signalButton" data-field="signalButton">Signal</button>
-        <div class="option"><input type="checkbox"   id="showCompletedCheck" data-field="showCompletedCheck"/> Completed </div>
-        <div class="option"><input type="checkbox"   id="showAbortedCheck" data-field="showAbortedCheck"/> Aborted </div>
-        <div class="option"><input type="checkbox"   id="showRelatedToMe" data-field="showRelatedToMe"/> Related to Me </div>
+<div class="container-fluid">
+  <br/>
+  <div class="row-fluid">
+    <form class="form-search">
+      <input type="text" class="search-query" id="filterProcessText" data-field="filterProcessText" /> 
+      <select data-field="filterTypeListBox" id="filterTypeListBox"></select>
+      <input type="checkbox" class="checkbox inline" id="showCompletedCheck" data-field="showCompletedCheck"/>
+      <input type="checkbox" class="checkbox inline" id="showAbortedCheck" data-field="showAbortedCheck"/>
+      <input type="checkbox" class="checkbox inline" id="showRelatedToMe" data-field="showRelatedToMe"/>
+      <button class="btn" id="filterButton" data-field="filterButton">Filter</button>
+      <button class="btn" id="signalButton" data-field="signalButton">Signal</button>
+      <button class="btn" id="abortButton" data-field="abortButton">Abort</button>
+    </form>
+  </div>
+  <div class="row-fluid">
+    <div data-field="listContainer" >
+
+      <table id="processInstanceListGrid" data-field="processInstanceListGrid" class="table table-bordered table-striped table-hover">
+
+      </table>
+
+      <div id="pager" class="pagination" data-field="pager"></div>
     </div>
-    <div class="list-content">
-
-        <table id="processInstanceListGrid" data-field="processInstanceListGrid">
-
-        </table>
-
-        <div id="pager" data-field="pager"></div>
-    </div>
-
+  </div>
 </div>
-

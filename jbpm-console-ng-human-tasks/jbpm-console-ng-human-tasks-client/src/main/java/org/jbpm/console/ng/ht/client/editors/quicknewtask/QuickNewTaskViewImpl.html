@@ -1,25 +1,32 @@
+<div id="myModal" class="modal modal-popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <!-- MODAL HEADER -->
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" data-field="closeButton" aria-hidden="true">x</button>
+    <h3 id="myModalLabel">Create New Task</h3>
+  </div>
 
-<div class="form">
+  <!-- MODAL BODY -->     
+  <div class="modal-body">
+    <div class="row-fluid">
+      <div class="span12">
 
-    <div class="form-header">
-        <h2>Create Task</h2>
-        <div class="header-actions clearfix">
-            
-            <button class="button main" data-field="addTaskButton" id="addTaskButton" >Create</button>
-            <button class="button close" data-field="closeButton" id="closeButton" >Close</button>
-        </div>
+        <fieldset>
+          <label>Task Name</label>
+          <input type="text" class="span12" data-field="taskNameText" />
+          <label class="checkbox">
+            <input type="checkbox" class="inline" id="quickTaskCheck" data-field="quickTaskCheck"/>Quick Task?
+          </label>
+        </fieldset>
+
+      </div>
     </div>
+  </div>
 
-    <div class="form-content one-col">
-
-        <div class="form-row clearfix">
-            <label>Task</label>
-            <input type="text" data-field="taskNameText" />
-            Quick Task?<input type="checkbox"   id="quickTaskCheck" data-field="quickTaskCheck"/> 
-        </div>
-     
-    </div>
+  <div class="modal-footer">
+    <button class="button main" data-field="addTaskButton" id="addTaskButton" >Create</button>
+  </div>
 
 
 </div>
+
 

@@ -15,9 +15,10 @@
  */
 package org.jbpm.console.ng.pr.client.editors.definition.list;
 
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.ui.TextBox;
 
+
+import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;

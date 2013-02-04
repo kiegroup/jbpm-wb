@@ -17,7 +17,8 @@
   <inherits name="org.jbpm.console.ng.es.JbpmConsoleNGExecutorServiceClient"/>
   <inherits name="org.jbpm.console.ng.bh.JbpmConsoleNGBPMHomeClient"/>
   <inherits name="org.jbpm.console.ng.pm.JbpmConsoleNGProcessModelingClient"/>
-    
+  
+  <inherits name="com.github.gwtbootstrap.Bootstrap" />  
   <inherits name="com.google.gwt.xml.XML" />
   <!--inherits name='com.googlecode.gchart.GChart'/-->
   <inherits name="org.jboss.errai.ui.UI" />

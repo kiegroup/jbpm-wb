@@ -15,6 +15,8 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskform;
 
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import javax.enterprise.context.Dependent;
@@ -26,7 +28,7 @@ import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
+
 import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -34,28 +36,24 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.shared.mvp.PlaceRequest;
-import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 /**
  * Main view.
  */
 @Dependent
-@Templated(value = "FormDisplayAlternativePopupViewImpl.html")
-public class FormDisplayAlternativePopupViewImpl extends Composite
+@Templated(value = "FormDisplayPopupViewImpl.html")
+public class FormDisplayPopupViewImpl extends Composite
         implements
-        FormDisplayAlternativePopupPresenter.FormDisplayView {
+        FormDisplayPopupPresenter.FormDisplayView {
 
-    private FormDisplayAlternativePopupPresenter presenter;
+    private FormDisplayPopupPresenter presenter;
     @Inject
     @DataField
     public VerticalPanel formView;
     @Inject
     @DataField
     public Label nameText;
-    
-    
-   
+
     @Inject
     @DataField
     public Label taskIdText;
@@ -67,16 +65,9 @@ public class FormDisplayAlternativePopupViewImpl extends Composite
     @Inject
     @DataField
     public Button closeButton;
-    
-    
-    
     @Inject
     @DataField
-    public Label goToDetails;
-    
-//    @Inject
-//    @DataField
-//    public Button fullButton;
+    public UnorderedList navBarUL;
    
     private long taskId;
     private int sessionId;
@@ -90,7 +81,7 @@ public class FormDisplayAlternativePopupViewImpl extends Composite
     
 
     @Override
-    public void init(FormDisplayAlternativePopupPresenter presenter) {
+    public void init(FormDisplayPopupPresenter presenter) {
         this.presenter = presenter;
 
     }
@@ -123,8 +114,6 @@ public class FormDisplayAlternativePopupViewImpl extends Composite
         return nameText;
     }
 
-    
-
     public Label getTaskIdText() {
         return taskIdText;
     }
@@ -133,33 +122,15 @@ public class FormDisplayAlternativePopupViewImpl extends Composite
         return optionsDiv;
     }
     
-    
     @EventHandler("closeButton")
     public void closeButton(ClickEvent e) {
         presenter.close();
     }
 
-    
-    
-    
-    @EventHandler("goToDetails")
-    public void goToDetails(ClickEvent e) {
-        presenter.close();
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Alternative Popup");
-        placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
-        placeManager.goTo(placeRequestImpl);
-
+    public UnorderedList getNavBarUL() {
+      return navBarUL;
     }
 
-  //
-  //    @EventHandler("fullButton")
-  //    public void fullButton(ClickEvent e) {
-  //        presenter.close();
-  //        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Perspective");
-  //        placeRequestImpl.addParameter("taskId", Long.toString(taskId));
-  //
-  //        placeManager.goTo(placeRequestImpl);
-  //    }
     public int getSessionId() {
       return sessionId;
     }

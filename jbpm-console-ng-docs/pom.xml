@@ -13,7 +13,7 @@
   <artifactId>jbpm-console-ng-docs</artifactId>
   <packaging>jdocbook</packaging>
 
-  <name>jBPM Console NG documentation</name>
+  <name>jBPM Console NG - Documentation</name>
   <description>jBPM Console NG documentation</description>
 
 </project>

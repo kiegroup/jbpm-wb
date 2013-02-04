@@ -26,20 +26,26 @@ public class TaskListDayBox extends Composite implements RequiresResize {
     private FlowPanel taskListBox = new FlowPanel();
     private FlowPanel dayTaskContainer = new FlowPanel();
     private FlowPanel top = new FlowPanel();
+     private FlowPanel fluidRow = new FlowPanel();
+    private FlowPanel span12 = new FlowPanel();
     private Label dayLabel = new Label();
     private TasksListPresenter presenter;
     private Identity identity;
     private PlaceManager placeManager;
 
     public TaskListDayBox(String day, List<TaskSummary> taskSummaries, Identity identity, PlaceManager placeManager, TasksListPresenter presenter) {
-
+        fluidRow.setStyleName("row-fluid");
+        span12.setStyleName("span12");
+        fluidRow.add(span12);
+        
         taskListBox.setStyleName("tasks-list");
         dayTaskContainer.setStyleName("day-tasks-container");
         top.setStyleName("top");
         dayLabel.setText(day);
         top.add(dayLabel);
         dayTaskContainer.add(top);
-        dayTaskContainer.add(taskListBox);
+        span12.add(taskListBox);
+        dayTaskContainer.add(fluidRow);
         initWidget(dayTaskContainer);
         this.taskSummaries = taskSummaries;
         taskListBox.clear();

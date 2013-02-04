@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskdetails;
 
+import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import javax.enterprise.context.Dependent;
@@ -41,37 +42,37 @@ import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
-@Templated(value = "TaskDetailsAlternativePopupViewImpl.html")
-public class TaskDetailsAlternativePopupViewImpl extends Composite
+@Templated(value = "TaskDetailsPopupViewImpl.html")
+public class TaskDetailsPopupViewImpl extends Composite
         implements
-        TaskDetailsAlternativePopupPresenter.InboxView {
+        TaskDetailsPopupPresenter.TaskDetailsPopupView {
 
-    private TaskDetailsAlternativePopupPresenter presenter;
-    @Inject
-    @DataField
-    private Label subSectionDescriptionDiv;
-    @Inject
-    @DataField
-    private Label subSectionDescriptionCollapseDiv;
-    @Inject
-    @DataField
-    private Label subSectionProcessContextDiv;
-    @Inject
-    @DataField
-    private Label subSectionProcessContextCollapseDiv;
+    private TaskDetailsPopupPresenter presenter;
+//    @Inject
+//    @DataField
+//    private Label subSectionDescriptionDiv;
+//    @Inject
+//    @DataField
+//    private Label subSectionDescriptionCollapseDiv;
+//    @Inject
+//    @DataField
+//    private Label subSectionProcessContextDiv;
+//    @Inject
+//    @DataField
+//    private Label subSectionProcessContextCollapseDiv;
     
-    @Inject
-    @DataField
-    public Label goToWork;
+//    @Inject
+//    @DataField
+//    public Label goToWork;
     
-    @Inject
-    @DataField
-    private Label subSectionSubTaskStrategiesDiv;
-    
-    @Inject
-    @DataField
-    private Label subSectionSubTaskStrategiesCollapseDiv;        
-            
+//    @Inject
+//    @DataField
+//    private Label subSectionSubTaskStrategiesDiv;
+//    
+//    @Inject
+//    @DataField
+//    private Label subSectionSubTaskStrategiesCollapseDiv;        
+//            
     @Inject
     @DataField
     public Label taskIdText;
@@ -112,12 +113,17 @@ public class TaskDetailsAlternativePopupViewImpl extends Composite
     private PlaceManager placeManager;
     private String[] subTaskStrategies = {"NoAction", "EndParentOnAllSubTasksEnd", "SkipAllSubTasksOnParentSkip"};
     private String[] priorities = {"0 - High", "1", "2", "3", "4", "5 - Medium", "6", "7", "8", "9", "10 - Low"};
+    
+    @Inject
+    @DataField
+    public UnorderedList navBarUL;
+    
     @Inject
     private Event<NotificationEvent> notification;
     
 
     @Override
-    public void init(TaskDetailsAlternativePopupPresenter presenter) {
+    public void init(TaskDetailsPopupPresenter presenter) {
         this.presenter = presenter;
 
 
@@ -134,44 +140,44 @@ public class TaskDetailsAlternativePopupViewImpl extends Composite
 
     }
 
-    @EventHandler("subSectionDescriptionCollapseDiv")
-    public void subSectionDescriptionCollapseDiv(ClickEvent e) {
-        if (subSectionDescriptionDiv.getStyleName().equals("sub-section")) {
-            subSectionDescriptionDiv.setStyleName("sub-section collapsed");
-        } else if (subSectionDescriptionDiv.getStyleName().equals("sub-section collapsed")) {
-            subSectionDescriptionDiv.setStyleName("sub-section");
-        }
-
-    }
-
-    @EventHandler("subSectionProcessContextCollapseDiv")
-    public void subSectionProcessContextCollapseDiv(ClickEvent e) {
-        if (subSectionProcessContextDiv.getStyleName().equals("sub-section")) {
-            subSectionProcessContextDiv.setStyleName("sub-section collapsed");
-        } else if (subSectionProcessContextDiv.getStyleName().equals("sub-section collapsed")) {
-            subSectionProcessContextDiv.setStyleName("sub-section");
-        }
-
-    }
+//    @EventHandler("subSectionDescriptionCollapseDiv")
+//    public void subSectionDescriptionCollapseDiv(ClickEvent e) {
+//        if (subSectionDescriptionDiv.getStyleName().equals("sub-section")) {
+//            subSectionDescriptionDiv.setStyleName("sub-section collapsed");
+//        } else if (subSectionDescriptionDiv.getStyleName().equals("sub-section collapsed")) {
+//            subSectionDescriptionDiv.setStyleName("sub-section");
+//        }
+//
+//    }
+//
+//    @EventHandler("subSectionProcessContextCollapseDiv")
+//    public void subSectionProcessContextCollapseDiv(ClickEvent e) {
+//        if (subSectionProcessContextDiv.getStyleName().equals("sub-section")) {
+//            subSectionProcessContextDiv.setStyleName("sub-section collapsed");
+//        } else if (subSectionProcessContextDiv.getStyleName().equals("sub-section collapsed")) {
+//            subSectionProcessContextDiv.setStyleName("sub-section");
+//        }
+//
+//    }
+//    
+//    @EventHandler("subSectionSubTaskStrategiesCollapseDiv")
+//    public void subSectionSubTaskStrategiesCollapseDiv(ClickEvent e) {
+//        if (subSectionSubTaskStrategiesDiv.getStyleName().equals("sub-section")) {
+//            subSectionSubTaskStrategiesDiv.setStyleName("sub-section collapsed");
+//        } else if (subSectionSubTaskStrategiesDiv.getStyleName().equals("sub-section collapsed")) {
+//            subSectionSubTaskStrategiesDiv.setStyleName("sub-section");
+//        }
+//
+//    }
     
-    @EventHandler("subSectionSubTaskStrategiesCollapseDiv")
-    public void subSectionSubTaskStrategiesCollapseDiv(ClickEvent e) {
-        if (subSectionSubTaskStrategiesDiv.getStyleName().equals("sub-section")) {
-            subSectionSubTaskStrategiesDiv.setStyleName("sub-section collapsed");
-        } else if (subSectionSubTaskStrategiesDiv.getStyleName().equals("sub-section collapsed")) {
-            subSectionSubTaskStrategiesDiv.setStyleName("sub-section");
-        }
-
-    }
-    
-    @EventHandler("goToWork")
-    public void goToWork(ClickEvent e) {
-        presenter.close();
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
-        placeRequestImpl.addParameter("taskId", taskIdText.getText());
-        placeManager.goTo(placeRequestImpl);
-
-    }
+//    @EventHandler("goToWork")
+//    public void goToWork(ClickEvent e) {
+//        presenter.close();
+//        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
+//        placeRequestImpl.addParameter("taskId", taskIdText.getText());
+//        placeManager.goTo(placeRequestImpl);
+//
+//    }
 //
 //    @EventHandler("updateButton")
 //    public void updateTaskButton(ClickEvent e) {
@@ -250,4 +256,10 @@ public class TaskDetailsAlternativePopupViewImpl extends Composite
     public Button getpIDetailsButton() {
         return pIDetailsButton;
     }
+
+    public UnorderedList getNavBarUL() {
+      return navBarUL;
+    }
+    
+    
 }

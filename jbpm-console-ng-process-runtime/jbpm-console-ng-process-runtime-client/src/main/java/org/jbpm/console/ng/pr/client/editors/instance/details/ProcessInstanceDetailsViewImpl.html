@@ -1,87 +1,68 @@
+<div class="row-fluid">
+  <div class="span12">
 
-<div class="form">
-
-    <div class="form-header">
-        <h2>Process Instance Details</h2>
-        <div class="header-actions clearfix">
-            <button class="button main" data-field="refreshButton" id="refreshButton">Refresh</button>
-
+    <div class="form-horizontal">
+      <legend>Process Instance Details</legend>
+      <div class="control-group">
+        <label  class="control-label" for="processIdText">Process Instance Id</label>
+        <div class="controls">
+          <input type="text" data-field="processIdText"  id="processIdText" placeholder=""/>
         </div>
+      </div>
+      <div class="control-group">
+        <label  class="control-label" for="processNameText">Process Definition Name</label>
+        <div class="controls">
+          <input type="text" data-field="processNameText"  id="processNameText" placeholder=""/>
+        </div>
+      </div>
+      <div class="control-group">
+        <label  class="control-label" for="processPackageText">Process Definition Package</label>
+        <div class="controls">
+          <input type="text" data-field="processPackageText"  id="processPackageText" placeholder=""/>
+        </div>
+      </div>
+      <div class="control-group">
+        <label  class="control-label" for="processVersionText">Process Definition Version</label>
+        <div class="controls">
+          <input type="text" data-field="processVersionText"  id="processVersionText" placeholder=""/>
+        </div>
+      </div>
+      <div class="control-group">
+        <label  class="control-label" for="stateText">Process State</label>
+        <div class="controls">
+          <input type="text" data-field="stateText"  id="stateText" placeholder=""/>
+        </div>
+      </div>
+      <div class="control-group">
+        <label  class="control-label" for="currentActivitiesListBox">Current Activities</label>
+        <div class="controls">
+          <select data-field="currentActivitiesListBox" class="span5" size="5" id="currentActivitiesListBox"></select>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="logTextArea">Process Log</label>
+        <div class="controls">
+          <textarea data-field="logTextArea" class="span5" rows="10" id="logTextArea"></textarea>
+        </div>
+      </div>
+
+      <div class="container-fluid">
+        <div class="row-fluid">
+          <div data-field="listContainer" >
+            <label>Process Data</label>  
+            <table id="processDataGrid"  data-field="processDataGrid" class="table table-bordered table-striped table-hover">
+
+            </table>
+            <div id="pager" class="pagination"  data-field="pager"></div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn" data-field="refreshButton" id="refreshButton">Refresh</button>
+          <button class="btn" data-field="viewSessionNotificationsButton" id="viewSessionNotificationsButton">Session Notifications</button>
+          <button class="btn" data-field="viewProcessDiagramButton" id="viewProcessDiagramButton">Process Diagram</button>
+        </div>
+
+      </div>
     </div>
-
-    <div class="form-content">
-
-
-        <div class="form-row clearfix">
-            <label>Process Instance Id</label>
-            <input type="text" data-field="processIdText"  id="processIdText"/>
-        </div>
-
-        <div class="form-row clearfix">
-            <label>Process Definition Name</label>
-            <input type="text" data-field="processNameText"  id="processNameText"/>
-        </div>
-        
-        <div class="form-row clearfix">
-            <label>Process Package</label>
-            <input type="text" data-field="processPackageText"/>
-        </div>
-        
-        <div class="form-row clearfix">
-            <label>Process Version</label>
-            <input type="text" data-field="processVersionText"/>
-        </div>
-
-        <div class="form-row clearfix">
-            <label>State</label>
-            <input type="text" data-field="stateText"  id="stateText"/>
-        </div>
-
-        <div class="form-row clearfix">
-            <label>Current Activities</label>
-            <div class="select-container multi">
-                <select data-field="currentActivitiesListBox" size="5" id="currentActivitiesListBox">
-
-                </select>
-            </div>
-
-        </div>    
-
-        <div class="form-row clearfix">
-            <label>Process Log</label>
-            <textarea data-field="logTextArea" id="logTextArea"></textarea>
-        </div>
-        <div class="form-row clearfix">
-            <label>Session Notifications</label>
-            <div class="input-button">
-                <button class="button main" data-field="viewSessionNotificationsButton" id="viewSessionNotificationsButton">Notifications</button>
-            </div>
-        </div>
-        <div class="form-row clearfix">
-            <label>Process Diagram</label>
-            <div class="input-button">
-                <button class="button main" data-field="viewProcessDiagramButton" id="viewProcessDiagramButton">Diagram</button>
-            </div>
-        </div>
-
-
-        <div class="form-group" >
-            <div class="title">
-                Process Data
-            </div>
-            <div class="list">
-                <div class="list-content">
-
-                    <table id="processDataGrid" data-field="processDataGrid">
-
-                    </table>
-
-                    <div id="pager" data-field="pager"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-</div>
-
+  </div>
