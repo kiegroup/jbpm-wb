@@ -110,7 +110,9 @@ public class HomeViewImpl extends Composite
   @Inject
   @DataField
   public IconAnchor workProcessRuntimeAnchor;
-  
+  @Inject
+  @DataField
+  public IconAnchor deployIdentityAnchor;
   @Inject
   @DataField
   public IconAnchor monitorBAMAnchor;
@@ -217,6 +219,14 @@ public class HomeViewImpl extends Composite
       @Override
       public void onClick(ClickEvent event) {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Runtime");
+        placeManager.goTo(placeRequestImpl);
+      }
+    });
+    
+    deployIdentityAnchor.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Users and Groups");
         placeManager.goTo(placeRequestImpl);
       }
     });
