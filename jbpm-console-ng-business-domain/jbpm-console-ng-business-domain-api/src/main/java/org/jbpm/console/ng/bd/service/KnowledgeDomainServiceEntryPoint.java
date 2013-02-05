@@ -49,7 +49,7 @@ public interface KnowledgeDomainServiceEntryPoint {
 
     Collection<ProcessInstanceSummary> getProcessInstancesBySessionId(String sessionId);
 
-    Collection<ProcessSummary> getProcessesBySessionId(String sessionId);
+    Collection<ProcessSummary> getProcessesByFilter(String filter);
 
     ProcessInstanceSummary getProcessInstanceById(long processInstanceId);
 

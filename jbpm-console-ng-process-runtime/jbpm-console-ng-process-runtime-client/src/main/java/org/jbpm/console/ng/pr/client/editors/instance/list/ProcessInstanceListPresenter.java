@@ -185,7 +185,6 @@ public class ProcessInstanceListPresenter {
 
   public void listProcessInstances() {
     
-    view.setFilterProcessText(currentProcessDefinition);
     if (!this.currentProcessDefinition.equals("")) {
       knowledgeServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
         @Override

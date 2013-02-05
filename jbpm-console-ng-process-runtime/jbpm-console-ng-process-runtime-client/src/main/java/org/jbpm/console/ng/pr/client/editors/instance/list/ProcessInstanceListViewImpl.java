@@ -163,6 +163,10 @@ public class ProcessInstanceListViewImpl extends Composite
             @Override
             public void onChange(ChangeEvent event) {
                 presenter.listProcessInstances();
+                String value = filterTypeListBox.getValue(filterTypeListBox.getSelectedIndex());
+                if ("no-filter".equals(value)) {
+                    filterProcessText.setText("");
+                }
                 
             }
         });

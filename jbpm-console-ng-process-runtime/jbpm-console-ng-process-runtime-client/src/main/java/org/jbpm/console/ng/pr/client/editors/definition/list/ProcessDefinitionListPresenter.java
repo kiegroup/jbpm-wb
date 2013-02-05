@@ -98,9 +98,9 @@ public class ProcessDefinitionListPresenter {
         }).fetchChanges();
     }
 
-    public void refreshProcessList(final String sessionId) {
+    public void refreshProcessList(final String filter) {
 
-        if (sessionId != null && !sessionId.equals("")) {
+        if (filter != null && !filter.equals("")) {
             knowledgeServices.call(new RemoteCallback<List<ProcessSummary>>() {
                 @Override
                 public void callback(List<ProcessSummary> processes) {
@@ -108,7 +108,7 @@ public class ProcessDefinitionListPresenter {
                     dataProvider.getList().addAll(processes);
                     dataProvider.refresh();
                 }
-            }).getProcessesBySessionId(sessionId);
+            }).getProcessesByFilter(filter);
         } else {
             knowledgeServices.call(new RemoteCallback<List<ProcessSummary>>() {
                 @Override

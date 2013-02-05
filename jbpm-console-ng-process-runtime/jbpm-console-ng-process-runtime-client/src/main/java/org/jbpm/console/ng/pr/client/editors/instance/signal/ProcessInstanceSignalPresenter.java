@@ -77,7 +77,7 @@ public class ProcessInstanceSignalPresenter {
         return view;
     }
     
-    public void signalProcessInstance(String sessionId, long processInstanceId) {
+    public void signalProcessInstance(long processInstanceId) {
 
         sessionServices.call(new RemoteCallback<Void>() {
             @Override
@@ -98,7 +98,7 @@ public class ProcessInstanceSignalPresenter {
         }
         
         // for single process instance load available signals
-        if (ids.length == 1) {
+        if (ids.length == 1 && Long.parseLong(ids[0]) != -1) {
             getAvailableSignals("general", Long.parseLong(ids[0]));
         }
     }

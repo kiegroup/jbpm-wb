@@ -68,8 +68,7 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
     public void signalButton(ClickEvent e) {
 
         for (Long processInstanceId : this.processInstanceIds) {
-            // TODO do not hardcode business key for session
-            presenter.signalProcessInstance("general", processInstanceId);
+            presenter.signalProcessInstance(processInstanceId);
             displayNotification("Signal of process instance " + processInstanceId + " signal " + signalRefText.getText() + " event " + eventText.getText());
         }
     }

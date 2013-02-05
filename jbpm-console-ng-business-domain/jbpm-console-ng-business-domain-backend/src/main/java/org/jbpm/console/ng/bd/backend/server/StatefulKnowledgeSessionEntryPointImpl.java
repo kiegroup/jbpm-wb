@@ -15,7 +15,9 @@
  */
 package org.jbpm.console.ng.bd.backend.server;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -67,11 +69,21 @@ public class StatefulKnowledgeSessionEntryPointImpl implements StatefulKnowledge
     
     @Override
     public void signalProcessInstance(long processInstanceId, String signalName, Object event) {
-        ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
-        StatefulKnowledgeSession ksession = domainService.getSessionById(piDesc.getSessionId());
+        
         if (processInstanceId == -1) {
-            ksession.signalEvent(signalName, event);
+            Collection<String> sessionNames = domainService.getSessionsNames();
+            for (String sessionName : sessionNames) {
+                Map<Integer, StatefulKnowledgeSession> sessions = domainService.getSessionsByName(sessionName);
+                Iterator<StatefulKnowledgeSession> sessionsIter = sessions.values().iterator();
+                while (sessionsIter.hasNext()) {
+                    StatefulKnowledgeSession ksession = (StatefulKnowledgeSession) sessionsIter.next();
+                    ksession.signalEvent(signalName, event);
+                }
+
+            }
         } else {
+            ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
+            StatefulKnowledgeSession ksession = domainService.getSessionById(piDesc.getSessionId());
             ksession.signalEvent(signalName, event, processInstanceId);
         }
 
