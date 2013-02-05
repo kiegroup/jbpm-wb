@@ -141,23 +141,23 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     }
 
     public Collection<NodeInstanceSummary> getProcessInstanceHistory(long processInstanceId) {
-        int sessionId = domainService.getSessionForProcessInstanceId(processInstanceId);
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistory(sessionId, processInstanceId));
+        ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistory(piDesc.getSessionId(), processInstanceId));
     }
 
     public Collection<NodeInstanceSummary> getProcessInstanceHistory(long processInstanceId, boolean completed) {
-        int sessionId = domainService.getSessionForProcessInstanceId(processInstanceId);
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistory(sessionId, processInstanceId, completed));
+        ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistory(piDesc.getSessionId(), processInstanceId, completed));
     }
 
     public Collection<NodeInstanceSummary> getProcessInstanceFullHistory(long processInstanceId) {
-        int sessionId = domainService.getSessionForProcessInstanceId(processInstanceId);
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistory(sessionId, processInstanceId));
+        ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistory(piDesc.getSessionId(), processInstanceId));
     }
 
     public Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(long processInstanceId) {
-        int sessionId = domainService.getSessionForProcessInstanceId(processInstanceId);
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceActiveNodes(sessionId, processInstanceId));
+        ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceActiveNodes(piDesc.getSessionId(), processInstanceId));
     }
 
     public ProcessSummary getProcessDesc(String processId) {
@@ -199,7 +199,8 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
 
     @Override
     public Collection<String> getAvailableSignals(String businessKey, long processInstanceId) {
-        StatefulKnowledgeSession ksession = domainService.getSessionById(domainService.getSessionForProcessInstanceId(processInstanceId));
+        ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
+        StatefulKnowledgeSession ksession = domainService.getSessionById(piDesc.getSessionId());
         ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
         Collection<String> activeSignals = new ArrayList<String>();
 
@@ -215,7 +216,8 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
 
     @Override
     public void setProcessVariable(long processInstanceId, String variableId, Object value) {
-        StatefulKnowledgeSession ksession = domainService.getSessionById(domainService.getSessionForProcessInstanceId(processInstanceId));
+        ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
+        StatefulKnowledgeSession ksession = domainService.getSessionById(piDesc.getSessionId());
         ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
 
         ((WorkflowProcessInstance) processInstance).setVariable(variableId, value);
