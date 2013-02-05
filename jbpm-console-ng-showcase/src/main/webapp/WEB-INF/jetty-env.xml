@@ -91,6 +91,13 @@
     </Arg>
   </New>
     
-    
+  <New id="emf" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>jBPMEMF</Arg>
+    <Arg>
+      <Call name="createEntityManagerFactory" class="javax.persistence.Persistence" >
+        <Arg>org.jbpm.domain</Arg>
+      </Call>
+    </Arg>
+  </New> 
   
 </Configure>
