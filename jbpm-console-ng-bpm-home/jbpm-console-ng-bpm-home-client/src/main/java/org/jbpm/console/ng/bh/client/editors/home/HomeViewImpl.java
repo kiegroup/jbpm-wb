@@ -67,6 +67,20 @@ public class HomeViewImpl extends Composite
   public Label userRolesLabel;
   @DataField
   public Image avatar;
+  @DataField
+  public Image carouselImg0;
+  @DataField
+  public Image carouselImg1;
+  @DataField
+  public Image carouselImg2;
+  @DataField
+  public Image carouselImg3;
+  @DataField
+  public Image carouselImg4;
+  @DataField
+  public Image carouselImg5;
+  
+  
   @Inject
   @DataField
   public IconAnchor discoverLabel;
@@ -102,13 +116,23 @@ public class HomeViewImpl extends Composite
   public IconAnchor monitorBAMAnchor;
   
   @Inject
+  @DataField
+  public IconAnchor deployJobsAnchor;
+  
+  @Inject
   private Event<NotificationEvent> notification;
   private Constants constants = GWT.create(Constants.class);
 
   public HomeViewImpl() {
 
     avatar = new Image();
-
+    carouselImg5 = new Image();
+    carouselImg4 = new Image();
+    carouselImg3 = new Image();
+    carouselImg2 = new Image();
+    carouselImg1 = new Image();
+    carouselImg0 = new Image();
+    
   }
 
   @Override
@@ -118,6 +142,14 @@ public class HomeViewImpl extends Composite
     avatar.setUrl(url + "images/avatars/" + identity.getName() + ".png");
     avatar.setSize("64px", "64px");
     List<Role> roles = identity.getRoles();
+    
+    carouselImg5.setUrl(url + "images/mountain.jpg");
+    carouselImg4.setUrl(url + "images/mountain.jpg");
+    carouselImg3.setUrl(url + "images/mountain.jpg");
+    carouselImg2.setUrl(url + "images/mountain.jpg");
+    carouselImg1.setUrl(url + "images/mountain.jpg");
+    carouselImg0.setUrl(url + "images/mountain.jpg");
+    
     List<String> stringRoles = new ArrayList<String>(roles.size());
     for (Role r : roles) {
       if (!r.getName().equals("IS_REMEMBER_ME")) {
@@ -185,6 +217,14 @@ public class HomeViewImpl extends Composite
       @Override
       public void onClick(ClickEvent event) {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Runtime");
+        placeManager.goTo(placeRequestImpl);
+      }
+    });
+    
+    deployJobsAnchor.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Requests List");
         placeManager.goTo(placeRequestImpl);
       }
     });
