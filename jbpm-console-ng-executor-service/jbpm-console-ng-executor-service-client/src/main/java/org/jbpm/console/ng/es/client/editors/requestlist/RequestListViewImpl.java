@@ -183,7 +183,7 @@ public class RequestListViewImpl extends Composite
         };
         myRequestListGrid.addColumn(checkColumn,
                 SafeHtmlUtils.fromSafeConstant("<br/>"));
-
+        myRequestListGrid.setColumnWidth(checkColumn, "40px");
 
         // Id
         Column<RequestSummary, Number> taskIdColumn =
@@ -201,9 +201,10 @@ public class RequestListViewImpl extends Composite
                 return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
             }
         });
+        
         myRequestListGrid.addColumn(taskIdColumn,
                 new ResizableHeader(constants.Id(), myRequestListGrid, taskIdColumn));
-
+        myRequestListGrid.setColumnWidth(taskIdColumn, "40px");
 
         // Task name.
         Column<RequestSummary, String> taskNameColumn =
@@ -222,13 +223,28 @@ public class RequestListViewImpl extends Composite
             }
         });
         myRequestListGrid.addColumn(taskNameColumn,
-                new ResizableHeader(constants.Task(), myRequestListGrid, taskNameColumn));
+                new ResizableHeader("Job Name", myRequestListGrid, taskNameColumn));
 
 
-
-
-
-
+        // Status
+        Column<RequestSummary, String> statusColumn =
+                new Column<RequestSummary, String>(new EditTextCell()) {
+            @Override
+            public String getValue(RequestSummary object) {
+                return object.getStatus();
+            }
+        };
+        statusColumn.setSortable(true);
+        sortHandler.setComparator(statusColumn,
+                new Comparator<RequestSummary>() {
+            public int compare(RequestSummary o1,
+                    RequestSummary o2) {
+                return o1.getStatus().compareTo(o2.getStatus());
+            }
+        });
+        myRequestListGrid.addColumn(statusColumn,
+                new ResizableHeader("Status", myRequestListGrid, taskNameColumn));
+        myRequestListGrid.setColumnWidth(statusColumn, "100px");
 
 
         // Due Date.
@@ -250,7 +266,7 @@ public class RequestListViewImpl extends Composite
 
 
 
-        Column<RequestSummary, String> editColumn =
+        Column<RequestSummary, String> detailsColumn =
                 new Column<RequestSummary, String>(new ButtonCell()) {
             @Override
             public String getValue(RequestSummary task) {
@@ -258,7 +274,7 @@ public class RequestListViewImpl extends Composite
             }
         };
 
-        editColumn.setFieldUpdater(new FieldUpdater<RequestSummary, String>() {
+        detailsColumn.setFieldUpdater(new FieldUpdater<RequestSummary, String>() {
             @Override
             public void update(int index,
                     RequestSummary request,
@@ -268,9 +284,9 @@ public class RequestListViewImpl extends Composite
             }
         });
 
-        myRequestListGrid.addColumn(editColumn,
+        myRequestListGrid.addColumn(detailsColumn,
                 new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant(constants.Details())));
-
+        myRequestListGrid.setColumnWidth(detailsColumn, "100px");
 
 
     }

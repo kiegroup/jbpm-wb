@@ -19,7 +19,6 @@ package org.jbpm.console.ng.es.model;
 import java.io.Serializable;
 import java.util.Date;
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jbpm.executor.entities.STATUS;
 
 /**
  *
@@ -30,7 +29,7 @@ public class RequestSummary implements Serializable{
 
     private Long id;
     private Date time;
-   // private STATUS status;
+    private String status;
     private String commandName;
     private String message;
     //Business Key for callback
@@ -39,14 +38,15 @@ public class RequestSummary implements Serializable{
     private int retries = 0;
     //Number of times that this request has been executed
     private int executions = 0;
+    
 
     public RequestSummary() {
     }
 
-    public RequestSummary(Long id, Date time, String commandName, String message, String key) {
+    public RequestSummary(Long id, Date time, String status, String commandName, String message, String key) {
         this.id = id;
         this.time = time;
-      //  this.status = status;
+        this.status = status;
         this.commandName = commandName;
         this.message = message;
         this.key = key;
@@ -70,13 +70,13 @@ public class RequestSummary implements Serializable{
         this.time = time;
     }
 
-//    public STATUS getStatus() {
-//        return status;
-//    }
-//
-//    public void setStatus(STATUS status) {
-//        this.status = status;
-//    }
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getCommandName() {
         return commandName;

@@ -31,7 +31,7 @@ public class RequestSummaryHelper {
     public static List<RequestSummary> adaptRequestList(List<RequestInfo> requests){
         List<RequestSummary> requestSummaries = new ArrayList<RequestSummary>(requests.size());
         for(RequestInfo request : requests){
-            requestSummaries.add(new RequestSummary(request.getId(), request.getTime(),  
+            requestSummaries.add(new RequestSummary(request.getId(), request.getTime(), request.getStatus().name(),
                     request.getCommandName(), request.getMessage(), request.getKey()));
         }
         return requestSummaries;

@@ -88,11 +88,10 @@ public class RequestListPresenter {
     }
 
     public void init() {
-        System.out.println("Starting Executor Service ...");
         executorServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
-                System.out.println("Executor Service Started ...");
+                view.displayNotification("Executor Service Started ...");
             }
         }).init();
     }
@@ -104,7 +103,7 @@ public class RequestListPresenter {
         executorServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long requestId) {
-                view.displayNotification("Request Schedulled" + requestId);
+                view.displayNotification("Request Schedulled: " + requestId);
 
             }
         }).scheduleRequest("PrintOutCmd", ctx);

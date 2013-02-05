@@ -211,8 +211,8 @@ public class FormDisplayPopupPresenter {
                 domainServices.call( new RemoteCallback<ProcessSummary>() {
                     @Override
                     public void callback( ProcessSummary summary ) {
-                        view.getNameText().setText( "" );
-                        view.getTaskIdText().setText( summary.getName() );
+                        view.getTaskIdText().setText( "" );
+                        view.getNameText().setText( summary.getName() );
                         FocusPanel wrapperFlowPanel = new FocusPanel();
                         wrapperFlowPanel.setStyleName("wrapper");
                         FocusPanel startFlowPanel = new FocusPanel();
