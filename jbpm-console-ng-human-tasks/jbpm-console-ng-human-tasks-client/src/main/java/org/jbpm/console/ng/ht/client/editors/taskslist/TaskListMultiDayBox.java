@@ -7,7 +7,7 @@ package org.jbpm.console.ng.ht.client.editors.taskslist;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
@@ -29,7 +29,7 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
 
     private TasksListPresenter presenter;
     
-    private Map<String, List<TaskSummary>> sectionTasks = new HashMap<String, List<TaskSummary>>();
+    private Map<String, List<TaskSummary>> sectionTasks = new LinkedHashMap<String, List<TaskSummary>>();
     
     public TaskListMultiDayBox() {
         tasksContainer.setStyleName("task-container");

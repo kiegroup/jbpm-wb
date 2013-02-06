@@ -22,6 +22,7 @@ import javax.inject.Inject;
 
 
 import java.util.ArrayList;
+import java.util.Map;
 import javax.enterprise.event.Observes;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jboss.errai.bus.client.api.RemoteCallback;
@@ -123,15 +124,15 @@ public class TasksListPresenter {
 
         } else {
 
-            taskServices.call(new RemoteCallback<List<TaskSummary>>() {
+            taskServices.call(new RemoteCallback<Map<String, List<TaskSummary>>>() {
                 @Override
-                public void callback(List<TaskSummary> tasks) {
-                    view.getTaskListMultiDayBox().addTasksByDay("Today", tasks);
-                    view.getTaskListMultiDayBox().refresh();
-
-
+                public  void callback(Map<String, List<TaskSummary>> tasks) {
+                   for(String day : tasks.keySet()){
+                    view.getTaskListMultiDayBox().addTasksByDay(day, tasks.get(day));
+                   }
+                   view.getTaskListMultiDayBox().refresh();
                 }
-            }).getTasksAssignedPersonalAndGroupsTasks(userId, groups, "en-UK");
+            }).getTasksAssignedPersonalAndGroupsTasksByDays(userId, groups, "en-UK");
 
 
         }
