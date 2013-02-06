@@ -107,7 +107,9 @@ public class TaskBox extends Composite {
             panel.setStyleName("clickable claim");
             options.add(focusPanel);
 
-        } else if (!"".equals(actualOwner) && !potentialOwners.isEmpty() && !potentialOwners.contains(identity.getName()) && (status.equals("Reserved") || status.equals("InProgress"))) {
+        } else if (!"".equals(actualOwner) && potentialOwners != null && !potentialOwners.isEmpty() 
+                && !potentialOwners.contains(identity.getName()) && 
+                (status.equals("Reserved") || status.equals("InProgress"))) {
             personalOrGroupTask.setStyleName("group-task");
             personalOrGroupTask.add(new HTML("Group Task"));
             FlowPanel panel = new FlowPanel();

@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.ht.client.editors.taskdetails;
 
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -38,8 +37,6 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.shared.mvp.PlaceRequest;
-import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
 @Templated(value = "TaskDetailsPopupViewImpl.html")
@@ -48,31 +45,6 @@ public class TaskDetailsPopupViewImpl extends Composite
         TaskDetailsPopupPresenter.TaskDetailsPopupView {
 
     private TaskDetailsPopupPresenter presenter;
-//    @Inject
-//    @DataField
-//    private Label subSectionDescriptionDiv;
-//    @Inject
-//    @DataField
-//    private Label subSectionDescriptionCollapseDiv;
-//    @Inject
-//    @DataField
-//    private Label subSectionProcessContextDiv;
-//    @Inject
-//    @DataField
-//    private Label subSectionProcessContextCollapseDiv;
-    
-//    @Inject
-//    @DataField
-//    public Label goToWork;
-    
-//    @Inject
-//    @DataField
-//    private Label subSectionSubTaskStrategiesDiv;
-//    
-//    @Inject
-//    @DataField
-//    private Label subSectionSubTaskStrategiesCollapseDiv;        
-//            
     @Inject
     @DataField
     public Label taskIdText;
@@ -106,6 +78,9 @@ public class TaskDetailsPopupViewImpl extends Composite
     @Inject
     @DataField
     public Button closeButton;
+     @Inject
+    @DataField
+    public Button updateTaskButton;
     @Inject
     @DataField
     public Button pIDetailsButton;
@@ -140,54 +115,16 @@ public class TaskDetailsPopupViewImpl extends Composite
 
     }
 
-//    @EventHandler("subSectionDescriptionCollapseDiv")
-//    public void subSectionDescriptionCollapseDiv(ClickEvent e) {
-//        if (subSectionDescriptionDiv.getStyleName().equals("sub-section")) {
-//            subSectionDescriptionDiv.setStyleName("sub-section collapsed");
-//        } else if (subSectionDescriptionDiv.getStyleName().equals("sub-section collapsed")) {
-//            subSectionDescriptionDiv.setStyleName("sub-section");
-//        }
-//
-//    }
-//
-//    @EventHandler("subSectionProcessContextCollapseDiv")
-//    public void subSectionProcessContextCollapseDiv(ClickEvent e) {
-//        if (subSectionProcessContextDiv.getStyleName().equals("sub-section")) {
-//            subSectionProcessContextDiv.setStyleName("sub-section collapsed");
-//        } else if (subSectionProcessContextDiv.getStyleName().equals("sub-section collapsed")) {
-//            subSectionProcessContextDiv.setStyleName("sub-section");
-//        }
-//
-//    }
-//    
-//    @EventHandler("subSectionSubTaskStrategiesCollapseDiv")
-//    public void subSectionSubTaskStrategiesCollapseDiv(ClickEvent e) {
-//        if (subSectionSubTaskStrategiesDiv.getStyleName().equals("sub-section")) {
-//            subSectionSubTaskStrategiesDiv.setStyleName("sub-section collapsed");
-//        } else if (subSectionSubTaskStrategiesDiv.getStyleName().equals("sub-section collapsed")) {
-//            subSectionSubTaskStrategiesDiv.setStyleName("sub-section");
-//        }
-//
-//    }
-    
-//    @EventHandler("goToWork")
-//    public void goToWork(ClickEvent e) {
-//        presenter.close();
-//        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
-//        placeRequestImpl.addParameter("taskId", taskIdText.getText());
-//        placeManager.goTo(placeRequestImpl);
-//
-//    }
-//
-//    @EventHandler("updateButton")
-//    public void updateTaskButton(ClickEvent e) {
-//        presenter.updateTask(Long.parseLong(taskIdText.getText()), taskNameText.getText(),
-//                taskDescriptionTextArea.getText(), userText.getText(),
-//                subTaskStrategyListBox.getItemText(subTaskStrategyListBox.getSelectedIndex()),
-//                dueDate.getValue(),
-//                taskPriorityListBox.getSelectedIndex());
-//
-//    }
+
+    @EventHandler("updateTaskButton")
+    public void updateTaskButton(ClickEvent e) {
+        presenter.updateTask(Long.parseLong(taskIdText.getText()), taskNameText.getText(),
+                taskDescriptionTextArea.getText(), userText.getText(),
+                subTaskStrategyListBox.getItemText(subTaskStrategyListBox.getSelectedIndex()),
+                dueDate.getValue(),
+                taskPriorityListBox.getSelectedIndex());
+
+    }
 
     @EventHandler("closeButton")
     public void closeButton(ClickEvent e) {

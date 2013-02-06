@@ -27,8 +27,6 @@
   <packaging>pom</packaging>
 
   <name>jBPM Console NG - BPM Home Panels</name>
-
-  <version>6.0.0-SNAPSHOT</version>
   <modules>
     <module>jbpm-console-ng-bpm-home-client</module>
   </modules>
