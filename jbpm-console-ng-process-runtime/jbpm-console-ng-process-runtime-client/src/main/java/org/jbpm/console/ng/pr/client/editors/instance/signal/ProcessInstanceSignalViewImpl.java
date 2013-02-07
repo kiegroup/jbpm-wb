@@ -30,9 +30,6 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
     private ProcessInstanceSignalPresenter presenter;
     @Inject
     @DataField
-    public Button closeButton;
-    @Inject
-    @DataField
     public Button signalButton;
     @Inject
     @DataField
@@ -77,11 +74,6 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
     public void clearButton(ClickEvent e) {
         signalRefText.setValue("");
         eventText.setValue("");
-    }
-
-    @EventHandler("closeButton")
-    public void closeButton(ClickEvent e) {
-        presenter.close();
     }
 
     @Override

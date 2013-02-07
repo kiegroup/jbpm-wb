@@ -65,7 +65,9 @@ public class TaskBox extends Composite {
 
     }
 
-    public TaskBox(final PlaceManager placeManager, final TasksListPresenter presenter, final Identity identity, final long taskId, final String taskName, final String actualOwner, final List<String> potentialOwners, final String status) {
+    public TaskBox(final PlaceManager placeManager, final TasksListPresenter presenter, 
+            final Identity identity, final long taskId, final String taskName, 
+            final String actualOwner, final List<String> potentialOwners, final String status) {
         this();
         this.taskId = taskId;
         this.taskName = taskName;

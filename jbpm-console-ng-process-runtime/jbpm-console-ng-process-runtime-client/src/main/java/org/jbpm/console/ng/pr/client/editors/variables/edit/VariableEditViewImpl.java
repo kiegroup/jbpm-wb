@@ -1,5 +1,7 @@
 package org.jbpm.console.ng.pr.client.editors.variables.edit;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -12,9 +14,10 @@ import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Button;
+
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Label;
+
 
 @Dependent
 @Templated(value = "VariableEditViewImpl.html")
@@ -31,9 +34,11 @@ public class VariableEditViewImpl extends Composite implements
     @Inject
     @DataField
     public TextBox variableTextBox;
+    
     @Inject
     @DataField
-    public Button closeButton;
+    public Label variableIdLabel;
+    
     @Inject
     @DataField
     public Button saveButton;
@@ -90,12 +95,7 @@ public class VariableEditViewImpl extends Composite implements
     public void clearButton(ClickEvent e) {
         variableTextBox.setValue("");
     }
-
-    @EventHandler("closeButton")
-    public void closeButton(ClickEvent e) {
-        presenter.close();
-    }
-    
+ 
     @EventHandler("saveButton")
     public void saveButton(ClickEvent e) {
 
@@ -104,5 +104,10 @@ public class VariableEditViewImpl extends Composite implements
         displayNotification("Variable updated " + variableId);
         
     }
+
+  @Override
+  public void setVariableIdLabel(String variableId) {
+    variableIdLabel.setText(variableId);
+  }
 
 }

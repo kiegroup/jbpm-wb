@@ -37,6 +37,8 @@ public class VariableEditPresenter {
         
         void setVariableId(String variableId);
         
+        void setVariableIdLabel(String variableId);
+        
         String getVariableId();
         
     }
@@ -79,6 +81,7 @@ public class VariableEditPresenter {
     public void onReveal() {
         view.setProcessInstanceId(Long.parseLong(place.getParameter("processInstanceId", "-1").toString()));
         view.setVariableId(place.getParameter("variableId", "-1").toString());
+        view.setVariableIdLabel(view.getVariableId());
         view.setVariableText(place.getParameter("value", "-1").toString());
     }
 

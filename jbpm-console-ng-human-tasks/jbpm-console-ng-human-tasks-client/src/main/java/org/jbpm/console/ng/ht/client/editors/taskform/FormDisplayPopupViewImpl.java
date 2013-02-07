@@ -62,9 +62,7 @@ public class FormDisplayPopupViewImpl extends Composite
     @DataField
     public FlowPanel optionsDiv;
    
-    @Inject
-    @DataField
-    public Button closeButton;
+    
     @Inject
     @DataField
     public UnorderedList navBarUL;
@@ -121,12 +119,7 @@ public class FormDisplayPopupViewImpl extends Composite
     public FlowPanel getOptionsDiv() {
         return optionsDiv;
     }
-    
-    @EventHandler("closeButton")
-    public void closeButton(ClickEvent e) {
-        presenter.close();
-    }
-
+   
     public UnorderedList getNavBarUL() {
       return navBarUL;
     }

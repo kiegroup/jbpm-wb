@@ -54,9 +54,7 @@ public class QuickNewTaskViewImpl extends Composite
     @Inject
     @DataField
     public Button addTaskButton;
-    @Inject
-    @DataField
-    public Button closeButton;
+   
     @Inject
     @DataField
     public TextBox taskNameText;
@@ -96,10 +94,6 @@ public class QuickNewTaskViewImpl extends Composite
         addTask();
     }
 
-    @EventHandler("closeButton")
-    public void closeButton(ClickEvent e) {
-        close();
-    }
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
@@ -116,7 +110,4 @@ public class QuickNewTaskViewImpl extends Composite
 
     }
 
-    private void close() {
-        presenter.close();
-    }
 }

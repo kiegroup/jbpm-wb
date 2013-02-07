@@ -75,9 +75,6 @@ public class TaskDetailsPopupViewImpl extends Composite
     @Inject
     @DataField
     public DateBox dueDate;
-    @Inject
-    @DataField
-    public Button closeButton;
      @Inject
     @DataField
     public Button updateTaskButton;
@@ -125,12 +122,6 @@ public class TaskDetailsPopupViewImpl extends Composite
                 taskPriorityListBox.getSelectedIndex());
 
     }
-
-    @EventHandler("closeButton")
-    public void closeButton(ClickEvent e) {
-        presenter.close();
-    }
-
 
     @EventHandler("pIDetailsButton")
     public void pIDetailsButton(ClickEvent e) {

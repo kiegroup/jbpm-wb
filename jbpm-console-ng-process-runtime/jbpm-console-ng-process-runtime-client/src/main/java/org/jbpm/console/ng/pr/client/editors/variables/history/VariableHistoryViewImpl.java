@@ -37,9 +37,6 @@ public class VariableHistoryViewImpl extends Composite implements
     @DataField
     public Label variableNameText;
     @Inject
-    @DataField
-    public Button closeButton;
-    @Inject
     @DataField 
     public FlowPanel listContainer;
     @Inject
@@ -126,11 +123,6 @@ public class VariableHistoryViewImpl extends Composite implements
     public void setVariableId(String variableId) {
         this.variableId = variableId;
         this.variableNameText.setText(variableId);
-    }
-    
-    @EventHandler("closeButton")
-    public void closeButton(ClickEvent e) {
-        presenter.close();
     }
 
     public long getProcessInstanceId() {

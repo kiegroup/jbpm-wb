@@ -1,26 +1,16 @@
-<div id="myModal" class="modal modal-popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <!-- MODAL HEADER -->
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" data-field="closeButton" aria-hidden="true">x</button>
-    <h3 id="myModalLabel">Edit Process Variable</h3>
+<div class="row-fluid">
+  <div class="span12">
+    <fieldset>
+      <label>Variable Name</label>
+      <label data-field="variableIdLabel"></label>
+      <label>Variable Value</label>
+      <input type="text" class="span12" data-field="variableTextBox" />
+    </fieldset>
+
   </div>
-
-  <!-- MODAL BODY -->     
-  <div class="modal-body">
-    <div class="row-fluid">
-      <div class="span12">
-
-        <fieldset>
-          <label>Variable Value</label>
-          <input type="text" class="span12" data-field="variableTextBox" />
-        </fieldset>
-
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-footer">
+  <div class="modal-footer span12">
     <button class="btn" data-field="clearButton" id="clearButton" >Clear</button>
     <button class="btn" data-field="saveButton" id="saveButton" >Save</button>
   </div>
 </div>
+
