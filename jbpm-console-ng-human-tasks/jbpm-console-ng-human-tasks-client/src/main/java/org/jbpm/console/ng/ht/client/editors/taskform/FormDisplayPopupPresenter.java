@@ -15,9 +15,6 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskform;
 
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.base.ListItem;
-import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -25,6 +22,8 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.NavLink;
+import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -36,7 +35,6 @@ import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.StatefulKnowledgeSessionEntryPoint;
-
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.fb.events.FormRenderedEvent;
 import org.jbpm.console.ng.ht.service.FormServiceEntryPoint;
@@ -94,9 +92,9 @@ public class FormDisplayPopupPresenter {
         String getProcessId();
 
         void setProcessId( String processId );
-        
+
         void setSessionId( int sessionId );
-        
+
         int getSessionId();
 
         VerticalPanel getFormView();
@@ -106,7 +104,7 @@ public class FormDisplayPopupPresenter {
         Label getTaskIdText();
 
         FlowPanel getOptionsDiv();
-        
+
         UnorderedList getNavBarUL();
 
     }
@@ -125,30 +123,29 @@ public class FormDisplayPopupPresenter {
 
     public void renderTaskForm( final long taskId ) {
         view.getNavBarUL().clear();
-            
-        NavLink workLink = new NavLink("Work");
-        workLink.setStyleName("active");
-        
-        
-        NavLink detailsLink = new NavLink("Details");
-        detailsLink.addClickHandler(new ClickHandler(){
+
+        NavLink workLink = new NavLink( "Work" );
+        workLink.setStyleName( "active" );
+
+        NavLink detailsLink = new NavLink( "Details" );
+        detailsLink.addClickHandler( new ClickHandler() {
 
             @Override
-            public void onClick(ClickEvent event) {
-              close();
-              PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Popup");
-              placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
-              placeManager.goTo(placeRequestImpl);
+            public void onClick( ClickEvent event ) {
+                close();
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Task Details Popup" );
+                placeRequestImpl.addParameter( "taskId", String.valueOf( taskId ) );
+                placeManager.goTo( placeRequestImpl );
             }
-        });
-        
-        view.getNavBarUL().add(workLink);
-        view.getNavBarUL().add(detailsLink);
-        
+        } );
+
+        view.getNavBarUL().add( workLink );
+        view.getNavBarUL().add( detailsLink );
+
         formServices.call( new RemoteCallback<String>() {
             @Override
             public void callback( String form ) {
-                
+
                 view.getFormView().clear();
                 view.getFormView().add( new HTMLPanel( form ) );
                 taskServices.call( new RemoteCallback<TaskSummary>() {
@@ -156,8 +153,8 @@ public class FormDisplayPopupPresenter {
                     public void callback( final TaskSummary task ) {
                         view.getOptionsDiv().clear();
                         FlowPanel wrapperFlowPanel = new FlowPanel();
-                        wrapperFlowPanel.setStyleName("wrapper");
-                        view.getOptionsDiv().add(wrapperFlowPanel);
+                        wrapperFlowPanel.setStyleName( "wrapper" );
+                        view.getOptionsDiv().add( wrapperFlowPanel );
                         view.getNameText().setText( task.getName() );
                         view.getTaskIdText().setText( String.valueOf( task.getId() ) );
                         if ( task.getStatus().equals( "Reserved" ) ) {
@@ -214,17 +211,17 @@ public class FormDisplayPopupPresenter {
                         view.getTaskIdText().setText( "" );
                         view.getNameText().setText( summary.getName() );
                         FocusPanel wrapperFlowPanel = new FocusPanel();
-                        wrapperFlowPanel.setStyleName("wrapper");
+                        wrapperFlowPanel.setStyleName( "wrapper" );
                         FocusPanel startFlowPanel = new FocusPanel();
-                            startFlowPanel.setStyleName( "option-button start" );
-                            startFlowPanel.addClickHandler( new ClickHandler() {
+                        startFlowPanel.setStyleName( "option-button start" );
+                        startFlowPanel.addClickHandler( new ClickHandler() {
 
-                                public native void onClick( ClickEvent event )/*-{
-                                    $wnd.startProcess($wnd.getFormValues($doc.getElementById("form-data")));
-                                }-*/;
-                            } );
-                            wrapperFlowPanel.add( startFlowPanel );
-                            view.getOptionsDiv().add( wrapperFlowPanel );
+                            public native void onClick( ClickEvent event )/*-{
+                                $wnd.startProcess($wnd.getFormValues($doc.getElementById("form-data")));
+                            }-*/;
+                        } );
+                        wrapperFlowPanel.add( startFlowPanel );
+                        view.getOptionsDiv().add( wrapperFlowPanel );
 
                     }
                 } ).getProcessDesc( processId );
@@ -314,10 +311,10 @@ public class FormDisplayPopupPresenter {
                 close();
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Definition Details" );
                 placeRequestImpl.addParameter( "processId", params.get( "processId" ).toString() );
-                placeRequestImpl.addParameter( "sessionId", Integer.toString(view.getSessionId()));
+                placeRequestImpl.addParameter( "sessionId", Integer.toString( view.getSessionId() ) );
                 placeManager.goTo( placeRequestImpl );
             }
-        } ).startProcess(view.getSessionId(), params.get( "processId" ).toString(), params );
+        } ).startProcess( view.getSessionId(), params.get( "processId" ).toString(), params );
 
     }
 
@@ -380,18 +377,25 @@ public class FormDisplayPopupPresenter {
     public void onReveal() {
         long taskId = Long.parseLong( place.getParameter( "taskId", "-1" ).toString() );
         String processId = place.getParameter( "processId", "none" ).toString();
-        String sessionId = place.getParameter("sessionId", "0").toString();
+        String sessionId = place.getParameter( "sessionId", "0" ).toString();
         if ( taskId != -1 ) {
             view.setTaskId( taskId );
             renderTaskForm( taskId );
         } else if ( !processId.equals( "none" ) ) {
             view.setProcessId( processId );
-            view.setSessionId( Integer.parseInt(sessionId) );
+            view.setSessionId( Integer.parseInt( sessionId ) );
             renderProcessForm( processId );
         }
     }
 
     public void close() {
+        removeForm();
         closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }
+
+    public native void removeForm()/*-{
+        var form = $doc.getElementById("form-data");
+        form.parentNode.removeChild(form);
+    }-*/;
+
 }
