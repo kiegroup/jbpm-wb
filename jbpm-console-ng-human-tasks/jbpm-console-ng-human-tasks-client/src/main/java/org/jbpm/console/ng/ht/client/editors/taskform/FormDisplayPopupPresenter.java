@@ -389,13 +389,7 @@ public class FormDisplayPopupPresenter {
     }
 
     public void close() {
-        removeForm();
         closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }
-
-    public native void removeForm()/*-{
-        var form = $doc.getElementById("form-data");
-        form.parentNode.removeChild(form);
-    }-*/;
 
 }
