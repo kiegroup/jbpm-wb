@@ -51,9 +51,7 @@ public class NewProcessDefinitionViewImpl extends Composite
   @Inject
   @DataField
   public TextBox processDefinitionPathText;
-  @Inject
-  @DataField
-  public Button closeButton;
+ 
   @Inject
   private Event<NotificationEvent> notification;
 
@@ -96,13 +94,6 @@ public class NewProcessDefinitionViewImpl extends Composite
 
   }
   
-    @EventHandler("closeButton")
-    public void closeButton(ClickEvent e) {
-        close();
-    }
     
-    
-    private void close() {
-        presenter.close();
-    }
+  
 }

@@ -16,6 +16,7 @@
 package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
 
+import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.Date;
 import javax.enterprise.context.Dependent;
@@ -50,6 +51,8 @@ public class QuickNewTaskPresenter {
         void displayNotification(String text);
 
         TextBox getTaskNameText();
+        
+        Button getAddTaskButton();
     }
     @Inject
     QuickNewTaskView view;
@@ -99,6 +102,7 @@ public class QuickNewTaskPresenter {
                 public void callback(Long taskId) {
                     view.displayNotification("Task Created and Started (id = " + taskId + ")");
                     close();
+                    
                 }
             }).addTaskAndStart(str, null, identity.getName() );
         }else{
@@ -107,6 +111,7 @@ public class QuickNewTaskPresenter {
                 public void callback(Long taskId) {
                     view.displayNotification("Task Created (id = " + taskId + ")");
                     close();
+                    
                 }
             }).addTask(str, null);
         }

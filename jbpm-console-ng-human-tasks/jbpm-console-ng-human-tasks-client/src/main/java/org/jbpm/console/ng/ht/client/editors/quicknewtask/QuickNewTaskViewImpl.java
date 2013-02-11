@@ -26,10 +26,11 @@ import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
-//
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 
 import com.google.gwt.user.client.ui.Composite;
 import java.util.Date;
@@ -54,7 +55,6 @@ public class QuickNewTaskViewImpl extends Composite
     @Inject
     @DataField
     public Button addTaskButton;
-   
     @Inject
     @DataField
     public TextBox taskNameText;
@@ -65,10 +65,15 @@ public class QuickNewTaskViewImpl extends Composite
     private Event<NotificationEvent> notification;
     @Inject
     private Event<UserTaskEvent> userTaskChanges;
+    
+    private HandlerRegistration textKeyPressHandler;
+    
+    private HandlerRegistration checkKeyPressHandler;
 
     @Override
     public void init(QuickNewTaskPresenter presenter) {
         this.presenter = presenter;
+        
         KeyPressHandler keyPressHandlerText = new KeyPressHandler() {
             public void onKeyPress(KeyPressEvent event) {
                 if (event.getNativeEvent().getKeyCode() == 13) {
@@ -76,7 +81,7 @@ public class QuickNewTaskViewImpl extends Composite
                 }
             }
         };
-        taskNameText.addKeyPressHandler(keyPressHandlerText);
+        textKeyPressHandler = taskNameText.addKeyPressHandler(keyPressHandlerText);
         
         KeyPressHandler keyPressHandlerCheck = new KeyPressHandler() {
             public void onKeyPress(KeyPressEvent event) {
@@ -85,8 +90,8 @@ public class QuickNewTaskViewImpl extends Composite
                 }
             }
         };
-        quickTaskCheck.addKeyPressHandler(keyPressHandlerCheck);
-        
+        checkKeyPressHandler = quickTaskCheck.addKeyPressHandler(keyPressHandlerCheck);
+        taskNameText.setFocus(true);
     }
 
     @EventHandler("addTaskButton")
@@ -105,9 +110,17 @@ public class QuickNewTaskViewImpl extends Composite
     }
 
     private void addTask() {
+        addTaskButton.setEnabled(false);
+        checkKeyPressHandler.removeHandler();
+        textKeyPressHandler.removeHandler();
+        
         presenter.addTask(identity.getName(),
-                taskNameText.getText(), quickTaskCheck.getValue(), new Date());
+                  taskNameText.getText(), quickTaskCheck.getValue(), new Date());
+        
 
     }
 
+    public Button getAddTaskButton() {
+      return addTaskButton;
+    }
 }
