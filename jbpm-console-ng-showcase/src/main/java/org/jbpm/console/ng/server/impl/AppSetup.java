@@ -15,10 +15,12 @@
  */
 package org.jbpm.console.ng.server.impl;
 
-import bitronix.tm.resource.jdbc.PoolingDataSource;
+import static org.kie.commons.io.FileSystemType.Bootstrap.BOOTSTRAP_INSTANCE;
+
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
@@ -32,42 +34,38 @@ import org.uberfire.backend.vfs.ActiveFileSystems;
 import org.uberfire.backend.vfs.FileSystemFactory;
 import org.uberfire.backend.vfs.impl.ActiveFileSystemsImpl;
 
-import static org.kie.commons.io.FileSystemType.Bootstrap.*;
-
 @Singleton
 public class AppSetup {
 
+    private static final String REPO_PLAYGROUND = "git://jbpm-playground";
+    private static final String ORIGIN_URL      = "https://github.com/guvnorngtestuser1/jbpm-console-ng-playground.git";
+
+    
     private final IOService         ioService         = new IOServiceDotFileImpl();
     private final ActiveFileSystems activeFileSystems = new ActiveFileSystemsImpl();
-    
+    private FileSystem fs = null;
     @PostConstruct
     public void onStartup() {
-        final String gitURL = "https://github.com/guvnorngtestuser1/guvnorng-playground.git";
-        final String userName = "guvnorngtestuser1";
-        final String password = "test1234";
-        final URI fsURI = URI.create( "git://uf-playground" );
 
-        final Map<String, Object> env = new HashMap<String, Object>() {{
-            put( "username", userName );
-            put( "password", password );
-            put( "origin", gitURL );
-        }};
-
-        FileSystem fs = null;
-
+        final URI fsURI = URI.create(REPO_PLAYGROUND);
+        
         try {
+            final String userName = "guvnorngtestuser1";
+            final String password = "test1234";
+            
+
+            final Map<String, Object> env = new HashMap<String, Object>();
+            env.put( "username", userName );
+            env.put( "password", password );
+            env.put( "origin", ORIGIN_URL );
             fs = ioService.newFileSystem( fsURI, env, BOOTSTRAP_INSTANCE );
         } catch ( FileSystemAlreadyExistsException ex ) {
             fs = ioService.getFileSystem( fsURI );
         }
 
         activeFileSystems.addBootstrapFileSystem( FileSystemFactory.newFS( new HashMap<String, String>() {{
-            put( "default://uf-playground", "uf-playground" );
+            put( REPO_PLAYGROUND, "jbpm-playground" );
         }}, fs.supportedFileAttributeViews() ) );
-        
-        
-
-        
     }
     
     // @PreDestroy -> ds.close();???
@@ -82,6 +80,12 @@ public class AppSetup {
     @Named("fs")
     public ActiveFileSystems fileSystems() {
         return activeFileSystems;
+    }
+    
+    @Produces
+    @Named("fileSystem")
+    public FileSystem fileSystem() {
+        return fs;
     }
 
 }

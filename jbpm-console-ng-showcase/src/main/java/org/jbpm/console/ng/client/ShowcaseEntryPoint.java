@@ -80,7 +80,8 @@ public class ShowcaseEntryPoint {
         "Tasks",
         "Process Runtime", 
         "Users and Groups",
-        "Jobs" 
+        "Jobs",
+        "Designer"
     };
     
     private SuggestBox actionText;

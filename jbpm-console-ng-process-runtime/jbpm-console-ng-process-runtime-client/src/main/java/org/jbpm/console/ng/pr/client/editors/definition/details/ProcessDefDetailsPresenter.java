@@ -15,21 +15,19 @@
  */
 package org.jbpm.console.ng.pr.client.editors.definition.details;
 
-import com.github.gwtbootstrap.client.ui.ListBox;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.user.client.Window;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.ht.model.TaskDefSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -38,6 +36,9 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.shared.mvp.PlaceRequest;
+
+import com.github.gwtbootstrap.client.ui.ListBox;
+import com.github.gwtbootstrap.client.ui.TextBox;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Definition Details")
@@ -66,6 +67,8 @@ public class ProcessDefDetailsPresenter {
         ListBox getSubprocessListBox();
         
         TextBox getSessionIdText();
+
+        void setProcessAssetPath(Path processAssetPath);
     }
 
     @Inject
@@ -91,18 +94,6 @@ public class ProcessDefDetailsPresenter {
     public UberView<ProcessDefDetailsPresenter> getView() {
         return view;
     }
-    
-    void openProcessDiagram(final String processDefId) {
-      
-      domainServices.call( new RemoteCallback<Map<String, String>>() {
-            @Override
-            public void callback( Map<String, String> availableProcessesPaths ) {
-               Window.open("http://localhost:8080/designer/editor?profile=jbpm&pp=&uuid=git://jbpm-playground" 
-                       +availableProcessesPaths.get(processDefId), "_blank", "");
-            }
-        } ).getAvailableProcessesPath();
-    
-  }
 
     public void refreshProcessDef( final String processId ) {
 
@@ -144,6 +135,8 @@ public class ProcessDefDetailsPresenter {
                 }
             }
         } ).getReusableSubProcesses( processId );
+        
+        getProcessPath(processId);
     }
 
     @OnReveal
@@ -155,5 +148,14 @@ public class ProcessDefDetailsPresenter {
         view.getSessionIdText().setText(sessionId);
 
         refreshProcessDef( processId );
+    }
+    
+    public void getProcessPath(String processDefId) {
+        domainServices.call(new RemoteCallback<Path>() {
+            @Override
+            public void callback(Path processAssetPath) {
+                view.setProcessAssetPath(processAssetPath);
+            }
+        }).getProcessAssetPath(processDefId);
     }
 }

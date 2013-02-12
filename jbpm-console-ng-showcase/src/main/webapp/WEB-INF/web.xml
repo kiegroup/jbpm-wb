@@ -112,7 +112,7 @@ profile in pom.xml to use that. -->
     <filter>
     <filter-name>Redirect Filter</filter-name>
     <filter-class>
-      org.jbpm.console.ng.server.impl.DesignerResourcesRedirectFilter
+      org.jbpm.designer.filter.DesignerResourcesRedirectFilter
     </filter-class>
     <init-param>
        <param-name>redirectTo</param-name>

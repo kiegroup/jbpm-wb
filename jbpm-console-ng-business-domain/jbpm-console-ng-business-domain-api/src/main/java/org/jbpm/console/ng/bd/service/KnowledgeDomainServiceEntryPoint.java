@@ -109,4 +109,6 @@ public interface KnowledgeDomainServiceEntryPoint {
     public Collection<RuleNotificationSummary> getAllNotificationInstance();
 
     public Collection<RuleNotificationSummary> getAllNotificationInstanceBySessionId(int sessionId);
+    
+    org.uberfire.backend.vfs.Path getProcessAssetPath(String processId);
 }

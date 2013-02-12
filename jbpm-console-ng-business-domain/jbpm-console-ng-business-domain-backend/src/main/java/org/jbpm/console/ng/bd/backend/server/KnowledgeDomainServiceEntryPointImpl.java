@@ -55,6 +55,8 @@ import org.kie.commons.java.nio.file.Path;
 import org.kie.runtime.StatefulKnowledgeSession;
 import org.kie.runtime.process.NodeInstance;
 import org.kie.runtime.process.ProcessInstance;
+import org.uberfire.backend.vfs.ActiveFileSystems;
+import org.uberfire.backend.vfs.PathFactory;
 
 /**
  *
@@ -75,6 +77,8 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     BPMN2DataService bpmn2Service;
     @Inject
     FileService fs;
+    @Inject
+    ActiveFileSystems fileSystems;
 
     public KnowledgeDomainServiceEntryPointImpl() {
     }
@@ -288,6 +292,18 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
 
     public Collection<RuleNotificationSummary> getAllNotificationInstanceBySessionId(int sessionId) {
         return RuleNotificationHelper.adaptCollection(rulesNotificationService.getAllNotificationInstanceBySessionId(sessionId));
+    }
+
+    @Override
+    public org.uberfire.backend.vfs.Path getProcessAssetPath(String processId) {
+        String reporoot = fs.getRepositoryRoot();
+        if (reporoot.endsWith("/")) {
+            reporoot = reporoot.substring(0, (reporoot.length() - 1));
+        }
+        String uri = reporoot + domainService.getProcessAssetPath(processId);
+        String name = uri.substring(uri.lastIndexOf("/") + 1);
+        return PathFactory.newPath(fileSystems.getBootstrapFileSystem(), name, uri);
+        
     }
 
     

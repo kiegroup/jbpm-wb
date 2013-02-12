@@ -27,6 +27,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 import org.uberfire.shared.mvp.PlaceRequest;
@@ -83,6 +84,8 @@ public class ProcessDefDetailsViewImpl extends Composite
   @Inject
   private Event<NotificationEvent> notification;
   private Constants constants = GWT.create(Constants.class);
+  
+  private Path processAssetPath;
 
   @Override
   public void init(ProcessDefDetailsPresenter presenter) {
@@ -125,12 +128,9 @@ public class ProcessDefDetailsViewImpl extends Composite
 
   }
 
-  //http://localhost:8080/designer/editor?profile=jbpm&pp=&uuid=git://designer-repo/examples/release/release.bpmn
   @EventHandler("openProcessDesignerButton")
-  public void openProcessDesignerButton(ClickEvent e) {
-    presenter.openProcessDiagram(processNameText.getText());
-      
-     
+  public void openProcessDesignerButton(ClickEvent e) {    
+      placeManager.goTo(processAssetPath);
 
   }
 
@@ -164,6 +164,11 @@ public class ProcessDefDetailsViewImpl extends Composite
   
   public void displayNotification(String text) {
     notification.fire(new NotificationEvent(text));
+  }
+
+  @Override
+  public void setProcessAssetPath(Path processAssetPath) {
+      this.processAssetPath = processAssetPath;
   }
 
 

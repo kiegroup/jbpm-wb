@@ -16,21 +16,12 @@
 package org.jbpm.console.ng.pr.client.editors.instance.details;
 
 
-import com.github.gwtbootstrap.client.ui.ListBox;
-import com.github.gwtbootstrap.client.ui.TextArea;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.ProvidesKey;
 import java.util.List;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-
 import org.jboss.errai.bus.client.api.RemoteCallback;
-
-
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
@@ -38,6 +29,8 @@ import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.VariableSummary;
 import org.kie.runtime.process.ProcessInstance;
+import org.uberfire.backend.vfs.Path;
+import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -46,6 +39,13 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.shared.mvp.PlaceRequest;
+
+import com.github.gwtbootstrap.client.ui.ListBox;
+import com.github.gwtbootstrap.client.ui.TextArea;
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.ProvidesKey;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance Details")
@@ -74,6 +74,10 @@ public class ProcessInstanceDetailsPresenter {
         TextBox getProcessPackageText();
         
         TextBox getProcessVersionText();
+        
+        void setProcessAssetPath(Path processAssetPath);
+        
+        void setCurrentActiveNodes(List<NodeInstanceSummary> activeNodes);
     }
 
     @Inject
@@ -115,6 +119,7 @@ public class ProcessInstanceDetailsPresenter {
         domainServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
             public void callback( List<NodeInstanceSummary> details ) {
+                view.setCurrentActiveNodes(details);
                 view.getCurrentActivitiesListBox().clear();
                 for ( NodeInstanceSummary nis : details ) {
                     view.getCurrentActivitiesListBox().addItem( nis.getTimestamp() + ":" + nis.getId() + "-" + nis.getNodeName(),
@@ -164,7 +169,7 @@ public class ProcessInstanceDetailsPresenter {
        
        loadVariables(processId, processDefId);
 
-
+       getProcessPath(processDefId);
     }
 
     public void addDataDisplay(HasData<VariableSummary> display) {
@@ -202,5 +207,14 @@ public class ProcessInstanceDetailsPresenter {
                     dataProvider.refresh();
             }
         }).getVariablesCurrentState(Long.parseLong(processId), processDefId);
+    }
+    
+    public void getProcessPath(String processDefId) {
+        domainServices.call(new RemoteCallback<Path>() {
+            @Override
+            public void callback(Path processAssetPath) {
+                view.setProcessAssetPath(processAssetPath);
+            }
+        }).getProcessAssetPath(processDefId);
     }
 }

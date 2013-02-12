@@ -30,6 +30,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -37,6 +38,7 @@ import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ShowcaseImages;
 import org.jbpm.console.ng.pr.client.util.ResizableHeader;
 import org.kie.runtime.process.ProcessInstance;
+import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
@@ -61,6 +63,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 
+import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.VariableSummary;
 
@@ -126,6 +129,8 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     private Constants constants = GWT.create(Constants.class);
     private ShowcaseImages images = GWT.create(ShowcaseImages.class);
     private ProcessInstanceSummary processInstance;
+    private Path processAssetPath;
+    private List<NodeInstanceSummary> activeNodes;
     
     @Override
     public void init(ProcessInstanceDetailsPresenter presenter) {
@@ -168,12 +173,16 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     
     @EventHandler("viewProcessDiagramButton")
     public void viewProcessDiagramButton(ClickEvent e){
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Diagram Popup");
-        placeRequestImpl.addParameter("processDefId", processNameText.getText());
-        placeRequestImpl.addParameter("processInstanceId", processIdText.getText());
-        placeRequestImpl.addParameter("processPackage", processPackageText.getText());
-        placeRequestImpl.addParameter("processVersion", processVersionText.getText());
-        placeManager.goTo(placeRequestImpl);
+        StringBuffer nodeParam = new StringBuffer();
+        for (NodeInstanceSummary activeNode : activeNodes) {
+            nodeParam.append(activeNode.getNodeUniqueName() + ",");
+        }
+        nodeParam.deleteCharAt(nodeParam.length()-1);
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Designer");
+        placeRequestImpl.addParameter("activeNodes", nodeParam.toString());
+        placeRequestImpl.addParameter("readOnly", "true");
+        
+        placeManager.goTo(processAssetPath, placeRequestImpl);
     }
     
     
@@ -417,5 +426,14 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         return processVersionText;
     }
     
+    public void setProcessAssetPath(Path processAssetPath) {
+        this.processAssetPath = processAssetPath;
+    }
+
+    @Override
+    public void setCurrentActiveNodes(List<NodeInstanceSummary> activeNodes) {
+        this.activeNodes = activeNodes;
+        
+    }
     
 }

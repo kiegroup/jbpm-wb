@@ -202,7 +202,7 @@ public class HomeViewImpl extends Composite
     modelProcessAnchor.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("New Process Definition");
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Designer");
         placeManager.goTo(placeRequestImpl);
       }
     });
