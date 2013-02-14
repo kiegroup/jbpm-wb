@@ -161,6 +161,16 @@
       <groupId>org.kie.commons</groupId>
       <artifactId>kie-nio2-fs</artifactId>
     </dependency>
+     <dependency>
+      <groupId>org.kie.commons</groupId>
+      <artifactId>kie-commons-io</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.kie.commons</groupId>
+      <artifactId>kie-commons-data</artifactId>
+    </dependency>
+    
 
     <!-- Errai Core -->
     <dependency>
@@ -296,6 +306,49 @@
       <artifactId>quartz</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.kie.guvnor</groupId>
+      <artifactId>guvnor-commons-ui</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.guvnor</groupId>
+      <artifactId>guvnor-core-services-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.guvnor</groupId>
+      <artifactId>guvnor-core-services-backend</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.kie.guvnor</groupId>
+      <artifactId>guvnor-project-editor-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.guvnor</groupId>
+      <artifactId>guvnor-project-editor-backend</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.guvnor</groupId>
+      <artifactId>guvnor-m2repo-editor-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.guvnor</groupId>
+      <artifactId>guvnor-m2repo-editor-backend</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>ant</artifactId>
+          <groupId>org.apache.ant</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.guvnor</groupId>
+      <artifactId>guvnor-metadata-widget</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.guvnor</groupId>
+      <artifactId>guvnor-commons-security</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -330,8 +383,15 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-modeling-client</compileSourcesArtifact>
 
 
-            <compileSourcesArtifact>org.kie.commons:kie-commons-data</compileSourcesArtifact>
-            <compileSourcesArtifact>org.kie.commons:kie-commons-validation</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.guvnor:guvnor-project-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.guvnor:guvnor-project-editor-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.guvnor:guvnor-common-ui</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.guvnor:guvnor-commons-security</compileSourcesArtifact>  
+            <compileSourcesArtifact>org.kie.guvnor:guvnor-core-services-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.guvnor:guvnor-m2repo-editor-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.guvnor:guvnor-metadata-widget</compileSourcesArtifact>
+            
+            
             <compileSourcesArtifact>org.uberfire:uberfire-security-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-security-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-api</compileSourcesArtifact>

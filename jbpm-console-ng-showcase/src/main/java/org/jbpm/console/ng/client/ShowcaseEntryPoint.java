@@ -81,7 +81,8 @@ public class ShowcaseEntryPoint {
         "Process Runtime", 
         "Users and Groups",
         "Jobs",
-        "Designer"
+        "Designer",
+        "Project Authoring Perspective"
     };
     
     private SuggestBox actionText;

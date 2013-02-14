@@ -10,6 +10,13 @@
   <inherits name="org.uberfire.UberfireWidgetsCore"/>
   <inherits name="org.uberfire.UberfireBackend"/>
     
+   <!-- Infrastructure -->
+  <inherits name="org.kie.guvnor.project.GuvnorProjectAPI"/>
+  <inherits name='org.kie.guvnor.datamodel.GuvnorDataModelAPI'/>
+  <inherits name="org.kie.guvnor.commons.data.GuvnorCommonsData"/>
+  <inherits name="org.kie.guvnor.services.GuvnorCoreServicesAPI"/>
+  <inherits name="org.kie.guvnor.commons.ui.GuvnorCommonsUI"/>
+  <inherits name="org.kie.guvnor.commons.security.GuvnorCommonsSecurity"/>
   <!-- Panels --> 
   <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksClient"/>
   <inherits name="org.jbpm.console.ng.pr.JbpmConsoleNGProcessRuntimeClient"/>
@@ -17,6 +24,11 @@
   <inherits name="org.jbpm.console.ng.es.JbpmConsoleNGExecutorServiceClient"/>
   <inherits name="org.jbpm.console.ng.bh.JbpmConsoleNGBPMHomeClient"/>
   <inherits name="org.jbpm.console.ng.pm.JbpmConsoleNGProcessModelingClient"/>
+  
+  <!-- projects -->
+  <inherits name="org.kie.guvnor.metadata.GuvnorMetadataWidget"/>
+  <inherits name="org.kie.guvnor.m2repo.GuvnorM2RepoEditorClient"/>
+  <inherits name="org.kie.guvnor.projecteditor.GuvnorProjectEditorClient"/>
   
   <!-- designer -->
   <inherits name="org.jbpm.designer.jBPMDesignerClient"/>

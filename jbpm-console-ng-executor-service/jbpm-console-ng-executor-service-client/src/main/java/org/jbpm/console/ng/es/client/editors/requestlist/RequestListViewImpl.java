@@ -53,8 +53,8 @@ import java.util.Set;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.client.i18n.Constants;
-import org.jbpm.console.ng.client.util.ResizableHeader;
+import org.jbpm.console.ng.es.client.i18n.Constants;
+import org.jbpm.console.ng.es.client.util.ResizableHeader;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestSelectionEvent;
 
