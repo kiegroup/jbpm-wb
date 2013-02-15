@@ -16,6 +16,7 @@
 package org.jbpm.console.ng.pr.backend.server;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,8 @@ import org.jbpm.console.ng.pr.model.VariableSummary;
  * @author salaboy
  */
 public class VariableHelper {
+    
+    private static final List<String> excludedVariables = Arrays.asList(new String[] {"processId"});
     
     public static Collection<VariableSummary> adaptCollection(Collection<VariableStateDesc> variables){
         List<VariableSummary> variablesSummary = new ArrayList<VariableSummary>();
@@ -45,6 +48,9 @@ public class VariableHelper {
     public static Collection<VariableSummary> adaptCollection(Collection<VariableStateDesc> variables, Map<String, String> properties, long processInstanceId){
         List<VariableSummary> variablesSummary = new ArrayList<VariableSummary>();
         for(VariableStateDesc v : variables){
+            if (excludedVariables.contains(v.getVariableId())) {
+                continue;
+            }
             String type = properties.remove(v.getVariableId());
             variablesSummary.add(new VariableSummary(v.getVariableId(), v.getVariableInstanceId(), 
                     v.getProcessInstanceId(), v.getOldValue(), v.getNewValue(),  v.getDataTimeStamp().toString(), type));

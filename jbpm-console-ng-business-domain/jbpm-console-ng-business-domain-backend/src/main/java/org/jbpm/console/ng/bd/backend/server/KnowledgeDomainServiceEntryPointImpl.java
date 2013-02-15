@@ -109,7 +109,6 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
 
 
     public Collection<ProcessSummary> getProcesses() {
-        domainService.getAvailableProcesses();
         return ProcessHelper.adaptCollection(dataService.getProcesses());
     }
     

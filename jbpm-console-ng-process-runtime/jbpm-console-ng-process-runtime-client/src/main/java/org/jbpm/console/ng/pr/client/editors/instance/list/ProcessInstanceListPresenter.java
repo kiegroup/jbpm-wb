@@ -200,7 +200,7 @@ public class ProcessInstanceListPresenter {
           view.setAvailableProcesses(processes);
 
         }
-      }).getProcesses();
+      }).getProcessInstances();
 
     }
 

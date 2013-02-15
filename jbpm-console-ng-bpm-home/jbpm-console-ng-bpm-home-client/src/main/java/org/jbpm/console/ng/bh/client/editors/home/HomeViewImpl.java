@@ -110,16 +110,16 @@ public class HomeViewImpl extends Composite
   @Inject
   @DataField
   public IconAnchor workProcessRuntimeAnchor;
-  @Inject
-  @DataField
-  public IconAnchor deployIdentityAnchor;
+//  @Inject
+//  @DataField
+//  public IconAnchor deployIdentityAnchor;
   @Inject
   @DataField
   public IconAnchor monitorBAMAnchor;
   
-  @Inject
-  @DataField
-  public IconAnchor deployJobsAnchor;
+//  @Inject
+//  @DataField
+//  public IconAnchor deployJobsAnchor;
   
   @Inject
   private Event<NotificationEvent> notification;
@@ -202,7 +202,7 @@ public class HomeViewImpl extends Composite
     modelProcessAnchor.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Designer");
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Authoring");
         placeManager.goTo(placeRequestImpl);
       }
     });
@@ -223,21 +223,21 @@ public class HomeViewImpl extends Composite
       }
     });
     
-    deployIdentityAnchor.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Users and Groups");
-        placeManager.goTo(placeRequestImpl);
-      }
-    });
-    
-    deployJobsAnchor.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Requests List");
-        placeManager.goTo(placeRequestImpl);
-      }
-    });
+//    deployIdentityAnchor.addClickHandler(new ClickHandler() {
+//      @Override
+//      public void onClick(ClickEvent event) {
+//        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Users and Groups");
+//        placeManager.goTo(placeRequestImpl);
+//      }
+//    });
+//    
+//    deployJobsAnchor.addClickHandler(new ClickHandler() {
+//      @Override
+//      public void onClick(ClickEvent event) {
+//        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Requests List");
+//        placeManager.goTo(placeRequestImpl);
+//      }
+//    });
     
     monitorBAMAnchor.addClickHandler(new ClickHandler() {
       @Override

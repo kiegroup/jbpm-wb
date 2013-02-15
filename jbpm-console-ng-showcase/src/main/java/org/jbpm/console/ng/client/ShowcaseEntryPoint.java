@@ -78,11 +78,11 @@ public class ShowcaseEntryPoint {
     private IOCBeanManager iocManager;
     private String[] menuItems = new String[]{
         "Tasks",
-        "Process Runtime", 
-        "Users and Groups",
-        "Jobs",
-        "Designer",
-        "Project Authoring Perspective"
+        "Process Definition List",
+        "Process Instance List",
+//        "Users and Groups",
+//        "Jobs",
+        "Authoring"
     };
     
     private SuggestBox actionText;

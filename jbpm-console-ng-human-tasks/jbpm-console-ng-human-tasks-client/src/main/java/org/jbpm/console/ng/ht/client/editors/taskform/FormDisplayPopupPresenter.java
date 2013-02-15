@@ -305,12 +305,13 @@ public class FormDisplayPopupPresenter {
 
         sessionServices.call( new RemoteCallback<Long>() {
             @Override
-            public void callback( Long processId ) {
-                view.displayNotification( "Process Id: " + processId + " started!" );
+            public void callback( Long processInstanceId ) {
+                view.displayNotification( "Process Id: " + processInstanceId + " started!" );
                 processInstanceCreatedEvents.fire( new ProcessInstanceCreated() );
                 close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Definition Details" );
-                placeRequestImpl.addParameter( "processId", params.get( "processId" ).toString() );
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instance Details" );
+                placeRequestImpl.addParameter( "processInstanceId", processInstanceId.toString() );
+                placeRequestImpl.addParameter( "processDefId", params.get( "processId" ).toString() );
                 placeRequestImpl.addParameter( "sessionId", Integer.toString( view.getSessionId() ) );
                 placeManager.goTo( placeRequestImpl );
             }

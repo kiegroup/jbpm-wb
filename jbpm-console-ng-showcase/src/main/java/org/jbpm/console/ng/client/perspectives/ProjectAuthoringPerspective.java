@@ -42,7 +42,7 @@ import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
  * @author salaboy
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Project Authoring Perspective")
+@WorkbenchPerspective(identifier = "Authoring")
 public class ProjectAuthoringPerspective {
 
   private ResourceMenuBuilder menuBuilder;

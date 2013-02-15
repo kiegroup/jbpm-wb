@@ -622,13 +622,15 @@ public class ProcessInstanceListViewImpl extends Composite
     public void setAvailableProcesses(Collection<ProcessInstanceSummary> processes) {
         String value = filterTypeListBox.getValue(filterTypeListBox.getSelectedIndex());
         oracle.clear();
-        for (ProcessInstanceSummary process : processes) {
-            if ("by-process-id".equals(value)) {
-                oracle.add(process.getProcessId());
-            } else if ("by-process-name".equals(value)) {
-                oracle.add(process.getProcessName());
+        if (processes != null && !processes.isEmpty()) {
+            for (ProcessInstanceSummary process : processes) {
+                if ("by-process-id".equals(value)) {
+                    oracle.add(process.getProcessId());
+                } else if ("by-process-name".equals(value)) {
+                    oracle.add(process.getProcessName());
+                }
+                
             }
-            
         }
     }
 
