@@ -1,7 +1,5 @@
 package org.jbpm.console.ng.ht.client.editors.taskcomments;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +27,7 @@ import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.NavLink;
+import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -54,7 +53,8 @@ public class TaskCommentsPopupPresenter {
         Button addCommentButton();
 
         DataGrid<CommentSummary> getDataGrid();
-
+        
+        SimplePager getPager();
     }
 
     @Inject
@@ -79,9 +79,8 @@ public class TaskCommentsPopupPresenter {
 
     private ListDataProvider<CommentSummary> dataProvider = new ListDataProvider<CommentSummary>();
 
-    @OnStart
-    public void onStart(final PlaceRequest place) {
-        this.place = place;
+    public ListDataProvider<CommentSummary> getDataProvider() {
+        return dataProvider;
     }
 
     @WorkbenchPartTitle
@@ -92,6 +91,11 @@ public class TaskCommentsPopupPresenter {
     @WorkbenchPartView
     public UberView<TaskCommentsPopupPresenter> getView() {
         return view;
+    }
+    
+    @OnStart
+    public void onStart(final PlaceRequest place) {
+        this.place = place;
     }
 
     @OnReveal
@@ -129,15 +133,13 @@ public class TaskCommentsPopupPresenter {
         view.getNavBarUL().add(workLink);
         view.getNavBarUL().add(detailsLink);
         view.getNavBarUL().add(commentsLink);
-        refreshTask(taskId);
+        refreshComments(taskId);
+        view.getDataGrid().redraw();
     }
 
-    public void close() {
-        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
-    }
-
-    public void refreshTask(long taskId) {
+    public void refreshComments(long taskId) {
         taskServices.call(new RemoteCallback<TaskSummary>() {
+            
             @Override
             public void callback(TaskSummary details) {
                 view.getTaskIdText().setText(String.valueOf(details.getId()));
@@ -145,21 +147,17 @@ public class TaskCommentsPopupPresenter {
             }
         }).getTaskDetails(taskId);
         taskServices.call(new RemoteCallback<List<CommentSummary>>() {
+            
             @Override
             public void callback(List<CommentSummary> comments) {
-                Collections.sort(comments, new Comparator<CommentSummary>() {
-                    @Override
-                    public int compare(CommentSummary o1, CommentSummary o2) {
-                        return o2.getAddedAt().compareTo(o1.getAddedAt());
-                    }
-                });
                 dataProvider.getList().clear();
                 dataProvider.getList().addAll(comments);
-                dataProvider.refresh();
                 if (comments.size() > 0) {
                     view.getDataGrid().setHeight("350px");
+                    view.getPager().setVisible(true);
                 }
-                
+                dataProvider.refresh();
+                view.getDataGrid().redraw();
             }
         }).getAllCommentsByTaskId(taskId);
 
@@ -167,19 +165,19 @@ public class TaskCommentsPopupPresenter {
 
     public void addTaskComment(final long taskId, String text, Date addedOn) {
         taskServices.call(new RemoteCallback<Long>() {
+            
             @Override
             public void callback(Long response) {
-                refreshTask(taskId);
+                refreshComments(taskId);
             }
         }).addComment(taskId, text, identity.getName(), addedOn);
-    }
-    
-    public ListDataProvider<CommentSummary> getDataProvider() {
-        return dataProvider;
     }
     
     public void addDataDisplay(HasData<CommentSummary> display) {
         dataProvider.addDataDisplay(display);
     }
 
+    public void close() {
+        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
+    }
 }

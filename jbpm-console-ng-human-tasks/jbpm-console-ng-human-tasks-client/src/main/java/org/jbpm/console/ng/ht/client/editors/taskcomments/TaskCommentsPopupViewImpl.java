@@ -1,7 +1,7 @@
 package org.jbpm.console.ng.ht.client.editors.taskcomments;
 
+import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -10,20 +10,17 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.ht.model.CommentSummary;
-import org.jbpm.console.ng.ht.model.TaskSummary;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 
@@ -65,6 +62,8 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
     @DataField
     public FlowPanel listContainer;
 
+    private ListHandler<CommentSummary> sortHandler;
+
     @Override
     public Label getTaskIdText() {
         return taskIdText;
@@ -96,23 +95,30 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
     }
 
     @Override
+    public SimplePager getPager() {
+        return pager;
+    }
+
+    @Override
     public void init(TaskCommentsPopupPresenter presenter) {
         this.presenter = presenter;
         listContainer.add(commentsListGrid);
         listContainer.add(pager);
         commentsListGrid.setHeight("100px");
         commentsListGrid.setEmptyTableWidget(new Label("No comments for this task."));
-        // sortHandler = new ListHandler<CommentSummary>(presenter.getDataProvider().getList());
-        // commentsListGrid.addColumnSortHandler(sortHandler);
+        // Attach a column sort handler to the ListDataProvider to sort the list.
+        sortHandler = new ListHandler<CommentSummary>(presenter.getDataProvider().getList());
+        commentsListGrid.addColumnSortHandler(sortHandler);
         initTableColumns();
         presenter.addDataDisplay(commentsListGrid);
         // Create a Pager to control the table.
+        pager.setVisible(false);
         pager.setDisplay(commentsListGrid);
         pager.setPageSize(6);
     }
 
     @EventHandler("addCommentButton")
-    public void updateTaskButton(ClickEvent e) {
+    public void addCommentButton(ClickEvent e) {
         presenter.addTaskComment(Long.parseLong(taskIdText.getText()), newTaskCommentTextArea.getText(), new Date());
     }
 
@@ -121,12 +127,33 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
         Column<CommentSummary, String> addedByColumn = new Column<CommentSummary, String>(new TextCell()) {
             @Override
             public String getValue(CommentSummary c) {
-                return new HTML(c.getAddedBy() + " on " + c.getAddedAt()).getHTML();
+                // for some reason the username comes in format [User:'<name>'], so parse just the <name>
+                int first = c.getAddedBy().indexOf('\'');
+                int last = c.getAddedBy().lastIndexOf('\'');
+                return c.getAddedBy().substring(first + 1, last);
             }
         };
         addedByColumn.setSortable(false);
-        commentsListGrid.addColumn(addedByColumn);
-        
+        commentsListGrid.addColumn(addedByColumn, "Added by");
+        commentsListGrid.setColumnWidth(addedByColumn, "100px");
+
+        // date
+        Column<CommentSummary, String> addedAtColumn = new Column<CommentSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(CommentSummary c) {
+                return c.getAddedAt().toString();
+            }
+        };
+        addedAtColumn.setSortable(true);
+        addedAtColumn.setDefaultSortAscending(true);
+        commentsListGrid.addColumn(addedAtColumn, "At");
+        sortHandler.setComparator(addedAtColumn, new Comparator<CommentSummary>() {
+            @Override
+            public int compare(CommentSummary o1, CommentSummary o2) {
+                return o1.getAddedAt().compareTo(o2.getAddedAt());
+            }
+        });
+
         // comment text
         Column<CommentSummary, String> commentTextColumn = new Column<CommentSummary, String>(new TextCell()) {
             @Override
@@ -135,6 +162,6 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
             }
         };
         addedByColumn.setSortable(false);
-        commentsListGrid.addColumn(commentTextColumn);
+        commentsListGrid.addColumn(commentTextColumn, "Comment");
     }
 }
