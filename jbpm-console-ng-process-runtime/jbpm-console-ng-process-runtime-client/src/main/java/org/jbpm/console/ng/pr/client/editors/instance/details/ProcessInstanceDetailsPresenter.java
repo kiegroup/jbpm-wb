@@ -78,6 +78,8 @@ public class ProcessInstanceDetailsPresenter {
         void setProcessAssetPath(Path processAssetPath);
         
         void setCurrentActiveNodes(List<NodeInstanceSummary> activeNodes);
+        
+        void setCurrentCompletedNodes(List<NodeInstanceSummary> completedNodes);
     }
 
     @Inject
@@ -166,6 +168,13 @@ public class ProcessInstanceDetailsPresenter {
                view.getStateText().setText(statusStr);
            }
        }).getProcessInstanceById( Long.parseLong(processId));
+        
+        domainServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
+            @Override
+            public void callback( List<NodeInstanceSummary> details ) {
+                view.setCurrentCompletedNodes(details);
+            }
+        } ).getProcessInstanceCompletedNodes( Long.parseLong( processId ) );
        
        loadVariables(processId, processDefId);
 

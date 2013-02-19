@@ -76,6 +76,8 @@ public interface KnowledgeDomainServiceEntryPoint {
     Collection<NodeInstanceSummary> getProcessInstanceFullHistory(long processInstanceId);
 
     Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(long processInstanceId);
+    
+    Collection<NodeInstanceSummary> getProcessInstanceCompletedNodes(long processInstanceId);
 
     ProcessSummary getProcessDesc(String processId);
 

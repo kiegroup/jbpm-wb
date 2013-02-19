@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.security.Identity;
@@ -73,7 +74,7 @@ public class TaskBox extends Composite {
         this.taskName = taskName;
         taskNameLabel.setText(taskName);
         this.actualOwner = actualOwner;
-        this.potentialOwners = potentialOwners;
+        this.potentialOwners = potentialOwners==null?Collections.EMPTY_LIST:potentialOwners;
         this.status = status;
         this.presenter = presenter;
         this.identity = identity;
@@ -91,7 +92,7 @@ public class TaskBox extends Composite {
         List<FocusPanel> options = new ArrayList<FocusPanel>();
         FlowPanel personalOrGroupTask = new FlowPanel();
 
-        if ("".equals(actualOwner) && !potentialOwners.isEmpty() && status.equals("Ready")) {
+        if ("".equals(actualOwner) && status.equals("Ready")) {
             personalOrGroupTask.setStyleName("group-task");
             personalOrGroupTask.add(new HTML("Group Task"));
             FlowPanel panel = new FlowPanel();

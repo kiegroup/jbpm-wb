@@ -78,8 +78,8 @@ public class ShowcaseEntryPoint {
     private IOCBeanManager iocManager;
     private String[] menuItems = new String[]{
         "Tasks",
-        "Process Definition List",
-        "Process Instance List",
+        "Process Definitions",
+        "Process Instances",
 //        "Users and Groups",
 //        "Jobs",
         "Authoring"

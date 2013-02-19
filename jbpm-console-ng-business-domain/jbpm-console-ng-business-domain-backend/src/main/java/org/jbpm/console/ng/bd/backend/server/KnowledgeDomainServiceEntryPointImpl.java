@@ -305,5 +305,12 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         
     }
 
+    @Override
+    public Collection<NodeInstanceSummary> getProcessInstanceCompletedNodes(long processInstanceId) {
+        ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceCompletedNodes(piDesc.getSessionId(), processInstanceId));
+    
+    }
+
     
 }

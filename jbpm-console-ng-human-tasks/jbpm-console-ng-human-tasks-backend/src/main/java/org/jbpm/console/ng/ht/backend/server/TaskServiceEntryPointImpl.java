@@ -154,6 +154,15 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     public Map<String, List<TaskSummary>> getTasksAssignedByGroupsByDay(String userId, List<String> groupIds, String language) {
       Date currentDay = new Date();
       Map<String, List<TaskSummary>> tasksByDay = new LinkedHashMap<String, List<TaskSummary>>();
+      
+      List<TaskSummary> todayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroupsByExpirationDate(groupIds, language, currentDay ));
+      // add all tasks without expiration date to today's tasks
+      todayTasks.addAll(TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedAsPotentialOwner(userId, groupIds, language)));
+      
+      SimpleDateFormat todayFormat = new SimpleDateFormat("EEEE");
+      tasksByDay.put(todayFormat.format(currentDay), todayTasks);
+      currentDay = new Date(currentDay.getTime() + (1000 * 60 * 60 * 24));
+      
       for(int i= 0; i < 5; i ++){
         List<TaskSummary> dayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroupsByExpirationDate(groupIds, language, currentDay ));
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
@@ -168,12 +177,18 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     public Map<String, List<TaskSummary>> getTasksOwnedByDay(String userId, List<String> groupIds, String language) {
       Date currentDay = new Date();
       Map<String, List<TaskSummary>> tasksByDay = new LinkedHashMap<String, List<TaskSummary>>();
-      List<Status> statuses = new ArrayList<Status>();
-      statuses.add(Status.Ready);
+      List<Status> statuses = new ArrayList<Status>();      
       statuses.add(Status.InProgress);
       statuses.add(Status.Reserved);
       statuses.add(Status.Created);
-      for(int i= 0; i < 5; i ++){
+      
+      List<TaskSummary> todayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByExpirationDateOptional(userId, statuses, currentDay ));
+      
+      SimpleDateFormat todayFormat = new SimpleDateFormat("EEEE");
+      tasksByDay.put(todayFormat.format(currentDay), todayTasks);
+      currentDay = new Date(currentDay.getTime() + (1000 * 60 * 60 * 24));
+      
+      for(int i= 1; i < 5; i ++){
         List<TaskSummary> dayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByExpirationDate(userId, statuses, currentDay ));
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
         tasksByDay.put(dayFormat.format(currentDay), dayTasks);

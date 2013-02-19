@@ -218,7 +218,7 @@ public class HomeViewImpl extends Composite
     workProcessRuntimeAnchor.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Runtime");
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Definitions");
         placeManager.goTo(placeRequestImpl);
       }
     });

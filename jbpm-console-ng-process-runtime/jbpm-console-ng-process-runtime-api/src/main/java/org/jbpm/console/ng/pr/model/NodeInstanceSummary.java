@@ -31,8 +31,11 @@ public class NodeInstanceSummary implements Serializable {
     private String nodeUniqueName;
     private String type;
     private String timestamp;
+    private String connection;
+    private boolean completed;
     
-    public NodeInstanceSummary(long id, long processId, String nodeName, String nodeUniqueName, String type, String timestamp) {
+    public NodeInstanceSummary(long id, long processId, String nodeName, String nodeUniqueName, 
+            String type, String timestamp, String connection, boolean completed) {
         super();
         this.id = id;
         this.processId = processId;
@@ -40,7 +43,8 @@ public class NodeInstanceSummary implements Serializable {
         this.nodeUniqueName = nodeUniqueName;
         this.type = type;
         this.timestamp = timestamp;
-
+        this.connection = connection;
+        this.completed = completed;
     }
 
     public NodeInstanceSummary() {
@@ -88,6 +92,22 @@ public class NodeInstanceSummary implements Serializable {
 
     public String getNodeUniqueName() {
         return nodeUniqueName;
+    }
+
+    public String getConnection() {
+        return connection;
+    }
+
+    public void setConnection(String incomingConnection) {
+        this.connection = incomingConnection;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
     
 }

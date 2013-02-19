@@ -15,12 +15,6 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.details;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.ListBox;
-import com.github.gwtbootstrap.client.ui.SimplePager;
-import com.github.gwtbootstrap.client.ui.TextArea;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,13 +24,15 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ShowcaseImages;
 import org.jbpm.console.ng.pr.client.util.ResizableHeader;
+import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.pr.model.VariableSummary;
 import org.kie.runtime.process.ProcessInstance;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.mvp.PlaceManager;
@@ -46,6 +42,12 @@ import org.uberfire.security.Identity;
 import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.ListBox;
+import com.github.gwtbootstrap.client.ui.SimplePager;
+import com.github.gwtbootstrap.client.ui.TextArea;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
@@ -62,10 +64,6 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-
-import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
-import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
-import org.jbpm.console.ng.pr.model.VariableSummary;
 
 @Dependent
 @Templated(value = "ProcessInstanceDetailsViewImpl.html")
@@ -131,6 +129,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     private ProcessInstanceSummary processInstance;
     private Path processAssetPath;
     private List<NodeInstanceSummary> activeNodes;
+    private List<NodeInstanceSummary> completedNodes;
     
     @Override
     public void init(ProcessInstanceDetailsPresenter presenter) {
@@ -178,8 +177,24 @@ public class ProcessInstanceDetailsViewImpl extends Composite
             nodeParam.append(activeNode.getNodeUniqueName() + ",");
         }
         nodeParam.deleteCharAt(nodeParam.length()-1);
+        
+        StringBuffer completedNodeParam = new StringBuffer();
+        for (NodeInstanceSummary completedNode : completedNodes) {
+            if (completedNode.isCompleted()) {
+                // insert outgoing sequence flow and node as this is for on entry event                 
+                completedNodeParam.append(completedNode.getNodeUniqueName() + ",");
+                completedNodeParam.append(completedNode.getConnection() + ",");
+            } else if (completedNode.getConnection() != null) {
+                // insert only incoming sequence flow as node id was already inserted
+                completedNodeParam.append(completedNode.getConnection() + ",");
+            }
+                        
+        }
+        completedNodeParam.deleteCharAt(completedNodeParam.length()-1);
+        
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Designer");
         placeRequestImpl.addParameter("activeNodes", nodeParam.toString());
+        placeRequestImpl.addParameter("completedNodes", completedNodeParam.toString());
         placeRequestImpl.addParameter("readOnly", "true");
         
         placeManager.goTo(processAssetPath, placeRequestImpl);
@@ -434,6 +449,10 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     public void setCurrentActiveNodes(List<NodeInstanceSummary> activeNodes) {
         this.activeNodes = activeNodes;
         
+    }
+
+    public void setCurrentCompletedNodes(List<NodeInstanceSummary> completedNodes) {
+        this.completedNodes = completedNodes;
     }
     
 }
