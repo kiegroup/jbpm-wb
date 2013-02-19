@@ -1,4 +1,4 @@
-	package org.jbpm.console.ng.ht.client.editors.taskgrid;
+package org.jbpm.console.ng.ht.client.editors.taskgrid;
 
 
 import com.github.gwtbootstrap.client.ui.Button;

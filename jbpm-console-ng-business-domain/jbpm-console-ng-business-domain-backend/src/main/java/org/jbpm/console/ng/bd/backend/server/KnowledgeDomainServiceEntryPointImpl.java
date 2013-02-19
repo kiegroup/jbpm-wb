@@ -52,6 +52,7 @@ import org.jbpm.shared.services.api.FileService;
 import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.kie.commons.java.nio.file.Path;
+import org.kie.runtime.KieSession;
 import org.kie.runtime.StatefulKnowledgeSession;
 import org.kie.runtime.process.NodeInstance;
 import org.kie.runtime.process.ProcessInstance;
@@ -204,7 +205,7 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     @Override
     public Collection<String> getAvailableSignals(String businessKey, long processInstanceId) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
-        StatefulKnowledgeSession ksession = domainService.getSessionById(piDesc.getSessionId());
+        KieSession ksession = domainService.getSessionById(piDesc.getSessionId());
         ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
         Collection<String> activeSignals = new ArrayList<String>();
 
@@ -221,7 +222,7 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
     @Override
     public void setProcessVariable(long processInstanceId, String variableId, Object value) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
-        StatefulKnowledgeSession ksession = domainService.getSessionById(piDesc.getSessionId());
+        KieSession ksession = domainService.getSessionById(piDesc.getSessionId());
         ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
 
         ((WorkflowProcessInstance) processInstance).setVariable(variableId, value);

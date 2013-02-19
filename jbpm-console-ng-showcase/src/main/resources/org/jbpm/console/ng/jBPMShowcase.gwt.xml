@@ -32,6 +32,7 @@
   <inherits name="org.kie.guvnor.projecteditor.GuvnorProjectEditorClient"/>
   <inherits name="org.kie.guvnor.projectconfigscreen.GuvnorProjectConfigScreenClient"/>
   <inherits name="org.kie.guvnor.configresource.GuvnorConfigResourceWidget"/>
+  <inherits name="org.kie.guvnor.explorer.GuvnorExplorerClient"/>
   
   <!-- designer -->
   <inherits name="org.jbpm.designer.jBPMDesignerClient"/>

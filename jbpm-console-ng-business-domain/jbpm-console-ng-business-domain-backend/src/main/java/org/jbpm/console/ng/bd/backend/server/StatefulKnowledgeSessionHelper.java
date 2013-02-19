@@ -17,6 +17,7 @@ package org.jbpm.console.ng.bd.backend.server;
 
 
 import org.jbpm.console.ng.bd.model.StatefulKnowledgeSessionSummary;
+import org.kie.runtime.KieSession;
 import org.kie.runtime.StatefulKnowledgeSession;
 
 /**
@@ -24,7 +25,7 @@ import org.kie.runtime.StatefulKnowledgeSession;
  * @author salaboy
  */
 public class StatefulKnowledgeSessionHelper {
-    public static StatefulKnowledgeSessionSummary adapt(StatefulKnowledgeSession ksession){
+    public static StatefulKnowledgeSessionSummary adapt(KieSession ksession){
         StatefulKnowledgeSessionSummary ksessionSummary 
                                         = new StatefulKnowledgeSessionSummary(ksession.getId());
 

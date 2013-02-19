@@ -28,7 +28,7 @@ import org.droolsjbpm.services.impl.model.ProcessInstanceDesc;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.bd.service.StatefulKnowledgeSessionEntryPoint;
-import org.kie.runtime.StatefulKnowledgeSession;
+import org.kie.runtime.KieSession;
 import org.kie.runtime.process.ProcessInstance;
 
 /**
@@ -48,13 +48,13 @@ public class StatefulKnowledgeSessionEntryPointImpl implements StatefulKnowledge
     public long startProcess(int sessionId, String processId) {
         
                 
-        StatefulKnowledgeSession ksession = domainService.getSessionsByName(domainService.getProcessInSessionByName(processId)).get(sessionId);
+        KieSession ksession = domainService.getSessionsByName(domainService.getProcessInSessionByName(processId)).get(sessionId);
         ProcessInstance pi = ksession.startProcess(processId);
         return pi.getId();
     }
     
     public long startProcess(int sessionId, String processId, Map<String, String> params) {
-        StatefulKnowledgeSession ksession = domainService.getSessionsByName(domainService.getProcessInSessionByName(processId)).get(sessionId);
+        KieSession ksession = domainService.getSessionsByName(domainService.getProcessInSessionByName(processId)).get(sessionId);
         ProcessInstance pi = ksession.startProcess(processId, new HashMap<String, Object>(params));
         return pi.getId();
     }
@@ -73,17 +73,17 @@ public class StatefulKnowledgeSessionEntryPointImpl implements StatefulKnowledge
         if (processInstanceId == -1) {
             Collection<String> sessionNames = domainService.getSessionsNames();
             for (String sessionName : sessionNames) {
-                Map<Integer, StatefulKnowledgeSession> sessions = domainService.getSessionsByName(sessionName);
-                Iterator<StatefulKnowledgeSession> sessionsIter = sessions.values().iterator();
+                Map<Integer, KieSession> sessions = domainService.getSessionsByName(sessionName);
+                Iterator<KieSession> sessionsIter = sessions.values().iterator();
                 while (sessionsIter.hasNext()) {
-                    StatefulKnowledgeSession ksession = (StatefulKnowledgeSession) sessionsIter.next();
+                    KieSession ksession = (KieSession) sessionsIter.next();
                     ksession.signalEvent(signalName, event);
                 }
 
             }
         } else {
             ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
-            StatefulKnowledgeSession ksession = domainService.getSessionById(piDesc.getSessionId());
+            KieSession ksession = domainService.getSessionById(piDesc.getSessionId());
             ksession.signalEvent(signalName, event, processInstanceId);
         }
 

@@ -381,6 +381,14 @@
       <groupId>org.kie.guvnor</groupId>
       <artifactId>guvnor-commons-builder</artifactId>
     </dependency>
+     <dependency>
+      <groupId>org.kie.guvnor</groupId>
+      <artifactId>guvnor-explorer-backend</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.guvnor</groupId>
+      <artifactId>guvnor-explorer-client</artifactId>
+    </dependency>
     
   </dependencies>
 
@@ -432,6 +440,7 @@
             <compileSourcesArtifact>org.kie.guvnor:guvnor-project-config-editor-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-m2repo-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-m2repo-editor-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.guvnor:guvnor-explorer-client</compileSourcesArtifact>
             
             <compileSourcesArtifact>org.uberfire:uberfire-security-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-security-client</compileSourcesArtifact>
@@ -450,6 +459,7 @@
           <runTarget>org.jbpm.console.ng.jBPMShowcase/jBPM.html</runTarget>
           <extraJvmArgs>-Xmx1024m -XX:MaxPermSize=256m</extraJvmArgs>
           <soyc>false</soyc>
+          
           <server>org.jboss.errai.cdi.server.gwt.JettyLauncher</server>
           <!-- drools-compiler has dependency on org.eclipse.jdt.core.compiler:ecj:jar:3.5.1:compile, 
             see http://code.google.com/p/google-web-toolkit/issues/detail?id=4479 -->

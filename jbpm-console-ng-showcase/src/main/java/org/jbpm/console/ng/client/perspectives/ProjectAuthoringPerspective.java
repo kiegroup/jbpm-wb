@@ -77,7 +77,7 @@ public class ProjectAuthoringPerspective {
     final PanelDefinition west = new PanelDefinitionImpl();
     west.setWidth(300);
     west.setMinWidth(200);
-    west.addPart(new PartDefinitionImpl(new DefaultPlaceRequest("FileExplorer")));
+    west.addPart(new PartDefinitionImpl(new DefaultPlaceRequest("org.kie.guvnor.explorer")));
     p.getRoot().insertChild(Position.WEST, west);
     p.setTransient(true);
     return p;
