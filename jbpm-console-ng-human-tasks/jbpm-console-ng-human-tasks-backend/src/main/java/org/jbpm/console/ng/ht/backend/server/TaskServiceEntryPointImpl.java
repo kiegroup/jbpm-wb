@@ -156,8 +156,6 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
       Map<String, List<TaskSummary>> tasksByDay = new LinkedHashMap<String, List<TaskSummary>>();
       
       List<TaskSummary> todayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroupsByExpirationDate(groupIds, language, currentDay ));
-      // add all tasks without expiration date to today's tasks
-      todayTasks.addAll(TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedAsPotentialOwner(userId, groupIds, language)));
       
       SimpleDateFormat todayFormat = new SimpleDateFormat("EEEE");
       tasksByDay.put(todayFormat.format(currentDay), todayTasks);
