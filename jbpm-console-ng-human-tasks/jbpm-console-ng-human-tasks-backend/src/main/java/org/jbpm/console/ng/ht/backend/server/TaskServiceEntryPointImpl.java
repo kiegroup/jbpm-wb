@@ -155,13 +155,13 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
       Date currentDay = new Date();
       Map<String, List<TaskSummary>> tasksByDay = new LinkedHashMap<String, List<TaskSummary>>();
       
-      List<TaskSummary> todayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroupsByExpirationDate(groupIds, language, currentDay ));
+      List<TaskSummary> todayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroupsByExpirationDateOptional(groupIds, language, currentDay ));
       
       SimpleDateFormat todayFormat = new SimpleDateFormat("EEEE");
       tasksByDay.put(todayFormat.format(currentDay), todayTasks);
       currentDay = new Date(currentDay.getTime() + (1000 * 60 * 60 * 24));
       
-      for(int i= 0; i < 5; i ++){
+      for(int i= 1; i < 5; i ++){
         List<TaskSummary> dayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroupsByExpirationDate(groupIds, language, currentDay ));
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
         tasksByDay.put(dayFormat.format(currentDay), dayTasks);
