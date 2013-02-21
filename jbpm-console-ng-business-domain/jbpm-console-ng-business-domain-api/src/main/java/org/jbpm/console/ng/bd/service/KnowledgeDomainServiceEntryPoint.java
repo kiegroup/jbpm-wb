@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.bd.model.RuleNotificationSummary;
-import org.jbpm.console.ng.bd.model.StatefulKnowledgeSessionSummary;
+import org.jbpm.console.ng.bd.model.KieSessionSummary;
 import org.jbpm.console.ng.ht.model.TaskDefSummary;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
@@ -36,7 +36,9 @@ import org.kie.commons.java.nio.file.Path;
 @Remote
 public interface KnowledgeDomainServiceEntryPoint {
 
-    StatefulKnowledgeSessionSummary getSessionSummaryByName(int kSessionId);
+    KieSessionSummary getSessionSummaryByName(int kSessionId);
+    
+    int newKieSession(String groupId, String artifactId, String version, String kbaseName, String sessionName);
 
     Collection<String> getSessionsNames();
 

@@ -23,7 +23,7 @@ import org.jboss.errai.bus.server.annotations.Remote;
  * @author salaboy
  */
 @Remote
-public interface StatefulKnowledgeSessionEntryPoint {
+public interface KieSessionEntryPoint {
     public long startProcess(int sessionId, String processId);
     public long startProcess(int sessionId, String processId, Map<String, String> params);
     public void abortProcessInstance(long processInstanceId);

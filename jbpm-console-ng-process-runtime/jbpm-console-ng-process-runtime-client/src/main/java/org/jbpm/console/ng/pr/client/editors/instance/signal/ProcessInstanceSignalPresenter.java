@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
-import org.jbpm.console.ng.bd.service.StatefulKnowledgeSessionEntryPoint;
+import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -54,7 +54,7 @@ public class ProcessInstanceSignalPresenter {
     private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
     
     @Inject 
-    private Caller<StatefulKnowledgeSessionEntryPoint> sessionServices;
+    private Caller<KieSessionEntryPoint> sessionServices;
     
     @PostConstruct
     public void init() {

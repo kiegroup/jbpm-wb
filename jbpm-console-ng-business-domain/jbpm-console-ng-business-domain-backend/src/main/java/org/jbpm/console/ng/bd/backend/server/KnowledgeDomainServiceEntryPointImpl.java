@@ -33,7 +33,7 @@ import org.droolsjbpm.services.impl.model.ProcessInstanceDesc;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.bd.model.RuleNotificationSummary;
-import org.jbpm.console.ng.bd.model.StatefulKnowledgeSessionSummary;
+import org.jbpm.console.ng.bd.model.KieSessionSummary;
 import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.ht.backend.server.TaskDefHelper;
 import org.jbpm.console.ng.ht.model.TaskDefSummary;
@@ -53,7 +53,6 @@ import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.kie.commons.java.nio.file.Path;
 import org.kie.runtime.KieSession;
-import org.kie.runtime.StatefulKnowledgeSession;
 import org.kie.runtime.process.NodeInstance;
 import org.kie.runtime.process.ProcessInstance;
 import org.uberfire.backend.vfs.ActiveFileSystems;
@@ -182,7 +181,9 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         return bpmn2Service.getTaskOutputMappings(processId, taskName);
     }
 
-   
+    public int newKieSession(String groupId, String artifactId, String version, String kbaseName, String sessionName) {
+      return domainService.newKieSession(groupId, artifactId, version, kbaseName, sessionName);
+    }
 
     @Override
     public Collection<ProcessInstanceSummary> getProcessInstances(List<Integer> states, String filterText,
@@ -278,8 +279,8 @@ public class KnowledgeDomainServiceEntryPointImpl implements KnowledgeDomainServ
         domainService.createDomain();
     }
 
-    public StatefulKnowledgeSessionSummary getSessionSummaryByName(int sessionId) {
-        return StatefulKnowledgeSessionHelper.adapt(domainService.getSessionById(sessionId));
+    public KieSessionSummary getSessionSummaryByName(int sessionId) {
+        return KieSessionHelper.adapt(domainService.getSessionById(sessionId));
     }
 
     public void insertNotification(int sessionId, String notification) {

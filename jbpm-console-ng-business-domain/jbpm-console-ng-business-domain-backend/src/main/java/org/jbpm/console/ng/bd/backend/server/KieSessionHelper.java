@@ -16,18 +16,17 @@
 package org.jbpm.console.ng.bd.backend.server;
 
 
-import org.jbpm.console.ng.bd.model.StatefulKnowledgeSessionSummary;
+import org.jbpm.console.ng.bd.model.KieSessionSummary;
 import org.kie.runtime.KieSession;
-import org.kie.runtime.StatefulKnowledgeSession;
 
 /**
  *
  * @author salaboy
  */
-public class StatefulKnowledgeSessionHelper {
-    public static StatefulKnowledgeSessionSummary adapt(KieSession ksession){
-        StatefulKnowledgeSessionSummary ksessionSummary 
-                                        = new StatefulKnowledgeSessionSummary(ksession.getId());
+public class KieSessionHelper {
+    public static KieSessionSummary adapt(KieSession ksession){
+        KieSessionSummary ksessionSummary 
+                                        = new KieSessionSummary(ksession.getId());
 
         return ksessionSummary;
     }

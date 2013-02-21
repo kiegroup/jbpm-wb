@@ -34,7 +34,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
-import org.jbpm.console.ng.bd.service.StatefulKnowledgeSessionEntryPoint;
+import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.fb.events.FormRenderedEvent;
 import org.jbpm.console.ng.ht.service.FormServiceEntryPoint;
@@ -64,7 +64,7 @@ public class FormDisplayPopupPresenter {
     @Inject
     private Caller<KnowledgeDomainServiceEntryPoint> domainServices;
     @Inject
-    Caller<StatefulKnowledgeSessionEntryPoint> sessionServices;
+    Caller<KieSessionEntryPoint> sessionServices;
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
     @Inject

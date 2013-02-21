@@ -34,7 +34,7 @@ import javax.enterprise.event.Observes;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
-import org.jbpm.console.ng.bd.service.StatefulKnowledgeSessionEntryPoint;
+import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
 import org.kie.runtime.process.ProcessInstance;
@@ -83,7 +83,7 @@ public class ProcessInstanceListPresenter {
   private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
   
   @Inject 
-  private Caller<StatefulKnowledgeSessionEntryPoint> sessionServices;
+  private Caller<KieSessionEntryPoint> sessionServices;
   
   private ListDataProvider<ProcessInstanceSummary> dataProvider = new ListDataProvider<ProcessInstanceSummary>();
 

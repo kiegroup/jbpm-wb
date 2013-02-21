@@ -23,14 +23,14 @@ import org.jboss.errai.common.client.api.annotations.Portable;
  * @author salaboy
  */
 @Portable
-public class StatefulKnowledgeSessionSummary implements Serializable{
+public class KieSessionSummary implements Serializable{
     private long sessionId;
 
-    public StatefulKnowledgeSessionSummary(long sessionId) {
+    public KieSessionSummary(long sessionId) {
         this.sessionId = sessionId;
     }
 
-    public StatefulKnowledgeSessionSummary() {
+    public KieSessionSummary() {
     }
 
     public long getSessionId() {

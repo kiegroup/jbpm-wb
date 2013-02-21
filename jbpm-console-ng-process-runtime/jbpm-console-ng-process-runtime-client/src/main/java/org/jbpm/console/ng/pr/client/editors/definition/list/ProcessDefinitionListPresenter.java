@@ -32,7 +32,7 @@ import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
-import org.jbpm.console.ng.bd.service.StatefulKnowledgeSessionEntryPoint;
+import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -59,7 +59,7 @@ public class ProcessDefinitionListPresenter {
     @Inject
     private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
     @Inject
-    Caller<StatefulKnowledgeSessionEntryPoint> ksessionServices;
+    Caller<KieSessionEntryPoint> ksessionServices;
     @Inject
     Event<ProcessInstanceCreated> processInstanceCreatedEvents;
     private ListDataProvider<ProcessSummary> dataProvider = new ListDataProvider<ProcessSummary>();
