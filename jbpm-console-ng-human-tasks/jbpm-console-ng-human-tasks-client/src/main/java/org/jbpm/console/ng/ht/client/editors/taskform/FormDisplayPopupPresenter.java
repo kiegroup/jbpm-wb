@@ -138,9 +138,22 @@ public class FormDisplayPopupPresenter {
                 placeManager.goTo( placeRequestImpl );
             }
         } );
+        
+        NavLink commentsLink = new NavLink("Comments");
+        commentsLink.addClickHandler(new ClickHandler(){
+
+            @Override
+            public void onClick(ClickEvent event) {
+              close();
+              PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Comments Popup");
+              placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
+              placeManager.goTo(placeRequestImpl);
+            }
+        });
 
         view.getNavBarUL().add( workLink );
         view.getNavBarUL().add( detailsLink );
+        view.getNavBarUL().add( commentsLink );
 
         formServices.call( new RemoteCallback<String>() {
             @Override

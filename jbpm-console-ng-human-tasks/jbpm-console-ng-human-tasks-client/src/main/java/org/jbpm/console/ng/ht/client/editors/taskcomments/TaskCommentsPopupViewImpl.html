@@ -1,0 +1,34 @@
+<div>
+  <h4 id="myModalLabel">
+    <div class="row-fluid">
+      <label data-field="taskIdText" class="inline span1"></label><label
+        data-field="taskNameText" class="inline span9"></label>
+    </div>
+  </h4>
+  <!-- MODAL NAV -->
+  <div class="navbar navbar-inverse">
+    <div class="navbar-inner">
+      <ul class="nav" data-field="navBarUL">
+      </ul>
+    </div>
+  </div>
+  <div class="accordion">
+    <!-- GROUP -->
+    <div class="accordion-group">
+      <div class="accordion-inner">
+        <form>
+          <textarea data-field="newTaskCommentTextArea"
+            id="newTaskCommentTextArea"></textarea></br>
+          <button class="btn" data-field="addCommentButton"
+            id="addCommentButton">Add Comment</button>
+        </form>
+      </div>
+        <div data-field="listContainer">
+          <table id="commentsListGrid" data-field="commentsListGrid"
+            class="table table-bordered table-striped table-hover">
+          </table>
+          <div id="pager" class="pagination" data-field="pager"></div>
+        </div>
+    </div>
+  </div>
+</div>

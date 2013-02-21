@@ -234,7 +234,6 @@ public class TaskDetailsPopupPresenter {
         
         NavLink workLink = new NavLink("Work");
         
-        
         workLink.addClickHandler(new ClickHandler(){
 
             @Override
@@ -245,9 +244,21 @@ public class TaskDetailsPopupPresenter {
               placeManager.goTo(placeRequestImpl);
             }
         });
+        NavLink commentsLink = new NavLink("Comments");
+        commentsLink.addClickHandler(new ClickHandler(){
+
+            @Override
+            public void onClick(ClickEvent event) {
+              close();
+              PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Comments Popup");
+              placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
+              placeManager.goTo(placeRequestImpl);
+            }
+        });
         
         view.getNavBarUL().add(workLink);
         view.getNavBarUL().add(detailsLink);
+        view.getNavBarUL().add(commentsLink);
         refreshTask(Long.parseLong(view.getTaskIdText().getText()));
     }
 
