@@ -17,10 +17,9 @@ package org.jbpm.console.ng.client.perspectives;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.New;
 import javax.inject.Inject;
+
 import org.kie.guvnor.commons.ui.client.handlers.NewResourcesMenu;
-import org.kie.guvnor.commons.ui.client.menu.ResourceMenuBuilder;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -32,72 +31,67 @@ import org.uberfire.client.workbench.model.PerspectiveDefinition;
 import org.uberfire.client.workbench.model.impl.PanelDefinitionImpl;
 import org.uberfire.client.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.client.workbench.model.impl.PerspectiveDefinitionImpl;
-import org.uberfire.client.workbench.widgets.menu.MenuBar;
-import org.uberfire.client.workbench.widgets.menu.impl.DefaultMenuBar;
-import org.uberfire.client.workbench.widgets.menu.impl.DefaultMenuItemCommand;
+import org.uberfire.client.workbench.widgets.menu.MenuFactory;
+import org.uberfire.client.workbench.widgets.menu.Menus;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 /**
- *
  * @author salaboy
  */
 @ApplicationScoped
 @WorkbenchPerspective(identifier = "Authoring")
 public class ProjectAuthoringPerspective {
 
-  private ResourceMenuBuilder menuBuilder;
-  @Inject
-  private PlaceManager placeManager;
-  private PerspectiveDefinition perspective;
-  private MenuBar menuBar;
-  
-  @Inject
-  private NewResourcesMenu newResourcesMenu;
+    @Inject
+    private PlaceManager          placeManager;
+    private PerspectiveDefinition perspective;
+    private Menus                 menus;
 
-  public ProjectAuthoringPerspective() {
-  }
+    @Inject
+    private NewResourcesMenu newResourcesMenu;
 
-  @PostConstruct
-  public void init() {
+    public ProjectAuthoringPerspective() {
+    }
 
-    buildMenuBar();
+    @PostConstruct
+    public void init() {
 
-  }
+        buildMenuBar();
 
-  @Inject
-  public ProjectAuthoringPerspective(@New ResourceMenuBuilder menuBuilder) {
-    this.menuBuilder = menuBuilder;
-  }
+    }
 
-  @Perspective
-  public PerspectiveDefinition getPerspective() {
-    final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
-    p.setName("Project Authoring Perspective");
+    @Perspective
+    public PerspectiveDefinition getPerspective() {
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
+        p.setName( "Project Authoring Perspective" );
 
-    final PanelDefinition west = new PanelDefinitionImpl();
-    west.setWidth(300);
-    west.setMinWidth(200);
-    west.addPart(new PartDefinitionImpl(new DefaultPlaceRequest("org.kie.guvnor.explorer")));
-    p.getRoot().insertChild(Position.WEST, west);
-    p.setTransient(true);
-    return p;
-  }
+        final PanelDefinition west = new PanelDefinitionImpl();
+        west.setWidth( 300 );
+        west.setMinWidth( 200 );
+        west.addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "org.kie.guvnor.explorer" ) ) );
+        p.getRoot().insertChild( Position.WEST, west );
+        p.setTransient( true );
+        return p;
+    }
 
-  @WorkbenchMenu
-  public MenuBar getMenuBar() {
-    return this.menuBar;
-  }
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return this.menus;
+    }
 
-  private void buildMenuBar() {
-    this.menuBar = new DefaultMenuBar();
-    menuBar.addItem(new DefaultMenuItemCommand("Projects",
-            new Command() {
-      @Override
-      public void execute() {
-        placeManager.goTo("org.kie.guvnor.explorer");
-      }
-    }));
-    
-    this.menuBar.addItem(newResourcesMenu);
-  }
+    private void buildMenuBar() {
+        this.menus = MenuFactory
+                .newTopLevelMenu( "Projects" )
+                    .respondsWith( new Command() {
+                        @Override
+                        public void execute() {
+                            placeManager.goTo( "org.kie.guvnor.explorer" );
+                        }
+                    } )
+                .endMenu()
+                .newTopLevelMenu( "New" )
+                    .withItems( newResourcesMenu.getMenuItems() )
+                .endMenu().build();
+
+    }
 }
