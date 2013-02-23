@@ -5,6 +5,27 @@
       <label class="checkbox">
         <input type="checkbox" class="inline" id="quickTaskCheck" data-field="quickTaskCheck"/>Quick Task?
       </label>
+     <div class="accordion">
+    <!-- GROUP -->
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle">
+          Advanced
+        </a>
+      </div>
+      <div id="desc_collapse" class="accordion-body collapse in" style="position: relative;">
+        <div class="accordion-inner">
+              <label>Due Date</label>
+              <input type="text" data-field="dueDate" id="dueDate">
+              <label>User</label>
+              <input type="text" data-field="userText" id="userText" />
+              <label>Priority</label>
+              <select data-field="taskPriorityListBox" id="taskPriorityListBox">
+              </select>
+        </div>
+      </div>
+    </div> 
+     </div>
     <div class="modal-footer span12">
       <button class="btn" data-field="addTaskButton" id="addTaskButton" >Create</button>
     </div>

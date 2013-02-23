@@ -16,9 +16,11 @@
 package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.TextBox;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -89,8 +91,15 @@ public class QuickNewTaskPresenter {
     public void init() {
     }
 
-    public void addTask(final String userId, String taskName, boolean isQuickTask,  Date due) {
-        String str = "(with (new Task()) { taskData = (with( new TaskData()) { expirationTime = new java.util.Date() } ), ";
+    public void addTask(final String userId, String taskName,int priority, boolean isQuickTask,  Date due) {
+        if(taskName.equals("")){
+          view.displayNotification("The Task Must Have a Name!");
+          return;
+        }
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("due", due);
+        
+        String str = "(with (new Task()) { priority = "+priority+", taskData = (with( new TaskData()) { expirationTime = due } ), ";
         str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
         if (userId != null && !userId.equals("")) {
             str += " [new User('" + userId + "')  ], }),";
@@ -104,7 +113,7 @@ public class QuickNewTaskPresenter {
                     close();
                     
                 }
-            }).addTaskAndStart(str, null, identity.getName() );
+            }).addTaskAndStart(str, params, identity.getName() );
         }else{
             taskServices.call(new RemoteCallback<Long>() {
                 @Override
@@ -113,7 +122,7 @@ public class QuickNewTaskPresenter {
                     close();
                     
                 }
-            }).addTask(str, null);
+            }).addTask(str, params);
         }
 
     }

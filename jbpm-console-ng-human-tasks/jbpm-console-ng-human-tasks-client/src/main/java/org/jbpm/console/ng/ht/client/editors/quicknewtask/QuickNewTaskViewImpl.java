@@ -15,9 +15,7 @@
  */
 package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.CheckBox;
-import com.github.gwtbootstrap.client.ui.TextBox;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -31,8 +29,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.datepicker.client.DateBox;
+
 import java.util.Date;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -58,6 +61,18 @@ public class QuickNewTaskViewImpl extends Composite
     @Inject
     @DataField
     public TextBox taskNameText;
+    @Inject
+    @DataField
+    public DateBox dueDate;
+    
+    @Inject
+    @DataField
+    public TextBox userText;
+    
+    @Inject
+    @DataField
+    public TextBox taskPriorityListBox;
+    
     @Inject
     @DataField
     public CheckBox quickTaskCheck;
@@ -92,6 +107,10 @@ public class QuickNewTaskViewImpl extends Composite
         };
         checkKeyPressHandler = quickTaskCheck.addKeyPressHandler(keyPressHandlerCheck);
         taskNameText.setFocus(true);
+        
+        userText.setText(identity.getName());
+        taskPriorityListBox.setText("5");
+        dueDate.setValue(new Date());
     }
 
     @EventHandler("addTaskButton")
@@ -114,8 +133,8 @@ public class QuickNewTaskViewImpl extends Composite
         checkKeyPressHandler.removeHandler();
         textKeyPressHandler.removeHandler();
         
-        presenter.addTask(identity.getName(),
-                  taskNameText.getText(), quickTaskCheck.getValue(), new Date());
+        presenter.addTask(userText.getText(),
+                  taskNameText.getText(), Integer.parseInt(taskPriorityListBox.getText()), quickTaskCheck.getValue(), dueDate.getValue());
         
 
     }
