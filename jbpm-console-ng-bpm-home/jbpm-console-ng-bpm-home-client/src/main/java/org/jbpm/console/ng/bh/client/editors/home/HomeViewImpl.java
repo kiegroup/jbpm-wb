@@ -62,11 +62,8 @@ public class HomeViewImpl extends Composite
   private PlaceManager placeManager;
   @Inject
   public Identity identity;
-  @Inject
-  @DataField
-  public Label userRolesLabel;
-  @DataField
-  public Image avatar;
+  
+
   @DataField
   public Image carouselImg0;
   @DataField
@@ -127,7 +124,7 @@ public class HomeViewImpl extends Composite
 
   public HomeViewImpl() {
 
-    avatar = new Image();
+    
     carouselImg5 = new Image();
     carouselImg4 = new Image();
     carouselImg3 = new Image();
@@ -141,8 +138,8 @@ public class HomeViewImpl extends Composite
   public void init(final HomePresenter presenter) {
     this.presenter = presenter;
     String url = GWT.getHostPageBaseURL();
-    avatar.setUrl(url + "images/avatars/" + identity.getName() + ".png");
-    avatar.setSize("64px", "64px");
+//    avatar.setUrl(url + "images/avatars/" + identity.getName() + ".png");
+//    avatar.setSize("64px", "64px");
     List<Role> roles = identity.getRoles();
     
     carouselImg5.setUrl(url + "images/mountain.jpg");
@@ -152,13 +149,13 @@ public class HomeViewImpl extends Composite
     carouselImg1.setUrl(url + "images/mountain.jpg");
     carouselImg0.setUrl(url + "images/mountain.jpg");
     
-    List<String> stringRoles = new ArrayList<String>(roles.size());
-    for (Role r : roles) {
-      if (!r.getName().equals("IS_REMEMBER_ME")) {
-        stringRoles.add(r.getName());
-      }
-    }
-    userRolesLabel.setText(stringRoles.toString());
+//    List<String> stringRoles = new ArrayList<String>(roles.size());
+//    for (Role r : roles) {
+//      if (!r.getName().equals("IS_REMEMBER_ME")) {
+//        stringRoles.add(r.getName());
+//      }
+//    }
+    
     discoverLabel.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {

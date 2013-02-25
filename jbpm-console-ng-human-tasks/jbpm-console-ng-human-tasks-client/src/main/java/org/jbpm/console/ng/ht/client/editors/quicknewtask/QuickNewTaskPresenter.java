@@ -92,12 +92,9 @@ public class QuickNewTaskPresenter {
     }
 
     public void addTask(final String userId, String taskName,int priority, boolean isQuickTask,  Date due) {
-        if(taskName.equals("")){
-          view.displayNotification("The Task Must Have a Name!");
-          return;
-        }
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("due", due);
+        
+        Map<String, Object> templateVars = new HashMap<String, Object>();
+        templateVars.put("due", due);
         
         String str = "(with (new Task()) { priority = "+priority+", taskData = (with( new TaskData()) { expirationTime = due } ), ";
         str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
@@ -113,7 +110,7 @@ public class QuickNewTaskPresenter {
                     close();
                     
                 }
-            }).addTaskAndStart(str, params, identity.getName() );
+            }).addTaskAndStart(str, null, identity.getName(), templateVars );
         }else{
             taskServices.call(new RemoteCallback<Long>() {
                 @Override
@@ -122,7 +119,7 @@ public class QuickNewTaskPresenter {
                     close();
                     
                 }
-            }).addTask(str, params);
+            }).addTask(str, null, templateVars);
         }
 
     }

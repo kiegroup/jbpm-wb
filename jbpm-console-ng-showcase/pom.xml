@@ -294,7 +294,11 @@
       <artifactId>jbpm-designer-client</artifactId>
       <version>6.0.0-SNAPSHOT</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-designer-api</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-designer-backend</artifactId>

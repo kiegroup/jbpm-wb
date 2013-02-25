@@ -129,12 +129,16 @@ public class QuickNewTaskViewImpl extends Composite
     }
 
     private void addTask() {
-        addTaskButton.setEnabled(false);
-        checkKeyPressHandler.removeHandler();
-        textKeyPressHandler.removeHandler();
-        
-        presenter.addTask(userText.getText(),
-                  taskNameText.getText(), Integer.parseInt(taskPriorityListBox.getText()), quickTaskCheck.getValue(), dueDate.getValue());
+        if(!taskNameText.getText().equals("")){
+          addTaskButton.setEnabled(false);
+          checkKeyPressHandler.removeHandler();
+          textKeyPressHandler.removeHandler();
+
+          presenter.addTask(userText.getText(),
+                    taskNameText.getText(), Integer.parseInt(taskPriorityListBox.getText()), quickTaskCheck.getValue(), dueDate.getValue());
+        }else{
+          displayNotification("The Task Must Have a Name!");
+        }
         
 
     }

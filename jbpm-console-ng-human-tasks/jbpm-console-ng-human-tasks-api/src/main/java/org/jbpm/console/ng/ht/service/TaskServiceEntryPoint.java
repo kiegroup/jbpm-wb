@@ -55,9 +55,9 @@ public interface TaskServiceEntryPoint {
 
     List<TaskSummary> getSubTasksByParent(long parentId);
 
-    long addTask(String taskString, Map<String, Object> params);
+    long addTask(String taskString, Map<String, Object> inputs, Map<String, Object> templateInputs);
     
-    long addTaskAndStart(String taskString, Map<String, Object> params, String userId);
+    long addTaskAndStart(String taskString, Map<String, Object> inputs, String userId, Map<String, Object> templateInputs);
 
     void start(long taskId, String user);
     
