@@ -63,7 +63,7 @@ public class AppSetup {
             fs = ioService.getFileSystem( fsURI );
         }
 
-        activeFileSystems.addBootstrapFileSystem( FileSystemFactory.newFS( new HashMap<String, String>() {{
+        activeFileSystems.addFileSystem( FileSystemFactory.newFS( new HashMap<String, String>() {{
             put( REPO_PLAYGROUND, "jbpm-playground" );
         }}, fs.supportedFileAttributeViews() ) );
     }
