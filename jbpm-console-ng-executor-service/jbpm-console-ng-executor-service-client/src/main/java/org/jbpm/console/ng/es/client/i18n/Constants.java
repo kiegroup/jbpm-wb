@@ -151,4 +151,6 @@ public interface Constants
     String Signaling_Process_Instance_Not_Allowed();
 
     String Old_Value();
+    
+    String No_Parameters_added_yet();
 }

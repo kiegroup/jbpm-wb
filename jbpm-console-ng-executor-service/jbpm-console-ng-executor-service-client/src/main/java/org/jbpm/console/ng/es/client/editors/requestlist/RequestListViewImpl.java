@@ -58,6 +58,7 @@ import org.jbpm.console.ng.es.client.util.ResizableHeader;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestSelectionEvent;
 
+import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 
@@ -164,7 +165,8 @@ public class RequestListViewImpl extends Composite
     
     @EventHandler("createRequestButton")
     public void createRequestButton(ClickEvent e) {
-        presenter.createRequest();
+        placeManager.goTo(new DefaultPlaceRequest("Quick New Job"));
+        //presenter.createRequest();
     }
 
     private void initTableColumns(final SelectionModel<RequestSummary> selectionModel) {
