@@ -13,10 +13,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.client.util.ResizableHeader;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
-import org.uberfire.client.annotations.OnStart;
-import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-import org.uberfire.shared.mvp.PlaceRequest;
 
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
@@ -66,9 +63,6 @@ public class QuickNewJobViewImpl extends Composite
     public DataGrid<RequestParameterSummary> myParametersGrid;
     @Inject
     Event<NotificationEvent> notificationEvents;
-    @Inject
-    private Event<BeforeClosePlaceEvent> closePlaceEvent;
-    private PlaceRequest place;
     private ListDataProvider<RequestParameterSummary> dataProvider = new ListDataProvider<RequestParameterSummary>();
 	private QuickNewJobPresenter presenter;
     private Constants constants = GWT.create(Constants.class);
@@ -83,11 +77,6 @@ public class QuickNewJobViewImpl extends Composite
 
         initGridColumns();
 	}
-
-	@OnStart
-    public void onStart( final PlaceRequest place ) {
-        this.place = place;
-    }
 
 	private void initGridColumns() {
 		Column<RequestParameterSummary, String> paramKeyColumn = new Column<RequestParameterSummary, String>(new EditTextCell()) {
@@ -177,10 +166,6 @@ public class QuickNewJobViewImpl extends Composite
 		notificationEvents.fire(new NotificationEvent(notification));
 	}
 	
-	public void close() {
-		closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
-	}
-
 	public Focusable getJobNameText() {
 		return jobNameText;
 	}

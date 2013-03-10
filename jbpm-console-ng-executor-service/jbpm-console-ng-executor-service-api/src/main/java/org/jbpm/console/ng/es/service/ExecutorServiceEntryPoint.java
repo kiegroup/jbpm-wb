@@ -43,6 +43,8 @@ public interface ExecutorServiceEntryPoint {
     public void init();
 
     public void destroy();
+    
+    public Boolean isActive();
 
     public int getInterval();
 

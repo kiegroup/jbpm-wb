@@ -99,6 +99,10 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
     public void destroy() {
         executor.destroy();
     }
+    
+    public Boolean isActive() {
+    	return executor.isActive();
+    }
 
     public int getInterval() {
         return executor.getInterval();

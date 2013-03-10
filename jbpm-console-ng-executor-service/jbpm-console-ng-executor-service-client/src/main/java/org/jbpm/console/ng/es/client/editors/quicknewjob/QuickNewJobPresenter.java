@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
@@ -14,10 +15,13 @@ import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
+import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
+import org.uberfire.shared.mvp.PlaceRequest;
 
 import com.google.gwt.user.client.ui.Focusable;
 
@@ -36,12 +40,14 @@ public class QuickNewJobPresenter {
     	void addRow(RequestParameterSummary parameter);
     	
         void displayNotification(String notification);
-        void close();
     }
     @Inject
     QuickNewJobView view;
     @Inject
     private Caller<ExecutorServiceEntryPoint> executorServices;
+    @Inject
+    private Event<BeforeClosePlaceEvent> closePlaceEvent;
+    private PlaceRequest place;
     
     @WorkbenchPartTitle
     public String getTitle() {
@@ -58,6 +64,11 @@ public class QuickNewJobPresenter {
 
     @PostConstruct
     public void init() {
+    }
+
+	@OnStart
+    public void onStart( final PlaceRequest place ) {
+        this.place = place;
     }
 
     public void removeParameter(RequestParameterSummary parameter) {
@@ -84,15 +95,18 @@ public class QuickNewJobPresenter {
             @Override
             public void callback(Long requestId) {
                 view.displayNotification("Request Schedulled: " + requestId);
-                view.close();
-
+                close();
             }
         }).scheduleRequest(jobType, dueDate, ctx);
+        
 	}
 
     @OnReveal
     public void onReveal() {
         view.getJobNameText().setFocus(true);
-
     }
+    
+	public void close() {
+		closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
+	}
 }

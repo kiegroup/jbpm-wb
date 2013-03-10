@@ -153,4 +153,8 @@ public interface Constants
     String Old_Value();
     
     String No_Parameters_added_yet();
+    
+    String Started();
+    
+    String Stopped();
 }

@@ -83,7 +83,7 @@ public class RequestListViewImpl extends Composite
     
     @Inject
     @DataField
-    public Button initButton;
+    public Button serviceSettingsButton;
     
     @Inject
     @DataField
@@ -157,10 +157,10 @@ public class RequestListViewImpl extends Composite
         presenter.refreshRequests(isChecked);
     }
     
-    @EventHandler("initButton")
-    public void initButton(ClickEvent e) {
-        
-        presenter.init();
+    @EventHandler("serviceSettingsButton")
+    public void serviceSettingsButton(ClickEvent e) {
+        placeManager.goTo(new DefaultPlaceRequest("Job Service Settings"));
+        //presenter.init();
     }
     
     @EventHandler("createRequestButton")
