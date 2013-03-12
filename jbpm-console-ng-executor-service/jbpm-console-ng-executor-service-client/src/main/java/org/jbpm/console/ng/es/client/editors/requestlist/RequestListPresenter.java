@@ -50,7 +50,7 @@ public class RequestListPresenter {
         CheckBox getShowCompletedCheck();
 
         DataGrid<RequestSummary> getDataGrid();
-
+        
         ColumnSortEvent.ListHandler<RequestSummary> getSortHandler();
     }
     @Inject
@@ -69,18 +69,29 @@ public class RequestListPresenter {
         return view;
     }
 
-    public void refreshRequests(boolean showCompleted) {
+    public void refreshRequests(List<String> statuses) {
 
-
-        executorServices.call(new RemoteCallback<List<RequestSummary>>() {
-            @Override
-            public void callback(List<RequestSummary> requests) {
-                dataProvider.setList(requests);
-                dataProvider.refresh();
-                view.getSortHandler().getList().addAll(dataProvider.getList());
-
-            }
-        }).getPendingRequests();
+    	if (statuses.isEmpty()) {
+    		executorServices.call(new RemoteCallback<List<RequestSummary>>() {
+	            @Override
+	            public void callback(List<RequestSummary> requests) {
+	                dataProvider.setList(requests);
+	                dataProvider.refresh();
+	                view.getSortHandler().getList().addAll(dataProvider.getList());
+	
+	            }
+	        }).getAllRequests();
+    	} else {
+	        executorServices.call(new RemoteCallback<List<RequestSummary>>() {
+	            @Override
+	            public void callback(List<RequestSummary> requests) {
+	                dataProvider.setList(requests);
+	                dataProvider.refresh();
+	                view.getSortHandler().getList().addAll(dataProvider.getList());
+	
+	            }
+	        }).getRequestsByStatus(statuses);
+    	}
 
 
 

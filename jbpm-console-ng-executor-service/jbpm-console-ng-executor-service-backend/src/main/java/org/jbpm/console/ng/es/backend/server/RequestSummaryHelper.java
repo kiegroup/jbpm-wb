@@ -17,11 +17,12 @@ package org.jbpm.console.ng.es.backend.server;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.jbpm.console.ng.es.model.ErrorSummary;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.executor.entities.ErrorInfo;
-
 import org.jbpm.executor.entities.RequestInfo;
+import org.jbpm.executor.entities.STATUS;
 
 /**
  *
@@ -44,5 +45,13 @@ public class RequestSummaryHelper {
                     error.getStacktrace(), error.getRequestInfo().getId()));
         }
         return errorSummaries;
+    }
+    
+    public static List<STATUS> adaptStatusList(List<String> statuses) {
+    	List<STATUS> statusList = new ArrayList<STATUS>(statuses.size());
+    	for (String status : statuses) {
+    		statusList.add(STATUS.valueOf(status));
+    	}
+    	return statusList;
     }
 }

@@ -16,6 +16,28 @@
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.es.client.i18n.Constants;
+import org.jbpm.console.ng.es.client.util.ResizableHeader;
+import org.jbpm.console.ng.es.model.RequestSummary;
+import org.jbpm.console.ng.es.model.events.RequestCreatedEvent;
+import org.jbpm.console.ng.es.model.events.RequestSelectionEvent;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.widgets.events.NotificationEvent;
+import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
+
 import com.google.gwt.cell.client.ButtonCell;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.EditTextCell;
@@ -23,15 +45,6 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-
-
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
@@ -48,18 +61,6 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
-import java.util.Comparator;
-import java.util.Set;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.es.client.i18n.Constants;
-import org.jbpm.console.ng.es.client.util.ResizableHeader;
-import org.jbpm.console.ng.es.model.RequestSummary;
-import org.jbpm.console.ng.es.model.events.RequestSelectionEvent;
-
-import org.uberfire.shared.mvp.PlaceRequest;
-import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 
 @Dependent
@@ -93,7 +94,22 @@ public class RequestListViewImpl extends Composite
     public SimplePager pager;
     @Inject
     @DataField
+    public CheckBox showQueuedCheck;
+    @Inject
+    @DataField
+    public CheckBox showRunningCheck;
+    @Inject
+    @DataField
+    public CheckBox showRetryingCheck;
+    @Inject
+    @DataField
+    public CheckBox showErrorCheck;
+    @Inject
+    @DataField
     public CheckBox showCompletedCheck;
+    @Inject
+    @DataField
+    public CheckBox showCancelledCheck;
     
     private Set<RequestSummary> selectedRequests;
     @Inject
@@ -149,13 +165,37 @@ public class RequestListViewImpl extends Composite
 
     }
 
-   
+    public void requestCreated(@Observes RequestCreatedEvent event) {
+    	fireRefreshList();
+    }
 
     @EventHandler("refreshRequestsButton")
     public void refreshRequestsButton(ClickEvent e) {
-        Boolean isChecked = showCompletedCheck.getValue();
-        presenter.refreshRequests(isChecked);
+    	fireRefreshList();
     }
+
+	private void fireRefreshList() {
+		List<String> statuses = new ArrayList<String>();
+    	if (showCompletedCheck.getValue()) {
+    		statuses.add("DONE");
+    	}
+    	if (showCancelledCheck.getValue()) {
+    		statuses.add("CANCELLED");
+    	}
+    	if (showErrorCheck.getValue()) {
+    		statuses.add("ERROR");
+    	}
+    	if (showQueuedCheck.getValue()) {
+    		statuses.add("QUEUED");
+    	}
+    	if (showRetryingCheck.getValue()) {
+    		statuses.add("RETRYING");
+    	}
+    	if (showRunningCheck.getValue()) {
+    		statuses.add("RUNNING");
+    	}
+        presenter.refreshRequests(statuses);
+	}
     
     @EventHandler("serviceSettingsButton")
     public void serviceSettingsButton(ClickEvent e) {
@@ -302,6 +342,26 @@ public class RequestListViewImpl extends Composite
     public CheckBox getShowCompletedCheck() {
         return showCompletedCheck;
     }
+    
+    public CheckBox getShowCancelledCheck() {
+		return showCancelledCheck;
+	}
+    
+    public CheckBox getShowErrorCheck() {
+		return showErrorCheck;
+	}
+    
+    public CheckBox getShowQueuedCheck() {
+		return showQueuedCheck;
+	}
+    
+    public CheckBox getShowRetryingCheck() {
+		return showRetryingCheck;
+	}
+    
+    public CheckBox getShowRunningCheck() {
+		return showRunningCheck;
+	}
 
     public DataGrid<RequestSummary> getDataGrid() {
         return myRequestListGrid;

@@ -84,38 +84,13 @@ public class JobServiceSettingsPresenter {
 	public void initService(final Integer numberOfExecutors, String frequency) {
 		try {
 			Integer interval = fromFrequencyToInterval(frequency);
-			executorServices.call(new RemoteCallback<Void>() {
+			executorServices.call(new RemoteCallback<Boolean>() {
 				@Override
-				public void callback(Void response) {
-					executorServices.call(new RemoteCallback<Void>() {
-						@Override
-						public void callback(Void response) {
-							executorServices.call(new RemoteCallback<Boolean>() {
-								@Override
-								public void callback(Boolean response) {
-									if (response) {
-										executorServices.call(new RemoteCallback<Void>() {
-											@Override
-											public void callback(Void nothing) {
-												view.displayNotification("Service stopped");
-												close();
-											}
-										}).destroy();
-									} else {
-										executorServices.call(new RemoteCallback<Void>() {
-											@Override
-											public void callback(Void nothing) {
-												view.displayNotification("Service started");
-												close();
-											}
-										}).init();
-									}
-								}
-							}).isActive();
-						}
-					}).setThreadPoolSize(numberOfExecutors);
+				public void callback(Boolean serviceStatus) {
+					view.displayNotification(serviceStatus ? "Service started" : "Service stopped");
+					close();
 				}
-			}).setInterval(interval);
+			}).startStopService(interval, numberOfExecutors);
 		} catch (NumberFormatException e) {
 			view.alert("Invalid frequency expression: " + frequency);
 		}

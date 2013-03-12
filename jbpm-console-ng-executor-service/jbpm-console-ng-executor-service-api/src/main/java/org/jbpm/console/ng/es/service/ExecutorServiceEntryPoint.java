@@ -29,6 +29,8 @@ public interface ExecutorServiceEntryPoint {
     public List<ErrorSummary> getAllErrors();
 
     public List<RequestSummary> getAllRequests();
+    
+    public List<RequestSummary> getRequestsByStatus(List<String> statuses);
 
     public int clearAllRequests();
 
@@ -45,6 +47,8 @@ public interface ExecutorServiceEntryPoint {
     public void destroy();
     
     public Boolean isActive();
+    
+    public Boolean startStopService(int waitTime, int nroOfThreads);
 
     public int getInterval();
 

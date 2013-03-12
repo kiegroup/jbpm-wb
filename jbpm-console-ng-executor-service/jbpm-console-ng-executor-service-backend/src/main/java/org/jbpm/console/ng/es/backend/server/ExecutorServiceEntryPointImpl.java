@@ -19,14 +19,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.es.model.ErrorSummary;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.jbpm.executor.api.CommandContext;
+import org.jbpm.executor.entities.STATUS;
 
 /**
  *
@@ -62,6 +65,12 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
 
     public List<RequestSummary> getAllRequests() {
         return RequestSummaryHelper.adaptRequestList(executor.getAllRequests());
+    }
+    
+    @Override
+    public List<RequestSummary> getRequestsByStatus(List<String> statuses) {
+    	List<STATUS> statusList = RequestSummaryHelper.adaptStatusList(statuses);
+    	return RequestSummaryHelper.adaptRequestList(executor.getRequestsByStatus(statusList));
     }
 
     public int clearAllRequests() {
@@ -101,6 +110,17 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
     }
     
     public Boolean isActive() {
+    	return executor.isActive();
+    }
+    
+    public Boolean startStopService(int waitTime, int nroOfThreads) {
+    	executor.setInterval(waitTime);
+    	executor.setThreadPoolSize(nroOfThreads);
+    	if (executor.isActive()) {
+    		executor.destroy();
+    	} else {
+    		executor.init();
+    	}
     	return executor.isActive();
     }
 
