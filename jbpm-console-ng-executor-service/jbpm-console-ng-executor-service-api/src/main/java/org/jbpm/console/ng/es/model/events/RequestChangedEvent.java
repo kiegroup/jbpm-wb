@@ -5,14 +5,14 @@ import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class RequestCreatedEvent implements Serializable {
+public class RequestChangedEvent implements Serializable {
 
 	private Long requestId;
 	
-    public RequestCreatedEvent() {
+    public RequestChangedEvent() {
     }
 
-	public RequestCreatedEvent(Long requestId) {
+	public RequestChangedEvent(Long requestId) {
 		this();
 		this.requestId = requestId;
 	}

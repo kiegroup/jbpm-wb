@@ -25,10 +25,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.es.model.RequestSummary;
+import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 
 
@@ -57,6 +59,9 @@ public class RequestListPresenter {
     private InboxView view;
     @Inject
     private Caller<ExecutorServiceEntryPoint> executorServices;
+    @Inject
+    private Event<RequestChangedEvent> requestChangedEvent;
+
     private ListDataProvider<RequestSummary> dataProvider = new ListDataProvider<RequestSummary>();
 
     @WorkbenchPartTitle
@@ -135,4 +140,14 @@ public class RequestListPresenter {
     public void refreshData() {
         dataProvider.refresh();
     }
+
+	public void cancelRequest(final Long requestId) {
+		executorServices.call(new RemoteCallback<Void>() {
+			@Override
+			public void callback(Void nothing) {
+				view.displayNotification("Request " + requestId + " cancelled");
+				requestChangedEvent.fire(new RequestChangedEvent(requestId));
+			}
+		}).cancelRequest(requestId);
+	}
 }

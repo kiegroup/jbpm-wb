@@ -18,6 +18,7 @@ package org.jbpm.console.ng.es.client.editors.requestlist;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -32,16 +33,20 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.client.util.ResizableHeader;
 import org.jbpm.console.ng.es.model.RequestSummary;
-import org.jbpm.console.ng.es.model.events.RequestCreatedEvent;
+import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.es.model.events.RequestSelectionEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
-import com.google.gwt.cell.client.ButtonCell;
+import com.google.gwt.cell.client.ActionCell;
+import com.google.gwt.cell.client.ActionCell.Delegate;
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CheckboxCell;
+import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
@@ -52,6 +57,7 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -165,7 +171,7 @@ public class RequestListViewImpl extends Composite
 
     }
 
-    public void requestCreated(@Observes RequestCreatedEvent event) {
+    public void requestCreated(@Observes RequestChangedEvent event) {
     	fireRefreshList();
     }
 
@@ -304,31 +310,37 @@ public class RequestListViewImpl extends Composite
         myRequestListGrid.addColumn(dueDateColumn,
                 new ResizableHeader(constants.Due_On(), myRequestListGrid, dueDateColumn));
 
+        // actions (icons)
+        List<HasCell<RequestSummary, ?>> cells = new LinkedList<HasCell<RequestSummary, ?>>();
 
-
-
-
-        Column<RequestSummary, String> detailsColumn =
-                new Column<RequestSummary, String>(new ButtonCell()) {
+        cells.add(new ActionHasCell("Details", new Delegate<RequestSummary>() {
             @Override
-            public String getValue(RequestSummary task) {
-                return "Details";
+            public void execute(RequestSummary job) {
+            	DefaultPlaceRequest request = new DefaultPlaceRequest("Job Request Details");
+            	request.addParameter("requestId", String.valueOf(job.getId()));
+            	placeManager.goTo(request);
             }
+        }));
+        cells.add(new ActionHasCell("Cancel", new Delegate<RequestSummary>() {
+            @Override
+            public void execute(RequestSummary job) {
+            	if (Window.confirm("Are you sure you want to cancel this Job?")) {
+            		presenter.cancelRequest(job.getId());
+            	}
+            }
+        }));
+
+        CompositeCell<RequestSummary> cell = new CompositeCell<RequestSummary>(cells);
+        Column<RequestSummary, RequestSummary> actionsColumn = 
+        	new Column<RequestSummary, RequestSummary>(cell) {
+        		public RequestSummary getValue(RequestSummary object) {
+                	return object;
+        		}
         };
 
-        detailsColumn.setFieldUpdater(new FieldUpdater<RequestSummary, String>() {
-            @Override
-            public void update(int index,
-                    RequestSummary request,
-                    String value) {
-                placeManager.goTo(new DefaultPlaceRequest(constants.Request_Details_Perspective_Errai()));
-                requestSelection.fire(new RequestSelectionEvent(request.getId()));
-            }
-        });
-
-        myRequestListGrid.addColumn(detailsColumn,
-                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant(constants.Details())));
-        myRequestListGrid.setColumnWidth(detailsColumn, "100px");
+        myRequestListGrid.addColumn(actionsColumn,
+                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant(constants.Actions())));
+        myRequestListGrid.setColumnWidth(actionsColumn, "100px");
 
 
     }
@@ -370,4 +382,27 @@ public class RequestListViewImpl extends Composite
     public ListHandler<RequestSummary> getSortHandler() {
         return sortHandler;
     }
+    
+	private class ActionHasCell implements HasCell<RequestSummary, RequestSummary> {
+        private ActionCell<RequestSummary> cell;
+
+        public ActionHasCell(String text, Delegate<RequestSummary> delegate) {
+            cell = new ActionCell<RequestSummary>(text, delegate);
+        }
+
+        @Override
+        public Cell<RequestSummary> getCell() {
+            return cell;
+        }
+
+        @Override
+        public FieldUpdater<RequestSummary, RequestSummary> getFieldUpdater() {
+            return null;
+        }
+
+        @Override
+        public RequestSummary getValue(RequestSummary object) {
+            return object;
+        }
+	}
 }

@@ -84,6 +84,12 @@ public class QuickNewJobViewImpl extends Composite
         		return rowObject.getKey();
         	}
         };
+        paramKeyColumn.setFieldUpdater(new FieldUpdater<RequestParameterSummary, String>() {
+        	public void update(int index, RequestParameterSummary object, String value) {
+        		object.setKey(value);
+        		dataProvider.getList().set(index, object);
+        	}
+        });
         myParametersGrid.addColumn(paramKeyColumn, new ResizableHeader<RequestParameterSummary>("Key", myParametersGrid, paramKeyColumn));
 
         Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>(new EditTextCell()) {
@@ -91,6 +97,12 @@ public class QuickNewJobViewImpl extends Composite
         		return rowObject.getValue();
         	}
         };
+        paramValueColumn.setFieldUpdater(new FieldUpdater<RequestParameterSummary, String>() {
+        	public void update(int index, RequestParameterSummary object, String value) {
+        		object.setValue(value);
+        		dataProvider.getList().set(index, object);
+        	}
+        });
         myParametersGrid.addColumn(paramValueColumn, new ResizableHeader<RequestParameterSummary>("Value", myParametersGrid, paramValueColumn));
         
         // actions (icons)
@@ -124,7 +136,7 @@ public class QuickNewJobViewImpl extends Composite
     @EventHandler("createButton")
     public void createButton(ClickEvent e) {
     	presenter.createJob(jobNameText.getText(), jobDueDate.getValue(), jobTypeText.getText(), 
-    			dataTriesNumber.getValue(), myParametersGrid.getVisibleItems());
+    			dataTriesNumber.getValue(), dataProvider.getList());
     }
 
 	private class ActionHasCell implements HasCell<RequestParameterSummary, RequestParameterSummary> {

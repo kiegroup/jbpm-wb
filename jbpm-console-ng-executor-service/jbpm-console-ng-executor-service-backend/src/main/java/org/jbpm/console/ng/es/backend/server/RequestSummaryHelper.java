@@ -15,11 +15,16 @@
  */
 package org.jbpm.console.ng.es.backend.server;
 
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.jbpm.console.ng.es.model.ErrorSummary;
+import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.RequestSummary;
+import org.jbpm.executor.api.CommandContext;
 import org.jbpm.executor.entities.ErrorInfo;
 import org.jbpm.executor.entities.RequestInfo;
 import org.jbpm.executor.entities.STATUS;
@@ -32,13 +37,17 @@ public class RequestSummaryHelper {
     public static List<RequestSummary> adaptRequestList(List<RequestInfo> requests){
         List<RequestSummary> requestSummaries = new ArrayList<RequestSummary>(requests.size());
         for(RequestInfo request : requests){
-            requestSummaries.add(new RequestSummary(request.getId(), request.getTime(), request.getStatus().name(),
-                    request.getCommandName(), request.getMessage(), request.getKey()));
+            requestSummaries.add(adaptRequest(request));
         }
         return requestSummaries;
     }
     
-    public static List<ErrorSummary> adaptErrorList(List<ErrorInfo> errors){
+    public static RequestSummary adaptRequest(RequestInfo request) {
+		return new RequestSummary(request.getId(), request.getTime(), request.getStatus().name(),
+                request.getCommandName(), request.getMessage(), request.getKey());
+	}
+
+	public static List<ErrorSummary> adaptErrorList(List<ErrorInfo> errors){
         List<ErrorSummary> errorSummaries = new ArrayList<ErrorSummary>(errors.size());
         for(ErrorInfo error : errors){
             errorSummaries.add(new ErrorSummary(error.getId(), error.getTime(), error.getMessage(),
@@ -54,4 +63,20 @@ public class RequestSummaryHelper {
     	}
     	return statusList;
     }
+
+	public static List<RequestParameterSummary> adaptInternalMap(RequestInfo request) {
+		ByteArrayInputStream bain = new ByteArrayInputStream(request.getRequestData());
+		List<RequestParameterSummary> retval = new ArrayList<RequestParameterSummary>();
+		try {
+			ObjectInputStream oin = new ObjectInputStream(bain);
+			CommandContext ctx = (CommandContext) oin.readObject();
+			Map<String, Object> map = ctx.getData();
+			for (Map.Entry<String, Object> entry : map.entrySet()) {
+				retval.add(new RequestParameterSummary(entry.getKey(), String.valueOf(entry.getValue())));
+			}
+		} catch (Exception e) {
+			//TODO handle exception
+		}
+		return retval;
+	}
 }

@@ -7,8 +7,10 @@ package org.jbpm.console.ng.es.service;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.es.model.ErrorSummary;
+import org.jbpm.console.ng.es.model.RequestDetails;
 import org.jbpm.console.ng.es.model.RequestSummary;
 
 
@@ -31,6 +33,8 @@ public interface ExecutorServiceEntryPoint {
     public List<RequestSummary> getAllRequests();
     
     public List<RequestSummary> getRequestsByStatus(List<String> statuses);
+    
+    public RequestDetails getRequestDetails(Long requestId);
 
     public int clearAllRequests();
 

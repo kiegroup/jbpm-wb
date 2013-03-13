@@ -26,9 +26,12 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.es.model.ErrorSummary;
+import org.jbpm.console.ng.es.model.RequestDetails;
+import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.jbpm.executor.api.CommandContext;
+import org.jbpm.executor.entities.RequestInfo;
 import org.jbpm.executor.entities.STATUS;
 
 /**
@@ -67,12 +70,19 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
         return RequestSummaryHelper.adaptRequestList(executor.getAllRequests());
     }
     
-    @Override
     public List<RequestSummary> getRequestsByStatus(List<String> statuses) {
     	List<STATUS> statusList = RequestSummaryHelper.adaptStatusList(statuses);
     	return RequestSummaryHelper.adaptRequestList(executor.getRequestsByStatus(statusList));
     }
 
+    public RequestDetails getRequestDetails(Long requestId) {
+    	RequestInfo request = executor.getRequestById(requestId);
+		RequestSummary summary = RequestSummaryHelper.adaptRequest(request);
+    	List<ErrorSummary> errors = RequestSummaryHelper.adaptErrorList(request.getErrorInfo());
+    	List<RequestParameterSummary> params = RequestSummaryHelper.adaptInternalMap(request);
+    	return new RequestDetails(summary, errors, params);
+    }
+    
     public int clearAllRequests() {
         return executor.clearAllRequests();
     }

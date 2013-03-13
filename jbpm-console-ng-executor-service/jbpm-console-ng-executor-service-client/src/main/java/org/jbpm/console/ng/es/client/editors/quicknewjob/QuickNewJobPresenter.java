@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
-import org.jbpm.console.ng.es.model.events.RequestCreatedEvent;
+import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
@@ -49,7 +49,7 @@ public class QuickNewJobPresenter {
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
     @Inject
-    private Event<RequestCreatedEvent> requestCreatedEvent;
+    private Event<RequestChangedEvent> requestCreatedEvent;
     private PlaceRequest place;
     
     @WorkbenchPartTitle
@@ -98,7 +98,7 @@ public class QuickNewJobPresenter {
             @Override
             public void callback(Long requestId) {
                 view.displayNotification("Request Schedulled: " + requestId);
-                requestCreatedEvent.fire(new RequestCreatedEvent(requestId));
+                requestCreatedEvent.fire(new RequestChangedEvent(requestId));
                 close();
             }
         }).scheduleRequest(jobType, dueDate, ctx);
