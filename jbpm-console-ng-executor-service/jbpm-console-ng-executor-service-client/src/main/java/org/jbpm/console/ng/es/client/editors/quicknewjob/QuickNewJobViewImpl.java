@@ -1,5 +1,6 @@
 package org.jbpm.console.ng.es.client.editors.quicknewjob;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -76,6 +77,8 @@ public class QuickNewJobViewImpl extends Composite
         myParametersGrid.setEmptyTableWidget(new Label(constants.No_Parameters_added_yet()));
 
         initGridColumns();
+        
+        jobDueDate.setValue(new Date());
 	}
 
 	private void initGridColumns() {
