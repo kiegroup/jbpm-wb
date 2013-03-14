@@ -30,7 +30,7 @@ public class NodeInstanceHelper {
         List<NodeInstanceSummary> nodeInstancesSummary = new ArrayList<NodeInstanceSummary>();
         for(NodeInstanceDesc ni : nodeInstances){
             nodeInstancesSummary.add(new NodeInstanceSummary(ni.getId(), ni.getProcessInstanceId(), 
-                    ni.getName(), ni.getNodeUniqueId(), ni.getType(), ni.getDataTimeStamp().toString(),
+                    ni.getName(), ni.getNodeId(), ni.getNodeType(), ni.getDataTimeStamp().toString(),
                     ni.getConnection(), ni.isCompleted()));
         }
         
@@ -39,7 +39,7 @@ public class NodeInstanceHelper {
     
     public static NodeInstanceSummary adapt(NodeInstanceDesc ni){
         return new NodeInstanceSummary(ni.getId(), ni.getProcessInstanceId(), 
-                    ni.getName(), ni.getNodeUniqueId(), ni.getType(), ni.getDataTimeStamp().toString()
+                    ni.getName(), ni.getNodeId(), ni.getNodeType(), ni.getDataTimeStamp().toString()
                     , ni.getConnection(), ni.isCompleted());
     }
 }
