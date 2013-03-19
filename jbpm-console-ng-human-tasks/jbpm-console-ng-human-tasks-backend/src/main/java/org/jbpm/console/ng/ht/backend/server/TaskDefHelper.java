@@ -18,14 +18,15 @@ package org.jbpm.console.ng.ht.backend.server;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import org.jbpm.console.ng.ht.model.TaskDefSummary;
-import org.jbpm.task.TaskDef;
+import org.kie.internal.task.api.model.TaskDef;
 /**
  *
  * @author salaboy
  */
 public class TaskDefHelper {
-    public static Collection<TaskDefSummary> adaptCollection(Collection<TaskDef> tasks){
+    public static Collection<TaskDefSummary> adaptCollection(Collection<? extends TaskDef> tasks){
         List<TaskDefSummary> tasksdefSummary = new ArrayList<TaskDefSummary>();
         for(TaskDef t : tasks){
             tasksdefSummary.add(new TaskDefSummary(t.getId(), t.getName()));

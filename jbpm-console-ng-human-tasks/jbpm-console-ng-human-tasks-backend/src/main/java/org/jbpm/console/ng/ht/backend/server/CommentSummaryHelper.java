@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jbpm.console.ng.ht.model.CommentSummary;
-import org.jbpm.task.Comment;
+import org.kie.internal.task.api.model.Comment;
 
 /**
  *
@@ -27,9 +27,9 @@ import org.jbpm.task.Comment;
  */
 public class CommentSummaryHelper {
 
-    public static List<CommentSummary> adaptCollection(List<org.jbpm.task.Comment> comments) {
+    public static List<CommentSummary> adaptCollection(List<Comment> comments) {
         List<CommentSummary> commentsSummaries = new ArrayList<CommentSummary>(comments.size());
-        for (org.jbpm.task.Comment comment : comments) {
+        for (Comment comment : comments) {
             commentsSummaries.add(new CommentSummary(comment.getId(), comment.getText(),
                     comment.getAddedBy().toString(), comment.getAddedAt()));
         }

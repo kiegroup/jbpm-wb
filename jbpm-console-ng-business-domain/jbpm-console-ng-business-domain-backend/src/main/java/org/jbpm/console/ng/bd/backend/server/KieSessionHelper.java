@@ -17,7 +17,7 @@ package org.jbpm.console.ng.bd.backend.server;
 
 
 import org.jbpm.console.ng.bd.model.KieSessionSummary;
-import org.kie.runtime.KieSession;
+import org.kie.api.runtime.KieSession;
 
 /**
  *

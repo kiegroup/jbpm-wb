@@ -22,7 +22,7 @@ import org.droolsjbpm.services.impl.model.ProcessInstanceDesc;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.workflow.instance.node.CompositeNodeInstance;
 import org.jbpm.workflow.instance.node.EventNodeInstance;
-import org.kie.runtime.process.NodeInstance;
+import org.kie.api.runtime.process.NodeInstance;
 
 /**
  *

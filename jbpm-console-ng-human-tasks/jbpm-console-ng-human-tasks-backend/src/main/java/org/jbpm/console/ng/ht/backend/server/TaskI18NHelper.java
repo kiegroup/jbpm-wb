@@ -17,7 +17,9 @@ package org.jbpm.console.ng.ht.backend.server;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.jbpm.task.I18NText;
+
+import org.jbpm.task.impl.model.I18NTextImpl;
+import org.kie.internal.task.api.model.I18NText;
 
 /**
  *
@@ -28,7 +30,7 @@ public class TaskI18NHelper {
         List<I18NText> result = new ArrayList<I18NText>(list.size());
         for(String s : list){
             // FIX
-            result.add(new I18NText("en-UK", s));
+            result.add(new I18NTextImpl("en-UK", s));
         }
         return result;
     }

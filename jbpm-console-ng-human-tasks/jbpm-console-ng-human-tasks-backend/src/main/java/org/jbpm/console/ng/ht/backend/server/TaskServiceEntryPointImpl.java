@@ -22,26 +22,28 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-
-import org.jbpm.console.ng.ht.model.IdentitySummary;
-import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.ht.model.CommentSummary;
+import org.jbpm.console.ng.ht.model.IdentitySummary;
+import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
-import org.jbpm.task.Comment;
-import org.jbpm.task.Content;
-import org.jbpm.task.Group;
-import org.jbpm.task.OrganizationalEntity;
-import org.jbpm.task.Status;
-import org.jbpm.task.SubTasksStrategy;
-import org.jbpm.task.Task;
-import org.jbpm.task.User;
 import org.jbpm.task.impl.factories.TaskFactory;
+import org.jbpm.task.impl.model.CommentImpl;
+import org.jbpm.task.impl.model.UserImpl;
 import org.jbpm.task.utils.ContentMarshallerHelper;
+import org.kie.internal.task.api.model.Comment;
+import org.kie.internal.task.api.model.Content;
+import org.kie.internal.task.api.model.Group;
+import org.kie.internal.task.api.model.OrganizationalEntity;
+import org.kie.internal.task.api.model.Status;
+import org.kie.internal.task.api.model.SubTasksStrategy;
+import org.kie.internal.task.api.model.Task;
+import org.kie.internal.task.api.model.User;
 
 /**
  *
@@ -53,7 +55,7 @@ import org.jbpm.task.utils.ContentMarshallerHelper;
 public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     
     @Inject
-    private org.jbpm.task.api.TaskServiceEntryPoint taskService;
+    private org.kie.internal.task.api.TaskService taskService;
     
     @Override
     public List<TaskSummary> getTasksAssignedAsBusinessAdministrator(String userId, String language) {
@@ -420,10 +422,10 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
 
     public long addComment(long taskId, String text, String addedBy, Date addedOn) {
-        Comment comment = new Comment();
+        Comment comment = new CommentImpl();
         comment.setText(text);
         comment.setAddedAt(addedOn);
-        comment.setAddedBy(new User(addedBy));
+        comment.setAddedBy(new UserImpl(addedBy));
         return taskService.addComment(taskId, comment);
     }
 

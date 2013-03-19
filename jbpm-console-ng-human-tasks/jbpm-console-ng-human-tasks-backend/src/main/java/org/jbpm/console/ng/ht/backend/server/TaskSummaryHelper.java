@@ -25,9 +25,9 @@ import org.jbpm.console.ng.ht.model.TaskSummary;
 
  */
 public class TaskSummaryHelper {
-    public static List<TaskSummary> adaptCollection(List<org.jbpm.task.query.TaskSummary> taskSums){
+    public static List<TaskSummary> adaptCollection(List<org.kie.internal.task.api.model.TaskSummary> taskSums){
         List<TaskSummary> taskSummaries = new ArrayList<TaskSummary>(taskSums.size());
-        for(org.jbpm.task.query.TaskSummary taskSum : taskSums){
+        for(org.kie.internal.task.api.model.TaskSummary taskSum : taskSums){
             taskSummaries.add(new TaskSummary(taskSum.getId(), 
                                 taskSum.getProcessInstanceId(), 
                                 taskSum.getName(), 
