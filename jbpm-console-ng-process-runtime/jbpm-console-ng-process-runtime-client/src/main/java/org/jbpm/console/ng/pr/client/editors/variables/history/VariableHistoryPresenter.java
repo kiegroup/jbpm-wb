@@ -10,7 +10,7 @@ import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
+import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.VariableSummary;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
@@ -53,7 +53,7 @@ public class VariableHistoryPresenter {
     private ListDataProvider<VariableSummary> dataProvider = new ListDataProvider<VariableSummary>();
 
     @Inject
-    private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
+    private Caller<DataServiceEntryPoint> dataServices;
 
     @PostConstruct
     public void init() {
@@ -88,7 +88,7 @@ public class VariableHistoryPresenter {
     }
 
     public void loadVariableHistory() {
-        knowledgeServices.call( new RemoteCallback<List<VariableSummary>>() {
+        dataServices.call( new RemoteCallback<List<VariableSummary>>() {
             @Override
             public void callback( List<VariableSummary> processInstances ) {
                 dataProvider.getList().clear();

@@ -24,10 +24,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
-import org.jboss.errai.bus.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.model.KieSessionSummary;
-import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
 
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -53,8 +50,8 @@ public class KieSessionsListPresenter {
     }
     @Inject
     private KieSessionsListView view;
-    @Inject
-    private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
+//    @Inject
+//    private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
     
     
     private ListDataProvider<KieSessionSummary> dataProvider = new ListDataProvider<KieSessionSummary>();
@@ -76,15 +73,15 @@ public class KieSessionsListPresenter {
     public void init() {
     }
     
-    void newKieSessionButton(String group, String artifact, String version, String kbaseName, final String kieSessionName) {
-      knowledgeServices.call(new RemoteCallback<Integer>() {
-                      @Override
-                      public void callback(Integer sessionId) {
-                          view.displayNotification(" KSession "+kieSessionName+" Created! with id = "+sessionId);
-
-                      }
-                  }).newKieSession(group, artifact, version, kbaseName, kieSessionName);
-    }
+//    void newKieSessionButton(String group, String artifact, String version, String kbaseName, final String kieSessionName) {
+//      knowledgeServices.call(new RemoteCallback<Integer>() {
+//                      @Override
+//                      public void callback(Integer sessionId) {
+//                          view.displayNotification(" KSession "+kieSessionName+" Created! with id = "+sessionId);
+//
+//                      }
+//                  }).newKieSession(group, artifact, version, kbaseName, kieSessionName);
+//    }
     
    
 

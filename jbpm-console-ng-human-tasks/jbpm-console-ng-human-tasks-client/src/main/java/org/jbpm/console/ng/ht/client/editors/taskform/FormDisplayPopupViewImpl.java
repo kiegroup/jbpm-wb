@@ -68,7 +68,7 @@ public class FormDisplayPopupViewImpl extends Composite
     public UnorderedList navBarUL;
    
     private long taskId;
-    private int sessionId;
+    private String domainId;
     private String processId;
     
     @Inject
@@ -124,12 +124,12 @@ public class FormDisplayPopupViewImpl extends Composite
       return navBarUL;
     }
 
-    public int getSessionId() {
-      return sessionId;
+    public String getDomainId() {
+      return domainId;
     }
 
-    public void setSessionId(int sessionId) {
-      this.sessionId = sessionId;
+    public void setDomainId(String domainId) {
+      this.domainId = domainId;
     }
 
    

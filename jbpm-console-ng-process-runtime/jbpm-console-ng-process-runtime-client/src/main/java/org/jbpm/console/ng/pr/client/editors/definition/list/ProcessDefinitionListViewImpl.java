@@ -48,6 +48,7 @@ import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
+import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -84,10 +85,9 @@ public class ProcessDefinitionListViewImpl extends Composite
     @Inject
     @DataField
     public Button filterKSessionButton;
-    
     @Inject
     @DataField
-    public Button fetchProcessDefsButton;
+    public Button initOrganizationButton;
     @Inject
     @DataField
     public DataGrid<ProcessSummary> processdefListGrid;
@@ -159,9 +159,10 @@ public class ProcessDefinitionListViewImpl extends Composite
         presenter.refreshProcessList(filterKSessionText.getText());
     }
     
-    @EventHandler("fetchProcessDefsButton")
-    public void fetchProcessDefsButton(ClickEvent e) {
-        presenter.fetchProcessDefs();
+   
+    @EventHandler("initOrganizationButton")
+    public void initOrganizationButton(ClickEvent e) {
+        presenter.newInitDomain();
     }
 
     private void initTableColumns(final SelectionModel<ProcessSummary> selectionModel) {
@@ -205,7 +206,7 @@ public class ProcessDefinitionListViewImpl extends Composite
 
         // Process Id String.
         Column<ProcessSummary, String> processNameColumn =
-                new Column<ProcessSummary, String>(new EditTextCell()) {
+                new Column<ProcessSummary, String>(new TextCell()) {
             @Override
             public String getValue(ProcessSummary object) {
                 return object.getName();
@@ -224,7 +225,7 @@ public class ProcessDefinitionListViewImpl extends Composite
 
         // Process PKG.
         Column<ProcessSummary, String> processPkgColumn =
-                new Column<ProcessSummary, String>(new EditTextCell()) {
+                new Column<ProcessSummary, String>(new TextCell()) {
             @Override
             public String getValue(ProcessSummary object) {
                 return object.getPackageName();
@@ -241,12 +242,12 @@ public class ProcessDefinitionListViewImpl extends Composite
         processdefListGrid.addColumn(processPkgColumn,
                 new ResizableHeader(constants.Package(), processdefListGrid, processPkgColumn));
         
-         // Process Session Id.
-        Column<ProcessSummary, Number> processSessionIdColumn =
-                new Column<ProcessSummary, Number>(new NumberCell()) {
+         // Process Domain Id.
+        Column<ProcessSummary, String> processSessionIdColumn =
+                new Column<ProcessSummary, String>(new TextCell()) {
             @Override
-            public Number getValue(ProcessSummary object) {
-                return object.getSessionId();
+            public String getValue(ProcessSummary object) {
+                return object.getDomainId();
             }
         };
         processSessionIdColumn.setSortable(true);
@@ -254,16 +255,16 @@ public class ProcessDefinitionListViewImpl extends Composite
                 new Comparator<ProcessSummary>() {
             public int compare(ProcessSummary o1,
                     ProcessSummary o2) {
-                return (o1.getSessionId() == o2.getSessionId())?0:1;
+                return o1.getDomainId().compareTo(o2.getDomainId());
             }
         });
         processdefListGrid.addColumn(processSessionIdColumn,
-                new ResizableHeader("Session Id", processdefListGrid, processSessionIdColumn));
+                new ResizableHeader("Domain", processdefListGrid, processSessionIdColumn));
         processdefListGrid.setColumnWidth(processSessionIdColumn, "90px");
 
         // Version Type 
         Column<ProcessSummary, String> versionColumn =
-                new Column<ProcessSummary, String>(new EditTextCell()) {
+                new Column<ProcessSummary, String>(new TextCell()) {
             @Override
             public String getValue(ProcessSummary object) {
                 return object.getVersion();
@@ -288,9 +289,8 @@ public class ProcessDefinitionListViewImpl extends Composite
             @Override
             public void execute(ProcessSummary process) {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
-                System.out.println("Opening form for process id = "+process.getId());
                 placeRequestImpl.addParameter("processId", process.getId());
-                placeRequestImpl.addParameter("sessionId", String.valueOf(process.getSessionId()));
+                placeRequestImpl.addParameter("domainId", process.getDomainId());
                 placeManager.goTo(placeRequestImpl);
             }
         }));
@@ -301,7 +301,7 @@ public class ProcessDefinitionListViewImpl extends Composite
 
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Definition_Details());
                 placeRequestImpl.addParameter("processId", process.getId());
-                placeRequestImpl.addParameter("sessionId", Integer.toString(process.getSessionId()));
+                placeRequestImpl.addParameter("domainId", process.getDomainId());
                 placeManager.goTo(placeRequestImpl);
             }
         }));

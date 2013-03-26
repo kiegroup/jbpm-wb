@@ -68,7 +68,7 @@ public class ProcessDefDetailsViewImpl extends Composite
   public ListBox subprocessListBox;
   @Inject
   @DataField
-  public TextBox sessionIdText;
+  public TextBox domainIdText;
   @Inject
   @DataField
   public Button refreshButton;
@@ -116,7 +116,7 @@ public class ProcessDefDetailsViewImpl extends Composite
     PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
     System.out.println("Opening form for process id = " + processNameText.getText());
     placeRequestImpl.addParameter("processId", processNameText.getText());
-    placeRequestImpl.addParameter("sessionId", sessionIdText.getText());
+    placeRequestImpl.addParameter("domainId", domainIdText.getText());
     placeManager.goTo(placeRequestImpl);
   }
 
@@ -158,8 +158,8 @@ public class ProcessDefDetailsViewImpl extends Composite
     return subprocessListBox;
   }
 
-  public TextBox getSessionIdText() {
-      return sessionIdText;
+  public TextBox getDomainIdText() {
+      return domainIdText;
   }
   
   public void displayNotification(String text) {

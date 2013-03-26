@@ -33,7 +33,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
+import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.fb.events.FormRenderedEvent;
@@ -62,7 +62,7 @@ public class FormDisplayPopupPresenter {
     @Inject
     private Caller<FormServiceEntryPoint>            formServices;
     @Inject
-    private Caller<KnowledgeDomainServiceEntryPoint> domainServices;
+    private Caller<DataServiceEntryPoint> dataServices;
     @Inject
     Caller<KieSessionEntryPoint> sessionServices;
     @Inject
@@ -93,9 +93,9 @@ public class FormDisplayPopupPresenter {
 
         void setProcessId( String processId );
 
-        void setSessionId( int sessionId );
+        void setDomainId( String domainId );
 
-        int getSessionId();
+        String getDomainId();
 
         VerticalPanel getFormView();
 
@@ -218,7 +218,7 @@ public class FormDisplayPopupPresenter {
                 view.getFormView().clear();
                 view.getFormView().add( new HTMLPanel( form ) );
 
-                domainServices.call( new RemoteCallback<ProcessSummary>() {
+                dataServices.call( new RemoteCallback<ProcessSummary>() {
                     @Override
                     public void callback( ProcessSummary summary ) {
                         view.getTaskIdText().setText( "" );
@@ -325,10 +325,10 @@ public class FormDisplayPopupPresenter {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instance Details" );
                 placeRequestImpl.addParameter( "processInstanceId", processInstanceId.toString() );
                 placeRequestImpl.addParameter( "processDefId", params.get( "processId" ).toString() );
-                placeRequestImpl.addParameter( "sessionId", Integer.toString( view.getSessionId() ) );
+                placeRequestImpl.addParameter( "domainId",  view.getDomainId() );
                 placeManager.goTo( placeRequestImpl );
             }
-        } ).startProcess( view.getSessionId(), params.get( "processId" ).toString(), params );
+        } ).startProcess( view.getDomainId(), params.get( "processId" ).toString(), params );
 
     }
 
@@ -391,13 +391,13 @@ public class FormDisplayPopupPresenter {
     public void onReveal() {
         long taskId = Long.parseLong( place.getParameter( "taskId", "-1" ).toString() );
         String processId = place.getParameter( "processId", "none" ).toString();
-        String sessionId = place.getParameter( "sessionId", "0" ).toString();
+        String domainId = place.getParameter( "domainId", "none" ).toString();
         if ( taskId != -1 ) {
             view.setTaskId( taskId );
             renderTaskForm( taskId );
         } else if ( !processId.equals( "none" ) ) {
             view.setProcessId( processId );
-            view.setSessionId( Integer.parseInt( sessionId ) );
+            view.setDomainId(  domainId );
             renderProcessForm( processId );
         }
     }

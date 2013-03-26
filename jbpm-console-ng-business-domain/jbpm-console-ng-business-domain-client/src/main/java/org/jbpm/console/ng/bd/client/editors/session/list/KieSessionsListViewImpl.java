@@ -173,8 +173,8 @@ public class KieSessionsListViewImpl extends Composite
 
     @EventHandler("newSessionButton")
     public void newSessionButton(ClickEvent e) {
-        presenter.newKieSessionButton(groupText.getText(), artifactText.getText(), 
-                        versionText.getText(), kbaseNameText.getText(), kieSessionNameText.getText());
+//        presenter.newKieSessionButton(groupText.getText(), artifactText.getText(), 
+//                        versionText.getText(), kbaseNameText.getText(), kieSessionNameText.getText());
     }
     
     

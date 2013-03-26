@@ -18,7 +18,6 @@ package org.jbpm.console.ng.pr.client.editors.instance.list;
 
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,7 +32,7 @@ import javax.enterprise.event.Observes;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
+import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
@@ -80,10 +79,10 @@ public class ProcessInstanceListPresenter {
   @Inject
   private ProcessInstanceListView view;
   @Inject
-  private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
+  private Caller<DataServiceEntryPoint> dataServices;
   
   @Inject 
-  private Caller<KieSessionEntryPoint> sessionServices;
+  private Caller<KieSessionEntryPoint> kieSessionServices;
   
   private ListDataProvider<ProcessInstanceSummary> dataProvider = new ListDataProvider<ProcessInstanceSummary>();
 
@@ -120,7 +119,7 @@ public class ProcessInstanceListPresenter {
     }
 
     if (sessionId != null && !sessionId.equals("")) {
-      knowledgeServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+      dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
         @Override
         public void callback(List<ProcessInstanceSummary> processInstances) {
           dataProvider.getList().clear();
@@ -129,7 +128,7 @@ public class ProcessInstanceListPresenter {
         }
       }).getProcessInstancesBySessionId(sessionId);
     } else {
-      knowledgeServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+      dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
         @Override
         public void callback(List<ProcessInstanceSummary> processInstances) {
           dataProvider.getList().clear();
@@ -174,7 +173,7 @@ public class ProcessInstanceListPresenter {
   }
 
   public void abortProcessInstance(String processDefId, long processInstanceId) {
-    sessionServices.call(new RemoteCallback<Void>() {
+    kieSessionServices.call(new RemoteCallback<Void>() {
       @Override
       public void callback(Void v) {
         refreshProcessList("");
@@ -186,7 +185,7 @@ public class ProcessInstanceListPresenter {
   public void listProcessInstances() {
     
     if (!this.currentProcessDefinition.equals("")) {
-      knowledgeServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+      dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
         @Override
         public void callback(List<ProcessInstanceSummary> processes) {
           view.setAvailableProcesses(processes);
@@ -194,7 +193,7 @@ public class ProcessInstanceListPresenter {
         }
       }).getProcessInstancesByProcessDefinition(this.currentProcessDefinition);
     } else {
-      knowledgeServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+      dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
         @Override
         public void callback(List<ProcessInstanceSummary> processes) {
           view.setAvailableProcesses(processes);

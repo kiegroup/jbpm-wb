@@ -266,6 +266,7 @@
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.osgi.core</artifactId>
+      <version>1.4.0</version>
     </dependency>
 
     <dependency>
@@ -441,14 +442,16 @@
             <compileSourcesArtifact>org.kie.guvnor:guvnor-config-resource-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-core-services-api</compileSourcesArtifact>
             
-            <compileSourcesArtifact>org.kie.guvnor:guvnor-project-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.kie.guvnor:guvnor-project-client</compileSourcesArtifact>
+            
             <compileSourcesArtifact>org.kie.guvnor:guvnor-project-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-project-editor-client</compileSourcesArtifact>
+
             <compileSourcesArtifact>org.kie.guvnor:guvnor-project-config-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-project-config-editor-client</compileSourcesArtifact>
+            
             <compileSourcesArtifact>org.kie.guvnor:guvnor-m2repo-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-m2repo-editor-client</compileSourcesArtifact>
+            
             <compileSourcesArtifact>org.kie.guvnor:guvnor-explorer-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-explorer-client</compileSourcesArtifact>
             
@@ -459,7 +462,6 @@
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-core-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-commons</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-workbench</compileSourcesArtifact>
-            <compileSourcesArtifact>org.uberfire:uberfire-backend-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-backend-commons</compileSourcesArtifact>
 
             <compileSourcesArtifact>org.jbpm:jbpm-designer-api</compileSourcesArtifact>
@@ -468,9 +470,9 @@
             <compileSourcesArtifact>org.kie.commons:kie-nio2-model</compileSourcesArtifact>
           </compileSourcesArtifacts>
           <runTarget>org.jbpm.console.ng.jBPMShowcase/jBPM.html</runTarget>
-          <extraJvmArgs>-Xmx1024m -XX:MaxPermSize=256m</extraJvmArgs>
+          <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m</extraJvmArgs>
           <soyc>false</soyc>
-          
+          <strict>false</strict>
           <server>org.jboss.errai.cdi.server.gwt.JettyLauncher</server>
           <!-- drools-compiler has dependency on org.eclipse.jdt.core.compiler:ecj:jar:3.5.1:compile, 
             see http://code.google.com/p/google-web-toolkit/issues/detail?id=4479 -->

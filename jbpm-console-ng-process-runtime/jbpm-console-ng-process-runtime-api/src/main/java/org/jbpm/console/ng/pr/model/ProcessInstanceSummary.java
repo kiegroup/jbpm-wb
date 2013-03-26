@@ -30,13 +30,15 @@ public class ProcessInstanceSummary implements Serializable {
     private String processVersion;
     private int state;
     private long startTime;
+    private String domainId;
 
-    public ProcessInstanceSummary(long id, String processId, String processName, 
+    public ProcessInstanceSummary(long id, String processId, String domainId,  String processName, 
             String processVersion, int state, long startTime) {
         super();
         this.id = id;
         this.processId = processId;
         this.processName = processName;
+        this.domainId = domainId;
         this.processVersion = processVersion;
         this.state = state;
         this.startTime = startTime;
@@ -92,8 +94,14 @@ public class ProcessInstanceSummary implements Serializable {
     public void setStartTime(long startTime) {
         this.startTime = startTime;
     }
-    
-    
+
+    public String getDomainId() {
+        return domainId;
+    }
+
+    public void setDomainId(String domainId) {
+        this.domainId = domainId;
+    }
     
     
 }

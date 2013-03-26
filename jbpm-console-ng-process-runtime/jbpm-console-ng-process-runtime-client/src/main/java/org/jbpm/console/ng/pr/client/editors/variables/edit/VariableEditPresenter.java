@@ -7,7 +7,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
+import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -54,7 +54,7 @@ public class VariableEditPresenter {
     private PlaceRequest place;
     
     @Inject
-    private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
+    private Caller<KieSessionEntryPoint> kieSessionServices;
     
     @PostConstruct
     public void init() {
@@ -91,7 +91,7 @@ public class VariableEditPresenter {
     
     public void setProcessVariable(Object value) {
 
-        knowledgeServices.call(new RemoteCallback<Void>() {
+        kieSessionServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void v) {
                 close();

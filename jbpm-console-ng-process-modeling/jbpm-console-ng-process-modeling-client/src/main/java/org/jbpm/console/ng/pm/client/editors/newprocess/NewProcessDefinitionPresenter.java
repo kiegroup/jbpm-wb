@@ -25,7 +25,7 @@ import javax.enterprise.event.Event;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
+import org.jbpm.console.ng.bd.service.FileServiceEntryPoint;
 
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -54,7 +54,7 @@ public class NewProcessDefinitionPresenter {
     @Inject
     Identity identity;
     @Inject
-    Caller<KnowledgeDomainServiceEntryPoint> domainService;
+    Caller<FileServiceEntryPoint> fileService;
     
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
@@ -90,7 +90,7 @@ public class NewProcessDefinitionPresenter {
 
     public void createNewProcess(final String path) {
         
-            domainService.call(new RemoteCallback<String>() {
+            fileService.call(new RemoteCallback<String>() {
                 @Override
                 public void callback(String path) {
                     view.displayNotification("File Created "+path.toString());

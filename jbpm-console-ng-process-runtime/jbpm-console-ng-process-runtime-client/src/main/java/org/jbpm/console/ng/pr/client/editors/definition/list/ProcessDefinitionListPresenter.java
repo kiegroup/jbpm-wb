@@ -20,19 +20,22 @@ package org.jbpm.console.ng.pr.client.editors.definition.list;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
+import java.util.ArrayList;
 import javax.enterprise.event.Event;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
+import org.jbpm.console.ng.bd.model.DomainSummary;
+import org.jbpm.console.ng.bd.model.OrganizationSummary;
+import org.jbpm.console.ng.bd.model.RuntimeSummary;
+import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
+import org.jbpm.console.ng.bd.service.DomainManagerServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
-import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -57,9 +60,11 @@ public class ProcessDefinitionListPresenter {
     @Inject
     private InboxView view;
     @Inject
-    private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
+    private Caller<DataServiceEntryPoint> dataServices;
+    
     @Inject
-    Caller<KieSessionEntryPoint> ksessionServices;
+    private Caller<DomainManagerServiceEntryPoint> domainManagerService;
+    
     @Inject
     Event<ProcessInstanceCreated> processInstanceCreatedEvents;
     private ListDataProvider<ProcessSummary> dataProvider = new ListDataProvider<ProcessSummary>();
@@ -77,31 +82,67 @@ public class ProcessDefinitionListPresenter {
     public ProcessDefinitionListPresenter() {
     }
 
-    @PostConstruct
-    public void init() {
-    }
+    public void newInitDomain() {
 
-    public void fetchProcessDefs() {
-        knowledgeServices.call(new RemoteCallback<Void>() {
+        
+        // TODO THIS SHOULD HAVE IT'S OWN MANAGEMENT SCREENS
+        
+        DomainSummary domainRelease = new DomainSummary();
+        domainRelease.setName("Release Domain");
+        List<RuntimeSummary> runtimesRelease = new ArrayList<RuntimeSummary>();
+        RuntimeSummary releaseRuntime = new RuntimeSummary();
+        releaseRuntime.setName("Release Runtime");
+        releaseRuntime.setReference("processes/release/");
+        releaseRuntime.setType("Folder/Runtime Manager(Singleton)");
+        
+        runtimesRelease.add(releaseRuntime);
+        
+        domainRelease.setRuntimes(runtimesRelease);
+        
+        DomainSummary domainGeneral = new DomainSummary();
+        domainGeneral.setName("General Domain");
+        
+        List<RuntimeSummary> runtimesGeneral = new ArrayList<RuntimeSummary>();
+        RuntimeSummary generalRuntime = new RuntimeSummary();
+        generalRuntime.setName("General Runtime");
+        generalRuntime.setReference("processes/general/");
+        generalRuntime.setType("Folder/Runtime Manager(Singleton)");
+        
+        runtimesGeneral.add(generalRuntime);
+        
+        
+        domainGeneral.setRuntimes(runtimesGeneral);
+        
+        List<DomainSummary> domains = new ArrayList<DomainSummary>();
+        domains.add(domainRelease);
+        domains.add(domainGeneral);
+        
+        
+        
+        OrganizationSummary organizationSummary = new OrganizationSummary();
+        organizationSummary.setDomains(domains);
+        organizationSummary.setName("jBPM Console NG");
+        
+        domainManagerService.call(new RemoteCallback<Long>() {
             @Override
-            public void callback(Void nothing) {
-                view.displayNotification(" Repository Updated! ");
-                knowledgeServices.call(new RemoteCallback<Void>() {
+            public void callback(final Long organizationId) {
+                view.displayNotification(" Organization Created " + organizationId);
+                domainManagerService.call(new RemoteCallback<Void>() {
                     @Override
                     public void callback(Void nothing) {
-                        view.displayNotification(" KSession recreated! ");
-                        refreshProcessList(view.getSessionIdText().getText());
-
+                        view.displayNotification(" Organization Initializated " + organizationId);
                     }
-                }).createDomain();
+                }).initOrganization(organizationId);
             }
-        }).fetchChanges();
+        }).newOrganization( organizationSummary );
+        
+        
     }
 
     public void refreshProcessList(final String filter) {
 
         if (filter != null && !filter.equals("")) {
-            knowledgeServices.call(new RemoteCallback<List<ProcessSummary>>() {
+            dataServices.call(new RemoteCallback<List<ProcessSummary>>() {
                 @Override
                 public void callback(List<ProcessSummary> processes) {
                     dataProvider.getList().clear();
@@ -110,7 +151,7 @@ public class ProcessDefinitionListPresenter {
                 }
             }).getProcessesByFilter(filter);
         } else {
-            knowledgeServices.call(new RemoteCallback<List<ProcessSummary>>() {
+            dataServices.call(new RemoteCallback<List<ProcessSummary>>() {
                 @Override
                 public void callback(List<ProcessSummary> processes) {
                     dataProvider.getList().clear();
@@ -119,18 +160,6 @@ public class ProcessDefinitionListPresenter {
                 }
             }).getProcesses();
         }
-    }
-
-    public void startProcessInstance(final String processId) {
-
-        ksessionServices.call(new RemoteCallback<Long>() {
-            @Override
-            public void callback(Long processId) {
-                view.displayNotification("Process Created (id = " + processId + ")");
-                processInstanceCreatedEvents.fire(new ProcessInstanceCreated());
-            }
-        }).startProcess(0 , processId);
-
     }
 
     public void addDataDisplay(HasData<ProcessSummary> display) {

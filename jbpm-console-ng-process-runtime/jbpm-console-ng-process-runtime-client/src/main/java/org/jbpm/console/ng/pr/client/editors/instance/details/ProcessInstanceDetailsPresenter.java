@@ -23,14 +23,12 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.VariableSummary;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.backend.vfs.Path;
-import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -46,6 +44,9 @@ import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
+import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
+import org.jbpm.console.ng.bd.service.FileServiceEntryPoint;
+
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance Details")
@@ -85,9 +86,14 @@ public class ProcessInstanceDetailsPresenter {
     @Inject
     private PlaceManager placeManager;
     @Inject
-    ProcessInstanceDetailsView                                view;
+    private ProcessInstanceDetailsView                                view;
     @Inject
-    Caller<KnowledgeDomainServiceEntryPoint> domainServices;
+    private Caller<DataServiceEntryPoint> dataServices;
+    @Inject
+    private Caller<FileServiceEntryPoint> fileServices;
+    
+    
+    
     private             ListDataProvider<VariableSummary> dataProvider = new ListDataProvider<VariableSummary>();
     public static final ProvidesKey<VariableSummary>      KEY_PROVIDER = new ProvidesKey<VariableSummary>() {
         public Object getKey( VariableSummary item ) {
@@ -107,7 +113,7 @@ public class ProcessInstanceDetailsPresenter {
 
     public void refreshProcessInstanceData( final String processId,
                                             final String processDefId ) {
-        domainServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
+        dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
             public void callback( List<NodeInstanceSummary> details ) {
                 view.getLogTextArea().setText("");
@@ -118,7 +124,7 @@ public class ProcessInstanceDetailsPresenter {
                 view.getLogTextArea().setText( fullLog );
             }
         } ).getProcessInstanceHistory( Long.parseLong( processId ) );
-        domainServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
+        dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
             public void callback( List<NodeInstanceSummary> details ) {
                 view.setCurrentActiveNodes(details);
@@ -130,7 +136,7 @@ public class ProcessInstanceDetailsPresenter {
             }
         } ).getProcessInstanceActiveNodes( Long.parseLong( processId ) );
 
-        domainServices.call( new RemoteCallback<ProcessSummary>() {
+        dataServices.call( new RemoteCallback<ProcessSummary>() {
             @Override
             public void callback( ProcessSummary process ) {
                 view.getProcessNameText().setText( process.getId() );
@@ -139,7 +145,7 @@ public class ProcessInstanceDetailsPresenter {
             }
         } ).getProcessDesc( processDefId );
 
-        domainServices.call( new RemoteCallback<ProcessInstanceSummary>() {
+        dataServices.call( new RemoteCallback<ProcessInstanceSummary>() {
             @Override
             public void callback( ProcessInstanceSummary process ) {
                 view.setProcessInstance( process );
@@ -169,7 +175,7 @@ public class ProcessInstanceDetailsPresenter {
            }
        }).getProcessInstanceById( Long.parseLong(processId));
         
-        domainServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
+        dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
             public void callback( List<NodeInstanceSummary> details ) {
                 view.setCurrentCompletedNodes(details);
@@ -178,7 +184,19 @@ public class ProcessInstanceDetailsPresenter {
        
        loadVariables(processId, processDefId);
 
-       getProcessPath(processDefId);
+        dataServices.call(new RemoteCallback<ProcessSummary>() {
+            @Override
+            public void callback(ProcessSummary process) {
+                
+                fileServices.call(new RemoteCallback<Path>() {
+                     @Override
+                     public void callback(Path processPath) {
+                         view.setProcessAssetPath(processPath);
+                     }
+                }).getPath(process.getOriginalPath());
+                
+            }
+        }).getProcessById(processDefId);
     }
 
     public void addDataDisplay(HasData<VariableSummary> display) {
@@ -208,7 +226,7 @@ public class ProcessInstanceDetailsPresenter {
     }
     
     public void loadVariables(final String processId, final String processDefId) {
-        domainServices.call(new RemoteCallback<List<VariableSummary>>() {
+        dataServices.call(new RemoteCallback<List<VariableSummary>>() {
             @Override
             public void callback(List<VariableSummary> variables) {
                     dataProvider.getList().clear();
@@ -218,12 +236,5 @@ public class ProcessInstanceDetailsPresenter {
         }).getVariablesCurrentState(Long.parseLong(processId), processDefId);
     }
     
-    public void getProcessPath(String processDefId) {
-        domainServices.call(new RemoteCallback<Path>() {
-            @Override
-            public void callback(Path processAssetPath) {
-                view.setProcessAssetPath(processAssetPath);
-            }
-        }).getProcessAssetPath(processDefId);
-    }
+    
 }

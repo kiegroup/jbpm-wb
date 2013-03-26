@@ -9,7 +9,6 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
@@ -68,9 +67,6 @@ public class TaskCommentsPopupPresenter {
 
     @Inject
     Caller<TaskServiceEntryPoint> taskServices;
-
-    @Inject
-    private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
 
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;

@@ -32,7 +32,7 @@ public class ProcessInstanceHelper {
     public static Collection<ProcessInstanceSummary> adaptCollection(Collection<ProcessInstanceDesc> processInstances){
         List<ProcessInstanceSummary> processInstancesSummary = new ArrayList<ProcessInstanceSummary>();
         for(ProcessInstanceDesc pi : processInstances){
-            processInstancesSummary.add(new ProcessInstanceSummary(pi.getId(), pi.getProcessId(), 
+            processInstancesSummary.add(new ProcessInstanceSummary(pi.getId(), pi.getProcessId(), pi.getDomainId(),
                     pi.getProcessName(), pi.getProcessVersion(), pi.getState(), pi.getDataTimeStamp().getTime()));
         }
         
@@ -40,7 +40,7 @@ public class ProcessInstanceHelper {
     }
     
     public static ProcessInstanceSummary adapt(ProcessInstanceDesc processInstance){
-        return new ProcessInstanceSummary(processInstance.getId(), processInstance.getProcessId(), 
+        return new ProcessInstanceSummary(processInstance.getId(), processInstance.getProcessId(), processInstance.getDomainId(),
                 processInstance.getProcessName(), processInstance.getProcessVersion(), processInstance.getState(), 
                 processInstance.getDataTimeStamp().getTime());
     }

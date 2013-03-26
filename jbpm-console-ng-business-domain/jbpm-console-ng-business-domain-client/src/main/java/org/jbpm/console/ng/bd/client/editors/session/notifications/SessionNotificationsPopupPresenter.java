@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.bd.client.editors.session.notifications;
 
-import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -23,10 +22,6 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
-import org.jboss.errai.bus.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.model.RuleNotificationSummary;
-import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -62,8 +57,8 @@ public class SessionNotificationsPopupPresenter {
     @Inject
     Identity  identity;
 
-    @Inject
-    private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
+//    @Inject
+//    private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
     @Inject
     private Event<BeforeClosePlaceEvent>             closePlaceEvent;
     private PlaceRequest                             place;
@@ -85,19 +80,19 @@ public class SessionNotificationsPopupPresenter {
 
     public void getSessionNotifications( final int sessionId ) {
 
-        knowledgeServices.call( new RemoteCallback<List<RuleNotificationSummary>>() {
-            @Override
-            public void callback( List<RuleNotificationSummary> notifications ) {
-                String notificationsText = "";
-                for ( RuleNotificationSummary n : notifications ) {
-                    notificationsText += n.getDataTimeStamp().toString() + " - " + n.getNotification() + "\n";
-                }
-                view.getSessionNotificationsTextArea().setText( "" );
-                view.getSessionNotificationsTextArea().setText( notificationsText );
-                view.displayNotification( " Session Notifications updated" );
-
-            }
-        } ).getAllNotificationInstance();
+//        knowledgeServices.call( new RemoteCallback<List<RuleNotificationSummary>>() {
+//            @Override
+//            public void callback( List<RuleNotificationSummary> notifications ) {
+//                String notificationsText = "";
+//                for ( RuleNotificationSummary n : notifications ) {
+//                    notificationsText += n.getDataTimeStamp().toString() + " - " + n.getNotification() + "\n";
+//                }
+//                view.getSessionNotificationsTextArea().setText( "" );
+//                view.getSessionNotificationsTextArea().setText( notificationsText );
+//                view.displayNotification( " Session Notifications updated" );
+//
+//            }
+//        } ).getAllNotificationInstance();
 
     }
 

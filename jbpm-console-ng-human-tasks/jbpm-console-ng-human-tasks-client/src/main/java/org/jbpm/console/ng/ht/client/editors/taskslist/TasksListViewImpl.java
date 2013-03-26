@@ -26,14 +26,11 @@ import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import javax.enterprise.event.Observes;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
 import org.uberfire.security.Identity;
 
@@ -59,6 +56,10 @@ public class TasksListViewImpl extends Composite
     @Inject
     @DataField
     public NavLink advancedViewTasksNavLink;
+    
+    @Inject
+    @DataField
+    public NavLink monthViewTasksNavLink;
     
     @Inject
     @DataField
@@ -97,6 +98,7 @@ public class TasksListViewImpl extends Composite
             public void onClick(ClickEvent event) {
               tasksViewContainer.setStyleName("day");
               weekViewTasksNavLink.setStyleName("");
+              monthViewTasksNavLink.setStyleName("");
               advancedViewTasksNavLink.setStyleName("");
               refreshTasks();
             }
@@ -108,8 +110,23 @@ public class TasksListViewImpl extends Composite
           public void onClick(ClickEvent event) {
             tasksViewContainer.setStyleName("week");
             dayViewTasksNavLink.setStyleName("");
+            monthViewTasksNavLink.setStyleName("");
             advancedViewTasksNavLink.setStyleName("");
             weekViewTasksNavLink.setStyleName("active");
+            refreshTasks();
+          }
+        });
+        
+        monthViewTasksNavLink.setText("Month");
+        monthViewTasksNavLink.addClickHandler(new ClickHandler() {
+
+          @Override
+          public void onClick(ClickEvent event) {
+            tasksViewContainer.setStyleName("month");
+            dayViewTasksNavLink.setStyleName("");
+            advancedViewTasksNavLink.setStyleName("");
+            weekViewTasksNavLink.setStyleName("");
+            monthViewTasksNavLink.setStyleName("active");
             refreshTasks();
           }
         });
@@ -121,6 +138,7 @@ public class TasksListViewImpl extends Composite
           public void onClick(ClickEvent event) {
             dayViewTasksNavLink.setStyleName("");
             weekViewTasksNavLink.setStyleName("");
+            monthViewTasksNavLink.setStyleName("");
             advancedViewTasksNavLink.setStyleName("active");
             PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Grid Tasks List");
             placeManager.goTo(placeRequestImpl);

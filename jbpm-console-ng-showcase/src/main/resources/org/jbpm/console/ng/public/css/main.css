@@ -343,3 +343,92 @@
 .week .task.active:hover .task-options {
 
 }
+
+/* MONTH VIEW */
+
+#section-content.month  {
+    height: 85%;
+}
+
+.month .day-tasks-container {
+    width:  14.28%; 
+	width: -moz-calc(100%/7);
+	width: -webkit-calc(100%/7);
+	width: calc(100%/7);
+    float: left;
+    min-height: 150px;
+  height:  20%; 
+  height: -moz-calc(100%/5);
+  height: -webkit-calc(100%/5);
+  height: calc(100%/5);
+   
+    overflow: hidden;
+    position: relative;
+    border-bottom: 1px solid #929292;
+    margin-bottom: -2px;
+    
+}
+
+.month .day-tasks-container .tasks-list {
+    height: 90%;
+    padding: 15px 5px 50px 5px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-right: 1px solid #929292;
+    
+}
+
+.month .day-tasks-container .top {
+    position: absolute;
+    z-index: 20;
+    -webkit-box-shadow:  0px 3px 1px 0px rgba(0,0,0,.6); 
+    box-shadow:  0px 3px 1px 0px rgba(0,0,0,.6);
+    right: 1px;
+    top: 2px;
+}
+
+.month .task .task-options {
+    display: none;
+}
+
+.month .task .task-name {
+    font-size: 12px;
+    color: #666;
+    line-height: 29px;
+    height: 25px;
+    width: 85%;
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: 15%;
+    overflow: hidden;
+}
+
+.month .task .task-name a {
+    color: #666; 
+    text-decoration: none;
+    display: block;
+    padding-left: 10px;
+}
+.month .task .task-name a:hover {
+    color: #000;
+}
+
+.month .task .priority {
+    height: 25px;
+    line-height: 25px;
+    display: block;
+    position: static;
+}
+
+.month .task .priority span {
+    display: none;
+}
+
+
+.month .task .hour {
+    height: 25px;
+    top: 1px;
+    left: 1px;
+    line-height: 25px;
+}

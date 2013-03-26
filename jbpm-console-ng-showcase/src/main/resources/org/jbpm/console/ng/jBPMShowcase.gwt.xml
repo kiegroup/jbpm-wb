@@ -40,8 +40,6 @@
   <inherits name="org.jbpm.designer.jBPMDesignerAPI"/>
   <inherits name="org.jbpm.designer.jBPMDesignerClient"/>
   
-  <inherits name="com.github.gwtbootstrap.Bootstrap" />  
-  <inherits name="com.google.gwt.xml.XML" />
   <!--inherits name='com.googlecode.gchart.GChart'/-->
   <inherits name="org.jboss.errai.ui.UI" />
   

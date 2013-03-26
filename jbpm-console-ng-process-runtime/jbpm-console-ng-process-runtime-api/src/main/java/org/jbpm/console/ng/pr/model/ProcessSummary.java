@@ -29,18 +29,20 @@ public class ProcessSummary {
     private String packageName;
     private String type;
     private String version;
-    private int sessionId;
+    private String originalPath;
+    private String domainId;
 
     public ProcessSummary() {
     }
 
-    public ProcessSummary(String id, String name, int sessionId, String packageName, String type, String version) {
+    public ProcessSummary(String id, String name, String domainId, String packageName, String type, String version, String originalpath) {
         this.id = id;
         this.name = name;
-        this.sessionId = sessionId;
+        this.domainId = domainId;
         this.packageName = packageName;
         this.type = type;
         this.version = version;
+        this.originalPath = originalpath;
     }
 
   
@@ -84,13 +86,22 @@ public class ProcessSummary {
         this.version = version;
     }
 
-    public int getSessionId() {
-      return sessionId;
+    public String getDomainId() {
+      return domainId;
     }
 
-    public void setSessionId(int sessionId) {
-      this.sessionId = sessionId;
+    public void setDomainId(String domainId) {
+      this.domainId = domainId;
     }
+
+    public String getOriginalPath() {
+        return originalPath;
+    }
+
+    public void setOriginalPath(String originalPath) {
+        this.originalPath = originalPath;
+    }
+    
     
     
 }

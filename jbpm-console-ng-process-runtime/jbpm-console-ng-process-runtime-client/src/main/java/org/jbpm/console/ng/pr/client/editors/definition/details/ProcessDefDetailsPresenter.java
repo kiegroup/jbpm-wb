@@ -24,7 +24,6 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.ht.model.TaskDefSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.backend.vfs.Path;
@@ -39,6 +38,11 @@ import org.uberfire.shared.mvp.PlaceRequest;
 
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
+import org.jbpm.console.ng.bd.service.FileServiceEntryPoint;
+import org.jbpm.console.ng.pr.model.ProcessSummary;
+import org.uberfire.backend.vfs.FileSystem;
+import org.uberfire.backend.vfs.PathFactory;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Definition Details")
@@ -66,7 +70,7 @@ public class ProcessDefDetailsPresenter {
 
         ListBox getSubprocessListBox();
         
-        TextBox getSessionIdText();
+        TextBox getDomainIdText();
 
         void setProcessAssetPath(Path processAssetPath);
     }
@@ -74,12 +78,13 @@ public class ProcessDefDetailsPresenter {
     @Inject
     private PlaceManager placeManager;
     @Inject
-    ProcessDefDetailsView                                view;
+    private ProcessDefDetailsView view;
     @Inject
-    Caller<TaskServiceEntryPoint>            taskServices;
+    private Caller<DataServiceEntryPoint> dataServices;
     @Inject
-    Caller<KnowledgeDomainServiceEntryPoint> domainServices;
-
+    private Caller<FileServiceEntryPoint> fileServices;
+    
+    
     @OnStart
     public void onStart( final PlaceRequest place ) {
         this.place = place;
@@ -97,7 +102,7 @@ public class ProcessDefDetailsPresenter {
 
     public void refreshProcessDef( final String processId ) {
 
-        domainServices.call( new RemoteCallback<List<TaskDefSummary>>() {
+        dataServices.call( new RemoteCallback<List<TaskDefSummary>>() {
             @Override
             public void callback( List<TaskDefSummary> tasks ) {
                 view.getNroOfHumanTasksText().setText( String.valueOf( tasks.size() ) );
@@ -107,7 +112,7 @@ public class ProcessDefDetailsPresenter {
                 }
             }
         } ).getAllTasksDef( processId );
-        domainServices.call( new RemoteCallback<Map<String, String>>() {
+        dataServices.call( new RemoteCallback<Map<String, String>>() {
             @Override
             public void callback( Map<String, String> entities ) {
                 view.getUsersGroupsListBox().clear();
@@ -116,7 +121,7 @@ public class ProcessDefDetailsPresenter {
                 }
             }
         } ).getAssociatedEntities( processId );
-        domainServices.call( new RemoteCallback<Map<String, String>>() {
+        dataServices.call( new RemoteCallback<Map<String, String>>() {
             @Override
             public void callback( Map<String, String> inputs ) {
                 view.getProcessDataListBox().clear();
@@ -126,7 +131,7 @@ public class ProcessDefDetailsPresenter {
             }
         } ).getRequiredInputData( processId );
 
-        domainServices.call( new RemoteCallback<Collection<String>>() {
+        dataServices.call( new RemoteCallback<Collection<String>>() {
             @Override
             public void callback( Collection<String> subprocesses ) {
                 view.getSubprocessListBox().clear();
@@ -136,7 +141,17 @@ public class ProcessDefDetailsPresenter {
             }
         } ).getReusableSubProcesses( processId );
         
-        getProcessPath(processId);
+        dataServices.call(new RemoteCallback<ProcessSummary>() {
+            @Override
+            public void callback(ProcessSummary process) {
+                fileServices.call(new RemoteCallback<Path>() {
+                     @Override
+                     public void callback(Path processPath) {
+                         view.setProcessAssetPath(processPath);
+                     }
+                }).getPath(process.getOriginalPath());
+            }
+        }).getProcessById(processId);
     }
 
     @OnReveal
@@ -144,18 +159,11 @@ public class ProcessDefDetailsPresenter {
         String processId = place.getParameter( "processId", "" );
         view.getProcessNameText().setText( processId );
         
-        String sessionId = place.getParameter( "sessionId", "" );
-        view.getSessionIdText().setText(sessionId);
+        String domainId = place.getParameter( "domainId", "none" );
+        view.getDomainIdText().setText(domainId);
 
         refreshProcessDef( processId );
     }
     
-    public void getProcessPath(String processDefId) {
-        domainServices.call(new RemoteCallback<Path>() {
-            @Override
-            public void callback(Path processAssetPath) {
-                view.setProcessAssetPath(processAssetPath);
-            }
-        }).getProcessAssetPath(processDefId);
-    }
+  
 }

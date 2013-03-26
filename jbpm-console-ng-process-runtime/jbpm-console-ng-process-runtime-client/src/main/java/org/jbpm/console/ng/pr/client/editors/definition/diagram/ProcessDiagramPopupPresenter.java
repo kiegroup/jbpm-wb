@@ -24,7 +24,8 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
+import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
+
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
@@ -66,7 +67,7 @@ public class ProcessDiagramPopupPresenter {
     @Inject
     Identity identity;
     @Inject
-    private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
+    private Caller<DataServiceEntryPoint> dataServices;
     
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
@@ -89,7 +90,7 @@ public class ProcessDiagramPopupPresenter {
 
     public void generateURL(final String processDefinitionId, final Long processInstanceId, 
                             final String packageName, final String version) {
-        knowledgeServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
+        dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
             public void callback( List<NodeInstanceSummary> details ) {
                 String fullLog = "?processDefId="+processDefinitionId+""

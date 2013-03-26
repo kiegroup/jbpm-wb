@@ -9,7 +9,6 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
@@ -49,12 +48,9 @@ public class ProcessInstanceSignalPresenter {
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
     private PlaceRequest place;
-    
-    @Inject
-    private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
-    
+
     @Inject 
-    private Caller<KieSessionEntryPoint> sessionServices;
+    private Caller<KieSessionEntryPoint> kieSessionServices;
     
     @PostConstruct
     public void init() {
@@ -79,7 +75,7 @@ public class ProcessInstanceSignalPresenter {
     
     public void signalProcessInstance(long processInstanceId) {
 
-        sessionServices.call(new RemoteCallback<Void>() {
+        kieSessionServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void v) {
                 close();
@@ -99,7 +95,7 @@ public class ProcessInstanceSignalPresenter {
         
         // for single process instance load available signals
         if (ids.length == 1 && Long.parseLong(ids[0]) != -1) {
-            getAvailableSignals("general", Long.parseLong(ids[0]));
+            getAvailableSignals(Long.parseLong(ids[0]));
         }
     }
 
@@ -107,8 +103,8 @@ public class ProcessInstanceSignalPresenter {
         closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
     
-    public void getAvailableSignals(String sessionId, long processInstanceId) {
-        knowledgeServices.call(new RemoteCallback<Collection<String>>() {
+    public void getAvailableSignals(long processInstanceId) {
+        kieSessionServices.call(new RemoteCallback<Collection<String>>() {
             @Override
             public void callback(Collection<String> signals) {
                 for(String s: signals){
@@ -117,6 +113,6 @@ public class ProcessInstanceSignalPresenter {
                 view.setAvailableSignals(signals);
                 
             }
-        }).getAvailableSignals(sessionId, processInstanceId);
+        }).getAvailableSignals(processInstanceId);
     }
 }

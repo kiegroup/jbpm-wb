@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 JBoss by Red Hat.
+ * Copyright 2013 JBoss by Red Hat.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,23 @@
  */
 package org.jbpm.console.ng.bd.service;
 
-import java.util.Collection;
-import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.kie.commons.java.nio.file.Path;
 
 /**
  *
  * @author salaboy
  */
 @Remote
-public interface KieSessionEntryPoint {
-    long startProcess(String domainId, String processId);
-    long startProcess(String domainId, String processId, Map<String, String> params);
-    void abortProcessInstance(long processInstanceId);
-    void signalProcessInstance(long processInstanceId, String signalName, Object event);
-    void setProcessVariable(long processInstanceId, String variableId, Object value);
-    Collection<String> getAvailableSignals(long processInstanceId);
+public interface FileServiceEntryPoint {
+    
+    String createProcessDefinitionFile(String name);
+    
+    void fetchChanges();
+
+    byte[] loadFile(Path file);
+
+    Iterable<Path> loadFilesByType(String path, String fileType); 
+    
+    org.uberfire.backend.vfs.Path getPath(String path);
 }

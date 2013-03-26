@@ -40,7 +40,8 @@ import javax.enterprise.event.Observes;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KnowledgeDomainServiceEntryPoint;
+import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
+
 
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
@@ -105,7 +106,7 @@ public class TaskDetailsPopupPresenter {
     @Inject
     Caller<TaskServiceEntryPoint> taskServices;
     @Inject
-    private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
+    private Caller<DataServiceEntryPoint> dataServices;
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
     private PlaceRequest place;
@@ -127,7 +128,7 @@ public class TaskDetailsPopupPresenter {
 
     public void goToProcessInstanceDetails() {
 
-        knowledgeServices.call(new RemoteCallback<ProcessInstanceSummary>() {
+        dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
             @Override
             public void callback(ProcessInstanceSummary processInstance) {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance Details");
