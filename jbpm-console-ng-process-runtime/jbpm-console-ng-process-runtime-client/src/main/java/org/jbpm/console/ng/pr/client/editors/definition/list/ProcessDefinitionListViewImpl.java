@@ -87,9 +87,6 @@ public class ProcessDefinitionListViewImpl extends Composite
     public Button filterKSessionButton;
     @Inject
     @DataField
-    public Button initOrganizationButton;
-    @Inject
-    @DataField
     public DataGrid<ProcessSummary> processdefListGrid;
     @Inject
     @DataField 
@@ -157,12 +154,6 @@ public class ProcessDefinitionListViewImpl extends Composite
     @EventHandler("filterKSessionButton")
     public void filterKSessionButton(ClickEvent e) {
         presenter.refreshProcessList(filterKSessionText.getText());
-    }
-    
-   
-    @EventHandler("initOrganizationButton")
-    public void initOrganizationButton(ClickEvent e) {
-        presenter.newInitDomain();
     }
 
     private void initTableColumns(final SelectionModel<ProcessSummary> selectionModel) {
