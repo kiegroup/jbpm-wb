@@ -18,7 +18,7 @@ package org.jbpm.console.ng.ht.backend.server;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jbpm.task.impl.model.I18NTextImpl;
+import org.jbpm.services.task.impl.model.I18NTextImpl;
 import org.kie.internal.task.api.model.I18NText;
 
 /**
