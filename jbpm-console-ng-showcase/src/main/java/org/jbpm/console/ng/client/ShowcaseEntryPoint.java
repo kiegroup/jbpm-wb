@@ -82,7 +82,7 @@ public class ShowcaseEntryPoint {
             "Process Instances",
 //        "Users and Groups",
 //        "Jobs",
-            "Kie Sessions List",
+         //   "Kie Sessions List",
             "Authoring"
     };
     @Inject
