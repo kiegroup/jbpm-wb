@@ -89,6 +89,7 @@ public class InitApplication {
             
             ut.commit();
         } catch (Exception e) {
+            e.printStackTrace();
             ut.rollback();
         }
         
