@@ -264,9 +264,8 @@
 
     <!-- Rouge imports to avoid OSGi errors -->
     <dependency>
-      <groupId>org.apache.felix</groupId>
+      <groupId>org.osgi</groupId>
       <artifactId>org.osgi.core</artifactId>
-      <version>1.4.0</version>
     </dependency>
 
     <dependency>

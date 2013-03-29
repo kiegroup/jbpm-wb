@@ -33,6 +33,7 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import org.jbpm.console.ng.pr.client.util.ResizableHeader;
+import org.uberfire.client.common.BusyPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 import org.uberfire.security.Identity;
@@ -85,6 +86,9 @@ public class ProcessDefinitionListViewImpl extends Composite
     @Inject
     @DataField
     public Button filterKSessionButton;
+    @Inject
+    @DataField
+    public Button reloadRepoButton;
     @Inject
     @DataField
     public DataGrid<ProcessSummary> processdefListGrid;
@@ -155,7 +159,12 @@ public class ProcessDefinitionListViewImpl extends Composite
     public void filterKSessionButton(ClickEvent e) {
         presenter.refreshProcessList(filterKSessionText.getText());
     }
-
+    
+    @EventHandler("reloadRepoButton")
+    public void reloadRepoButton(ClickEvent e) {
+        presenter.reloadRepository();
+    }
+    
     private void initTableColumns(final SelectionModel<ProcessSummary> selectionModel) {
         // Checkbox column. This table will uses a checkbox column for selection.
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
@@ -322,6 +331,16 @@ public class ProcessDefinitionListViewImpl extends Composite
 
     public TextBox getSessionIdText() {
         return filterKSessionText;
+    }
+    
+    @Override
+    public void showBusyIndicator( final String message ) {
+        BusyPopup.showMessage( message );
+    }
+
+    @Override
+    public void hideBusyIndicator() {
+        BusyPopup.close();
     }
 
     private class StartActionHasCell implements HasCell<ProcessSummary, ProcessSummary> {

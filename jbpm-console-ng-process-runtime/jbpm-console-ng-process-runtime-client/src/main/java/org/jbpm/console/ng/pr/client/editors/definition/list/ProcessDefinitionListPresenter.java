@@ -28,6 +28,9 @@ import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import java.util.ArrayList;
 import javax.enterprise.event.Event;
+
+import org.jboss.errai.bus.client.api.ErrorCallback;
+import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.model.DomainSummary;
@@ -56,6 +59,10 @@ public class ProcessDefinitionListPresenter {
         TextBox getSessionIdText();
 
         DataGrid<ProcessSummary> getDataGrid();
+
+        void showBusyIndicator(String message);
+
+        void hideBusyIndicator();
     }
     @Inject
     private InboxView view;
@@ -104,6 +111,35 @@ public class ProcessDefinitionListPresenter {
                 }
             }).getProcesses();
         }
+    }
+    
+    public void reloadRepository() {
+
+        view.showBusyIndicator("Please wait");
+        domainManagerService.call(new RemoteCallback<List<OrganizationSummary>>() {
+            @Override
+            public void callback(List<OrganizationSummary> organizations) {
+                for (OrganizationSummary org : organizations) {
+                    domainManagerService.call(new RemoteCallback<Void>() {
+                        @Override
+                        public void callback(Void noresult) {
+                            refreshProcessList(null);
+                            view.hideBusyIndicator();
+                            view.displayNotification("Process refreshed from repository");
+                        }
+                    }, new ErrorCallback() {
+                        
+                        @Override
+                        public boolean error(Message message, Throwable throwable) {
+                            view.hideBusyIndicator();
+                            view.displayNotification("Error: Process refreshed from repository failed");
+                            return false;
+                        }
+                    }).initOrganization(org.getId());
+                }
+            }
+        }).getAllOrganizations();
+        
     }
 
     public void addDataDisplay(HasData<ProcessSummary> display) {
