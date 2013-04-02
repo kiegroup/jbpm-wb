@@ -19,8 +19,6 @@ import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.user.client.Window;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -30,18 +28,11 @@ import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 
 
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
-import com.google.gwt.user.client.ui.SuggestBox;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.security.Identity;
 import org.uberfire.security.Role;
@@ -78,24 +69,24 @@ public class HomeViewImpl extends Composite
   public Image carouselImg5;
   
   
-  @Inject
-  @DataField
-  public IconAnchor discoverLabel;
+//  @Inject
+//  @DataField
+//  public IconAnchor discoverLabel;
   @Inject
   @DataField
   public IconAnchor designLabel;
-  @Inject
-  @DataField
-  public IconAnchor deployLabel;
+//  @Inject
+//  @DataField
+//  public IconAnchor deployLabel;
   @Inject
   @DataField
   public IconAnchor workLabel;
   @Inject
   @DataField
   public IconAnchor monitorLabel;
-  @Inject
-  @DataField
-  public IconAnchor improveLabel;
+//  @Inject
+//  @DataField
+//  public IconAnchor improveLabel;
   @Inject
   @DataField
   public IconAnchor modelProcessAnchor;
@@ -149,52 +140,9 @@ public class HomeViewImpl extends Composite
     carouselImg1.setUrl(url + "images/mountain.jpg");
     carouselImg0.setUrl(url + "images/mountain.jpg");
     
-//    List<String> stringRoles = new ArrayList<String>(roles.size());
-//    for (Role r : roles) {
-//      if (!r.getName().equals("IS_REMEMBER_ME")) {
-//        stringRoles.add(r.getName());
-//      }
-//    }
+
     
-    discoverLabel.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        presenter.discover();
-      }
-    });
-
-    designLabel.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        presenter.design();
-      }
-    });
-
-    deployLabel.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        presenter.deploy();
-      }
-    });
-
-    workLabel.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        presenter.work();
-      }
-    });
-    monitorLabel.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        presenter.monitor();
-      }
-    });
-    improveLabel.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        presenter.improve();
-      }
-    });
+   
 
     modelProcessAnchor.addClickHandler(new ClickHandler() {
       @Override
@@ -219,22 +167,7 @@ public class HomeViewImpl extends Composite
         placeManager.goTo(placeRequestImpl);
       }
     });
-    
-//    deployIdentityAnchor.addClickHandler(new ClickHandler() {
-//      @Override
-//      public void onClick(ClickEvent event) {
-//        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Users and Groups");
-//        placeManager.goTo(placeRequestImpl);
-//      }
-//    });
-//    
-//    deployJobsAnchor.addClickHandler(new ClickHandler() {
-//      @Override
-//      public void onClick(ClickEvent event) {
-//        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Requests List");
-//        placeManager.goTo(placeRequestImpl);
-//      }
-//    });
+
     
     monitorBAMAnchor.addClickHandler(new ClickHandler() {
       @Override

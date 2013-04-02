@@ -133,7 +133,7 @@
     <form action="j_security_check" method="POST">
       <p>
         <label>Username</label>
-        <input value="" name="j_username" class="text-input" type="text"/>
+        <input value="" name="j_username" class="text-input" type="text" autofocus/>
       </p>
       <br style="clear: both;"/>
 
@@ -144,8 +144,6 @@
       <br style="clear: both;"/>
       
       <p>
-        <input class="button" type="button" value="Help" onclick="alert('Users: kris/kris, tiho/tiho, salaboy/salaboy, maciej/maciej, marco/marco')"/>  
-        
         <input class="button" type="submit" value="Sign In"/>
       </p>
       
