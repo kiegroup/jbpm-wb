@@ -206,7 +206,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     
     @Override
     public long addTask(String taskString, Map<String, Object> inputs, Map<String, Object> templateVars) {
-        Task task = TaskFactory.evalTask(taskString, templateVars, true);
+        Task task = TaskFactory.evalTask(taskString, templateVars);
         return taskService.addTask(task, inputs);
     }
     
