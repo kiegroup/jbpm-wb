@@ -119,7 +119,7 @@ public class ProcessInstanceDetailsPresenter {
                 view.getLogTextArea().setText("");
                 String fullLog = "";
                 for ( NodeInstanceSummary nis : details ) {
-                    fullLog += nis.getTimestamp() + " - " + nis.getNodeName() + " (" + nis.getType() + ") \n";
+                    fullLog += nis.getTimestamp() + ": " + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType() + ") \n";
                 }
                 view.getLogTextArea().setText( fullLog );
             }
@@ -130,7 +130,8 @@ public class ProcessInstanceDetailsPresenter {
                 view.setCurrentActiveNodes(details);
                 view.getCurrentActivitiesListBox().clear();
                 for ( NodeInstanceSummary nis : details ) {
-                    view.getCurrentActivitiesListBox().addItem( nis.getTimestamp() + ":" + nis.getId() + "-" + nis.getNodeName(),
+                  
+                    view.getCurrentActivitiesListBox().addItem( nis.getTimestamp() + ":" + nis.getId() + " - " + nis.getNodeName() +" (" + nis.getType() + ")" ,
                                                                 String.valueOf( nis.getId() ) );
                 }
             }

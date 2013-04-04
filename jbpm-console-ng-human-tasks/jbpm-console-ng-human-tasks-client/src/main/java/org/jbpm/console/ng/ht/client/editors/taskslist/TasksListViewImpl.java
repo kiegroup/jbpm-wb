@@ -179,9 +179,6 @@ public class TasksListViewImpl extends Composite
     }
 
     public void refreshTasks() {
-//        Boolean isCheckedCompleted = showCompletedCheck.getValue();
-//        Boolean isCheckedGroupTasks = showGroupTasksCheck.getValue();
-//        Boolean isCheckedPersonalTasks = showPersonalTasksCheck.getValue();
         presenter.refreshTasks(identity.getName(), false, false, false);
     }
 

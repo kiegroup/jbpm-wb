@@ -1,68 +1,81 @@
 <div class="row-fluid">
-  <div class="span12">
+    <div class="navbar navbar-inverse">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse.filters" >
+                    <span class="icon-bar"></span>
+                </a>
+                <div class="nav-collapse filters collapse">
+                    <div class="row-fluid">
+                        <ul class="nav">
+                            <li class="divider-vertical"></li>
+                            <li class="active" data-field="viewProcessDiagramButton"></li>
+                            <li class="divider-vertical"></li>
+                            <li class="active" data-field="refreshButton"></li>
+                        </ul>
 
-    <div class="form-horizontal">
-      <legend>Process Instance Details</legend>
-      <div class="control-group">
-        <label  class="control-label" for="processIdText">Process Instance Id</label>
-        <div class="controls">
-          <input type="text" data-field="processIdText"  id="processIdText" placeholder=""/>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="control-group">
-        <label  class="control-label" for="processNameText">Process Definition Name</label>
-        <div class="controls">
-          <input type="text" data-field="processNameText"  id="processNameText" placeholder=""/>
+    </div>
+    <div class="span11">
+        <div class="form-horizontal">
+            <legend>Process Instance Details</legend>
+            <div class="control-group">
+                <label  class="control-label" for="processIdText">Process Instance Id</label>
+                <div class="controls">
+                    <input type="text" data-field="processIdText"  id="processIdText" placeholder=""/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label  class="control-label" for="processNameText">Process Definition Name</label>
+                <div class="controls">
+                    <input type="text" data-field="processNameText"  id="processNameText" placeholder=""/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label  class="control-label" for="processPackageText">Process Definition Package</label>
+                <div class="controls">
+                    <input type="text" data-field="processPackageText"  id="processPackageText" placeholder=""/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label  class="control-label" for="processVersionText">Process Definition Version</label>
+                <div class="controls">
+                    <input type="text" data-field="processVersionText"  id="processVersionText" placeholder=""/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label  class="control-label" for="stateText">Process State</label>
+                <div class="controls">
+                    <input type="text" data-field="stateText"  id="stateText" placeholder=""/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label  class="control-label" for="currentActivitiesListBox">Current Activities</label>
+                <div class="controls">
+                    <select data-field="currentActivitiesListBox" class="span5" size="5" id="currentActivitiesListBox"></select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="logTextArea">Process Log</label>
+                <div class="controls">
+                    <textarea data-field="logTextArea" class="span5" rows="10" id="logTextArea"></textarea>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="control-group">
-        <label  class="control-label" for="processPackageText">Process Definition Package</label>
-        <div class="controls">
-          <input type="text" data-field="processPackageText"  id="processPackageText" placeholder=""/>
-        </div>
-      </div>
-      <div class="control-group">
-        <label  class="control-label" for="processVersionText">Process Definition Version</label>
-        <div class="controls">
-          <input type="text" data-field="processVersionText"  id="processVersionText" placeholder=""/>
-        </div>
-      </div>
-      <div class="control-group">
-        <label  class="control-label" for="stateText">Process State</label>
-        <div class="controls">
-          <input type="text" data-field="stateText"  id="stateText" placeholder=""/>
-        </div>
-      </div>
-      <div class="control-group">
-        <label  class="control-label" for="currentActivitiesListBox">Current Activities</label>
-        <div class="controls">
-          <select data-field="currentActivitiesListBox" class="span5" size="5" id="currentActivitiesListBox"></select>
-        </div>
-      </div>
-      <div class="control-group">
-        <label class="control-label" for="logTextArea">Process Log</label>
-        <div class="controls">
-          <textarea data-field="logTextArea" class="span5" rows="10" id="logTextArea"></textarea>
-        </div>
-      </div>
 
-      <div class="container-fluid">
-        <div class="row-fluid">
-          <div data-field="listContainer" >
+
+    </div>
+    <div class="span11">
+
+        <div data-field="listContainer" >
             <label>Process Data</label>  
             <table id="processDataGrid"  data-field="processDataGrid" class="table table-bordered table-striped table-hover">
 
             </table>
             <div id="pager" class="pagination"  data-field="pager"></div>
-          </div>
         </div>
-
-        <div class="form-actions">
-          <button class="btn" data-field="refreshButton" id="refreshButton">Refresh</button>
-          <button class="btn" data-field="viewSessionNotificationsButton" id="viewSessionNotificationsButton">Session Notifications</button>
-          <button class="btn" data-field="viewProcessDiagramButton" id="viewProcessDiagramButton">Process Diagram</button>
-        </div>
-
-      </div>
     </div>
-  </div>
+</div>

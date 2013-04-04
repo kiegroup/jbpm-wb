@@ -91,8 +91,14 @@ public class ProcessDefDetailsViewImpl extends Composite
   public void init(ProcessDefDetailsPresenter presenter) {
     this.presenter = presenter;
     this.humanTasksListBox.setVisibleItemCount(5);
+    this.humanTasksListBox.setEnabled(false);
     this.usersGroupsListBox.setVisibleItemCount(5);
+    this.usersGroupsListBox.setEnabled(false);
     this.processDataListBox.setVisibleItemCount(5);
+    this.processDataListBox.setEnabled(false);
+    this.processNameText.setEnabled(false);
+    this.domainIdText.setEnabled(false);
+    nroOfHumanTasksText.setEnabled(false);
 
     this.subprocessListBox.addDoubleClickHandler(new DoubleClickHandler() {
       @Override
@@ -104,7 +110,9 @@ public class ProcessDefDetailsViewImpl extends Composite
         placeManager.goTo(placeRequestImpl);
       }
     });
+    
   }
+  
 
   @EventHandler("refreshButton")
   public void refreshButton(ClickEvent e) {
@@ -114,7 +122,6 @@ public class ProcessDefDetailsViewImpl extends Composite
   @EventHandler("createProcessInstanceButton")
   public void createProcessInstance(ClickEvent e) {
     PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
-    System.out.println("Opening form for process id = " + processNameText.getText());
     placeRequestImpl.addParameter("processId", processNameText.getText());
     placeRequestImpl.addParameter("domainId", domainIdText.getText());
     placeManager.goTo(placeRequestImpl);

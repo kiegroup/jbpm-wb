@@ -15,8 +15,10 @@
  */
 package org.jbpm.console.ng.pr.backend.server;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import org.droolsjbpm.services.impl.model.NodeInstanceDesc;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
@@ -29,17 +31,17 @@ public class NodeInstanceHelper {
     public static Collection<NodeInstanceSummary> adaptCollection(Collection<NodeInstanceDesc> nodeInstances){
         List<NodeInstanceSummary> nodeInstancesSummary = new ArrayList<NodeInstanceSummary>();
         for(NodeInstanceDesc ni : nodeInstances){
-            nodeInstancesSummary.add(new NodeInstanceSummary(ni.getId(), ni.getProcessInstanceId(), 
-                    ni.getName(), ni.getNodeId(), ni.getNodeType(), ni.getDataTimeStamp().toString(),
-                    ni.getConnection(), ni.isCompleted()));
+            nodeInstancesSummary.add(adapt(ni));
         }
         
         return nodeInstancesSummary;
     }
     
     public static NodeInstanceSummary adapt(NodeInstanceDesc ni){
+        Date date = ni.getDataTimeStamp();
+        String formattedDate = new SimpleDateFormat("dd/MM/yyyy, Ka").format(date);
         return new NodeInstanceSummary(ni.getId(), ni.getProcessInstanceId(), 
-                    ni.getName(), ni.getNodeId(), ni.getNodeType(), ni.getDataTimeStamp().toString()
+                    ni.getName(), ni.getNodeId(), ni.getNodeType(), formattedDate
                     , ni.getConnection(), ni.isCompleted());
     }
 }

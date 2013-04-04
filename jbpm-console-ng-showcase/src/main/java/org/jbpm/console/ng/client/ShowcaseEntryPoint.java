@@ -77,13 +77,14 @@ public class ShowcaseEntryPoint {
     @Inject
     private IOCBeanManager            iocManager;
     private String[] menuItems = new String[]{
+            "Authoring",
             "Tasks",
             "Process Definitions",
             "Process Instances",
 //        "Users and Groups",
 //        "Jobs",
          //   "Kie Sessions List",
-            "Authoring"
+            
     };
     @Inject
     public Identity identity;
@@ -191,7 +192,7 @@ public class ShowcaseEntryPoint {
 
     private List<? extends MenuItem> getViews() {
         final List<MenuItem> result = new ArrayList<MenuItem>( menuItems.length );
-        Arrays.sort( menuItems );
+       // Arrays.sort( menuItems );
         for ( final String menuItem : menuItems ) {
             result.add( MenuFactory.newSimpleItem( menuItem ).respondsWith( new Command() {
                 @Override
@@ -200,7 +201,12 @@ public class ShowcaseEntryPoint {
                 }
             } ).endMenu().build().getItems().get( 0 ) );
         }
-
+        result.add(MenuFactory.newSimpleItem( "BAM" ).respondsWith( new Command() {
+                @Override
+                public void execute() {
+                    Window.open("http://localhost:8080/bam-app/", "_blank", "");
+                }
+            } ).endMenu().build().getItems().get( 0 ) );
         return result;
     }
 

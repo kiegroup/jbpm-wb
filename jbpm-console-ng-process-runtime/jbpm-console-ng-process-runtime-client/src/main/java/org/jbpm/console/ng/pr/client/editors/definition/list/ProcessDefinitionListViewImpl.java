@@ -45,10 +45,8 @@ import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
-import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -170,23 +168,23 @@ public class ProcessDefinitionListViewImpl extends Composite
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
         // mouse selection.
 
-        Column<ProcessSummary, Boolean> checkColumn =
-                new Column<ProcessSummary, Boolean>(new CheckboxCell(true,
-                false)) {
-            @Override
-            public Boolean getValue(ProcessSummary object) {
-                // Get the value from the selection model.
-                return selectionModel.isSelected(object);
-            }
-        };
-        
-        processdefListGrid.addColumn(checkColumn,
-                SafeHtmlUtils.fromSafeConstant("<br/>"));
-        processdefListGrid.setColumnWidth(checkColumn, "40px");
+//        Column<ProcessSummary, Boolean> checkColumn =
+//                new Column<ProcessSummary, Boolean>(new CheckboxCell(true,
+//                false)) {
+//            @Override
+//            public Boolean getValue(ProcessSummary object) {
+//                // Get the value from the selection model.
+//                return selectionModel.isSelected(object);
+//            }
+//        };
+//        
+//        processdefListGrid.addColumn(checkColumn,
+//                SafeHtmlUtils.fromSafeConstant("<br/>"));
+//        processdefListGrid.setColumnWidth(checkColumn, "40px");
 
         // Id.
         Column<ProcessSummary, String> processIdColumn =
-                new Column<ProcessSummary, String>(new EditTextCell()) {
+                new Column<ProcessSummary, String>(new TextCell()) {
             @Override
             public String getValue(ProcessSummary object) {
                 return object.getId();
@@ -197,7 +195,7 @@ public class ProcessDefinitionListViewImpl extends Composite
                 new Comparator<ProcessSummary>() {
             public int compare(ProcessSummary o1,
                     ProcessSummary o2) {
-                return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
+                return o1.getId().compareTo(o2.getId());
             }
         });
         processdefListGrid.addColumn(processIdColumn,
@@ -243,24 +241,24 @@ public class ProcessDefinitionListViewImpl extends Composite
                 new ResizableHeader(constants.Package(), processdefListGrid, processPkgColumn));
         
          // Process Domain Id.
-        Column<ProcessSummary, String> processSessionIdColumn =
+        Column<ProcessSummary, String> processDomainIdColumn =
                 new Column<ProcessSummary, String>(new TextCell()) {
             @Override
             public String getValue(ProcessSummary object) {
                 return object.getDomainId();
             }
         };
-        processSessionIdColumn.setSortable(true);
-        sortHandler.setComparator(processSessionIdColumn,
+        processDomainIdColumn.setSortable(true);
+        sortHandler.setComparator(processDomainIdColumn,
                 new Comparator<ProcessSummary>() {
             public int compare(ProcessSummary o1,
                     ProcessSummary o2) {
                 return o1.getDomainId().compareTo(o2.getDomainId());
             }
         });
-        processdefListGrid.addColumn(processSessionIdColumn,
-                new ResizableHeader("Domain", processdefListGrid, processSessionIdColumn));
-        processdefListGrid.setColumnWidth(processSessionIdColumn, "90px");
+        processdefListGrid.addColumn(processDomainIdColumn,
+                new ResizableHeader("Domain", processdefListGrid, processDomainIdColumn));
+        processdefListGrid.setColumnWidth(processDomainIdColumn, "90px");
 
         // Version Type 
         Column<ProcessSummary, String> versionColumn =
@@ -275,7 +273,9 @@ public class ProcessDefinitionListViewImpl extends Composite
                 new Comparator<ProcessSummary>() {
             public int compare(ProcessSummary o1,
                     ProcessSummary o2) {
-                return o1.getVersion().compareTo(o2.getVersion());
+                Integer version1 = ((o1.getVersion() == null || o1.getVersion().equals("")))?0:Integer.valueOf(o1.getVersion());
+                Integer version2 = ((o2.getVersion() == null || o2.getVersion().equals("")))?0:Integer.valueOf(o2.getVersion());
+                return version1.compareTo(version2);
             }
         });
         processdefListGrid.addColumn(versionColumn,

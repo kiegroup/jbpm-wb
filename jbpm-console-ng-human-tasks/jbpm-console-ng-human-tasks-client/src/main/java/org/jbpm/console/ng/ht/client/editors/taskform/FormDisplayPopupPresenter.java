@@ -173,8 +173,9 @@ public class FormDisplayPopupPresenter {
                         if ( task.getStatus().equals( "Reserved" ) ) {
                             FocusPanel startFlowPanel = new FocusPanel();
                             startFlowPanel.setStyleName( "option-button start" );
+                            startFlowPanel.setTitle("Start Task");
                             startFlowPanel.addClickHandler( new ClickHandler() {
-
+                            
                                 public native void onClick( ClickEvent event )/*-{
                                     $wnd.startTask($wnd.getFormValues($doc.getElementById("form-data")));
                                 }-*/;
@@ -184,6 +185,7 @@ public class FormDisplayPopupPresenter {
                         } else if ( task.getStatus().equals( "InProgress" ) ) {
                             FocusPanel saveTaskFlowPanel = new FocusPanel();
                             saveTaskFlowPanel.setStyleName( "option-button save" );
+                            saveTaskFlowPanel.setTitle("Save Task");
                             saveTaskFlowPanel.addClickHandler( new ClickHandler() {
 
                                 public native void onClick( ClickEvent event )/*-{
@@ -193,6 +195,7 @@ public class FormDisplayPopupPresenter {
                             wrapperFlowPanel.add( saveTaskFlowPanel );
                             FocusPanel completeTaskFlowPanel = new FocusPanel();
                             completeTaskFlowPanel.setStyleName( "option-button complete" );
+                            completeTaskFlowPanel.setTitle("Complete Task");
                             completeTaskFlowPanel.addClickHandler( new ClickHandler() {
 
                                 public native void onClick( ClickEvent event )/*-{
@@ -227,6 +230,7 @@ public class FormDisplayPopupPresenter {
                         wrapperFlowPanel.setStyleName( "wrapper" );
                         FocusPanel startFlowPanel = new FocusPanel();
                         startFlowPanel.setStyleName( "option-button start" );
+                        startFlowPanel.setTitle("Start Process");
                         startFlowPanel.addClickHandler( new ClickHandler() {
 
                             public native void onClick( ClickEvent event )/*-{

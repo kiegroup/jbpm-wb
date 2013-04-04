@@ -45,6 +45,7 @@ import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.ListBox;
+import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.TextBox;
@@ -102,14 +103,14 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     public TextArea logTextArea;
     @Inject
     @DataField
-    public Button refreshButton;
-    @Inject
-    @DataField
-    public Button viewSessionNotificationsButton;
+    public NavLink refreshButton;
+//    @Inject
+//    @DataField
+//    public Button viewSessionNotificationsButton;
     
     @Inject
     @DataField
-    public Button viewProcessDiagramButton;
+    public NavLink viewProcessDiagramButton;
     @Inject
     @DataField
     public DataGrid<VariableSummary> processDataGrid;
@@ -135,6 +136,15 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     public void init(ProcessInstanceDetailsPresenter presenter) {
         this.presenter = presenter;
 
+        processIdText.setEnabled(false);
+        processNameText.setEnabled(false);
+        processPackageText.setEnabled(false);
+        processVersionText.setEnabled(false);
+        stateText.setEnabled(false);
+        logTextArea.setEnabled(false);
+        currentActivitiesListBox.setEnabled(false);
+        refreshButton.setText("Refresh");
+        viewProcessDiagramButton.setText("View Process Diagram");
         listContainer.add(processDataGrid);
         listContainer.add(pager);
         processDataGrid.setHeight("200px");
@@ -151,24 +161,25 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         // Create a Pager to control the table.
 
         pager.setDisplay(processDataGrid);
-        pager.setPageSize(6);
+        pager.setPageSize(4);
 
 
         initTableColumns();
 
         presenter.addDataDisplay(processDataGrid);
+        
     }
 
     @EventHandler("refreshButton")
     public void refreshButton(ClickEvent e) {
         presenter.refreshProcessInstanceData(processIdText.getText(),processNameText.getText());
     }
-    @EventHandler("viewSessionNotificationsButton")
-    public void viewSessionNotificationsButton(ClickEvent e){
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Session Notifications Popup");
-        placeRequestImpl.addParameter("sessionId", Integer.toString(0));
-        placeManager.goTo(placeRequestImpl);
-    }
+//    @EventHandler("viewSessionNotificationsButton")
+//    public void viewSessionNotificationsButton(ClickEvent e){
+//        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Session Notifications Popup");
+//        placeRequestImpl.addParameter("sessionId", Integer.toString(0));
+//        placeManager.goTo(placeRequestImpl);
+//    }
     
     @EventHandler("viewProcessDiagramButton")
     public void viewProcessDiagramButton(ClickEvent e){

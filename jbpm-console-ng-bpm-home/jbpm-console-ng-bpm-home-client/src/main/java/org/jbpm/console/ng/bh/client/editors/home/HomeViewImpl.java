@@ -97,7 +97,10 @@ public class HomeViewImpl extends Composite
   
   @Inject
   @DataField
-  public IconAnchor workProcessRuntimeAnchor;
+  public IconAnchor workProcessDefinitionsAnchor;
+  @Inject
+  @DataField
+  public IconAnchor workProcessInstancesAnchor;
 //  @Inject
 //  @DataField
 //  public IconAnchor deployIdentityAnchor;
@@ -160,10 +163,18 @@ public class HomeViewImpl extends Composite
       }
     });
     
-    workProcessRuntimeAnchor.addClickHandler(new ClickHandler() {
+    workProcessDefinitionsAnchor.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Definitions");
+        placeManager.goTo(placeRequestImpl);
+      }
+    });
+    
+    workProcessInstancesAnchor.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instances");
         placeManager.goTo(placeRequestImpl);
       }
     });
