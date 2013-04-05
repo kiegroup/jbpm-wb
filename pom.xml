@@ -38,27 +38,8 @@
     <module>jbpm-console-ng-bpm-home</module>
     <module>jbpm-console-ng-process-modeling</module>
     <module>jbpm-console-ng-showcase</module>
-    
   </modules>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-ui</artifactId>
-        <version>${errai.version}</version>
-      </dependency>
-       <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-data-binding</artifactId>
-        <version>${errai.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.github.gwtbootstrap</groupId>
-        <artifactId>gwt-bootstrap</artifactId>
-        <version>2.2.1.0</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+
   <repositories>
     <repository>
      <id>sonatype</id>
