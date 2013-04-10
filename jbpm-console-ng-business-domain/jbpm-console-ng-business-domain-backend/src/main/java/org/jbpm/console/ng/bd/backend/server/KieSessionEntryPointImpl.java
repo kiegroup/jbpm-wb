@@ -35,7 +35,6 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
-import org.kie.internal.runtime.manager.Runtime;
 import org.kie.internal.runtime.manager.RuntimeManager;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 
@@ -56,7 +55,7 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
     public long startProcess(String domainName, String processId) {
         RuntimeManager runtimesByDomain = domainManagerService.getRuntimesByDomain(domainName);
         // I'm considering Singleton
-        KieSession ksession = runtimesByDomain.getRuntime(ProcessInstanceIdContext.get()).getKieSession();
+        KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get()).getKieSession();
         ProcessInstance pi = ksession.startProcess(processId);
         return pi.getId();
     }
@@ -64,7 +63,7 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
     public long startProcess(String domainName, String processId, Map<String, String> params) {
         RuntimeManager runtimesByDomain = domainManagerService.getRuntimesByDomain(domainName);
         // I'm considering Singleton
-        KieSession ksession = runtimesByDomain.getRuntime(ProcessInstanceIdContext.get()).getKieSession();
+        KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get()).getKieSession();
         ProcessInstance pi = ksession.startProcess(processId, new HashMap<String, Object>(params));
         return pi.getId();
     }
@@ -74,7 +73,7 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
         RuntimeManager runtimesByDomain = domainManagerService.getRuntimesByDomain(piDesc.getDomainId());
         // I'm considering Singleton
-        KieSession ksession = runtimesByDomain.getRuntime(ProcessInstanceIdContext.get(processInstanceId)).getKieSession();
+        KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId)).getKieSession();
         ksession.abortProcessInstance(processInstanceId);
 
     }
@@ -96,7 +95,7 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
         } else {
             ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
             RuntimeManager runtimesByDomain = domainManagerService.getRuntimesByDomain(piDesc.getDomainId());
-            KieSession ksession = runtimesByDomain.getRuntime(ProcessInstanceIdContext.get(processInstanceId)).getKieSession();
+            KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId)).getKieSession();
             ksession.signalEvent(signalName, event, processInstanceId);
         }
 
@@ -105,7 +104,7 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
     public Collection<String> getAvailableSignals(long processInstanceId) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
         RuntimeManager runtimesByDomain = domainManagerService.getRuntimesByDomain(piDesc.getDomainId());
-        KieSession ksession = runtimesByDomain.getRuntime(ProcessInstanceIdContext.get(processInstanceId)).getKieSession();
+        KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId)).getKieSession();
         ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
         Collection<String> activeSignals = new ArrayList<String>();
 
@@ -122,7 +121,7 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
     public void setProcessVariable(long processInstanceId, String variableId, Object value) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
         RuntimeManager runtimesByDomain = domainManagerService.getRuntimesByDomain(piDesc.getDomainId());
-        KieSession ksession = runtimesByDomain.getRuntime(ProcessInstanceIdContext.get(processInstanceId)).getKieSession();
+        KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId)).getKieSession();
         ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
 
         ((WorkflowProcessInstance) processInstance).setVariable(variableId, value);

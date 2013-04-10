@@ -15,10 +15,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 /**
- *
+ * This class should contain all RequestScoped producers
+ * required by the application.
  */
 @RequestScoped
-public class TaskDatabaseProducer {
+public class RequestScopedProducer {
 
     @Inject
     private EntityManagerFactory emf;

@@ -208,19 +208,32 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-ui</artifactId>
+      <version>${errai.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-data-binding</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.github.gwtbootstrap</groupId>
-      <artifactId>gwt-bootstrap</artifactId>
+      <version>${errai.version}</version>
     </dependency>
 
     <!-- CDI Development Utils -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency>
     <!-- This must be placed above com.google.gwt:gwt-dev to override the 
       Jetty that is present there -->
     <dependency>
@@ -253,6 +266,11 @@
     <dependency>
       <groupId>org.jboss.weld.servlet</groupId>
       <artifactId>weld-servlet-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.solder</groupId>
+      <artifactId>solder-impl</artifactId>
     </dependency>
 
     <!-- GWT and GWT Extensions -->
@@ -383,6 +401,10 @@
     </dependency>
     <dependency>
       <groupId>org.kie.guvnor</groupId>
+      <artifactId>guvnor-commons-ui</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.guvnor</groupId>
       <artifactId>guvnor-commons-builder</artifactId>
     </dependency>
      <dependency>
@@ -396,6 +418,14 @@
      <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-guvnor-models-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-bpmn2-emfextmodel</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse</groupId>
+      <artifactId>org.eclipse.bpmn2</artifactId>
     </dependency>
   </dependencies>
 
@@ -434,7 +464,7 @@
 
             <compileSourcesArtifact>org.kie.guvnor:guvnor-decorated-grid-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-view-source-widget</compileSourcesArtifact>
-            <compileSourcesArtifact>org.kie.guvnor:guvnor-common-ui</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.guvnor:guvnor-commons-ui</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-commons-security</compileSourcesArtifact> 
             <compileSourcesArtifact>org.kie.guvnor:guvnor-commons-services-api</compileSourcesArtifact>  
             <compileSourcesArtifact>org.kie.guvnor:guvnor-metadata-widget</compileSourcesArtifact>

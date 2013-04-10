@@ -16,7 +16,7 @@
 package org.jbpm.console.ng.bd.service;
 
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.kie.commons.java.nio.file.Path;
+
 
 /**
  *
@@ -29,9 +29,9 @@ public interface FileServiceEntryPoint {
     
     void fetchChanges();
 
-    byte[] loadFile(Path file);
+//    byte[] loadFile(Path file);
 
-    Iterable<Path> loadFilesByType(String path, String fileType); 
+//    Iterable<Path> loadFilesByType(String path, String fileType);
     
     org.uberfire.backend.vfs.Path getPath(String path);
 }

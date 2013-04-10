@@ -23,52 +23,30 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.jbpm.shared.services.cdi.Startup;
 import org.kie.commons.io.IOService;
 import org.kie.commons.io.impl.IOServiceDotFileImpl;
 import org.kie.commons.java.nio.file.FileSystem;
 import org.kie.commons.java.nio.file.FileSystemAlreadyExistsException;
+import org.kie.commons.java.nio.file.FileSystemNotFoundException;
+import org.uberfire.backend.repositories.Repository;
+import org.uberfire.backend.repositories.RepositoryService;
+import org.uberfire.backend.server.repositories.DefaultSystemRepository;
 import org.uberfire.backend.vfs.ActiveFileSystems;
 import org.uberfire.backend.vfs.FileSystemFactory;
 import org.uberfire.backend.vfs.impl.ActiveFileSystemsImpl;
 
 @Singleton
+@Startup
 public class AppSetup {
 
-    private static final String REPO_PLAYGROUND = "git://jbpm-playground";
+    private static final String REPO_PLAYGROUND = "jbpm-playground";
     private static final String ORIGIN_URL      = "https://github.com/guvnorngtestuser1/jbpm-console-ng-playground.git";
-
-    
-    private final IOService         ioService         = new IOServiceDotFileImpl();
-    private final ActiveFileSystems activeFileSystems = new ActiveFileSystemsImpl();
-    private FileSystem fs = null;
-    @PostConstruct
-    public void onStartup() {
-
-        final URI fsURI = URI.create(REPO_PLAYGROUND);
-        
-        try {
-            final String userName = "guvnorngtestuser1";
-            final String password = "test1234";
-            
-
-            final Map<String, Object> env = new HashMap<String, Object>();
-            env.put( "username", userName );
-            env.put( "password", password );
-            env.put( "origin", ORIGIN_URL );
-            fs = ioService.newFileSystem( fsURI, env, BOOTSTRAP_INSTANCE );
-        } catch ( FileSystemAlreadyExistsException ex ) {
-            fs = ioService.getFileSystem( fsURI );
-        }
-
-        activeFileSystems.addFileSystem( FileSystemFactory.newFS( new HashMap<String, String>() {{
-            put( REPO_PLAYGROUND, "jbpm-playground" );
-        }}, fs.supportedFileAttributeViews() ) );
-    }
-    
-    // @PreDestroy -> ds.close();???
+    private final IOService ioService = new IOServiceDotFileImpl();
 
     @Produces
     @Named("ioStrategy")
@@ -76,10 +54,27 @@ public class AppSetup {
         return ioService;
     }
 
-    @Produces
-    @Named("fs")
-    public ActiveFileSystems fileSystems() {
-        return activeFileSystems;
+    @Inject
+    private RepositoryService repositoryService;
+
+    private FileSystem fs = null;
+    @PostConstruct
+    public void onStartup() {
+
+        Repository repository = repositoryService.getRepository(REPO_PLAYGROUND);
+        if(repository == null) {
+            final String userName = "guvnorngtestuser1";
+            final String password = "test1234";
+            repositoryService.cloneRepository("git", REPO_PLAYGROUND, ORIGIN_URL, userName, password);
+            repository = repositoryService.getRepository(REPO_PLAYGROUND);
+        }
+        try {
+            fs = ioService.newFileSystem(URI.create(repository.getUri()), repository.getEnvironment());
+
+        } catch (FileSystemAlreadyExistsException e) {
+            fs = ioService.getFileSystem(URI.create(repository.getUri()));
+
+        }
     }
     
     @Produces
@@ -87,5 +82,7 @@ public class AppSetup {
     public FileSystem fileSystem() {
         return fs;
     }
+
+
 
 }

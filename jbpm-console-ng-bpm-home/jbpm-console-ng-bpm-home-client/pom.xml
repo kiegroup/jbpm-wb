@@ -42,11 +42,6 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-workbench</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>com.github.gwtbootstrap</groupId>
-      <artifactId>gwt-bootstrap</artifactId>
-    </dependency>
     
     <dependency>
       <groupId>javax.inject</groupId>
@@ -75,11 +70,13 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-ui</artifactId>
+      <version>${errai.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-data-binding</artifactId>
+      <version>${errai.version}</version>
     </dependency>
 
     <!-- GWT and GWT Extensions -->
