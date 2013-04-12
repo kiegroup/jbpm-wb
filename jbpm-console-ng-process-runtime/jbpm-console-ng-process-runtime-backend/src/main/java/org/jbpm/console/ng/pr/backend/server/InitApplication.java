@@ -13,7 +13,7 @@ import javax.transaction.UserTransaction;
 
 import org.droolsjbpm.services.api.DomainManagerService;
 import org.droolsjbpm.services.domain.entities.Organization;
-import org.jbpm.shared.services.cdi.Startup;
+import org.kie.commons.services.cdi.Startup;
 
 @ApplicationScoped
 @Startup

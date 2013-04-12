@@ -414,4 +414,9 @@ minutes. it is now 24 hours. -->
   <security-role>
     <role-name>jbpm-console-user</role-name>
   </security-role>
+
+  <error-page>
+    <error-code>403</error-code>
+    <location>/not_authorized.jsp</location>
+  </error-page>
 </web-app>

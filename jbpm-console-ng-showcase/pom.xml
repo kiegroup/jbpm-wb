@@ -165,7 +165,10 @@
       <groupId>org.kie.commons</groupId>
       <artifactId>kie-commons-io</artifactId>
     </dependency>
-    
+    <dependency>
+      <groupId>org.kie.commons</groupId>
+      <artifactId>kie-commons-cdi</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.kie.commons</groupId>
       <artifactId>kie-commons-data</artifactId>

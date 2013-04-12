@@ -15,11 +15,7 @@
  */
 package org.jbpm.console.ng.server.impl;
 
-import static org.kie.commons.io.FileSystemType.Bootstrap.BOOTSTRAP_INSTANCE;
-
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Produces;
@@ -27,18 +23,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.jbpm.shared.services.cdi.Startup;
+import org.kie.commons.services.cdi.Startup;
 import org.kie.commons.io.IOService;
 import org.kie.commons.io.impl.IOServiceDotFileImpl;
-import org.kie.commons.java.nio.file.FileSystem;
 import org.kie.commons.java.nio.file.FileSystemAlreadyExistsException;
-import org.kie.commons.java.nio.file.FileSystemNotFoundException;
 import org.uberfire.backend.repositories.Repository;
 import org.uberfire.backend.repositories.RepositoryService;
-import org.uberfire.backend.server.repositories.DefaultSystemRepository;
-import org.uberfire.backend.vfs.ActiveFileSystems;
-import org.uberfire.backend.vfs.FileSystemFactory;
-import org.uberfire.backend.vfs.impl.ActiveFileSystemsImpl;
 
 @Singleton
 @Startup
@@ -57,7 +47,6 @@ public class AppSetup {
     @Inject
     private RepositoryService repositoryService;
 
-    private FileSystem fs = null;
     @PostConstruct
     public void onStartup() {
 
@@ -69,20 +58,11 @@ public class AppSetup {
             repository = repositoryService.getRepository(REPO_PLAYGROUND);
         }
         try {
-            fs = ioService.newFileSystem(URI.create(repository.getUri()), repository.getEnvironment());
+            ioService.newFileSystem(URI.create(repository.getUri()), repository.getEnvironment());
 
         } catch (FileSystemAlreadyExistsException e) {
-            fs = ioService.getFileSystem(URI.create(repository.getUri()));
+            ioService.getFileSystem(URI.create(repository.getUri()));
 
         }
     }
-    
-    @Produces
-    @Named("fileSystem")
-    public FileSystem fileSystem() {
-        return fs;
-    }
-
-
-
 }
