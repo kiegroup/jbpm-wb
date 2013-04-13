@@ -16,6 +16,7 @@ import org.jbpm.console.ng.es.client.util.ResizableHeader;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
+import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
@@ -33,7 +34,6 @@ import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.view.client.ListDataProvider;
 
 @Dependent
@@ -46,7 +46,7 @@ public class QuickNewJobViewImpl extends Composite
     public TextBox jobNameText;
     @Inject
     @DataField
-    public DateBox jobDueDate;
+    public DateTimeBox jobDueDate;
     @Inject
     @DataField
     public TextBox jobTypeText;
