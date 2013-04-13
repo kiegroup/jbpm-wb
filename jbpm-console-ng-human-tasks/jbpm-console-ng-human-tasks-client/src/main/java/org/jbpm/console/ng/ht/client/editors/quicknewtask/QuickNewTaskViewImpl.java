@@ -15,34 +15,29 @@
  */
 package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
+import java.util.Date;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
+import org.uberfire.security.Identity;
 
-
+import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
-
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.datepicker.client.DateBox;
-
-import java.util.Date;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.security.Identity;
-
-
 
 @Dependent
 @Templated(value = "QuickNewTaskViewImpl.html")
@@ -63,16 +58,13 @@ public class QuickNewTaskViewImpl extends Composite
     public TextBox taskNameText;
     @Inject
     @DataField
-    public DateBox dueDate;
-    
+    public DateTimeBox dueDate;
     @Inject
     @DataField
     public TextBox userText;
-    
     @Inject
     @DataField
     public TextBox taskPriorityListBox;
-    
     @Inject
     @DataField
     public CheckBox quickTaskCheck;
@@ -118,7 +110,6 @@ public class QuickNewTaskViewImpl extends Composite
         addTask();
     }
 
-
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
         userTaskChanges.fire(new UserTaskEvent(identity.getName()));
@@ -139,8 +130,6 @@ public class QuickNewTaskViewImpl extends Composite
         }else{
           displayNotification("The Task Must Have a Name!");
         }
-        
-
     }
 
     public Button getAddTaskButton() {

@@ -15,28 +15,25 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskdetails;
 
-import com.github.gwtbootstrap.client.ui.base.UnorderedList;
-import com.google.gwt.event.dom.client.ClickEvent;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
-
-
+import com.github.gwtbootstrap.client.ui.base.UnorderedList;
+import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.datepicker.client.DateBox;
-
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.client.mvp.PlaceManager;
 
 @Dependent
 @Templated(value = "TaskDetailsPopupViewImpl.html")
@@ -74,7 +71,7 @@ public class TaskDetailsPopupViewImpl extends Composite
     public ListBox subTaskStrategyListBox;
     @Inject
     @DataField
-    public DateBox dueDate;
+    public DateTimeBox dueDate;
      @Inject
     @DataField
     public Button updateTaskButton;
@@ -149,7 +146,7 @@ public class TaskDetailsPopupViewImpl extends Composite
         return taskPriorityListBox;
     }
 
-    public DateBox getDueDate() {
+    public DateTimeBox getDueDate() {
         return dueDate;
     }
 

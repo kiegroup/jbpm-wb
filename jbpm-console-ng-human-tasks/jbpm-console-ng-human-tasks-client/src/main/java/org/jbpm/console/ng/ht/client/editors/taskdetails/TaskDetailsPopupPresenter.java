@@ -15,34 +15,18 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskdetails;
 
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.base.UnorderedList;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.datepicker.client.DateBox;
-
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
-
-
+import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
-
-
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
@@ -58,6 +42,17 @@ import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
 import org.uberfire.security.Identity;
 import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
+
+import com.github.gwtbootstrap.client.ui.NavLink;
+import com.github.gwtbootstrap.client.ui.base.UnorderedList;
+import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 
 @Dependent
 @WorkbenchPopup(identifier = "Task Details Popup")
@@ -77,7 +72,7 @@ public class TaskDetailsPopupPresenter {
 
         ListBox getTaskPriorityListBox();
 
-        DateBox getDueDate();
+        DateTimeBox getDueDate();
 
         TextBox getUserText();
 
