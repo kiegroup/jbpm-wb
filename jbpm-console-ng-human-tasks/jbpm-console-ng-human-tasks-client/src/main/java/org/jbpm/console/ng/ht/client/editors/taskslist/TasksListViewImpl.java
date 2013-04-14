@@ -82,10 +82,8 @@ public class TasksListViewImpl extends Composite
     @Override
     public void init(TasksListPresenter presenter) {
         this.presenter = presenter;
-
+        taskListMultiDayBox.init();
         taskListMultiDayBox.setPresenter(presenter);
-
-        
 
         refreshTasks();
         // By Default we will start in Day View
