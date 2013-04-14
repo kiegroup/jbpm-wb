@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.ht.model.CommentSummary;
+import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.IdentitySummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 
@@ -41,11 +42,11 @@ public interface TaskServiceEntryPoint {
     
     List<TaskSummary> getTasksAssignedByGroups(List<String> groupsId, String language); 
     
-    Map<String, List<TaskSummary>> getTasksOwnedByDay(String userId, List<String> groupIds, String language);
+    Map<Day, List<TaskSummary>> getTasksOwnedByDay(String userId, List<String> groupIds, String language);
     
-    Map<String, List<TaskSummary>> getTasksAssignedPersonalAndGroupsTasksByDays(String userId, List<String> groupIds, String language);
+    Map<Day, List<TaskSummary>> getTasksAssignedPersonalAndGroupsTasksByDays(String userId, List<String> groupIds, String language);
     
-    Map<String, List<TaskSummary>> getTasksAssignedByGroupsByDay(String userId, List<String> groupIds, String language);
+    Map<Day, List<TaskSummary>> getTasksAssignedByGroupsByDay(String userId, List<String> groupIds, String language);
 
     List<TaskSummary> getTasksOwned(String userId);
     

@@ -15,8 +15,10 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
+import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.security.Identity;
@@ -26,6 +28,7 @@ import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
@@ -38,7 +41,7 @@ public class TaskListDayBox extends Composite implements RequiresResize {
     private static IconType ICON_TASKS_COLLAPSED = IconType.DOUBLE_ANGLE_DOWN;
     private static IconType ICON_TASKS_VISIBLE = IconType.DOUBLE_ANGLE_UP;
     
-    private String day;
+    private Day day;
     private List<TaskSummary> taskSummaries;
     private Identity identity;
     private PlaceManager placeManager;
@@ -53,7 +56,7 @@ public class TaskListDayBox extends Composite implements RequiresResize {
 
     private boolean tasksCollapsed = false;
 
-    public TaskListDayBox(String day, List<TaskSummary> taskSummaries, Identity identity, PlaceManager placeManager,
+    public TaskListDayBox(Day day, List<TaskSummary> taskSummaries, Identity identity, PlaceManager placeManager,
             TasksListPresenter presenter) {
         this.day = day;
         this.taskSummaries = taskSummaries;
@@ -70,7 +73,9 @@ public class TaskListDayBox extends Composite implements RequiresResize {
         taskListBox.setStyleName("tasks-list");
         dayTaskContainer.setStyleName("day-tasks-container");
         top.setStyleName("top");
-        iconAndDayName.setText(day + " (" + taskSummaries.size() + ")");
+        DateTimeFormat fmt = DateTimeFormat.getFormat("dd/MM/yyyy");
+        String dayAndDate = day.getDayOfWeekName() + " - " + fmt.format(day.getDate());
+        iconAndDayName.setText(dayAndDate + " (" + taskSummaries.size() + ")");
         // show/hide the tasks when the icon is clicked
         iconAndDayName.addClickHandler(new ClickHandler() {
             @Override
