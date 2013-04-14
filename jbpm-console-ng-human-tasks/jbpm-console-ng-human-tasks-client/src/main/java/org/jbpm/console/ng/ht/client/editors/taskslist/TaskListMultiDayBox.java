@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.security.Identity;
@@ -43,10 +44,10 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
 
     private TasksListPresenter presenter;
 
-    private Map<String, List<TaskSummary>> sectionTasks = new LinkedHashMap<String, List<TaskSummary>>();
+    private Map<Day, List<TaskSummary>> sectionTasks = new LinkedHashMap<Day, List<TaskSummary>>();
 
     public TaskListMultiDayBox() {
-
+        
     }
 
     public TasksListPresenter getPresenter() {
@@ -64,15 +65,18 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
 
     public void refresh() {
         tasksContainer.clear();
-        for (String section : sectionTasks.keySet()) {
+        for (Day section : sectionTasks.keySet()) {
             TaskListDayBox taskList = new TaskListDayBox(section, sectionTasks.get(section), identity, placeManager, presenter);
             taskList.init();
             tasksContainer.add(taskList);
         }
-
     }
 
     public void addTasksByDay(String day, List<TaskSummary> taskSummaries) {
+        
+    }
+    
+    public void addTasksByDay(Day day, List<TaskSummary> taskSummaries) {
         sectionTasks.put(day, taskSummaries);
     }
 

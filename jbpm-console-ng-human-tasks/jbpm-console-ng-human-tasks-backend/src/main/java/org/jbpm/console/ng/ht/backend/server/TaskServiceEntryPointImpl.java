@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.ht.model.CommentSummary;
+import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.IdentitySummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
@@ -36,6 +37,8 @@ import org.jbpm.services.task.impl.factories.TaskFactory;
 import org.jbpm.services.task.impl.model.CommentImpl;
 import org.jbpm.services.task.impl.model.UserImpl;
 import org.jbpm.services.task.utils.ContentMarshallerHelper;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.kie.internal.task.api.model.Comment;
 import org.kie.internal.task.api.model.Content;
 import org.kie.internal.task.api.model.Group;
@@ -144,55 +147,53 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
             return groupTasks;
       
     }
-    public Map<String, List<TaskSummary>> getTasksAssignedPersonalAndGroupsTasksByDays(String userId, List<String> groupIds, String language) {
-      Map<String, List<TaskSummary>> tasksAssignedByGroupsByDay = getTasksAssignedByGroupsByDay(userId, groupIds, language);
-      Map<String, List<TaskSummary>> tasksOwnedByDay = getTasksOwnedByDay(userId, groupIds, language);
-      for(String day : tasksOwnedByDay.keySet()){
+    @Override
+    public Map<Day, List<TaskSummary>> getTasksAssignedPersonalAndGroupsTasksByDays(String userId, List<String> groupIds, String language) {
+      Map<Day, List<TaskSummary>> tasksAssignedByGroupsByDay = getTasksAssignedByGroupsByDay(userId, groupIds, language);
+      Map<Day, List<TaskSummary>> tasksOwnedByDay = getTasksOwnedByDay(userId, groupIds, language);
+      for(Day day : tasksOwnedByDay.keySet()) {
         tasksOwnedByDay.get(day).addAll(tasksAssignedByGroupsByDay.get(day));
       }
       return tasksOwnedByDay;
     }
     
-    public Map<String, List<TaskSummary>> getTasksAssignedByGroupsByDay(String userId, List<String> groupIds, String language) {
+    @Override
+    public Map<Day, List<TaskSummary>> getTasksAssignedByGroupsByDay(String userId, List<String> groupIds, String language) {
       Date currentDay = new Date();
-      Map<String, List<TaskSummary>> tasksByDay = new LinkedHashMap<String, List<TaskSummary>>();
+      Map<Day, List<TaskSummary>> tasksByDay = new LinkedHashMap<Day, List<TaskSummary>>();
       
       List<TaskSummary> todayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroupsByExpirationDateOptional(groupIds, language, currentDay ));
+      SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
+      tasksByDay.put(new Day(currentDay, dayFormat.format(currentDay)), todayTasks);
+      currentDay = new Date(currentDay.getTime() + (DateTimeConstants.MILLIS_PER_DAY));
       
-      SimpleDateFormat todayFormat = new SimpleDateFormat("EEEE");
-      tasksByDay.put(todayFormat.format(currentDay), todayTasks);
-      currentDay = new Date(currentDay.getTime() + (1000 * 60 * 60 * 24));
-      
-      for(int i= 1; i < 5; i ++){
+      for(int i= 1; i < 5; i ++) {
         List<TaskSummary> dayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroupsByExpirationDate(groupIds, language, currentDay ));
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
-        tasksByDay.put(dayFormat.format(currentDay), dayTasks);
-        currentDay = new Date(currentDay.getTime() + (1000 * 60 * 60 * 24));
-        
+        tasksByDay.put(new Day(currentDay, dayFormat.format(currentDay)), dayTasks);
+        currentDay = new Date(currentDay.getTime() + (DateTimeConstants.MILLIS_PER_DAY));
       }
       
       return tasksByDay;
     }
     
-    public Map<String, List<TaskSummary>> getTasksOwnedByDay(String userId, List<String> groupIds, String language) {
+    @Override
+    public Map<Day, List<TaskSummary>> getTasksOwnedByDay(String userId, List<String> groupIds, String language) {
       Date currentDay = new Date();
-      Map<String, List<TaskSummary>> tasksByDay = new LinkedHashMap<String, List<TaskSummary>>();
-      List<Status> statuses = new ArrayList<Status>();      
+      Map<Day, List<TaskSummary>> tasksByDay = new LinkedHashMap<Day, List<TaskSummary>>();
+      List<Status> statuses = new ArrayList<Status>();
       statuses.add(Status.InProgress);
       statuses.add(Status.Reserved);
       statuses.add(Status.Created);
       
       List<TaskSummary> todayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByExpirationDateOptional(userId, statuses, currentDay ));
-      
-      SimpleDateFormat todayFormat = new SimpleDateFormat("EEEE");
-      tasksByDay.put(todayFormat.format(currentDay), todayTasks);
-      currentDay = new Date(currentDay.getTime() + (1000 * 60 * 60 * 24));
+      SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
+      tasksByDay.put(new Day(currentDay, dayFormat.format(currentDay)), todayTasks);
+      currentDay = new Date(currentDay.getTime() + (DateTimeConstants.MILLIS_PER_DAY));
       
       for(int i= 1; i < 5; i ++){
         List<TaskSummary> dayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByExpirationDate(userId, statuses, currentDay ));
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
-        tasksByDay.put(dayFormat.format(currentDay), dayTasks);
-        currentDay = new Date(currentDay.getTime() + (1000 * 60 * 60 * 24));
+        tasksByDay.put(new Day(currentDay, dayFormat.format(currentDay)), dayTasks);
+        currentDay = new Date(currentDay.getTime() + (DateTimeConstants.MILLIS_PER_DAY));
         
       }
       return tasksByDay;

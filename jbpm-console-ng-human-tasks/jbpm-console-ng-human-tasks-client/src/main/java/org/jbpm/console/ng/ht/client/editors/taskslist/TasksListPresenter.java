@@ -24,6 +24,8 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Map;
 import javax.enterprise.event.Observes;
+
+import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
@@ -124,10 +126,10 @@ public class TasksListPresenter {
 
         } else {
 
-            taskServices.call(new RemoteCallback<Map<String, List<TaskSummary>>>() {
+            taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
-                public  void callback(Map<String, List<TaskSummary>> tasks) {
-                   for(String day : tasks.keySet()){
+                public  void callback(Map<Day, List<TaskSummary>> tasks) {
+                   for(Day day : tasks.keySet()){
                     view.getTaskListMultiDayBox().addTasksByDay(day, tasks.get(day));
                    }
                    view.getTaskListMultiDayBox().refresh();
