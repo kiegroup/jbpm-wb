@@ -35,8 +35,14 @@ import com.google.gwt.user.client.ui.RequiresResize;
  * @author salaboy
  */
 public class TaskListDayBox extends Composite implements RequiresResize {
-
+    private static IconType ICON_TASKS_COLLAPSED = IconType.DOUBLE_ANGLE_DOWN;
+    private static IconType ICON_TASKS_VISIBLE = IconType.DOUBLE_ANGLE_UP;
+    
+    private String day;
     private List<TaskSummary> taskSummaries;
+    private Identity identity;
+    private PlaceManager placeManager;
+    private TasksListPresenter presenter;
     private FlowPanel taskListBox = new FlowPanel();
     private FlowPanel dayTaskContainer = new FlowPanel();
     private FlowPanel top = new FlowPanel();
@@ -44,14 +50,19 @@ public class TaskListDayBox extends Composite implements RequiresResize {
     private FlowPanel span12 = new FlowPanel();
     private IconAnchor iconAndDayName = new IconAnchor();
     private Collapse collapsible = new Collapse();
-    private TasksListPresenter presenter;
-    private Identity identity;
-    private PlaceManager placeManager;
-    
-    private boolean tasksVisible = true;
+
+    private boolean tasksCollapsed = false;
 
     public TaskListDayBox(String day, List<TaskSummary> taskSummaries, Identity identity, PlaceManager placeManager,
             TasksListPresenter presenter) {
+        this.day = day;
+        this.taskSummaries = taskSummaries;
+        this.identity = identity;
+        this.placeManager = placeManager;
+        this.presenter = presenter;
+    }
+
+    public void init() {
         fluidRow.setStyleName("row-fluid");
         span12.setStyleName("span12");
         fluidRow.add(span12);
@@ -60,33 +71,30 @@ public class TaskListDayBox extends Composite implements RequiresResize {
         dayTaskContainer.setStyleName("day-tasks-container");
         top.setStyleName("top");
         iconAndDayName.setText(day + " (" + taskSummaries.size() + ")");
+        // show/hide the tasks when the icon is clicked
         iconAndDayName.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 collapsible.toggle();
-                if (tasksVisible) {
-                    iconAndDayName.setIcon(IconType.DOUBLE_ANGLE_DOWN);
-                } else {
-                    iconAndDayName.setIcon(IconType.DOUBLE_ANGLE_UP);
-                }
-                tasksVisible = !tasksVisible;
+                toggleIcon();
             }
         });
+        
         top.add(iconAndDayName);
         dayTaskContainer.add(top);
         span12.add(taskListBox);
         collapsible.add(fluidRow);
+        dayTaskContainer.add(collapsible);
+        
         if (taskSummaries.size() > 0) {
             collapsible.setDefaultOpen(true);
-            tasksVisible = true;
-            iconAndDayName.setIcon(IconType.DOUBLE_ANGLE_UP);
+            tasksCollapsed = false;
+            iconAndDayName.setIcon(ICON_TASKS_VISIBLE);
         } else {
-            tasksVisible = false;
-            iconAndDayName.setIcon(IconType.DOUBLE_ANGLE_DOWN);
+            tasksCollapsed = true;
+            iconAndDayName.setIcon(ICON_TASKS_COLLAPSED);
         }
-        dayTaskContainer.add(collapsible);
         initWidget(dayTaskContainer);
-        this.taskSummaries = taskSummaries;
         taskListBox.clear();
         for (TaskSummary ts : this.taskSummaries) {
             taskListBox.add(new TaskBox(placeManager, presenter, identity, ts.getId(), ts.getName(), ts.getActualOwner(), ts
@@ -124,5 +132,19 @@ public class TaskListDayBox extends Composite implements RequiresResize {
 
     @Override
     public void onResize() {
+    }
+
+    /**
+     * Changes the icon based on {@code tasksCollapsed} flag.
+     * 
+     * @param iconAnchor component for which toggle the icon
+     */
+    private void toggleIcon() {
+        if (tasksCollapsed) {
+            iconAndDayName.setIcon(ICON_TASKS_VISIBLE);
+        } else {
+            iconAndDayName.setIcon(ICON_TASKS_COLLAPSED);
+        }
+        tasksCollapsed = !tasksCollapsed;
     }
 }

@@ -1,22 +1,36 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 JBoss by Red Hat.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.RequiresResize;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.inject.Inject;
+
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.security.Identity;
 
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.RequiresResize;
+
 /**
- *
+ * 
  * @author salaboy
  */
 public class TaskListMultiDayBox extends Composite implements RequiresResize {
@@ -28,23 +42,11 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
     private PlaceManager placeManager;
 
     private TasksListPresenter presenter;
-    
+
     private Map<String, List<TaskSummary>> sectionTasks = new LinkedHashMap<String, List<TaskSummary>>();
-    
+
     public TaskListMultiDayBox() {
-        tasksContainer.setStyleName("task-container");
-        initWidget(tasksContainer);
-    }
-    
-     public void refresh(){
-        tasksContainer.clear();
-        for(String section : sectionTasks.keySet()){
-           
-           tasksContainer.add(new TaskListDayBox(section, sectionTasks.get(section), identity, placeManager, presenter ));
-        }
-        
-    }
-    public void onResize() {
+
     }
 
     public TasksListPresenter getPresenter() {
@@ -54,9 +56,27 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
     public void setPresenter(TasksListPresenter presenter) {
         this.presenter = presenter;
     }
-    
-    public void addTasksByDay(String day, List<TaskSummary> taskSummaries){
+
+    public void init() {
+        tasksContainer.setStyleName("task-container");
+        initWidget(tasksContainer);
+    }
+
+    public void refresh() {
+        tasksContainer.clear();
+        for (String section : sectionTasks.keySet()) {
+            TaskListDayBox taskList = new TaskListDayBox(section, sectionTasks.get(section), identity, placeManager, presenter);
+            taskList.init();
+            tasksContainer.add(taskList);
+        }
+
+    }
+
+    public void addTasksByDay(String day, List<TaskSummary> taskSummaries) {
         sectionTasks.put(day, taskSummaries);
     }
-    
+
+    @Override
+    public void onResize() {
+    }
 }
