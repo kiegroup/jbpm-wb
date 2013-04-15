@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.jbpm.console.ng.ht.model.Day;
