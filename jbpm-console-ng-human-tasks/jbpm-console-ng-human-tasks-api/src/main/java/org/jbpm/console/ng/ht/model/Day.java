@@ -35,7 +35,7 @@ public class Day implements Serializable {
     }
     
     public Date getDate() {
-        return date;
+        return new Date(date.getTime());
     }
 
     public String getDayOfWeekName() {
