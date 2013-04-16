@@ -104,12 +104,9 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint{
     }
     
     public Collection<ProcessInstanceSummary> getProcessInstances(List<Integer> states, String filterText,
-            int filterType, String initiator) {
+             String initiator) {
         Collection<ProcessInstanceDesc> result = null;
-        if (filterType == 0) {
-            // search by process id
-            result = dataService.getProcessInstancesByProcessId(states, filterText, initiator);
-        } else if (filterType == 1) {
+        if(!filterText.equals("")){
             // search by process name
             result = dataService.getProcessInstancesByProcessName(states, filterText, initiator);
         } else {

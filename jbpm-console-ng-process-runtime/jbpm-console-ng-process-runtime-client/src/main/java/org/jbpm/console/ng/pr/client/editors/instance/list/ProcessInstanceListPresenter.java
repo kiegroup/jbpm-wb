@@ -57,12 +57,10 @@ public class ProcessInstanceListPresenter {
     void displayNotification(String text);
 
     String getFilterProcessText();
-    
+
     void setFilterProcessText(String processText);
-
+    
     DataGrid<ProcessInstanceSummary> getDataGrid();
-
-    int getFilterType();
 
     void setAvailableProcesses(Collection<ProcessInstanceSummary> processes);
   }
@@ -129,7 +127,7 @@ public class ProcessInstanceListPresenter {
           dataProvider.getList().addAll(processInstances);
           dataProvider.refresh();
         }
-      }).getProcessInstances(states, view.getFilterProcessText(), view.getFilterType(), initiator);
+      }).getProcessInstances(states, view.getFilterProcessText(), initiator);
     }
 
 

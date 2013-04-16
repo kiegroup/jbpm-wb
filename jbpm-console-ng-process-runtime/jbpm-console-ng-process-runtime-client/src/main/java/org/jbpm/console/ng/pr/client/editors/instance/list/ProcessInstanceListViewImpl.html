@@ -1,57 +1,47 @@
 <div class="container-fluid">
-  <br/>
-  <div class="row-fluid">
-    <div class="navbar navbar-inverse" id="task-nav">
-    <div class="navbar-inner">
-      <div class="container">
-        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse.filters" >
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </a>
-        <div class="nav-collapse filters collapse">
-          <div class="row-fluid">
-            <ul class="nav">
-              
-              <li class="divider-vertical"></li>
-              <a class="brand" href="#">Filters</a>
-              <li data-field="showCompletedLink"></li>
-              <li data-field="showAbortedLink"></li>
-              <li data-field="showRelatedToMeLink"></li>
-              <a class="brand" href="#">Bulk Actions</a>
-              <li data-field="signalLink"></li>
-              <li data-field="abortLink"></li>
-            </ul>
-            <form action="#" class="navbar-search pull-right">
-              <input type="text" class="search-query" data-field="filterProcessText"  placeholder="Search">
-              <select data-field="filterTypeListBox" id="filterTypeListBox" class=""></select>
-              <button class="btn" id="filterButton" data-field="filterButton">Search</button>
-            </form>
-          </div>
+    <br/>
+    <div class="row-fluid">
+        <div class="navbar" id="task-nav">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse.filters" >
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="nav-collapse filters collapse">
+                        <div class="row-fluid">
+                            <a class="brand" href="#">Filters</a>
+                            <ul class="nav">
+                                <li data-field="showCompletedLink"></li>
+                                <li data-field="showAbortedLink"></li>
+                                <li data-field="showRelatedToMeLink"></li>
+                            </ul>
+                            <a class="brand" href="#">Bulk</a>
+                            <ul class="nav">
+                                <li data-field="signalLink"></li>
+                                <li data-field="abortLink"></li>
+                            </ul>  
+                            <form action="#" class="navbar-form pull-right">
+                                <input type="text" class="search-query" data-field="filterProcessText"  placeholder="filter">
+                                <button class="btn" id="filterButton" data-field="filterButton">Filter</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+
+
+    </div>
+    <div class="row-fluid">
+        <div data-field="listContainer" >
+
+            <table id="processInstanceListGrid" data-field="processInstanceListGrid" class="table table-bordered table-striped table-hover">
+
+            </table>
+
+            <div id="pager" class="pagination" data-field="pager"></div>
         </div>
-      </div>
     </div>
-  </div>  
-      
-    <!--<form class="form-search">
-      <input type="text" class="search-query" id="filterProcessText" data-field="filterProcessText" /> 
-      
-      <input type="checkbox" class="checkbox inline" id="showCompletedCheck" data-field="showCompletedCheck"/>
-      <input type="checkbox" class="checkbox inline" id="showAbortedCheck" data-field="showAbortedCheck"/>
-      <input type="checkbox" class="checkbox inline" id="showRelatedToMe" data-field="showRelatedToMe"/>
-      <button class="btn" id="filterButton" data-field="filterButton">Search</button>
-      <button class="btn" id="signalButton" data-field="signalButton">Signal</button>
-      <button class="btn" id="abortButton" data-field="abortButton">Abort</button>
-    </form>-->
-  </div>
-  <div class="row-fluid">
-    <div data-field="listContainer" >
-
-      <table id="processInstanceListGrid" data-field="processInstanceListGrid" class="table table-bordered table-striped table-hover">
-
-      </table>
-
-      <div id="pager" class="pagination" data-field="pager"></div>
-    </div>
-  </div>
 </div>

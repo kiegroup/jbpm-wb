@@ -17,13 +17,11 @@ package org.jbpm.console.ng.pr.client.editors.instance.list;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -55,11 +53,8 @@ import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
-import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -98,9 +93,7 @@ public class ProcessInstanceListViewImpl extends Composite
     @Inject
     @DataField
     public Button filterButton;
-    @Inject
-    @DataField
-    public ListBox filterTypeListBox;
+    
     @Inject
     @DataField
     public NavLink abortLink;
@@ -140,22 +133,6 @@ public class ProcessInstanceListViewImpl extends Composite
     @Override
     public void init(final ProcessInstanceListPresenter presenter) {
         this.presenter = presenter;
-
-        this.filterTypeListBox.addItem("-------", "no-filter");
-        this.filterTypeListBox.addItem("By Process Id", "by-process-id");
-        this.filterTypeListBox.addItem("By Process Name", "by-process-name");
-
-        this.filterTypeListBox.addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event) {
-                presenter.listProcessInstances();
-                String value = filterTypeListBox.getValue(filterTypeListBox.getSelectedIndex());
-                if ("no-filter".equals(value)) {
-                    filterProcessText.setText("");
-                }
-
-            }
-        });
 
         listContainer.add(processInstanceListGrid);
         listContainer.add(pager);
@@ -629,29 +606,14 @@ public class ProcessInstanceListViewImpl extends Composite
     }
 
     public void setAvailableProcesses(Collection<ProcessInstanceSummary> processes) {
-        String value = filterTypeListBox.getValue(filterTypeListBox.getSelectedIndex());
         oracle.clear();
         if (processes != null && !processes.isEmpty()) {
             for (ProcessInstanceSummary process : processes) {
-                if ("by-process-id".equals(value)) {
-                    oracle.add(process.getProcessId());
-                } else if ("by-process-name".equals(value)) {
                     oracle.add(process.getProcessName());
-                }
 
             }
         }
     }
 
-    @Override
-    public int getFilterType() {
-        String value = filterTypeListBox.getValue(filterTypeListBox.getSelectedIndex());
-        if ("by-process-id".equals(value)) {
-            return 0;
-        } else if ("by-process-name".equals(value)) {
-            return 1;
-        }
-
-        return -1;
-    }
+    
 }

@@ -53,8 +53,7 @@ public interface DataServiceEntryPoint {
 
     Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(long processInstanceId);
     
-    Collection<ProcessInstanceSummary> getProcessInstances(List<Integer> states, String filterText,
-            int filterType, String initiator);
+    Collection<ProcessInstanceSummary> getProcessInstances(List<Integer> states, String filterText, String initiator);
     
     Collection<NodeInstanceSummary> getProcessInstanceCompletedNodes(long processInstanceId);
     

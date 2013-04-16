@@ -244,10 +244,10 @@ public class ShowcaseEntryPoint {
 
     private List<? extends MenuItem> getBAMViews() {
         final List<MenuItem> result = new ArrayList<MenuItem>(1);
-        result.add(MenuFactory.newSimpleItem("BAM").respondsWith(new Command() {
+        result.add(MenuFactory.newSimpleItem("Process Dashboard").respondsWith(new Command() {
             @Override
             public void execute() {
-                Window.open("http://localhost:8080/bam-app/", "_blank", "");
+                Window.open("http://localhost:8080/dashbuilder/workspace/jbpm-dashboard", "_blank", "");
             }
         }).endMenu().build().getItems().get(0));
         return result;

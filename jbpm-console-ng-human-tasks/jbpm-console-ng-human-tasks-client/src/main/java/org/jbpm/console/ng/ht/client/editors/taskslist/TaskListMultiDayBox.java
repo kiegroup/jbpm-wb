@@ -29,6 +29,7 @@ import org.uberfire.security.Identity;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
+import java.util.Date;
 
 /**
  * 
@@ -73,7 +74,7 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
     }
 
     public void addTasksByDay(String day, List<TaskSummary> taskSummaries) {
-        
+       sectionTasks.put(new Day(new Date(), day), taskSummaries); 
     }
     
     public void addTasksByDay(Day day, List<TaskSummary> taskSummaries) {
