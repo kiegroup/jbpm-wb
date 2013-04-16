@@ -39,7 +39,7 @@ public class NodeInstanceHelper {
     
     public static NodeInstanceSummary adapt(NodeInstanceDesc ni){
         Date date = ni.getDataTimeStamp();
-        String formattedDate = new SimpleDateFormat("dd/MM/yyyy, Ka").format(date);
+        String formattedDate = new SimpleDateFormat("d/MMM/yy HH:mm:ss").format(date);
         return new NodeInstanceSummary(ni.getId(), ni.getProcessInstanceId(), 
                     ni.getName(), ni.getNodeId(), ni.getNodeType(), formattedDate
                     , ni.getConnection(), ni.isCompleted());

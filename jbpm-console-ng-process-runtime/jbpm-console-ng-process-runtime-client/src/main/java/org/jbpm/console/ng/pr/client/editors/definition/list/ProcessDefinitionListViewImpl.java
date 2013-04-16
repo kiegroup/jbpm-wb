@@ -164,45 +164,29 @@ public class ProcessDefinitionListViewImpl extends Composite
     }
     
     private void initTableColumns(final SelectionModel<ProcessSummary> selectionModel) {
-        // Checkbox column. This table will uses a checkbox column for selection.
-        // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
-        // mouse selection.
 
-//        Column<ProcessSummary, Boolean> checkColumn =
-//                new Column<ProcessSummary, Boolean>(new CheckboxCell(true,
-//                false)) {
+
+//        // Id.
+//        Column<ProcessSummary, String> processIdColumn =
+//                new Column<ProcessSummary, String>(new TextCell()) {
 //            @Override
-//            public Boolean getValue(ProcessSummary object) {
-//                // Get the value from the selection model.
-//                return selectionModel.isSelected(object);
+//            public String getValue(ProcessSummary object) {
+//                return object.getId();
 //            }
 //        };
-//        
-//        processdefListGrid.addColumn(checkColumn,
-//                SafeHtmlUtils.fromSafeConstant("<br/>"));
-//        processdefListGrid.setColumnWidth(checkColumn, "40px");
-
-        // Id.
-        Column<ProcessSummary, String> processIdColumn =
-                new Column<ProcessSummary, String>(new TextCell()) {
-            @Override
-            public String getValue(ProcessSummary object) {
-                return object.getId();
-            }
-        };
-        processIdColumn.setSortable(true);
-        sortHandler.setComparator(processIdColumn,
-                new Comparator<ProcessSummary>() {
-            public int compare(ProcessSummary o1,
-                    ProcessSummary o2) {
-                return o1.getId().compareTo(o2.getId());
-            }
-        });
-        processdefListGrid.addColumn(processIdColumn,
-                new ResizableHeader(constants.Id(), processdefListGrid, processIdColumn));
+//        processIdColumn.setSortable(true);
+//        sortHandler.setComparator(processIdColumn,
+//                new Comparator<ProcessSummary>() {
+//            public int compare(ProcessSummary o1,
+//                    ProcessSummary o2) {
+//                return o1.getId().compareTo(o2.getId());
+//            }
+//        });
+//        processdefListGrid.addColumn(processIdColumn,
+//                new ResizableHeader(constants.Id(), processdefListGrid, processIdColumn));
 
 
-        // Process Id String.
+        // Process Name String.
         Column<ProcessSummary, String> processNameColumn =
                 new Column<ProcessSummary, String>(new TextCell()) {
             @Override
@@ -221,24 +205,24 @@ public class ProcessDefinitionListViewImpl extends Composite
         processdefListGrid.addColumn(processNameColumn,
                 new ResizableHeader(constants.Name(), processdefListGrid, processNameColumn));
 
-        // Process PKG.
-        Column<ProcessSummary, String> processPkgColumn =
-                new Column<ProcessSummary, String>(new TextCell()) {
-            @Override
-            public String getValue(ProcessSummary object) {
-                return object.getPackageName();
-            }
-        };
-        processPkgColumn.setSortable(true);
-        sortHandler.setComparator(processPkgColumn,
-                new Comparator<ProcessSummary>() {
-            public int compare(ProcessSummary o1,
-                    ProcessSummary o2) {
-                return o1.getPackageName().compareTo(o2.getPackageName());
-            }
-        });
-        processdefListGrid.addColumn(processPkgColumn,
-                new ResizableHeader(constants.Package(), processdefListGrid, processPkgColumn));
+//        // Process PKG.
+//        Column<ProcessSummary, String> processPkgColumn =
+//                new Column<ProcessSummary, String>(new TextCell()) {
+//            @Override
+//            public String getValue(ProcessSummary object) {
+//                return object.getPackageName();
+//            }
+//        };
+//        processPkgColumn.setSortable(true);
+//        sortHandler.setComparator(processPkgColumn,
+//                new Comparator<ProcessSummary>() {
+//            public int compare(ProcessSummary o1,
+//                    ProcessSummary o2) {
+//                return o1.getPackageName().compareTo(o2.getPackageName());
+//            }
+//        });
+//        processdefListGrid.addColumn(processPkgColumn,
+//                new ResizableHeader(constants.Package(), processdefListGrid, processPkgColumn));
         
          // Process Domain Id.
         Column<ProcessSummary, String> processDomainIdColumn =

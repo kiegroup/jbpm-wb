@@ -77,6 +77,16 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
         ksession.abortProcessInstance(processInstanceId);
 
     }
+    
+     @Override
+    public void suspendProcessInstance(long processInstanceId) {
+        ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
+        RuntimeManager runtimesByDomain = domainManagerService.getRuntimesByDomain(piDesc.getDomainId());
+        // I'm considering Singleton
+//        KieSession ksession = runtimesByDomain.getRuntime(ProcessInstanceIdContext.get(processInstanceId)).getKieSession();
+//        ksession.abortProcessInstance(processInstanceId);
+
+    }
 
     @Override
     public void signalProcessInstance(long processInstanceId, String signalName, Object event) {

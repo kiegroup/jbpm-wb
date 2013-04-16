@@ -62,12 +62,6 @@ public class ProcessInstanceListPresenter {
 
     DataGrid<ProcessInstanceSummary> getDataGrid();
 
-    Boolean isShowCompleted();
-
-    Boolean isShowAborted();
-
-    Boolean isShowRelatedToMe();
-
     int getFilterType();
 
     void setAvailableProcesses(Collection<ProcessInstanceSummary> processes);
@@ -103,18 +97,18 @@ public class ProcessInstanceListPresenter {
   public void init() {
   }
 
-  public void refreshProcessList(final String sessionId) {
+  public void refreshProcessList(final String sessionId, boolean aborted, boolean completed, boolean relatedToMe) {
     List<Integer> states = new ArrayList<Integer>();
     states.add(ProcessInstance.STATE_ACTIVE);
-    if (view.isShowAborted()) {
+    if (aborted) {
       states.add(ProcessInstance.STATE_ABORTED);
     }
-    if (view.isShowCompleted()) {
+    if (completed) {
       states.add(ProcessInstance.STATE_COMPLETED);
     }
 
     String initiator = null;
-    if (view.isShowRelatedToMe()) {
+    if (relatedToMe) {
       initiator = identity.getName();
     }
 
@@ -144,7 +138,7 @@ public class ProcessInstanceListPresenter {
   }
 
   public void newInstanceCreated(@Observes ProcessInstanceCreated pi) {
-    refreshProcessList("");
+    refreshProcessList("", false, false, false);
   }
 
   public void addDataDisplay(HasData<ProcessInstanceSummary> display) {
@@ -169,17 +163,27 @@ public class ProcessInstanceListPresenter {
 
     this.currentProcessDefinition = place.getParameter("processDefId", "");
     listProcessInstances();
-    refreshProcessList("");
+    refreshProcessList("", false, false, false);
   }
 
   public void abortProcessInstance(String processDefId, long processInstanceId) {
     kieSessionServices.call(new RemoteCallback<Void>() {
       @Override
       public void callback(Void v) {
-        refreshProcessList("");
+        refreshProcessList("", false, false, false);
 
       }
     }).abortProcessInstance(processInstanceId);
+  }
+  
+  public void suspendProcessInstance(String processDefId, long processInstanceId) {
+    kieSessionServices.call(new RemoteCallback<Void>() {
+      @Override
+      public void callback(Void v) {
+        refreshProcessList("", false, false, false);
+
+      }
+    }).suspendProcessInstance(processInstanceId);
   }
 
   public void listProcessInstances() {

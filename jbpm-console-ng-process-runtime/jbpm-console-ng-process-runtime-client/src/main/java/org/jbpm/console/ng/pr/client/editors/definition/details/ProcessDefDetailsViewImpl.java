@@ -17,6 +17,7 @@ package org.jbpm.console.ng.pr.client.editors.definition.details;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ListBox;
+import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -71,16 +72,16 @@ public class ProcessDefDetailsViewImpl extends Composite
   public TextBox domainIdText;
   @Inject
   @DataField
-  public Button refreshButton;
+  public NavLink refreshButton;
   @Inject
   @DataField
-  public Button viewProcessInstancesButton;
+  public NavLink viewProcessInstancesButton;
   @Inject
   @DataField
-  public Button createProcessInstanceButton;
+  public NavLink createProcessInstanceButton;
   @Inject
   @DataField
-  public Button openProcessDesignerButton;
+  public NavLink openProcessDesignerButton;
   @Inject
   private Event<NotificationEvent> notification;
   private Constants constants = GWT.create(Constants.class);
@@ -110,6 +111,11 @@ public class ProcessDefDetailsViewImpl extends Composite
         placeManager.goTo(placeRequestImpl);
       }
     });
+    
+    refreshButton.setText("Refresh");
+    viewProcessInstancesButton.setText("View Process Instances");
+    createProcessInstanceButton.setText("New Process Instance");
+    openProcessDesignerButton.setText("View Process Model");
     
   }
   

@@ -1,12 +1,32 @@
 <div class="row-fluid">
-  <div class="span12">
-      <div class=" span12 form-actions">
-        <button class="btn" data-field="createProcessInstanceButton" id="createProcessInstanceButton">New Process Instance</button>
-        <button class="btn" data-field="viewProcessInstancesButton" id="viewProcessInstancesButton">View Process Instances</button>
-        <button class="btn" data-field="openProcessDesignerButton" id="openProcessDesignerButton">View Process Model</button>    
-        <button class="btn" data-field="refreshButton" id="refreshButton">Refresh</button>
+      <div class="navbar navbar-inverse">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse.filters" >
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+                <div class="nav-collapse filters collapse">
+                    <div class="row-fluid">
+                        <ul class="nav">
+                            <li class="divider-vertical"></li>
+                            <li class="active" data-field="createProcessInstanceButton"></li>
+                            <li class="divider-vertical"></li>
+                            <li class="active" data-field="viewProcessInstancesButton"></li>
+                            <li class="divider-vertical"></li>
+                            <li class="active" data-field="openProcessDesignerButton"></li>
+                            <li class="divider-vertical"></li>
+                            <li class="active" data-field="refreshButton"></li>
+                        </ul>
 
-      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  <div class="span11">
+    
     <div class="form-horizontal">
       <legend>Process Definition Details</legend>
       <div class="control-group">

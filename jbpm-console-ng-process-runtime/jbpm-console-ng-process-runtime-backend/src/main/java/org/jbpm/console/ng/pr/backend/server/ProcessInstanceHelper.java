@@ -15,8 +15,10 @@
  */
 package org.jbpm.console.ng.pr.backend.server;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import org.droolsjbpm.services.impl.model.ProcessInstanceDesc;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
@@ -32,17 +34,18 @@ public class ProcessInstanceHelper {
     public static Collection<ProcessInstanceSummary> adaptCollection(Collection<ProcessInstanceDesc> processInstances){
         List<ProcessInstanceSummary> processInstancesSummary = new ArrayList<ProcessInstanceSummary>();
         for(ProcessInstanceDesc pi : processInstances){
-            processInstancesSummary.add(new ProcessInstanceSummary(pi.getId(), pi.getProcessId(), pi.getDomainId(),
-                    pi.getProcessName(), pi.getProcessVersion(), pi.getState(), pi.getDataTimeStamp().getTime()));
+            processInstancesSummary.add(adapt(pi));
         }
         
         return processInstancesSummary;
     }
     
     public static ProcessInstanceSummary adapt(ProcessInstanceDesc processInstance){
+        Date date = processInstance.getDataTimeStamp();
+        String formattedDate = new SimpleDateFormat("d/MMM/yy HH:mm:ss").format(date);
         return new ProcessInstanceSummary(processInstance.getId(), processInstance.getProcessId(), processInstance.getDomainId(),
                 processInstance.getProcessName(), processInstance.getProcessVersion(), processInstance.getState(), 
-                processInstance.getDataTimeStamp().getTime());
+                formattedDate, processInstance.getInitiator());
     }
     
     public static Collection<String> collectActiveSignals(Collection<NodeInstance> activeNodes) {

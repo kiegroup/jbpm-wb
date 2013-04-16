@@ -69,30 +69,23 @@ import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 public class ShowcaseEntryPoint {
 
     @Inject
-    private PlaceManager              placeManager;
+    private PlaceManager placeManager;
     @Inject
     private WorkbenchMenuBarPresenter menubar;
     @Inject
-    private ActivityManager           activityManager;
+    private ActivityManager activityManager;
     @Inject
-    private IOCBeanManager            iocManager;
+    private IOCBeanManager iocManager;
     private String[] menuItems = new String[]{
-            "Authoring",
-            "Tasks",
-            "Process Definitions",
-            "Process Instances",
-//        "Users and Groups",
-//        "Jobs",
-         //   "Kie Sessions List",
-            
+        "Authoring",
+        "Tasks",
+        "Process Definitions",
+        "Process Instances", //        "Users and Groups",
+    //        "Jobs",
+    //   "Kie Sessions List",
     };
     @Inject
     public Identity identity;
-
-    private SuggestBox actionText;
-    private TextBox    textSuggestBox;
-    DefaultSuggestionDisplay suggestionDisplay;
-    Map<String, String> actions = new HashMap<String, String>();
 
     @AfterInitialization
     public void startApp() {
@@ -109,39 +102,31 @@ public class ShowcaseEntryPoint {
     }
 
     private void registerDoAction() {
-        actions.put( "Show me my pending Tasks", "Personal Tasks" );
-        actions.put( "Show me my Inbox", "Inbox Perspective" );
-        actions.put( "I want to start a new Process", "Process Runtime Perspective" );
-        actions.put( "I want to design a new Process Model", "Process Designer Perspective" );
-        actions.put( "I want to create a Task", "Quick New Task" );
-        actions.put( "Show me all the pending tasks in my Group", "Group Tasks" );
-        actions.put( "Logout", "Logout" );
-
-        KeyPressHandler keyPressHandler = new KeyPressHandler() {
-            public void onKeyPress( KeyPressEvent event ) {
-
-                if ( event.getUnicodeCharCode() == 160 && event.isAltKeyDown() ) {
-                    final DialogBox dialogBox = createDialogBox();
-                    dialogBox.setGlassEnabled( true );
-                    dialogBox.setAnimationEnabled( true );
-                    dialogBox.center();
-                    dialogBox.show();
-                    actionText.setFocus( true );
-                }
-                if ( event.isControlKeyDown() && event.getUnicodeCharCode() == 116 ) {
-                    PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Quick New Task" );
-                    placeManager.goTo( placeRequestImpl );
-                }
-
-                if ( event.isControlKeyDown() && event.getUnicodeCharCode() == 104 ) {
-                    PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Home Perspective" );
-                    placeManager.goTo( placeRequestImpl );
-                }
-
-            }
-        };
-
-        RootPanel.get().addDomHandler( keyPressHandler, KeyPressEvent.getType() );
+//        KeyPressHandler keyPressHandler = new KeyPressHandler() {
+//            public void onKeyPress( KeyPressEvent event ) {
+//
+//                if ( event.getUnicodeCharCode() == 160 && event.isAltKeyDown() ) {
+//                    final DialogBox dialogBox = createDialogBox();
+//                    dialogBox.setGlassEnabled( true );
+//                    dialogBox.setAnimationEnabled( true );
+//                    dialogBox.center();
+//                    dialogBox.show();
+//                    actionText.setFocus( true );
+//                }
+//                if ( event.isControlKeyDown() && event.getUnicodeCharCode() == 116 ) {
+//                    PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Quick New Task" );
+//                    placeManager.goTo( placeRequestImpl );
+//                }
+//
+//                if ( event.isControlKeyDown() && event.getUnicodeCharCode() == 104 ) {
+//                    PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Home Perspective" );
+//                    placeManager.goTo( placeRequestImpl );
+//                }
+//
+//            }
+//        };
+//
+//        RootPanel.get().addDomHandler( keyPressHandler, KeyPressEvent.getType() );
     }
 
     private void setupMenu() {
@@ -149,80 +134,138 @@ public class ShowcaseEntryPoint {
         final AbstractWorkbenchPerspectiveActivity defaultPerspective = getDefaultPerspectiveActivity();
 
         final Menus menus = MenuFactory
-                .newTopLevelMenu( "Home" )
-                .respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        if ( defaultPerspective != null ) {
-                            placeManager.goTo( new DefaultPlaceRequest( defaultPerspective.getIdentifier() ) );
-                        } else {
-                                Window.alert( "Default perspective not found." );
-                            }
-                        }
-                    } )
+                .newTopLevelMenu("Home")
+                .respondsWith(new Command() {
+            @Override
+            public void execute() {
+                if (defaultPerspective != null) {
+                    placeManager.goTo(new DefaultPlaceRequest(defaultPerspective.getIdentifier()));
+                } else {
+                    Window.alert("Default perspective not found.");
+                }
+            }
+        })
                 .endMenu()
-                .newTopLevelMenu( "Views" )
-                    .withItems( getViews() )
+                .newTopLevelMenu("Authoring")
+                .withItems(getAuthoringViews())
                 .endMenu()
-                .newTopLevelMenu( "Logout" )
-                    .respondsWith( new Command() {
-                        @Override
-                        public void execute() {
-                            redirect( GWT.getModuleBaseURL() + "uf_logout" );
-                        }
-                    } )
+                .newTopLevelMenu("Process Management")
+                .withItems(getProcessMGMTViews())
                 .endMenu()
-                .newTopLevelMenu( identity.getName() )
-                    .position( MenuPosition.RIGHT )
-                    .withItems( getRoles() )
+                .newTopLevelMenu("Work")
+                .withItems(getWorkViews())
+                .endMenu()
+                .newTopLevelMenu("BAM")
+                .withItems(getBAMViews())
+                .endMenu()
+                .newTopLevelMenu("Logout")
+                .respondsWith(new Command() {
+            @Override
+            public void execute() {
+                redirect(GWT.getModuleBaseURL() + "uf_logout");
+            }
+        })
+                .endMenu()
+                .newTopLevelMenu(identity.getName())
+                .position(MenuPosition.RIGHT)
+                .withItems(getRoles())
                 .endMenu()
                 .build();
 
-        menubar.aggregateWorkbenchMenus( menus );
+        menubar.aggregateWorkbenchMenus(menus);
     }
 
     private List<? extends MenuItem> getRoles() {
-        final List<MenuItem> result = new ArrayList<MenuItem>( identity.getRoles().size() );
-        for ( final Role role : identity.getRoles() ) {
-            result.add( MenuFactory.newSimpleItem( role.getName() ).endMenu().build().getItems().get( 0 ) );
+        final List<MenuItem> result = new ArrayList<MenuItem>(identity.getRoles().size());
+        for (final Role role : identity.getRoles()) {
+            result.add(MenuFactory.newSimpleItem(role.getName()).endMenu().build().getItems().get(0));
         }
 
         return result;
     }
 
-    private List<? extends MenuItem> getViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>( menuItems.length );
-       // Arrays.sort( menuItems );
-        for ( final String menuItem : menuItems ) {
-            result.add( MenuFactory.newSimpleItem( menuItem ).respondsWith( new Command() {
-                @Override
-                public void execute() {
-                    placeManager.goTo( new DefaultPlaceRequest( menuItem ) );
-                }
-            } ).endMenu().build().getItems().get( 0 ) );
-        }
-        result.add(MenuFactory.newSimpleItem( "BAM" ).respondsWith( new Command() {
-                @Override
-                public void execute() {
-                    Window.open("http://localhost:8080/bam-app/", "_blank", "");
-                }
-            } ).endMenu().build().getItems().get( 0 ) );
+    private List<? extends MenuItem> getAuthoringViews() {
+        final List<MenuItem> result = new ArrayList<MenuItem>(1);
+
+        result.add(MenuFactory.newSimpleItem("Process Authoring").respondsWith(new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo(new DefaultPlaceRequest("Authoring"));
+            }
+        }).endMenu().build().getItems().get(0));
+
+
+        return result;
+    }
+
+    private List<? extends MenuItem> getProcessMGMTViews() {
+        final List<MenuItem> result = new ArrayList<MenuItem>(2);
+        
+
+        result.add(MenuFactory.newSimpleItem("Process Definitions").respondsWith(new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo(new DefaultPlaceRequest("Process Definitions"));
+            }
+        }).endMenu().build().getItems().get(0));
+
+        result.add(MenuFactory.newSimpleItem("Process Instances").respondsWith(new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo(new DefaultPlaceRequest("Process Instances"));
+            }
+        }).endMenu().build().getItems().get(0));
+
+
+        return result;
+    }
+    
+    private List<? extends MenuItem> getWorkViews() {
+        final List<MenuItem> result = new ArrayList<MenuItem>(2);
+        
+
+        result.add(MenuFactory.newSimpleItem("Tasks - Calendar View").respondsWith(new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo(new DefaultPlaceRequest("Tasks"));
+            }
+        }).endMenu().build().getItems().get(0));
+
+        result.add(MenuFactory.newSimpleItem("Tasks - Grid View").respondsWith(new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo(new DefaultPlaceRequest("Grid Tasks List"));
+            }
+        }).endMenu().build().getItems().get(0));
+
+
+        return result;
+    }
+
+    private List<? extends MenuItem> getBAMViews() {
+        final List<MenuItem> result = new ArrayList<MenuItem>(1);
+        result.add(MenuFactory.newSimpleItem("BAM").respondsWith(new Command() {
+            @Override
+            public void execute() {
+                Window.open("http://localhost:8080/bam-app/", "_blank", "");
+            }
+        }).endMenu().build().getItems().get(0));
         return result;
     }
 
     private AbstractWorkbenchPerspectiveActivity getDefaultPerspectiveActivity() {
         AbstractWorkbenchPerspectiveActivity defaultPerspective = null;
-        final Collection<IOCBeanDef<AbstractWorkbenchPerspectiveActivity>> perspectives = iocManager.lookupBeans( AbstractWorkbenchPerspectiveActivity.class );
+        final Collection<IOCBeanDef<AbstractWorkbenchPerspectiveActivity>> perspectives = iocManager.lookupBeans(AbstractWorkbenchPerspectiveActivity.class);
         final Iterator<IOCBeanDef<AbstractWorkbenchPerspectiveActivity>> perspectivesIterator = perspectives.iterator();
         outer_loop:
-        while ( perspectivesIterator.hasNext() ) {
+        while (perspectivesIterator.hasNext()) {
             final IOCBeanDef<AbstractWorkbenchPerspectiveActivity> perspective = perspectivesIterator.next();
             final AbstractWorkbenchPerspectiveActivity instance = perspective.getInstance();
-            if ( instance.isDefault() ) {
+            if (instance.isDefault()) {
                 defaultPerspective = instance;
                 break outer_loop;
             } else {
-                iocManager.destroyBean( instance );
+                iocManager.destroyBean(instance);
             }
         }
         return defaultPerspective;
@@ -231,110 +274,41 @@ public class ShowcaseEntryPoint {
     private List<AbstractWorkbenchPerspectiveActivity> getPerspectiveActivities() {
 
         //Get Perspective Providers
-        final Set<AbstractWorkbenchPerspectiveActivity> activities = activityManager.getActivities( AbstractWorkbenchPerspectiveActivity.class );
+        final Set<AbstractWorkbenchPerspectiveActivity> activities = activityManager.getActivities(AbstractWorkbenchPerspectiveActivity.class);
 
         //Sort Perspective Providers so they're always in the same sequence!
-        List<AbstractWorkbenchPerspectiveActivity> sortedActivities = new ArrayList<AbstractWorkbenchPerspectiveActivity>( activities );
-        Collections.sort( sortedActivities,
-                          new Comparator<AbstractWorkbenchPerspectiveActivity>() {
-                              @Override
-                              public int compare( AbstractWorkbenchPerspectiveActivity o1,
-                                                  AbstractWorkbenchPerspectiveActivity o2 ) {
-                                  return o1.getPerspective().getName().compareTo( o2.getPerspective().getName() );
-                              }
-                          } );
+        List<AbstractWorkbenchPerspectiveActivity> sortedActivities = new ArrayList<AbstractWorkbenchPerspectiveActivity>(activities);
+        Collections.sort(sortedActivities,
+                new Comparator<AbstractWorkbenchPerspectiveActivity>() {
+            @Override
+            public int compare(AbstractWorkbenchPerspectiveActivity o1,
+                    AbstractWorkbenchPerspectiveActivity o2) {
+                return o1.getPerspective().getName().compareTo(o2.getPerspective().getName());
+            }
+        });
 
         return sortedActivities;
     }
     //Fade out the "Loading application" pop-up
 
     private void hideLoadingPopup() {
-        final Element e = RootPanel.get( "loading" ).getElement();
+        final Element e = RootPanel.get("loading").getElement();
 
         new Animation() {
             @Override
-            protected void onUpdate( double progress ) {
-                e.getStyle().setOpacity( 1.0 - progress );
+            protected void onUpdate(double progress) {
+                e.getStyle().setOpacity(1.0 - progress);
             }
 
             @Override
             protected void onComplete() {
-                e.getStyle().setVisibility( Style.Visibility.HIDDEN );
+                e.getStyle().setVisibility(Style.Visibility.HIDDEN);
             }
-        }.run( 500 );
+        }.run(500);
     }
 
-    public static native void redirect( String url )/*-{
-        $wnd.location = url;
-    }-*/;
+    public static native void redirect(String url)/*-{
+     $wnd.location = url;
+     }-*/;
 
-    private DialogBox createDialogBox() {
-        // Create a dialog box and set the caption text
-        final DialogBox dialogBox = new DialogBox();
-        dialogBox.ensureDebugId( "cwDialogBox" );
-        dialogBox.setText( "Do Action" );
-
-        // Create a table to layout the content
-        VerticalPanel dialogContents = new VerticalPanel();
-        dialogContents.setSpacing( 4 );
-        dialogBox.setWidget( dialogContents );
-
-        // Add some text to the top of the dialog
-        HTML details = new HTML( "What do you want to do now?" );
-        dialogContents.add( details );
-        dialogContents.setCellHorizontalAlignment(
-                details, HasHorizontalAlignment.ALIGN_CENTER );
-
-        MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
-        String[] words = { "Show me my pending Tasks",
-                "I want to start a new Process",
-                "I want to design a new Process Model",
-                "I want to design a new Form",
-                "I want to create a Task",
-                "Show me all the pending tasks in my Group",
-                "Show me my Inbox", "Logout"
-        };
-        for ( int i = 0; i < words.length; ++i ) {
-            oracle.add( words[ i ] );
-        }
-        // Create the suggest box
-        textSuggestBox = new TextBox();
-        suggestionDisplay = new DefaultSuggestionDisplay();
-        actionText = new SuggestBox( oracle, textSuggestBox, suggestionDisplay );
-
-        KeyPressHandler keyPressHandler = new KeyPressHandler() {
-            public void onKeyPress( KeyPressEvent event ) {
-                if ( event.getNativeEvent().getKeyCode() == 27 ) {
-
-                    dialogBox.hide();
-                    suggestionDisplay.hideSuggestions();
-
-                }
-                if ( event.getNativeEvent().getKeyCode() == 13 ) {
-
-                    doAction( actionText.getText() );
-                    dialogBox.hide();
-                }
-            }
-        };
-
-        actionText.addHandler( keyPressHandler, KeyPressEvent.getType() );
-
-        dialogContents.add( actionText );
-
-        // Return the dialog box
-        return dialogBox;
-    }
-
-    public void doAction( String action ) {
-        String locatedAction = actions.get( action );
-        if ( locatedAction == null || locatedAction.equals( "" ) ) {
-
-            return;
-        }
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( locatedAction );
-//        placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
-
-        placeManager.goTo( placeRequestImpl );
-    }
 }
