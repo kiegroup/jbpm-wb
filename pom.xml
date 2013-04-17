@@ -42,6 +42,20 @@
 
   <repositories>
     <repository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Repository Group</name>
+      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+      </snapshots>
+    </repository>
+    <repository>
      <id>sonatype</id>
      <url>http://oss.sonatype.org/content/repositories/snapshots</url>
      <snapshots><enabled>true</enabled></snapshots>

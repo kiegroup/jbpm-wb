@@ -42,11 +42,11 @@ public interface TaskServiceEntryPoint {
     
     List<TaskSummary> getTasksAssignedByGroups(List<String> groupsId, String language); 
     
-    Map<Day, List<TaskSummary>> getTasksOwnedByDay(String userId, List<String> groupIds, String language);
+    Map<Day, List<TaskSummary>> getTasksOwnedByDays(String userId, List<String> groupIds, String language);
     
     Map<Day, List<TaskSummary>> getTasksAssignedPersonalAndGroupsTasksByDays(String userId, List<String> groupIds, String language);
     
-    Map<Day, List<TaskSummary>> getTasksAssignedByGroupsByDay(String userId, List<String> groupIds, String language);
+    Map<Day, List<TaskSummary>> getTasksAssignedByGroupsByDays(List<String> groupIds, String language);
 
     List<TaskSummary> getTasksOwned(String userId);
     

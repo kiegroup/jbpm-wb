@@ -50,7 +50,7 @@ public class TasksListPresenter {
         void displayNotification(String text);
 
         TaskListMultiDayBox getTaskListMultiDayBox();
-        
+
         void refreshTasks();
     }
     @Inject
@@ -77,70 +77,84 @@ public class TasksListPresenter {
     public void init() {
     }
 
-    public void refreshTasks(final String userId, final boolean showOnlyPersonal, final boolean showCompleted, final boolean showGroupTasks) {
+    public void refreshActiveTasks() {
         List<Role> roles = identity.getRoles();
         List<String> groups = new ArrayList<String>(roles.size());
         for (Role r : roles) {
             groups.add(r.getName().trim());
         }
-        if (showCompleted) {
-            taskServices.call(new RemoteCallback<List<TaskSummary>>() {
-                @Override
-                public void callback(List<TaskSummary> tasks) {
-                    view.getTaskListMultiDayBox().addTasksByDay("Today", tasks);
-                    view.getTaskListMultiDayBox().refresh();
-
-
-
-                }
-            }).getTasksOwned(userId);
-        } else if (showGroupTasks) {
-
-            taskServices.call(new RemoteCallback<List<TaskSummary>>() {
-                @Override
-                public void callback(List<TaskSummary> tasks) {
-                    view.getTaskListMultiDayBox().addTasksByDay("Today", tasks);
-                    view.getTaskListMultiDayBox().refresh();
-
-
-                }
-            }).getTasksAssignedByGroups(groups, "en-UK");
-
-        } else if (showOnlyPersonal) {
-            List<String> statuses = new ArrayList<String>(4);
-            statuses.add("Ready");
-            statuses.add("InProgress");
-            statuses.add("Created");
-            statuses.add("Reserved");
-            taskServices.call(new RemoteCallback<List<TaskSummary>>() {
-                @Override
-                public void callback(List<TaskSummary> tasks) {
-                    view.getTaskListMultiDayBox().addTasksByDay("Today", tasks);
-                    view.getTaskListMultiDayBox().refresh();
-
-
-                }
-            }).getTasksOwned(userId, statuses, "en-UK");
-
-
-
-        } else {
-
-            taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
-                @Override
-                public  void callback(Map<Day, List<TaskSummary>> tasks) {
-                   for(Day day : tasks.keySet()){
+        taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
+            @Override
+            public void callback(Map<Day, List<TaskSummary>> tasks) {
+                for (Day day : tasks.keySet()) {
+                    
                     view.getTaskListMultiDayBox().addTasksByDay(day, tasks.get(day));
-                   }
-                   view.getTaskListMultiDayBox().refresh();
                 }
-            }).getTasksAssignedPersonalAndGroupsTasksByDays(userId, groups, "en-UK");
+                view.getTaskListMultiDayBox().refresh();
+            }
+        }).getTasksAssignedPersonalAndGroupsTasksByDays(identity.getName(), groups, "en-UK");
+    }
+
+    public void refreshAllTasks() {
+        List<String> statuses = new ArrayList<String>(4);
+        statuses.add("Ready");
+        statuses.add("InProgress");
+        statuses.add("Created");
+        statuses.add("Reserved");
+        statuses.add("Completed");
+        statuses.add("Aborted");
+        statuses.add("Suspended");
+        taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
+            @Override
+            public void callback(Map<Day, List<TaskSummary>> tasks) {
+                for (Day day : tasks.keySet()) {    
+                    view.getTaskListMultiDayBox().addTasksByDay(day, tasks.get(day));
+                }
+                view.getTaskListMultiDayBox().refresh();
 
 
+
+            }
+        }).getTasksOwnedByDays(identity.getName(),statuses, "en-UK");
+    }
+
+    public void refreshPersonalTasks() {
+
+        List<String> statuses = new ArrayList<String>(4);
+        statuses.add("Ready");
+        statuses.add("InProgress");
+        statuses.add("Created");
+        statuses.add("Reserved");
+        taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
+            @Override
+            public void callback(Map<Day, List<TaskSummary>> tasks) {
+               for (Day day : tasks.keySet()) {    
+                    view.getTaskListMultiDayBox().addTasksByDay(day, tasks.get(day));
+                }
+                view.getTaskListMultiDayBox().refresh();
+
+
+            }
+        }).getTasksOwnedByDays(identity.getName(), statuses, "en-UK");
+    }
+
+    public void refreshGroupTasks() {
+        List<Role> roles = identity.getRoles();
+        List<String> groups = new ArrayList<String>(roles.size());
+        for (Role r : roles) {
+            groups.add(r.getName().trim());
         }
+        taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
+            @Override
+            public void callback(Map<Day, List<TaskSummary>> tasks) {
+                for (Day day : tasks.keySet()) {    
+                    view.getTaskListMultiDayBox().addTasksByDay(day, tasks.get(day));
+                }
+                view.getTaskListMultiDayBox().refresh();
 
 
-
+            }
+        }).getTasksAssignedByGroupsByDays(groups, "en-UK");
     }
 
     public void startTasks(final List<Long> selectedTasks, final String userId) {
@@ -157,7 +171,7 @@ public class TasksListPresenter {
     }
 
     public void releaseTasks(List<Long> selectedTasks, final String userId) {
-       
+
 
         taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
@@ -170,7 +184,7 @@ public class TasksListPresenter {
     }
 
     public void completeTasks(List<Long> selectedTasks, final String userId) {
-       
+
 
         taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
@@ -185,7 +199,7 @@ public class TasksListPresenter {
     }
 
     public void claimTasks(List<Long> selectedTasks, final String userId) {
-        
+
         taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback(List<TaskSummary> tasks) {

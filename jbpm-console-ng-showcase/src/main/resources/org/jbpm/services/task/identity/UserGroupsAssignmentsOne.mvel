@@ -4,8 +4,9 @@ usersgroups = [
                 new User('kris') : [new Group( "Reviewer" ),  new Group( "jBPM Developer" ) ,  new Group( "Project Leaders" )],
                 new User('marco') : [new Group( "Reviewer" ),  new Group( "jBPM Developer" )],      
                 new User('tiho') : [new Group( "Writer" ),  new Group( "jBPM Developer" )],          
-                new User('Administrator') : [new Group( "Adminitrators" )],
                 new User('katy') : [new Group( "HR" )],
+                new User('Administrator') : [new Group( "Adminitrators" )],
+                
                 
               ];       
 return usersgroups;

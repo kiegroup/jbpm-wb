@@ -17,6 +17,7 @@ package org.jbpm.console.ng.pr.client.editors.definition.list;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.Comparator;
@@ -43,15 +44,14 @@ import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
-import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -86,7 +86,7 @@ public class ProcessDefinitionListViewImpl extends Composite
     public Button filterKSessionButton;
     @Inject
     @DataField
-    public Button reloadRepoButton;
+    public NavLink reloadRepoButton;
     @Inject
     @DataField
     public DataGrid<ProcessSummary> processdefListGrid;
@@ -107,10 +107,18 @@ public class ProcessDefinitionListViewImpl extends Composite
     private ShowcaseImages images = GWT.create(ShowcaseImages.class);
 
     @Override
-    public void init(ProcessDefinitionListPresenter presenter) {
+    public void init(final ProcessDefinitionListPresenter presenter) {
         this.presenter = presenter;
 
        
+        reloadRepoButton.setText("Reload Repository");
+        reloadRepoButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                 presenter.reloadRepository();
+            }
+        });
+        
         listContainer.add(processdefListGrid);
         listContainer.add(pager);
         
@@ -158,10 +166,7 @@ public class ProcessDefinitionListViewImpl extends Composite
         presenter.refreshProcessList(filterKSessionText.getText());
     }
     
-    @EventHandler("reloadRepoButton")
-    public void reloadRepoButton(ClickEvent e) {
-        presenter.reloadRepository();
-    }
+   
     
     private void initTableColumns(final SelectionModel<ProcessSummary> selectionModel) {
 

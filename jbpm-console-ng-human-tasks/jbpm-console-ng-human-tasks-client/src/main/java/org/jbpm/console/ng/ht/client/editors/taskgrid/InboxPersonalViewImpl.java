@@ -1,9 +1,9 @@
 package org.jbpm.console.ng.ht.client.editors.taskgrid;
 
-
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -41,6 +41,7 @@ import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -74,13 +75,7 @@ public class InboxPersonalViewImpl extends Composite
     public Button refreshTasksButton;
     @Inject
     @DataField
-    public Button startTaskButton;
-    @Inject
-    @DataField
-    public Button completeTaskButton;
-    @Inject
-    @DataField
-    public Button quickTaskButton;
+    public NavLink createQuickTaskNavLink;
     @Inject
     @DataField
     public DataGrid<TaskSummary> myTaskListGrid;
@@ -92,13 +87,16 @@ public class InboxPersonalViewImpl extends Composite
     public FlowPanel listContainer;
     @Inject
     @DataField
-    public CheckBox showCompletedCheck;
+    public NavLink showAllTasksNavLink;
     @Inject
     @DataField
-    public CheckBox showPersonalTasksCheck;
+    public NavLink showPersonalTasksNavLink;
     @Inject
     @DataField
-    public CheckBox showGroupTasksCheck;
+    public NavLink showGroupTasksNavLink;
+    @Inject
+    @DataField
+    public NavLink showActiveTasksNavLink;
     private Set<TaskSummary> selectedTasks;
     @Inject
     private Event<NotificationEvent> notification;
@@ -110,12 +108,12 @@ public class InboxPersonalViewImpl extends Composite
     private ShowcaseImages images = GWT.create(ShowcaseImages.class);
 
     @Override
-    public void init(InboxPersonalPresenter presenter) {
+    public void init(final InboxPersonalPresenter presenter) {
         this.presenter = presenter;
 
         listContainer.add(myTaskListGrid);
         listContainer.add(pager);
-        
+
         myTaskListGrid.setHeight("350px");
         // Set the message to display when the table is empty.
         myTaskListGrid.setEmptyTableWidget(new Label(constants.Hooray_you_don_t_have_any_pending_Task__()));
@@ -125,6 +123,66 @@ public class InboxPersonalViewImpl extends Composite
                 new ListHandler<TaskSummary>(presenter.getDataProvider().getList());
 
         myTaskListGrid.addColumnSortHandler(sortHandler);
+
+
+        // Filters
+        showPersonalTasksNavLink.setText("Personal");
+        showPersonalTasksNavLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                showPersonalTasksNavLink.setStyleName("active");
+                showGroupTasksNavLink.setStyleName("");
+                showActiveTasksNavLink.setStyleName("");
+                showAllTasksNavLink.setStyleName("");
+                presenter.refreshPersonalTasks();
+            }
+        });
+
+        showGroupTasksNavLink.setText("Group");
+        showGroupTasksNavLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                showGroupTasksNavLink.setStyleName("active");
+                showPersonalTasksNavLink.setStyleName("");
+                showActiveTasksNavLink.setStyleName("");
+                showAllTasksNavLink.setStyleName("");
+                presenter.refreshGroupTasks();
+            }
+        });
+
+
+        showActiveTasksNavLink.setText("Active");
+        showActiveTasksNavLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                showGroupTasksNavLink.setStyleName("");
+                showPersonalTasksNavLink.setStyleName("");
+                showActiveTasksNavLink.setStyleName("active");
+                showAllTasksNavLink.setStyleName("");
+                presenter.refreshActiveTasks();
+            }
+        });
+
+        showAllTasksNavLink.setText("All");
+        showAllTasksNavLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                showGroupTasksNavLink.setStyleName("");
+                showPersonalTasksNavLink.setStyleName("");
+                showActiveTasksNavLink.setStyleName("");
+                showAllTasksNavLink.setStyleName("active");
+                presenter.refreshAllTasks();
+            }
+        });
+
+        createQuickTaskNavLink.setText("New Task");
+        createQuickTaskNavLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Quick New Task");
+                placeManager.goTo(placeRequestImpl);
+            }
+        });
 
         // Create a Pager to control the table.
 
@@ -143,29 +201,29 @@ public class InboxPersonalViewImpl extends Composite
             }
         });
 
-        
+
         myTaskListGrid.setSelectionModel(selectionModel,
                 DefaultSelectionEventManager
                 .<TaskSummary>createCheckboxManager());
 
         initTableColumns(selectionModel);
         presenter.addDataDisplay(myTaskListGrid);
-        
-         KeyPressHandler refreshPressHandler = new KeyPressHandler() {
+
+        KeyPressHandler refreshPressHandler = new KeyPressHandler() {
             public void onKeyPress(KeyPressEvent event) {
 //                System.out.println("event.getUnicodeCharCode() -> "+event.getUnicodeCharCode());
 //                System.out.println("event.getNativeEvent().getKeyCode() = "+event.getNativeEvent().getKeyCode());
-                if(event.isControlKeyDown() && event.getUnicodeCharCode() == 114 ){
-                   refreshTasks();
+                if (event.isControlKeyDown() && event.getUnicodeCharCode() == 114) {
+                    refreshTasks();
                 }
-                
-                
+
+
             }
         };
-        
-        
+
+
         refreshTasksButton.addDomHandler(refreshPressHandler, KeyPressEvent.getType());
-        
+
         refreshTasks();
 
     }
@@ -180,33 +238,25 @@ public class InboxPersonalViewImpl extends Composite
         refreshTasks();
     }
 
-    @EventHandler("startTaskButton")
-    public void startTaskButton(ClickEvent e) {
-        if (selectedTasks.isEmpty()) {
-            displayNotification(constants.Please_Select_at_least_one_Task_to_Execute_a_Quick_Action());
-            return;
-        }
-        presenter.startTasks(selectedTasks,
-                identity.getName());
-    }
-
-    @EventHandler("quickTaskButton")
-    public void quickTaskButton(ClickEvent e) {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Quick New Task");
-        placeManager.goTo(placeRequestImpl);
-    }
-
-    @EventHandler("completeTaskButton")
-    public void completeTaskButton(ClickEvent e) {
-        if (selectedTasks.isEmpty()) {
-            displayNotification(constants.Please_Select_at_least_one_Task_to_Execute_a_Quick_Action());
-            return;
-        }
-        presenter.completeTasks(selectedTasks,
-                identity.getName());
-
-    }
-
+//    @EventHandler("startTaskButton")
+//    public void startTaskButton(ClickEvent e) {
+//        if (selectedTasks.isEmpty()) {
+//            displayNotification(constants.Please_Select_at_least_one_Task_to_Execute_a_Quick_Action());
+//            return;
+//        }
+//        presenter.startTasks(selectedTasks,
+//                identity.getName());
+//    }
+//    @EventHandler("completeTaskButton")
+//    public void completeTaskButton(ClickEvent e) {
+//        if (selectedTasks.isEmpty()) {
+//            displayNotification(constants.Please_Select_at_least_one_Task_to_Execute_a_Quick_Action());
+//            return;
+//        }
+//        presenter.completeTasks(selectedTasks,
+//                identity.getName());
+//
+//    }
     private void initTableColumns(final SelectionModel<TaskSummary> selectionModel) {
         // Checkbox column. This table will uses a checkbox column for selection.
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
@@ -404,7 +454,7 @@ public class InboxPersonalViewImpl extends Composite
                 placeManager.goTo(placeRequestImpl);
             }
         }));
-        
+
         cells.add(new PopupActionHasCell("Work Popup", new Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
@@ -417,11 +467,11 @@ public class InboxPersonalViewImpl extends Composite
 
         CompositeCell<TaskSummary> cell = new CompositeCell<TaskSummary>(cells);
         Column<TaskSummary, TaskSummary> actionsColumn = new Column<TaskSummary, TaskSummary>(cell) {
-                                                  @Override
-                                                  public TaskSummary getValue(TaskSummary object) {
-                                                      return object;
-                                                  }
-                                              };
+            @Override
+            public TaskSummary getValue(TaskSummary object) {
+                return object;
+            }
+        };
         myTaskListGrid.addColumn(actionsColumn, "Actions");
 
 
@@ -430,12 +480,6 @@ public class InboxPersonalViewImpl extends Composite
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
-    }
-
-
-
-    public CheckBox getShowCompletedCheck() {
-        return showCompletedCheck;
     }
 
     public DataGrid<TaskSummary> getDataGrid() {
@@ -450,16 +494,12 @@ public class InboxPersonalViewImpl extends Composite
         return selectionModel;
     }
 
-    public CheckBox getShowGroupTasksCheck() {
-        return showGroupTasksCheck;
-    }
-
     public void refreshTasks() {
-        Boolean isCheckedCompleted = showCompletedCheck.getValue();
-        Boolean isCheckedGroupTasks = showGroupTasksCheck.getValue();
-        Boolean isCheckedPersonalTasks = showPersonalTasksCheck.getValue();
-        presenter.refreshTasks(identity.getName(), isCheckedPersonalTasks,
-                isCheckedCompleted, isCheckedGroupTasks);
+        showGroupTasksNavLink.setStyleName("");
+        showPersonalTasksNavLink.setStyleName("");
+        showActiveTasksNavLink.setStyleName("active");
+        showAllTasksNavLink.setStyleName("");
+        presenter.refreshActiveTasks();
     }
 
     private class EditHasCell implements HasCell<TaskSummary, TaskSummary> {
@@ -498,8 +538,6 @@ public class InboxPersonalViewImpl extends Composite
             return object;
         }
     }
-
-   
 
     private class StartActionHasCell implements HasCell<TaskSummary, TaskSummary> {
 
@@ -546,7 +584,7 @@ public class InboxPersonalViewImpl extends Composite
             cell = new ActionCell<TaskSummary>(text, delegate) {
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
-                    if (value.getActualOwner() != null && value.getStatus().equals("InProgress")) { 
+                    if (value.getActualOwner() != null && value.getStatus().equals("InProgress")) {
                         AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.completeIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
                         mysb.appendHtmlConstant("<span title='Complete'>");

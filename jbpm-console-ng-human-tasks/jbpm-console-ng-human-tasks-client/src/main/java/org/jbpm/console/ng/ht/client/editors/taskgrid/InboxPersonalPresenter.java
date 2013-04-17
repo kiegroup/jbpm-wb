@@ -1,6 +1,5 @@
 package org.jbpm.console.ng.ht.client.editors.taskgrid;
 
-
 import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import java.util.ArrayList;
@@ -42,9 +41,6 @@ public class InboxPersonalPresenter {
 
         void displayNotification(String text);
 
-        CheckBox getShowCompletedCheck();
-
-        CheckBox getShowGroupTasksCheck();
 
         DataGrid<TaskSummary> getDataGrid();
 
@@ -84,27 +80,13 @@ public class InboxPersonalPresenter {
     public void init() {
     }
 
-    public void refreshTasks(final String userId, final boolean showOnlyPersonal, final boolean showCompleted, final boolean showGroupTasks) {
+    public void refreshActiveTasks(){
         List<Role> roles = identity.getRoles();
         List<String> groups = new ArrayList<String>(roles.size());
         for (Role r : roles) {
             groups.add(r.getName().trim());
         }
-        if (showCompleted) {
-            taskServices.call(new RemoteCallback<List<TaskSummary>>() {
-                @Override
-                public void callback(List<TaskSummary> tasks) {
-
-                    dataProvider.getList().clear();
-                    dataProvider.getList().addAll(tasks);
-                    dataProvider.refresh();
-                    view.getSelectionModel().clear();
-
-                }
-            }).getTasksOwned(userId);
-        } else if (showGroupTasks) {
-
-            taskServices.call(new RemoteCallback<List<TaskSummary>>() {
+        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                     dataProvider.getList().clear();
@@ -113,46 +95,60 @@ public class InboxPersonalPresenter {
                     view.getSelectionModel().clear();
 
                 }
-            }).getTasksAssignedByGroups(groups, "en-UK");
-
-        } else if (showOnlyPersonal) {
-            List<String> statuses = new ArrayList<String>(4);
-            statuses.add("Ready");
-            statuses.add("InProgress");
-            statuses.add("Created");
-            statuses.add("Reserved");
-            taskServices.call(new RemoteCallback<List<TaskSummary>>() {
-                @Override
-                public void callback(List<TaskSummary> tasks) {
-                    dataProvider.getList().clear();
-                    dataProvider.getList().addAll(tasks);
-                    dataProvider.refresh();
-                    view.getSelectionModel().clear();
-
-                }
-            }).getTasksOwned(userId, statuses, "en-UK");
-
-
-
-        } else {
-
-            taskServices.call(new RemoteCallback<List<TaskSummary>>() {
-                @Override
-                public void callback(List<TaskSummary> tasks) {
-                    dataProvider.getList().clear();
-                    dataProvider.getList().addAll(tasks);
-                    dataProvider.refresh();
-                    view.getSelectionModel().clear();
-
-                }
-            }).getTasksAssignedPersonalAndGroupsTasks(userId, groups, "en-UK");
-
-
-        }
-
-
-
+            }).getTasksAssignedPersonalAndGroupsTasks(identity.getName(), groups, "en-UK");
     }
+    
+    public void refreshAllTasks() {
+        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
+            @Override
+            public void callback(List<TaskSummary> tasks) {
+
+                dataProvider.getList().clear();
+                dataProvider.getList().addAll(tasks);
+                dataProvider.refresh();
+                view.getSelectionModel().clear();
+
+            }
+        }).getTasksOwned(identity.getName());
+    }
+
+    public void refreshPersonalTasks() {
+        List<String> statuses = new ArrayList<String>(4);
+        statuses.add("Ready");
+        statuses.add("InProgress");
+        statuses.add("Created");
+        statuses.add("Reserved");
+        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
+            @Override
+            public void callback(List<TaskSummary> tasks) {
+                dataProvider.getList().clear();
+                dataProvider.getList().addAll(tasks);
+                dataProvider.refresh();
+                view.getSelectionModel().clear();
+
+            }
+        }).getTasksOwned(identity.getName(), statuses, "en-UK");
+    }
+
+    public void refreshGroupTasks() {
+        List<Role> roles = identity.getRoles();
+        List<String> groups = new ArrayList<String>(roles.size());
+        for (Role r : roles) {
+            groups.add(r.getName().trim());
+        }
+        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
+            @Override
+            public void callback(List<TaskSummary> tasks) {
+                dataProvider.getList().clear();
+                dataProvider.getList().addAll(tasks);
+                dataProvider.refresh();
+                view.getSelectionModel().clear();
+
+            }
+        }).getTasksAssignedByGroups(groups, "en-UK");
+    }
+
+  
 
     public void startTasks(final Set<TaskSummary> selectedTasks, final String userId) {
         List<Long> tasksIds = new ArrayList<Long>(selectedTasks.size());

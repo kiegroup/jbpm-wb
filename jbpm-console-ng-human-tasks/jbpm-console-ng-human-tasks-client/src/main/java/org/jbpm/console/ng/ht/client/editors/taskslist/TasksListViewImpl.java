@@ -47,40 +47,44 @@ public class TasksListViewImpl extends Composite
     private Identity identity;
     @Inject
     private PlaceManager placeManager;
-   
     private TasksListPresenter presenter;
     @Inject
     @DataField
     public NavLink dayViewTasksNavLink;
-    
     @Inject
     @DataField
     public NavLink advancedViewTasksNavLink;
-    
     @Inject
     @DataField
     public NavLink monthViewTasksNavLink;
-    
     @Inject
     @DataField
     public NavLink weekViewTasksNavLink;
-    
     @Inject
     @DataField
     public NavLink createQuickTaskNavLink;
-    
+    @Inject
+    @DataField
+    public NavLink showAllTasksNavLink;
+    @Inject
+    @DataField
+    public NavLink showPersonalTasksNavLink;
+    @Inject
+    @DataField
+    public NavLink showGroupTasksNavLink;
+    @Inject
+    @DataField
+    public NavLink showActiveTasksNavLink;
     @Inject
     @DataField
     public FlowPanel tasksViewContainer;
-    
     @Inject
-    private  TaskListMultiDayBox taskListMultiDayBox;
+    private TaskListMultiDayBox taskListMultiDayBox;
     @Inject
     private Event<NotificationEvent> notification;
-    
 
     @Override
-    public void init(TasksListPresenter presenter) {
+    public void init(final TasksListPresenter presenter) {
         this.presenter = presenter;
         taskListMultiDayBox.init();
         taskListMultiDayBox.setPresenter(presenter);
@@ -91,78 +95,116 @@ public class TasksListViewImpl extends Composite
         tasksViewContainer.add(taskListMultiDayBox);
         dayViewTasksNavLink.setText("Day");
         dayViewTasksNavLink.addClickHandler(new ClickHandler() {
-
             @Override
             public void onClick(ClickEvent event) {
-              tasksViewContainer.setStyleName("day");
-              weekViewTasksNavLink.setStyleName("");
-              monthViewTasksNavLink.setStyleName("");
-              advancedViewTasksNavLink.setStyleName("");
-              refreshTasks();
+                tasksViewContainer.setStyleName("day");
+                dayViewTasksNavLink.setStyleName("active");
+                weekViewTasksNavLink.setStyleName("");
+                monthViewTasksNavLink.setStyleName("");
+                advancedViewTasksNavLink.setStyleName("");
+                refreshTasks();
             }
         });
         weekViewTasksNavLink.setText("Week");
         weekViewTasksNavLink.addClickHandler(new ClickHandler() {
-
-          @Override
-          public void onClick(ClickEvent event) {
-            tasksViewContainer.setStyleName("week");
-            dayViewTasksNavLink.setStyleName("");
-            monthViewTasksNavLink.setStyleName("");
-            advancedViewTasksNavLink.setStyleName("");
-            weekViewTasksNavLink.setStyleName("active");
-            refreshTasks();
-          }
+            @Override
+            public void onClick(ClickEvent event) {
+                tasksViewContainer.setStyleName("week");
+                dayViewTasksNavLink.setStyleName("");
+                monthViewTasksNavLink.setStyleName("");
+                advancedViewTasksNavLink.setStyleName("");
+                weekViewTasksNavLink.setStyleName("active");
+                refreshTasks();
+            }
         });
-        
+
         monthViewTasksNavLink.setText("Month");
         monthViewTasksNavLink.addClickHandler(new ClickHandler() {
-
-          @Override
-          public void onClick(ClickEvent event) {
-            tasksViewContainer.setStyleName("month");
-            dayViewTasksNavLink.setStyleName("");
-            advancedViewTasksNavLink.setStyleName("");
-            weekViewTasksNavLink.setStyleName("");
-            monthViewTasksNavLink.setStyleName("active");
-            refreshTasks();
-          }
+            @Override
+            public void onClick(ClickEvent event) {
+                tasksViewContainer.setStyleName("month");
+                dayViewTasksNavLink.setStyleName("");
+                advancedViewTasksNavLink.setStyleName("");
+                weekViewTasksNavLink.setStyleName("");
+                monthViewTasksNavLink.setStyleName("active");
+                refreshTasks();
+            }
         });
-        
+
         advancedViewTasksNavLink.setText("Advanced");
         advancedViewTasksNavLink.addClickHandler(new ClickHandler() {
-
-          @Override
-          public void onClick(ClickEvent event) {
-            dayViewTasksNavLink.setStyleName("");
-            weekViewTasksNavLink.setStyleName("");
-            monthViewTasksNavLink.setStyleName("");
-            advancedViewTasksNavLink.setStyleName("active");
-            PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Grid Tasks List");
-            placeManager.goTo(placeRequestImpl);
-          }
+            @Override
+            public void onClick(ClickEvent event) {
+                dayViewTasksNavLink.setStyleName("");
+                weekViewTasksNavLink.setStyleName("");
+                monthViewTasksNavLink.setStyleName("");
+                advancedViewTasksNavLink.setStyleName("active");
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Grid Tasks List");
+                placeManager.goTo(placeRequestImpl);
+            }
         });
-        
+
         createQuickTaskNavLink.setText("New Task");
         createQuickTaskNavLink.addClickHandler(new ClickHandler() {
-
-          @Override
-          public void onClick(ClickEvent event) {
-              PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Quick New Task");
-              placeManager.goTo(placeRequestImpl);
-          }
+            @Override
+            public void onClick(ClickEvent event) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Quick New Task");
+                placeManager.goTo(placeRequestImpl);
+            }
         });
-        
-        advancedViewTasksNavLink.setText("Advanced");
-        advancedViewTasksNavLink.addClickHandler(new ClickHandler() {
 
-          @Override
-          public void onClick(ClickEvent event) {
-              PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Grid Tasks List");
-              placeManager.goTo(placeRequestImpl);
-          }
-        });
         
+
+        // Filters
+        showPersonalTasksNavLink.setText("Personal");
+        showPersonalTasksNavLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                showPersonalTasksNavLink.setStyleName("active");
+                showGroupTasksNavLink.setStyleName("");
+                showActiveTasksNavLink.setStyleName("");
+                showAllTasksNavLink.setStyleName("");
+                presenter.refreshPersonalTasks();
+            }
+        });
+
+        showGroupTasksNavLink.setText("Group");
+        showGroupTasksNavLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                showGroupTasksNavLink.setStyleName("active");
+                showPersonalTasksNavLink.setStyleName("");
+                showActiveTasksNavLink.setStyleName("");
+                showAllTasksNavLink.setStyleName("");
+                presenter.refreshGroupTasks();
+            }
+        });
+
+
+        showActiveTasksNavLink.setText("Active");
+        showActiveTasksNavLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                showGroupTasksNavLink.setStyleName("");
+                showPersonalTasksNavLink.setStyleName("");
+                showActiveTasksNavLink.setStyleName("active");
+                showAllTasksNavLink.setStyleName("");
+                presenter.refreshActiveTasks();
+            }
+        });
+
+        showAllTasksNavLink.setText("All");
+        showAllTasksNavLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                showGroupTasksNavLink.setStyleName("");
+                showPersonalTasksNavLink.setStyleName("");
+                showActiveTasksNavLink.setStyleName("");
+                showAllTasksNavLink.setStyleName("active");
+                presenter.refreshAllTasks();
+            }
+        });
+
 
     }
 
@@ -171,17 +213,19 @@ public class TasksListViewImpl extends Composite
 
     }
 
-//
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
 
     public void refreshTasks() {
-        presenter.refreshTasks(identity.getName(), false, false, false);
+        showGroupTasksNavLink.setStyleName("");
+        showPersonalTasksNavLink.setStyleName("");
+        showActiveTasksNavLink.setStyleName("active");
+        showAllTasksNavLink.setStyleName("");
+        presenter.refreshActiveTasks();
     }
 
     public TaskListMultiDayBox getTaskListMultiDayBox() {
         return taskListMultiDayBox;
     }
-
 }

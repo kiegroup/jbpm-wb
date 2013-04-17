@@ -149,8 +149,8 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
     @Override
     public Map<Day, List<TaskSummary>> getTasksAssignedPersonalAndGroupsTasksByDays(String userId, List<String> groupIds, String language) {
-      Map<Day, List<TaskSummary>> tasksAssignedByGroupsByDay = getTasksAssignedByGroupsByDay(userId, groupIds, language);
-      Map<Day, List<TaskSummary>> tasksOwnedByDay = getTasksOwnedByDay(userId, groupIds, language);
+      Map<Day, List<TaskSummary>> tasksAssignedByGroupsByDay = getTasksAssignedByGroupsByDays(groupIds, language);
+      Map<Day, List<TaskSummary>> tasksOwnedByDay = getTasksOwnedByDays(userId, groupIds, language);
       for(Day day : tasksOwnedByDay.keySet()) {
         tasksOwnedByDay.get(day).addAll(tasksAssignedByGroupsByDay.get(day));
       }
@@ -158,7 +158,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
     
     @Override
-    public Map<Day, List<TaskSummary>> getTasksAssignedByGroupsByDay(String userId, List<String> groupIds, String language) {
+    public Map<Day, List<TaskSummary>> getTasksAssignedByGroupsByDays(List<String> groupIds, String language) {
       Date currentDay = new Date();
       Map<Day, List<TaskSummary>> tasksByDay = new LinkedHashMap<Day, List<TaskSummary>>();
       
@@ -177,7 +177,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
     
     @Override
-    public Map<Day, List<TaskSummary>> getTasksOwnedByDay(String userId, List<String> groupIds, String language) {
+    public Map<Day, List<TaskSummary>> getTasksOwnedByDays(String userId, List<String> groupIds, String language) {
       Date currentDay = new Date();
       Map<Day, List<TaskSummary>> tasksByDay = new LinkedHashMap<Day, List<TaskSummary>>();
       List<Status> statuses = new ArrayList<Status>();
