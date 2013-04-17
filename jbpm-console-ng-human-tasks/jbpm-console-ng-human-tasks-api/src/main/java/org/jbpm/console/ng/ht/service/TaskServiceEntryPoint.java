@@ -40,7 +40,19 @@ public interface TaskServiceEntryPoint {
     
     List<TaskSummary> getTasksAssignedByGroup(String groupId, String language); 
     
-    List<TaskSummary> getTasksAssignedByGroups(List<String> groupsId, String language); 
+    List<TaskSummary> getTasksAssignedByGroups(List<String> groupsId, String language);
+    
+    Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, Date from, Date to, String language);
+    
+    Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, Date from, int nrOfDaysAfter, String language);
+    
+    Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(String userId, List<String> groupIds, Date from, Date to, String language);
+    
+    Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(String userId, List<String> groupIds, Date from, int nrOfDaysAfter, String language);
+    
+    Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDays(List<String> groupIds, Date from, Date to, String language);
+    
+    Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDays(List<String> groupIds, Date from, int nrOfDaysAfter, String language);
     
     Map<Day, List<TaskSummary>> getTasksOwnedByDays(String userId, List<String> groupIds, String language);
     
