@@ -43,7 +43,7 @@ public class ProcessInstanceHelper {
     public static ProcessInstanceSummary adapt(ProcessInstanceDesc processInstance){
         Date date = processInstance.getDataTimeStamp();
         String formattedDate = new SimpleDateFormat("d/MMM/yy HH:mm:ss").format(date);
-        return new ProcessInstanceSummary(processInstance.getId(), processInstance.getProcessId(), processInstance.getDomainId(),
+        return new ProcessInstanceSummary(processInstance.getId(), processInstance.getProcessId(), processInstance.getDeploymentId(),
                 processInstance.getProcessName(), processInstance.getProcessVersion(), processInstance.getState(), 
                 formattedDate, processInstance.getInitiator());
     }

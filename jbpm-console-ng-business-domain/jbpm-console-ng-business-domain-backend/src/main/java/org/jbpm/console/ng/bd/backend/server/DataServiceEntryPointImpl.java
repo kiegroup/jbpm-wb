@@ -59,8 +59,8 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint{
         return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstances());
     }
 
-    public Collection<ProcessInstanceSummary> getProcessInstancesBySessionId(String domainId) {
-        return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstancesByDomainId(domainId));
+    public Collection<ProcessInstanceSummary> getProcessInstancesBySessionId(String deploymentId) {
+        return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstancesByDeploymentId(deploymentId));
     }
 
     public Collection<ProcessSummary> getProcessesByFilter(String filter) {
@@ -85,22 +85,22 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint{
     
      public Collection<NodeInstanceSummary> getProcessInstanceHistory(long processInstanceId) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistory(piDesc.getDomainId(), processInstanceId));
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistory(piDesc.getDeploymentId(), processInstanceId));
     }
 
     public Collection<NodeInstanceSummary> getProcessInstanceHistory(long processInstanceId, boolean completed) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistory(piDesc.getDomainId(), processInstanceId, completed));
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistory(piDesc.getDeploymentId(), processInstanceId, completed));
     }
 
     public Collection<NodeInstanceSummary> getProcessInstanceFullHistory(long processInstanceId) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistory(piDesc.getDomainId(), processInstanceId));
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistory(piDesc.getDeploymentId(), processInstanceId));
     }
 
     public Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(long processInstanceId) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceActiveNodes(piDesc.getDomainId(), processInstanceId));
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceActiveNodes(piDesc.getDeploymentId(), processInstanceId));
     }
     
     public Collection<ProcessInstanceSummary> getProcessInstances(List<Integer> states, String filterText,
@@ -118,7 +118,7 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint{
     
     public Collection<NodeInstanceSummary> getProcessInstanceCompletedNodes(long processInstanceId) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceCompletedNodes(piDesc.getDomainId(), processInstanceId));
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceCompletedNodes(piDesc.getDeploymentId(), processInstanceId));
     
     }
     

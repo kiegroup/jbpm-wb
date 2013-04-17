@@ -16,21 +16,36 @@
 package org.jbpm.console.ng.server.impl;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
 
+import org.droolsjbpm.services.api.DeploymentUnit;
+import org.droolsjbpm.services.impl.VFSDeploymentUnit;
+import org.jbpm.console.ng.pr.service.DeploymentManagerEntryPoint;
+import org.jbpm.console.ng.pr.service.Initializable;
+import org.kie.commons.java.nio.file.DirectoryStream;
+import org.kie.commons.java.nio.file.Path;
 import org.kie.commons.services.cdi.Startup;
 import org.kie.commons.io.IOService;
 import org.kie.commons.io.impl.IOServiceDotFileImpl;
+
 import org.kie.commons.java.nio.file.FileSystemAlreadyExistsException;
+import org.uberfire.backend.group.Group;
+import org.uberfire.backend.group.GroupService;
 import org.uberfire.backend.repositories.Repository;
 import org.uberfire.backend.repositories.RepositoryService;
 
-@Singleton
+@ApplicationScoped
 @Startup
 public class AppSetup {
 
@@ -47,15 +62,29 @@ public class AppSetup {
     @Inject
     private RepositoryService repositoryService;
 
+    @Inject
+    private GroupService groupService;
+
+    @Inject
+    private DeploymentManagerEntryPoint deploymentManager;
+
+    private Repository repository;
+
     @PostConstruct
     public void onStartup() {
 
-        Repository repository = repositoryService.getRepository(REPO_PLAYGROUND);
+        repository = repositoryService.getRepository(REPO_PLAYGROUND);
         if(repository == null) {
             final String userName = "guvnorngtestuser1";
             final String password = "test1234";
             repositoryService.cloneRepository("git", REPO_PLAYGROUND, ORIGIN_URL, userName, password);
             repository = repositoryService.getRepository(REPO_PLAYGROUND);
+        }
+        Collection<Group> groups = groupService.getGroups();
+        if (groups == null || groups.isEmpty()) {
+            List<Repository> repositories = new ArrayList<Repository>();
+            repositories.add(repository);
+            groupService.createGroup("demo", "demo@jbpm.org", repositories);
         }
         try {
             ioService.newFileSystem(URI.create(repository.getUri()), repository.getEnvironment());
@@ -64,5 +93,31 @@ public class AppSetup {
             ioService.getFileSystem(URI.create(repository.getUri()));
 
         }
+        Set<DeploymentUnit> deploymentUnits = produceDeploymentUnits();
+        ((Initializable)deploymentManager).initDeployments(deploymentUnits);
+    }
+
+    @Produces
+    @RequestScoped
+    public Set<DeploymentUnit> produceDeploymentUnits() {
+        Iterable<Path> assetDirectories = ioService.newDirectoryStream( ioService.get( repository.getUri() + "/processes" ), new DirectoryStream.Filter<Path>() {
+            @Override
+            public boolean accept( final Path entry ) {
+                if ( org.kie.commons.java.nio.file.Files.isDirectory(entry) ) {
+                    return true;
+                }
+                return false;
+            }
+        } );
+        Set<DeploymentUnit> deploymentUnits = new HashSet<DeploymentUnit>();
+        for (Path p : assetDirectories) {
+            String folder = p.toString();
+            if (folder.startsWith("/")) {
+                folder = folder.substring(1);
+            }
+            deploymentUnits.add(new VFSDeploymentUnit(p.getFileName().toString(), REPO_PLAYGROUND, folder));
+        }
+
+        return deploymentUnits;
     }
 }

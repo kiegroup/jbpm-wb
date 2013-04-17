@@ -210,45 +210,6 @@ public class ProcessDefinitionListViewImpl extends Composite
         processdefListGrid.addColumn(processNameColumn,
                 new ResizableHeader(constants.Name(), processdefListGrid, processNameColumn));
 
-//        // Process PKG.
-//        Column<ProcessSummary, String> processPkgColumn =
-//                new Column<ProcessSummary, String>(new TextCell()) {
-//            @Override
-//            public String getValue(ProcessSummary object) {
-//                return object.getPackageName();
-//            }
-//        };
-//        processPkgColumn.setSortable(true);
-//        sortHandler.setComparator(processPkgColumn,
-//                new Comparator<ProcessSummary>() {
-//            public int compare(ProcessSummary o1,
-//                    ProcessSummary o2) {
-//                return o1.getPackageName().compareTo(o2.getPackageName());
-//            }
-//        });
-//        processdefListGrid.addColumn(processPkgColumn,
-//                new ResizableHeader(constants.Package(), processdefListGrid, processPkgColumn));
-        
-         // Process Domain Id.
-        Column<ProcessSummary, String> processDomainIdColumn =
-                new Column<ProcessSummary, String>(new TextCell()) {
-            @Override
-            public String getValue(ProcessSummary object) {
-                return object.getDomainId();
-            }
-        };
-        processDomainIdColumn.setSortable(true);
-        sortHandler.setComparator(processDomainIdColumn,
-                new Comparator<ProcessSummary>() {
-            public int compare(ProcessSummary o1,
-                    ProcessSummary o2) {
-                return o1.getDomainId().compareTo(o2.getDomainId());
-            }
-        });
-        processdefListGrid.addColumn(processDomainIdColumn,
-                new ResizableHeader("Domain", processdefListGrid, processDomainIdColumn));
-        processdefListGrid.setColumnWidth(processDomainIdColumn, "90px");
-
         // Version Type 
         Column<ProcessSummary, String> versionColumn =
                 new Column<ProcessSummary, String>(new TextCell()) {

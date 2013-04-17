@@ -27,6 +27,7 @@ import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.ht.model.TaskDefSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -39,10 +40,7 @@ import org.uberfire.shared.mvp.PlaceRequest;
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
-import org.jbpm.console.ng.bd.service.FileServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
-import org.uberfire.backend.vfs.FileSystem;
-import org.uberfire.backend.vfs.PathFactory;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Definition Details")
@@ -82,7 +80,7 @@ public class ProcessDefDetailsPresenter {
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
     @Inject
-    private Caller<FileServiceEntryPoint> fileServices;
+    private Caller<VFSService> fileServices;
     
     
     @OnStart
@@ -149,7 +147,7 @@ public class ProcessDefDetailsPresenter {
                      public void callback(Path processPath) {
                          view.setProcessAssetPath(processPath);
                      }
-                }).getPath(process.getOriginalPath());
+                }).get(process.getOriginalPath());
             }
         }).getProcessById(processId);
     }

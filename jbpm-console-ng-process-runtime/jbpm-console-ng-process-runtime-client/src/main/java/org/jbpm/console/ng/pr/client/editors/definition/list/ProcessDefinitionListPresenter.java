@@ -26,20 +26,17 @@ import javax.inject.Inject;
 
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
-import java.util.ArrayList;
+
 import javax.enterprise.event.Event;
 
 import org.jboss.errai.bus.client.api.ErrorCallback;
 import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.model.DomainSummary;
-import org.jbpm.console.ng.bd.model.OrganizationSummary;
-import org.jbpm.console.ng.bd.model.RuntimeSummary;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
-import org.jbpm.console.ng.bd.service.DomainManagerServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
+import org.jbpm.console.ng.pr.service.DeploymentManagerEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -68,10 +65,10 @@ public class ProcessDefinitionListPresenter {
     private InboxView view;
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
-    
+
     @Inject
-    private Caller<DomainManagerServiceEntryPoint> domainManagerService;
-    
+    private Caller<DeploymentManagerEntryPoint> deploymentManager;
+
     @Inject
     Event<ProcessInstanceCreated> processInstanceCreatedEvents;
     private ListDataProvider<ProcessSummary> dataProvider = new ListDataProvider<ProcessSummary>();
@@ -116,29 +113,22 @@ public class ProcessDefinitionListPresenter {
     public void reloadRepository() {
 
         view.showBusyIndicator("Please wait");
-        domainManagerService.call(new RemoteCallback<List<OrganizationSummary>>() {
+        deploymentManager.call(new RemoteCallback<Void>() {
             @Override
-            public void callback(List<OrganizationSummary> organizations) {
-                for (OrganizationSummary org : organizations) {
-                    domainManagerService.call(new RemoteCallback<Void>() {
-                        @Override
-                        public void callback(Void noresult) {
-                            refreshProcessList(null);
-                            view.hideBusyIndicator();
-                            view.displayNotification("Process refreshed from repository");
-                        }
-                    }, new ErrorCallback() {
-                        
-                        @Override
-                        public boolean error(Message message, Throwable throwable) {
-                            view.hideBusyIndicator();
-                            view.displayNotification("Error: Process refreshed from repository failed");
-                            return false;
-                        }
-                    }).initOrganization(org.getId());
-                }
+            public void callback(Void organizations) {
+                refreshProcessList(null);
+                view.hideBusyIndicator();
+                view.displayNotification("Process refreshed from repository");
             }
-        }).getAllOrganizations();
+        }, new ErrorCallback() {
+
+           @Override
+           public boolean error(Message message, Throwable throwable) {
+               view.hideBusyIndicator();
+               view.displayNotification("Error: Process refreshed from repository failed");
+               return true;
+           }
+       }).redeploy();
         
     }
 

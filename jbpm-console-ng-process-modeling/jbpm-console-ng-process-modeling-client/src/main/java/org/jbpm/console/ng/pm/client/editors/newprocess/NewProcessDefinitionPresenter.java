@@ -22,11 +22,6 @@ import javax.inject.Inject;
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 
-
-import org.jboss.errai.bus.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.service.FileServiceEntryPoint;
-
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -53,8 +48,6 @@ public class NewProcessDefinitionPresenter {
     NewProcessDefinitionView view;
     @Inject
     Identity identity;
-    @Inject
-    Caller<FileServiceEntryPoint> fileService;
     
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
@@ -89,15 +82,15 @@ public class NewProcessDefinitionPresenter {
     }
 
     public void createNewProcess(final String path) {
-        
-            fileService.call(new RemoteCallback<String>() {
-                @Override
-                public void callback(String path) {
-                    view.displayNotification("File Created "+path.toString());
-                    Window.open("http://localhost:8080/designer/editor?profile=jbpm&pp=&uuid=git://jbpm-playground"+path.toString(), "_blank", "");
-                }
-            }).createProcessDefinitionFile(path);
-        
+//
+//            fileService.call(new RemoteCallback<String>() {
+//                @Override
+//                public void callback(String path) {
+//                    view.displayNotification("File Created "+path.toString());
+//                    Window.open("http://localhost:8080/designer/editor?profile=jbpm&pp=&uuid=git://jbpm-playground"+path.toString(), "_blank", "");
+//                }
+//            }).createProcessDefinitionFile(path);
+//
 
     }
 

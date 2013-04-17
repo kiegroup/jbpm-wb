@@ -29,6 +29,7 @@ import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.VariableSummary;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -45,7 +46,6 @@ import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
-import org.jbpm.console.ng.bd.service.FileServiceEntryPoint;
 
 
 @Dependent
@@ -90,7 +90,7 @@ public class ProcessInstanceDetailsPresenter {
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
     @Inject
-    private Caller<FileServiceEntryPoint> fileServices;
+    private Caller<VFSService> fileServices;
     
     
     
@@ -194,7 +194,7 @@ public class ProcessInstanceDetailsPresenter {
                      public void callback(Path processPath) {
                          view.setProcessAssetPath(processPath);
                      }
-                }).getPath(process.getOriginalPath());
+                }).get(process.getOriginalPath());
                 
             }
         }).getProcessById(processDefId);
