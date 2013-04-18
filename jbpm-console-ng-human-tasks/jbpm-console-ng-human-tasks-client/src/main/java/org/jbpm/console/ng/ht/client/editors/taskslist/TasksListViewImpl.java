@@ -82,6 +82,8 @@ public class TasksListViewImpl extends Composite
     private TaskListMultiDayBox taskListMultiDayBox;
     @Inject
     private Event<NotificationEvent> notification;
+    
+    private String currentView = "day";
 
     @Override
     public void init(final TasksListPresenter presenter) {
@@ -89,7 +91,7 @@ public class TasksListViewImpl extends Composite
         taskListMultiDayBox.init();
         taskListMultiDayBox.setPresenter(presenter);
 
-        refreshTasks();
+        refreshDayTasks();
         // By Default we will start in Day View
         tasksViewContainer.setStyleName("day");
         tasksViewContainer.add(taskListMultiDayBox);
@@ -102,7 +104,8 @@ public class TasksListViewImpl extends Composite
                 weekViewTasksNavLink.setStyleName("");
                 monthViewTasksNavLink.setStyleName("");
                 advancedViewTasksNavLink.setStyleName("");
-                refreshTasks();
+                currentView = "day";
+                refreshDayTasks();
             }
         });
         weekViewTasksNavLink.setText("Week");
@@ -114,7 +117,8 @@ public class TasksListViewImpl extends Composite
                 monthViewTasksNavLink.setStyleName("");
                 advancedViewTasksNavLink.setStyleName("");
                 weekViewTasksNavLink.setStyleName("active");
-                refreshTasks();
+                currentView = "week";
+                refreshWeekTasks();
             }
         });
 
@@ -127,7 +131,8 @@ public class TasksListViewImpl extends Composite
                 advancedViewTasksNavLink.setStyleName("");
                 weekViewTasksNavLink.setStyleName("");
                 monthViewTasksNavLink.setStyleName("active");
-                refreshTasks();
+                currentView = "month";
+                refreshMonthTasks();
             }
         });
 
@@ -217,12 +222,53 @@ public class TasksListViewImpl extends Composite
         notification.fire(new NotificationEvent(text));
     }
 
-    public void refreshTasks() {
+    public void refreshDayTasks() {
+        monthViewTasksNavLink.setStyleName("");
+        weekViewTasksNavLink.setStyleName("");
+        dayViewTasksNavLink.setStyleName("active");
+        
         showGroupTasksNavLink.setStyleName("");
         showPersonalTasksNavLink.setStyleName("");
         showActiveTasksNavLink.setStyleName("active");
         showAllTasksNavLink.setStyleName("");
-        presenter.refreshActiveTasks();
+        presenter.refresh3DaysActiveTasks();
+    }
+    
+    public void refreshWeekTasks(){
+        
+        monthViewTasksNavLink.setStyleName("");
+        weekViewTasksNavLink.setStyleName("active");
+        dayViewTasksNavLink.setStyleName("");
+        
+        showGroupTasksNavLink.setStyleName("");
+        showPersonalTasksNavLink.setStyleName("");
+        showActiveTasksNavLink.setStyleName("active");
+        showAllTasksNavLink.setStyleName("");
+        presenter.refreshWeekActiveTasks();
+    }
+    
+    public void refreshMonthTasks(){
+        monthViewTasksNavLink.setStyleName("active");
+        weekViewTasksNavLink.setStyleName("");
+        dayViewTasksNavLink.setStyleName("");
+        
+        showGroupTasksNavLink.setStyleName("");
+        showPersonalTasksNavLink.setStyleName("");
+        showActiveTasksNavLink.setStyleName("active");
+        showAllTasksNavLink.setStyleName("");
+        presenter.refreshMonthActiveTasks();
+    }
+    
+    public void refreshTasks() {
+       if(currentView.equals("day")){
+           refreshDayTasks();
+       }else if(currentView.equals("week")){
+           refreshWeekTasks();
+       }else if(currentView.equals("month")){
+           refreshMonthTasks();
+       }
+       
+        
     }
 
     public TaskListMultiDayBox getTaskListMultiDayBox() {

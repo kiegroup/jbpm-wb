@@ -22,6 +22,7 @@ import javax.inject.Inject;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import javax.enterprise.event.Observes;
 
@@ -76,16 +77,71 @@ public class TasksListPresenter {
     @PostConstruct
     public void init() {
     }
-
-    public void refreshActiveTasks() {
+    private List<String> getGroups(Identity identity){
         List<Role> roles = identity.getRoles();
         List<String> groups = new ArrayList<String>(roles.size());
         for (Role r : roles) {
             groups.add(r.getName().trim());
         }
+        return groups;
+    }
+    public void refresh3DaysActiveTasks(){
+        List<String> groups = getGroups(identity);
+        Date today = new Date();
+        Date daysAfter = new Date(today.getTime() + ((24 * 60 * 60 * 1000) * 3));
         taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
             @Override
             public void callback(Map<Day, List<TaskSummary>> tasks) {
+                view.getTaskListMultiDayBox().clear();
+                for (Day day : tasks.keySet()) {
+                    
+                    view.getTaskListMultiDayBox().addTasksByDay(day, tasks.get(day));
+                }
+                view.getTaskListMultiDayBox().refresh();
+            }
+        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(identity.getName(), groups, today, daysAfter, "en-UK");
+    
+    }
+    public void refreshWeekActiveTasks(){
+        List<String> groups = getGroups(identity);
+        Date today = new Date();
+        Date daysAfter = new Date(today.getTime() + ((24 * 60 * 60 * 1000) * 5));
+        taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
+            @Override
+            public void callback(Map<Day, List<TaskSummary>> tasks) {
+                view.getTaskListMultiDayBox().clear();
+                for (Day day : tasks.keySet()) {
+                    
+                    view.getTaskListMultiDayBox().addTasksByDay(day, tasks.get(day));
+                }
+                view.getTaskListMultiDayBox().refresh();
+            }
+        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(identity.getName(), groups, today, daysAfter, "en-UK");
+    }
+    public void refreshMonthActiveTasks(){
+        List<String> groups = getGroups(identity);
+        Date today = new Date();
+        Date daysAfter = new Date(today.getTime() + new Long((24 * 60 * 60 * 1000) *21L));
+        taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
+            @Override
+            public void callback(Map<Day, List<TaskSummary>> tasks) {
+                view.getTaskListMultiDayBox().clear();
+                for (Day day : tasks.keySet()) {
+                    
+                    view.getTaskListMultiDayBox().addTasksByDay(day, tasks.get(day));
+                }
+                view.getTaskListMultiDayBox().refresh();
+            }
+        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(identity.getName(), groups, today, daysAfter, "en-UK");
+    
+    }
+    
+    public void refreshActiveTasks() {
+        List<String> groups = getGroups(identity);
+        taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
+            @Override
+            public void callback(Map<Day, List<TaskSummary>> tasks) {
+                view.getTaskListMultiDayBox().clear();
                 for (Day day : tasks.keySet()) {
                     
                     view.getTaskListMultiDayBox().addTasksByDay(day, tasks.get(day));
@@ -107,6 +163,7 @@ public class TasksListPresenter {
         taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
             @Override
             public void callback(Map<Day, List<TaskSummary>> tasks) {
+                view.getTaskListMultiDayBox().clear();
                 for (Day day : tasks.keySet()) {    
                     view.getTaskListMultiDayBox().addTasksByDay(day, tasks.get(day));
                 }
@@ -128,6 +185,7 @@ public class TasksListPresenter {
         taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
             @Override
             public void callback(Map<Day, List<TaskSummary>> tasks) {
+               view.getTaskListMultiDayBox().clear();
                for (Day day : tasks.keySet()) {    
                     view.getTaskListMultiDayBox().addTasksByDay(day, tasks.get(day));
                 }
@@ -139,14 +197,11 @@ public class TasksListPresenter {
     }
 
     public void refreshGroupTasks() {
-        List<Role> roles = identity.getRoles();
-        List<String> groups = new ArrayList<String>(roles.size());
-        for (Role r : roles) {
-            groups.add(r.getName().trim());
-        }
+        List<String> groups = getGroups(identity);
         taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
             @Override
             public void callback(Map<Day, List<TaskSummary>> tasks) {
+                view.getTaskListMultiDayBox().clear();
                 for (Day day : tasks.keySet()) {    
                     view.getTaskListMultiDayBox().addTasksByDay(day, tasks.get(day));
                 }

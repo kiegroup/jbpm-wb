@@ -102,6 +102,9 @@ public class ProcessInstanceListViewImpl extends Composite
     public NavLink signalLink;
     @Inject
     @DataField
+    public NavLink showAllLink;
+    @Inject
+    @DataField
     public NavLink showCompletedLink;
     @Inject
     @DataField
@@ -139,25 +142,34 @@ public class ProcessInstanceListViewImpl extends Composite
 
         processInstanceListGrid.setHeight("350px");
 
+        
+        showAllLink.setText("Active");
+        showAllLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                presenter.refreshActiveProcessList();
+            }
+        });
+        
         showCompletedLink.setText("Completed");
         showCompletedLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                presenter.refreshProcessList("", false, true, false);
+                presenter.refreshCompletedProcessList();
             }
         });
         showAbortedLink.setText("Aborted");
         showAbortedLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                presenter.refreshProcessList("", true, false, false);
+                presenter.refreshAbortedProcessList();
             }
         });
         showRelatedToMeLink.setText("Related To Me");
         showRelatedToMeLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                presenter.refreshProcessList("", false, false, true);
+                presenter.refreshRelatedToMeProcessList();
             }
         });
 
@@ -249,7 +261,7 @@ public class ProcessInstanceListViewImpl extends Composite
 
     @EventHandler("filterButton")
     public void filterKSessionButton(ClickEvent e) {
-        presenter.refreshProcessList("", false, false, false);
+        presenter.refreshActiveProcessList();
     }
 
     private void initTableColumns(final SelectionModel<ProcessInstanceSummary> selectionModel) {
@@ -601,7 +613,7 @@ public class ProcessInstanceListViewImpl extends Composite
 
     public void formClosed(@Observes BeforeClosePlaceEvent closed) {
         if ("Signal Process Popup".equals(closed.getPlace().getIdentifier())) {
-            presenter.refreshProcessList("", false, false, false);
+            presenter.refreshActiveProcessList();
         }
     }
 

@@ -73,7 +73,7 @@ public class TaskListDayBox extends Composite implements RequiresResize {
         dayTaskContainer.setStyleName("day-tasks-container");
         top.setStyleName("top");
         DateTimeFormat fmt = DateTimeFormat.getFormat("dd/MM/yyyy");
-        String dayAndDate = day.getDayOfWeekName() + " - " + fmt.format(day.getDate());
+        String dayAndDate = day.getDayOfWeekName();// + " - " + fmt.format(day.getDate());
         iconAndDayName.setText(dayAndDate + " (" + taskSummaries.size() + ")");
         // show/hide the tasks when the icon is clicked
         iconAndDayName.addClickHandler(new ClickHandler() {

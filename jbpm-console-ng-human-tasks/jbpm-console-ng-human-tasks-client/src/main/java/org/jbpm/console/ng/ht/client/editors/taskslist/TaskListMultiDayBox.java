@@ -65,7 +65,7 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
     }
 
     public void refresh() {
-        tasksContainer.clear();
+        
         for (Day section : sectionTasks.keySet()) {
             TaskListDayBox taskList = new TaskListDayBox(section, sectionTasks.get(section), identity, placeManager, presenter);
             taskList.init();
@@ -79,6 +79,11 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
     
     public void addTasksByDay(Day day, List<TaskSummary> taskSummaries) {
         sectionTasks.put(day, taskSummaries);
+    }
+    
+    public void clear() {
+        tasksContainer.clear();
+        sectionTasks.clear();
     }
 
     @Override

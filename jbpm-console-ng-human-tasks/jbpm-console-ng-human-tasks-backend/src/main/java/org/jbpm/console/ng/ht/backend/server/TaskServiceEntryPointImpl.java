@@ -174,7 +174,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     public Map<Day,List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDays(List<String> groupIds, Date from, Date to, String language) {
         Map<Day, List<TaskSummary>> tasksByDay = new LinkedHashMap<Day, List<TaskSummary>>();
         List<TaskSummary> firstDayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroupsByExpirationDateOptional(groupIds, language, from));
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE dd");
         tasksByDay.put(new Day(from, dayFormat.format(from)), firstDayTasks);
         int nrOfDays = Days.daysBetween(new LocalDate(from), new LocalDate(to)).getDays();
         for (int i = 1; i < nrOfDays; i++) {
@@ -204,7 +204,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         statuses.add(Status.Reserved);
         statuses.add(Status.Created);
         List<TaskSummary> firstDayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByExpirationDateOptional(userId, statuses, from));
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE dd");
         tasksByDay.put(new Day(from, dayFormat.format(from)), firstDayTasks);
         int nrOfDays = Days.daysBetween(new LocalDate(from), new LocalDate(to)).getDays();
         for (int i = 1; i < nrOfDays; i++) {

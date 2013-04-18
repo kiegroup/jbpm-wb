@@ -94,23 +94,10 @@ public class ProcessInstanceListPresenter {
   @PostConstruct
   public void init() {
   }
-
-  public void refreshProcessList(final String sessionId, boolean aborted, boolean completed, boolean relatedToMe) {
-    List<Integer> states = new ArrayList<Integer>();
-    states.add(ProcessInstance.STATE_ACTIVE);
-    if (aborted) {
-      states.add(ProcessInstance.STATE_ABORTED);
-    }
-    if (completed) {
-      states.add(ProcessInstance.STATE_COMPLETED);
-    }
-
-    String initiator = null;
-    if (relatedToMe) {
-      initiator = identity.getName();
-    }
-
-    if (sessionId != null && !sessionId.equals("")) {
+  
+  public void refreshActiveProcessList() {
+      List<Integer> states = new ArrayList<Integer>();
+      states.add(ProcessInstance.STATE_ACTIVE);
       dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
         @Override
         public void callback(List<ProcessInstanceSummary> processInstances) {
@@ -118,25 +105,54 @@ public class ProcessInstanceListPresenter {
           dataProvider.getList().addAll(processInstances);
           dataProvider.refresh();
         }
-      }).getProcessInstancesBySessionId(sessionId);
-    } else {
-      dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
-        @Override
-        public void callback(List<ProcessInstanceSummary> processInstances) {
-          dataProvider.getList().clear();
-          dataProvider.getList().addAll(processInstances);
-          dataProvider.refresh();
-        }
-      }).getProcessInstances(states, view.getFilterProcessText(), initiator);
-    }
-
-
-
-
+      }).getProcessInstances(states, view.getFilterProcessText(), null);
   }
 
+  public void refreshRelatedToMeProcessList() {
+      List<Integer> states = new ArrayList<Integer>();
+      states.add(ProcessInstance.STATE_ACTIVE);
+      dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+        @Override
+        public void callback(List<ProcessInstanceSummary> processInstances) {
+          dataProvider.getList().clear();
+          dataProvider.getList().addAll(processInstances);
+          dataProvider.refresh();
+        }
+      }).getProcessInstances(states, view.getFilterProcessText(), identity.getName());
+  }
+  
+  public void refreshAbortedProcessList() {
+      List<Integer> states = new ArrayList<Integer>();
+      states.add(ProcessInstance.STATE_ABORTED);
+      dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+        @Override
+        public void callback(List<ProcessInstanceSummary> processInstances) {
+          dataProvider.getList().clear();
+          dataProvider.getList().addAll(processInstances);
+          dataProvider.refresh();
+        }
+      }).getProcessInstances(states, view.getFilterProcessText(), null);
+  }
+  
+  public void refreshCompletedProcessList() {
+      List<Integer> states = new ArrayList<Integer>();
+      states.add(ProcessInstance.STATE_COMPLETED);
+      dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+        @Override
+        public void callback(List<ProcessInstanceSummary> processInstances) {
+          dataProvider.getList().clear();
+          dataProvider.getList().addAll(processInstances);
+          dataProvider.refresh();
+        }
+      }).getProcessInstances(states, view.getFilterProcessText(), null);
+  }
+  
+  
+  
+
+
   public void newInstanceCreated(@Observes ProcessInstanceCreated pi) {
-    refreshProcessList("", false, false, false);
+    refreshActiveProcessList();
   }
 
   public void addDataDisplay(HasData<ProcessInstanceSummary> display) {
@@ -161,14 +177,14 @@ public class ProcessInstanceListPresenter {
 
     this.currentProcessDefinition = place.getParameter("processDefId", "");
     listProcessInstances();
-    refreshProcessList("", false, false, false);
+    refreshActiveProcessList();
   }
 
   public void abortProcessInstance(String processDefId, long processInstanceId) {
     kieSessionServices.call(new RemoteCallback<Void>() {
       @Override
       public void callback(Void v) {
-        refreshProcessList("", false, false, false);
+        refreshActiveProcessList();
 
       }
     }).abortProcessInstance(processInstanceId);
@@ -178,7 +194,7 @@ public class ProcessInstanceListPresenter {
     kieSessionServices.call(new RemoteCallback<Void>() {
       @Override
       public void callback(Void v) {
-        refreshProcessList("", false, false, false);
+        refreshActiveProcessList();
 
       }
     }).suspendProcessInstance(processInstanceId);
