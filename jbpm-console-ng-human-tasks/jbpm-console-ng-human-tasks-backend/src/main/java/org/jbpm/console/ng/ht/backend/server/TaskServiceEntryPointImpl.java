@@ -37,9 +37,7 @@ import org.jbpm.services.task.impl.factories.TaskFactory;
 import org.jbpm.services.task.impl.model.CommentImpl;
 import org.jbpm.services.task.impl.model.UserImpl;
 import org.jbpm.services.task.utils.ContentMarshallerHelper;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeUtils;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.kie.internal.task.api.model.Comment;
@@ -176,8 +174,8 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         List<TaskSummary> firstDayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroupsByExpirationDateOptional(groupIds, language, from));
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
         tasksByDay.put(new Day(from, dayFormat.format(from)), firstDayTasks);
-        int nrOfDays = Days.daysBetween(new LocalDate(from), new LocalDate(to)).getDays();
-        for (int i = 1; i < nrOfDays; i++) {
+        int nrOfDaysBetween = Days.daysBetween(new LocalDate(from), new LocalDate(to)).getDays();
+        for (int i = 1; i <= nrOfDaysBetween; i++) {
             Date currentDay = new Date(from.getTime() + i * DateTimeConstants.MILLIS_PER_DAY);
             List<TaskSummary> dayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroupsByExpirationDate(groupIds, language, currentDay));
             tasksByDay.put(new Day(currentDay, dayFormat.format(currentDay)), dayTasks);
@@ -206,8 +204,8 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         List<TaskSummary> firstDayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByExpirationDateOptional(userId, statuses, from));
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
         tasksByDay.put(new Day(from, dayFormat.format(from)), firstDayTasks);
-        int nrOfDays = Days.daysBetween(new LocalDate(from), new LocalDate(to)).getDays();
-        for (int i = 1; i < nrOfDays; i++) {
+        int nrOfDaysBetween = Days.daysBetween(new LocalDate(from), new LocalDate(to)).getDays();
+        for (int i = 1; i <= nrOfDaysBetween; i++) {
             Date currentDay = new Date(from.getTime() + i * DateTimeConstants.MILLIS_PER_DAY);
             List<TaskSummary> dayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByExpirationDate(userId, statuses, currentDay ));
             tasksByDay.put(new Day(currentDay, dayFormat.format(currentDay)), dayTasks);
