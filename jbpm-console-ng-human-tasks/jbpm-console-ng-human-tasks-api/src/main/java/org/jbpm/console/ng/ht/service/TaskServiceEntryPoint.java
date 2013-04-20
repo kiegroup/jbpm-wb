@@ -15,10 +15,6 @@ import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.IdentitySummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 
-
-/**
- *
- */
 @Remote
 public interface TaskServiceEntryPoint {
 
@@ -42,20 +38,112 @@ public interface TaskServiceEntryPoint {
     
     List<TaskSummary> getTasksAssignedByGroups(List<String> groupsId, String language);
     
+    /**
+     * Gets the mapping '{@link Day} -> list of owned tasks' from start day to end day (including).
+     * 
+     * Only active tasks are considered (task with status "InProgress", "Reserved" or "Created").
+     * 
+     * @param userId  id of the task owner
+     * @param from  start day
+     * @param to  end day
+     * @param language
+     * 
+     * @return list of tasks per day for specified days (dates)
+     */
     Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, Date from, Date to, String language);
     
+    /**
+     * Gets the mapping '{@link Day} -> list of owned tasks' starting from specified day and for specified number of days.
+     * 
+     * Only active tasks are considered (task with status "InProgress", "Reserved" or "Created").
+     * 
+     * @param userId  id of the task owner
+     * @param from  start day
+     * @param nrOfDaysTotal how many days to return including start date
+     * @param language
+     * 
+     * @return list of task per day for specified days (dates)
+     */
     Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, Date from, int nrOfDaysTotal, String language);
     
+    /**
+     * Gets the mapping '{@link Day} -> list of owned tasks' from start day to end day (including).
+     * Only tasks with specified statuses are considered.
+     * 
+     * @param userId id of the task owner
+     * @param strStatuses  list of statuses
+     * @param from  start day
+     * @param to end day
+     * @param language
+     * @return list of tasks per day for specified days (dates)
+     */
     Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, List<String> strStatuses, Date from, Date to, String language);
     
+    /**
+     * Gets the mapping '{@link Day} -> list of owned tasks' starting from specified dayand for specified number of days.
+     * Only tasks with specified statuses are considered.
+     *  
+     * @param userId  id of the task owner
+     * @param from  start day
+     * @param nrOfDaysTotal how many days to return including start date
+     * @param language
+     * 
+     * @return list of tasks per day for specified days (dates)
+     */
     Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, List<String> strStatuses, Date from, int nrOfDaysTotal, String language);
     
+    /**
+     * Gets the mapping '{@link Day} -> list of assigned personal and groups tasks' from start day to end day (including).
+     * 
+     * Only tasks with status "Ready", "InProgress", "Reserved" or "Created" are considered.
+     * 
+     * @param userId  id of the task owner
+     * @param groupIds  list of group ids
+     * @param from  start day
+     * @param to  end day
+     * @param language
+     * 
+     * @return list of tasks per day for specified days (dates)
+     */
     Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(String userId, List<String> groupIds, Date from, Date to, String language);
     
+    /**
+     * Gets the mapping '{@link Day} -> list of assigned personal and groups tasks' starting from specified day and for specified number of days.
+     * 
+     * Only tasks with status "Ready", "InProgress", "Reserved" or "Created" are considered.
+     * 
+     * @param userId  id of the task owner
+     * @param groupIds  list of group ids
+     * @param from start day
+     * @param nrOfDaysTotal how many days to return including start date
+     * @param language
+     * 
+     * @return list of tasks per day for specified days (dates)
+     */
     Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(String userId, List<String> groupIds, Date from, int nrOfDaysTotal, String language);
     
+    /**
+     * Gets the mapping '{@link Day} -> list of assigned groups tasks' from start day to end day (including).
+     * 
+     * @param groupIds  list of group ids
+     * @param from start day
+     * @param to  end day
+     * @param language
+     * 
+     * @return list of tasks per day for specified days (dates)
+     */
     Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDays(List<String> groupIds, Date from, Date to, String language);
     
+    /**
+     * Gets the mapping '{@link Day} -> list of assigned groups tasks' starting from specified day and for specified number of days.
+     * 
+     * @param groupIds  list of group ids
+     * @param from start day
+     * @param nrOfDaysTotal how many days to return including start date
+     * @param language
+     * 
+     * @return list of tasks per day for specified days (dates)
+     */
     Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDays(List<String> groupIds, Date from, int nrOfDaysTotal, String language);
     
     List<TaskSummary> getTasksOwned(String userId);
