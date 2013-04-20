@@ -346,6 +346,16 @@
 
 /* MONTH VIEW */
 
+.month .day-tasks-container .row-fluid{
+    height: 100% !important;
+    position: absolute;
+    top: 0px;
+}
+
+.month .day-tasks-container .row-fluid .span12 {
+    height: 100% !important;
+}
+
 #section-content.month  {
     height: 85%;
 }
@@ -358,9 +368,9 @@
     float: left;
     min-height: 150px;
   height:  20%; 
-  height: -moz-calc(100%/5);
+  /*height: -moz-calc(100%/5);
   height: -webkit-calc(100%/5);
-  height: calc(100%/5);
+  height: calc(100%/5);*/
    
     overflow: hidden;
     position: relative;
