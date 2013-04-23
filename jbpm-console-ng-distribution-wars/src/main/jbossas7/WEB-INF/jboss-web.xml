@@ -8,6 +8,4 @@
 
   <security-domain>java:/jaas/jbpm-console-ng</security-domain>
 
-  <context-root>jbpm-console-ng</context-root>
-
 </jboss-web>
