@@ -25,6 +25,18 @@
   <description>jBPM Console NG - Showcase</description>
 
   <dependencies>
+    <!-- Hack: ANT bundled with kie-ci needs to be excluded when running on Jetty -->
+    <!-- It is added back for other Application Servers in their respective assemblies -->
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-ci</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.ant</groupId>
+          <artifactId>ant</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <!-- jBPM Console Panels -->
     <!--Logs -->
     <dependency>
@@ -149,7 +161,6 @@
     <dependency>
       <groupId>javax.enterprise</groupId>
       <artifactId>cdi-api</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -300,11 +311,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-validator</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
     </dependency>
@@ -359,12 +365,6 @@
     <dependency>
       <groupId>org.kie.guvnor</groupId>
       <artifactId>guvnor-m2repo-editor-backend</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>ant</artifactId>
-          <groupId>org.apache.ant</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.kie.guvnor</groupId>
