@@ -146,9 +146,9 @@ public interface TaskServiceEntryPoint {
      */
     Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDays(List<String> groupIds, Date from, int nrOfDaysTotal, String language);
     
-    List<TaskSummary> getTasksOwned(String userId);
+    List<TaskSummary> getTasksOwned(String userId, String language);
     
-    List<TaskSummary> getTasksOwned(String userId, List<String> status, String language);
+    List<TaskSummary> getTasksOwnedByStatus(String userId, List<String> status, String language);
     
     List<TaskSummary> getSubTasksAssignedAsPotentialOwner(long parentId, String userId, String language);
 

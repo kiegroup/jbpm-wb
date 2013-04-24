@@ -37,19 +37,19 @@ import org.jbpm.services.task.impl.factories.TaskFactory;
 import org.jbpm.services.task.impl.model.CommentImpl;
 import org.jbpm.services.task.impl.model.UserImpl;
 import org.jbpm.services.task.utils.ContentMarshallerHelper;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeUtils;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
-import org.kie.internal.task.api.model.Comment;
-import org.kie.internal.task.api.model.Content;
-import org.kie.internal.task.api.model.Group;
-import org.kie.internal.task.api.model.OrganizationalEntity;
-import org.kie.internal.task.api.model.Status;
+import org.kie.api.task.model.Content;
+import org.kie.api.task.model.Group;
+import org.kie.api.task.model.OrganizationalEntity;
+import org.kie.api.task.model.Status;
+import org.kie.api.task.model.Task;
+import org.kie.api.task.model.User;
+import org.kie.internal.task.api.InternalTaskService;
+import org.kie.internal.task.api.model.InternalComment;
+import org.kie.internal.task.api.model.InternalTask;
 import org.kie.internal.task.api.model.SubTasksStrategy;
-import org.kie.internal.task.api.model.Task;
-import org.kie.internal.task.api.model.User;
 
 /**
  *
@@ -61,7 +61,7 @@ import org.kie.internal.task.api.model.User;
 public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     
     @Inject
-    private org.kie.internal.task.api.TaskService taskService;
+    private InternalTaskService taskService;
     
     @Override
     public List<TaskSummary> getTasksAssignedAsBusinessAdministrator(String userId, String language) {
@@ -104,17 +104,17 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
     
     @Override
-    public List<TaskSummary> getTasksOwned(String userId) {
-        return TaskSummaryHelper.adaptCollection(taskService.getTasksOwned(userId));
+    public List<TaskSummary> getTasksOwned(String userId, String language) {
+        return TaskSummaryHelper.adaptCollection(taskService.getTasksOwned(userId, language));
     }
     
     @Override
-    public List<TaskSummary> getTasksOwned(String userId, List<String> status, String language) {
+    public List<TaskSummary> getTasksOwnedByStatus(String userId, List<String> status, String language) {
         List<Status> statuses = new ArrayList<Status>();
         for(String s : status){
           statuses.add(Status.valueOf(s));
         }
-        return TaskSummaryHelper.adaptCollection(taskService.getTasksOwned(userId, statuses, language));
+        return TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByStatus(userId, statuses, language));
     }
     
     @Override
@@ -145,7 +145,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         statuses.add(Status.InProgress);
         statuses.add(Status.Reserved);
         statuses.add(Status.Created);
-        List<TaskSummary> personalTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwned(userId, statuses, language));
+        List<TaskSummary> personalTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByStatus(userId, statuses, language));
         groupTasks.addAll(personalTasks);
         return groupTasks;
     }
@@ -339,7 +339,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
                 task.getTaskData().getExpirationTime(),
                 task.getTaskData().getProcessId(),
                 task.getTaskData().getProcessSessionId(),
-                task.getSubTaskStrategy().name(),
+                ((InternalTask) task).getSubTaskStrategy().name(),
                 (int) task.getTaskData().getParentId(),potOwnersString);
     }
     
@@ -447,7 +447,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
 
     public long addComment(long taskId, String text, String addedBy, Date addedOn) {
-        Comment comment = new CommentImpl();
+        InternalComment comment = new CommentImpl();
         comment.setText(text);
         comment.setAddedAt(addedOn);
         comment.setAddedBy(new UserImpl(addedBy));

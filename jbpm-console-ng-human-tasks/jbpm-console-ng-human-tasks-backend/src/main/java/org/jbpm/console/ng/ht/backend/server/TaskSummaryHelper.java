@@ -19,15 +19,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.kie.internal.task.api.model.InternalTaskSummary;
 
 /**
  *
 
  */
 public class TaskSummaryHelper {
-    public static List<TaskSummary> adaptCollection(List<org.kie.internal.task.api.model.TaskSummary> taskSums){
+    public static List<TaskSummary> adaptCollection(List<org.kie.api.task.model.TaskSummary> taskSums){
         List<TaskSummary> taskSummaries = new ArrayList<TaskSummary>(taskSums.size());
-        for(org.kie.internal.task.api.model.TaskSummary taskSum : taskSums){
+        for(org.kie.api.task.model.TaskSummary taskSum : taskSums){
             taskSummaries.add(new TaskSummary(taskSum.getId(), 
                                 taskSum.getProcessInstanceId(), 
                                 taskSum.getName(), 
@@ -43,8 +44,8 @@ public class TaskSummaryHelper {
                                 taskSum.getExpirationTime(), 
                                 taskSum.getProcessId(), 
                                 taskSum.getProcessSessionId(),
-                                taskSum.getSubTaskStrategy().name(),
-                                (int)taskSum.getParentId(), taskSum.getPotentialOwners()));
+                                ((InternalTaskSummary) taskSum).getSubTaskStrategy().name(),
+                                (int)((InternalTaskSummary) taskSum).getParentId(), taskSum.getPotentialOwners()));
         }
         return taskSummaries;
     }

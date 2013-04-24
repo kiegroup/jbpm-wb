@@ -19,12 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jbpm.console.ng.ht.model.CommentSummary;
-import org.kie.internal.task.api.model.Comment;
+import org.kie.api.task.model.Comment;
 
-/**
- *
- *
- */
 public class CommentSummaryHelper {
 
     public static List<CommentSummary> adaptCollection(List<Comment> comments) {

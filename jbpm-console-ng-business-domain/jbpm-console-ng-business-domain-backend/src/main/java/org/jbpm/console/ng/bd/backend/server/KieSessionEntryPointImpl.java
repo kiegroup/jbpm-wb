@@ -18,13 +18,12 @@ package org.jbpm.console.ng.bd.backend.server;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.droolsjbpm.services.api.DeploymentService;
-
 import org.droolsjbpm.services.api.RuntimeDataService;
 import org.droolsjbpm.services.impl.model.ProcessInstanceDesc;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -33,10 +32,10 @@ import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.backend.server.ProcessInstanceHelper;
 import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
-import org.kie.internal.runtime.manager.RuntimeManager;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 
 /**

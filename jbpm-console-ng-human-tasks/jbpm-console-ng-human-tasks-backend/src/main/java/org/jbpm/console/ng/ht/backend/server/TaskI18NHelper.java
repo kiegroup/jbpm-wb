@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jbpm.services.task.impl.model.I18NTextImpl;
-import org.kie.internal.task.api.model.I18NText;
+import org.kie.api.task.model.I18NText;
 
 /**
  *

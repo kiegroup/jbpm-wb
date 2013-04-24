@@ -109,7 +109,7 @@ public class InboxPersonalPresenter {
                 view.getSelectionModel().clear();
 
             }
-        }).getTasksOwned(identity.getName());
+        }).getTasksOwned(identity.getName(), "en-UK");
     }
 
     public void refreshPersonalTasks() {
@@ -127,7 +127,7 @@ public class InboxPersonalPresenter {
                 view.getSelectionModel().clear();
 
             }
-        }).getTasksOwned(identity.getName(), statuses, "en-UK");
+        }).getTasksOwnedByStatus(identity.getName(), statuses, "en-UK");
     }
 
     public void refreshGroupTasks() {
