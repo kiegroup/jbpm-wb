@@ -183,7 +183,7 @@ public class HomeViewImpl extends Composite
     monitorBAMAnchor.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        Window.open("http://localhost:8080/bam-app/", "_blank", "");
+        Window.open("http://localhost:8080/dashbuilder/workspace/jbpm-dashboard", "_blank", "");
       }
     });
 
