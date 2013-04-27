@@ -1,0 +1,10 @@
+usersGroups = [ new User( "Yoda" ) : [ new Group( "Star Wars" ), new Group( "Jedi Knights" ) ],
+                new User( "Obi-Wan Kenobi" ) : [ new Group( "Star Wars" ), new Group( "Jedi Knights" ) ],
+                new User( "Darth Vader" ) : [ new Group( "Star Wars" ), new Group( "Sith Lords" ) ],
+                new User( "Darth Maul" ) : [ new Group( "Star Wars" ), new Group( "Sith Lords" ) ],
+                new User( "Bobba Fet" ) : [ new Group( "Star Wars" ), new Group( "Bounty Hunters" ) ],
+                new User( "Jango Fet" ) : [ new Group( "Star Wars" ), new Group( "Bounty Hunters" ) ],
+                
+                new User('Administrator') : [new Group( "Admnistrators" )],
+              ];       
+return usersGroups;
