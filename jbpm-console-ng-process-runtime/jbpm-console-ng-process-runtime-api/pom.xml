@@ -35,7 +35,7 @@
         </dependency>
         <dependency>
           <groupId>org.jbpm</groupId>
-          <artifactId>droolsjbpm-knowledge-services</artifactId>
+          <artifactId>jbpm-kie-services</artifactId>
           <version>${project.version}</version>
         </dependency>
     </dependencies>

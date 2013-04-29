@@ -33,7 +33,7 @@
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>executor-services</artifactId>
+      <artifactId>jbpm-executor</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
