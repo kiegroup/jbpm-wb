@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import org.droolsjbpm.services.impl.model.ProcessInstanceDesc;
+import org.jbpm.kie.services.impl.model.ProcessInstanceDesc;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.workflow.instance.node.CompositeNodeInstance;
 import org.jbpm.workflow.instance.node.EventNodeInstance;

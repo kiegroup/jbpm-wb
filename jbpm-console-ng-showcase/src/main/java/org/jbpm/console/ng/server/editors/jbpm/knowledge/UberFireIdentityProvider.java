@@ -7,7 +7,7 @@ import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 
-import org.droolsjbpm.services.api.IdentityProvider;
+import org.jbpm.kie.services.api.IdentityProvider;
 import org.uberfire.security.Identity;
 import org.uberfire.security.Role;
 

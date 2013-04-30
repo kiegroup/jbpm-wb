@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import org.droolsjbpm.services.impl.model.NodeInstanceDesc;
+import org.jbpm.kie.services.impl.model.NodeInstanceDesc;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 
 /**

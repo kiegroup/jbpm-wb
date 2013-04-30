@@ -29,8 +29,8 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.droolsjbpm.services.api.DeploymentUnit;
-import org.droolsjbpm.services.impl.VFSDeploymentUnit;
+import org.jbpm.kie.services.api.DeploymentUnit;
+import org.jbpm.kie.services.impl.VFSDeploymentUnit;
 import org.jbpm.console.ng.pr.service.DeploymentManagerEntryPoint;
 import org.jbpm.console.ng.pr.service.Initializable;
 import org.kie.commons.java.nio.file.DirectoryStream;

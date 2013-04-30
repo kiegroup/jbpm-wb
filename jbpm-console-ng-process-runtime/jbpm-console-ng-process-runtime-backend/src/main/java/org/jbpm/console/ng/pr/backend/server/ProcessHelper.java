@@ -18,7 +18,7 @@ package org.jbpm.console.ng.pr.backend.server;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.droolsjbpm.services.impl.model.ProcessDesc;
+import org.jbpm.kie.services.impl.model.ProcessDesc;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 /**
  *

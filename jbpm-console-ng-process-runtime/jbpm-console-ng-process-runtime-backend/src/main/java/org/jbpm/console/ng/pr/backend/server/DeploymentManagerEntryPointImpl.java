@@ -12,8 +12,8 @@ import javax.naming.InitialContext;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-import org.droolsjbpm.services.api.DeploymentService;
-import org.droolsjbpm.services.api.DeploymentUnit;
+import org.jbpm.kie.services.api.DeploymentService;
+import org.jbpm.kie.services.api.DeploymentUnit;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.pr.service.DeploymentManagerEntryPoint;

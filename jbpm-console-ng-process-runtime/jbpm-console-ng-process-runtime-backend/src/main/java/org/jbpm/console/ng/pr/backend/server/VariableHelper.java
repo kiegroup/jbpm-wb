@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.droolsjbpm.services.impl.model.VariableStateDesc;
+import org.jbpm.kie.services.impl.model.VariableStateDesc;
 import org.jbpm.console.ng.pr.model.VariableSummary;
 
 /**
