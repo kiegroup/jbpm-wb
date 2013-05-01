@@ -276,19 +276,9 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     	Map<Day, List<TaskSummary>> tasksByDay = new LinkedHashMap<Day, List<TaskSummary>>();
     	List<Status> statuses = new ArrayList<Status>();
         for(String s : strStatuses){
-
-           System.out.println("Status "+s);
         	
            statuses.add(Status.valueOf(s));
         }
-        
-        System.out.println("userId "+userId);
-        System.out.println("strStatuses "+strStatuses);
-        System.out.println("from "+from);
-        System.out.println("nrOfDaysTotal "+nrOfDaysTotal);
-        System.out.println("taskName "+taskName);
-        
-        
         
         List<TaskSummary> firstDayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByExpirationDateOptionalByTaskName(userId, statuses, language, from, taskName));
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE dd");
