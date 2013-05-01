@@ -16,6 +16,7 @@
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
 import com.github.gwtbootstrap.client.ui.NavLink;
+import com.github.gwtbootstrap.client.ui.Button;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -28,8 +29,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import javax.enterprise.event.Observes;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
 import org.uberfire.security.Identity;
@@ -82,6 +85,12 @@ public class TasksListViewImpl extends Composite
     private TaskListMultiDayBox taskListMultiDayBox;
     @Inject
     private Event<NotificationEvent> notification;
+    @Inject
+    @DataField
+    public Button refreshTasksButton;
+    @Inject
+    @DataField
+    public TextBox searchText;
     
     private String currentView = "day";
 
@@ -274,4 +283,19 @@ public class TasksListViewImpl extends Composite
     public TaskListMultiDayBox getTaskListMultiDayBox() {
         return taskListMultiDayBox;
     }
+    
+	@EventHandler("refreshTasksButton")
+	public void refreshTasksButton(ClickEvent e) {
+		refreshTasks();
+	}
+
+	@Override
+	public String getSearchText() {
+		return this.searchText.getText();
+	}
+
+	@Override
+	public String getCurrentView() {
+		return this.currentView;
+	}
 }

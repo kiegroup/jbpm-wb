@@ -53,6 +53,10 @@ public class TasksListPresenter {
         TaskListMultiDayBox getTaskListMultiDayBox();
 
         void refreshTasks();
+        
+        String getSearchText();
+
+		String getCurrentView();
     }
     @Inject
     private TaskListView view;
@@ -99,7 +103,9 @@ public class TasksListPresenter {
                 }
                 view.getTaskListMultiDayBox().refresh();
             }
-        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(identity.getName(), groups, today, daysTotal, "en-UK");
+		}).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDaysByTaskName(
+						identity.getName(), groups, today, daysTotal, "en-UK",
+						view.getSearchText());
     
     }
     public void refreshWeekActiveTasks(){
@@ -116,7 +122,9 @@ public class TasksListPresenter {
                 }
                 view.getTaskListMultiDayBox().refresh();
             }
-        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(identity.getName(), groups, today, daysTotal, "en-UK");
+		}).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDaysByTaskName(
+						identity.getName(), groups, today, daysTotal, "en-UK",
+						view.getSearchText());
     }
     public void refreshMonthActiveTasks(){
         List<String> groups = getGroups(identity);
@@ -132,14 +140,16 @@ public class TasksListPresenter {
                 }
                 view.getTaskListMultiDayBox().refresh();
             }
-        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(identity.getName(), groups, today, daysTotal, "en-UK");
+		}).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDaysByTaskName(
+						identity.getName(), groups, today, daysTotal, "en-UK",
+						view.getSearchText());
     
     }
     
     public void refreshActiveTasks() {
         List<String> groups = getGroups(identity);
         Date today = new Date();
-        int nrOfDays = 5;
+        int nrOfDays = getCalculatedDaysFromCurrentView();
         taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
             @Override
             public void callback(Map<Day, List<TaskSummary>> tasks) {
@@ -150,20 +160,24 @@ public class TasksListPresenter {
                 }
                 view.getTaskListMultiDayBox().refresh();
             }
-        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(identity.getName(), groups, today, nrOfDays, "en-UK");
+				
+        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDaysByTaskName(
+						identity.getName(), groups, today, nrOfDays, "en-UK",
+						view.getSearchText());
     }
 
     public void refreshAllTasks() {
         Date today = new Date();
-        int daysTotal = 5;
-        List<String> statuses = new ArrayList<String>(4);
+        int daysTotal = getCalculatedDaysFromCurrentView();
+        List<String> statuses = new ArrayList<String>(7);
         statuses.add("Ready");
         statuses.add("InProgress");
         statuses.add("Created");
         statuses.add("Reserved");
         statuses.add("Completed");
-        statuses.add("Aborted");
+        //statuses.add("Aborted"); //FIXME Aborted isn't const on org.kie.api.task.model.Status
         statuses.add("Suspended");
+        
         taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
             @Override
             public void callback(Map<Day, List<TaskSummary>> tasks) {
@@ -176,12 +190,12 @@ public class TasksListPresenter {
 
 
             }
-        }).getTasksOwnedFromDateToDateByDays(identity.getName(), statuses, today, daysTotal, "en-UK");
+        }).getTasksOwnedFromDateToDateByDaysByTaskName(identity.getName(), statuses, today, daysTotal, "en-UK", view.getSearchText());
     }
 
     public void refreshPersonalTasks() {
         Date today = new Date();
-        int daysTotal = 5;
+		int daysTotal = getCalculatedDaysFromCurrentView();
         List<String> statuses = new ArrayList<String>(4);
         statuses.add("Ready");
         statuses.add("InProgress");
@@ -198,12 +212,12 @@ public class TasksListPresenter {
 
 
             }
-        }).getTasksOwnedFromDateToDateByDays(identity.getName(), statuses, today, daysTotal, "en-UK");
+        }).getTasksOwnedFromDateToDateByDaysByTaskName(identity.getName(), statuses, today, daysTotal, "en-UK", view.getSearchText());
     }
 
     public void refreshGroupTasks() {
         Date today = new Date();
-        int daysTotal = 5;
+		int daysTotal = getCalculatedDaysFromCurrentView();
         List<String> groups = getGroups(identity);
         taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
             @Override
@@ -216,7 +230,8 @@ public class TasksListPresenter {
 
 
             }
-        }).getTasksAssignedFromDateToDateByGroupsByDays(groups, today, daysTotal, "en-UK");
+		}).getTasksAssignedFromDateToDateByGroupsByDaysByTaskName(groups, today,
+				daysTotal, "en-UK", view.getSearchText());
     }
 
     public void startTasks(final List<Long> selectedTasks, final String userId) {
@@ -283,4 +298,35 @@ public class TasksListPresenter {
     public void formClosed(@Observes BeforeClosePlaceEvent closed) {
         view.refreshTasks();
     }
+
+	
+	/**
+	 * Return number of days in depends of selected view (day, week or moth ) 
+	 * @return
+	 */
+	private int getCalculatedDaysFromCurrentView() {
+		if (isCurrentViewDay()) {
+			return 3;
+		} else if (isCurrentViewWeek()) {
+			return 5;
+
+		} else if (isCurrentViewMoth()) {
+			return 21;
+		}
+		return 0;
+
+	}
+
+	private boolean isCurrentViewDay() {
+		return view.getCurrentView().equals("day");
+	}
+
+	private boolean isCurrentViewWeek() {
+		return view.getCurrentView().equals("week");
+	}
+
+	private boolean isCurrentViewMoth() {
+		return view.getCurrentView().equals("month");
+	}
+
 }
