@@ -25,7 +25,7 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.ht.model.TaskDefSummary;
-import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.jbpm.console.ng.pr.model.DummyProcessPath;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.OnReveal;
@@ -71,6 +71,8 @@ public class ProcessDefDetailsPresenter {
         TextBox getDomainIdText();
 
         void setProcessAssetPath(Path processAssetPath);
+
+        void setEncodedProcessSource(String encodedProcessSource);
     }
 
     @Inject
@@ -142,12 +144,17 @@ public class ProcessDefDetailsPresenter {
         dataServices.call(new RemoteCallback<ProcessSummary>() {
             @Override
             public void callback(ProcessSummary process) {
-                fileServices.call(new RemoteCallback<Path>() {
-                     @Override
-                     public void callback(Path processPath) {
-                         view.setProcessAssetPath(processPath);
-                     }
-                }).get(process.getOriginalPath());
+                view.setEncodedProcessSource(process.getEncodedProcessSource());
+                if (process.getOriginalPath() != null) {
+                    fileServices.call(new RemoteCallback<Path>() {
+                         @Override
+                         public void callback(Path processPath) {
+                             view.setProcessAssetPath(processPath);
+                         }
+                    }).get(process.getOriginalPath());
+                } else {
+                    view.setProcessAssetPath(new DummyProcessPath(process.getId()));
+                }
             }
         }).getProcessById(processId);
     }

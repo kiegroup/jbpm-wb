@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -29,17 +28,19 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.jbpm.kie.services.api.DeploymentUnit;
-import org.jbpm.kie.services.impl.VFSDeploymentUnit;
 import org.jbpm.console.ng.pr.service.DeploymentManagerEntryPoint;
 import org.jbpm.console.ng.pr.service.Initializable;
-import org.kie.commons.java.nio.file.DirectoryStream;
-import org.kie.commons.java.nio.file.Path;
-import org.kie.commons.services.cdi.Startup;
+import org.jbpm.kie.services.api.DeploymentService;
+import org.jbpm.kie.services.api.DeploymentUnit;
+import org.jbpm.kie.services.api.Vfs;
+import org.jbpm.kie.services.impl.KModuleDeploymentUnit;
+import org.jbpm.kie.services.impl.VFSDeploymentUnit;
 import org.kie.commons.io.IOService;
 import org.kie.commons.io.impl.IOServiceDotFileImpl;
-
+import org.kie.commons.java.nio.file.DirectoryStream;
 import org.kie.commons.java.nio.file.FileSystemAlreadyExistsException;
+import org.kie.commons.java.nio.file.Path;
+import org.kie.commons.services.cdi.Startup;
 import org.uberfire.backend.group.Group;
 import org.uberfire.backend.group.GroupService;
 import org.uberfire.backend.repositories.Repository;
@@ -67,6 +68,10 @@ public class AppSetup {
 
     @Inject
     private DeploymentManagerEntryPoint deploymentManager;
+
+    @Inject
+    @Vfs
+    private DeploymentService deploymentService;
 
     private Repository repository;
 
@@ -100,6 +105,7 @@ public class AppSetup {
     @Produces
     @RequestScoped
     public Set<DeploymentUnit> produceDeploymentUnits() {
+        Set<DeploymentUnit> deploymentUnits = new HashSet<DeploymentUnit>();
         Iterable<Path> assetDirectories = ioService.newDirectoryStream( ioService.get( repository.getUri() + "/processes" ), new DirectoryStream.Filter<Path>() {
             @Override
             public boolean accept( final Path entry ) {
@@ -109,7 +115,7 @@ public class AppSetup {
                 return false;
             }
         } );
-        Set<DeploymentUnit> deploymentUnits = new HashSet<DeploymentUnit>();
+
         for (Path p : assetDirectories) {
             String folder = p.toString();
             if (folder.startsWith("/")) {
@@ -117,7 +123,14 @@ public class AppSetup {
             }
             deploymentUnits.add(new VFSDeploymentUnit(p.getFileName().toString(), REPO_PLAYGROUND, folder));
         }
-
+//        DeploymentUnit deploymentUnit = new KModuleDeploymentUnit("org.jbpm.test", "test-module", "1.0.0-SNAPSHOT");
+//        deploymentUnits.add(deploymentUnit);
         return deploymentUnits;
+    }
+
+
+    @Produces
+    public DeploymentService getDeploymentService() {
+        return this.deploymentService;
     }
 }

@@ -2,22 +2,17 @@ package org.jbpm.console.ng.pr.backend.server;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.List;
 import java.util.Set;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.naming.InitialContext;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 
-import org.jbpm.kie.services.api.DeploymentService;
-import org.jbpm.kie.services.api.DeploymentUnit;
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.pr.service.DeploymentManagerEntryPoint;
 import org.jbpm.console.ng.pr.service.Initializable;
+import org.jbpm.kie.services.api.DeploymentService;
+import org.jbpm.kie.services.api.DeploymentUnit;
 
 @Service
 @ApplicationScoped
@@ -29,6 +24,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
     @Inject
     @RequestScoped
     private Set<DeploymentUnit> deploymentUnits;
+
 
     @Override
     public void initDeployments(Set<DeploymentUnit> deploymentUnits) {

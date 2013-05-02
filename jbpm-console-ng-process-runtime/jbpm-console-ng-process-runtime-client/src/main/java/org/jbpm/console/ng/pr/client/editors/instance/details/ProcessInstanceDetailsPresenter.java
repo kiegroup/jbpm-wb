@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.pr.model.DummyProcessPath;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
@@ -81,6 +82,8 @@ public class ProcessInstanceDetailsPresenter {
         void setCurrentActiveNodes(List<NodeInstanceSummary> activeNodes);
         
         void setCurrentCompletedNodes(List<NodeInstanceSummary> completedNodes);
+
+        void setEncodedProcessSource(String encodedProcessSource);
     }
 
     @Inject
@@ -188,14 +191,17 @@ public class ProcessInstanceDetailsPresenter {
         dataServices.call(new RemoteCallback<ProcessSummary>() {
             @Override
             public void callback(ProcessSummary process) {
-                
-                fileServices.call(new RemoteCallback<Path>() {
-                     @Override
-                     public void callback(Path processPath) {
-                         view.setProcessAssetPath(processPath);
-                     }
-                }).get(process.getOriginalPath());
-                
+                view.setEncodedProcessSource(process.getEncodedProcessSource());
+                if (process.getOriginalPath() != null) {
+                    fileServices.call(new RemoteCallback<Path>() {
+                        @Override
+                        public void callback(Path processPath) {
+                            view.setProcessAssetPath(processPath);
+                        }
+                    }).get(process.getOriginalPath());
+                } else {
+                    view.setProcessAssetPath(new DummyProcessPath(process.getId()));
+                }
             }
         }).getProcessById(processDefId);
     }

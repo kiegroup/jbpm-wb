@@ -31,11 +31,12 @@ public class ProcessSummary {
     private String version;
     private String originalPath;
     private String domainId;
+    private String encodedProcessSource;
 
     public ProcessSummary() {
     }
 
-    public ProcessSummary(String id, String name, String domainId, String packageName, String type, String version, String originalpath) {
+    public ProcessSummary(String id, String name, String domainId, String packageName, String type, String version, String originalpath, String processSource) {
         this.id = id;
         this.name = name;
         this.domainId = domainId;
@@ -43,6 +44,7 @@ public class ProcessSummary {
         this.type = type;
         this.version = version;
         this.originalPath = originalpath;
+        this.encodedProcessSource = processSource;
     }
 
   
@@ -101,7 +103,13 @@ public class ProcessSummary {
     public void setOriginalPath(String originalPath) {
         this.originalPath = originalPath;
     }
-    
-    
-    
+
+    public String getEncodedProcessSource() {
+        return encodedProcessSource;
+    }
+
+    public void setEncodedProcessSource(String encodedProcessSource) {
+        this.encodedProcessSource = encodedProcessSource;
+    }
+
 }

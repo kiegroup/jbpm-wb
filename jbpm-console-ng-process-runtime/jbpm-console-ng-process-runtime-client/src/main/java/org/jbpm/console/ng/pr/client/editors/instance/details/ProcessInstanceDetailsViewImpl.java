@@ -129,6 +129,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     private ShowcaseImages images = GWT.create(ShowcaseImages.class);
     private ProcessInstanceSummary processInstance;
     private Path processAssetPath;
+    private String encodedProcessSource;
     private List<NodeInstanceSummary> activeNodes;
     private List<NodeInstanceSummary> completedNodes;
     
@@ -187,7 +188,9 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         for (NodeInstanceSummary activeNode : activeNodes) {
             nodeParam.append(activeNode.getNodeUniqueName() + ",");
         }
-        nodeParam.deleteCharAt(nodeParam.length()-1);
+        if (nodeParam.length() > 0) {
+            nodeParam.deleteCharAt(nodeParam.length()-1);
+        }
         
         StringBuffer completedNodeParam = new StringBuffer();
         for (NodeInstanceSummary completedNode : completedNodes) {
@@ -207,6 +210,9 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         placeRequestImpl.addParameter("activeNodes", nodeParam.toString());
         placeRequestImpl.addParameter("completedNodes", completedNodeParam.toString());
         placeRequestImpl.addParameter("readOnly", "true");
+        if(encodedProcessSource != null) {
+            placeRequestImpl.addParameter("encodedProcessSource", encodedProcessSource);
+        }
         
         placeManager.goTo(processAssetPath, placeRequestImpl);
     }
@@ -465,5 +471,10 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     public void setCurrentCompletedNodes(List<NodeInstanceSummary> completedNodes) {
         this.completedNodes = completedNodes;
     }
-    
+
+    @Override
+    public void setEncodedProcessSource(String encodedProcessSource) {
+        this.encodedProcessSource = encodedProcessSource;
+    }
+
 }
