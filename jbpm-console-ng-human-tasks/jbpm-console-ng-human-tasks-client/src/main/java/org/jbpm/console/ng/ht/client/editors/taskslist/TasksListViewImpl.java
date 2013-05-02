@@ -15,27 +15,32 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
-import com.github.gwtbootstrap.client.ui.NavLink;
+import java.util.Date;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-
-
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import javax.enterprise.event.Observes;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.ht.client.util.CalendarPicker;
+import org.jbpm.console.ng.ht.client.util.DateRange;
+import org.jbpm.console.ng.ht.client.util.DateUtils;
 import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 import org.uberfire.security.Identity;
-
 import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
+
+import com.github.gwtbootstrap.client.ui.NavLink;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 @Dependent
 @Templated(value = "TasksListViewImpl.html")
@@ -45,43 +50,63 @@ public class TasksListViewImpl extends Composite
 
     @Inject
     private Identity identity;
+    
     @Inject
     private PlaceManager placeManager;
+    
     private TasksListPresenter presenter;
+    
     @Inject
     @DataField
     public NavLink dayViewTasksNavLink;
+    
     @Inject
     @DataField
     public NavLink advancedViewTasksNavLink;
+    
     @Inject
     @DataField
     public NavLink monthViewTasksNavLink;
+    
     @Inject
     @DataField
     public NavLink weekViewTasksNavLink;
+    
     @Inject
     @DataField
     public NavLink createQuickTaskNavLink;
+    
     @Inject
     @DataField
     public NavLink showAllTasksNavLink;
+    
     @Inject
     @DataField
     public NavLink showPersonalTasksNavLink;
+    
     @Inject
     @DataField
     public NavLink showGroupTasksNavLink;
+    
     @Inject
     @DataField
     public NavLink showActiveTasksNavLink;
+    
     @Inject
     @DataField
     public FlowPanel tasksViewContainer;
+    
+    @Inject
+    @DataField
+    private CalendarPicker calendarPicker;
+    
     @Inject
     private TaskListMultiDayBox taskListMultiDayBox;
+    
     @Inject
     private Event<NotificationEvent> notification;
+    
+    private Date currentDate;
     
     private String currentView = "day";
 
@@ -90,7 +115,16 @@ public class TasksListViewImpl extends Composite
         this.presenter = presenter;
         taskListMultiDayBox.init();
         taskListMultiDayBox.setPresenter(presenter);
-
+        calendarPicker.init();
+        currentDate = new Date();
+        calendarPicker.setViewType("day");
+        calendarPicker.addValueChangeHandler(new ValueChangeHandler<Date>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Date> event) {
+                currentDate = event.getValue();
+                refreshTasks();
+            }
+        });
         refreshDayTasks();
         // By Default we will start in Day View
         tasksViewContainer.setStyleName("day");
@@ -105,6 +139,7 @@ public class TasksListViewImpl extends Composite
                 monthViewTasksNavLink.setStyleName("");
                 advancedViewTasksNavLink.setStyleName("");
                 currentView = "day";
+                calendarPicker.setViewType("day");
                 refreshDayTasks();
             }
         });
@@ -118,6 +153,7 @@ public class TasksListViewImpl extends Composite
                 advancedViewTasksNavLink.setStyleName("");
                 weekViewTasksNavLink.setStyleName("active");
                 currentView = "week";
+                calendarPicker.setViewType("week");
                 refreshWeekTasks();
             }
         });
@@ -132,6 +168,7 @@ public class TasksListViewImpl extends Composite
                 weekViewTasksNavLink.setStyleName("");
                 monthViewTasksNavLink.setStyleName("active");
                 currentView = "month";
+                calendarPicker.setViewType("month");
                 refreshMonthTasks();
             }
         });
@@ -158,8 +195,6 @@ public class TasksListViewImpl extends Composite
             }
         });
 
-        
-
         // Filters
         showPersonalTasksNavLink.setText("Personal");
         showPersonalTasksNavLink.addClickHandler(new ClickHandler() {
@@ -169,7 +204,7 @@ public class TasksListViewImpl extends Composite
                 showGroupTasksNavLink.setStyleName("");
                 showActiveTasksNavLink.setStyleName("");
                 showAllTasksNavLink.setStyleName("");
-                presenter.refreshPersonalTasks();
+                presenter.refreshPersonalTasks(currentDate);
             }
         });
 
@@ -185,7 +220,6 @@ public class TasksListViewImpl extends Composite
             }
         });
 
-
         showActiveTasksNavLink.setText("Active");
         showActiveTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
@@ -194,7 +228,7 @@ public class TasksListViewImpl extends Composite
                 showPersonalTasksNavLink.setStyleName("");
                 showActiveTasksNavLink.setStyleName("active");
                 showAllTasksNavLink.setStyleName("");
-                presenter.refreshActiveTasks();
+                presenter.refreshActiveTasks(currentDate);
             }
         });
 
@@ -206,18 +240,16 @@ public class TasksListViewImpl extends Composite
                 showPersonalTasksNavLink.setStyleName("");
                 showActiveTasksNavLink.setStyleName("");
                 showAllTasksNavLink.setStyleName("active");
-                presenter.refreshAllTasks();
+                presenter.refreshAllTasks(currentDate);
             }
         });
-
-
     }
 
     public void recieveStatusChanged(@Observes UserTaskEvent event) {
         refreshTasks();
-
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
@@ -231,11 +263,10 @@ public class TasksListViewImpl extends Composite
         showPersonalTasksNavLink.setStyleName("");
         showActiveTasksNavLink.setStyleName("active");
         showAllTasksNavLink.setStyleName("");
-        presenter.refresh3DaysActiveTasks();
+        presenter.refresh3DaysActiveTasks(currentDate);
     }
     
-    public void refreshWeekTasks(){
-        
+    public void refreshWeekTasks() {
         monthViewTasksNavLink.setStyleName("");
         weekViewTasksNavLink.setStyleName("active");
         dayViewTasksNavLink.setStyleName("");
@@ -244,10 +275,11 @@ public class TasksListViewImpl extends Composite
         showPersonalTasksNavLink.setStyleName("");
         showActiveTasksNavLink.setStyleName("active");
         showAllTasksNavLink.setStyleName("");
-        presenter.refreshWeekActiveTasks();
+        DateRange weekRange = DateUtils.getWeekDateRange(currentDate);
+        presenter.refreshWeekActiveTasks(weekRange.getStartDate());
     }
     
-    public void refreshMonthTasks(){
+    public void refreshMonthTasks() {
         monthViewTasksNavLink.setStyleName("active");
         weekViewTasksNavLink.setStyleName("");
         dayViewTasksNavLink.setStyleName("");
@@ -256,9 +288,11 @@ public class TasksListViewImpl extends Composite
         showPersonalTasksNavLink.setStyleName("");
         showActiveTasksNavLink.setStyleName("active");
         showAllTasksNavLink.setStyleName("");
-        presenter.refreshMonthActiveTasks();
+        DateRange monthRange = DateUtils.getMonthDateRange(currentDate);
+        presenter.refreshMonthActiveTasks(monthRange.getStartDate());
     }
     
+    @Override
     public void refreshTasks() {
        if(currentView.equals("day")){
            refreshDayTasks();
@@ -267,10 +301,9 @@ public class TasksListViewImpl extends Composite
        }else if(currentView.equals("month")){
            refreshMonthTasks();
        }
-       
-        
     }
 
+    @Override
     public TaskListMultiDayBox getTaskListMultiDayBox() {
         return taskListMultiDayBox;
     }

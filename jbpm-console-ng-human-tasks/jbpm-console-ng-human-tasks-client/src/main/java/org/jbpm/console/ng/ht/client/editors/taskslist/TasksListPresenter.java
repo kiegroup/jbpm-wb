@@ -20,7 +20,6 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
@@ -43,6 +42,9 @@ import org.uberfire.security.Role;
 @Dependent
 @WorkbenchScreen(identifier = "Tasks List")
 public class TasksListPresenter {
+    public static final int DAYS_FOR_DAY_VIEW = 3;
+    public static final int DAYS_FOR_WEEK_VIEW = 5;
+    public static final int DAYS_FOR_MONTH_VIEW = 21;
 
     public interface TaskListView
             extends
@@ -77,6 +79,7 @@ public class TasksListPresenter {
     @PostConstruct
     public void init() {
     }
+    
     private List<String> getGroups(Identity identity){
         List<Role> roles = identity.getRoles();
         List<String> groups = new ArrayList<String>(roles.size());
@@ -85,10 +88,9 @@ public class TasksListPresenter {
         }
         return groups;
     }
-    public void refresh3DaysActiveTasks(){
+    
+    public void refresh3DaysActiveTasks(Date fromDate) {
         List<String> groups = getGroups(identity);
-        Date today = new Date();
-        int daysTotal = 3;
         taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
             @Override
             public void callback(Map<Day, List<TaskSummary>> tasks) {
@@ -99,13 +101,11 @@ public class TasksListPresenter {
                 }
                 view.getTaskListMultiDayBox().refresh();
             }
-        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(identity.getName(), groups, today, daysTotal, "en-UK");
+        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(identity.getName(), groups, fromDate, DAYS_FOR_DAY_VIEW, "en-UK");
     
     }
-    public void refreshWeekActiveTasks(){
+    public void refreshWeekActiveTasks(Date fromDate) {
         List<String> groups = getGroups(identity);
-        Date today = new Date();
-        int daysTotal = 5;
         taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
             @Override
             public void callback(Map<Day, List<TaskSummary>> tasks) {
@@ -116,12 +116,11 @@ public class TasksListPresenter {
                 }
                 view.getTaskListMultiDayBox().refresh();
             }
-        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(identity.getName(), groups, today, daysTotal, "en-UK");
+        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(identity.getName(), groups, fromDate, DAYS_FOR_WEEK_VIEW, "en-UK");
     }
-    public void refreshMonthActiveTasks(){
+    
+    public void refreshMonthActiveTasks(Date fromDate) {
         List<String> groups = getGroups(identity);
-        Date today = new Date();
-        int daysTotal = 21;
         taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
             @Override
             public void callback(Map<Day, List<TaskSummary>> tasks) {
@@ -132,13 +131,11 @@ public class TasksListPresenter {
                 }
                 view.getTaskListMultiDayBox().refresh();
             }
-        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(identity.getName(), groups, today, daysTotal, "en-UK");
-    
+        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(identity.getName(), groups, fromDate, DAYS_FOR_MONTH_VIEW, "en-UK");
     }
     
-    public void refreshActiveTasks() {
+    public void refreshActiveTasks(Date fromDate) {
         List<String> groups = getGroups(identity);
-        Date today = new Date();
         int nrOfDays = 5;
         taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
             @Override
@@ -150,11 +147,10 @@ public class TasksListPresenter {
                 }
                 view.getTaskListMultiDayBox().refresh();
             }
-        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(identity.getName(), groups, today, nrOfDays, "en-UK");
+        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(identity.getName(), groups, fromDate, nrOfDays, "en-UK");
     }
 
-    public void refreshAllTasks() {
-        Date today = new Date();
+    public void refreshAllTasks(Date fromDate) {
         int daysTotal = 5;
         List<String> statuses = new ArrayList<String>(4);
         statuses.add("Ready");
@@ -172,15 +168,11 @@ public class TasksListPresenter {
                     view.getTaskListMultiDayBox().addTasksByDay(day, tasks.get(day));
                 }
                 view.getTaskListMultiDayBox().refresh();
-
-
-
             }
-        }).getTasksOwnedFromDateToDateByDays(identity.getName(), statuses, today, daysTotal, "en-UK");
+        }).getTasksOwnedFromDateToDateByDays(identity.getName(), statuses, fromDate, daysTotal, "en-UK");
     }
 
-    public void refreshPersonalTasks() {
-        Date today = new Date();
+    public void refreshPersonalTasks(Date date) {
         int daysTotal = 5;
         List<String> statuses = new ArrayList<String>(4);
         statuses.add("Ready");
@@ -195,10 +187,8 @@ public class TasksListPresenter {
                     view.getTaskListMultiDayBox().addTasksByDay(day, tasks.get(day));
                 }
                 view.getTaskListMultiDayBox().refresh();
-
-
             }
-        }).getTasksOwnedFromDateToDateByDays(identity.getName(), statuses, today, daysTotal, "en-UK");
+        }).getTasksOwnedFromDateToDateByDays(identity.getName(), statuses, date, daysTotal, "en-UK");
     }
 
     public void refreshGroupTasks() {
@@ -213,8 +203,6 @@ public class TasksListPresenter {
                     view.getTaskListMultiDayBox().addTasksByDay(day, tasks.get(day));
                 }
                 view.getTaskListMultiDayBox().refresh();
-
-
             }
         }).getTasksAssignedFromDateToDateByGroupsByDays(groups, today, daysTotal, "en-UK");
     }
@@ -227,14 +215,9 @@ public class TasksListPresenter {
                 view.refreshTasks();
             }
         }).startBatch(selectedTasks, userId);
-
-
-
     }
 
     public void releaseTasks(List<Long> selectedTasks, final String userId) {
-
-
         taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback(List<TaskSummary> tasks) {
@@ -242,12 +225,9 @@ public class TasksListPresenter {
                 view.refreshTasks();
             }
         }).releaseBatch(selectedTasks, userId);
-
     }
 
     public void completeTasks(List<Long> selectedTasks, final String userId) {
-
-
         taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback(List<TaskSummary> tasks) {
@@ -255,13 +235,9 @@ public class TasksListPresenter {
                 view.refreshTasks();
             }
         }).completeBatch(selectedTasks, userId, null);
-
-
-
     }
 
     public void claimTasks(List<Long> selectedTasks, final String userId) {
-
         taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback(List<TaskSummary> tasks) {
@@ -270,9 +246,6 @@ public class TasksListPresenter {
 
             }
         }).claimBatch(selectedTasks, userId);
-
-
-
     }
 
     @OnReveal
