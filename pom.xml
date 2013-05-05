@@ -52,7 +52,8 @@
       </releases>
       <snapshots>
         <enabled>true</enabled>
-        <updatePolicy>daily</updatePolicy>
+        <updatePolicy>never</updatePolicy>
+        <!--updatePolicy>daily</updatePolicy-->
       </snapshots>
     </repository>
     <repository>

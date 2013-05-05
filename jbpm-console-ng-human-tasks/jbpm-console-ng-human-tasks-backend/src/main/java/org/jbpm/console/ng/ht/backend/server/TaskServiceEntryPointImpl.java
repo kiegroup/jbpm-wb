@@ -150,19 +150,6 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return groupTasks;
     }
     
-    @Override
-    public List<TaskSummary> getTasksAssignedPersonalAndGroupsTasksByTaskName(String userId, List<String> groupIds, String language, String taskName) {
-        List<TaskSummary> groupTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroups(groupIds, language));
-        List<Status> statuses = new ArrayList<Status>();
-        statuses.add(Status.Ready);
-        statuses.add(Status.InProgress);
-        statuses.add(Status.Reserved);
-        statuses.add(Status.Created);
-        List<TaskSummary> personalTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByStatusByTaskName(userId, statuses, language, taskName));
-        groupTasks.addAll(personalTasks);
-        return groupTasks;
-    }
-    
     
     @Override
     public Map<Day,List<TaskSummary>> getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(String userId, List<String> groupIds, Date from, Date to, String language) {
@@ -177,10 +164,10 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     
       
     @Override
-    public Map<Day,List<TaskSummary>> getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDaysByTaskName(String userId, List<String> groupIds, Date from, int nrOfDaysTotal, String language, String taskName) {
+    public Map<Day,List<TaskSummary>> getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDaysBySearchText(String userId, List<String> groupIds, Date from, int nrOfDaysTotal, String language, String taskName) {
            
-       	Map<Day, List<TaskSummary>> tasksAssignedByGroupsByDay = getTasksAssignedFromDateToDateByGroupsByDaysByTaskName(groupIds, from, nrOfDaysTotal, language, taskName);
-        Map<Day, List<TaskSummary>> tasksOwnedByDay = getTasksOwnedFromDateToDateByDaysByTaskName(userId, from, nrOfDaysTotal, language, taskName);
+       	Map<Day, List<TaskSummary>> tasksAssignedByGroupsByDay = getTasksAssignedFromDateToDateByGroupsByDaysBySearchText(groupIds, from, nrOfDaysTotal, language, taskName);
+        Map<Day, List<TaskSummary>> tasksOwnedByDay = getTasksOwnedFromDateToDateByDaysBySearchText(userId, from, nrOfDaysTotal, language, taskName);
         for(Day day : tasksOwnedByDay.keySet()) {
             tasksOwnedByDay.get(day).addAll(tasksAssignedByGroupsByDay.get(day));
         }
@@ -214,16 +201,16 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     
     
       @Override
-    public Map<Day,List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDaysByTaskName(List<String> groupIds, Date from, int nrOfDaysTotal, String language, String taskName) {
+    public Map<Day,List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDaysBySearchText(List<String> groupIds, Date from, int nrOfDaysTotal, String language, String taskName) {
        
     
     	Map<Day, List<TaskSummary>> tasksByDay = new LinkedHashMap<Day, List<TaskSummary>>();
-        List<TaskSummary> firstDayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroupsByExpirationDateOptionalByTaskName(groupIds, language, from, taskName));
+        List<TaskSummary> firstDayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroupsByExpirationDateOptionalBySearchText(groupIds, language, from, taskName));
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE dd");
         tasksByDay.put(new Day(from, dayFormat.format(from)), firstDayTasks);
         for (int i = 1; i < nrOfDaysTotal; i++) {
             Date currentDay = new Date(from.getTime() + i * DateTimeConstants.MILLIS_PER_DAY);
-            List<TaskSummary> dayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroupsByExpirationDateByTaskName(groupIds, language, currentDay, taskName));
+            List<TaskSummary> dayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroupsByExpirationDateBySearchText(groupIds, language, currentDay, taskName));
             tasksByDay.put(new Day(currentDay, dayFormat.format(currentDay)), dayTasks);
         }
         return tasksByDay;
@@ -258,20 +245,20 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     
     
     @Override
-    public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDaysByTaskName(String userId, Date from, int nrOfDaysTotal, String language, String taskName) {
+    public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDaysBySearchText(String userId, Date from, int nrOfDaysTotal, String language, String searchText) {
        
         List<String> strStatuses = new ArrayList<String>();
         strStatuses.add(Status.InProgress.name());
         strStatuses.add(Status.Reserved.name());
         strStatuses.add(Status.Created.name());
         
-        return getTasksOwnedFromDateToDateByDaysByTaskName(userId, strStatuses, from, nrOfDaysTotal, language, taskName);
+        return getTasksOwnedFromDateToDateByDaysBySearchText(userId, strStatuses, from, nrOfDaysTotal, language, searchText);
         
        
     }
     
     @Override
-    public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDaysByTaskName(String userId, List<String> strStatuses, Date from, int nrOfDaysTotal, String language, String taskName) {
+    public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDaysBySearchText(String userId, List<String> strStatuses, Date from, int nrOfDaysTotal, String language, String searchText) {
 
     	Map<Day, List<TaskSummary>> tasksByDay = new LinkedHashMap<Day, List<TaskSummary>>();
     	List<Status> statuses = new ArrayList<Status>();
@@ -280,13 +267,13 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
            statuses.add(Status.valueOf(s));
         }
         
-        List<TaskSummary> firstDayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByExpirationDateOptionalByTaskName(userId, statuses, language, from, taskName));
+        List<TaskSummary> firstDayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByExpirationDateOptionalBySearchText(userId, statuses, language, from, searchText));
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE dd");
         tasksByDay.put(new Day(from, dayFormat.format(from)), firstDayTasks);
     
         for (int i = 1; i < nrOfDaysTotal; i++) {
             Date currentDay = new Date(from.getTime() + i * DateTimeConstants.MILLIS_PER_DAY);
-            List<TaskSummary> dayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByExpirationDateByTaskName(userId, statuses, language, currentDay, taskName));
+            List<TaskSummary> dayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByExpirationDateBySearchText(userId, statuses, language, currentDay, searchText));
             
             tasksByDay.put(new Day(currentDay, dayFormat.format(currentDay)), dayTasks);
         }

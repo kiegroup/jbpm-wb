@@ -62,11 +62,11 @@ public interface TaskServiceEntryPoint {
      * @param from  start day
      * @param nrOfDaysTotal how many days to return including start date
      * @param language
-     * @param taskName name of task
+     * @param searchText
      * 
      * @return list of tasks per day for specified days (dates)
      */
-    Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDaysByTaskName(String userId, Date from, int nrOfDaysTotal, String language, String taskName);
+    Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDaysBySearchText(String userId, Date from, int nrOfDaysTotal, String language, String searchText);
     
     /**
      * Gets the mapping '{@link Day} -> list of owned tasks' starting from specified day and for specified number of days.
@@ -116,11 +116,11 @@ public interface TaskServiceEntryPoint {
      * @param from  start day
      * @param nrOfDaysTotal how many days to return including start date
      * @param language
-     * @param taskName
+     * @param searchText
      * 
      * @return list of tasks per day for specified days (dates)
      */
-    Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDaysByTaskName(String userId, List<String> strStatuses, Date from, int nrOfDaysTotal, String language, String taskName);
+    Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDaysBySearchText(String userId, List<String> strStatuses, Date from, int nrOfDaysTotal, String language, String searchText);
     
     /**
      * Gets the mapping '{@link Day} -> list of assigned personal and groups tasks' from start day to end day (including).
@@ -147,11 +147,11 @@ public interface TaskServiceEntryPoint {
      * @param from  start day
      * @param nrOfDaysTotal how many days to return including start date
      * @param language
-     * @param taskName name of task
+     * @param searchText 
      * 
      * @return list of tasks per day for specified days (dates)
      */
-    Map<Day,List<TaskSummary>> getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDaysByTaskName(String userId, List<String> groupIds, Date from,int nrOfDaysTotal, String language, String taskName);
+    Map<Day,List<TaskSummary>> getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDaysBySearchText(String userId, List<String> groupIds, Date from,int nrOfDaysTotal, String language, String searchText);
     
     
     /**
@@ -190,11 +190,11 @@ public interface TaskServiceEntryPoint {
      * @param from start day
      * @param nrOfDaysTotal how many days to return including start date
      * @param language
-     * @param taskName name of task
+     * @param searchText
      * 
      * @return list of tasks per day for specified days (dates)
      */
-    Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDaysByTaskName(List<String> groupIds, Date from,  int nrOfDaysTotal, String language, String taskName);
+    Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDaysBySearchText(List<String> groupIds, Date from,  int nrOfDaysTotal, String language, String searchText);
     
     /**
      * Gets the mapping '{@link Day} -> list of assigned groups tasks' starting from specified day and for specified number of days.
@@ -276,7 +276,6 @@ public interface TaskServiceEntryPoint {
     
     List<TaskSummary> getTasksAssignedPersonalAndGroupsTasks(String userId, List<String> groupIds, String language);
 
-    List<TaskSummary> getTasksAssignedPersonalAndGroupsTasksByTaskName(String userId, List<String> groupIds, String language, String taskName);
     
     IdentitySummary getOrganizationalEntityById(String entityId);
     

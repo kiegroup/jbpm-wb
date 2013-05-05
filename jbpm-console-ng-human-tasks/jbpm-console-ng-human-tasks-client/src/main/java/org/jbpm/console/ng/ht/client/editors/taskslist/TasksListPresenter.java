@@ -103,7 +103,7 @@ public class TasksListPresenter {
                 }
                 view.getTaskListMultiDayBox().refresh();
             }
-		}).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDaysByTaskName(
+		}).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDaysBySearchText(
 						identity.getName(), groups, today, daysTotal, "en-UK",
 						view.getSearchText());
     
@@ -122,7 +122,7 @@ public class TasksListPresenter {
                 }
                 view.getTaskListMultiDayBox().refresh();
             }
-		}).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDaysByTaskName(
+		}).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDaysBySearchText(
 						identity.getName(), groups, today, daysTotal, "en-UK",
 						view.getSearchText());
     }
@@ -140,7 +140,7 @@ public class TasksListPresenter {
                 }
                 view.getTaskListMultiDayBox().refresh();
             }
-		}).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDaysByTaskName(
+		}).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDaysBySearchText(
 						identity.getName(), groups, today, daysTotal, "en-UK",
 						view.getSearchText());
     
@@ -161,7 +161,7 @@ public class TasksListPresenter {
                 view.getTaskListMultiDayBox().refresh();
             }
 				
-        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDaysByTaskName(
+        }).getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDaysBySearchText(
 						identity.getName(), groups, today, nrOfDays, "en-UK",
 						view.getSearchText());
     }
@@ -190,7 +190,7 @@ public class TasksListPresenter {
 
 
             }
-        }).getTasksOwnedFromDateToDateByDaysByTaskName(identity.getName(), statuses, today, daysTotal, "en-UK", view.getSearchText());
+        }).getTasksOwnedFromDateToDateByDaysBySearchText(identity.getName(), statuses, today, daysTotal, "en-UK", view.getSearchText());
     }
 
     public void refreshPersonalTasks() {
@@ -212,7 +212,7 @@ public class TasksListPresenter {
 
 
             }
-        }).getTasksOwnedFromDateToDateByDaysByTaskName(identity.getName(), statuses, today, daysTotal, "en-UK", view.getSearchText());
+        }).getTasksOwnedFromDateToDateByDaysBySearchText(identity.getName(), statuses, today, daysTotal, "en-UK", view.getSearchText());
     }
 
     public void refreshGroupTasks() {
@@ -230,7 +230,7 @@ public class TasksListPresenter {
 
 
             }
-		}).getTasksAssignedFromDateToDateByGroupsByDaysByTaskName(groups, today,
+		}).getTasksAssignedFromDateToDateByGroupsByDaysBySearchText(groups, today,
 				daysTotal, "en-UK", view.getSearchText());
     }
 
