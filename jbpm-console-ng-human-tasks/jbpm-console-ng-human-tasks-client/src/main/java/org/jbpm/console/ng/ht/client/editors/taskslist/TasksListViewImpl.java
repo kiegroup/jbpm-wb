@@ -15,7 +15,9 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
+import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
+import com.google.gwt.core.client.GWT;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -31,6 +33,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import javax.enterprise.event.Observes;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.ht.client.i8n.Constants;
 import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
 import org.uberfire.security.Identity;
 
@@ -77,6 +80,14 @@ public class TasksListViewImpl extends Composite
     public NavLink showActiveTasksNavLink;
     @Inject
     @DataField
+    public Label taskCalendarViewLabel;
+    
+    @Inject
+    @DataField 
+    public Label filtersLabel;
+    
+    @Inject
+    @DataField
     public FlowPanel tasksViewContainer;
     @Inject
     private TaskListMultiDayBox taskListMultiDayBox;
@@ -84,6 +95,8 @@ public class TasksListViewImpl extends Composite
     private Event<NotificationEvent> notification;
     
     private String currentView = "day";
+    
+    private Constants constants = GWT.create(Constants.class);
 
     @Override
     public void init(final TasksListPresenter presenter) {
@@ -95,7 +108,7 @@ public class TasksListViewImpl extends Composite
         // By Default we will start in Day View
         tasksViewContainer.setStyleName("day");
         tasksViewContainer.add(taskListMultiDayBox);
-        dayViewTasksNavLink.setText("Day");
+        dayViewTasksNavLink.setText(constants.Day());
         dayViewTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -108,7 +121,7 @@ public class TasksListViewImpl extends Composite
                 refreshDayTasks();
             }
         });
-        weekViewTasksNavLink.setText("Week");
+        weekViewTasksNavLink.setText(constants.Week());
         weekViewTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -122,7 +135,7 @@ public class TasksListViewImpl extends Composite
             }
         });
 
-        monthViewTasksNavLink.setText("Month");
+        monthViewTasksNavLink.setText(constants.Month());
         monthViewTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -136,7 +149,7 @@ public class TasksListViewImpl extends Composite
             }
         });
 
-        advancedViewTasksNavLink.setText("Advanced");
+        advancedViewTasksNavLink.setText(constants.Advanced());
         advancedViewTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -149,7 +162,7 @@ public class TasksListViewImpl extends Composite
             }
         });
 
-        createQuickTaskNavLink.setText("New Task");
+        createQuickTaskNavLink.setText(constants.New_Task());
         createQuickTaskNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -161,7 +174,7 @@ public class TasksListViewImpl extends Composite
         
 
         // Filters
-        showPersonalTasksNavLink.setText("Personal");
+        showPersonalTasksNavLink.setText(constants.Personal());
         showPersonalTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -173,7 +186,7 @@ public class TasksListViewImpl extends Composite
             }
         });
 
-        showGroupTasksNavLink.setText("Group");
+        showGroupTasksNavLink.setText(constants.Group());
         showGroupTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -186,7 +199,7 @@ public class TasksListViewImpl extends Composite
         });
 
 
-        showActiveTasksNavLink.setText("Active");
+        showActiveTasksNavLink.setText(constants.Active());
         showActiveTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -198,7 +211,7 @@ public class TasksListViewImpl extends Composite
             }
         });
 
-        showAllTasksNavLink.setText("All");
+        showAllTasksNavLink.setText(constants.All());
         showAllTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -210,7 +223,10 @@ public class TasksListViewImpl extends Composite
             }
         });
 
-
+        taskCalendarViewLabel.setText(constants.Tasks_List_Calendar_View());
+        taskCalendarViewLabel.setStyleName("");
+        
+        filtersLabel.setText(constants.Filters());
     }
 
     public void recieveStatusChanged(@Observes UserTaskEvent event) {

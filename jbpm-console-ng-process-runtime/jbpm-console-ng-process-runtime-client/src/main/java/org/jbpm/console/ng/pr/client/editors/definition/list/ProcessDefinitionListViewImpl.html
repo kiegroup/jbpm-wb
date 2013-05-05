@@ -1,7 +1,11 @@
 <div class="container-fluid">
-  <br/>
   <div class="row-fluid">
-      <div class="navbar" id="task-nav">
+      <div> <h4 style="display:inline"><div style="display:inline" data-field="processDefinitionsLabel"></div></h4>
+            <ul style="display:inline" class="nav">
+                <li style="display:inline"><a title="Refresh" class="icon-jbpm-refresh" data-field="refreshIcon" href="#"><i></i></a></li>
+            </ul>
+        </div>
+      <div class="navbar navbar-static-top"  id="processdef-nav">
             <div class="navbar-inner">
                 <div class="container">
                     <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse.filters" >
@@ -11,11 +15,6 @@
                     </a>
                     <div class="nav-collapse filters collapse">
                         <div class="row-fluid">
-                            <a class="brand" href="#">Actions</a>
-                            <ul class="nav">
-                                <li data-field="reloadRepoButton"></li>
-                            </ul>
-                           
                             <form action="#" class="navbar-form pull-right">
                                 <input type="text" class="search-query" data-field="filterKSessionText"  placeholder="filter">
                                 <button class="btn" id="filterKSessionButton" data-field="filterKSessionButton">Filter</button>
@@ -34,7 +33,7 @@
 
       </table>
 
-      <div id="pager" class="pagination" data-field="pager"></div>
+      <div id="pager" class="pagination pagination-right pull-right" data-field="pager"></div>
     </div>
   </div>
 </div>

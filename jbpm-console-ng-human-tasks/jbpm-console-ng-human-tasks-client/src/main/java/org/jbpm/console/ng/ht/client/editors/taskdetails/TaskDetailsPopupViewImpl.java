@@ -15,6 +15,8 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskdetails;
 
+import com.github.gwtbootstrap.client.ui.ControlLabel;
+import com.github.gwtbootstrap.client.ui.Label;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -27,13 +29,16 @@ import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.HTMLPanel;
+
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+import org.jbpm.console.ng.ht.client.i8n.Constants;
 
 @Dependent
 @Templated(value = "TaskDetailsPopupViewImpl.html")
@@ -66,9 +71,14 @@ public class TaskDetailsPopupViewImpl extends Composite
     @Inject
     @DataField
     public ListBox taskPriorityListBox;
+//    @Inject
+//    @DataField
+//    public ListBox subTaskStrategyListBox;
+    
     @Inject
     @DataField
-    public ListBox subTaskStrategyListBox;
+    public Label processContextLabel;
+    
     @Inject
     @DataField
     public DateTimeBox dueDate;
@@ -78,9 +88,46 @@ public class TaskDetailsPopupViewImpl extends Composite
     @Inject
     @DataField
     public Button pIDetailsButton;
+    
+    @Inject
+    @DataField
+    public ControlLabel taskStatusLabel;
+    
+    @Inject
+    @DataField
+    public ControlLabel userLabel;
+    
+    @Inject
+    @DataField
+    public ControlLabel dueDateLabel;
+    
+    @Inject
+    @DataField
+    public ControlLabel taskPriorityLabel;
+    
+    @Inject
+    @DataField
+    public ControlLabel processInstanceIdLabel;
+    
+    @Inject
+    @DataField
+    public ControlLabel processIdLabel;
+    
+    @Inject
+    @DataField
+    public ControlLabel pIDetailsLabel;
+    
+    @Inject
+    @DataField
+    public ControlLabel taskDescriptionLabel;
+    
+    @Inject
+    @DataField
+    public ControlLabel descriptionAccordionLabel;
+    
     @Inject
     private PlaceManager placeManager;
-    private String[] subTaskStrategies = {"NoAction", "EndParentOnAllSubTasksEnd", "SkipAllSubTasksOnParentSkip"};
+    
     private String[] priorities = {"0 - High", "1", "2", "3", "4", "5 - Medium", "6", "7", "8", "9", "10 - Low"};
     
     @Inject
@@ -89,24 +136,40 @@ public class TaskDetailsPopupViewImpl extends Composite
     
     @Inject
     private Event<NotificationEvent> notification;
-    
+    // Commented out until we add the posibility of adding sub tasks
+    //private String[] subTaskStrategies = {"NoAction", "EndParentOnAllSubTasksEnd", "SkipAllSubTasksOnParentSkip"};
 
+    private Constants constants = GWT.create(Constants.class);
+    
     @Override
     public void init(TaskDetailsPopupPresenter presenter) {
         this.presenter = presenter;
 
-
-        for (String strategy : subTaskStrategies) {
-            subTaskStrategyListBox.addItem(strategy);
-
-        }
+        // Commented out until we add the posibility of adding sub tasks
+//        for (String strategy : subTaskStrategies) {
+//            subTaskStrategyListBox.addItem(strategy);
+//
+//        }
 
         for (String priority : priorities) {
             taskPriorityListBox.addItem(priority);
 
         }
-
-
+        
+        taskStatusLabel.add(new HTMLPanel(constants.Status()));
+        userLabel.add(new HTMLPanel(constants.User()));
+        dueDateLabel.add(new HTMLPanel(constants.Due_On()));
+        taskPriorityLabel.add(new HTMLPanel(constants.Priority()));
+        
+        processInstanceIdLabel.add(new HTMLPanel(constants.Process_Instance_Id()));
+        processIdLabel.add(new HTMLPanel(constants.Process_Definition_Id()));
+        pIDetailsLabel.add(new HTMLPanel(constants.Process_Instance_Details()));
+        taskDescriptionLabel.add(new HTMLPanel(constants.Description()));
+        descriptionAccordionLabel.add(new HTMLPanel(constants.Description()));
+        processContextLabel.setText(constants.Process_Context());
+        processContextLabel.setStyleName("");
+        pIDetailsButton.setText(constants.Process_Instance_Details());
+        updateTaskButton.setText(constants.Update());
     }
 
 
@@ -114,7 +177,7 @@ public class TaskDetailsPopupViewImpl extends Composite
     public void updateTaskButton(ClickEvent e) {
         presenter.updateTask(Long.parseLong(taskIdText.getText()), taskNameText.getText(),
                 taskDescriptionTextArea.getText(), userText.getText(),
-                subTaskStrategyListBox.getItemText(subTaskStrategyListBox.getSelectedIndex()),
+               // subTaskStrategyListBox.getItemText(subTaskStrategyListBox.getSelectedIndex()),
                 dueDate.getValue(),
                 taskPriorityListBox.getSelectedIndex());
 
@@ -149,18 +212,19 @@ public class TaskDetailsPopupViewImpl extends Composite
     public DateTimeBox getDueDate() {
         return dueDate;
     }
-
-    public ListBox getSubTaskStrategyListBox() {
-        return subTaskStrategyListBox;
-    }
+// Commented out until we add the posibility of adding sub tasks
+//    public ListBox getSubTaskStrategyListBox() {
+//        return subTaskStrategyListBox;
+//    }
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
 
-    public String[] getSubTaskStrategies() {
-        return subTaskStrategies;
-    }
+    // Commented out until we add the posibility of adding sub tasks
+//    public String[] getSubTaskStrategies() {
+//        return subTaskStrategies;
+//    }
 
     public String[] getPriorities() {
         return priorities;

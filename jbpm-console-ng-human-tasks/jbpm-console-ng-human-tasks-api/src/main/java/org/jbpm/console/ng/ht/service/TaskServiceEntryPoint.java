@@ -226,6 +226,8 @@ public interface TaskServiceEntryPoint {
 
     CommentSummary getCommentById(long commentId);
     
-    void updateSimpleTaskDetails(long taskId, List<String> taskNames, int priority, List<String> taskDescription, String subTaskStrategy, Date dueDate);
+    void updateSimpleTaskDetails(long taskId, List<String> taskNames, int priority, List<String> taskDescription, 
+                //String subTaskStrategy, 
+                Date dueDate);
     
 }

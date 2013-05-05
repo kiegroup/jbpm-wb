@@ -466,12 +466,14 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return CommentSummaryHelper.adapt(taskService.getCommentById(commentId));
     }
 
-    public void updateSimpleTaskDetails(long taskId, List<String> taskNames, int priority, List<String> taskDescription, String subTaskStrategy, Date dueDate) {
+    public void updateSimpleTaskDetails(long taskId, List<String> taskNames, int priority, List<String> taskDescription, 
+            //String subTaskStrategy, 
+            Date dueDate) {
         //TODO: update only the changed bits
         setPriority(taskId, priority);
         setTaskNames(taskId, taskNames);
         setDescriptions(taskId, taskDescription);
-        setSubTaskStrategy(taskId, subTaskStrategy);
+      //  setSubTaskStrategy(taskId, subTaskStrategy);
         setExpirationDate(taskId, dueDate);
     }
 

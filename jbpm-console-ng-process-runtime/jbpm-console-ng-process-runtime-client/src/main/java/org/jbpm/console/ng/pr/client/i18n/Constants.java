@@ -33,122 +33,138 @@ public interface Constants
 
     Constants INSTANCE = GWT.create(Constants.class);
 
-    String SignOut();
-
-    String WelcomeUser();
-
-    String There_is_no_variable_information_to_show();
-
-    String Variable();
-
-    String Value();
-
-    String Last_Time_Changed();
-
-    String View_History ();
-
-    String Variable_History_Perspective ();
-
-    String Show_me_my_pending_Tasks ();
-
-    String I_want_to_start_a_new_Process ();
-
-    String I_want_to_design_a_new_Process_Model ();
-
-    String I_want_to_design_a_new_Form();
-
-    String I_want_to_create_a_Task();
-
-    String Show_me_all_the_pending_tasks_in_my_Group();
-
-    String Show_me_my_Inbox();
-
-    String Hooray_you_don_t_have_any_pending_Task__ ();
-
-    String Id();
-
-    String Task();
-
-    String Status();
-
-    String Due_On();
-
-    String Details();
-
-    String Request_Details_Perspective_Errai();
-
-    String No_KBases_Available();
-
-    String Please_Select_at_least_one_Task_to_Execute_a_Quick_Action();
-
-    String Priority();
-
-
-    String No_Parent();
-
-    String Parent();
-
-    String Edit();
-
-    String Task_Edit_Perspective();
-
-    String Work ();
-
-    String Form_Perspective ();
-
     String No_Process_Definitions_Available ();
-
-    String Name ();
-
-    String Package ();
-
-    String Type ();
-
-    String Version ();
-
-    String Start_Process ();
-
-    String Actions ();
-
+    
+    String Reload_Repository();
+    
+    String Name();
+    
+    String Version();
+    
+    String Details();
+    
+    String Actions();
+    
+    String Start();
+    
+    String Signal();
+    
+    String Abort();
+    
+    String Start_Date();
+    
+    String State();
+    
+    String Unknown();
+    
+    String Active();
+    
+    String Aborted();
+    
+    String Completed();
+    
+    String Pending();
+    
+    String Suspended();
+    
+    String Initiator();
+    
+    String Process_Instances_Refreshed();
+    
+    String No_Process_Instances_Available();
+    
+    String Aborting_Process_Instance_Not_Allowed();
+    
+    String Aborting_Process_Instance();
+    
+    String Signaling_Process_Instance();
+    
+    String Signaling_Process_Instance_Not_Allowed();
+ 
+    String Bulk_Signal();
+    
+    String Related_To_Me();
+    
+    String Showing();
+    
+    String Filter();
+    
+    String Process_Instances();
+    
+    String Variable_History();
+    
+    String Edit_Variable();
+    
+    String Last_Modification();
+    
+    String Value();
+    
+    String Type();
+    
+    String No_Variables_Available();
+    
+    String Refresh();
+    
+    String View_Process_Instances();
+    
+    String New_Process_Instance();
+    
+    String View_Process_Model();
+    
+    String Process_Definition_Name();
+    
+    String Human_Tasks_Count();
+    
+    String Domain_Name();
+    
+    String Human_Tasks();
+    
+    String User_And_Groups();
+    
+    String SubProcesses();
+    
+    String Process_Variables();
+    
     String Process_Definition_Details();
-
-    String No_Process_Instances_Available ();
-
-    String Aborting_Process_Instance ();
-
-    String Signaling_Process_Instance ();
-
-    String Process_Id ();
-
-    String Process_Name ();
     
-    String Process_Version ();
-
-    String State ();
+    String Process_Definition_Details_Refreshed();
     
-    String Process_Instance_Start_Time();
+    String Previous_Value();
+    
+    String No_History_For_This_Variable();
 
+    String Process_Definitions();
+    
     String Process_Instance_Details();
 
-    String Hooray_you_don_t_have_any_Group_Task_to_Claim__();
+    String Process_Instance_ID();
 
-    String Task_Id ();
+    String Process_Definition_Package();
 
-    String Task_Name ();
+    String Process_Definition_Version();
 
-    String Actual_Owner ();
+    String Process_Instance_State();
 
-    String Description ();
+    String Current_Activities();
 
-    String Completed ();
+    String Process_Instance_Log();
+    
+    String Process_Instances_Details_Refreshed();
 
-    String Pending ();
+    String Clear();
 
-    String Personal_Task_Statistics ();
+    String Save();
 
-    String Aborting_Process_Instance_Not_Allowed();
+    String Variables_Name();
 
-    String Signaling_Process_Instance_Not_Allowed();
+    String Variable_Value();
 
-    String Old_Value();
+    String Variables_History();
+
+    String Signalling_Process_Instance();
+
+    String Event();
+
+    String Signal_Ref();
+    
 }

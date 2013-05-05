@@ -20,6 +20,7 @@ import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,7 +64,7 @@ import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.client.resources.ShowcaseImages;
+import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
 
@@ -86,7 +87,7 @@ public class ProcessDefinitionListViewImpl extends Composite
     public Button filterKSessionButton;
     @Inject
     @DataField
-    public NavLink reloadRepoButton;
+    public IconAnchor refreshIcon;
     @Inject
     @DataField
     public DataGrid<ProcessSummary> processdefListGrid;
@@ -96,7 +97,13 @@ public class ProcessDefinitionListViewImpl extends Composite
     @Inject
     @DataField
     public SimplePager pager;
+    
+    @Inject
+    @DataField
+    public Label processDefinitionsLabel;
+    
     private Set<ProcessSummary> selectedProcessDef;
+    
     @Inject
     private Event<NotificationEvent> notification;
     @Inject
@@ -104,15 +111,16 @@ public class ProcessDefinitionListViewImpl extends Composite
     private ListHandler<ProcessSummary> sortHandler;
     
     private Constants constants = GWT.create(Constants.class);
-    private ShowcaseImages images = GWT.create(ShowcaseImages.class);
+    private ProcessRuntimeImages images = GWT.create(ProcessRuntimeImages.class);
 
     @Override
     public void init(final ProcessDefinitionListPresenter presenter) {
         this.presenter = presenter;
 
-       
-        reloadRepoButton.setText("Reload Repository");
-        reloadRepoButton.addClickHandler(new ClickHandler() {
+        processDefinitionsLabel.setText(constants.Process_Definitions());
+        processDefinitionsLabel.setStyleName("");
+        refreshIcon.setTitle(constants.Reload_Repository());
+        refreshIcon.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                  presenter.reloadRepository();
@@ -123,9 +131,10 @@ public class ProcessDefinitionListViewImpl extends Composite
         listContainer.add(pager);
         
         processdefListGrid.setHeight("350px");
-
         // Set the message to display when the table is empty.
-        processdefListGrid.setEmptyTableWidget(new Label(constants.No_Process_Definitions_Available()));
+        Label emptyTable = new Label(constants.No_Process_Definitions_Available());
+        emptyTable.setStyleName("");
+        processdefListGrid.setEmptyTableWidget(emptyTable);
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler =
@@ -170,25 +179,6 @@ public class ProcessDefinitionListViewImpl extends Composite
     
     private void initTableColumns(final SelectionModel<ProcessSummary> selectionModel) {
 
-
-//        // Id.
-//        Column<ProcessSummary, String> processIdColumn =
-//                new Column<ProcessSummary, String>(new TextCell()) {
-//            @Override
-//            public String getValue(ProcessSummary object) {
-//                return object.getId();
-//            }
-//        };
-//        processIdColumn.setSortable(true);
-//        sortHandler.setComparator(processIdColumn,
-//                new Comparator<ProcessSummary>() {
-//            public int compare(ProcessSummary o1,
-//                    ProcessSummary o2) {
-//                return o1.getId().compareTo(o2.getId());
-//            }
-//        });
-//        processdefListGrid.addColumn(processIdColumn,
-//                new ResizableHeader(constants.Id(), processdefListGrid, processIdColumn));
 
 
         // Process Name String.
@@ -249,7 +239,7 @@ public class ProcessDefinitionListViewImpl extends Composite
             @Override
             public void execute(ProcessSummary process) {
 
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Definition_Details());
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Definition Details");
                 placeRequestImpl.addParameter("processId", process.getId());
                 placeRequestImpl.addParameter("domainId", process.getDomainId());
                 placeManager.goTo(placeRequestImpl);
@@ -257,13 +247,13 @@ public class ProcessDefinitionListViewImpl extends Composite
         }));
 
         CompositeCell<ProcessSummary> cell = new CompositeCell<ProcessSummary>(cells);
-      Column<ProcessSummary, ProcessSummary> actionsColumn = new Column<ProcessSummary, ProcessSummary>(cell) {
+        Column<ProcessSummary, ProcessSummary> actionsColumn = new Column<ProcessSummary, ProcessSummary>(cell) {
                                                         @Override
                                                         public ProcessSummary getValue(ProcessSummary object) {
                                                             return object;
                                                         }
                                                     };
-        processdefListGrid.addColumn(actionsColumn, "Actions");
+        processdefListGrid.addColumn(actionsColumn, constants.Actions());
         processdefListGrid.setColumnWidth(actionsColumn, "70px");
     }
 
@@ -302,9 +292,9 @@ public class ProcessDefinitionListViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, ProcessSummary value, SafeHtmlBuilder sb) {
 
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.startIcon());
+                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.startGridIcon());
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='Start'>");
+                    mysb.appendHtmlConstant("<span title='"+constants.Start()+"'>");
                     mysb.append(imageProto.getSafeHtml());
                     mysb.appendHtmlConstant("</span>");
                     sb.append(mysb.toSafeHtml());
@@ -337,9 +327,9 @@ public class ProcessDefinitionListViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, ProcessSummary value, SafeHtmlBuilder sb) {
 
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.detailsIcon());
+                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.detailsGridIcon());
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='Details'>");
+                    mysb.appendHtmlConstant("<span title='"+constants.Details()+"'>");
                     mysb.append(imageProto.getSafeHtml());
                     mysb.appendHtmlConstant("</span>");
                     sb.append(mysb.toSafeHtml());

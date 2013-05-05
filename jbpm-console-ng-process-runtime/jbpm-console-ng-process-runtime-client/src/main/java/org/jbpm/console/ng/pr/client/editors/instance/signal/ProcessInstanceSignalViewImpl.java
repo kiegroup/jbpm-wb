@@ -1,5 +1,6 @@
 package org.jbpm.console.ng.pr.client.editors.instance.signal;
 
+import com.github.gwtbootstrap.client.ui.Label;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,6 +35,15 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
     @Inject
     @DataField
     public Button clearButton;
+    
+    @Inject 
+    @DataField
+    public Label signalRefLabel;
+    
+    @Inject 
+    @DataField
+    public Label eventLabel;
+    
     @Inject
     @DataField
     public TextBox eventText;
@@ -49,12 +59,16 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
     public ProcessInstanceSignalViewImpl() {
         oracle = new MultiWordSuggestOracle();
         signalRefText = new SuggestBox(oracle);
+        
     }
 
     @Override
     public void init(ProcessInstanceSignalPresenter presenter) {
         this.presenter = presenter;
-
+        clearButton.setText(constants.Clear());
+        signalButton.setText(constants.Signal());
+        signalRefLabel.setText(constants.Signal_Ref());
+        eventLabel.setText(constants.Event());
     }
 
     public void displayNotification(String text) {
@@ -66,7 +80,8 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
 
         for (Long processInstanceId : this.processInstanceIds) {
             presenter.signalProcessInstance(processInstanceId);
-            displayNotification("Signal of process instance " + processInstanceId + " signal " + signalRefText.getText() + " event " + eventText.getText());
+            displayNotification(constants.Signalling_Process_Instance() + processInstanceId + " " +constants.Signal() + " = " + 
+                                    signalRefText.getText() + " - " + constants.Event() + " = " + eventText.getText());
         }
     }
 

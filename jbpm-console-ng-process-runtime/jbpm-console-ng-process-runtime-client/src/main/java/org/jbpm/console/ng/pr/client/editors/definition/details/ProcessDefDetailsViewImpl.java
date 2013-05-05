@@ -16,11 +16,14 @@
 package org.jbpm.console.ng.pr.client.editors.definition.details;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
 
@@ -46,154 +49,178 @@ public class ProcessDefDetailsViewImpl extends Composite
         implements
         ProcessDefDetailsPresenter.ProcessDefDetailsView {
 
-  @Inject
-  private PlaceManager placeManager;
-  private ProcessDefDetailsPresenter presenter;
-  @Inject
-  @DataField
-  public TextBox processNameText;
-  @Inject
-  @DataField
-  public TextBox nroOfHumanTasksText;
-  @Inject
-  @DataField
-  public ListBox humanTasksListBox;
-  @Inject
-  @DataField
-  public ListBox usersGroupsListBox;
-  @Inject
-  @DataField
-  public ListBox processDataListBox;
-  @Inject
-  @DataField
-  public ListBox subprocessListBox;
-  @Inject
-  @DataField
-  public TextBox domainIdText;
-  @Inject
-  @DataField
-  public NavLink refreshButton;
-  @Inject
-  @DataField
-  public NavLink viewProcessInstancesButton;
-  @Inject
-  @DataField
-  public NavLink createProcessInstanceButton;
-  @Inject
-  @DataField
-  public NavLink openProcessDesignerButton;
-  @Inject
-  private Event<NotificationEvent> notification;
-  private Constants constants = GWT.create(Constants.class);
-  
-  private Path processAssetPath;
-  private String encodedProcessSource;
+    @Inject
+    private PlaceManager placeManager;
+    private ProcessDefDetailsPresenter presenter;
+    @Inject
+    @DataField
+    public TextBox processNameText;
+    @Inject
+    @DataField
+    public TextBox nroOfHumanTasksText;
+    @Inject
+    @DataField
+    public ListBox humanTasksListBox;
+    @Inject
+    @DataField
+    public ListBox usersGroupsListBox;
+    @Inject
+    @DataField
+    public ListBox processDataListBox;
+    @Inject
+    @DataField
+    public ListBox subprocessListBox;
+    @Inject
+    @DataField
+    public TextBox domainIdText;
+    @Inject
+    @DataField
+    public IconAnchor refreshIcon;
+    @Inject
+    @DataField
+    public NavLink viewProcessInstancesButton;
+    @Inject
+    @DataField
+    public NavLink createProcessInstanceButton;
+    @Inject
+    @DataField
+    public NavLink openProcessDesignerButton;
+    @Inject
+    @DataField
+    public Label processDetailsLabel;
+    @Inject
+    @DataField
+    public Label processNameLabel;
+    @Inject
+    @DataField
+    public Label nroOfHumanTasksLabel;
+    @Inject
+    @DataField
+    public Label domainIdLabel;
+    @Inject
+    @DataField
+    public Label humanTasksListLabel;
+    @Inject
+    @DataField
+    public Label usersGroupsListLabel;
+    @Inject
+    @DataField
+    public Label subprocessListLabel;
+    @Inject
+    @DataField
+    public Label processDataListLabel;
+    @Inject
+    private Event<NotificationEvent> notification;
+    private Constants constants = GWT.create(Constants.class);
+    private Path processAssetPath;
 
-  @Override
-  public void init(ProcessDefDetailsPresenter presenter) {
-    this.presenter = presenter;
-    this.humanTasksListBox.setVisibleItemCount(5);
-    this.humanTasksListBox.setEnabled(false);
-    this.usersGroupsListBox.setVisibleItemCount(5);
-    this.usersGroupsListBox.setEnabled(false);
-    this.processDataListBox.setVisibleItemCount(5);
-    this.processDataListBox.setEnabled(false);
-    this.processNameText.setEnabled(false);
-    this.domainIdText.setEnabled(false);
-    nroOfHumanTasksText.setEnabled(false);
+    @Override
+    public void init(final ProcessDefDetailsPresenter presenter) {
+        this.presenter = presenter;
+        this.humanTasksListBox.setVisibleItemCount(5);
+        this.humanTasksListBox.setEnabled(false);
+        this.usersGroupsListBox.setVisibleItemCount(5);
+        this.usersGroupsListBox.setEnabled(false);
+        this.processDataListBox.setVisibleItemCount(5);
+        this.processDataListBox.setEnabled(false);
+        this.processNameText.setEnabled(false);
+        this.domainIdText.setEnabled(false);
+        nroOfHumanTasksText.setEnabled(false);
 
-    this.subprocessListBox.addDoubleClickHandler(new DoubleClickHandler() {
-      @Override
-      public void onDoubleClick(DoubleClickEvent event) {
-        ListBox source = (ListBox) event.getSource();
-        String processId = source.getValue(source.getSelectedIndex());
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Definition_Details());
-        placeRequestImpl.addParameter("processId", processId);
+        this.subprocessListBox.addDoubleClickHandler(new DoubleClickHandler() {
+            @Override
+            public void onDoubleClick(DoubleClickEvent event) {
+                ListBox source = (ListBox) event.getSource();
+                String processId = source.getValue(source.getSelectedIndex());
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Definition Details");
+                placeRequestImpl.addParameter("processId", processId);
+                placeManager.goTo(placeRequestImpl);
+            }
+        });
+
+        processDetailsLabel.setText(constants.Process_Definition_Details());
+        processDetailsLabel.setStyleName("");
+        
+        processNameLabel.setText(constants.Process_Definition_Name());
+        nroOfHumanTasksLabel.setText(constants.Human_Tasks_Count());
+        domainIdLabel.setText(constants.Domain_Name());
+        humanTasksListLabel.setText(constants.Human_Tasks());
+        usersGroupsListLabel.setText(constants.User_And_Groups());
+        subprocessListLabel.setText(constants.SubProcesses());
+        processDataListLabel.setText(constants.Process_Variables());
+
+        refreshIcon.setTitle(constants.Refresh());
+        refreshIcon.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                presenter.refreshProcessDef(processNameText.getText());
+                displayNotification(constants.Process_Definition_Details_Refreshed());
+            }
+        });
+        viewProcessInstancesButton.setText(constants.View_Process_Instances());
+        createProcessInstanceButton.setText(constants.New_Process_Instance());
+        openProcessDesignerButton.setText(constants.View_Process_Model());
+
+    }
+
+   
+
+    @EventHandler("createProcessInstanceButton")
+    public void createProcessInstance(ClickEvent e) {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
+        placeRequestImpl.addParameter("processId", processNameText.getText());
+        placeRequestImpl.addParameter("domainId", domainIdText.getText());
         placeManager.goTo(placeRequestImpl);
-      }
-    });
-    
-    refreshButton.setText("Refresh");
-    viewProcessInstancesButton.setText("View Process Instances");
-    createProcessInstanceButton.setText("New Process Instance");
-    openProcessDesignerButton.setText("View Process Model");
-    
-  }
-  
+    }
 
-  @EventHandler("refreshButton")
-  public void refreshButton(ClickEvent e) {
-    presenter.refreshProcessDef(processNameText.getText());
-  }
+    @EventHandler("viewProcessInstancesButton")
+    public void viewProcessInstancesButton(ClickEvent e) {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance List");
+        placeRequestImpl.addParameter("processDefId", processNameText.getText());
+        placeManager.goTo(placeRequestImpl);
 
-  @EventHandler("createProcessInstanceButton")
-  public void createProcessInstance(ClickEvent e) {
-    PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
-    placeRequestImpl.addParameter("processId", processNameText.getText());
-    placeRequestImpl.addParameter("domainId", domainIdText.getText());
-    placeManager.goTo(placeRequestImpl);
-  }
+    }
 
-  @EventHandler("viewProcessInstancesButton")
-  public void viewProcessInstancesButton(ClickEvent e) {
-    PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance List");
-    placeRequestImpl.addParameter("processDefId", processNameText.getText());
-    placeManager.goTo(placeRequestImpl);
+    @EventHandler("openProcessDesignerButton")
+    public void openProcessDesignerButton(ClickEvent e) {
+        placeManager.goTo(processAssetPath);
 
-  }
+    }
 
-  @EventHandler("openProcessDesignerButton")
-  public void openProcessDesignerButton(ClickEvent e) {
-      PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Designer");
+    public TextBox getProcessNameText() {
+        return processNameText;
+    }
 
-      if(encodedProcessSource != null) {
-          placeRequestImpl.addParameter("readOnly", "true");
-          placeRequestImpl.addParameter("encodedProcessSource", encodedProcessSource);
-      }
-      placeManager.goTo(processAssetPath, placeRequestImpl);
+    public TextBox getNroOfHumanTasksText() {
+        return nroOfHumanTasksText;
+    }
 
-  }
+    public ListBox getHumanTasksListBox() {
+        return humanTasksListBox;
+    }
 
-  public TextBox getProcessNameText() {
-    return processNameText;
-  }
+    public ListBox getUsersGroupsListBox() {
+        return usersGroupsListBox;
+    }
 
-  public TextBox getNroOfHumanTasksText() {
-    return nroOfHumanTasksText;
-  }
+    public ListBox getProcessDataListBox() {
+        return processDataListBox;
+    }
 
-  public ListBox getHumanTasksListBox() {
-    return humanTasksListBox;
-  }
+    public ListBox getSubprocessListBox() {
+        return subprocessListBox;
+    }
 
-  public ListBox getUsersGroupsListBox() {
-    return usersGroupsListBox;
-  }
+    public TextBox getDomainIdText() {
+        return domainIdText;
+    }
 
-  public ListBox getProcessDataListBox() {
-    return processDataListBox;
-  }
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
+    }
 
-  public ListBox getSubprocessListBox() {
-    return subprocessListBox;
-  }
-
-  public TextBox getDomainIdText() {
-      return domainIdText;
-  }
-  
-  public void displayNotification(String text) {
-    notification.fire(new NotificationEvent(text));
-  }
-
-  @Override
-  public void setProcessAssetPath(Path processAssetPath) {
-      this.processAssetPath = processAssetPath;
-  }
-
-  @Override
-  public void setEncodedProcessSource(String encodedProcessSource) {
-      this.encodedProcessSource = encodedProcessSource;
-  }
-
+    @Override
+    public void setProcessAssetPath(Path processAssetPath) {
+        this.processAssetPath = processAssetPath;
+    }
 }

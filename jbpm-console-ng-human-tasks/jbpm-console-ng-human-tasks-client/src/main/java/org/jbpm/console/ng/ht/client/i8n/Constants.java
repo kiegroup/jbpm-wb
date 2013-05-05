@@ -33,122 +33,92 @@ public interface Constants
 
     Constants INSTANCE = GWT.create(Constants.class);
 
-    String SignOut();
+    String Tasks_List_Calendar_View();
+    
+    String Tasks_List_Advanced_View();
 
-    String WelcomeUser();
+    String Day();
 
-    String There_is_no_variable_information_to_show();
+    String Week();
 
-    String Variable();
+    String Month();
 
-    String Value();
+    String Advanced();
 
-    String Last_Time_Changed();
+    String New_Task();
 
-    String View_History ();
+    String Personal();
 
-    String Variable_History_Perspective ();
+    String Group();
 
-    String Show_me_my_pending_Tasks ();
+    String Active();
 
-    String I_want_to_start_a_new_Process ();
+    String All();
 
-    String I_want_to_design_a_new_Process_Model ();
+    String No_Pending_Tasks_Enjoy();
 
-    String I_want_to_design_a_new_Form();
-
-    String I_want_to_create_a_Task();
-
-    String Show_me_all_the_pending_tasks_in_my_Group();
-
-    String Show_me_my_Inbox();
-
-    String Hooray_you_don_t_have_any_pending_Task__ ();
-
-    String Id();
+    String Priority();
 
     String Task();
+
+    String Id();
 
     String Status();
 
     String Due_On();
 
+    String Parent();
+
+    String Complete();
+
+    String Release();
+
+    String Claim();
+
+    String Work();
+
+    String Start();
+
     String Details();
-
-    String Request_Details_Perspective_Errai();
-
-    String No_KBases_Available();
-
-    String Please_Select_at_least_one_Task_to_Execute_a_Quick_Action();
-
-    String Priority();
-
+    
+    String Actions();
 
     String No_Parent();
 
-    String Parent();
+    String User();
 
-    String Edit();
+    String Process_Instance_Id();
 
-    String Task_Edit_Perspective();
-
-    String Work ();
-
-    String Form_Perspective ();
-
-    String No_Process_Definitions_Available ();
-
-    String Name ();
-
-    String Package ();
-
-    String Type ();
-
-    String Version ();
-
-    String Start_Process ();
-
-    String Actions ();
-
-    String Process_Definition_Details();
-
-    String No_Process_Instances_Available ();
-
-    String Aborting_Process_Instance ();
-
-    String Signaling_Process_Instance ();
-
-    String Process_Id ();
-
-    String Process_Name ();
-    
-    String Process_Version ();
-
-    String State ();
-    
-    String Process_Instance_Start_Time();
+    String Process_Definition_Id();
 
     String Process_Instance_Details();
 
-    String Hooray_you_don_t_have_any_Group_Task_to_Claim__();
+    String No_Comments_For_This_Task();
 
-    String Task_Id ();
+    String Comment();
+    
+    String At();
+    
+    String Added_By();
 
-    String Task_Name ();
+    String Add_Comment();
 
-    String Actual_Owner ();
+    String Task_Must_Have_A_Name();
 
-    String Description ();
+    String Create();
 
-    String Completed ();
+    String Task_Name();
 
-    String Pending ();
+    String Quick_Task();
+    
+    String Description();
 
-    String Personal_Task_Statistics ();
+    String Comments();
+    
+    String Filters();
 
-    String Aborting_Process_Instance_Not_Allowed();
+    String Process_Context();
 
-    String Signaling_Process_Instance_Not_Allowed();
+    String Update();
 
-    String Old_Value();
 }

@@ -157,13 +157,16 @@ public class TasksListPresenter {
         Date today = new Date();
         int daysTotal = 5;
         List<String> statuses = new ArrayList<String>(4);
-        statuses.add("Ready");
-        statuses.add("InProgress");
         statuses.add("Created");
+        statuses.add("Ready");
         statuses.add("Reserved");
-        statuses.add("Completed");
-        statuses.add("Aborted");
+        statuses.add("InProgress");
         statuses.add("Suspended");
+        statuses.add("Suspended");
+        statuses.add("Failed");
+        statuses.add("Error");
+        statuses.add("Exited");
+        statuses.add("Obsolete");
         taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
             @Override
             public void callback(Map<Day, List<TaskSummary>> tasks) {

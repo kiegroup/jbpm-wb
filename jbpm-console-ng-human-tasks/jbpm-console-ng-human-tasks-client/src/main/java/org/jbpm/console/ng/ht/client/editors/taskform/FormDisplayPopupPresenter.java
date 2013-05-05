@@ -24,6 +24,7 @@ import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -35,6 +36,7 @@ import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
+import org.jbpm.console.ng.ht.client.i8n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.fb.events.FormRenderedEvent;
 import org.jbpm.console.ng.ht.service.FormServiceEntryPoint;
@@ -78,6 +80,8 @@ public class FormDisplayPopupPresenter {
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
     private PlaceRequest                 place;
+    
+    private Constants constants = GWT.create(Constants.class);
 
     public interface FormDisplayView
             extends
@@ -124,10 +128,10 @@ public class FormDisplayPopupPresenter {
     public void renderTaskForm( final long taskId ) {
         view.getNavBarUL().clear();
 
-        NavLink workLink = new NavLink( "Work" );
+        NavLink workLink = new NavLink( constants.Work() );
         workLink.setStyleName( "active" );
 
-        NavLink detailsLink = new NavLink( "Details" );
+        NavLink detailsLink = new NavLink( constants.Details() );
         detailsLink.addClickHandler( new ClickHandler() {
 
             @Override
@@ -139,7 +143,7 @@ public class FormDisplayPopupPresenter {
             }
         } );
         
-        NavLink commentsLink = new NavLink("Comments");
+        NavLink commentsLink = new NavLink(constants.Comments());
         commentsLink.addClickHandler(new ClickHandler(){
 
             @Override

@@ -1,25 +1,24 @@
 <div class="row-fluid">
   <div class="span12">
-      <label>Task Name</label>
+      <label data-field="taskNameLabel"></label>
       <input type="text" class="span12" data-field="taskNameText" />
-      <label class="checkbox">
-        <input type="checkbox" class="inline" id="quickTaskCheck" data-field="quickTaskCheck"/>Quick Task?
-      </label>
+      <input type="checkbox" style="display:inline" id="quickTaskCheck" data-field="quickTaskCheck"/>
+      
      <div class="accordion">
     <!-- GROUP -->
     <div class="accordion-group">
       <div class="accordion-heading">
         <a class="accordion-toggle">
-          Advanced
+          <label data-field="advancedLabel"></label>
         </a>
       </div>
       <div id="desc_collapse" class="accordion-body collapse in" style="position: relative;">
         <div class="accordion-inner">
-              <label>Due Date</label>
+              <label data-field="dueDateLabel"></label>
               <input type="text" data-field="dueDate" id="dueDate">
-              <label>User</label>
+              <label data-field="userLabel"></label>
               <input type="text" data-field="userText" id="userText" />
-              <label>Priority</label>
+              <label data-field="taskPriorityLabel"></label>
               <select data-field="taskPriorityListBox" id="taskPriorityListBox">
               </select>
         </div>
@@ -27,7 +26,7 @@
     </div> 
      </div>
     <div class="modal-footer span12">
-      <button class="btn" data-field="addTaskButton" id="addTaskButton" >Create</button>
+      <button class="btn" data-field="addTaskButton" id="addTaskButton" ></button>
     </div>
   </div>
 </div>

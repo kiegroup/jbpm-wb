@@ -1,4 +1,9 @@
 <div class="row-fluid">
+    <div> <h4 style="display:inline"><div style="display:inline" data-field="processDetailsLabel"></div></h4>
+            <ul style="display:inline" class="nav">
+                <li style="display:inline"><a class="icon-jbpm-refresh" data-field="refreshIcon" href="#"><i></i></a></li>
+            </ul>
+        </div>
       <div class="navbar">
         <div class="navbar-inner">
             <div class="container">
@@ -10,14 +15,13 @@
                 <div class="nav-collapse filters collapse">
                     <div class="row-fluid">
                         <ul class="nav">
-                            <li class="divider-vertical"></li>
+                            
                             <li data-field="createProcessInstanceButton"></li>
-                            <li class="divider-vertical"></li>
+                            
                             <li data-field="viewProcessInstancesButton"></li>
-                            <li class="divider-vertical"></li>
+                            
                             <li data-field="openProcessDesignerButton"></li>
-                            <li class="divider-vertical"></li>
-                            <li data-field="refreshButton"></li>
+                            
                         </ul>
 
                     </div>
@@ -28,45 +32,45 @@
   <div class="span11">
     
     <div class="form-horizontal">
-      <legend>Process Definition Details</legend>
+      
       <div class="control-group">
-        <label  class="control-label" for="processNameText">Process Definition Name</label>
+        <label  class="control-label" for="processNameText" data-field="processNameLabel"></label>
         <div class="controls">
           <input type="text" data-field="processNameText"  id="processNameText" placeholder=""/>
         </div>
       </div>
       <div class="control-group">
-        <label  class="control-label" for="nroOfHumanTasksText">Human Tasks Count</label>
+        <label  class="control-label" for="nroOfHumanTasksText" data-field="nroOfHumanTasksLabel"></label>
         <div class="controls">
           <input type="text" data-field="nroOfHumanTasksText"  id="nroOfHumanTasksText" placeholder=""/>
         </div>
       </div>
       <div class="control-group">
-        <label  class="control-label" for="domainIdText">Domain Id</label>
+        <label  class="control-label" for="domainIdText" data-field="domainIdLabel"></label>
         <div class="controls">
           <input type="text" data-field="domainIdText"  id="domainIdText" placeholder=""/>
         </div>
       </div>
       <div class="control-group">
-        <label  class="control-label" for="humanTasksListBox">Human Tasks</label>
+        <label  class="control-label" for="humanTasksListBox" data-field="humanTasksListLabel"></label>
         <div class="controls">
           <select data-field="humanTasksListBox" size="5" id="humanTasksListBox"></select>
         </div>
       </div>
       <div class="control-group">
-        <label  class="control-label" for="usersGroupsListBox">User and Groups</label>
+        <label  class="control-label" for="usersGroupsListBox" data-field="usersGroupsListLabel"></label>
         <div class="controls">
           <select data-field="usersGroupsListBox" size="5" id="usersGroupsListBox"></select>
         </div>
       </div>
       <div class="control-group">
-        <label  class="control-label" for="subprocessListBox">Sub Processes</label>
+        <label  class="control-label" for="subprocessListBox" data-field="subprocessListLabel"></label>
         <div class="controls">
           <select data-field="subprocessListBox" size="5" id="subprocessListBox"></select>
         </div>
       </div>
       <div class="control-group">
-        <label  class="control-label" for="processDataListBox">Process Variables</label>
+        <label  class="control-label" for="processDataListBox" data-field="processDataListLabel"></label>
         <div class="controls">
           <select data-field="processDataListBox" size="5" id="processDataListBox"></select>
         </div>

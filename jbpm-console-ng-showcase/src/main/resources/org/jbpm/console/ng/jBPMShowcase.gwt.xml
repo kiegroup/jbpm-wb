@@ -50,5 +50,7 @@
 
   <!-- Specify the paths for translatable code -->
   <source path='client'/>
+  
+  <extend-property name="locale" values="es_AR"/>
     
 </module>

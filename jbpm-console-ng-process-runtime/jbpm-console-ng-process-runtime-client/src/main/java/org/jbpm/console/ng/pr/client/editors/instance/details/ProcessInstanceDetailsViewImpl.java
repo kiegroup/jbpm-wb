@@ -28,7 +28,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.client.resources.ShowcaseImages;
+import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
 import org.jbpm.console.ng.pr.client.util.ResizableHeader;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
@@ -42,13 +42,14 @@ import org.uberfire.security.Identity;
 import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
-import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
@@ -58,13 +59,14 @@ import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
+
 
 @Dependent
 @Templated(value = "ProcessInstanceDetailsViewImpl.html")
@@ -103,10 +105,38 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     public TextArea logTextArea;
     @Inject
     @DataField
-    public NavLink refreshButton;
-//    @Inject
-//    @DataField
-//    public Button viewSessionNotificationsButton;
+    public IconAnchor refreshIcon;
+    
+    @Inject
+    @DataField 
+    public Label processInstanceDetailsLabel;
+    @Inject
+    @DataField 
+    public Label processIdLabel;
+    
+    @Inject
+    @DataField 
+    public Label processNameLabel;
+    
+    @Inject
+    @DataField 
+    public Label processPackageLabel;
+    
+    @Inject
+    @DataField 
+    public Label processVersionLabel;
+    
+    @Inject
+    @DataField 
+    public Label stateLabel;
+    
+    @Inject
+    @DataField 
+    public Label currentActivitiesListLabel;
+    
+    @Inject
+    @DataField
+    public Label logTextLabel;
     
     @Inject
     @DataField
@@ -126,7 +156,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     private Event<NotificationEvent> notification;
     
     private Constants constants = GWT.create(Constants.class);
-    private ShowcaseImages images = GWT.create(ShowcaseImages.class);
+    private ProcessRuntimeImages images = GWT.create(ProcessRuntimeImages.class);
     private ProcessInstanceSummary processInstance;
     private Path processAssetPath;
     private String encodedProcessSource;
@@ -134,7 +164,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     private List<NodeInstanceSummary> completedNodes;
     
     @Override
-    public void init(ProcessInstanceDetailsPresenter presenter) {
+    public void init(final ProcessInstanceDetailsPresenter presenter) {
         this.presenter = presenter;
 
         processIdText.setEnabled(false);
@@ -144,14 +174,28 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         stateText.setEnabled(false);
         logTextArea.setEnabled(false);
         currentActivitiesListBox.setEnabled(false);
-        refreshButton.setText("Refresh");
-        viewProcessDiagramButton.setText("View Process Diagram");
+        
+        viewProcessDiagramButton.setText(constants.View_Process_Model());
         listContainer.add(processDataGrid);
         listContainer.add(pager);
         processDataGrid.setHeight("200px");
-
+        
+        
+        
+        processNameLabel.setText(constants.Process_Definition_Name());
+        processIdLabel.setText(constants.Process_Instance_ID());
+        processPackageLabel.setText(constants.Process_Definition_Package());
+        processVersionLabel.setText(constants.Process_Definition_Version());
+        stateLabel.setText(constants.Process_Instance_State());
+        currentActivitiesListLabel.setText(constants.Current_Activities());
+        logTextLabel.setText(constants.Process_Instance_Log());
+        
+        processInstanceDetailsLabel.setText(constants.Process_Instance_Details());
+        processInstanceDetailsLabel.setStyleName("");
         // Set the message to display when the table is empty.
-        processDataGrid.setEmptyTableWidget(new Label(constants.There_is_no_variable_information_to_show()));
+        Label emptyTable = new Label(constants.No_Variables_Available());
+        emptyTable.setStyleName("");
+        processDataGrid.setEmptyTableWidget(emptyTable);
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler =
@@ -164,6 +208,14 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         pager.setDisplay(processDataGrid);
         pager.setPageSize(4);
 
+        refreshIcon.setTitle(constants.Refresh());
+        refreshIcon.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                presenter.refreshProcessInstanceData(processIdText.getText(),processNameText.getText());
+                displayNotification(constants.Process_Instances_Details_Refreshed());
+            }
+        });
 
         initTableColumns();
 
@@ -171,16 +223,8 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         
     }
 
-    @EventHandler("refreshButton")
-    public void refreshButton(ClickEvent e) {
-        presenter.refreshProcessInstanceData(processIdText.getText(),processNameText.getText());
-    }
-//    @EventHandler("viewSessionNotificationsButton")
-//    public void viewSessionNotificationsButton(ClickEvent e){
-//        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Session Notifications Popup");
-//        placeRequestImpl.addParameter("sessionId", Integer.toString(0));
-//        placeManager.goTo(placeRequestImpl);
-//    }
+   
+
     
     @EventHandler("viewProcessDiagramButton")
     public void viewProcessDiagramButton(ClickEvent e){
@@ -256,7 +300,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         variableId.setSortable(true);
 
         processDataGrid.addColumn(variableId,
-                new ResizableHeader(constants.Variable(), processDataGrid, variableId));
+                new ResizableHeader(constants.Name(), processDataGrid, variableId));
         sortHandler.setComparator(variableId,
                 new Comparator<VariableSummary>() {
                     public int compare(VariableSummary o1,
@@ -318,7 +362,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         dueDateColumn.setSortable(true);
 
         processDataGrid.addColumn(dueDateColumn,
-                new ResizableHeader(constants.Last_Time_Changed(), processDataGrid, dueDateColumn));
+                new ResizableHeader(constants.Last_Modification(), processDataGrid, dueDateColumn));
         sortHandler.setComparator(dueDateColumn,
                 new Comparator<VariableSummary>() {
                     public int compare(VariableSummary o1,
@@ -360,7 +404,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
             public VariableSummary getValue(VariableSummary object) {
                 return object;
             }
-        }, "Actions");
+        }, constants.Actions());
 
     }
     
@@ -373,9 +417,9 @@ public class ProcessInstanceDetailsViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, VariableSummary value, SafeHtmlBuilder sb) {
                     if (processInstance.getState() == ProcessInstance.STATE_ACTIVE) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.editIcon());
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.editGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='Edit'>");
+                        mysb.appendHtmlConstant("<span title='"+constants.Edit_Variable()+"'>");
                         mysb.append(imageProto.getSafeHtml());
                         mysb.appendHtmlConstant("</span>");
                         sb.append(mysb.toSafeHtml());
@@ -409,9 +453,9 @@ public class ProcessInstanceDetailsViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, VariableSummary value, SafeHtmlBuilder sb) {
                     
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.detailsIcon());
+                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.historyGridIcon());
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='History'>");
+                    mysb.appendHtmlConstant("<span title='"+constants.Variables_History()+"'>");
                     mysb.append(imageProto.getSafeHtml());
                     mysb.appendHtmlConstant("</span>");
                     sb.append(mysb.toSafeHtml());

@@ -15,6 +15,7 @@ import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
@@ -23,6 +24,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
+import org.jbpm.console.ng.ht.client.i8n.Constants;
 
 @Dependent
 @Templated(value = "TaskCommentsPopupViewImpl.html")
@@ -63,6 +65,8 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
     public FlowPanel listContainer;
 
     private ListHandler<CommentSummary> sortHandler;
+    
+    private Constants constants = GWT.create(Constants.class);
 
     @Override
     public Label getTaskIdText() {
@@ -105,7 +109,8 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
         listContainer.add(commentsListGrid);
         listContainer.add(pager);
         commentsListGrid.setHeight("100px");
-        commentsListGrid.setEmptyTableWidget(new Label("No comments for this task."));
+        Label emtpyTable = new Label(constants.No_Comments_For_This_Task());
+        commentsListGrid.setEmptyTableWidget(emtpyTable);
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler = new ListHandler<CommentSummary>(presenter.getDataProvider().getList());
         commentsListGrid.addColumnSortHandler(sortHandler);
@@ -115,6 +120,8 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
         pager.setVisible(false);
         pager.setDisplay(commentsListGrid);
         pager.setPageSize(6);
+        
+        addCommentButton.setText(constants.Add_Comment());
     }
 
     @EventHandler("addCommentButton")
@@ -134,7 +141,7 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
             }
         };
         addedByColumn.setSortable(false);
-        commentsListGrid.addColumn(addedByColumn, "Added by");
+        commentsListGrid.addColumn(addedByColumn, constants.Added_By());
         commentsListGrid.setColumnWidth(addedByColumn, "100px");
 
         // date
@@ -146,7 +153,7 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
         };
         addedAtColumn.setSortable(true);
         addedAtColumn.setDefaultSortAscending(true);
-        commentsListGrid.addColumn(addedAtColumn, "At");
+        commentsListGrid.addColumn(addedAtColumn, constants.At());
         sortHandler.setComparator(addedAtColumn, new Comparator<CommentSummary>() {
             @Override
             public int compare(CommentSummary o1, CommentSummary o2) {
@@ -162,6 +169,6 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
             }
         };
         addedByColumn.setSortable(false);
-        commentsListGrid.addColumn(commentTextColumn, "Comment");
+        commentsListGrid.addColumn(commentTextColumn, constants.Comment());
     }
 }

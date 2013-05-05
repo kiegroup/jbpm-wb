@@ -1,4 +1,4 @@
-<div>
+<div class="row-fluid">
   <h4 id="myModalLabel">
     <div class="row-fluid"><label data-field="taskIdText" class="inline span1"></label><label data-field="taskNameText" class="inline span9"></label></div>
   </h4>
@@ -15,21 +15,21 @@
     <div class="accordion-group">
       <div class="accordion-heading">
         <a class="accordion-toggle">
-          Description
+          <label data-field="descriptionAccordionLabel"></label>
         </a>
       </div>
       <div id="desc_collapse" class="accordion-body collapse in" style="position: relative;">
         <div class="accordion-inner">
           
-              <label>Description</label>
+              <label data-field="taskDescriptionLabel"></label>
               <textarea data-field="taskDescriptionTextArea" id="taskDescriptionTextArea"></textarea>
-              <label>Status</label>
+              <label data-field="taskStatusLabel"></label>
               <input type="text" data-field="taskStatusText"/>
-              <label>User</label>
+              <label data-field="userLabel"></label>
               <input type="text" data-field="userText" id="userText" />
-              <label>Due Date</label>
+              <label data-field="dueDateLabel"></label>
               <input type="text" data-field="dueDate" id="dueDate">
-              <label>Priority</label>
+              <label data-field="taskPriorityLabel"></label>
               <select data-field="taskPriorityListBox" id="taskPriorityListBox">
               </select>
            
@@ -39,23 +39,23 @@
     <div class="accordion-group">
       <div class="accordion-heading">
         <a class="accordion-toggle" >
-          Process Context
+          <label data-field="processContextLabel"></label>
         </a>
       </div>
       <div id="context_collapse" class="accordion-body collapse in" style="position: relative;">
         <div class="accordion-inner">
          
-              <label>Process Instance Id</label>
+              <label data-field="processInstanceIdLabel"></label>
               <input type="text" data-field="processInstanceIdText" id="processInstanceIdText">
-              <label>Process Definition Id</label>
+              <label data-field="processIdLabel"></label>
               <input type="text" data-field="processIdText" id="processIdText">
-              <label>Process Instance Details</label>
-              <button class="button main" data-field="pIDetailsButton" id="pIDetailsButton" >Process Instance Details</button>
+              <label data-field="pIDetailsLabel"></label>
+              <button class="button main" data-field="pIDetailsButton" id="pIDetailsButton" ></button>
           
         </div>
       </div>
     </div>
-    <div class="accordion-group">
+    <!--div class="accordion-group">
       <div class="accordion-heading">
         <a class="accordion-toggle" >
           Sub Task Strategy
@@ -70,11 +70,11 @@
           
         </div>
       </div>
-    </div>
+    </div-->
 
   </div>
-  <div class="modal-footer span5">
-    <button class="btn" data-field="updateTaskButton" id="updateTaskButton" >Update</button>
+  <div class="modal-footer span12">
+    <button class="btn" data-field="updateTaskButton" id="updateTaskButton" ></button>
   </div>
 </div>  
 

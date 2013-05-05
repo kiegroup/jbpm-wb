@@ -1,6 +1,7 @@
 package org.jbpm.console.ng.pr.client.editors.variables.edit;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -16,7 +17,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Label;
+
 
 
 @Dependent
@@ -41,6 +42,15 @@ public class VariableEditViewImpl extends Composite implements
     
     @Inject
     @DataField
+    public Label variableIdUILabel;
+    
+     @Inject
+    @DataField
+    public Label variableTextLabel;
+
+    
+    @Inject
+    @DataField
     public Button saveButton;
     @Inject
     @DataField
@@ -52,6 +62,10 @@ public class VariableEditViewImpl extends Composite implements
     @Override
     public void init(VariableEditPresenter presenter) {
         this.presenter = presenter;
+        clearButton.setText(constants.Clear());
+        saveButton.setText(constants.Save());
+        variableIdUILabel.setText(constants.Variables_Name());
+        variableTextLabel.setText(constants.Variable_Value());
 
     }
 

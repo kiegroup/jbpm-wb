@@ -3,6 +3,7 @@ package org.jbpm.console.ng.ht.client.editors.taskgrid;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import java.util.Comparator;
@@ -52,12 +53,12 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
+
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
-import org.jbpm.console.ng.ht.client.resources.ShowcaseImages;
+import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
 
 @Dependent
 @Templated(value = "InboxPersonalViewImpl.html")
@@ -97,6 +98,14 @@ public class InboxPersonalViewImpl extends Composite
     @Inject
     @DataField
     public NavLink showActiveTasksNavLink;
+    @Inject
+    @DataField
+    public Label taskAdvancedViewLabel;
+    
+    @Inject
+    @DataField
+    public Label filtersLabel;
+    
     private Set<TaskSummary> selectedTasks;
     @Inject
     private Event<NotificationEvent> notification;
@@ -105,7 +114,7 @@ public class InboxPersonalViewImpl extends Composite
     private ListHandler<TaskSummary> sortHandler;
     private MultiSelectionModel<TaskSummary> selectionModel;
     private Constants constants = GWT.create(Constants.class);
-    private ShowcaseImages images = GWT.create(ShowcaseImages.class);
+    private HumanTasksImages images = GWT.create(HumanTasksImages.class);
 
     @Override
     public void init(final InboxPersonalPresenter presenter) {
@@ -113,10 +122,12 @@ public class InboxPersonalViewImpl extends Composite
 
         listContainer.add(myTaskListGrid);
         listContainer.add(pager);
-
+        taskAdvancedViewLabel.setText(constants.Tasks_List_Advanced_View());
+        taskAdvancedViewLabel.setStyleName("");
+        
         myTaskListGrid.setHeight("350px");
         // Set the message to display when the table is empty.
-        myTaskListGrid.setEmptyTableWidget(new Label(constants.Hooray_you_don_t_have_any_pending_Task__()));
+        myTaskListGrid.setEmptyTableWidget(new Label(constants.No_Pending_Tasks_Enjoy()));
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler =
@@ -126,7 +137,7 @@ public class InboxPersonalViewImpl extends Composite
 
 
         // Filters
-        showPersonalTasksNavLink.setText("Personal");
+        showPersonalTasksNavLink.setText(constants.Personal());
         showPersonalTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -138,7 +149,7 @@ public class InboxPersonalViewImpl extends Composite
             }
         });
 
-        showGroupTasksNavLink.setText("Group");
+        showGroupTasksNavLink.setText(constants.Group());
         showGroupTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -151,7 +162,7 @@ public class InboxPersonalViewImpl extends Composite
         });
 
 
-        showActiveTasksNavLink.setText("Active");
+        showActiveTasksNavLink.setText(constants.Active());
         showActiveTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -163,7 +174,7 @@ public class InboxPersonalViewImpl extends Composite
             }
         });
 
-        showAllTasksNavLink.setText("All");
+        showAllTasksNavLink.setText(constants.All());
         showAllTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -175,7 +186,7 @@ public class InboxPersonalViewImpl extends Composite
             }
         });
 
-        createQuickTaskNavLink.setText("New Task");
+        createQuickTaskNavLink.setText(constants.New_Task());
         createQuickTaskNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -225,6 +236,8 @@ public class InboxPersonalViewImpl extends Composite
         refreshTasksButton.addDomHandler(refreshPressHandler, KeyPressEvent.getType());
 
         refreshTasks();
+        
+        filtersLabel.setText(constants.Filters());
 
     }
 
@@ -238,25 +251,7 @@ public class InboxPersonalViewImpl extends Composite
         refreshTasks();
     }
 
-//    @EventHandler("startTaskButton")
-//    public void startTaskButton(ClickEvent e) {
-//        if (selectedTasks.isEmpty()) {
-//            displayNotification(constants.Please_Select_at_least_one_Task_to_Execute_a_Quick_Action());
-//            return;
-//        }
-//        presenter.startTasks(selectedTasks,
-//                identity.getName());
-//    }
-//    @EventHandler("completeTaskButton")
-//    public void completeTaskButton(ClickEvent e) {
-//        if (selectedTasks.isEmpty()) {
-//            displayNotification(constants.Please_Select_at_least_one_Task_to_Execute_a_Quick_Action());
-//            return;
-//        }
-//        presenter.completeTasks(selectedTasks,
-//                identity.getName());
-//
-//    }
+
     private void initTableColumns(final SelectionModel<TaskSummary> selectionModel) {
         // Checkbox column. This table will uses a checkbox column for selection.
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
@@ -384,25 +379,25 @@ public class InboxPersonalViewImpl extends Composite
 
 
         // Task parent id.
-        Column<TaskSummary, String> taskParentIdColumn =
-                new Column<TaskSummary, String>(new TextCell()) {
-            @Override
-            public String getValue(TaskSummary object) {
-                return (object.getParentId() > 0) ? String.valueOf(object.getParentId()) : constants.No_Parent();
-            }
-        };
-        taskParentIdColumn.setSortable(true);
-
-        myTaskListGrid.addColumn(taskParentIdColumn,
-                new ResizableHeader(constants.Parent(), myTaskListGrid, taskParentIdColumn));
-        myTaskListGrid.setColumnWidth(taskParentIdColumn, "100px");
-        sortHandler.setComparator(taskParentIdColumn,
-                new Comparator<TaskSummary>() {
-            public int compare(TaskSummary o1,
-                    TaskSummary o2) {
-                return Integer.valueOf(o1.getParentId()).compareTo(o2.getParentId());
-            }
-        });
+//        Column<TaskSummary, String> taskParentIdColumn =
+//                new Column<TaskSummary, String>(new TextCell()) {
+//            @Override
+//            public String getValue(TaskSummary object) {
+//                return (object.getParentId() > 0) ? String.valueOf(object.getParentId()) : constants.No_Parent();
+//            }
+//        };
+//        taskParentIdColumn.setSortable(true);
+//
+//        myTaskListGrid.addColumn(taskParentIdColumn,
+//                new ResizableHeader(constants.Parent(), myTaskListGrid, taskParentIdColumn));
+//        myTaskListGrid.setColumnWidth(taskParentIdColumn, "100px");
+//        sortHandler.setComparator(taskParentIdColumn,
+//                new Comparator<TaskSummary>() {
+//            public int compare(TaskSummary o1,
+//                    TaskSummary o2) {
+//                return Integer.valueOf(o1.getParentId()).compareTo(o2.getParentId());
+//            }
+//        });
 
 
         List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
@@ -446,7 +441,7 @@ public class InboxPersonalViewImpl extends Composite
         }));
 
 
-        cells.add(new EditHasCell("Edit", new Delegate<TaskSummary>() {
+        cells.add(new DetailsHasCell("Edit", new Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Popup");
@@ -472,7 +467,7 @@ public class InboxPersonalViewImpl extends Composite
                 return object;
             }
         };
-        myTaskListGrid.addColumn(actionsColumn, "Actions");
+        myTaskListGrid.addColumn(actionsColumn, constants.Actions());
 
 
 
@@ -502,19 +497,19 @@ public class InboxPersonalViewImpl extends Composite
         presenter.refreshActiveTasks();
     }
 
-    private class EditHasCell implements HasCell<TaskSummary, TaskSummary> {
+    private class DetailsHasCell implements HasCell<TaskSummary, TaskSummary> {
 
         private ActionCell<TaskSummary> cell;
 
-        public EditHasCell(String text, Delegate<TaskSummary> delegate) {
+        public DetailsHasCell(String text, Delegate<TaskSummary> delegate) {
             cell = new ActionCell<TaskSummary>(text, delegate) {
                 @Override
                 public void render(Context context, TaskSummary value, SafeHtmlBuilder sb) {
 
-                    ImageResource editIcon = images.editIcon();
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(editIcon);
+                    ImageResource detailsIcon = images.detailsIcon();
+                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(detailsIcon);
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='Details'>");
+                    mysb.appendHtmlConstant("<span title='"+constants.Details()+"'>");
                     mysb.append(imageProto.getSafeHtml());
                     mysb.appendHtmlConstant("</span>");
                     sb.append(mysb.toSafeHtml());
@@ -548,9 +543,9 @@ public class InboxPersonalViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
                     if (value.getActualOwner() != null && (value.getStatus().equals("Reserved"))) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.startIcon());
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.startGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='Start'>");
+                        mysb.appendHtmlConstant("<span title='"+constants.Start()+"'>");
                         mysb.append(imageProto.getSafeHtml());
                         mysb.appendHtmlConstant("</span>");
                         sb.append(mysb.toSafeHtml());
@@ -585,9 +580,9 @@ public class InboxPersonalViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
                     if (value.getActualOwner() != null && value.getStatus().equals("InProgress")) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.completeIcon());
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.completeGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='Complete'>");
+                        mysb.appendHtmlConstant("<span title='"+constants.Complete()+"'>");
                         mysb.append(imageProto.getSafeHtml());
                         mysb.appendHtmlConstant("</span>");
                         sb.append(mysb.toSafeHtml());
@@ -624,7 +619,7 @@ public class InboxPersonalViewImpl extends Composite
                     if (value.getActualOwner() != null && (value.getStatus().equals("Reserved") || value.getStatus().equals("InProgress"))) {
                         AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.popupIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='Work'>");
+                        mysb.appendHtmlConstant("<span title='"+constants.Work()+"'>");
                         mysb.append(imageProto.getSafeHtml());
                         mysb.appendHtmlConstant("</span>");
                         sb.append(mysb.toSafeHtml());
@@ -659,9 +654,9 @@ public class InboxPersonalViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
                     if (value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty() && value.getStatus().equals("Ready")) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.unlockIcon());
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.releaseGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='Claim'>");
+                        mysb.appendHtmlConstant("<span title='"+constants.Claim()+"'>");
                         mysb.append(imageProto.getSafeHtml());
                         mysb.appendHtmlConstant("</span>");
                         sb.append(mysb.toSafeHtml());
@@ -697,9 +692,9 @@ public class InboxPersonalViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
                     if (value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty() && !value.getPotentialOwners().contains(identity.getName()) && value.getStatus().equals("Reserved")) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.lockIcon());
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.claimGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='Release'>");
+                        mysb.appendHtmlConstant("<span title='"+constants.Release()+"'>");
                         mysb.append(imageProto.getSafeHtml());
                         mysb.appendHtmlConstant("</span>");
                         sb.append(mysb.toSafeHtml());

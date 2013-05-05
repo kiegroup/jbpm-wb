@@ -28,6 +28,7 @@ import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -35,6 +36,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
+import org.jbpm.console.ng.ht.client.i8n.Constants;
 
 @Dependent
 @WorkbenchPopup(identifier = "Task Comments Popup")
@@ -67,6 +69,8 @@ public class TaskCommentsPopupPresenter {
 
     @Inject
     Caller<TaskServiceEntryPoint> taskServices;
+    
+    private Constants constants = GWT.create(Constants.class);
 
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
@@ -99,10 +103,10 @@ public class TaskCommentsPopupPresenter {
         final long taskId = Long.parseLong(place.getParameter("taskId", "0").toString());
         view.getTaskIdText().setText(String.valueOf(taskId));
         view.getNavBarUL().clear();
-        NavLink commentsLink = new NavLink("Comments");
+        NavLink commentsLink = new NavLink(constants.Comments());
         commentsLink.setStyleName("active");
 
-        NavLink workLink = new NavLink("Work");
+        NavLink workLink = new NavLink(constants.Work());
 
         workLink.addClickHandler(new ClickHandler() {
 
@@ -114,7 +118,7 @@ public class TaskCommentsPopupPresenter {
                 placeManager.goTo(placeRequestImpl);
             }
         });
-        NavLink detailsLink = new NavLink("Details");
+        NavLink detailsLink = new NavLink(constants.Details());
         detailsLink.addClickHandler(new ClickHandler() {
 
             @Override

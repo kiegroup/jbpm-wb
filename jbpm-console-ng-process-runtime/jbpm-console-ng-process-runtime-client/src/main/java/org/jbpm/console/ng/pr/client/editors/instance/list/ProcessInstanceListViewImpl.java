@@ -17,8 +17,11 @@ package org.jbpm.console.ng.pr.client.editors.instance.list;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.Icon;
+import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
+import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -35,7 +38,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.client.resources.ShowcaseImages;
+import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
 import org.jbpm.console.ng.pr.client.util.ResizableHeader;
 import org.jbpm.console.ng.pr.model.events.ProcessSelectionEvent;
 import org.kie.api.runtime.process.ProcessInstance;
@@ -64,7 +67,6 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 
@@ -94,12 +96,7 @@ public class ProcessInstanceListViewImpl extends Composite
     @DataField
     public Button filterButton;
     
-    @Inject
-    @DataField
-    public NavLink abortLink;
-    @Inject
-    @DataField
-    public NavLink signalLink;
+   
     @Inject
     @DataField
     public NavLink showAllLink;
@@ -114,6 +111,22 @@ public class ProcessInstanceListViewImpl extends Composite
     public NavLink showRelatedToMeLink;
     @Inject
     @DataField
+    public IconAnchor signalIcon;
+    @Inject
+    @DataField
+    public IconAnchor abortIcon;
+    @Inject
+    @DataField
+    public IconAnchor refreshIcon;
+    @Inject
+    @DataField
+    public Label fiterLabel;
+    
+    @Inject
+    @DataField
+    public Label processInstanceLabel;
+    @Inject
+    @DataField
     public DataGrid<ProcessInstanceSummary> processInstanceListGrid;
     @Inject
     @DataField
@@ -126,7 +139,7 @@ public class ProcessInstanceListViewImpl extends Composite
     private Event<ProcessSelectionEvent> processSelection;
     private ListHandler<ProcessInstanceSummary> sortHandler;
     private Constants constants = GWT.create(Constants.class);
-    private ShowcaseImages images = GWT.create(ShowcaseImages.class);
+    private ProcessRuntimeImages images = GWT.create(ProcessRuntimeImages.class);
 
     public ProcessInstanceListViewImpl() {
         oracle = new MultiWordSuggestOracle();
@@ -136,14 +149,16 @@ public class ProcessInstanceListViewImpl extends Composite
     @Override
     public void init(final ProcessInstanceListPresenter presenter) {
         this.presenter = presenter;
-
+        filterButton.setText(constants.Filter());
+        processInstanceLabel.setText(constants.Process_Instances());
+        processInstanceLabel.setStyleName("");
         listContainer.add(processInstanceListGrid);
         listContainer.add(pager);
 
         processInstanceListGrid.setHeight("350px");
-
+        fiterLabel.setText(constants.Showing());
         
-        showAllLink.setText("Active");
+        showAllLink.setText(constants.Active());
         showAllLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -151,21 +166,21 @@ public class ProcessInstanceListViewImpl extends Composite
             }
         });
         
-        showCompletedLink.setText("Completed");
+        showCompletedLink.setText(constants.Completed());
         showCompletedLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 presenter.refreshCompletedProcessList();
             }
         });
-        showAbortedLink.setText("Aborted");
+        showAbortedLink.setText(constants.Aborted());
         showAbortedLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 presenter.refreshAbortedProcessList();
             }
         });
-        showRelatedToMeLink.setText("Related To Me");
+        showRelatedToMeLink.setText(constants.Related_To_Me());
         showRelatedToMeLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -173,8 +188,9 @@ public class ProcessInstanceListViewImpl extends Composite
             }
         });
 
-        signalLink.setText("Signal");
-        signalLink.addClickHandler(new ClickHandler() {
+        signalIcon.setTitle(constants.Bulk_Signal());
+        
+        signalIcon.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 StringBuffer processIdsParam = new StringBuffer();
@@ -202,8 +218,10 @@ public class ProcessInstanceListViewImpl extends Composite
                 displayNotification(constants.Signaling_Process_Instance());
             }
         });
-        abortLink.setText("Abort");
-        abortLink.addClickHandler(new ClickHandler() {
+        
+        
+        abortIcon.setTitle("Bulk Abort");
+        abortIcon.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 if (selectedProcessInstances != null) {
@@ -221,9 +239,20 @@ public class ProcessInstanceListViewImpl extends Composite
                 }
             }
         });
-
+        
+        
+        refreshIcon.setTitle(constants.Refresh());
+        refreshIcon.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                presenter.refreshActiveProcessList();
+                displayNotification(constants.Process_Instances_Refreshed());
+            }
+        });
         // Set the message to display when the table is empty.
-        processInstanceListGrid.setEmptyTableWidget(new Label(constants.No_Process_Instances_Available()));
+        Label emptyTable = new Label(constants.No_Process_Instances_Available());
+        emptyTable.setStyleName("");
+        processInstanceListGrid.setEmptyTableWidget(emptyTable);
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler =
@@ -282,44 +311,6 @@ public class ProcessInstanceListViewImpl extends Composite
                 SafeHtmlUtils.fromSafeConstant("<br/>"));
         processInstanceListGrid.setColumnWidth(checkColumn, "40px");
 
-//        // Id.
-//        Column<ProcessInstanceSummary, Number> processInstanceIdColumn =
-//                new Column<ProcessInstanceSummary, Number>(new NumberCell()) {
-//                    @Override
-//                    public Number getValue(ProcessInstanceSummary object) {
-//                        return object.getId();
-//                    }
-//                };
-//        processInstanceIdColumn.setSortable(true);
-//        sortHandler.setComparator(processInstanceIdColumn,
-//                new Comparator<ProcessInstanceSummary>() {
-//                    public int compare(ProcessInstanceSummary o1,
-//                            ProcessInstanceSummary o2) {
-//                        return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
-//                    }
-//                });
-//        processInstanceListGrid.addColumn(processInstanceIdColumn,
-//                new ResizableHeader(constants.Id(), processInstanceListGrid, processInstanceIdColumn));
-//        processInstanceListGrid.setColumnWidth(processInstanceIdColumn, "50px");
-
-//        // Process Id String.
-//        Column<ProcessInstanceSummary, String> processIdColumn =
-//                new Column<ProcessInstanceSummary, String>(new TextCell()) {
-//                    @Override
-//                    public String getValue(ProcessInstanceSummary object) {
-//                        return object.getProcessId();
-//                    }
-//                };
-//        processIdColumn.setSortable(true);
-//        sortHandler.setComparator(processIdColumn,
-//                new Comparator<ProcessInstanceSummary>() {
-//                    public int compare(ProcessInstanceSummary o1,
-//                            ProcessInstanceSummary o2) {
-//                        return o1.getProcessId().compareTo(o2.getProcessId());
-//                    }
-//                });
-//        processInstanceListGrid.addColumn(processIdColumn,
-//                new ResizableHeader(constants.Process_Id(), processInstanceListGrid, processIdColumn));
 
         // Process Name.
         Column<ProcessInstanceSummary, String> processNameColumn =
@@ -338,7 +329,7 @@ public class ProcessInstanceListViewImpl extends Composite
             }
         });
         processInstanceListGrid.addColumn(processNameColumn,
-                new ResizableHeader(constants.Process_Name(), processInstanceListGrid, processNameColumn));
+                new ResizableHeader(constants.Name(), processInstanceListGrid, processNameColumn));
 
         Column<ProcessInstanceSummary, String> processInitiatorColumn =
                 new Column<ProcessInstanceSummary, String>(new TextCell()) {
@@ -356,8 +347,8 @@ public class ProcessInstanceListViewImpl extends Composite
             }
         });
         processInstanceListGrid.addColumn(processInitiatorColumn,
-                new ResizableHeader("Initiator", processInstanceListGrid, processInitiatorColumn));
-
+                new ResizableHeader(constants.Initiator(), processInstanceListGrid, processInitiatorColumn));
+        processInstanceListGrid.setColumnWidth(processInitiatorColumn, "180px");
         // Process Version.
         Column<ProcessInstanceSummary, String> processVersionColumn =
                 new Column<ProcessInstanceSummary, String>(new TextCell()) {
@@ -375,29 +366,29 @@ public class ProcessInstanceListViewImpl extends Composite
             }
         });
         processInstanceListGrid.addColumn(processVersionColumn,
-                new ResizableHeader(constants.Process_Version(), processInstanceListGrid, processVersionColumn));
+                new ResizableHeader(constants.Version(), processInstanceListGrid, processVersionColumn));
         processInstanceListGrid.setColumnWidth(processVersionColumn, "90px");
         // Process State 
         Column<ProcessInstanceSummary, String> processStateColumn =
                 new Column<ProcessInstanceSummary, String>(new TextCell()) {
             @Override
             public String getValue(ProcessInstanceSummary object) {
-                String statusStr = "Unknown";
+                String statusStr = constants.Unknown();
                 switch (object.getState()) {
                     case ProcessInstance.STATE_ACTIVE:
-                        statusStr = "Active";
+                        statusStr = constants.Active();
                         break;
                     case ProcessInstance.STATE_ABORTED:
-                        statusStr = "Aborted";
+                        statusStr = constants.Aborted();
                         break;
                     case ProcessInstance.STATE_COMPLETED:
-                        statusStr = "Completed";
+                        statusStr = constants.Completed();
                         break;
                     case ProcessInstance.STATE_PENDING:
-                        statusStr = "Pending";
+                        statusStr = constants.Pending();
                         break;
                     case ProcessInstance.STATE_SUSPENDED:
-                        statusStr = "Suspended";
+                        statusStr = constants.Suspended();
                         break;
 
                     default:
@@ -435,7 +426,7 @@ public class ProcessInstanceListViewImpl extends Composite
             }
         });
         processInstanceListGrid.addColumn(startTimeColumn,
-                new ResizableHeader(constants.Process_Instance_Start_Time(), processInstanceListGrid, startTimeColumn));
+                new ResizableHeader(constants.Start_Date(), processInstanceListGrid, startTimeColumn));
         processInstanceListGrid.setColumnWidth(startTimeColumn, "210px");
 
 
@@ -445,7 +436,7 @@ public class ProcessInstanceListViewImpl extends Composite
             @Override
             public void execute(ProcessInstanceSummary processInstance) {
 
-                DefaultPlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Instance_Details());
+                DefaultPlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance Details");
                 placeRequestImpl.addParameter("processInstanceId", Long.toString(processInstance.getId()));
                 placeRequestImpl.addParameter("processDefId", processInstance.getProcessId());
                 placeManager.goTo(placeRequestImpl);
@@ -478,7 +469,7 @@ public class ProcessInstanceListViewImpl extends Composite
                 return object;
             }
         };
-        processInstanceListGrid.addColumn(actionsColumn, "Actions");
+        processInstanceListGrid.addColumn(actionsColumn, constants.Actions());
         processInstanceListGrid.setColumnWidth(actionsColumn, "100px");
     }
 
@@ -512,9 +503,9 @@ public class ProcessInstanceListViewImpl extends Composite
             cell = new ActionCell<ProcessInstanceSummary>(text, delegate) {
                 @Override
                 public void render(Cell.Context context, ProcessInstanceSummary value, SafeHtmlBuilder sb) {
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.detailsIcon());
+                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.detailsGridIcon());
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='Details'>");
+                    mysb.appendHtmlConstant("<span title='"+constants.Details()+"'>");
                     mysb.append(imageProto.getSafeHtml());
                     mysb.appendHtmlConstant("</span>");
                     sb.append(mysb.toSafeHtml());
@@ -548,9 +539,9 @@ public class ProcessInstanceListViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, ProcessInstanceSummary value, SafeHtmlBuilder sb) {
                     if (value.getState() == ProcessInstance.STATE_ACTIVE) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.abortIcon());
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.abortGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='Abort'>");
+                        mysb.appendHtmlConstant("<span title='"+constants.Abort()+"'>");
                         mysb.append(imageProto.getSafeHtml());
                         mysb.appendHtmlConstant("</span>");
                         sb.append(mysb.toSafeHtml());
@@ -584,9 +575,9 @@ public class ProcessInstanceListViewImpl extends Composite
                 @Override
                 public void render(Cell.Context context, ProcessInstanceSummary value, SafeHtmlBuilder sb) {
                     if (value.getState() == ProcessInstance.STATE_ACTIVE) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.signalIcon());
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.signalGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='Signal'>");
+                        mysb.appendHtmlConstant("<span title='"+constants.Signal()+"'>");
                         mysb.append(imageProto.getSafeHtml());
                         mysb.appendHtmlConstant("</span>");
                         sb.append(mysb.toSafeHtml());
