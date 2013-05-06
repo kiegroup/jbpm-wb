@@ -113,6 +113,8 @@ public class ProcessDefDetailsViewImpl extends Composite
     private Event<NotificationEvent> notification;
     private Constants constants = GWT.create(Constants.class);
     private Path processAssetPath;
+    
+    private String encodedProcessSource;
 
     @Override
     public void init(final ProcessDefDetailsPresenter presenter) {
@@ -183,7 +185,13 @@ public class ProcessDefDetailsViewImpl extends Composite
 
     @EventHandler("openProcessDesignerButton")
     public void openProcessDesignerButton(ClickEvent e) {
-        placeManager.goTo(processAssetPath);
+       PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Designer");
+
+      if(encodedProcessSource != null) {
+          placeRequestImpl.addParameter("readOnly", "true");
+          placeRequestImpl.addParameter("encodedProcessSource", encodedProcessSource);
+      }
+      placeManager.goTo(processAssetPath, placeRequestImpl);
 
     }
 
@@ -223,4 +231,8 @@ public class ProcessDefDetailsViewImpl extends Composite
     public void setProcessAssetPath(Path processAssetPath) {
         this.processAssetPath = processAssetPath;
     }
+    
+    public void setEncodedProcessSource(String encodedProcessSource) {
+      this.encodedProcessSource = encodedProcessSource;
+   }
 }
