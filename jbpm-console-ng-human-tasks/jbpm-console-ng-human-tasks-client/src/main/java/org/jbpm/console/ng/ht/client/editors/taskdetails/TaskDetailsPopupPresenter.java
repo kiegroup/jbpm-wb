@@ -118,7 +118,7 @@ public class TaskDetailsPopupPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Task Details Popup";
+        return constants.Details();
     }
 
     @WorkbenchPartView

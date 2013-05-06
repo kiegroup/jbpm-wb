@@ -1,5 +1,6 @@
 package org.jbpm.console.ng.pr.client.editors.variables.history;
 
+import com.google.gwt.core.client.GWT;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -11,6 +12,7 @@ import com.google.gwt.view.client.ListDataProvider;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.VariableSummary;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
@@ -55,6 +57,8 @@ public class VariableHistoryPresenter {
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
 
+    private Constants constants = GWT.create(Constants.class);
+    
     @PostConstruct
     public void init() {
 
@@ -67,7 +71,7 @@ public class VariableHistoryPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Process variable history";
+        return constants.Variable_History();
     }
 
     @WorkbenchPartView

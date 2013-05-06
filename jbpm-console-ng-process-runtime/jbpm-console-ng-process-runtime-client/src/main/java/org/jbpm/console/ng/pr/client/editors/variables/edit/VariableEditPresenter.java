@@ -1,5 +1,6 @@
 package org.jbpm.console.ng.pr.client.editors.variables.edit;
 
+import com.google.gwt.core.client.GWT;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -8,6 +9,7 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -56,6 +58,8 @@ public class VariableEditPresenter {
     @Inject
     private Caller<KieSessionEntryPoint> kieSessionServices;
     
+    private Constants constants = GWT.create(Constants.class);
+    
     @PostConstruct
     public void init() {
      
@@ -69,7 +73,7 @@ public class VariableEditPresenter {
     
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Edit process variable";
+        return constants.Edit_Variable();
     }
 
     @WorkbenchPartView

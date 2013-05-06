@@ -16,6 +16,7 @@
 package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextBox;
 import java.util.Date;
@@ -30,6 +31,7 @@ import javax.enterprise.event.Event;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.ht.client.i8n.Constants;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
@@ -66,6 +68,8 @@ public class QuickNewTaskPresenter {
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
     private PlaceRequest place;
     
+    private Constants constants = GWT.create(Constants.class);
+    
     @Inject
     private PlaceManager placeManager;
 
@@ -76,7 +80,7 @@ public class QuickNewTaskPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Quick New Task";
+        return constants.Quick_Task();
     }
 
     @WorkbenchPartView

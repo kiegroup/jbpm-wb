@@ -34,6 +34,7 @@ import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.IOCBeanManager;
+import org.jbpm.console.ng.client.i18n.Constants;
 import org.kie.guvnor.commons.ui.client.resources.RoundedCornersResource;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityManager;
@@ -62,14 +63,9 @@ public class ShowcaseEntryPoint {
     private ActivityManager activityManager;
     @Inject
     private IOCBeanManager iocManager;
-    private String[] menuItems = new String[]{
-        "Authoring",
-        "Tasks",
-        "Process Definitions",
-        "Process Instances", //        "Users and Groups",
-    //        "Jobs",
-    //   "Kie Sessions List",
-    };
+    
+    private Constants constants = GWT.create(Constants.class);
+    
     @Inject
     public Identity identity;
 
@@ -120,7 +116,7 @@ public class ShowcaseEntryPoint {
         final AbstractWorkbenchPerspectiveActivity defaultPerspective = getDefaultPerspectiveActivity();
 
         final Menus menus = MenuFactory
-                .newTopLevelMenu("Home")
+                .newTopLevelMenu(constants.Home())
                 .respondsWith(new Command() {
             @Override
             public void execute() {
@@ -132,19 +128,19 @@ public class ShowcaseEntryPoint {
             }
         })
                 .endMenu()
-                .newTopLevelMenu("Authoring")
+                .newTopLevelMenu(constants.Authoring())
                 .withItems(getAuthoringViews())
                 .endMenu()
-                .newTopLevelMenu("Process Management")
+                .newTopLevelMenu(constants.Process_Management())
                 .withItems(getProcessMGMTViews())
                 .endMenu()
-                .newTopLevelMenu("Work")
+                .newTopLevelMenu(constants.Work())
                 .withItems(getWorkViews())
                 .endMenu()
-                .newTopLevelMenu("BAM")
+                .newTopLevelMenu(constants.BAM())
                 .withItems(getBAMViews())
                 .endMenu()
-                .newTopLevelMenu("Logout")
+                .newTopLevelMenu(constants.LogOut())
                 .respondsWith(new Command() {
             @Override
             public void execute() {
@@ -173,7 +169,7 @@ public class ShowcaseEntryPoint {
     private List<? extends MenuItem> getAuthoringViews() {
         final List<MenuItem> result = new ArrayList<MenuItem>(1);
 
-        result.add(MenuFactory.newSimpleItem("Process Authoring").respondsWith(new Command() {
+        result.add(MenuFactory.newSimpleItem(constants.Process_Authoring()).respondsWith(new Command() {
             @Override
             public void execute() {
                 placeManager.goTo(new DefaultPlaceRequest("Authoring"));
@@ -188,14 +184,14 @@ public class ShowcaseEntryPoint {
         final List<MenuItem> result = new ArrayList<MenuItem>(2);
         
 
-        result.add(MenuFactory.newSimpleItem("Process Definitions").respondsWith(new Command() {
+        result.add(MenuFactory.newSimpleItem(constants.Process_Definitions()).respondsWith(new Command() {
             @Override
             public void execute() {
                 placeManager.goTo(new DefaultPlaceRequest("Process Definitions"));
             }
         }).endMenu().build().getItems().get(0));
 
-        result.add(MenuFactory.newSimpleItem("Process Instances").respondsWith(new Command() {
+        result.add(MenuFactory.newSimpleItem(constants.Process_Instances()).respondsWith(new Command() {
             @Override
             public void execute() {
                 placeManager.goTo(new DefaultPlaceRequest("Process Instances"));
@@ -210,14 +206,14 @@ public class ShowcaseEntryPoint {
         final List<MenuItem> result = new ArrayList<MenuItem>(2);
         
 
-        result.add(MenuFactory.newSimpleItem("Tasks - Calendar View").respondsWith(new Command() {
+        result.add(MenuFactory.newSimpleItem(constants.Tasks_Calendar_View()).respondsWith(new Command() {
             @Override
             public void execute() {
                 placeManager.goTo(new DefaultPlaceRequest("Tasks"));
             }
         }).endMenu().build().getItems().get(0));
 
-        result.add(MenuFactory.newSimpleItem("Tasks - Grid View").respondsWith(new Command() {
+        result.add(MenuFactory.newSimpleItem(constants.Tasks_Grid_View()).respondsWith(new Command() {
             @Override
             public void execute() {
                 placeManager.goTo(new DefaultPlaceRequest("Grid Tasks List"));
@@ -230,7 +226,7 @@ public class ShowcaseEntryPoint {
 
     private List<? extends MenuItem> getBAMViews() {
         final List<MenuItem> result = new ArrayList<MenuItem>(1);
-        result.add(MenuFactory.newSimpleItem("Process Dashboard").respondsWith(new Command() {
+        result.add(MenuFactory.newSimpleItem(constants.Process_Dashboard()).respondsWith(new Command() {
             @Override
             public void execute() {
                 Window.open("http://localhost:8080/dashbuilder/workspace/jbpm-dashboard", "_blank", "");

@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.bh.client.editors.home;
 
+import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -74,7 +75,7 @@ public class HomeViewImpl extends Composite
 //  public IconAnchor discoverLabel;
   @Inject
   @DataField
-  public IconAnchor designLabel;
+  public IconAnchor authoringLabel;
 //  @Inject
 //  @DataField
 //  public IconAnchor deployLabel;
@@ -107,6 +108,59 @@ public class HomeViewImpl extends Composite
   @Inject
   @DataField
   public IconAnchor monitorBAMAnchor;
+  
+  @Inject
+  @DataField
+  public Label thejBPMCycle;
+  
+  @Inject
+  @DataField
+  public Label discoverLabel;
+  
+  @Inject
+  @DataField
+  public Label discoverTextLabel;
+  
+  @Inject
+  @DataField
+  public Label designLabel;
+  
+  @Inject
+  @DataField
+  public Label designTextLabel;
+  
+  @Inject
+  @DataField
+  public Label deployLabel;
+  
+  @Inject
+  @DataField
+  public Label deployTextLabel;
+  
+  @Inject
+  @DataField
+  public Label workTasksLabel;
+  
+  @Inject
+  @DataField
+  public Label workTasksTextLabel;
+  
+  @Inject
+  @DataField
+  public Label bamLabel;
+  
+  @Inject
+  @DataField
+  public Label bamTextLabel;
+  
+  @Inject
+  @DataField
+  public Label improveLabel;
+  
+  @Inject
+  @DataField
+  public Label improveTextLabel;
+  
   
 //  @Inject
 //  @DataField
@@ -143,10 +197,42 @@ public class HomeViewImpl extends Composite
     carouselImg1.setUrl(url + "images/mountain.jpg");
     carouselImg0.setUrl(url + "images/mountain.jpg");
     
-
+    authoringLabel.setText(constants.Authoring());
+    modelProcessAnchor.setText(constants.Business_Processes());
+    workLabel.setText(constants.Work());
+    workTaskListAnchor.setText(constants.Tasks_List());
+    workProcessDefinitionsAnchor.setText(constants.Process_Definitions());
+    workProcessInstancesAnchor.setText(constants.Process_Instances());
+    monitorLabel.setText(constants.Monitor());
+    monitorBAMAnchor.setText(constants.Business_Activity_Monitoring());
+    thejBPMCycle.setText(constants.The_jBPM_Cycle());
+    thejBPMCycle.setStyleName("");
     
-   
-
+    discoverLabel.setText(constants.Discover());
+    discoverLabel.setStyleName("");
+    discoverTextLabel.setText(constants.Discover_Text());
+    discoverTextLabel.setStyleName("");
+    designLabel.setText(constants.Design());
+    designLabel.setStyleName("");
+    designTextLabel.setText(constants.Design_Text());
+    designTextLabel.setStyleName("");
+    deployLabel.setText(constants.Deploy());
+    deployLabel.setStyleName("");
+    deployTextLabel.setText(constants.Deploy_Text());
+    deployTextLabel.setStyleName("");
+    workTasksLabel.setText(constants.Work());     
+    workTasksLabel.setStyleName("");
+    workTasksTextLabel.setText(constants.Work_Text());
+    workTasksTextLabel.setStyleName("");
+    bamLabel.setText(constants.Business_Activity_Monitoring());
+    bamLabel.setStyleName("");
+    bamTextLabel.setText(constants.BAM_Text());  
+    bamTextLabel.setStyleName("");
+    improveLabel.setText(constants.Improve());
+    improveLabel.setStyleName("");
+    improveTextLabel.setText(constants.Improve_Text());
+    improveTextLabel.setStyleName("");
+    
     modelProcessAnchor.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {

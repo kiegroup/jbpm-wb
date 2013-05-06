@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.ht.client.i8n;
+package org.jbpm.console.ng.client.i18n;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Messages;
+import org.uberfire.client.workbench.widgets.menu.MenuItem;
 
 /**
  * This uses GWT to provide client side compile time resolving of locales. See:
@@ -33,94 +34,32 @@ public interface Constants
 
     Constants INSTANCE = GWT.create(Constants.class);
 
-    String Tasks_List_Calendar_View();
+    String Tasks_Calendar_View();
+
+    String Tasks_Grid_View();
+
+    String Process_Dashboard();
+
+    String Process_Authoring();
+
+    String Authoring();
+
+    String Process_Management();
     
-    String Tasks_List_Advanced_View();
-
-    String Day();
-
-    String Week();
-
-    String Month();
-
-    String Advanced();
-
-    String New_Task();
-
-    String Personal();
-
-    String Group();
-
-    String Active();
-
-    String All();
-
-    String No_Pending_Tasks_Enjoy();
-
-    String Priority();
-
-    String Task();
-
-    String Id();
-
-    String Status();
-
-    String Due_On();
-
-    String Parent();
-
-    String Complete();
-
-    String Release();
-
-    String Claim();
-
     String Work();
-
-    String Start();
-
-    String Details();
     
-    String Actions();
-
-    String No_Parent();
-
-    String User();
-
-    String Process_Instance_Id();
-
-    String Process_Definition_Id();
-
-    String Process_Instance_Details();
-
-    String No_Comments_For_This_Task();
-
-    String Comment();
+    String BAM();
     
-    String At();
+    String LogOut();
     
-    String Added_By();
-
-    String Add_Comment();
-
-    String Task_Must_Have_A_Name();
-
-    String Create();
-
-    String Task_Name();
-
-    String Quick_Task();
+    String Home();
     
-    String Description();
-
-    String Comments();
+    String Process_Definitions();
     
-    String Filters();
+    String Process_Instances();
+    
+    
+   
 
-    String Process_Context();
-
-    String Update();
-
-    String Form();
-
+    
 }

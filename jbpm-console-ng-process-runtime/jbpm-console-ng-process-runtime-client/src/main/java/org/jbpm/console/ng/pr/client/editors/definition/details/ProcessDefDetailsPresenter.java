@@ -39,7 +39,9 @@ import org.uberfire.shared.mvp.PlaceRequest;
 
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.core.client.GWT;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 
 @Dependent
@@ -84,6 +86,7 @@ public class ProcessDefDetailsPresenter {
     @Inject
     private Caller<VFSService> fileServices;
     
+    private Constants constants = GWT.create(Constants.class);
     
     @OnStart
     public void onStart( final PlaceRequest place ) {
@@ -92,7 +95,7 @@ public class ProcessDefDetailsPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Process Definition Details";
+        return constants.Process_Definition_Details();
     }
 
     @WorkbenchPartView

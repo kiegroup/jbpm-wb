@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
+import com.google.gwt.core.client.GWT;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -31,6 +32,7 @@ import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.ht.client.i8n.Constants;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -71,10 +73,12 @@ public class TasksListPresenter {
     private Identity identity;
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
+    
+    private Constants constants = GWT.create(Constants.class);
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Tasks List";
+        return constants.Tasks_List_Calendar_View();
     }
 
     @WorkbenchPartView

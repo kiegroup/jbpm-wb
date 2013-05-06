@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.pr.client.editors.definition.diagram;
 
+import com.google.gwt.core.client.GWT;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -25,6 +26,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.uberfire.client.annotations.OnReveal;
@@ -73,6 +75,8 @@ public class ProcessDiagramPopupPresenter {
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
     private PlaceRequest place;
 
+    private Constants constants = GWT.create(Constants.class);
+    
     @OnStart
     public void onStart(final PlaceRequest place) {
         this.place = place;
@@ -80,7 +84,7 @@ public class ProcessDiagramPopupPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Process Diagram Popup";
+        return constants.Process_Diagram();
     }
 
     @WorkbenchPartView

@@ -18,6 +18,7 @@ package org.jbpm.console.ng.pr.client.editors.instance.list;
 
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.google.gwt.core.client.GWT;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,6 +35,7 @@ import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
 import org.kie.api.runtime.process.ProcessInstance;
@@ -77,10 +79,12 @@ public class ProcessInstanceListPresenter {
   private Caller<KieSessionEntryPoint> kieSessionServices;
   
   private ListDataProvider<ProcessInstanceSummary> dataProvider = new ListDataProvider<ProcessInstanceSummary>();
+  
+  private Constants constants = GWT.create(Constants.class);
 
   @WorkbenchPartTitle
   public String getTitle() {
-    return "Process Instance List";
+    return constants.Process_Instances();
   }
 
   @WorkbenchPartView

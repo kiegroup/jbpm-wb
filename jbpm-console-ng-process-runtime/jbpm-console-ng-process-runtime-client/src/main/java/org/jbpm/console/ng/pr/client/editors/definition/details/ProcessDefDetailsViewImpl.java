@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.pr.client.editors.definition.details;
 
-import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.NavLink;

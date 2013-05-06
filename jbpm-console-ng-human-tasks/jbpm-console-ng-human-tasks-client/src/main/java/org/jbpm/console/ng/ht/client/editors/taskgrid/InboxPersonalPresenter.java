@@ -2,6 +2,7 @@ package org.jbpm.console.ng.ht.client.editors.taskgrid;
 
 import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.google.gwt.core.client.GWT;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +31,7 @@ import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.ProvidesKey;
+import org.jbpm.console.ng.ht.client.i8n.Constants;
 
 @Dependent
 @WorkbenchScreen(identifier = "Grid Tasks List")
@@ -56,6 +58,9 @@ public class InboxPersonalPresenter {
     private Identity identity;
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
+    
+    private Constants constants = GWT.create(Constants.class);
+    
     private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
     public static final ProvidesKey<TaskSummary> KEY_PROVIDER = new ProvidesKey<TaskSummary>() {
         public Object getKey(TaskSummary item) {
@@ -65,7 +70,7 @@ public class InboxPersonalPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Personal Tasks";
+        return constants.Tasks_List_Advanced_View();
     }
 
     @WorkbenchPartView

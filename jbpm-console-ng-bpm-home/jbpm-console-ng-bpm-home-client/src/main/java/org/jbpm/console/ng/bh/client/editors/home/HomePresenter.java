@@ -15,17 +15,14 @@
  */
 package org.jbpm.console.ng.bh.client.editors.home;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.core.client.GWT;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jbpm.console.ng.bh.client.i18n.Constants;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -48,6 +45,9 @@ public class HomePresenter {
   }
   @Inject
   private PlaceManager placeManager;
+  
+  private Constants constants = GWT.create(Constants.class);
+  
   @Inject
   HomeView view;
   // Retrieve the actions from a service
@@ -59,7 +59,7 @@ public class HomePresenter {
 
   @WorkbenchPartTitle
   public String getTitle() {
-    return "Home Screen";
+    return constants.Home();
   }
 
   @WorkbenchPartView

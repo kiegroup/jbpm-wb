@@ -85,7 +85,7 @@ public class TaskCommentsPopupPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Task Comments";
+        return constants.Comments();
     }
 
     @WorkbenchPartView

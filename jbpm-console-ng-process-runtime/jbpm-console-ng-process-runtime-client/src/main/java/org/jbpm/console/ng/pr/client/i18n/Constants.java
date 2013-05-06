@@ -166,5 +166,7 @@ public interface Constants
     String Event();
 
     String Signal_Ref();
+
+    String Process_Diagram();
     
 }

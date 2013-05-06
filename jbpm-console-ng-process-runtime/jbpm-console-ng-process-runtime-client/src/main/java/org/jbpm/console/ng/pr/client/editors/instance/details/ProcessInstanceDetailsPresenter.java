@@ -43,10 +43,12 @@ import org.uberfire.shared.mvp.PlaceRequest;
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 
 
 @Dependent
@@ -95,7 +97,7 @@ public class ProcessInstanceDetailsPresenter {
     @Inject
     private Caller<VFSService> fileServices;
     
-    
+    private Constants constants = GWT.create(Constants.class);
     
     private             ListDataProvider<VariableSummary> dataProvider = new ListDataProvider<VariableSummary>();
     public static final ProvidesKey<VariableSummary>      KEY_PROVIDER = new ProvidesKey<VariableSummary>() {
@@ -106,7 +108,7 @@ public class ProcessInstanceDetailsPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Process Instance Details";
+        return constants.Process_Instance_Details();
     }
 
     @WorkbenchPartView

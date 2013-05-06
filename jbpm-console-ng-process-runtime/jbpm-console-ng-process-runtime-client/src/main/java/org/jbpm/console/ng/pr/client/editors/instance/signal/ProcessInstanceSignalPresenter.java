@@ -1,5 +1,6 @@
 package org.jbpm.console.ng.pr.client.editors.instance.signal;
 
+import com.google.gwt.core.client.GWT;
 import java.util.Collection;
 
 import javax.annotation.PostConstruct;
@@ -10,6 +11,7 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -52,6 +54,8 @@ public class ProcessInstanceSignalPresenter {
     @Inject 
     private Caller<KieSessionEntryPoint> kieSessionServices;
     
+    private Constants constants = GWT.create(Constants.class);
+    
     @PostConstruct
     public void init() {
      
@@ -65,7 +69,7 @@ public class ProcessInstanceSignalPresenter {
     
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Signal process instance";
+        return constants.Signaling_Process_Instance();
     }
 
     @WorkbenchPartView
