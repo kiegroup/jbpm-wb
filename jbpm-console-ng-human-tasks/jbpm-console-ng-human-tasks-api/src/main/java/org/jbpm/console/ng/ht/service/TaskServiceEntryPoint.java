@@ -54,7 +54,7 @@ public interface TaskServiceEntryPoint {
     
 
     /**
-     * Gets the mapping '{@link Day} -> list of owned tasks' starting from specified day, for specified number of days and filtering by task name or part of it.
+     * Gets the mapping '{@link Day} -> list of owned tasks' starting from specified day, for specified number of days and filtering by text.
      * 
      * Only active tasks are considered (task with status "InProgress", "Reserved" or "Created").
      * 
@@ -109,7 +109,7 @@ public interface TaskServiceEntryPoint {
     Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, List<String> strStatuses, Date from, int nrOfDaysTotal, String language);
     
     /**
-     * Gets the mapping '{@link Day} -> list of owned tasks' starting from specified day, for specified number of days and filtering by task name or part of it.
+     * Gets the mapping '{@link Day} -> list of owned tasks' starting from specified day, for specified number of days and filtering by text.
      * Only tasks with specified statuses are considered.
      *  
      * @param userId  id of the task owner
@@ -138,9 +138,7 @@ public interface TaskServiceEntryPoint {
     Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(String userId, List<String> groupIds, Date from, Date to, String language);
     
     /**
-     * Gets the mapping '{@link Day} -> list of assigned personal and groups tasks' starting from specified day, for specified number of days and filtering by task name or part of it.
-     * 
-     * Only tasks with status "Ready", "InProgress", "Reserved" or "Created" are considered.
+     * Gets the mapping '{@link Day} -> list of assigned personal and groups tasks' starting from specified day, for specified number of days and filtering by text.
      * 
      * @param userId  id of the task owner
      * @param groupIds  list of group ids
@@ -184,7 +182,7 @@ public interface TaskServiceEntryPoint {
     
     
     /**
-     * Gets the mapping '{@link Day} -> list of assigned groups tasks' starting from specified day and for specified number of days, filtering by task name or part of it.
+     * Gets the mapping '{@link Day} -> list of assigned groups tasks' starting from specified day and for specified number of days, filtering by text.
      * 
      * @param groupIds  list of group ids
      * @param from start day
