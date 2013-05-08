@@ -5,6 +5,7 @@ import java.io.FilenameFilter;
 import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
@@ -13,6 +14,10 @@ import org.jbpm.console.ng.pr.service.DeploymentManagerEntryPoint;
 import org.jbpm.console.ng.pr.service.Initializable;
 import org.jbpm.kie.services.api.DeploymentService;
 import org.jbpm.kie.services.api.DeploymentUnit;
+import org.jbpm.kie.services.impl.event.Deploy;
+import org.jbpm.kie.services.impl.event.DeploymentEvent;
+import org.jbpm.kie.services.impl.event.Undeploy;
+import org.uberfire.backend.deployment.DeploymentConfigService;
 
 @Service
 @ApplicationScoped
@@ -24,6 +29,9 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
     @Inject
     @RequestScoped
     private Set<DeploymentUnit> deploymentUnits;
+
+    @Inject
+    private DeploymentConfigService deploymentConfigService;
 
 
     @Override
@@ -67,4 +75,13 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         }
     }
 
+    public void saveDeployment(@Observes @Deploy DeploymentEvent event) {
+        if(deploymentConfigService.getDeployment(event.getDeploymentId()) == null) {
+            deploymentConfigService.addDeployment(event.getDeploymentId(), event.getDeployedUnit().getDeploymentUnit());
+        }
+    }
+
+    public void removeDeployment(@Observes @Undeploy DeploymentEvent event) {
+        deploymentConfigService.removeDeployment(event.getDeploymentId());
+    }
 }
