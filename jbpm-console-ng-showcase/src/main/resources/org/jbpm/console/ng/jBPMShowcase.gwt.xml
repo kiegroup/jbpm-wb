@@ -30,7 +30,7 @@
   <!-- projects -->
   
   <inherits name="org.kie.guvnor.metadata.GuvnorMetadataWidget"/>
-  <inherits name="org.kie.guvnor.m2repo.GuvnorM2RepoEditorClient"/>
+  <inherits name="org.guvnor.m2repo.GuvnorM2RepoEditorClient"/>
   <inherits name="org.kie.guvnor.projecteditor.GuvnorProjectEditorClient"/>
   <inherits name="org.kie.guvnor.projectconfigscreen.GuvnorProjectConfigScreenClient"/>
   <inherits name="org.kie.guvnor.configresource.GuvnorConfigResourceWidget"/>
