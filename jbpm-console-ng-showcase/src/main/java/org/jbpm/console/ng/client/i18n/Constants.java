@@ -32,6 +32,8 @@ public interface Constants
         extends
         Messages {
 
+    
+
     Constants INSTANCE = GWT.create(Constants.class);
 
     String Tasks_Calendar_View();
@@ -57,8 +59,12 @@ public interface Constants
     String Process_Definitions();
     
     String Process_Instances();
+
+    String Deploy();
+
+    String Deployments();
     
-    
+    String newItem();
    
 
     

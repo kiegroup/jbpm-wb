@@ -17,6 +17,7 @@ package org.jbpm.console.ng.bd.client.editors.session.list;
 
 
 
+import com.google.gwt.core.client.GWT;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -24,7 +25,12 @@ import javax.inject.Inject;
 
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
-import org.jbpm.console.ng.bd.model.KieSessionSummary;
+import java.util.List;
+import org.jboss.errai.bus.client.api.RemoteCallback;
+import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.bd.client.i18n.Constants;
+import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
+import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
 
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -33,7 +39,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 
 @Dependent
-@WorkbenchScreen(identifier = "Kie Sessions List")
+@WorkbenchScreen(identifier = "Deployments")
 public class KieSessionsListPresenter {
 
   
@@ -50,15 +56,16 @@ public class KieSessionsListPresenter {
     }
     @Inject
     private KieSessionsListView view;
-//    @Inject
-//    private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
+    @Inject
+    private Caller<DeploymentManagerEntryPoint> deploymentManager;
     
+    private Constants constants = GWT.create(Constants.class);
     
-    private ListDataProvider<KieSessionSummary> dataProvider = new ListDataProvider<KieSessionSummary>();
+    private ListDataProvider<String> dataProvider = new ListDataProvider<String>();
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Process Definition List";
+        return constants.Deployment_Units();
     }
 
     @WorkbenchPartView
@@ -73,23 +80,35 @@ public class KieSessionsListPresenter {
     public void init() {
     }
     
-//    void newKieSessionButton(String group, String artifact, String version, String kbaseName, final String kieSessionName) {
-//      knowledgeServices.call(new RemoteCallback<Integer>() {
-//                      @Override
-//                      public void callback(Integer sessionId) {
-//                          view.displayNotification(" KSession "+kieSessionName+" Created! with id = "+sessionId);
-//
-//                      }
-//                  }).newKieSession(group, artifact, version, kbaseName, kieSessionName);
-//    }
+    public void newKieSessionButton(String group, String artifact, String version, String kbaseName, final String kieSessionName) {
+          deploymentManager.call(new RemoteCallback<Void>() {
+                          @Override
+                      public void callback(Void nothing) {
+                          view.displayNotification(" Kjar Deployed "+kieSessionName);
+
+                      }
+                  }).deploy(new KModuleDeploymentUnitSummary(kbaseName, group, artifact, version, kbaseName, kieSessionName));
+    }
+    
+    public void refreshDeployedUnits(){
+        deploymentManager.call(new RemoteCallback<List<String>>() {
+                @Override
+                public void callback(List<String> ids) {
+                    dataProvider.getList().clear();
+                    dataProvider.getList().addAll(ids);
+                    dataProvider.refresh();
+                }
+            }).getDeploymentUnits();
+    
+    }
     
    
 
-    public void addDataDisplay(HasData<KieSessionSummary> display) {
+    public void addDataDisplay(HasData<String> display) {
         dataProvider.addDataDisplay(display);
     }
 
-    public ListDataProvider<KieSessionSummary> getDataProvider() {
+    public ListDataProvider<String> getDataProvider() {
         return dataProvider;
     }
 
@@ -99,6 +118,6 @@ public class KieSessionsListPresenter {
 
     @OnReveal
     public void onReveal() {
-       
+       refreshDeployedUnits();
     }
 }

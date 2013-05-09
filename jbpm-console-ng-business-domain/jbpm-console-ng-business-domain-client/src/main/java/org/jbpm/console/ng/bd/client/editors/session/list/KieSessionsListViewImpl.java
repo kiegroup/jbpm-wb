@@ -41,7 +41,7 @@ import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
-import com.google.gwt.cell.client.NumberCell;
+import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -62,9 +62,7 @@ import java.util.List;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.client.resources.ShowcaseImages;
 import org.jbpm.console.ng.bd.client.util.ResizableHeader;
-import org.jbpm.console.ng.bd.model.KieSessionSummary;
 import org.jbpm.console.ng.bd.model.events.KieSessionSelectionEvent;
-import org.jbpm.console.ng.pr.model.ProcessSummary;
 
 @Dependent
 @Templated(value = "KieSessionsListViewImpl.html")
@@ -104,7 +102,7 @@ public class KieSessionsListViewImpl extends Composite
 
     @Inject
     @DataField
-    public DataGrid<KieSessionSummary> ksessionsListGrid;
+    public DataGrid<String> ksessionsListGrid;
 
     @Inject
     @DataField 
@@ -114,12 +112,12 @@ public class KieSessionsListViewImpl extends Composite
     @DataField
     public SimplePager pagerKsessions;
     
-    private Set<KieSessionSummary> selectedKieSession;
+    private Set<String> selectedKieSession;
     @Inject
     private Event<NotificationEvent> notification;
     @Inject
     private Event<KieSessionSelectionEvent> kieSessionSelection;
-    private ListHandler<KieSessionSummary> sortHandler;
+    private ListHandler<String> sortHandler;
     
     private Constants constants = GWT.create(Constants.class);
     private ShowcaseImages images = GWT.create(ShowcaseImages.class);
@@ -133,13 +131,14 @@ public class KieSessionsListViewImpl extends Composite
         listContainerKsessions.add(pagerKsessions);
         
         ksessionsListGrid.setHeight("350px");
-
-//         Set the message to display when the table is empty.
-        ksessionsListGrid.setEmptyTableWidget(new Label("No Kie Sessions Available"));
+        //         Set the message to display when the table is empty.
+        Label emptyTable = new Label(constants.No_Deployment_Units_Available());
+        emptyTable.setStyleName("");
+        ksessionsListGrid.setEmptyTableWidget(emptyTable);
 
 //         Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler =
-                new ListHandler<KieSessionSummary>(presenter.getDataProvider().getList());
+                new ListHandler<String>(presenter.getDataProvider().getList());
         ksessionsListGrid.addColumnSortHandler(sortHandler);
 
         // Create a Pager to control the table.
@@ -148,20 +147,20 @@ public class KieSessionsListViewImpl extends Composite
         pagerKsessions.setPageSize(10);
 
         // Add a selection model so we can select cells.
-        final MultiSelectionModel<KieSessionSummary> selectionModel =
-                new MultiSelectionModel<KieSessionSummary>();
+        final MultiSelectionModel<String> selectionModel =
+                new MultiSelectionModel<String>();
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             public void onSelectionChange(SelectionChangeEvent event) {
                 selectedKieSession = selectionModel.getSelectedSet();
-                for (KieSessionSummary kieSession : selectedKieSession) {
-                    kieSessionSelection.fire(new KieSessionSelectionEvent(kieSession.getSessionId()));
+                for (String kieSession : selectedKieSession) {
+                    
                 }
             }
         });
 
         ksessionsListGrid.setSelectionModel(selectionModel,
                 DefaultSelectionEventManager
-                .<KieSessionSummary>createCheckboxManager());
+                .<String>createCheckboxManager());
 
         initTableColumns(selectionModel);
 
@@ -173,21 +172,21 @@ public class KieSessionsListViewImpl extends Composite
 
     @EventHandler("newSessionButton")
     public void newSessionButton(ClickEvent e) {
-//        presenter.newKieSessionButton(groupText.getText(), artifactText.getText(), 
-//                        versionText.getText(), kbaseNameText.getText(), kieSessionNameText.getText());
+        presenter.newKieSessionButton(groupText.getText(), artifactText.getText(), 
+                      versionText.getText(), kbaseNameText.getText(), kieSessionNameText.getText());
     }
     
     
 
-    private void initTableColumns(final SelectionModel<KieSessionSummary> selectionModel) {
+    private void initTableColumns(final SelectionModel<String> selectionModel) {
         // Checkbox column. This table will uses a checkbox column for selection.
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
         // mouse selection.
 
-        Column<KieSessionSummary, Boolean> checkColumn =
-                new Column<KieSessionSummary, Boolean>(new CheckboxCell(true, false)) {
+        Column<String, Boolean> checkColumn =
+                new Column<String, Boolean>(new CheckboxCell(true, false)) {
             @Override
-            public Boolean getValue(KieSessionSummary object) {
+            public Boolean getValue(String object) {
                 // Get the value from the selection model.
                 return selectionModel.isSelected(object);
             }
@@ -198,55 +197,55 @@ public class KieSessionsListViewImpl extends Composite
         ksessionsListGrid.setColumnWidth(checkColumn, "40px");
 
         // Id.
-        Column<KieSessionSummary, Number> sessionIdColumn =
-                new Column<KieSessionSummary, Number>(new NumberCell()) {
+        Column<String, String> sessionIdColumn =
+                new Column<String, String>(new TextCell()) {
             @Override
-            public Number getValue(KieSessionSummary object) {
-                return object.getSessionId();
+            public String getValue(String object) {
+                return object;
             }
         };
         sessionIdColumn.setSortable(true);
         sortHandler.setComparator(sessionIdColumn,
-                new Comparator<KieSessionSummary>() {
-            public int compare(KieSessionSummary o1,
-                    KieSessionSummary o2) {
-                return Long.valueOf(o1.getSessionId()).compareTo(Long.valueOf(o2.getSessionId()));
+                new Comparator<String>() {
+            public int compare(String o1,
+                    String o2) {
+                return o1.compareTo(o2);
             }
         });
         ksessionsListGrid.addColumn(sessionIdColumn,
                 new ResizableHeader("Id", ksessionsListGrid, sessionIdColumn));
 
         // actions (icons)
-        List<HasCell<KieSessionSummary, ?>> cells = new LinkedList<HasCell<KieSessionSummary, ?>>();
+        List<HasCell<String, ?>> cells = new LinkedList<HasCell<String, ?>>();
 
-        cells.add(new DeleteActionHasCell("Delete Kie Session", new Delegate<KieSessionSummary>() {
+        cells.add(new DeleteActionHasCell("Delete Kie Session", new Delegate<String>() {
             @Override
-            public void execute(KieSessionSummary session) {
+            public void execute(String session) {
 //                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
 //                System.out.println("Opening form for process id = "+process.getId());
 //                placeRequestImpl.addParameter("processId", process.getId());
 //                placeRequestImpl.addParameter("sessionId", String.valueOf(process.getSessionId()));
 //                placeManager.goTo(placeRequestImpl);
-                displayNotification("Session "+session.getSessionId()+ "needs to be deleted here!!");
+                displayNotification("Session "+session+ "needs to be deleted here!!");
             }
         }));
 
-        cells.add(new DetailsActionHasCell("Details", new Delegate<KieSessionSummary>() {
+        cells.add(new DetailsActionHasCell("Details", new Delegate<String>() {
             @Override
-            public void execute(KieSessionSummary session) {
+            public void execute(String session) {
 
 //                PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Definition_Details());
 //                placeRequestImpl.addParameter("processId", process.getId());
 //                placeRequestImpl.addParameter("sessionId", Integer.toString(process.getSessionId()));
 //                placeManager.goTo(placeRequestImpl);
-              displayNotification("Session "+session.getSessionId()+ " go to details here!!");
+              displayNotification("Session "+session+ " go to details here!!");
             }
         }));
 
-        CompositeCell<KieSessionSummary> cell = new CompositeCell<KieSessionSummary>(cells);
-        Column<KieSessionSummary, KieSessionSummary> actionsColumn = new Column<KieSessionSummary, KieSessionSummary>(cell) {
+        CompositeCell<String> cell = new CompositeCell<String>(cells);
+        Column<String, String> actionsColumn = new Column<String, String>(cell) {
                                                         @Override
-                                                        public KieSessionSummary getValue(KieSessionSummary object) {
+                                                        public String getValue(String object) {
                                                             return object;
                                                         }
                                                     };
@@ -258,24 +257,24 @@ public class KieSessionsListViewImpl extends Composite
         notification.fire(new NotificationEvent(text));
     }
 
-    public DataGrid<KieSessionSummary> getDataGrid() {
+    public DataGrid<String> getDataGrid() {
         return ksessionsListGrid;
     }
 
-    public ListHandler<KieSessionSummary> getSortHandler() {
+    public ListHandler<String> getSortHandler() {
         return sortHandler;
     }
 
     
 
-    private class DeleteActionHasCell implements HasCell<KieSessionSummary, KieSessionSummary> {
+    private class DeleteActionHasCell implements HasCell<String, String> {
 
-        private ActionCell<KieSessionSummary> cell;
+        private ActionCell<String> cell;
 
-        public DeleteActionHasCell(String text, Delegate<KieSessionSummary> delegate) {
-            cell = new ActionCell<KieSessionSummary>(text, delegate) {
+        public DeleteActionHasCell(String text, Delegate<String> delegate) {
+            cell = new ActionCell<String>(text, delegate) {
                 @Override
-                public void render(Cell.Context context, KieSessionSummary value, SafeHtmlBuilder sb) {
+                public void render(Cell.Context context, String value, SafeHtmlBuilder sb) {
 
                     AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.startIcon());
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
@@ -288,29 +287,29 @@ public class KieSessionsListViewImpl extends Composite
         }
 
         @Override
-        public Cell<KieSessionSummary> getCell() {
+        public Cell<String> getCell() {
             return cell;
         }
 
         @Override
-        public FieldUpdater<KieSessionSummary, KieSessionSummary> getFieldUpdater() {
+        public FieldUpdater<String, String> getFieldUpdater() {
             return null;
         }
 
         @Override
-        public KieSessionSummary getValue(KieSessionSummary object) {
+        public String getValue(String object) {
             return object;
         }
     }
 
-    private class DetailsActionHasCell implements HasCell<KieSessionSummary, KieSessionSummary> {
+    private class DetailsActionHasCell implements HasCell<String, String> {
 
-        private ActionCell<KieSessionSummary> cell;
+        private ActionCell<String> cell;
 
-        public DetailsActionHasCell(String text, Delegate<KieSessionSummary> delegate) {
-            cell = new ActionCell<KieSessionSummary>(text, delegate) {
+        public DetailsActionHasCell(String text, Delegate<String> delegate) {
+            cell = new ActionCell<String>(text, delegate) {
                 @Override
-                public void render(Cell.Context context, KieSessionSummary value, SafeHtmlBuilder sb) {
+                public void render(Cell.Context context, String value, SafeHtmlBuilder sb) {
 
                     AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.detailsIcon());
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
@@ -323,17 +322,17 @@ public class KieSessionsListViewImpl extends Composite
         }
 
         @Override
-        public Cell<KieSessionSummary> getCell() {
+        public Cell<String> getCell() {
             return cell;
         }
 
         @Override
-        public FieldUpdater<KieSessionSummary, KieSessionSummary> getFieldUpdater() {
+        public FieldUpdater<String, String> getFieldUpdater() {
             return null;
         }
 
         @Override
-        public KieSessionSummary getValue(KieSessionSummary object) {
+        public String getValue(String object) {
             return object;
         }
     }

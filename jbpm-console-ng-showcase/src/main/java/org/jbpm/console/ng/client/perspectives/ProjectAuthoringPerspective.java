@@ -15,14 +15,19 @@
  */
 package org.jbpm.console.ng.client.perspectives;
 
+import com.google.gwt.core.client.GWT;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import org.jbpm.console.ng.client.i18n.Constants;
+import org.kie.guvnor.commons.ui.client.handlers.NewResourcePresenter;
 
 import org.kie.guvnor.commons.ui.client.handlers.NewResourcesMenu;
+import org.kie.guvnor.commons.ui.client.menu.ToolsMenu;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
+import org.uberfire.client.annotations.WorkbenchToolBar;
 import org.uberfire.client.mvp.Command;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.Position;
@@ -33,6 +38,10 @@ import org.uberfire.client.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.client.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.client.workbench.widgets.menu.MenuFactory;
 import org.uberfire.client.workbench.widgets.menu.Menus;
+import org.uberfire.client.workbench.widgets.toolbar.IconType;
+import org.uberfire.client.workbench.widgets.toolbar.ToolBar;
+import org.uberfire.client.workbench.widgets.toolbar.impl.DefaultToolBar;
+import org.uberfire.client.workbench.widgets.toolbar.impl.DefaultToolBarItem;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 /**
@@ -48,7 +57,17 @@ public class ProjectAuthoringPerspective {
     private Menus                 menus;
 
     @Inject
+    private NewResourcePresenter newResourcePresenter;
+    
+    @Inject
     private NewResourcesMenu newResourcesMenu;
+    
+    @Inject
+    private ToolsMenu toolsMenu;
+    
+        private ToolBar               toolBar;
+        
+    private Constants constants = GWT.create(Constants.class);
 
     public ProjectAuthoringPerspective() {
     }
@@ -57,8 +76,26 @@ public class ProjectAuthoringPerspective {
     public void init() {
 
         buildMenuBar();
+        buildToolBar();
+    }
+    
+    
+    private void buildToolBar() {
+        this.toolBar = new DefaultToolBar( "guvnor.new.item" );
+        final String tooltip = constants.newItem();
+        final Command command = new Command() {
+            @Override
+            public void execute() {
+                newResourcePresenter.show();
+            }
+        };
+        toolBar.addItem( new DefaultToolBarItem( IconType.FILE,
+                                                 tooltip,
+                                                 command ) );
 
     }
+
+    
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
@@ -78,6 +115,11 @@ public class ProjectAuthoringPerspective {
     public Menus getMenus() {
         return this.menus;
     }
+    
+    @WorkbenchToolBar
+    public ToolBar getToolBar() {
+        return this.toolBar;
+    }
 
     private void buildMenuBar() {
         this.menus = MenuFactory
@@ -91,7 +133,17 @@ public class ProjectAuthoringPerspective {
                 .endMenu()
                 .newTopLevelMenu( "New" )
                     .withItems( newResourcesMenu.getMenuItems() )
-                .endMenu().build();
+                
+                
+                .endMenu()
+                 .newTopLevelMenu( "Tools" )
+                    .withItems( toolsMenu.getMenuItems() )
+                
+                
+                .endMenu()
+                
+                
+                .build();
 
     }
 }

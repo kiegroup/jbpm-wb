@@ -18,6 +18,7 @@ package org.jbpm.console.ng.bd.backend.server;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -30,6 +31,7 @@ import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.backend.server.ProcessInstanceHelper;
+import org.jbpm.kie.services.api.DeployedUnit;
 import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeManager;

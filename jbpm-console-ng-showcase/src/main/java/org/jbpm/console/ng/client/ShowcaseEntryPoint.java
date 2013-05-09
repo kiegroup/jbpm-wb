@@ -74,7 +74,7 @@ public class ShowcaseEntryPoint {
         loadStyles();
         setupMenu();
         hideLoadingPopup();
-        registerDoAction();
+        
     }
 
     private void loadStyles() {
@@ -83,33 +83,7 @@ public class ShowcaseEntryPoint {
         RoundedCornersResource.INSTANCE.roundCornersCss().ensureInjected();
     }
 
-    private void registerDoAction() {
-//        KeyPressHandler keyPressHandler = new KeyPressHandler() {
-//            public void onKeyPress( KeyPressEvent event ) {
-//
-//                if ( event.getUnicodeCharCode() == 160 && event.isAltKeyDown() ) {
-//                    final DialogBox dialogBox = createDialogBox();
-//                    dialogBox.setGlassEnabled( true );
-//                    dialogBox.setAnimationEnabled( true );
-//                    dialogBox.center();
-//                    dialogBox.show();
-//                    actionText.setFocus( true );
-//                }
-//                if ( event.isControlKeyDown() && event.getUnicodeCharCode() == 116 ) {
-//                    PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Quick New Task" );
-//                    placeManager.goTo( placeRequestImpl );
-//                }
-//
-//                if ( event.isControlKeyDown() && event.getUnicodeCharCode() == 104 ) {
-//                    PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Home Perspective" );
-//                    placeManager.goTo( placeRequestImpl );
-//                }
-//
-//            }
-//        };
-//
-//        RootPanel.get().addDomHandler( keyPressHandler, KeyPressEvent.getType() );
-    }
+   
 
     private void setupMenu() {
 
@@ -130,6 +104,9 @@ public class ShowcaseEntryPoint {
                 .endMenu()
                 .newTopLevelMenu(constants.Authoring())
                 .withItems(getAuthoringViews())
+                .endMenu()
+                .newTopLevelMenu(constants.Deploy())
+                .withItems(getDeploymentViews())
                 .endMenu()
                 .newTopLevelMenu(constants.Process_Management())
                 .withItems(getProcessMGMTViews())
@@ -197,6 +174,23 @@ public class ShowcaseEntryPoint {
                 placeManager.goTo(new DefaultPlaceRequest("Process Instances"));
             }
         }).endMenu().build().getItems().get(0));
+
+
+        return result;
+    }
+    
+    private List<? extends MenuItem> getDeploymentViews() {
+        final List<MenuItem> result = new ArrayList<MenuItem>(1);
+        
+
+        result.add(MenuFactory.newSimpleItem(constants.Deployments()).respondsWith(new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo(new DefaultPlaceRequest("Deployments"));
+            }
+        }).endMenu().build().getItems().get(0));
+
+       
 
 
         return result;

@@ -367,12 +367,12 @@
       <artifactId>guvnor-m2repo-editor-backend</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.guvnor</groupId>
-      <artifactId>guvnor-metadata-widget</artifactId>
+      <groupId>org.kie.workbench.widgets</groupId>
+      <artifactId>kie-wb-metadata-widget</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.guvnor</groupId>
-      <artifactId>guvnor-config-resource-widget</artifactId>
+      <groupId>org.kie.workbench.widgets</groupId>
+      <artifactId>kie-wb-config-resource-widget</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.guvnor</groupId>
@@ -391,12 +391,12 @@
       <artifactId>guvnor-project-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.guvnor</groupId>
-      <artifactId>guvnor-view-source-widget</artifactId>
+      <groupId> org.kie.workbench.widgets</groupId>
+      <artifactId>kie-wb-view-source-widget</artifactId>
     </dependency>
      <dependency>
-      <groupId>org.kie.guvnor</groupId>
-      <artifactId>guvnor-decorated-grid-widget</artifactId>
+      <groupId>org.kie.workbench.widgets</groupId>
+      <artifactId>kie-wb-decorated-grid-widget</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.guvnor</groupId>
@@ -465,13 +465,13 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-modeling-client</compileSourcesArtifact>
 
-            <compileSourcesArtifact>org.kie.guvnor:guvnor-decorated-grid-widget</compileSourcesArtifact>
-            <compileSourcesArtifact>org.kie.guvnor:guvnor-view-source-widget</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-decorated-grid-widget</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-view-source-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-commons-ui</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-commons-security</compileSourcesArtifact> 
             <compileSourcesArtifact>org.kie.guvnor:guvnor-commons-services-api</compileSourcesArtifact>  
-            <compileSourcesArtifact>org.kie.guvnor:guvnor-metadata-widget</compileSourcesArtifact>
-            <compileSourcesArtifact>org.kie.guvnor:guvnor-config-resource-widget</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-metadata-widget</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-config-resource-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-core-services-api</compileSourcesArtifact>
             
             

@@ -252,7 +252,7 @@ public class HomeViewImpl extends Composite
     workProcessDefinitionsAnchor.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Definitions");
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Definition List");
         placeManager.goTo(placeRequestImpl);
       }
     });

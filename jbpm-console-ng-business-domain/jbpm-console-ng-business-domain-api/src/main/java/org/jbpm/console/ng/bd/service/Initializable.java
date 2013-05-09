@@ -1,4 +1,4 @@
-package org.jbpm.console.ng.pr.service;
+package org.jbpm.console.ng.bd.service;
 
 import java.util.Set;
 

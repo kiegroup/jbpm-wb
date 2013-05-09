@@ -38,7 +38,7 @@ import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
-import org.jbpm.console.ng.pr.service.DeploymentManagerEntryPoint;
+import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -116,13 +116,13 @@ public class ProcessDefinitionListPresenter {
     
     public void reloadRepository() {
 
-        view.showBusyIndicator("Please wait");
+        view.showBusyIndicator(constants.Please_Wait());
         deploymentManager.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void organizations) {
                 refreshProcessList(null);
                 view.hideBusyIndicator();
-                view.displayNotification("Process refreshed from repository");
+                view.displayNotification(constants.Processes_Refreshed_From_The_Repo());
             }
         }, new ErrorCallback() {
 

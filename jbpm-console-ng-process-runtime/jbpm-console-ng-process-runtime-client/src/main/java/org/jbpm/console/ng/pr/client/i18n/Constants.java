@@ -168,5 +168,9 @@ public interface Constants
     String Signal_Ref();
 
     String Process_Diagram();
+
+    String Please_Wait();
+
+    String Processes_Refreshed_From_The_Repo();
     
 }

@@ -31,8 +31,8 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.jbpm.console.ng.pr.service.DeploymentManagerEntryPoint;
-import org.jbpm.console.ng.pr.service.Initializable;
+import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
+import org.jbpm.console.ng.bd.service.Initializable;
 import org.jbpm.kie.services.api.DeploymentService;
 import org.jbpm.kie.services.api.DeploymentUnit;
 import org.jbpm.kie.services.api.Kjar;
