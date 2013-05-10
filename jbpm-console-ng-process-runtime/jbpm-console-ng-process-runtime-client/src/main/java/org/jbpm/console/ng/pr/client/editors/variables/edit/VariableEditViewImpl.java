@@ -84,6 +84,7 @@ public class VariableEditViewImpl extends Composite implements
 
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }

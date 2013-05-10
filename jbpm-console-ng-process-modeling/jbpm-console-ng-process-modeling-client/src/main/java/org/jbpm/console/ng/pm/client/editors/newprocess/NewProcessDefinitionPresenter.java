@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.pm.client.editors.newprocess;
 
-import com.google.gwt.user.client.Window;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 

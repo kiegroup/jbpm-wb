@@ -88,18 +88,22 @@ public class SessionNotificationsPopupViewImpl extends Composite
         presenter.close();
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
 
+    @Override
     public TextBox getSessionIdText() {
         return sessionIdText;
     }
 
+    @Override
     public TextArea getSessionNotificationsTextArea() {
         return sessionNotificationsTextArea;
     }
 
+    @Override
     public Button getUpdateButton() {
         return updateButton;
     }

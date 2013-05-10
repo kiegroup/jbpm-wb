@@ -275,7 +275,8 @@ public class HomeViewImpl extends Composite
 
   }
 
-  public void displayNotification(String text) {
+  @Override
+public void displayNotification(String text) {
     notification.fire(new NotificationEvent(text));
   }
 }

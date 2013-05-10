@@ -149,6 +149,7 @@ public class ProcessDefinitionListViewImpl extends Composite
         final MultiSelectionModel<ProcessSummary> selectionModel =
                 new MultiSelectionModel<ProcessSummary>();
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            @Override
             public void onSelectionChange(SelectionChangeEvent event) {
                 selectedProcessDef = selectionModel.getSelectedSet();
                 for (ProcessSummary pd : selectedProcessDef) {
@@ -191,6 +192,7 @@ public class ProcessDefinitionListViewImpl extends Composite
         processNameColumn.setSortable(true);
         sortHandler.setComparator(processNameColumn,
                 new Comparator<ProcessSummary>() {
+            @Override
             public int compare(ProcessSummary o1,
                     ProcessSummary o2) {
                 return o1.getName().compareTo(o2.getName());
@@ -210,6 +212,7 @@ public class ProcessDefinitionListViewImpl extends Composite
         versionColumn.setSortable(true);
         sortHandler.setComparator(versionColumn,
                 new Comparator<ProcessSummary>() {
+            @Override
             public int compare(ProcessSummary o1,
                     ProcessSummary o2) {
                 Integer version1 = ((o1.getVersion() == null || o1.getVersion().equals("")))?0:Integer.valueOf(o1.getVersion());
@@ -256,10 +259,12 @@ public class ProcessDefinitionListViewImpl extends Composite
         processdefListGrid.setColumnWidth(actionsColumn, "70px");
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
 
+    @Override
     public DataGrid<ProcessSummary> getDataGrid() {
         return processdefListGrid;
     }
@@ -268,6 +273,7 @@ public class ProcessDefinitionListViewImpl extends Composite
         return sortHandler;
     }
 
+    @Override
     public TextBox getSessionIdText() {
         return filterKSessionText;
     }

@@ -37,7 +37,6 @@ import org.jbpm.kie.services.api.DeploymentService;
 import org.jbpm.kie.services.api.DeploymentUnit;
 import org.jbpm.kie.services.api.Kjar;
 import org.jbpm.kie.services.api.Vfs;
-import org.jbpm.kie.services.impl.KModuleDeploymentUnit;
 import org.jbpm.kie.services.impl.VFSDeploymentUnit;
 import org.kie.commons.io.IOService;
 import org.kie.commons.io.impl.IOServiceDotFileImpl;

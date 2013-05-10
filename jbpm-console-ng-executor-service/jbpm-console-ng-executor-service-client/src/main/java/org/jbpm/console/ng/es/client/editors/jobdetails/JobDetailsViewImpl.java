@@ -59,7 +59,8 @@ public class JobDetailsViewImpl extends Composite implements JobDetailsView {
 	@Override
 	public void init(JobDetailsPresenter p) {
 		Column<RequestParameterSummary, String> paramKeyColumn = new Column<RequestParameterSummary, String>(new TextCell()) {
-        	public String getValue(RequestParameterSummary rowObject) {
+        	@Override
+            public String getValue(RequestParameterSummary rowObject) {
         		return rowObject.getKey();
         	}
         };
@@ -71,7 +72,8 @@ public class JobDetailsViewImpl extends Composite implements JobDetailsView {
         		new ResizableHeader<RequestParameterSummary>("Key", executionParametersGrid, paramKeyColumn));
 
         Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>(new TextCell()) {
-        	public String getValue(RequestParameterSummary rowObject) {
+        	@Override
+            public String getValue(RequestParameterSummary rowObject) {
         		return rowObject.getValue();
         	}
         };
@@ -79,7 +81,8 @@ public class JobDetailsViewImpl extends Composite implements JobDetailsView {
         		new ResizableHeader<RequestParameterSummary>("Value", executionParametersGrid, paramValueColumn));
 	}
 	
-	public void setRequest(RequestSummary r, List<ErrorSummary> errors, List<RequestParameterSummary> params) {
+	@Override
+    public void setRequest(RequestSummary r, List<ErrorSummary> errors, List<RequestParameterSummary> params) {
 		this.jobRetries.setText(String.valueOf(r.getExecutions()));
 		if (errors != null) {
 			for (ErrorSummary error : errors) {

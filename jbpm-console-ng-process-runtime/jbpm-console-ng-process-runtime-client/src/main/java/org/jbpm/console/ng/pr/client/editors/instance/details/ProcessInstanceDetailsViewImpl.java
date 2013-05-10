@@ -263,22 +263,27 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     
     
     
+    @Override
     public TextBox getProcessIdText() {
         return processIdText;
     }
 
+    @Override
     public ListBox getCurrentActivitiesListBox() {
         return currentActivitiesListBox;
     }
 
+    @Override
     public TextArea getLogTextArea() {
         return logTextArea;
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
 
+    @Override
     public TextBox getProcessNameText() {
         return processNameText;
     }
@@ -303,6 +308,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
                 new ResizableHeader(constants.Name(), processDataGrid, variableId));
         sortHandler.setComparator(variableId,
                 new Comparator<VariableSummary>() {
+                    @Override
                     public int compare(VariableSummary o1,
                             VariableSummary o2) {
                         return o1.getVariableId().compareTo(o2.getVariableId());
@@ -323,6 +329,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
                 new ResizableHeader(constants.Value(), processDataGrid, valueColumn));
         sortHandler.setComparator(valueColumn,
                 new Comparator<VariableSummary>() {
+                    @Override
                     public int compare(VariableSummary o1,
                             VariableSummary o2) {
                         return o1.getNewValue().compareTo(o2.getNewValue());
@@ -343,6 +350,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
                 new ResizableHeader(constants.Type(), processDataGrid, typeColumn));
         sortHandler.setComparator(typeColumn,
                 new Comparator<VariableSummary>() {
+                    @Override
                     public int compare(VariableSummary o1,
                             VariableSummary o2) {
                         return o1.getType().compareTo(o2.getType());
@@ -365,6 +373,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
                 new ResizableHeader(constants.Last_Modification(), processDataGrid, dueDateColumn));
         sortHandler.setComparator(dueDateColumn,
                 new Comparator<VariableSummary>() {
+                    @Override
                     public int compare(VariableSummary o1,
                             VariableSummary o2) {
                        
@@ -490,18 +499,22 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         this.processInstance = processInstance;
     }
 
+    @Override
     public TextBox getStateText() {
         return this.stateText;
     }
 
+    @Override
     public TextBox getProcessPackageText() {
         return processPackageText;
     }
 
+    @Override
     public TextBox getProcessVersionText() {
         return processVersionText;
     }
     
+    @Override
     public void setProcessAssetPath(Path processAssetPath) {
         this.processAssetPath = processAssetPath;
     }
@@ -512,6 +525,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         
     }
 
+    @Override
     public void setCurrentCompletedNodes(List<NodeInstanceSummary> completedNodes) {
         this.completedNodes = completedNodes;
     }

@@ -59,7 +59,8 @@ public class NewProcessDefinitionViewImpl extends Composite
   public void init(NewProcessDefinitionPresenter presenter) {
     this.presenter = presenter;
     KeyPressHandler keyPressHandlerText = new KeyPressHandler() {
-      public void onKeyPress(KeyPressEvent event) {
+      @Override
+    public void onKeyPress(KeyPressEvent event) {
         if (event.getNativeEvent().getKeyCode() == 13) {
           createProcessDefinitionFile();
         }
@@ -68,7 +69,8 @@ public class NewProcessDefinitionViewImpl extends Composite
     processDefinitionPathText.addKeyPressHandler(keyPressHandlerText);
 
     KeyPressHandler keyPressHandlerCheck = new KeyPressHandler() {
-      public void onKeyPress(KeyPressEvent event) {
+      @Override
+    public void onKeyPress(KeyPressEvent event) {
         if (event.getNativeEvent().getKeyCode() == 13) {
           createProcessDefinitionFile();
         }
@@ -83,7 +85,8 @@ public class NewProcessDefinitionViewImpl extends Composite
     createProcessDefinitionFile();
   }
 
-  public void displayNotification(String text) {
+  @Override
+public void displayNotification(String text) {
     notification.fire(new NotificationEvent(text));
 
   }

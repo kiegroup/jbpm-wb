@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.ht.client.editors.taskgrid;
 
 import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
@@ -219,6 +218,7 @@ public class InboxPersonalViewImpl extends Composite
         selectionModel =
                 new MultiSelectionModel<TaskSummary>();
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            @Override
             public void onSelectionChange(SelectionChangeEvent event) {
                 selectedTasks = selectionModel.getSelectedSet();
                 for (TaskSummary ts : selectedTasks) {
@@ -236,6 +236,7 @@ public class InboxPersonalViewImpl extends Composite
         presenter.addDataDisplay(myTaskListGrid);
 
         KeyPressHandler refreshPressHandler = new KeyPressHandler() {
+            @Override
             public void onKeyPress(KeyPressEvent event) {
 //                System.out.println("event.getUnicodeCharCode() -> "+event.getUnicodeCharCode());
 //                System.out.println("event.getNativeEvent().getKeyCode() = "+event.getNativeEvent().getKeyCode());
@@ -300,6 +301,7 @@ public class InboxPersonalViewImpl extends Composite
                 new ResizableHeader(constants.Id(), myTaskListGrid, taskIdColumn));
         sortHandler.setComparator(taskIdColumn,
                 new Comparator<TaskSummary>() {
+            @Override
             public int compare(TaskSummary o1,
                     TaskSummary o2) {
                 return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
@@ -320,6 +322,7 @@ public class InboxPersonalViewImpl extends Composite
                 new ResizableHeader(constants.Task(), myTaskListGrid, taskNameColumn));
         sortHandler.setComparator(taskNameColumn,
                 new Comparator<TaskSummary>() {
+            @Override
             public int compare(TaskSummary o1,
                     TaskSummary o2) {
                 return o1.getName().compareTo(o2.getName());
@@ -341,6 +344,7 @@ public class InboxPersonalViewImpl extends Composite
         myTaskListGrid.setColumnWidth(taskPriorityColumn, "100px");
         sortHandler.setComparator(taskPriorityColumn,
                 new Comparator<TaskSummary>() {
+            @Override
             public int compare(TaskSummary o1,
                     TaskSummary o2) {
                 return Integer.valueOf(o1.getPriority()).compareTo(o2.getPriority());
@@ -360,6 +364,7 @@ public class InboxPersonalViewImpl extends Composite
                 new ResizableHeader(constants.Status(), myTaskListGrid, statusColumn));
         sortHandler.setComparator(statusColumn,
                 new Comparator<TaskSummary>() {
+            @Override
             public int compare(TaskSummary o1,
                     TaskSummary o2) {
                 return o1.getStatus().compareTo(o2.getStatus());
@@ -383,6 +388,7 @@ public class InboxPersonalViewImpl extends Composite
                 new ResizableHeader(constants.Due_On(), myTaskListGrid, dueDateColumn));
         sortHandler.setComparator(dueDateColumn,
                 new Comparator<TaskSummary>() {
+            @Override
             public int compare(TaskSummary o1,
                     TaskSummary o2) {
                 if (o1.getExpirationTime() == null || o2.getExpirationTime() == null) {
@@ -488,22 +494,27 @@ public class InboxPersonalViewImpl extends Composite
 
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
 
+    @Override
     public DataGrid<TaskSummary> getDataGrid() {
         return myTaskListGrid;
     }
 
+    @Override
     public ListHandler<TaskSummary> getSortHandler() {
         return sortHandler;
     }
 
+    @Override
     public MultiSelectionModel<TaskSummary> getSelectionModel() {
         return selectionModel;
     }
 
+    @Override
     public void refreshTasks() {
         showGroupTasksNavLink.setStyleName("");
         showPersonalTasksNavLink.setStyleName("");

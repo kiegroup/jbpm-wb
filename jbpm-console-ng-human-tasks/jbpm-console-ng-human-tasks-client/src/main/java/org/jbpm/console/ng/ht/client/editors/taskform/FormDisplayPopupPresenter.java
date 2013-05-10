@@ -180,6 +180,7 @@ public class FormDisplayPopupPresenter {
                             startFlowPanel.setTitle("Start Task");
                             startFlowPanel.addClickHandler( new ClickHandler() {
                             
+                                @Override
                                 public native void onClick( ClickEvent event )/*-{
                                     $wnd.startTask($wnd.getFormValues($doc.getElementById("form-data")));
                                 }-*/;
@@ -192,6 +193,7 @@ public class FormDisplayPopupPresenter {
                             saveTaskFlowPanel.setTitle("Save Task");
                             saveTaskFlowPanel.addClickHandler( new ClickHandler() {
 
+                                @Override
                                 public native void onClick( ClickEvent event )/*-{
                                     $wnd.saveTaskState($wnd.getFormValues($doc.getElementById("form-data")));
                                 }-*/;
@@ -202,6 +204,7 @@ public class FormDisplayPopupPresenter {
                             completeTaskFlowPanel.setTitle("Complete Task");
                             completeTaskFlowPanel.addClickHandler( new ClickHandler() {
 
+                                @Override
                                 public native void onClick( ClickEvent event )/*-{
                                     $wnd.completeTask($wnd.getFormValues($doc.getElementById("form-data")));
                                 }-*/;
@@ -237,6 +240,7 @@ public class FormDisplayPopupPresenter {
                         startFlowPanel.setTitle("Start Process");
                         startFlowPanel.addClickHandler( new ClickHandler() {
 
+                            @Override
                             public native void onClick( ClickEvent event )/*-{
                                 $wnd.startProcess($wnd.getFormValues($doc.getElementById("form-data")));
                             }-*/;

@@ -83,7 +83,8 @@ public class QuickNewJobViewImpl extends Composite
 	private QuickNewJobPresenter presenter;
     private Constants constants = GWT.create(Constants.class);
 	
-	public void init(QuickNewJobPresenter p) {
+	@Override
+    public void init(QuickNewJobPresenter p) {
 		this.presenter = p;
 		
         myParametersGrid.setHeight("200px");
@@ -98,12 +99,14 @@ public class QuickNewJobViewImpl extends Composite
 
 	private void initGridColumns() {
 		Column<RequestParameterSummary, String> paramKeyColumn = new Column<RequestParameterSummary, String>(new EditTextCell()) {
-        	public String getValue(RequestParameterSummary rowObject) {
+        	@Override
+            public String getValue(RequestParameterSummary rowObject) {
         		return rowObject.getKey();
         	}
         };
         paramKeyColumn.setFieldUpdater(new FieldUpdater<RequestParameterSummary, String>() {
-        	public void update(int index, RequestParameterSummary object, String value) {
+        	@Override
+            public void update(int index, RequestParameterSummary object, String value) {
         		object.setKey(value);
         		dataProvider.getList().set(index, object);
         	}
@@ -111,12 +114,14 @@ public class QuickNewJobViewImpl extends Composite
         myParametersGrid.addColumn(paramKeyColumn, new ResizableHeader<RequestParameterSummary>("Key", myParametersGrid, paramKeyColumn));
 
         Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>(new EditTextCell()) {
-        	public String getValue(RequestParameterSummary rowObject) {
+        	@Override
+            public String getValue(RequestParameterSummary rowObject) {
         		return rowObject.getValue();
         	}
         };
         paramValueColumn.setFieldUpdater(new FieldUpdater<RequestParameterSummary, String>() {
-        	public void update(int index, RequestParameterSummary object, String value) {
+        	@Override
+            public void update(int index, RequestParameterSummary object, String value) {
         		object.setValue(value);
         		dataProvider.getList().set(index, object);
         	}
@@ -136,7 +141,8 @@ public class QuickNewJobViewImpl extends Composite
         CompositeCell<RequestParameterSummary> cell = new CompositeCell<RequestParameterSummary>(cells);
         Column<RequestParameterSummary, RequestParameterSummary> actionsColumn = 
         	new Column<RequestParameterSummary, RequestParameterSummary>(cell) {
-        		public RequestParameterSummary getValue(RequestParameterSummary object) {
+        		@Override
+                public RequestParameterSummary getValue(RequestParameterSummary object) {
                 	return object;
         		}
         };
@@ -184,19 +190,23 @@ public class QuickNewJobViewImpl extends Composite
 		myParametersGrid.getSelectionModel().setSelected(parameter, true);
 	}
 	
-	public void removeRow(RequestParameterSummary parameter) {
+	@Override
+    public void removeRow(RequestParameterSummary parameter) {
 		 dataProvider.getList().remove(parameter);
 	}
 	
-	public void addRow(RequestParameterSummary parameter) {
+	@Override
+    public void addRow(RequestParameterSummary parameter) {
 		dataProvider.getList().add(parameter);
 	}
 	
-	public void displayNotification(String notification) {
+	@Override
+    public void displayNotification(String notification) {
 		notificationEvents.fire(new NotificationEvent(notification));
 	}
 	
-	public Focusable getJobNameText() {
+	@Override
+    public Focusable getJobNameText() {
 		return jobNameText;
 	}
 }

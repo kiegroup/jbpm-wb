@@ -189,26 +189,32 @@ public class TaskDetailsPopupViewImpl extends Composite
         presenter.goToProcessInstanceDetails();
     }
 
+    @Override
     public TextBox getUserText() {
         return userText;
     }
 
+    @Override
     public Label getTaskIdText() {
         return taskIdText;
     }
 
+    @Override
     public Label getTaskNameText() {
         return taskNameText;
     }
 
+    @Override
     public TextArea getTaskDescriptionTextArea() {
         return taskDescriptionTextArea;
     }
 
+    @Override
     public ListBox getTaskPriorityListBox() {
         return taskPriorityListBox;
     }
 
+    @Override
     public DateTimeBox getDueDate() {
         return dueDate;
     }
@@ -217,6 +223,7 @@ public class TaskDetailsPopupViewImpl extends Composite
 //        return subTaskStrategyListBox;
 //    }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
@@ -226,26 +233,32 @@ public class TaskDetailsPopupViewImpl extends Composite
 //        return subTaskStrategies;
 //    }
 
+    @Override
     public String[] getPriorities() {
         return priorities;
     }
 
+    @Override
     public TextBox getTaskStatusText() {
         return taskStatusText;
     }
 
+    @Override
     public TextBox getProcessInstanceIdText() {
         return processInstanceIdText;
     }
 
+    @Override
     public TextBox getProcessIdText() {
         return processIdText;
     }
     
+    @Override
     public Button getpIDetailsButton() {
         return pIDetailsButton;
     }
 
+    @Override
     public UnorderedList getNavBarUL() {
       return navBarUL;
     }

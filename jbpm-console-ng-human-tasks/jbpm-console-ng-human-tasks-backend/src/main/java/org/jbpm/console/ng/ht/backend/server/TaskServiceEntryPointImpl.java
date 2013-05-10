@@ -122,15 +122,18 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return TaskSummaryHelper.adaptCollection(taskService.getSubTasksAssignedAsPotentialOwner(parentId, userId, language));
     }
     
+    @Override
     public List<TaskSummary> getTasksAssignedByGroup(String groupId, String language) {
         return TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroup(groupId, language));
     }
     
+    @Override
     public List<TaskSummary> getTasksAssignedByGroups(List<String> groupIds, String language) {
         
         return TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroups(groupIds, language));
     }
     
+    @Override
     public List<TaskSummary> getTasksAssignedPersonalAndGroupTasks(String userId, String groupId, String language) {
         List<TaskSummary> groupTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroup(groupId, language));
         List<TaskSummary> personalTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedAsPotentialOwner(userId, language));
@@ -138,6 +141,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return groupTasks;
     }
     
+    @Override
     public List<TaskSummary> getTasksAssignedPersonalAndGroupsTasks(String userId, List<String> groupIds, String language) {
         List<TaskSummary> groupTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroups(groupIds, language));
         List<Status> statuses = new ArrayList<Status>();
@@ -247,6 +251,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         taskService.start(taskId, user);
     }
     
+    @Override
     public void startBatch(List<Long> taskIds, String user){
         for(Long taskId : taskIds){
             taskService.start(taskId, user);
@@ -273,6 +278,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         taskService.release(taskId, user);
     }
     
+    @Override
     public void setPriority(long taskId, int priority) {
         taskService.setPriority(taskId, priority);
     }
@@ -281,42 +287,52 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         taskService.setTaskNames(taskId, TaskI18NHelper.adaptI18NList(taskNames) );
     }
     
+    @Override
     public void setExpirationDate(long taskId, Date date) {        
         taskService.setExpirationDate(taskId, date);
     }
     
+    @Override
     public void setDescriptions(long taskId, List<String> descriptions) {
         taskService.setDescriptions(taskId, TaskI18NHelper.adaptI18NList(descriptions));
     }
     
+    @Override
     public void setSkipable(long taskId, boolean skipable) {
         taskService.setSkipable(taskId, skipable);
     }
     
+    @Override
     public void setSubTaskStrategy(long taskId, String strategy) {
         taskService.setSubTaskStrategy(taskId, SubTasksStrategy.valueOf(strategy));
     }
     
+    @Override
     public int getPriority(long taskId) {
         return taskService.getPriority(taskId);
     }
     
+    @Override
     public Date getExpirationDate(long taskId) {
         return taskService.getExpirationDate(taskId);
     }
     
+    @Override
     public List<String> getDescriptions(long taskId) {
         return TaskI18NHelper.adaptStringList(taskService.getDescriptions(taskId));
     }
     
+    @Override
     public boolean isSkipable(long taskId) {
         return taskService.isSkipable(taskId);
     }
     
+    @Override
     public String getSubTaskStrategy(long taskId) {
         return taskService.getSubTaskStrategy(taskId).name();
     }
     
+    @Override
     public TaskSummary getTaskDetails(long taskId) {
         Task task = taskService.getTaskById(taskId);
         List<OrganizationalEntity> potentialOwners = task.getPeopleAssignments().getPotentialOwners();
@@ -343,6 +359,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
                 (int) task.getTaskData().getParentId(),potOwnersString);
     }
     
+    @Override
     public long saveContent(long taskId, Map<String, String> values) {
         return addContent(taskId, (Map)values);
     }
@@ -367,12 +384,14 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return taskService.getContentById(contentId);
     }
     
+    @Override
     public Map<String, String> getContentListById(long contentId) {
         Content contentById = getContentById(contentId);
         Object unmarshall = ContentMarshallerHelper.unmarshall(contentById.getContent(), null);
         return (Map<String, String>) unmarshall;
     }
     
+    @Override
     public Map<String, String> getContentListByTaskId(long taskId) {
         Task taskInstanceById = taskService.getTaskById(taskId);
         long documentContentId = taskInstanceById.getTaskData().getDocumentContentId();
@@ -389,6 +408,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return (Map<String, String>) unmarshall;
     }
     
+    @Override
     public Map<String, String> getTaskOutputContentByTaskId(long taskId) {
         Task taskInstanceById = taskService.getTaskById(taskId);
         long documentContentId = taskInstanceById.getTaskData().getOutputContentId();
@@ -403,14 +423,17 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return new HashMap<String, String>();
     }
     
+    @Override
     public int getCompletedTaskByUserId(String userId) {
         return taskService.getCompletedTaskByUserId(userId);
     }
     
+    @Override
     public int getPendingTaskByUserId(String userId) {
         return taskService.getPendingTaskByUserId(userId);
     }
     
+    @Override
     public IdentitySummary getOrganizationalEntityById(String entityId) {
         OrganizationalEntity entity = taskService.getOrganizationalEntityById(entityId);
         if (entity != null) {
@@ -446,6 +469,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return allEntitites;
     }
 
+    @Override
     public long addComment(long taskId, String text, String addedBy, Date addedOn) {
         InternalComment comment = new CommentImpl();
         comment.setText(text);
@@ -454,18 +478,22 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return taskService.addComment(taskId, comment);
     }
 
+    @Override
     public void deleteComment(long taskId, long commentId) {
         taskService.deleteComment(taskId, commentId);
     }
 
+    @Override
     public List<CommentSummary> getAllCommentsByTaskId(long taskId) {
         return CommentSummaryHelper.adaptCollection(taskService.getAllCommentsByTaskId(taskId));
     }
 
+    @Override
     public CommentSummary getCommentById(long commentId) {
         return CommentSummaryHelper.adapt(taskService.getCommentById(commentId));
     }
 
+    @Override
     public void updateSimpleTaskDetails(long taskId, List<String> taskNames, int priority, List<String> taskDescription, 
             //String subTaskStrategy, 
             Date dueDate) {
@@ -477,18 +505,21 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         setExpirationDate(taskId, dueDate);
     }
 
+    @Override
     public void claimBatch(List<Long> taskIds, String user) {
         for(Long taskId : taskIds){
             taskService.claim(taskId, user);
         }
     }
 
+    @Override
     public void completeBatch(List<Long> taskIds, String user, Map<String, Object> params) {
         for(Long taskId : taskIds){
             taskService.complete(taskId, user, params);
         }
     }
 
+    @Override
     public void releaseBatch(List<Long> taskIds, String user) {
         for(Long taskId : taskIds){
             taskService.release(taskId, user);

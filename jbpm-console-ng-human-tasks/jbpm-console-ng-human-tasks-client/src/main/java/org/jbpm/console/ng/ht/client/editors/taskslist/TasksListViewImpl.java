@@ -260,6 +260,7 @@ public class TasksListViewImpl extends Composite
 
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }

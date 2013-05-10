@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskgrid;
 
-import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.google.gwt.core.client.GWT;
 import java.util.ArrayList;
@@ -78,6 +77,7 @@ public class InboxPersonalPresenter {
     
     private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
     public static final ProvidesKey<TaskSummary> KEY_PROVIDER = new ProvidesKey<TaskSummary>() {
+        @Override
         public Object getKey(TaskSummary item) {
             return item == null ? null : item.getId();
         }

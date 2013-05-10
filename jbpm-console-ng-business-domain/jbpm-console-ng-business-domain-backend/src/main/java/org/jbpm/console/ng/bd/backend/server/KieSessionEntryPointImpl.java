@@ -18,7 +18,6 @@ package org.jbpm.console.ng.bd.backend.server;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -31,7 +30,6 @@ import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.backend.server.ProcessInstanceHelper;
-import org.jbpm.kie.services.api.DeployedUnit;
 import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeManager;
@@ -54,6 +52,7 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
     @Inject
     private RuntimeDataService dataService;
 
+    @Override
     public long startProcess(String domainName, String processId) {
         RuntimeManager runtimesByDomain = deploymentService.getDeployedUnit(domainName).getRuntimeManager();
         // I'm considering Singleton
@@ -62,6 +61,7 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
         return pi.getId();
     }
 
+    @Override
     public long startProcess(String domainName, String processId, Map<String, String> params) {
         RuntimeManager runtimesByDomain = deploymentService.getDeployedUnit(domainName).getRuntimeManager();
         // I'm considering Singleton
@@ -113,6 +113,7 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
 
     }
 
+    @Override
     public Collection<String> getAvailableSignals(long processInstanceId) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
         RuntimeManager runtimesByDomain = deploymentService.getDeployedUnit(piDesc.getDeploymentId()).getRuntimeManager();
@@ -130,6 +131,7 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
         return activeSignals;
     }
 
+    @Override
     public void setProcessVariable(long processInstanceId, String variableId, Object value) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
         RuntimeManager runtimesByDomain = deploymentService.getDeployedUnit(piDesc.getDeploymentId()).getRuntimeManager();

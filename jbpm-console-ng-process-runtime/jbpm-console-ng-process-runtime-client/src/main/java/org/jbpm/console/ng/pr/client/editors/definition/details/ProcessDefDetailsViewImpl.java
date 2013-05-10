@@ -194,34 +194,42 @@ public class ProcessDefDetailsViewImpl extends Composite
 
     }
 
+    @Override
     public TextBox getProcessNameText() {
         return processNameText;
     }
 
+    @Override
     public TextBox getNroOfHumanTasksText() {
         return nroOfHumanTasksText;
     }
 
+    @Override
     public ListBox getHumanTasksListBox() {
         return humanTasksListBox;
     }
 
+    @Override
     public ListBox getUsersGroupsListBox() {
         return usersGroupsListBox;
     }
 
+    @Override
     public ListBox getProcessDataListBox() {
         return processDataListBox;
     }
 
+    @Override
     public ListBox getSubprocessListBox() {
         return subprocessListBox;
     }
 
+    @Override
     public TextBox getDomainIdText() {
         return domainIdText;
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
@@ -231,6 +239,7 @@ public class ProcessDefDetailsViewImpl extends Composite
         this.processAssetPath = processAssetPath;
     }
     
+    @Override
     public void setEncodedProcessSource(String encodedProcessSource) {
       this.encodedProcessSource = encodedProcessSource;
    }

@@ -86,6 +86,7 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
         eventLabel.setText(constants.Event());
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
@@ -111,10 +112,12 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
         this.processInstanceIds.add(processInstanceId);
     }
 
+    @Override
     public String getSignalRefText() {
         return signalRefText.getText();
     }
 
+    @Override
     public String getEventText() {
         return eventText.getText();
     }

@@ -150,6 +150,7 @@ public class KieSessionsListViewImpl extends Composite
         final MultiSelectionModel<String> selectionModel =
                 new MultiSelectionModel<String>();
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            @Override
             public void onSelectionChange(SelectionChangeEvent event) {
                 selectedKieSession = selectionModel.getSelectedSet();
                 for (String kieSession : selectedKieSession) {
@@ -207,6 +208,7 @@ public class KieSessionsListViewImpl extends Composite
         sessionIdColumn.setSortable(true);
         sortHandler.setComparator(sessionIdColumn,
                 new Comparator<String>() {
+            @Override
             public int compare(String o1,
                     String o2) {
                 return o1.compareTo(o2);
@@ -253,6 +255,7 @@ public class KieSessionsListViewImpl extends Composite
         ksessionsListGrid.setColumnWidth(actionsColumn, "70px");
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }

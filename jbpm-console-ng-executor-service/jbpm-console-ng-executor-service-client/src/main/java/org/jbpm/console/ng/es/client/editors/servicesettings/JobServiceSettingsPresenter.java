@@ -90,7 +90,8 @@ public class JobServiceSettingsPresenter {
     		}
     	}).getThreadPoolSize();
     	executorServices.call(new RemoteCallback<Boolean>() {
-    		public void callback(Boolean started) {
+    		@Override
+            public void callback(Boolean started) {
     			view.setStartedLabel(started);
     		}
     	}).isActive();

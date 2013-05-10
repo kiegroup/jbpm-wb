@@ -131,6 +131,7 @@ public class VariableHistoryViewImpl extends Composite implements
         
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
@@ -147,10 +148,12 @@ public class VariableHistoryViewImpl extends Composite implements
         this.variableNameText.setText(variableId);
     }
 
+    @Override
     public long getProcessInstanceId() {
         return processInstanceId;
     }
 
+    @Override
     public String getVariableId() {
         return variableId;
     }

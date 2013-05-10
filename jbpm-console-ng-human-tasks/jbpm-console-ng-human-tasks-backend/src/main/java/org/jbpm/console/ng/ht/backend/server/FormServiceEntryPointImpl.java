@@ -119,6 +119,7 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
    
    
 
+    @Override
     public String getFormDisplayTask(long taskId) {
         return displayService.getFormDisplayTask(taskId);
     }
@@ -156,6 +157,7 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
         return formMap;
     }
 
+    @Override
     public String getFormDisplayProcess(String processId) {
         return displayService.getFormDisplayProcess(processId);
     }

@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
 import com.github.gwtbootstrap.client.ui.ControlLabel;
-import com.github.gwtbootstrap.client.ui.base.HtmlWidget;
 import java.util.Date;
 
 import javax.enterprise.context.Dependent;
@@ -108,6 +107,7 @@ public class QuickNewTaskViewImpl extends Composite
         this.presenter = presenter;
         
         KeyPressHandler keyPressHandlerText = new KeyPressHandler() {
+            @Override
             public void onKeyPress(KeyPressEvent event) {
                 if (event.getNativeEvent().getKeyCode() == 13) {
                     addTask();
@@ -117,6 +117,7 @@ public class QuickNewTaskViewImpl extends Composite
         textKeyPressHandler = taskNameText.addKeyPressHandler(keyPressHandlerText);
         
         KeyPressHandler keyPressHandlerCheck = new KeyPressHandler() {
+            @Override
             public void onKeyPress(KeyPressEvent event) {
                 if (event.getNativeEvent().getKeyCode() == 13) {
                     addTask();
@@ -147,11 +148,13 @@ public class QuickNewTaskViewImpl extends Composite
         addTask();
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
         userTaskChanges.fire(new UserTaskEvent(identity.getName()));
     }
 
+    @Override
     public TextBox getTaskNameText() {
         return taskNameText;
     }
@@ -169,6 +172,7 @@ public class QuickNewTaskViewImpl extends Composite
         }
     }
 
+    @Override
     public Button getAddTaskButton() {
       return addTaskButton;
     }

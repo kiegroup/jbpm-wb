@@ -151,6 +151,7 @@ public class RequestListViewImpl extends Composite
         final MultiSelectionModel<RequestSummary> selectionModel =
                 new MultiSelectionModel<RequestSummary>();
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            @Override
             public void onSelectionChange(SelectionChangeEvent event) {
                 selectedRequests = selectionModel.getSelectedSet();
                 for (RequestSummary r : selectedRequests) {
@@ -244,6 +245,7 @@ public class RequestListViewImpl extends Composite
         taskIdColumn.setSortable(true);
         sortHandler.setComparator(taskIdColumn,
                 new Comparator<RequestSummary>() {
+            @Override
             public int compare(RequestSummary o1,
                     RequestSummary o2) {
                 return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
@@ -265,6 +267,7 @@ public class RequestListViewImpl extends Composite
         taskNameColumn.setSortable(true);
         sortHandler.setComparator(taskNameColumn,
                 new Comparator<RequestSummary>() {
+            @Override
             public int compare(RequestSummary o1,
                     RequestSummary o2) {
                 return o1.getCommandName().compareTo(o2.getCommandName());
@@ -285,6 +288,7 @@ public class RequestListViewImpl extends Composite
         statusColumn.setSortable(true);
         sortHandler.setComparator(statusColumn,
                 new Comparator<RequestSummary>() {
+            @Override
             public int compare(RequestSummary o1,
                     RequestSummary o2) {
                 return o1.getStatus().compareTo(o2.getStatus());
@@ -333,7 +337,8 @@ public class RequestListViewImpl extends Composite
         CompositeCell<RequestSummary> cell = new CompositeCell<RequestSummary>(cells);
         Column<RequestSummary, RequestSummary> actionsColumn = 
         	new Column<RequestSummary, RequestSummary>(cell) {
-        		public RequestSummary getValue(RequestSummary object) {
+        		@Override
+                public RequestSummary getValue(RequestSummary object) {
                 	return object;
         		}
         };
@@ -345,12 +350,14 @@ public class RequestListViewImpl extends Composite
 
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
 
    
 
+    @Override
     public CheckBox getShowCompletedCheck() {
         return showCompletedCheck;
     }
@@ -375,10 +382,12 @@ public class RequestListViewImpl extends Composite
 		return showRunningCheck;
 	}
 
+    @Override
     public DataGrid<RequestSummary> getDataGrid() {
         return myRequestListGrid;
     }
 
+    @Override
     public ListHandler<RequestSummary> getSortHandler() {
         return sortHandler;
     }

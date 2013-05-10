@@ -100,30 +100,37 @@ public class ProcessDiagramPopupViewImpl extends Composite
         presenter.close();
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
 
+    @Override
     public TextBox getProcessDefIdText() {
         return processDefIdText;
     }
 
+    @Override
     public TextBox getProcessDiagramURLText() {
         return processDiagramURLText;
     }
 
+    @Override
     public TextBox getProcessPackageNameText() {
         return processPackageNameText;
     }
 
+    @Override
     public TextBox getProcessVersionText() {
         return processVersionText;
     }
 
+    @Override
     public Button getGenerateUrlButton() {
         return generateUrlButton;
     }
 
+    @Override
     public TextBox getProcessInstanceIdText() {
         return processInstanceIdText;
     }

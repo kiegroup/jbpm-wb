@@ -57,7 +57,8 @@ public class JobServiceSettingsViewImpl extends Composite
 	private JobServiceSettingsPresenter presenter;
 	private Constants constants = GWT.create(Constants.class);
 	
-	public void init(JobServiceSettingsPresenter p) {
+	@Override
+    public void init(JobServiceSettingsPresenter p) {
 		this.presenter = p;
 		this.presenter.init();
 	}
@@ -67,23 +68,28 @@ public class JobServiceSettingsViewImpl extends Composite
     	presenter.initService(numberOfExecutorsText.getValue(), frequencyText.getText());
     }
     
-	public void displayNotification(String notification) {
+	@Override
+    public void displayNotification(String notification) {
 		notificationEvents.fire(new NotificationEvent(notification));
 	}
 	
-	public Focusable getNumberOfExecutorsText() {
+	@Override
+    public Focusable getNumberOfExecutorsText() {
 		return numberOfExecutorsText;
 	}
 	
-	public void setFrequencyText(String frequency) {
+	@Override
+    public void setFrequencyText(String frequency) {
 		this.frequencyText.setValue(frequency);
 	}
 	
-	public void setNumberOfExecutors(Integer numberOfExecutors) {
+	@Override
+    public void setNumberOfExecutors(Integer numberOfExecutors) {
 		this.numberOfExecutorsText.setValue(numberOfExecutors);
 	}
 	
-	public void setStartedLabel(Boolean started) {
+	@Override
+    public void setStartedLabel(Boolean started) {
 		this.startedLabel.setText(started ? constants.Started() : constants.Stopped());
 	}
 	

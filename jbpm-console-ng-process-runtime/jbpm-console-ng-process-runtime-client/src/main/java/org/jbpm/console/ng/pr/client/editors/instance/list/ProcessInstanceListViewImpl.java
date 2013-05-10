@@ -17,7 +17,6 @@ package org.jbpm.console.ng.pr.client.editors.instance.list;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.Icon;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
@@ -268,6 +267,7 @@ public class ProcessInstanceListViewImpl extends Composite
         final MultiSelectionModel<ProcessInstanceSummary> selectionModel =
                 new MultiSelectionModel<ProcessInstanceSummary>();
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            @Override
             public void onSelectionChange(SelectionChangeEvent event) {
                 selectedProcessInstances = selectionModel.getSelectedSet();
                 for (ProcessInstanceSummary ts : selectedProcessInstances) {
@@ -323,6 +323,7 @@ public class ProcessInstanceListViewImpl extends Composite
         processNameColumn.setSortable(true);
         sortHandler.setComparator(processNameColumn,
                 new Comparator<ProcessInstanceSummary>() {
+            @Override
             public int compare(ProcessInstanceSummary o1,
                     ProcessInstanceSummary o2) {
                 return o1.getProcessId().compareTo(o2.getProcessId());
@@ -341,6 +342,7 @@ public class ProcessInstanceListViewImpl extends Composite
         processInitiatorColumn.setSortable(true);
         sortHandler.setComparator(processInitiatorColumn,
                 new Comparator<ProcessInstanceSummary>() {
+            @Override
             public int compare(ProcessInstanceSummary o1,
                     ProcessInstanceSummary o2) {
                 return o1.getInitiator().compareTo(o2.getInitiator());
@@ -360,6 +362,7 @@ public class ProcessInstanceListViewImpl extends Composite
         processVersionColumn.setSortable(true);
         sortHandler.setComparator(processVersionColumn,
                 new Comparator<ProcessInstanceSummary>() {
+            @Override
             public int compare(ProcessInstanceSummary o1,
                     ProcessInstanceSummary o2) {
                 return o1.getProcessVersion().compareTo(o2.getProcessVersion());
@@ -401,6 +404,7 @@ public class ProcessInstanceListViewImpl extends Composite
         processStateColumn.setSortable(true);
         sortHandler.setComparator(processStateColumn,
                 new Comparator<ProcessInstanceSummary>() {
+            @Override
             public int compare(ProcessInstanceSummary o1,
                     ProcessInstanceSummary o2) {
                 return Integer.valueOf(o1.getState()).compareTo(o2.getState());
@@ -420,6 +424,7 @@ public class ProcessInstanceListViewImpl extends Composite
         startTimeColumn.setSortable(true);
         sortHandler.setComparator(startTimeColumn,
                 new Comparator<ProcessInstanceSummary>() {
+            @Override
             public int compare(ProcessInstanceSummary o1,
                     ProcessInstanceSummary o2) {
                 return Long.valueOf(o1.getStartTime()).compareTo(Long.valueOf(o2.getStartTime()));
@@ -473,10 +478,12 @@ public class ProcessInstanceListViewImpl extends Composite
         processInstanceListGrid.setColumnWidth(actionsColumn, "100px");
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
 
+    @Override
     public DataGrid<ProcessInstanceSummary> getDataGrid() {
         return processInstanceListGrid;
     }
@@ -608,6 +615,7 @@ public class ProcessInstanceListViewImpl extends Composite
         }
     }
 
+    @Override
     public void setAvailableProcesses(Collection<ProcessInstanceSummary> processes) {
         oracle.clear();
         if (processes != null && !processes.isEmpty()) {

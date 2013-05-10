@@ -101,6 +101,7 @@ public class ProcessInstanceDetailsPresenter {
     
     private             ListDataProvider<VariableSummary> dataProvider = new ListDataProvider<VariableSummary>();
     public static final ProvidesKey<VariableSummary>      KEY_PROVIDER = new ProvidesKey<VariableSummary>() {
+        @Override
         public Object getKey( VariableSummary item ) {
             return item == null ? null : item.getVariableId();
         }

@@ -17,8 +17,6 @@ package org.jbpm.console.ng.ht.client.editors.taskform;
 
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Button;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -31,7 +29,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 
 import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 
@@ -84,50 +81,62 @@ public class FormDisplayPopupViewImpl extends Composite
 
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
 
+    @Override
     public long getTaskId() {
         return taskId;
     }
 
+    @Override
     public void setTaskId(long taskId) {
         this.taskId = taskId;
     }
 
+    @Override
     public String getProcessId() {
         return processId;
     }
 
+    @Override
     public void setProcessId(String processId) {
         this.processId = processId;
     }
     
+    @Override
     public VerticalPanel getFormView() {
         return formView;
     }
 
+    @Override
     public Label getNameText() {
         return nameText;
     }
 
+    @Override
     public Label getTaskIdText() {
         return taskIdText;
     }
 
+    @Override
     public FlowPanel getOptionsDiv() {
         return optionsDiv;
     }
    
+    @Override
     public UnorderedList getNavBarUL() {
       return navBarUL;
     }
 
+    @Override
     public String getDomainId() {
       return domainId;
     }
 
+    @Override
     public void setDomainId(String domainId) {
       this.domainId = domainId;
     }

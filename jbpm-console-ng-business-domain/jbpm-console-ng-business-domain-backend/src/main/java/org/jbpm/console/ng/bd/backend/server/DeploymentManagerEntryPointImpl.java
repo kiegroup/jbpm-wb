@@ -74,6 +74,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
 
     }
 
+    @Override
     public void redeploy() {
         for (DeploymentUnit unit : deploymentUnits) {
             if (deploymentService.getDeployedUnit(unit.getIdentifier()) != null) {
