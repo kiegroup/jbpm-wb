@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
@@ -23,8 +24,8 @@ import org.jbpm.kie.services.impl.KModuleDeploymentUnit;
 import org.jbpm.kie.services.impl.event.Deploy;
 import org.jbpm.kie.services.impl.event.DeploymentEvent;
 import org.jbpm.kie.services.impl.event.Undeploy;
+import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.uberfire.backend.deployment.DeploymentConfigService;
-
 
 @Service
 @ApplicationScoped
@@ -37,6 +38,13 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
     private Set<DeploymentUnit> deploymentUnits;
     @Inject
     private DeploymentConfigService deploymentConfigService;
+    @Inject
+    private GuvnorM2Repository guvnorM2Repository;
+
+    @PostConstruct
+    public void configure() {
+        guvnorM2Repository.getRepositoryURL();
+    }
 
     @Override
     public void initDeployments(Set<DeploymentUnit> deploymentUnits) {

@@ -132,7 +132,7 @@ public class AppSetup {
         }
         if (deploymentServiceTypeConfig == null) {
             deploymentServiceTypeConfig = configurationFactory.newConfigGroup(ConfigType.GLOBAL, DEPLOYMENT_SERVICE_TYPE_CONFIG, "");
-            deploymentServiceTypeConfig.addConfigItem(configurationFactory.newConfigItem("type", "vfs"));
+            deploymentServiceTypeConfig.addConfigItem(configurationFactory.newConfigItem("type", "kjar"));
 
             configurationService.addConfiguration(deploymentServiceTypeConfig);
         }
