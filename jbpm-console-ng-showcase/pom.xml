@@ -418,9 +418,9 @@
       <groupId>org.kie.guvnor</groupId>
       <artifactId>guvnor-explorer-client</artifactId>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.drools</groupId>
-      <artifactId>drools-guvnor-models-commons</artifactId>
+      <artifactId>drools-workbench-models-commons</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -455,7 +455,7 @@
           <module>org.jbpm.console.ng.FastCompiledjBPMShowcase</module>
           <logLevel>INFO</logLevel>
           <compileSourcesArtifacts>
-            <compileSourcesArtifact>org.drools:drools-guvnor-models-commons</compileSourcesArtifact>
+            <compileSourcesArtifact>org.drools:drools-workbench-models-commons</compileSourcesArtifact>
             
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-client</compileSourcesArtifact>
