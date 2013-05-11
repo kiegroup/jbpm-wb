@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 JBoss Inc 
+ * Copyright 2011 JBoss Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.editors.taskform;
 
 import com.github.gwtbootstrap.client.ui.Label;
@@ -23,14 +24,12 @@ import javax.inject.Inject;
 
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
-
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-
 
 import org.uberfire.client.mvp.PlaceManager;
 
@@ -39,14 +38,14 @@ import org.uberfire.client.mvp.PlaceManager;
  */
 @Dependent
 @Templated(value = "FormDisplayPopupViewImpl.html")
-public class FormDisplayPopupViewImpl extends Composite
-        implements
-        FormDisplayPopupPresenter.FormDisplayView {
+public class FormDisplayPopupViewImpl extends Composite implements FormDisplayPopupPresenter.FormDisplayView {
 
     private FormDisplayPopupPresenter presenter;
+
     @Inject
     @DataField
     public VerticalPanel formView;
+
     @Inject
     @DataField
     public Label nameText;
@@ -58,22 +57,20 @@ public class FormDisplayPopupViewImpl extends Composite
     @Inject
     @DataField
     public FlowPanel optionsDiv;
-   
-    
+
     @Inject
     @DataField
     public UnorderedList navBarUL;
-   
+
     private long taskId;
     private String domainId;
     private String processId;
-    
+
     @Inject
     private PlaceManager placeManager;
-    
+
     @Inject
     private Event<NotificationEvent> notification;
-    
 
     @Override
     public void init(FormDisplayPopupPresenter presenter) {
@@ -105,7 +102,7 @@ public class FormDisplayPopupViewImpl extends Composite
     public void setProcessId(String processId) {
         this.processId = processId;
     }
-    
+
     @Override
     public VerticalPanel getFormView() {
         return formView;
@@ -125,24 +122,20 @@ public class FormDisplayPopupViewImpl extends Composite
     public FlowPanel getOptionsDiv() {
         return optionsDiv;
     }
-   
+
     @Override
     public UnorderedList getNavBarUL() {
-      return navBarUL;
+        return navBarUL;
     }
 
     @Override
     public String getDomainId() {
-      return domainId;
+        return domainId;
     }
 
     @Override
     public void setDomainId(String domainId) {
-      this.domainId = domainId;
+        this.domainId = domainId;
     }
 
-   
- 
-    
- 
 }

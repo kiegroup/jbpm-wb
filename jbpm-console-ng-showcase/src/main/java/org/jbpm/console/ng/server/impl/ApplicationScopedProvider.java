@@ -25,8 +25,7 @@ import org.uberfire.backend.repositories.Repository;
 import org.uberfire.backend.server.repositories.DefaultSystemRepository;
 
 /**
- * This class should contain all ApplicationScoped producers
- * required by the application.
+ * This class should contain all ApplicationScoped producers required by the application.
  */
 @ApplicationScoped
 public class ApplicationScopedProvider {
@@ -50,7 +49,7 @@ public class ApplicationScopedProvider {
 
     @PersistenceUnit(unitName = "org.jbpm.domain")
     private EntityManagerFactory emf;
-    
+
     @Produces
     public EntityManagerFactory getEntityManagerFactory() {
         if (this.emf == null) {
@@ -60,19 +59,20 @@ public class ApplicationScopedProvider {
             } catch (NamingException e) {
                 this.emf = Persistence.createEntityManagerFactory("org.jbpm.domain");
             }
-            
+
         }
         return this.emf;
     }
-    
+
     @Produces
     @Singleton
     @PerRequest
     @PerProcessInstance
     public RuntimeEnvironment produceEnvironment(EntityManagerFactory emf) {
         SimpleRuntimeEnvironment environment = new DefaultRuntimeEnvironment(emf);
-        Properties properties= new Properties();
-        environment.setUserGroupCallback( new JBossUserGroupCallbackImpl(properties));
+        Properties properties = new Properties();
+        environment.setUserGroupCallback(new JBossUserGroupCallbackImpl(properties));
         return environment;
     }
+
 }

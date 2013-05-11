@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.es.client.editors.servicesettings;
 
 import javax.enterprise.context.Dependent;
@@ -37,64 +38,68 @@ import com.google.gwt.user.client.ui.TextBox;
 
 @Dependent
 @Templated(value = "JobServiceSettingsViewImpl.html")
-public class JobServiceSettingsViewImpl extends Composite 
-		implements JobServiceSettingsPresenter.JobServiceSettingsView {
+public class JobServiceSettingsViewImpl extends Composite implements JobServiceSettingsPresenter.JobServiceSettingsView {
+    private Constants constants = GWT.create(Constants.class);
 
     @Inject
     @DataField
     public IntegerBox numberOfExecutorsText;
+
     @Inject
     @DataField
     public TextBox frequencyText;
+
     @Inject
     @DataField
     public Button startStopButton;
+
     @Inject
     @DataField
     public Label startedLabel;
+
     @Inject
     Event<NotificationEvent> notificationEvents;
-	private JobServiceSettingsPresenter presenter;
-	private Constants constants = GWT.create(Constants.class);
-	
-	@Override
+
+    private JobServiceSettingsPresenter presenter;
+
+    @Override
     public void init(JobServiceSettingsPresenter p) {
-		this.presenter = p;
-		this.presenter.init();
-	}
+        this.presenter = p;
+        this.presenter.init();
+    }
 
     @EventHandler("startStopButton")
     public void startStopButton(ClickEvent e) {
-    	presenter.initService(numberOfExecutorsText.getValue(), frequencyText.getText());
+        presenter.initService(numberOfExecutorsText.getValue(), frequencyText.getText());
     }
-    
-	@Override
+
+    @Override
     public void displayNotification(String notification) {
-		notificationEvents.fire(new NotificationEvent(notification));
-	}
-	
-	@Override
+        notificationEvents.fire(new NotificationEvent(notification));
+    }
+
+    @Override
     public Focusable getNumberOfExecutorsText() {
-		return numberOfExecutorsText;
-	}
-	
-	@Override
+        return numberOfExecutorsText;
+    }
+
+    @Override
     public void setFrequencyText(String frequency) {
-		this.frequencyText.setValue(frequency);
-	}
-	
-	@Override
+        this.frequencyText.setValue(frequency);
+    }
+
+    @Override
     public void setNumberOfExecutors(Integer numberOfExecutors) {
-		this.numberOfExecutorsText.setValue(numberOfExecutors);
-	}
-	
-	@Override
+        this.numberOfExecutorsText.setValue(numberOfExecutors);
+    }
+
+    @Override
     public void setStartedLabel(Boolean started) {
-		this.startedLabel.setText(started ? constants.Started() : constants.Stopped());
-	}
-	
-	@Override
-	public void alert(String message) {
-		Window.alert(message); //TODO improve??
-	}
+        this.startedLabel.setText(started ? constants.Started() : constants.Stopped());
+    }
+
+    @Override
+    public void alert(String message) {
+        Window.alert(message); // TODO improve??
+    }
 }

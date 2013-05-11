@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.editors.taskcomments;
 
 import java.util.Date;
@@ -58,6 +59,7 @@ import org.jbpm.console.ng.ht.client.i8n.Constants;
 public class TaskCommentsPopupPresenter {
 
     public interface TaskCommentsPopupView extends UberView<TaskCommentsPopupPresenter> {
+
         Label getTaskIdText();
 
         Label getTaskNameText();
@@ -69,7 +71,7 @@ public class TaskCommentsPopupPresenter {
         Button addCommentButton();
 
         DataGrid<CommentSummary> getDataGrid();
-        
+
         SimplePager getPager();
     }
 
@@ -84,7 +86,7 @@ public class TaskCommentsPopupPresenter {
 
     @Inject
     Caller<TaskServiceEntryPoint> taskServices;
-    
+
     private Constants constants = GWT.create(Constants.class);
 
     @Inject
@@ -107,7 +109,7 @@ public class TaskCommentsPopupPresenter {
     public UberView<TaskCommentsPopupPresenter> getView() {
         return view;
     }
-    
+
     @OnStart
     public void onStart(final PlaceRequest place) {
         this.place = place;
@@ -154,7 +156,7 @@ public class TaskCommentsPopupPresenter {
 
     public void refreshComments(long taskId) {
         taskServices.call(new RemoteCallback<TaskSummary>() {
-            
+
             @Override
             public void callback(TaskSummary details) {
                 view.getTaskIdText().setText(String.valueOf(details.getId()));
@@ -162,7 +164,7 @@ public class TaskCommentsPopupPresenter {
             }
         }).getTaskDetails(taskId);
         taskServices.call(new RemoteCallback<List<CommentSummary>>() {
-            
+
             @Override
             public void callback(List<CommentSummary> comments) {
                 dataProvider.getList().clear();
@@ -180,14 +182,14 @@ public class TaskCommentsPopupPresenter {
 
     public void addTaskComment(final long taskId, String text, Date addedOn) {
         taskServices.call(new RemoteCallback<Long>() {
-            
+
             @Override
             public void callback(Long response) {
                 refreshComments(taskId);
             }
         }).addComment(taskId, text, identity.getName(), addedOn);
     }
-    
+
     public void addDataDisplay(HasData<CommentSummary> display) {
         dataProvider.addDataDisplay(display);
     }
@@ -195,4 +197,5 @@ public class TaskCommentsPopupPresenter {
     public void close() {
         closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
+
 }

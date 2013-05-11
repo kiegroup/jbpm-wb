@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.client.resources;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 
-public interface ProcessRuntimeResources
-        extends
-        ClientBundle {
+public interface ProcessRuntimeResources extends ClientBundle {
 
-    ProcessRuntimeResources INSTANCE = GWT.create( ProcessRuntimeResources.class );
-
+    ProcessRuntimeResources INSTANCE = GWT.create(ProcessRuntimeResources.class);
 
     ProcessRuntimeImages processRuntimeImages();
 

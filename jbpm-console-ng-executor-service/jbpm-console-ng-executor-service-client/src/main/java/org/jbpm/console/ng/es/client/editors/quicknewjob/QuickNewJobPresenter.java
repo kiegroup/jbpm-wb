@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.es.client.editors.quicknewjob;
 
 import java.util.Date;
@@ -45,18 +46,17 @@ import com.google.gwt.user.client.ui.Focusable;
 @WorkbenchPopup(identifier = "Quick New Job")
 public class QuickNewJobPresenter {
 
-    public interface QuickNewJobView
-   			extends
-   			UberView<QuickNewJobPresenter> {
+    public interface QuickNewJobView extends UberView<QuickNewJobPresenter> {
 
-    	Focusable getJobNameText();
-    	
-    	void removeRow(RequestParameterSummary parameter);
-    	
-    	void addRow(RequestParameterSummary parameter);
-    	
+        Focusable getJobNameText();
+
+        void removeRow(RequestParameterSummary parameter);
+
+        void addRow(RequestParameterSummary parameter);
+
         void displayNotification(String notification);
     }
+
     @Inject
     QuickNewJobView view;
     @Inject
@@ -66,7 +66,10 @@ public class QuickNewJobPresenter {
     @Inject
     private Event<RequestChangedEvent> requestCreatedEvent;
     private PlaceRequest place;
-    
+
+    public QuickNewJobPresenter() {
+    }
+
     @WorkbenchPartTitle
     public String getTitle() {
         return "Quick New Job";
@@ -77,38 +80,37 @@ public class QuickNewJobPresenter {
         return view;
     }
 
-    public QuickNewJobPresenter() {
-    }
+
 
     @PostConstruct
     public void init() {
     }
 
-	@OnStart
-    public void onStart( final PlaceRequest place ) {
+    @OnStart
+    public void onStart(final PlaceRequest place) {
         this.place = place;
     }
 
     public void removeParameter(RequestParameterSummary parameter) {
-    	view.removeRow(parameter);
-    }
-    
-    public void addNewParameter() {
-    	view.addRow(new RequestParameterSummary("click to edit", "click to edit"));
+        view.removeRow(parameter);
     }
 
-	public void createJob(String jobName, Date dueDate, String jobType,
-			Integer numberOfTries, List<RequestParameterSummary> parameters) {
-		
+    public void addNewParameter() {
+        view.addRow(new RequestParameterSummary("click to edit", "click to edit"));
+    }
+
+    public void createJob(String jobName, Date dueDate, String jobType, Integer numberOfTries,
+            List<RequestParameterSummary> parameters) {
+
         Map<String, String> ctx = new HashMap<String, String>();
         if (parameters != null) {
-        	for (RequestParameterSummary param : parameters) {
-        		ctx.put(param.getKey(), param.getValue());
-        	}
+            for (RequestParameterSummary param : parameters) {
+                ctx.put(param.getKey(), param.getValue());
+            }
         }
-        ctx.put("retries", String.valueOf(numberOfTries)); //TODO make legacy keys hard to repeat by accident
-        ctx.put("jobName", jobName); //TODO make legacy keys hard to repeat by accident 
-        
+        ctx.put("retries", String.valueOf(numberOfTries)); // TODO make legacy keys hard to repeat by accident
+        ctx.put("jobName", jobName); // TODO make legacy keys hard to repeat by accident
+
         executorServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long requestId) {
@@ -117,15 +119,16 @@ public class QuickNewJobPresenter {
                 close();
             }
         }).scheduleRequest(jobType, dueDate, ctx);
-        
-	}
+
+    }
 
     @OnReveal
     public void onReveal() {
         view.getJobNameText().setFocus(true);
     }
-    
-	public void close() {
-		closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
-	}
+
+    public void close() {
+        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
+    }
+
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.bd.backend.server;
 
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
 
     @Inject
     private DeploymentService deploymentService;
+
     @Inject
     private RuntimeDataService dataService;
 
@@ -71,18 +73,19 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
         RuntimeManager runtimesByDomain = deploymentService.getDeployedUnit(piDesc.getDeploymentId()).getRuntimeManager();
         // I'm considering Singleton
-        KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId)).getKieSession();
+        KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId))
+                .getKieSession();
         ksession.abortProcessInstance(processInstanceId);
 
     }
-    
-     @Override
+
+    @Override
     public void suspendProcessInstance(long processInstanceId) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
         RuntimeManager runtimesByDomain = deploymentService.getDeployedUnit(piDesc.getDeploymentId()).getRuntimeManager();
         // I'm considering Singleton
-//        KieSession ksession = runtimesByDomain.getRuntime(ProcessInstanceIdContext.get(processInstanceId)).getKieSession();
-//        ksession.abortProcessInstance(processInstanceId);
+        // KieSession ksession = runtimesByDomain.getRuntime(ProcessInstanceIdContext.get(processInstanceId)).getKieSession();
+        // ksession.abortProcessInstance(processInstanceId);
 
     }
 
@@ -90,20 +93,21 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
     public void signalProcessInstance(long processInstanceId, String signalName, Object event) {
 
         if (processInstanceId == -1) {
-//            Collection<String> sessionNames = domainService.getSessionsNames();
-//            for (String sessionName : sessionNames) {
-//                Map<Integer, KieSession> sessions = domainService.getSessionsByName(sessionName);
-//                Iterator<KieSession> sessionsIter = sessions.values().iterator();
-//                while (sessionsIter.hasNext()) {
-//                    KieSession ksession = (KieSession) sessionsIter.next();
-//                    ksession.signalEvent(signalName, event);
-//                }
-//
-//            }
+            // Collection<String> sessionNames = domainService.getSessionsNames();
+            // for (String sessionName : sessionNames) {
+            // Map<Integer, KieSession> sessions = domainService.getSessionsByName(sessionName);
+            // Iterator<KieSession> sessionsIter = sessions.values().iterator();
+            // while (sessionsIter.hasNext()) {
+            // KieSession ksession = (KieSession) sessionsIter.next();
+            // ksession.signalEvent(signalName, event);
+            // }
+            //
+            // }
         } else {
             ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
             RuntimeManager runtimesByDomain = deploymentService.getDeployedUnit(piDesc.getDeploymentId()).getRuntimeManager();
-            KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId)).getKieSession();
+            KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId))
+                    .getKieSession();
             ksession.signalEvent(signalName, event, processInstanceId);
         }
 
@@ -113,12 +117,14 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
     public Collection<String> getAvailableSignals(long processInstanceId) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
         RuntimeManager runtimesByDomain = deploymentService.getDeployedUnit(piDesc.getDeploymentId()).getRuntimeManager();
-        KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId)).getKieSession();
+        KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId))
+                .getKieSession();
         ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
         Collection<String> activeSignals = new ArrayList<String>();
 
         if (processInstance != null) {
-            ((ProcessInstanceImpl) processInstance).setProcess(ksession.getKieBase().getProcess(processInstance.getProcessId()));
+            ((ProcessInstanceImpl) processInstance)
+            .setProcess(ksession.getKieBase().getProcess(processInstance.getProcessId()));
             Collection<NodeInstance> activeNodes = ((WorkflowProcessInstance) processInstance).getNodeInstances();
 
             activeSignals.addAll(ProcessInstanceHelper.collectActiveSignals(activeNodes));
@@ -131,10 +137,12 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
     public void setProcessVariable(long processInstanceId, String variableId, Object value) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
         RuntimeManager runtimesByDomain = deploymentService.getDeployedUnit(piDesc.getDeploymentId()).getRuntimeManager();
-        KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId)).getKieSession();
+        KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId))
+                .getKieSession();
         ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
 
         ((WorkflowProcessInstance) processInstance).setVariable(variableId, value);
 
     }
+
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.bd.service;
 
 import java.util.Collection;
@@ -21,12 +22,19 @@ import org.jboss.errai.bus.server.annotations.Remote;
 
 @Remote
 public interface KieSessionEntryPoint {
+
     long startProcess(String domainId, String processId);
+
     long startProcess(String domainId, String processId, Map<String, String> params);
+
     void abortProcessInstance(long processInstanceId);
+
     void suspendProcessInstance(long processInstanceId);
+
     void signalProcessInstance(long processInstanceId, String signalName, Object event);
+
     void setProcessVariable(long processInstanceId, String variableId, Object value);
-    
+
     Collection<String> getAvailableSignals(long processInstanceId);
+
 }

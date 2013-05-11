@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.editors.taskcomments;
 
 import java.util.Comparator;
@@ -44,6 +45,7 @@ import org.jbpm.console.ng.ht.client.i8n.Constants;
 @Dependent
 @Templated(value = "TaskCommentsPopupViewImpl.html")
 public class TaskCommentsPopupViewImpl extends Composite implements TaskCommentsPopupPresenter.TaskCommentsPopupView {
+    private Constants constants = GWT.create(Constants.class);
 
     private TaskCommentsPopupPresenter presenter;
 
@@ -80,8 +82,8 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
     public FlowPanel listContainer;
 
     private ListHandler<CommentSummary> sortHandler;
-    
-    private Constants constants = GWT.create(Constants.class);
+
+
 
     @Override
     public Label getTaskIdText() {
@@ -135,7 +137,7 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
         pager.setVisible(false);
         pager.setDisplay(commentsListGrid);
         pager.setPageSize(6);
-        
+
         addCommentButton.setText(constants.Add_Comment());
     }
 

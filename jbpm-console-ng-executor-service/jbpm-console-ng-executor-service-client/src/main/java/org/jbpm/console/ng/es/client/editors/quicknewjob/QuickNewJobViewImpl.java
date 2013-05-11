@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.es.client.editors.quicknewjob;
 
 import java.util.Date;
@@ -53,117 +54,127 @@ import com.google.gwt.view.client.ListDataProvider;
 
 @Dependent
 @Templated(value = "QuickNewJobViewImpl.html")
-public class QuickNewJobViewImpl extends Composite 
-		implements QuickNewJobPresenter.QuickNewJobView {
+public class QuickNewJobViewImpl extends Composite implements QuickNewJobPresenter.QuickNewJobView {
+    private Constants constants = GWT.create(Constants.class);
 
     @Inject
     @DataField
     public TextBox jobNameText;
+
     @Inject
     @DataField
     public DateTimeBox jobDueDate;
+
     @Inject
     @DataField
     public TextBox jobTypeText;
+
     @Inject
     @DataField
     public IntegerBox dataTriesNumber;
+
     @Inject
     @DataField
     public Button newParametersButton;
+
     @Inject
     @DataField
     public Button createButton;
+
     @Inject
     @DataField
     public DataGrid<RequestParameterSummary> myParametersGrid;
+
     @Inject
     Event<NotificationEvent> notificationEvents;
     private ListDataProvider<RequestParameterSummary> dataProvider = new ListDataProvider<RequestParameterSummary>();
-	private QuickNewJobPresenter presenter;
-    private Constants constants = GWT.create(Constants.class);
-	
-	@Override
+
+    private QuickNewJobPresenter presenter;
+
+    @Override
     public void init(QuickNewJobPresenter p) {
-		this.presenter = p;
-		
+        this.presenter = p;
+
         myParametersGrid.setHeight("200px");
 
-        //      Set the message to display when the table is empty.
+        // Set the message to display when the table is empty.
         myParametersGrid.setEmptyTableWidget(new Label(constants.No_Parameters_added_yet()));
 
         initGridColumns();
-        
-        jobDueDate.setValue(new Date());
-	}
 
-	private void initGridColumns() {
-		Column<RequestParameterSummary, String> paramKeyColumn = new Column<RequestParameterSummary, String>(new EditTextCell()) {
-        	@Override
+        jobDueDate.setValue(new Date());
+    }
+
+    private void initGridColumns() {
+        Column<RequestParameterSummary, String> paramKeyColumn = new Column<RequestParameterSummary, String>(new EditTextCell()) {
+            @Override
             public String getValue(RequestParameterSummary rowObject) {
-        		return rowObject.getKey();
-        	}
+                return rowObject.getKey();
+            }
         };
         paramKeyColumn.setFieldUpdater(new FieldUpdater<RequestParameterSummary, String>() {
-        	@Override
+            @Override
             public void update(int index, RequestParameterSummary object, String value) {
-        		object.setKey(value);
-        		dataProvider.getList().set(index, object);
-        	}
+                object.setKey(value);
+                dataProvider.getList().set(index, object);
+            }
         });
-        myParametersGrid.addColumn(paramKeyColumn, new ResizableHeader<RequestParameterSummary>("Key", myParametersGrid, paramKeyColumn));
+        myParametersGrid.addColumn(paramKeyColumn, new ResizableHeader<RequestParameterSummary>("Key", myParametersGrid,
+                paramKeyColumn));
 
-        Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>(new EditTextCell()) {
-        	@Override
+        Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>(
+                new EditTextCell()) {
+            @Override
             public String getValue(RequestParameterSummary rowObject) {
-        		return rowObject.getValue();
-        	}
+                return rowObject.getValue();
+            }
         };
         paramValueColumn.setFieldUpdater(new FieldUpdater<RequestParameterSummary, String>() {
-        	@Override
+            @Override
             public void update(int index, RequestParameterSummary object, String value) {
-        		object.setValue(value);
-        		dataProvider.getList().set(index, object);
-        	}
+                object.setValue(value);
+                dataProvider.getList().set(index, object);
+            }
         });
-        myParametersGrid.addColumn(paramValueColumn, new ResizableHeader<RequestParameterSummary>("Value", myParametersGrid, paramValueColumn));
-        
+        myParametersGrid.addColumn(paramValueColumn, new ResizableHeader<RequestParameterSummary>("Value", myParametersGrid,
+                paramValueColumn));
+
         // actions (icons)
         List<HasCell<RequestParameterSummary, ?>> cells = new LinkedList<HasCell<RequestParameterSummary, ?>>();
 
         cells.add(new ActionHasCell("Remove", new Delegate<RequestParameterSummary>() {
             @Override
             public void execute(RequestParameterSummary parameter) {
-            	presenter.removeParameter(parameter);
+                presenter.removeParameter(parameter);
             }
         }));
 
         CompositeCell<RequestParameterSummary> cell = new CompositeCell<RequestParameterSummary>(cells);
-        Column<RequestParameterSummary, RequestParameterSummary> actionsColumn = 
-        	new Column<RequestParameterSummary, RequestParameterSummary>(cell) {
-        		@Override
-                public RequestParameterSummary getValue(RequestParameterSummary object) {
-                	return object;
-        		}
+        Column<RequestParameterSummary, RequestParameterSummary> actionsColumn = new Column<RequestParameterSummary, RequestParameterSummary>(
+                cell) {
+            @Override
+            public RequestParameterSummary getValue(RequestParameterSummary object) {
+                return object;
+            }
         };
         myParametersGrid.addColumn(actionsColumn, "Actions");
         myParametersGrid.setColumnWidth(actionsColumn, "70px");
-        
+
         dataProvider.addDataDisplay(myParametersGrid);
-	}
-	
-    @EventHandler("newParametersButton")
-    public void newParametersButton(ClickEvent e) {
-    	presenter.addNewParameter();
-    }
-    
-    @EventHandler("createButton")
-    public void createButton(ClickEvent e) {
-    	presenter.createJob(jobNameText.getText(), jobDueDate.getValue(), jobTypeText.getText(), 
-    			dataTriesNumber.getValue(), dataProvider.getList());
     }
 
-	private class ActionHasCell implements HasCell<RequestParameterSummary, RequestParameterSummary> {
+    @EventHandler("newParametersButton")
+    public void newParametersButton(ClickEvent e) {
+        presenter.addNewParameter();
+    }
+
+    @EventHandler("createButton")
+    public void createButton(ClickEvent e) {
+        presenter.createJob(jobNameText.getText(), jobDueDate.getValue(), jobTypeText.getText(), dataTriesNumber.getValue(),
+                dataProvider.getList());
+    }
+
+    private class ActionHasCell implements HasCell<RequestParameterSummary, RequestParameterSummary> {
         private ActionCell<RequestParameterSummary> cell;
 
         public ActionHasCell(String text, Delegate<RequestParameterSummary> delegate) {
@@ -184,29 +195,30 @@ public class QuickNewJobViewImpl extends Composite
         public RequestParameterSummary getValue(RequestParameterSummary object) {
             return object;
         }
-	}
+    }
 
-	public void makeRowEditable(RequestParameterSummary parameter) {
-		myParametersGrid.getSelectionModel().setSelected(parameter, true);
-	}
-	
-	@Override
+    public void makeRowEditable(RequestParameterSummary parameter) {
+        myParametersGrid.getSelectionModel().setSelected(parameter, true);
+    }
+
+    @Override
     public void removeRow(RequestParameterSummary parameter) {
-		 dataProvider.getList().remove(parameter);
-	}
-	
-	@Override
+        dataProvider.getList().remove(parameter);
+    }
+
+    @Override
     public void addRow(RequestParameterSummary parameter) {
-		dataProvider.getList().add(parameter);
-	}
-	
-	@Override
+        dataProvider.getList().add(parameter);
+    }
+
+    @Override
     public void displayNotification(String notification) {
-		notificationEvents.fire(new NotificationEvent(notification));
-	}
-	
-	@Override
+        notificationEvents.fire(new NotificationEvent(notification));
+    }
+
+    @Override
     public Focusable getJobNameText() {
-		return jobNameText;
-	}
+        return jobNameText;
+    }
+
 }

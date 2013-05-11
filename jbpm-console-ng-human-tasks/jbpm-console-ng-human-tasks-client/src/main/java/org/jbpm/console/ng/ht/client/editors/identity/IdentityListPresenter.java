@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.editors.identity;
 
 import com.github.gwtbootstrap.client.ui.TextBox;
@@ -55,7 +56,7 @@ public class IdentityListPresenter {
     @Inject
     Caller<TaskServiceEntryPoint> taskServices;
     private ListDataProvider<IdentitySummary> dataProvider = new ListDataProvider<IdentitySummary>();
-    
+
     @WorkbenchPartTitle
     public String getTitle() {
         return "Users and Groups";
@@ -72,7 +73,7 @@ public class IdentityListPresenter {
     @PostConstruct
     public void init() {
     }
-    
+
     public void addDataDisplay(HasData<IdentitySummary> display) {
         dataProvider.addDataDisplay(display);
     }
@@ -84,10 +85,10 @@ public class IdentityListPresenter {
     public void refreshData() {
         dataProvider.refresh();
     }
-    
+
     @OnReveal
     public void onReveal() {
-       refreshIdentityList();
+        refreshIdentityList();
     }
 
     public void refreshIdentityList() {
@@ -95,7 +96,7 @@ public class IdentityListPresenter {
             @Override
             public void callback(List<IdentitySummary> entities) {
                 dataProvider.getList().clear();
-                if(entities != null){
+                if (entities != null) {
                     dataProvider.getList().addAll(entities);
                     dataProvider.refresh();
                 }
@@ -103,16 +104,16 @@ public class IdentityListPresenter {
             }
         }).getOrganizationalEntities();
     }
-    
+
     public void getEntityById(String entityId) {
         taskServices.call(new RemoteCallback<IdentitySummary>() {
             @Override
             public void callback(IdentitySummary identity) {
                 dataProvider.getList().clear();
-                if(identity != null){
+                if (identity != null) {
                     List<IdentitySummary> values = new ArrayList<IdentitySummary>();
                     values.add(identity);
-                    
+
                     dataProvider.getList().addAll(values);
                     dataProvider.refresh();
                 }
@@ -120,4 +121,5 @@ public class IdentityListPresenter {
             }
         }).getOrganizationalEntityById(entityId);
     }
+
 }

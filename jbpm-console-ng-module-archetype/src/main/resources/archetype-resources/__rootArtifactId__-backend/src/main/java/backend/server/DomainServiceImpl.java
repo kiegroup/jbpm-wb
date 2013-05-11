@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.bd.backend.server;
 
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-
 /**
- *
  * Your Service Impl Goes Here
  */
 @Service
@@ -31,6 +30,5 @@ public class DomainServiceImpl implements DomainService {
    public String hello(String name){
      return "Hello "+ name;
    }
-
    
 }

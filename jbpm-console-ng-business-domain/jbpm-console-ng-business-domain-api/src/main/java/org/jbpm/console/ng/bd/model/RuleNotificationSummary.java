@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.bd.model;
 
 import java.io.Serializable;
@@ -30,7 +31,6 @@ public class RuleNotificationSummary implements Serializable {
     public RuleNotificationSummary() {
     }
 
-    
     public RuleNotificationSummary(long id, String notification, int sessionId, Date dataTimeStamp) {
         this.id = id;
         this.notification = notification;
@@ -72,8 +72,8 @@ public class RuleNotificationSummary implements Serializable {
 
     @Override
     public String toString() {
-        return "RuleNotificationSummary{" + "id=" + id + ", notification=" + notification + ", sessionId=" + sessionId + ", dataTimeStamp=" + dataTimeStamp + '}';
+        return "RuleNotificationSummary{" + "id=" + id + ", notification=" + notification + ", sessionId=" + sessionId
+                + ", dataTimeStamp=" + dataTimeStamp + '}';
     }
-    
-    
+
 }

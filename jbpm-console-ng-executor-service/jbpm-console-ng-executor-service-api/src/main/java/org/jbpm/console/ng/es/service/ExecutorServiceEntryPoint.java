@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.es.service;
 
 import java.util.Date;
@@ -24,13 +25,9 @@ import org.jbpm.console.ng.es.model.ErrorSummary;
 import org.jbpm.console.ng.es.model.RequestDetails;
 import org.jbpm.console.ng.es.model.RequestSummary;
 
-
-/**
- *
- */
 @Remote
 public interface ExecutorServiceEntryPoint {
-    
+
     public List<RequestSummary> getQueuedRequests();
 
     public List<RequestSummary> getCompletedRequests();
@@ -42,9 +39,9 @@ public interface ExecutorServiceEntryPoint {
     public List<ErrorSummary> getAllErrors();
 
     public List<RequestSummary> getAllRequests();
-    
+
     public List<RequestSummary> getRequestsByStatus(List<String> statuses);
-    
+
     public RequestDetails getRequestDetails(Long requestId);
 
     public int clearAllRequests();
@@ -52,7 +49,7 @@ public interface ExecutorServiceEntryPoint {
     public int clearAllErrors();
 
     public Long scheduleRequest(String commandName, Map<String, String> ctx);
-    
+
     public Long scheduleRequest(String commandId, Date date, Map<String, String> ctx);
 
     public void cancelRequest(Long requestId);
@@ -60,9 +57,9 @@ public interface ExecutorServiceEntryPoint {
     public void init();
 
     public void destroy();
-    
+
     public Boolean isActive();
-    
+
     public Boolean startStopService(int waitTime, int nroOfThreads);
 
     public int getInterval();
@@ -76,14 +73,13 @@ public interface ExecutorServiceEntryPoint {
     public int getThreadPoolSize();
 
     public void setThreadPoolSize(int nroOfThreads);
-    
+
     public List<RequestSummary> getPendingRequests();
 
     public List<RequestSummary> getPendingRequestById(Long id);
 
-
     public List<RequestSummary> getRunningRequests();
-    
+
     public List<RequestSummary> getFutureQueuedRequests();
-    
+
 }

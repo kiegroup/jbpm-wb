@@ -24,16 +24,15 @@ import org.uberfire.client.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.client.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
-
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Process Instances", isDefault=false)
+@WorkbenchPerspective(identifier = "Process Instances", isDefault = false)
 public class ProcessInstancesPerspective {
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
-        p.setName( "Process Instances" );
-        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Process Instance List" ) ) );
+        p.setName("Process Instances");
+        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Process Instance List")));
         p.setTransient(true);
         return p;
     }

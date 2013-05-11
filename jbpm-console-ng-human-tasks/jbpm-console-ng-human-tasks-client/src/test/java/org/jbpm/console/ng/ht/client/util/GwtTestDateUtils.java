@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.util;
 
 import static org.jbpm.console.ng.ht.client.util.DateUtils.createDate;
@@ -52,7 +53,7 @@ public class GwtTestDateUtils extends GWTTestCase {
         DateRange weekRange = DateUtils.getWeekDateRange(date);
         assertEquals(createDate("2013-04-29"), weekRange.getStartDate());
         assertEquals(createDate("2013-05-03"), weekRange.getEndDate());
-        
+
         // part of the week is in 2013 and part in 2012
         date = createDate("2013-01-02");
         weekRange = DateUtils.getWeekDateRange(date);
@@ -89,4 +90,5 @@ public class GwtTestDateUtils extends GWTTestCase {
     public String getModuleName() {
         return "org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksClient";
     }
+
 }

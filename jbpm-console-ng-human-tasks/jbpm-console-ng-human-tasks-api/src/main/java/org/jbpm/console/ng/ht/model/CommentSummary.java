@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.model;
 
 import java.io.Serializable;
@@ -20,18 +21,15 @@ import java.util.Date;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class CommentSummary implements Serializable{
-    
-    
+public class CommentSummary implements Serializable {
+
     private long id;
 
-    
     private String text;
-    
-    
+
     private String addedBy;
-    
-    private Date addedAt;  
+
+    private Date addedAt;
 
     public CommentSummary(long id, String text, String addedBy, Date addedAt) {
         this.id = id;
@@ -45,8 +43,6 @@ public class CommentSummary implements Serializable{
         this.addedBy = addedBy;
         this.addedAt = addedAt;
     }
-    
-    
 
     public CommentSummary() {
     }
@@ -87,6 +83,5 @@ public class CommentSummary implements Serializable{
     public String toString() {
         return "CommentSummary{" + "id=" + id + ", text=" + text + ", addedBy=" + addedBy + ", addedAt=" + addedAt + '}';
     }
-    
-    
+
 }

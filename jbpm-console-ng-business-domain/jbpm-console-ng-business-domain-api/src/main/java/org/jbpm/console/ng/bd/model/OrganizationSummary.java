@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.bd.model;
 
 import java.io.Serializable;
@@ -20,7 +21,7 @@ import java.util.List;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class OrganizationSummary implements Serializable{
+public class OrganizationSummary implements Serializable {
     private long id;
     private String name;
     private List<DomainSummary> domains;
@@ -28,8 +29,6 @@ public class OrganizationSummary implements Serializable{
     public OrganizationSummary() {
     }
 
-    
-    
     public OrganizationSummary(long id, String name, List<DomainSummary> domains) {
         this.id = id;
         this.name = name;
@@ -59,6 +58,5 @@ public class OrganizationSummary implements Serializable{
     public void setDomains(List<DomainSummary> domains) {
         this.domains = domains;
     }
-    
-    
+
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.es.client.editors.jobdetails;
 
 import java.util.List;
@@ -39,18 +40,22 @@ import org.uberfire.shared.mvp.PlaceRequest;
 @WorkbenchPopup(identifier = "Job Request Details")
 public class JobDetailsPresenter {
 
-    public interface JobDetailsView
-		extends
-		UberView<JobDetailsPresenter> {
-    	
-    	void setRequest(RequestSummary request, List<ErrorSummary> errors, List<RequestParameterSummary> params);
+    public interface JobDetailsView extends UberView<JobDetailsPresenter> {
+
+        void setRequest(RequestSummary request, List<ErrorSummary> errors, List<RequestParameterSummary> params);
     }
+
+    private Long requestId;
+
     @Inject
     JobDetailsView view;
-    private Long requestId;
+
     @Inject
     private Caller<ExecutorServiceEntryPoint> executorServices;
-    
+
+    public JobDetailsPresenter() {
+    }
+
     @WorkbenchPartTitle
     public String getTitle() {
         return "Job Request Details";
@@ -61,21 +66,19 @@ public class JobDetailsPresenter {
         return view;
     }
 
-    public JobDetailsPresenter() {
-    }
-
     @PostConstruct
     public void init() {
     }
 
-	@OnStart
-    public void onStart( final PlaceRequest place ) {
+    @OnStart
+    public void onStart(final PlaceRequest place) {
         this.requestId = Long.valueOf(place.getParameter("requestId", "0"));
         this.executorServices.call(new RemoteCallback<RequestDetails>() {
-        	@Override
-        	public void callback(RequestDetails response) {
-        		view.setRequest(response.getRequest(), response.getErrors(), response.getParams());
-        	}
+            @Override
+            public void callback(RequestDetails response) {
+                view.setRequest(response.getRequest(), response.getErrors(), response.getParams());
+            }
         }).getRequestDetails(Long.valueOf(this.requestId));
     }
+
 }

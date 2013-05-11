@@ -18,7 +18,7 @@ public class UberFireIdentityProvider implements IdentityProvider, Serializable 
 
     @Inject
     private Identity identity;
-    
+
     @Override
     public String getName() {
         return identity.getName();
@@ -27,12 +27,12 @@ public class UberFireIdentityProvider implements IdentityProvider, Serializable 
     @Override
     public List<String> getRoles() {
         List<String> roles = new ArrayList<String>();
-        
+
         List<Role> ufRoles = identity.getRoles();
         for (Role role : ufRoles) {
             roles.add(role.getName());
         }
-        
+
         return roles;
     }
 

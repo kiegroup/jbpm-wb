@@ -15,28 +15,28 @@
 */
 
 @sprite .header {
-	gwt-image: 'jbossrulesBlue';
-	height: 70px;
+    gwt-image: 'jbossrulesBlue';
+    height: 70px;
 }
 
 .logo {
-	float: left;
+    float: left;
 }
 
 .controls {
-	float: right;
-	padding-right: 10px;
+    float: right;
+    padding-right: 10px;
 }
 
 .userInfo {
-	color: #fff;
-	font-size: .9em;
+    color: #fff;
+    font-size: .9em;
 }
 
 .userInfo a {
-	color: #fff;
+    color: #fff;
 }
 
 .perspectives {
-	text-align: right;
+    text-align: right;
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pm.client.editors.newprocess;
 
 import javax.enterprise.context.Dependent;
@@ -36,67 +37,63 @@ import org.uberfire.security.Identity;
 
 @Dependent
 @Templated(value = "NewProcessDefinitionViewImpl.html")
-public class NewProcessDefinitionViewImpl extends Composite
-        implements
-        NewProcessDefinitionPresenter.NewProcessDefinitionView {
+public class NewProcessDefinitionViewImpl extends Composite implements NewProcessDefinitionPresenter.NewProcessDefinitionView {
 
-  @Inject
-  private Identity identity;
-  @Inject
-  private PlaceManager placeManager;
-  private NewProcessDefinitionPresenter presenter;
-  @Inject
-  @DataField
-  public Button newProcessDefinitionButton;
-  @Inject
-  @DataField
-  public TextBox processDefinitionPathText;
- 
-  @Inject
-  private Event<NotificationEvent> notification;
+    @Inject
+    private Identity identity;
 
-  @Override
-  public void init(NewProcessDefinitionPresenter presenter) {
-    this.presenter = presenter;
-    KeyPressHandler keyPressHandlerText = new KeyPressHandler() {
-      @Override
-    public void onKeyPress(KeyPressEvent event) {
-        if (event.getNativeEvent().getKeyCode() == 13) {
-          createProcessDefinitionFile();
-        }
-      }
-    };
-    processDefinitionPathText.addKeyPressHandler(keyPressHandlerText);
+    @Inject
+    private PlaceManager placeManager;
 
-    KeyPressHandler keyPressHandlerCheck = new KeyPressHandler() {
-      @Override
-    public void onKeyPress(KeyPressEvent event) {
-        if (event.getNativeEvent().getKeyCode() == 13) {
-          createProcessDefinitionFile();
-        }
-      }
-    };
+    private NewProcessDefinitionPresenter presenter;
 
+    @Inject
+    @DataField
+    public Button newProcessDefinitionButton;
 
-  }
+    @Inject
+    @DataField
+    public TextBox processDefinitionPathText;
 
-  @EventHandler("newProcessDefinitionButton")
-  public void newProcessDefinitionButton(ClickEvent e) {
-    createProcessDefinitionFile();
-  }
+    @Inject
+    private Event<NotificationEvent> notification;
 
-  @Override
-public void displayNotification(String text) {
-    notification.fire(new NotificationEvent(text));
+    @Override
+    public void init(NewProcessDefinitionPresenter presenter) {
+        this.presenter = presenter;
+        KeyPressHandler keyPressHandlerText = new KeyPressHandler() {
+            @Override
+            public void onKeyPress(KeyPressEvent event) {
+                if (event.getNativeEvent().getKeyCode() == 13) {
+                    createProcessDefinitionFile();
+                }
+            }
+        };
+        processDefinitionPathText.addKeyPressHandler(keyPressHandlerText);
 
-  }
+        KeyPressHandler keyPressHandlerCheck = new KeyPressHandler() {
+            @Override
+            public void onKeyPress(KeyPressEvent event) {
+                if (event.getNativeEvent().getKeyCode() == 13) {
+                    createProcessDefinitionFile();
+                }
+            }
+        };
+    }
 
- 
-  private void createProcessDefinitionFile() {
-    presenter.createNewProcess(processDefinitionPathText.getText());
+    @EventHandler("newProcessDefinitionButton")
+    public void newProcessDefinitionButton(ClickEvent e) {
+        createProcessDefinitionFile();
+    }
 
-  }
-  
-    
-  
+    @Override
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
+
+    }
+
+    private void createProcessDefinitionFile() {
+        presenter.createNewProcess(processDefinitionPathText.getText());
+    }
+
 }

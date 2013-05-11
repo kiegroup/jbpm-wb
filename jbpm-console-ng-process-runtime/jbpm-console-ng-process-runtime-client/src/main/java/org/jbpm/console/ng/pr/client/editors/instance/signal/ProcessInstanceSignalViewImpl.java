@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.client.editors.instance.signal;
 
 import com.github.gwtbootstrap.client.ui.Label;
@@ -40,41 +41,44 @@ import com.google.gwt.user.client.ui.TextBox;
 
 @Dependent
 @Templated(value = "ProcessInstanceSignalViewImpl.html")
-public class ProcessInstanceSignalViewImpl extends Composite implements
-        ProcessInstanceSignalPresenter.PopupView {
+public class ProcessInstanceSignalViewImpl extends Composite implements ProcessInstanceSignalPresenter.PopupView {
+    private Constants constants = GWT.create(Constants.class);
 
     private ProcessInstanceSignalPresenter presenter;
     @Inject
     @DataField
     public Button signalButton;
+
     @Inject
     @DataField
     public Button clearButton;
-    
-    @Inject 
+
+    @Inject
     @DataField
     public Label signalRefLabel;
-    
-    @Inject 
+
+    @Inject
     @DataField
     public Label eventLabel;
-    
+
     @Inject
     @DataField
     public TextBox eventText;
-    
+
     @DataField
     public SuggestBox signalRefText;
+
     @Inject
     private Event<NotificationEvent> notification;
+
     public List<Long> processInstanceIds = new ArrayList<Long>();
-    private Constants constants = GWT.create(Constants.class);
+
     private MultiWordSuggestOracle oracle;
 
     public ProcessInstanceSignalViewImpl() {
         oracle = new MultiWordSuggestOracle();
         signalRefText = new SuggestBox(oracle);
-        
+
     }
 
     @Override
@@ -96,8 +100,8 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
 
         for (Long processInstanceId : this.processInstanceIds) {
             presenter.signalProcessInstance(processInstanceId);
-            displayNotification(constants.Signalling_Process_Instance() + processInstanceId + " " +constants.Signal() + " = " + 
-                                    signalRefText.getText() + " - " + constants.Event() + " = " + eventText.getText());
+            displayNotification(constants.Signalling_Process_Instance() + processInstanceId + " " + constants.Signal() + " = "
+                    + signalRefText.getText() + " - " + constants.Event() + " = " + eventText.getText());
         }
     }
 
@@ -126,4 +130,5 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
     public void setAvailableSignals(Collection<String> signals) {
         oracle.addAll(signals);
     }
+
 }

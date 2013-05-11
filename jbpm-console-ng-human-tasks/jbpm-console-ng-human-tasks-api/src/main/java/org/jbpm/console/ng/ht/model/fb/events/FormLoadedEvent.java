@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.model.fb.events;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
@@ -24,7 +25,6 @@ public class FormLoadedEvent {
     public FormLoadedEvent() {
     }
 
-    
     public FormLoadedEvent(String jsonForm) {
         this.jsonForm = jsonForm;
     }
@@ -33,6 +33,4 @@ public class FormLoadedEvent {
         return jsonForm;
     }
 
-    
-    
 }

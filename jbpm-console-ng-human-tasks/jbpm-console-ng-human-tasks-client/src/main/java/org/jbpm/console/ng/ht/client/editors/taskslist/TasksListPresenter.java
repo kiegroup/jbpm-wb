@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
 import com.google.gwt.core.client.GWT;
@@ -73,7 +74,7 @@ public class TasksListPresenter {
     private Identity identity;
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
-    
+
     private Constants constants = GWT.create(Constants.class);
 
     @WorkbenchPartTitle
@@ -280,4 +281,5 @@ public class TasksListPresenter {
                 throw new IllegalStateException("Unrecognized task type '" + taskType + "'!");
         }
     }
+
 }

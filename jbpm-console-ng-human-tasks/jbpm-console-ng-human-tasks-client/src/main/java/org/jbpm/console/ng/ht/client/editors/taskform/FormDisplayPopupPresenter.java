@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 JBoss Inc 
+ * Copyright 2011 JBoss Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.editors.taskform;
 
 import java.util.HashMap;
@@ -58,46 +59,53 @@ import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 @Dependent
 @WorkbenchPopup(identifier = "Form Display")
 public class FormDisplayPopupPresenter {
-
-    @Inject
-    private FormDisplayView                          view;
-    @Inject
-    private Caller<FormServiceEntryPoint>            formServices;
-    @Inject
-    private Caller<DataServiceEntryPoint> dataServices;
-    @Inject
-    Caller<KieSessionEntryPoint> sessionServices;
-    @Inject
-    private Caller<TaskServiceEntryPoint> taskServices;
-    @Inject
-    private Event<FormRenderedEvent>      formRendered;
-    @Inject
-    Event<ProcessInstanceCreated> processInstanceCreatedEvents;
-    @Inject
-    private Identity                     identity;
-    @Inject
-    private PlaceManager                 placeManager;
-    @Inject
-    private Event<BeforeClosePlaceEvent> closePlaceEvent;
-    private PlaceRequest                 place;
-    
     private Constants constants = GWT.create(Constants.class);
 
-    public interface FormDisplayView
-            extends
-            UberView<FormDisplayPopupPresenter> {
+    @Inject
+    private FormDisplayView view;
 
-        void displayNotification( String text );
+    @Inject
+    private Caller<FormServiceEntryPoint> formServices;
+
+    @Inject
+    private Caller<DataServiceEntryPoint> dataServices;
+
+    @Inject
+    Caller<KieSessionEntryPoint> sessionServices;
+
+    @Inject
+    private Caller<TaskServiceEntryPoint> taskServices;
+
+    @Inject
+    private Event<FormRenderedEvent> formRendered;
+
+    @Inject
+    Event<ProcessInstanceCreated> processInstanceCreatedEvents;
+
+    @Inject
+    private Identity identity;
+
+    @Inject
+    private PlaceManager placeManager;
+
+    @Inject
+    private Event<BeforeClosePlaceEvent> closePlaceEvent;
+
+    private PlaceRequest place;
+
+    public interface FormDisplayView extends UberView<FormDisplayPopupPresenter> {
+
+        void displayNotification(String text);
 
         long getTaskId();
 
-        void setTaskId( long taskId );
+        void setTaskId(long taskId);
 
         String getProcessId();
 
-        void setProcessId( String processId );
+        void setProcessId(String processId);
 
-        void setDomainId( String domainId );
+        void setDomainId(String domainId);
 
         String getDomainId();
 
@@ -115,144 +123,144 @@ public class FormDisplayPopupPresenter {
 
     @PostConstruct
     public void init() {
-        publish( this );
+        publish(this);
         publishGetFormValues();
 
     }
 
     @OnStart
-    public void onStart( final PlaceRequest place ) {
+    public void onStart(final PlaceRequest place) {
         this.place = place;
     }
 
-    public void renderTaskForm( final long taskId ) {
+    public void renderTaskForm(final long taskId) {
         view.getNavBarUL().clear();
 
-        NavLink workLink = new NavLink( constants.Work() );
-        workLink.setStyleName( "active" );
+        NavLink workLink = new NavLink(constants.Work());
+        workLink.setStyleName("active");
 
-        NavLink detailsLink = new NavLink( constants.Details() );
-        detailsLink.addClickHandler( new ClickHandler() {
-
-            @Override
-            public void onClick( ClickEvent event ) {
-                close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Task Details Popup" );
-                placeRequestImpl.addParameter( "taskId", String.valueOf( taskId ) );
-                placeManager.goTo( placeRequestImpl );
-            }
-        } );
-        
-        NavLink commentsLink = new NavLink(constants.Comments());
-        commentsLink.addClickHandler(new ClickHandler(){
+        NavLink detailsLink = new NavLink(constants.Details());
+        detailsLink.addClickHandler(new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent event) {
-              close();
-              PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Comments Popup");
-              placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
-              placeManager.goTo(placeRequestImpl);
+                close();
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Popup");
+                placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
+                placeManager.goTo(placeRequestImpl);
             }
         });
 
-        view.getNavBarUL().add( workLink );
-        view.getNavBarUL().add( detailsLink );
-        view.getNavBarUL().add( commentsLink );
+        NavLink commentsLink = new NavLink(constants.Comments());
+        commentsLink.addClickHandler(new ClickHandler() {
 
-        formServices.call( new RemoteCallback<String>() {
             @Override
-            public void callback( String form ) {
+            public void onClick(ClickEvent event) {
+                close();
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Comments Popup");
+                placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
+                placeManager.goTo(placeRequestImpl);
+            }
+        });
+
+        view.getNavBarUL().add(workLink);
+        view.getNavBarUL().add(detailsLink);
+        view.getNavBarUL().add(commentsLink);
+
+        formServices.call(new RemoteCallback<String>() {
+            @Override
+            public void callback(String form) {
 
                 view.getFormView().clear();
-                view.getFormView().add( new HTMLPanel( form ) );
-                taskServices.call( new RemoteCallback<TaskSummary>() {
+                view.getFormView().add(new HTMLPanel(form));
+                taskServices.call(new RemoteCallback<TaskSummary>() {
                     @Override
-                    public void callback( final TaskSummary task ) {
+                    public void callback(final TaskSummary task) {
                         view.getOptionsDiv().clear();
                         FlowPanel wrapperFlowPanel = new FlowPanel();
-                        wrapperFlowPanel.setStyleName( "wrapper" );
-                        view.getOptionsDiv().add( wrapperFlowPanel );
-                        view.getNameText().setText( task.getName() );
-                        view.getTaskIdText().setText( String.valueOf( task.getId() ) );
-                        if ( task.getStatus().equals( "Reserved" ) ) {
+                        wrapperFlowPanel.setStyleName("wrapper");
+                        view.getOptionsDiv().add(wrapperFlowPanel);
+                        view.getNameText().setText(task.getName());
+                        view.getTaskIdText().setText(String.valueOf(task.getId()));
+                        if (task.getStatus().equals("Reserved")) {
                             FocusPanel startFlowPanel = new FocusPanel();
-                            startFlowPanel.setStyleName( "option-button start" );
+                            startFlowPanel.setStyleName("option-button start");
                             startFlowPanel.setTitle("Start Task");
-                            startFlowPanel.addClickHandler( new ClickHandler() {
-                            
+                            startFlowPanel.addClickHandler(new ClickHandler() {
+
                                 @Override
-                                public native void onClick( ClickEvent event )/*-{
+                                public native void onClick(ClickEvent event)/*-{
                                     $wnd.startTask($wnd.getFormValues($doc.getElementById("form-data")));
                                 }-*/;
-                            } );
-                            wrapperFlowPanel.add( startFlowPanel );
-                            view.getOptionsDiv().add( wrapperFlowPanel );
-                        } else if ( task.getStatus().equals( "InProgress" ) ) {
+                            });
+                            wrapperFlowPanel.add(startFlowPanel);
+                            view.getOptionsDiv().add(wrapperFlowPanel);
+                        } else if (task.getStatus().equals("InProgress")) {
                             FocusPanel saveTaskFlowPanel = new FocusPanel();
-                            saveTaskFlowPanel.setStyleName( "option-button save" );
+                            saveTaskFlowPanel.setStyleName("option-button save");
                             saveTaskFlowPanel.setTitle("Save Task");
-                            saveTaskFlowPanel.addClickHandler( new ClickHandler() {
+                            saveTaskFlowPanel.addClickHandler(new ClickHandler() {
 
                                 @Override
-                                public native void onClick( ClickEvent event )/*-{
+                                public native void onClick(ClickEvent event)/*-{
                                     $wnd.saveTaskState($wnd.getFormValues($doc.getElementById("form-data")));
                                 }-*/;
-                            } );
-                            wrapperFlowPanel.add( saveTaskFlowPanel );
+                            });
+                            wrapperFlowPanel.add(saveTaskFlowPanel);
                             FocusPanel completeTaskFlowPanel = new FocusPanel();
-                            completeTaskFlowPanel.setStyleName( "option-button complete" );
+                            completeTaskFlowPanel.setStyleName("option-button complete");
                             completeTaskFlowPanel.setTitle("Complete Task");
-                            completeTaskFlowPanel.addClickHandler( new ClickHandler() {
+                            completeTaskFlowPanel.addClickHandler(new ClickHandler() {
 
                                 @Override
-                                public native void onClick( ClickEvent event )/*-{
+                                public native void onClick(ClickEvent event)/*-{
                                     $wnd.completeTask($wnd.getFormValues($doc.getElementById("form-data")));
                                 }-*/;
-                            } );
-                            wrapperFlowPanel.add( completeTaskFlowPanel );
-                            view.getOptionsDiv().add( wrapperFlowPanel );
+                            });
+                            wrapperFlowPanel.add(completeTaskFlowPanel);
+                            view.getOptionsDiv().add(wrapperFlowPanel);
 
                         }
                     }
-                } ).getTaskDetails( taskId );
+                }).getTaskDetails(taskId);
             }
-        } ).getFormDisplayTask( taskId );
+        }).getFormDisplayTask(taskId);
 
     }
 
-    public void renderProcessForm( final String processId ) {
+    public void renderProcessForm(final String processId) {
         view.getNavBarUL().clear();
-        formServices.call( new RemoteCallback<String>() {
+        formServices.call(new RemoteCallback<String>() {
             @Override
-            public void callback( String form ) {
+            public void callback(String form) {
                 view.getFormView().clear();
-                view.getFormView().add( new HTMLPanel( form ) );
+                view.getFormView().add(new HTMLPanel(form));
 
-                dataServices.call( new RemoteCallback<ProcessSummary>() {
+                dataServices.call(new RemoteCallback<ProcessSummary>() {
                     @Override
-                    public void callback( ProcessSummary summary ) {
-                        view.getTaskIdText().setText( "" );
-                        view.getNameText().setText( summary.getName() );
+                    public void callback(ProcessSummary summary) {
+                        view.getTaskIdText().setText("");
+                        view.getNameText().setText(summary.getName());
                         FocusPanel wrapperFlowPanel = new FocusPanel();
-                        wrapperFlowPanel.setStyleName( "wrapper" );
+                        wrapperFlowPanel.setStyleName("wrapper");
                         FocusPanel startFlowPanel = new FocusPanel();
-                        startFlowPanel.setStyleName( "option-button start" );
+                        startFlowPanel.setStyleName("option-button start");
                         startFlowPanel.setTitle("Start Process");
-                        startFlowPanel.addClickHandler( new ClickHandler() {
+                        startFlowPanel.addClickHandler(new ClickHandler() {
 
                             @Override
-                            public native void onClick( ClickEvent event )/*-{
+                            public native void onClick(ClickEvent event)/*-{
                                 $wnd.startProcess($wnd.getFormValues($doc.getElementById("form-data")));
                             }-*/;
-                        } );
-                        wrapperFlowPanel.add( startFlowPanel );
-                        view.getOptionsDiv().add( wrapperFlowPanel );
+                        });
+                        wrapperFlowPanel.add(startFlowPanel);
+                        view.getOptionsDiv().add(wrapperFlowPanel);
 
                     }
-                } ).getProcessDesc( processId );
+                }).getProcessDesc(processId);
 
             }
-        } ).getFormDisplayProcess( processId );
+        }).getFormDisplayProcess(processId);
 
     }
 
@@ -266,87 +274,84 @@ public class FormDisplayPopupPresenter {
         return view;
     }
 
-    public void completeTask( String values ) {
-        final Map<String, String> params = getUrlParameters( values );
-        final Map<String, Object> objParams = new HashMap<String, Object>( params );
-        taskServices.call( new RemoteCallback<Void>() {
+    public void completeTask(String values) {
+        final Map<String, String> params = getUrlParameters(values);
+        final Map<String, Object> objParams = new HashMap<String, Object>(params);
+        taskServices.call(new RemoteCallback<Void>() {
             @Override
-            public void callback( Void nothing ) {
-                view.displayNotification( "Form for Task Id: " + params.get( "taskId" ) + " was completed!" );
+            public void callback(Void nothing) {
+                view.displayNotification("Form for Task Id: " + params.get("taskId") + " was completed!");
                 close();
             }
-        } ).complete( Long.parseLong( params.get( "taskId" ) ), identity.getName(), objParams );
+        }).complete(Long.parseLong(params.get("taskId")), identity.getName(), objParams);
 
     }
 
-    public void saveTaskState( final Long taskId,
-                               final Map<String, String> values ) {
-        taskServices.call( new RemoteCallback<Long>() {
+    public void saveTaskState(final Long taskId, final Map<String, String> values) {
+        taskServices.call(new RemoteCallback<Long>() {
             @Override
-            public void callback( Long contentId ) {
-                view.displayNotification( "Task Id: " + taskId + " State was Saved! ContentId : " + contentId );
-                renderTaskForm( taskId );
+            public void callback(Long contentId) {
+                view.displayNotification("Task Id: " + taskId + " State was Saved! ContentId : " + contentId);
+                renderTaskForm(taskId);
             }
-        } ).saveContent( taskId, values );
+        }).saveContent(taskId, values);
     }
 
-    public void saveTaskState( String values ) {
-        final Map<String, String> params = getUrlParameters( values );
-        taskServices.call( new RemoteCallback<Long>() {
+    public void saveTaskState(String values) {
+        final Map<String, String> params = getUrlParameters(values);
+        taskServices.call(new RemoteCallback<Long>() {
             @Override
-            public void callback( Long contentId ) {
-                view.displayNotification( "Task Id: " + params.get( "taskId" ) + " State was Saved! ContentId : " + contentId );
-                renderTaskForm( Long.parseLong( params.get( "taskId" ).toString() ) );
+            public void callback(Long contentId) {
+                view.displayNotification("Task Id: " + params.get("taskId") + " State was Saved! ContentId : " + contentId);
+                renderTaskForm(Long.parseLong(params.get("taskId").toString()));
             }
-        } ).saveContent( Long.parseLong( params.get( "taskId" ).toString() ), params );
+        }).saveContent(Long.parseLong(params.get("taskId").toString()), params);
 
     }
 
-    public void startTask( final Long taskId,
-                           final String identity ) {
-        taskServices.call( new RemoteCallback<Void>() {
+    public void startTask(final Long taskId, final String identity) {
+        taskServices.call(new RemoteCallback<Void>() {
             @Override
-            public void callback( Void nothing ) {
-                view.displayNotification( "Task Id: " + taskId + " was started!" );
-                renderTaskForm( taskId );
+            public void callback(Void nothing) {
+                view.displayNotification("Task Id: " + taskId + " was started!");
+                renderTaskForm(taskId);
             }
-        } ).start( taskId, identity );
+        }).start(taskId, identity);
     }
 
-    public void startTask( String values ) {
-        final Map<String, String> params = getUrlParameters( values );
-        taskServices.call( new RemoteCallback<Void>() {
+    public void startTask(String values) {
+        final Map<String, String> params = getUrlParameters(values);
+        taskServices.call(new RemoteCallback<Void>() {
             @Override
-            public void callback( Void nothing ) {
-                view.displayNotification( "Task Id: " + params.get( "taskId" ) + " was started!" );
-                renderTaskForm( Long.parseLong( params.get( "taskId" ).toString() ) );
+            public void callback(Void nothing) {
+                view.displayNotification("Task Id: " + params.get("taskId") + " was started!");
+                renderTaskForm(Long.parseLong(params.get("taskId").toString()));
             }
-        } ).start( Long.parseLong( params.get( "taskId" ).toString() ), identity.getName() );
+        }).start(Long.parseLong(params.get("taskId").toString()), identity.getName());
 
     }
 
-    public void startProcess( String values ) {
-        final Map<String, String> params = getUrlParameters( values );
+    public void startProcess(String values) {
+        final Map<String, String> params = getUrlParameters(values);
 
-        sessionServices.call( new RemoteCallback<Long>() {
+        sessionServices.call(new RemoteCallback<Long>() {
             @Override
-            public void callback( Long processInstanceId ) {
-                view.displayNotification( "Process Id: " + processInstanceId + " started!" );
-                processInstanceCreatedEvents.fire( new ProcessInstanceCreated() );
+            public void callback(Long processInstanceId) {
+                view.displayNotification("Process Id: " + processInstanceId + " started!");
+                processInstanceCreatedEvents.fire(new ProcessInstanceCreated());
                 close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instance Details" );
-                placeRequestImpl.addParameter( "processInstanceId", processInstanceId.toString() );
-                placeRequestImpl.addParameter( "processDefId", params.get( "processId" ).toString() );
-                placeRequestImpl.addParameter( "domainId",  view.getDomainId() );
-                placeManager.goTo( placeRequestImpl );
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance Details");
+                placeRequestImpl.addParameter("processInstanceId", processInstanceId.toString());
+                placeRequestImpl.addParameter("processDefId", params.get("processId").toString());
+                placeRequestImpl.addParameter("domainId", view.getDomainId());
+                placeManager.goTo(placeRequestImpl);
             }
-        } ).startProcess( view.getDomainId(), params.get( "processId" ).toString(), params );
+        }).startProcess(view.getDomainId(), params.get("processId").toString(), params);
 
     }
 
     // Set up the JS-callable signature as a global JS function.
-    private native void publish( FormDisplayPopupPresenter fdp )/*-{
-
+    private native void publish(FormDisplayPopupPresenter fdp)/*-{
         $wnd.completeTask = function (from) {
             fdp.@org.jbpm.console.ng.ht.client.editors.taskform.FormDisplayPopupPresenter::completeTask(Ljava/lang/String;)(from);
         }
@@ -362,7 +367,6 @@ public class FormDisplayPopupPresenter {
         $wnd.startProcess = function (from) {
             fdp.@org.jbpm.console.ng.ht.client.editors.taskform.FormDisplayPopupPresenter::startProcess(Ljava/lang/String;)(from);
         }
-
     }-*/;
 
     private native void publishGetFormValues() /*-{
@@ -374,25 +378,23 @@ public class FormDisplayPopupPresenter {
                 var fieldValue = form.elements[i].value;
                 if (fieldName != '') {
                     params += fieldName + '=' + fieldValue + '&';
-                }
+               }
             }
-
             return params;
         };
-
     }-*/;
 
-    public static Map<String, String> getUrlParameters( String values ) {
+    public static Map<String, String> getUrlParameters(String values) {
         Map<String, String> params = new HashMap<String, String>();
-        for ( String param : values.split( "&" ) ) {
-            String pair[] = param.split( "=" );
-            String key = pair[ 0 ];
+        for (String param : values.split("&")) {
+            String pair[] = param.split("=");
+            String key = pair[0];
             String value = "";
-            if ( pair.length > 1 ) {
-                value = pair[ 1 ];
+            if (pair.length > 1) {
+                value = pair[1];
             }
-            if ( !key.startsWith( "btn_" ) ) {
-                params.put( key, value );
+            if (!key.startsWith("btn_")) {
+                params.put(key, value);
             }
         }
 
@@ -401,21 +403,21 @@ public class FormDisplayPopupPresenter {
 
     @OnReveal
     public void onReveal() {
-        long taskId = Long.parseLong( place.getParameter( "taskId", "-1" ).toString() );
-        String processId = place.getParameter( "processId", "none" ).toString();
-        String domainId = place.getParameter( "domainId", "none" ).toString();
-        if ( taskId != -1 ) {
-            view.setTaskId( taskId );
-            renderTaskForm( taskId );
-        } else if ( !processId.equals( "none" ) ) {
-            view.setProcessId( processId );
-            view.setDomainId(  domainId );
-            renderProcessForm( processId );
+        long taskId = Long.parseLong(place.getParameter("taskId", "-1").toString());
+        String processId = place.getParameter("processId", "none").toString();
+        String domainId = place.getParameter("domainId", "none").toString();
+        if (taskId != -1) {
+            view.setTaskId(taskId);
+            renderTaskForm(taskId);
+        } else if (!processId.equals("none")) {
+            view.setProcessId(processId);
+            view.setDomainId(domainId);
+            renderProcessForm(processId);
         }
     }
 
     public void close() {
-        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
+        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
 
 }

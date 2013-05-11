@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.backend.server;
 
 import java.util.ArrayList;
@@ -26,14 +27,14 @@ public class CommentSummaryHelper {
     public static List<CommentSummary> adaptCollection(List<Comment> comments) {
         List<CommentSummary> commentsSummaries = new ArrayList<CommentSummary>(comments.size());
         for (Comment comment : comments) {
-            commentsSummaries.add(new CommentSummary(comment.getId(), comment.getText(),
-                    comment.getAddedBy().toString(), comment.getAddedAt()));
+            commentsSummaries.add(new CommentSummary(comment.getId(), comment.getText(), comment.getAddedBy().toString(),
+                    comment.getAddedAt()));
         }
         return commentsSummaries;
     }
 
     static CommentSummary adapt(Comment comment) {
-        return new CommentSummary(comment.getId(), comment.getText(),
-                    comment.getAddedBy().toString(), comment.getAddedAt());
+        return new CommentSummary(comment.getId(), comment.getText(), comment.getAddedBy().toString(), comment.getAddedAt());
     }
+
 }

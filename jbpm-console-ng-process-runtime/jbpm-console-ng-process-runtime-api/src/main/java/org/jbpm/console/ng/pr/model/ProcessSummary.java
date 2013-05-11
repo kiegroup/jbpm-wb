@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.model;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
@@ -32,7 +33,8 @@ public class ProcessSummary {
     public ProcessSummary() {
     }
 
-    public ProcessSummary(String id, String name, String domainId, String packageName, String type, String version, String originalpath, String processSource) {
+    public ProcessSummary(String id, String name, String domainId, String packageName, String type, String version,
+            String originalpath, String processSource) {
         this.id = id;
         this.name = name;
         this.domainId = domainId;
@@ -43,7 +45,6 @@ public class ProcessSummary {
         this.encodedProcessSource = processSource;
     }
 
-  
     public String getId() {
         return id;
     }
@@ -85,11 +86,11 @@ public class ProcessSummary {
     }
 
     public String getDomainId() {
-      return domainId;
+        return domainId;
     }
 
     public void setDomainId(String domainId) {
-      this.domainId = domainId;
+        this.domainId = domainId;
     }
 
     public String getOriginalPath() {

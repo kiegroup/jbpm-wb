@@ -18,7 +18,7 @@ import org.jbpm.services.task.impl.model.TaskImpl;
 import org.junit.Test;
 
 /**
- * Tests for console-ng specific task methods (e.g. queires).
+ * Tests for console-ng specific task methods (e.g. queries).
  */
 public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBaseTest {
 
@@ -347,7 +347,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
         taskStr += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new Group('Jedi Knights')], }),";
         taskStr += "names = [ new I18NText( 'en-UK', 'No expiration date specified')] })";
         createAndAddTask(taskStr);
-        
+
         taskStr = "(with (new Task()) { priority = 55, taskData = (with( new TaskData()) {";
         taskStr += "expirationTime = null } ), ";
         taskStr += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new User('Yoda')], }),";
@@ -374,7 +374,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
             taskStr += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new Group('Star Wars')], }),";
             taskStr += "names = [ new I18NText( 'en-UK', 'Second day group task " + i + "')] })";
             createAndAddTask(taskStr);
-            
+
             taskStr = "(with (new Task()) { priority = 55, taskData = (with( new TaskData()) {";
             taskStr += "expirationTime = new java.text.SimpleDateFormat(\"yyyy-MM-dd\").parse(\"2013-04-21\") } ), ";
             taskStr += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new User('Yoda')], }),";
@@ -388,7 +388,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
             taskStr += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new Group('Jedi Knights')], }),";
             taskStr += "names = [ new I18NText( 'en-UK', 'Third day group task " + i + "')] })";
             createAndAddTask(taskStr);
-            
+
             taskStr = "(with (new Task()) { priority = 55, taskData = (with( new TaskData()) {";
             taskStr += "expirationTime = new java.text.SimpleDateFormat(\"yyyy-MM-dd\").parse(\"2013-04-22\") } ), ";
             taskStr += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new User('Yoda')], }),";
@@ -402,14 +402,14 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
             taskStr += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new Group('Star Wars')], }),";
             taskStr += "names = [ new I18NText( 'en-UK', 'Fourth day group task " + i + "')] })";
             createAndAddTask(taskStr);
-            
+
             taskStr = "(with (new Task()) { priority = 55, taskData = (with( new TaskData()) {";
             taskStr += "expirationTime = new java.text.SimpleDateFormat(\"yyyy-MM-dd\").parse(\"2013-04-23\") } ), ";
             taskStr += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new User('Yoda')], }),";
             taskStr += "names = [ new I18NText( 'en-UK', 'Fourth day user task " + i + "')] })";
             createAndAddTask(taskStr);
         }
-        
+
         List<String> groupIds = new ArrayList<String>();
         groupIds.add("Star Wars");
         groupIds.add("Jedi Knights");
@@ -447,6 +447,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
         TaskImpl task = TaskFactory.evalTask(new StringReader(taskStr));
         taskService.addTask(task, new HashMap<String, Object>());
     }
+
     /**
      * Verifies that the specified tasks have the expected expiration date. If the expiration date is not set, ignore that.
      * 
@@ -461,4 +462,5 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
             }
         }
     }
+
 }

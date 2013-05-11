@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.client.editors.variables.edit;
 
 import com.google.gwt.core.client.GWT;
@@ -39,6 +40,7 @@ import org.uberfire.shared.mvp.PlaceRequest;
 @Dependent
 @WorkbenchPopup(identifier = "Edit Variable Popup")
 public class VariableEditPresenter {
+    private Constants constants = GWT.create(Constants.class);
 
     public interface PopupView extends UberView<VariableEditPresenter> {
 
@@ -47,37 +49,38 @@ public class VariableEditPresenter {
         void setProcessInstanceId(long processInstanceId);
 
         long getProcessInstanceId();
-        
+
         String getVariableText();
-        
+
         void setVariableText(String value);
-        
+
         void setVariableId(String variableId);
-        
+
         void setVariableIdLabel(String variableId);
-        
+
         String getVariableId();
-        
+
     }
-    
+
     @Inject
     private PopupView view;
+
     @Inject
     private Identity identity;
+
     @Inject
     private PlaceManager placeManager;
+
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
+
     private PlaceRequest place;
-    
+
     @Inject
     private Caller<KieSessionEntryPoint> kieSessionServices;
-    
-    private Constants constants = GWT.create(Constants.class);
-    
+
     @PostConstruct
     public void init() {
-     
 
     }
 
@@ -85,7 +88,7 @@ public class VariableEditPresenter {
     public void onStart(final PlaceRequest place) {
         this.place = place;
     }
-    
+
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.Edit_Variable();
@@ -107,15 +110,16 @@ public class VariableEditPresenter {
     public void close() {
         closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
-    
+
     public void setProcessVariable(Object value) {
 
         kieSessionServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void v) {
                 close();
-                
+
             }
-        }).setProcessVariable( view.getProcessInstanceId(), view.getVariableId(), value);
+        }).setProcessVariable(view.getProcessInstanceId(), view.getVariableId(), value);
     }
+
 }

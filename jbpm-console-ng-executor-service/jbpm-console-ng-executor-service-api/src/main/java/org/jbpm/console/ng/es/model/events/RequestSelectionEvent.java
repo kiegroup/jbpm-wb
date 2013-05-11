@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.es.model.events;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- */
 @Portable
 public class RequestSelectionEvent {
     private Long taskId;
-    // This should be removed from here 
+    // This should be removed from here
     private String userId;
 
     public RequestSelectionEvent() {
@@ -41,9 +39,9 @@ public class RequestSelectionEvent {
     public String getUserId() {
         return userId;
     }
-    
+
     public long getTaskId() {
         return taskId;
     }
-    
+
 }

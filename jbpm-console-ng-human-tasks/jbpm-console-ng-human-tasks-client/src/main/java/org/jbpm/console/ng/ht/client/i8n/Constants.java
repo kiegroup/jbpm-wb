@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.i8n;
 
 import com.google.gwt.core.client.GWT;
@@ -20,21 +21,18 @@ import com.google.gwt.i18n.client.Messages;
 
 /**
  * This uses GWT to provide client side compile time resolving of locales. See:
- * http://code.google.com/docreader/#p=google-web-toolkit-doc-1-5&s=google-web-
- * toolkit-doc-1-5&t=DevGuideInternationalization (for more information).
+ * http://code.google.com/docreader/#p=google-web-toolkit-doc-1-5&s=google-web- toolkit-doc-1-5&t=DevGuideInternationalization
+ * (for more information).
  * <p/>
- * Each method name matches up with a key in Constants.properties (the
- * properties file can still be used on the server). To use this, use
- * <code>GWT.create(Constants.class)</code>.
+ * Each method name matches up with a key in Constants.properties (the properties file can still be used on the server). To use
+ * this, use <code>GWT.create(Constants.class)</code>.
  */
-public interface Constants
-        extends
-        Messages {
+public interface Constants extends Messages {
 
     Constants INSTANCE = GWT.create(Constants.class);
 
     String Tasks_List_Calendar_View();
-    
+
     String Tasks_List_Advanced_View();
 
     String Day();
@@ -80,7 +78,7 @@ public interface Constants
     String Start();
 
     String Details();
-    
+
     String Actions();
 
     String No_Parent();
@@ -96,9 +94,9 @@ public interface Constants
     String No_Comments_For_This_Task();
 
     String Comment();
-    
+
     String At();
-    
+
     String Added_By();
 
     String Add_Comment();
@@ -110,11 +108,11 @@ public interface Constants
     String Task_Name();
 
     String Quick_Task();
-    
+
     String Description();
 
     String Comments();
-    
+
     String Filters();
 
     String Process_Context();

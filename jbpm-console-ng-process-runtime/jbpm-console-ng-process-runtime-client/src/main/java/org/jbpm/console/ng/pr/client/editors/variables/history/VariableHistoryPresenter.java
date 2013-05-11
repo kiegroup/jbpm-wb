@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.client.editors.variables.history;
 
 import com.google.gwt.core.client.GWT;
@@ -43,44 +44,47 @@ import org.uberfire.shared.mvp.PlaceRequest;
 @Dependent
 @WorkbenchPopup(identifier = "Variable History Popup")
 public class VariableHistoryPresenter {
+    private Constants constants = GWT.create(Constants.class);
 
     public interface PopupView extends UberView<VariableHistoryPresenter> {
 
-        void displayNotification( String text );
+        void displayNotification(String text);
 
-        void setProcessInstanceId( long processInstanceId );
+        void setProcessInstanceId(long processInstanceId);
 
         long getProcessInstanceId();
 
-        void setVariableId( String variableId );
+        void setVariableId(String variableId);
 
         String getVariableId();
     }
 
     @Inject
-    private PopupView                    view;
+    private PopupView view;
+
     @Inject
-    private Identity                     identity;
+    private Identity identity;
+
     @Inject
-    private PlaceManager                 placeManager;
+    private PlaceManager placeManager;
+
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
-    private PlaceRequest                 place;
+
+    private PlaceRequest place;
 
     private ListDataProvider<VariableSummary> dataProvider = new ListDataProvider<VariableSummary>();
 
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
 
-    private Constants constants = GWT.create(Constants.class);
-    
     @PostConstruct
     public void init() {
 
     }
 
     @OnStart
-    public void onStart( final PlaceRequest place ) {
+    public void onStart(final PlaceRequest place) {
         this.place = place;
     }
 
@@ -96,29 +100,29 @@ public class VariableHistoryPresenter {
 
     @OnReveal
     public void onReveal() {
-        view.setProcessInstanceId( Long.parseLong( place.getParameter( "processInstanceId", "-1" ).toString() ) );
-        view.setVariableId( place.getParameter( "variableId", "-1" ).toString() );
+        view.setProcessInstanceId(Long.parseLong(place.getParameter("processInstanceId", "-1").toString()));
+        view.setVariableId(place.getParameter("variableId", "-1").toString());
 
         loadVariableHistory();
     }
 
     public void close() {
-        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
+        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
 
     public void loadVariableHistory() {
-        dataServices.call( new RemoteCallback<List<VariableSummary>>() {
+        dataServices.call(new RemoteCallback<List<VariableSummary>>() {
             @Override
-            public void callback( List<VariableSummary> processInstances ) {
+            public void callback(List<VariableSummary> processInstances) {
                 dataProvider.getList().clear();
-                dataProvider.getList().addAll( processInstances );
+                dataProvider.getList().addAll(processInstances);
                 dataProvider.refresh();
             }
-        } ).getVariableHistory( view.getProcessInstanceId(), view.getVariableId() );
+        }).getVariableHistory(view.getProcessInstanceId(), view.getVariableId());
     }
 
-    public void addDataDisplay( HasData<VariableSummary> display ) {
-        dataProvider.addDataDisplay( display );
+    public void addDataDisplay(HasData<VariableSummary> display) {
+        dataProvider.addDataDisplay(display);
     }
 
     public ListDataProvider<VariableSummary> getDataProvider() {
@@ -128,4 +132,5 @@ public class VariableHistoryPresenter {
     public void refreshData() {
         dataProvider.refresh();
     }
+
 }

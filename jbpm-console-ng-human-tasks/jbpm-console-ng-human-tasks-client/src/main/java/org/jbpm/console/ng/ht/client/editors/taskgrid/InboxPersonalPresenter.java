@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.editors.taskgrid;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
@@ -51,12 +52,9 @@ import org.jbpm.console.ng.ht.client.i8n.Constants;
 @WorkbenchScreen(identifier = "Grid Tasks List")
 public class InboxPersonalPresenter {
 
-    public interface InboxView
-            extends
-            UberView<InboxPersonalPresenter> {
+    public interface InboxView extends UberView<InboxPersonalPresenter> {
 
         void displayNotification(String text);
-
 
         DataGrid<TaskSummary> getDataGrid();
 
@@ -66,15 +64,16 @@ public class InboxPersonalPresenter {
 
         public void refreshTasks();
     }
+
     @Inject
     private InboxView view;
     @Inject
     private Identity identity;
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
-    
+
     private Constants constants = GWT.create(Constants.class);
-    
+
     private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
     public static final ProvidesKey<TaskSummary> KEY_PROVIDER = new ProvidesKey<TaskSummary>() {
         @Override
@@ -100,24 +99,24 @@ public class InboxPersonalPresenter {
     public void init() {
     }
 
-    public void refreshActiveTasks(){
+    public void refreshActiveTasks() {
         List<Role> roles = identity.getRoles();
         List<String> groups = new ArrayList<String>(roles.size());
         for (Role r : roles) {
             groups.add(r.getName().trim());
         }
         taskServices.call(new RemoteCallback<List<TaskSummary>>() {
-                @Override
-                public void callback(List<TaskSummary> tasks) {
-                    dataProvider.getList().clear();
-                    dataProvider.getList().addAll(tasks);
-                    dataProvider.refresh();
-                    view.getSelectionModel().clear();
+            @Override
+            public void callback(List<TaskSummary> tasks) {
+                dataProvider.getList().clear();
+                dataProvider.getList().addAll(tasks);
+                dataProvider.refresh();
+                view.getSelectionModel().clear();
 
-                }
-            }).getTasksAssignedPersonalAndGroupsTasks(identity.getName(), groups, "en-UK");
+            }
+        }).getTasksAssignedPersonalAndGroupsTasks(identity.getName(), groups, "en-UK");
     }
-    
+
     public void refreshAllTasks() {
         taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
@@ -168,8 +167,6 @@ public class InboxPersonalPresenter {
         }).getTasksAssignedByGroups(groups, "en-UK");
     }
 
-  
-
     public void startTasks(final Set<TaskSummary> selectedTasks, final String userId) {
         List<Long> tasksIds = new ArrayList<Long>(selectedTasks.size());
         for (TaskSummary ts : selectedTasks) {
@@ -182,8 +179,6 @@ public class InboxPersonalPresenter {
                 view.refreshTasks();
             }
         }).startBatch(tasksIds, userId);
-
-
 
     }
 
@@ -217,8 +212,6 @@ public class InboxPersonalPresenter {
             }
         }).completeBatch(tasksIds, userId, null);
 
-
-
     }
 
     public void claimTasks(Set<TaskSummary> selectedTasks, final String userId) {
@@ -234,8 +227,6 @@ public class InboxPersonalPresenter {
 
             }
         }).claimBatch(tasksIds, userId);
-
-
 
     }
 
@@ -258,4 +249,5 @@ public class InboxPersonalPresenter {
     public void formClosed(@Observes BeforeClosePlaceEvent closed) {
         view.refreshTasks();
     }
+
 }

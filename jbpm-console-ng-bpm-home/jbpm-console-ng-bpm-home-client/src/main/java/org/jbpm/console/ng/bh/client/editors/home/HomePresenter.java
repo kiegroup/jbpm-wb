@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.bh.client.editors.home;
 
 import com.google.gwt.core.client.GWT;
@@ -36,56 +37,51 @@ import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 @WorkbenchScreen(identifier = "Home Screen")
 public class HomePresenter {
 
-  public interface HomeView
-          extends
-          UberView<HomePresenter> {
+    public interface HomeView extends UberView<HomePresenter> {
 
-    void displayNotification(String text);
+        void displayNotification(String text);
 
-  }
-  @Inject
-  private PlaceManager placeManager;
-  
-  private Constants constants = GWT.create(Constants.class);
-  
-  @Inject
-  HomeView view;
-  // Retrieve the actions from a service
-  Map<String, String> actions = new HashMap<String, String>();
-
-  @PostConstruct
-  public void init() {
-  }
-
-  @WorkbenchPartTitle
-  public String getTitle() {
-    return constants.Home();
-  }
-
-  @WorkbenchPartView
-  public UberView<HomePresenter> getView() {
-    return view;
-  }
-
-  public void doAction(String action) {
-    String locatedAction = actions.get(action);
-    if (locatedAction == null || locatedAction.equals("")) {
-      view.displayNotification(" Action Not Implemented Yet!");
-      return;
     }
-    PlaceRequest placeRequestImpl = new DefaultPlaceRequest(locatedAction);
-//        placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
 
-    placeManager.goTo(placeRequestImpl);
+    @Inject
+    private PlaceManager placeManager;
 
-  }
+    private Constants constants = GWT.create(Constants.class);
 
-  @OnReveal
-  public void onReveal() {
-   
+    @Inject
+    HomeView view;
+    // Retrieve the actions from a service
+    Map<String, String> actions = new HashMap<String, String>();
 
+    @PostConstruct
+    public void init() {
+    }
 
-  }
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return constants.Home();
+    }
 
-  
+    @WorkbenchPartView
+    public UberView<HomePresenter> getView() {
+        return view;
+    }
+
+    public void doAction(String action) {
+        String locatedAction = actions.get(action);
+        if (locatedAction == null || locatedAction.equals("")) {
+            view.displayNotification(" Action Not Implemented Yet!");
+            return;
+        }
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(locatedAction);
+        // placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
+
+        placeManager.goTo(placeRequestImpl);
+    }
+
+    @OnReveal
+    public void onReveal() {
+
+    }
+
 }

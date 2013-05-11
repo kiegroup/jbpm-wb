@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.es.model;
 
 import java.io.Serializable;
@@ -20,7 +21,7 @@ import java.util.Date;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class ErrorSummary implements Serializable{
+public class ErrorSummary implements Serializable {
 
     private Long id;
     private Date time;
@@ -38,8 +39,6 @@ public class ErrorSummary implements Serializable{
         this.stacktrace = stacktrace;
         this.requestInfoId = requestInfoId;
     }
-    
-    
 
     public Long getId() {
         return id;
@@ -80,6 +79,5 @@ public class ErrorSummary implements Serializable{
     public void setRequestInfoId(Long requestInfoId) {
         this.requestInfoId = requestInfoId;
     }
-    
-    
+
 }

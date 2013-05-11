@@ -33,11 +33,14 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
 
     @Inject
     private DeploymentService deploymentService;
+
     @Inject
     @RequestScoped
     private Set<DeploymentUnit> deploymentUnits;
+
     @Inject
     private DeploymentConfigService deploymentConfigService;
+
     @Inject
     private GuvnorM2Repository guvnorM2Repository;
 
@@ -59,14 +62,14 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
     @Override
     public void deploy(DeploymentUnitSummary unitSummary) {
         DeploymentUnit unit = null;
-        if(unitSummary.getType().equals("kjar")){
-           unit =  new KModuleDeploymentUnit(((KModuleDeploymentUnitSummary)unitSummary).getGroupId(), 
-                                                ((KModuleDeploymentUnitSummary)unitSummary).getArtifactId(), 
-                                                ((KModuleDeploymentUnitSummary)unitSummary).getVersion(), 
-                                                ((KModuleDeploymentUnitSummary)unitSummary).getKbaseName(), 
-                                                ((KModuleDeploymentUnitSummary)unitSummary).getKsessionName());
+        if (unitSummary.getType().equals("kjar")) {
+            unit = new KModuleDeploymentUnit(((KModuleDeploymentUnitSummary) unitSummary).getGroupId(),
+                    ((KModuleDeploymentUnitSummary) unitSummary).getArtifactId(),
+                    ((KModuleDeploymentUnitSummary) unitSummary).getVersion(),
+                    ((KModuleDeploymentUnitSummary) unitSummary).getKbaseName(),
+                    ((KModuleDeploymentUnitSummary) unitSummary).getKsessionName());
         }// add for vfs
-        
+
         if (deploymentService.getDeployedUnit(unit.getIdentifier()) == null) {
             cleanup(unit.getIdentifier());
             deploymentService.deploy(unit);
@@ -125,4 +128,5 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         }
         return unitsIds;
     }
+
 }

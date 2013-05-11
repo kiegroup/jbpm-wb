@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
 import java.util.List;
@@ -35,7 +36,7 @@ import com.google.gwt.user.client.ui.RequiresResize;
 public class TaskListDayBox extends Composite implements RequiresResize {
     private static IconType ICON_TASKS_COLLAPSED = IconType.DOUBLE_ANGLE_DOWN;
     private static IconType ICON_TASKS_VISIBLE = IconType.DOUBLE_ANGLE_UP;
-    
+
     private Day day;
     private List<TaskSummary> taskSummaries;
     private Identity identity;
@@ -79,13 +80,13 @@ public class TaskListDayBox extends Composite implements RequiresResize {
                 toggleIcon();
             }
         });
-        
+
         top.add(iconAndDayName);
         dayTaskContainer.add(top);
         span12.add(taskListBox);
         collapsible.add(fluidRow);
         dayTaskContainer.add(collapsible);
-        
+
         if (taskSummaries.size() > 0) {
             collapsible.setDefaultOpen(true);
             tasksCollapsed = false;
@@ -147,4 +148,5 @@ public class TaskListDayBox extends Composite implements RequiresResize {
         }
         tasksCollapsed = !tasksCollapsed;
     }
+
 }

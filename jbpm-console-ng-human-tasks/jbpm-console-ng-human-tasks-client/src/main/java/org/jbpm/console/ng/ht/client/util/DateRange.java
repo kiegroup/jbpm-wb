@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.util;
 
 import java.util.Date;
@@ -23,7 +24,7 @@ import java.util.Date;
 public class DateRange {
     private final Date startDate;
     private final Date endDate;
-    
+
     public DateRange(Date startDate, Date endDate) {
         super();
         this.startDate = startDate;
@@ -59,7 +60,7 @@ public class DateRange {
             return false;
         return true;
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -68,7 +69,7 @@ public class DateRange {
         result = prime * result + ((startDate == null) ? 0 : startDate.hashCode());
         return result;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -79,4 +80,5 @@ public class DateRange {
         builder.append("]");
         return builder.toString();
     }
+
 }

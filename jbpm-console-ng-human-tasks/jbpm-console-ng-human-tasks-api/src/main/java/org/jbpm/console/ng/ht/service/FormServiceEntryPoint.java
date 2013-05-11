@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.service;
 
 import org.jboss.errai.bus.server.annotations.Remote;
@@ -21,7 +22,7 @@ import org.jboss.errai.bus.server.annotations.Remote;
 public interface FormServiceEntryPoint {
 
     public String getFormDisplayTask(long taskId);
-    
+
     public String getFormDisplayProcess(String processId);
 
 }

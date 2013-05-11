@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.model;
 
 import java.io.Serializable;
@@ -28,12 +29,12 @@ import org.jboss.errai.marshalling.client.api.annotations.MapsTo;
 public class Day implements Serializable {
     private final Date date;
     private final String dayOfWeekName;
-    
+
     public Day(@MapsTo("date") Date date, @MapsTo("dayOfWeekName") String dayOfWeekName) {
         this.date = date;
         this.dayOfWeekName = dayOfWeekName;
     }
-    
+
     public Date getDate() {
         return new Date(date.getTime());
     }
@@ -44,15 +45,19 @@ public class Day implements Serializable {
 
     @Override
     public boolean equals(Object other) {
-        if (this == other) return true;
-        if (other == null) return false;
-        if (!(other instanceof Day)) return false;
-        Day otherDay = (Day)other;
+        if (this == other)
+            return true;
+        if (other == null)
+            return false;
+        if (!(other instanceof Day))
+            return false;
+        Day otherDay = (Day) other;
         return this.dayOfWeekName.equals(otherDay.dayOfWeekName);
     }
-    
+
     @Override
     public int hashCode() {
         return dayOfWeekName.hashCode();
     }
+
 }

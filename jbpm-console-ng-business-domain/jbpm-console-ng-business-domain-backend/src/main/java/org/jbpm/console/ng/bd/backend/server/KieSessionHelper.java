@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.bd.backend.server;
 
+package org.jbpm.console.ng.bd.backend.server;
 
 import org.jbpm.console.ng.bd.model.KieSessionSummary;
 import org.kie.api.runtime.KieSession;
 
 public class KieSessionHelper {
-    public static KieSessionSummary adapt(KieSession ksession){
-        KieSessionSummary ksessionSummary 
-                                        = new KieSessionSummary(ksession.getId());
+    public static KieSessionSummary adapt(KieSession ksession) {
+        KieSessionSummary ksessionSummary = new KieSessionSummary(ksession.getId());
 
         return ksessionSummary;
     }
+
 }

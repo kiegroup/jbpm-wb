@@ -20,18 +20,16 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 
-public interface ShowcaseImages
-        extends
-        ClientBundle {
+public interface ShowcaseImages extends ClientBundle {
 
-    ShowcaseImages INSTANCE = GWT.create( ShowcaseImages.class );
+    ShowcaseImages INSTANCE = GWT.create(ShowcaseImages.class);
 
     @Source("images/monitoring.png")
     ImageResource monitoringScreenshot();
 
     @Source("images/hdrlogo_drools.gif")
     ImageResource hdrlogoDrools();
-    
+
     @Source("images/icons/edit.png")
     ImageResource editIcon();
 
@@ -52,13 +50,13 @@ public interface ShowcaseImages
 
     @Source("images/icons/start.png")
     public ImageResource startIcon();
-    
+
     @Source("images/icons/details.png")
     public ImageResource detailsIcon();
-    
+
     @Source("images/icons/abort.png")
     public ImageResource abortIcon();
-    
+
     @Source("images/icons/signal.png")
     public ImageResource signalIcon();
 

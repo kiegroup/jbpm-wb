@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.backend.server;
 
 import java.util.ArrayList;
@@ -20,19 +21,21 @@ import java.util.Collection;
 import java.util.List;
 import org.jbpm.kie.services.impl.model.ProcessDesc;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
+
 public class ProcessHelper {
-    public static Collection<ProcessSummary> adaptCollection(Collection<ProcessDesc> processes){
+    public static Collection<ProcessSummary> adaptCollection(Collection<ProcessDesc> processes) {
         List<ProcessSummary> processesSummary = new ArrayList<ProcessSummary>();
-        for(ProcessDesc p : processes){
-            processesSummary.add(new ProcessSummary(p.getId(), p.getName(), p.getDeploymentId(), p.getPackageName(),
-                    p.getType(), p.getVersion(), p.getOriginalPath(), p.getEncodedProcessSource()));
+        for (ProcessDesc p : processes) {
+            processesSummary.add(new ProcessSummary(p.getId(), p.getName(), p.getDeploymentId(), p.getPackageName(), p
+                    .getType(), p.getVersion(), p.getOriginalPath(), p.getEncodedProcessSource()));
         }
-        
+
         return processesSummary;
     }
-    
-    public static ProcessSummary adapt(ProcessDesc p){
-        return new ProcessSummary(p.getId(), p.getName(), p.getDeploymentId(), p.getPackageName(),
-                p.getType(), p.getVersion(), p.getOriginalPath(), p.getEncodedProcessSource());
+
+    public static ProcessSummary adapt(ProcessDesc p) {
+        return new ProcessSummary(p.getId(), p.getName(), p.getDeploymentId(), p.getPackageName(), p.getType(), p.getVersion(),
+                p.getOriginalPath(), p.getEncodedProcessSource());
     }
+
 }

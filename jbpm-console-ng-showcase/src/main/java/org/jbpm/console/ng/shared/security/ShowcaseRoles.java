@@ -26,7 +26,7 @@ import static java.lang.annotation.RetentionPolicy.*;
 
 @RolesType
 @Retention(RUNTIME)
-@Target({TYPE, METHOD})
+@Target({ TYPE, METHOD })
 public @interface ShowcaseRoles {
 
     AppRoles[] value();

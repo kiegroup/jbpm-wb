@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.client.editors.definition.list;
-
-
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.TextBox;
@@ -23,7 +22,6 @@ import com.google.gwt.core.client.GWT;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-
 
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
@@ -49,9 +47,7 @@ import org.uberfire.client.mvp.UberView;
 @WorkbenchScreen(identifier = "Process Definition List")
 public class ProcessDefinitionListPresenter {
 
-    public interface InboxView
-            extends
-            UberView<ProcessDefinitionListPresenter> {
+    public interface InboxView extends UberView<ProcessDefinitionListPresenter> {
 
         void displayNotification(String text);
 
@@ -63,8 +59,10 @@ public class ProcessDefinitionListPresenter {
 
         void hideBusyIndicator();
     }
+
     @Inject
     private InboxView view;
+
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
 
@@ -76,7 +74,7 @@ public class ProcessDefinitionListPresenter {
     private ListDataProvider<ProcessSummary> dataProvider = new ListDataProvider<ProcessSummary>();
 
     private Constants constants = GWT.create(Constants.class);
-    
+
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.Process_Definitions();
@@ -89,7 +87,6 @@ public class ProcessDefinitionListPresenter {
 
     public ProcessDefinitionListPresenter() {
     }
-
 
     public void refreshProcessList(final String filter) {
 
@@ -113,7 +110,7 @@ public class ProcessDefinitionListPresenter {
             }).getProcesses();
         }
     }
-    
+
     public void reloadRepository() {
 
         view.showBusyIndicator(constants.Please_Wait());
@@ -126,14 +123,14 @@ public class ProcessDefinitionListPresenter {
             }
         }, new ErrorCallback() {
 
-           @Override
-           public boolean error(Message message, Throwable throwable) {
-               view.hideBusyIndicator();
-               view.displayNotification("Error: Process refreshed from repository failed");
-               return true;
-           }
-       }).redeploy();
-        
+            @Override
+            public boolean error(Message message, Throwable throwable) {
+                view.hideBusyIndicator();
+                view.displayNotification("Error: Process refreshed from repository failed");
+                return true;
+            }
+        }).redeploy();
+
     }
 
     public void addDataDisplay(HasData<ProcessSummary> display) {
@@ -152,4 +149,5 @@ public class ProcessDefinitionListPresenter {
     public void onReveal() {
         refreshProcessList("");
     }
+
 }

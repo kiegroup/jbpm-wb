@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.bd.client.editors.session.notifications;
 
 import com.google.gwt.core.client.GWT;
@@ -22,8 +23,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-
-
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -38,12 +37,10 @@ import org.uberfire.client.mvp.PlaceManager;
 
 @Dependent
 @Templated(value = "SessionNotificationsPopupViewImpl.html")
-public class SessionNotificationsPopupViewImpl extends Composite
-        implements
-        SessionNotificationsPopupPresenter.InboxView {
+public class SessionNotificationsPopupViewImpl extends Composite implements SessionNotificationsPopupPresenter.InboxView {
 
     private SessionNotificationsPopupPresenter presenter;
-  
+
     @Inject
     @DataField
     public TextBox sessionIdText;
@@ -56,25 +53,21 @@ public class SessionNotificationsPopupViewImpl extends Composite
     @DataField
     public Button updateButton;
 
-    
     @Inject
     @DataField
     public Button closeButton;
 
-   
-    
     @Inject
     private PlaceManager placeManager;
-   
+
     @Inject
     private Event<NotificationEvent> notification;
-    
+
     private Constants constants = GWT.create(Constants.class);
 
     @Override
     public void init(SessionNotificationsPopupPresenter presenter) {
         this.presenter = presenter;
-
 
     }
 
@@ -108,11 +101,4 @@ public class SessionNotificationsPopupViewImpl extends Composite
         return updateButton;
     }
 
-
-
-  
-
-    
-    
-    
 }

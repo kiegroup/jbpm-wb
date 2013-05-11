@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.es.backend.server;
 
 import java.util.Date;
@@ -34,10 +35,6 @@ import org.jbpm.executor.api.CommandContext;
 import org.jbpm.executor.entities.RequestInfo;
 import org.jbpm.executor.entities.STATUS;
 
-/**
- *
- *
- */
 @Service
 @ApplicationScoped
 @Transactional
@@ -75,22 +72,22 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
     public List<RequestSummary> getAllRequests() {
         return RequestSummaryHelper.adaptRequestList(executor.getAllRequests());
     }
-    
+
     @Override
     public List<RequestSummary> getRequestsByStatus(List<String> statuses) {
-    	List<STATUS> statusList = RequestSummaryHelper.adaptStatusList(statuses);
-    	return RequestSummaryHelper.adaptRequestList(executor.getRequestsByStatus(statusList));
+        List<STATUS> statusList = RequestSummaryHelper.adaptStatusList(statuses);
+        return RequestSummaryHelper.adaptRequestList(executor.getRequestsByStatus(statusList));
     }
 
     @Override
     public RequestDetails getRequestDetails(Long requestId) {
-    	RequestInfo request = executor.getRequestById(requestId);
-		RequestSummary summary = RequestSummaryHelper.adaptRequest(request);
-    	List<ErrorSummary> errors = RequestSummaryHelper.adaptErrorList(request.getErrorInfo());
-    	List<RequestParameterSummary> params = RequestSummaryHelper.adaptInternalMap(request);
-    	return new RequestDetails(summary, errors, params);
+        RequestInfo request = executor.getRequestById(requestId);
+        RequestSummary summary = RequestSummaryHelper.adaptRequest(request);
+        List<ErrorSummary> errors = RequestSummaryHelper.adaptErrorList(request.getErrorInfo());
+        List<RequestParameterSummary> params = RequestSummaryHelper.adaptInternalMap(request);
+        return new RequestDetails(summary, errors, params);
     }
-    
+
     @Override
     public int clearAllRequests() {
         return executor.clearAllRequests();
@@ -133,22 +130,22 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
     public void destroy() {
         executor.destroy();
     }
-    
+
     @Override
     public Boolean isActive() {
-    	return executor.isActive();
+        return executor.isActive();
     }
-    
+
     @Override
     public Boolean startStopService(int waitTime, int nroOfThreads) {
-    	executor.setInterval(waitTime);
-    	executor.setThreadPoolSize(nroOfThreads);
-    	if (executor.isActive()) {
-    		executor.destroy();
-    	} else {
-    		executor.init();
-    	}
-    	return executor.isActive();
+        executor.setInterval(waitTime);
+        executor.setThreadPoolSize(nroOfThreads);
+        if (executor.isActive()) {
+            executor.destroy();
+        } else {
+            executor.init();
+        }
+        return executor.isActive();
     }
 
     @Override
@@ -200,4 +197,5 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
     public List<RequestSummary> getFutureQueuedRequests() {
         return RequestSummaryHelper.adaptRequestList(executor.getFutureQueuedRequests());
     }
+
 }

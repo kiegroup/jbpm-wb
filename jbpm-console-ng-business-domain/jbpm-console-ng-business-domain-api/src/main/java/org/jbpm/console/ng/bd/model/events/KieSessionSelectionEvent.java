@@ -13,32 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.bd.model.events;
 
 import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class KieSessionSelectionEvent implements Serializable{
-  private long ksessionId;
+public class KieSessionSelectionEvent implements Serializable {
+    private long ksessionId;
 
-  public KieSessionSelectionEvent() {
-  }
+    public KieSessionSelectionEvent() {
+    }
 
-  public KieSessionSelectionEvent(long ksessionId) {
-    this.ksessionId = ksessionId;
-  }
+    public KieSessionSelectionEvent(long ksessionId) {
+        this.ksessionId = ksessionId;
+    }
 
-  public long getKsessionId() {
-    return ksessionId;
-  }
+    public long getKsessionId() {
+        return ksessionId;
+    }
 
-  public void setKsessionId(long ksessionId) {
-    this.ksessionId = ksessionId;
-  }
-  
-  
-  
+    public void setKsessionId(long ksessionId) {
+        this.ksessionId = ksessionId;
+    }
 
-  
 }

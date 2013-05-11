@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.bd.service;
 
 import java.util.Collection;
@@ -27,6 +28,7 @@ import org.jbpm.console.ng.pr.model.VariableSummary;
 
 @Remote
 public interface DataServiceEntryPoint {
+
     Collection<ProcessInstanceSummary> getProcessInstances();
 
     Collection<ProcessInstanceSummary> getProcessInstancesBySessionId(String sessionId);
@@ -38,9 +40,9 @@ public interface DataServiceEntryPoint {
     ProcessSummary getProcessById(String processId);
 
     Collection<ProcessSummary> getProcesses();
-    
+
     Collection<ProcessInstanceSummary> getProcessInstancesByProcessDefinition(String processDefId);
-    
+
     Collection<NodeInstanceSummary> getProcessInstanceHistory(long processInstanceId);
 
     Collection<NodeInstanceSummary> getProcessInstanceHistory(long processInstanceId, boolean completed);
@@ -48,19 +50,19 @@ public interface DataServiceEntryPoint {
     Collection<NodeInstanceSummary> getProcessInstanceFullHistory(long processInstanceId);
 
     Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(long processInstanceId);
-    
+
     Collection<ProcessInstanceSummary> getProcessInstances(List<Integer> states, String filterText, String initiator);
-    
+
     Collection<NodeInstanceSummary> getProcessInstanceCompletedNodes(long processInstanceId);
-    
+
     Collection<VariableSummary> getVariableHistory(long processInstanceId, String variableId);
-    
+
     /*
-     * BPMN2 
+     * BPMN2
      */
-    
+
     Collection<String> getReusableSubProcesses(String processId);
-    
+
     List<String> getAssociatedDomainObjects(String processId);
 
     Map<String, String> getRequiredInputData(String processId);
@@ -78,4 +80,5 @@ public interface DataServiceEntryPoint {
     Map<String, String> getTaskInputMappings(String processId, String taskName);
 
     Map<String, String> getTaskOutputMappings(String processId, String taskName);
+
 }

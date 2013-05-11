@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.es.client.editors.jobdetails;
 
 import java.util.List;
@@ -43,58 +44,62 @@ import com.google.gwt.view.client.ListDataProvider;
 @Dependent
 @Templated(value = "JobDetailsViewImpl.html")
 public class JobDetailsViewImpl extends Composite implements JobDetailsView {
+    private Constants constants = GWT.create(Constants.class);
 
-	@Inject
-	@DataField
-	private Label jobRetries;
-	@Inject
-	@DataField
-	private DataGrid<RequestParameterSummary> executionParametersGrid;
-	@Inject
-	@DataField
-	private VerticalPanel errorsOccurredList;
-	private Constants constants = GWT.create(Constants.class);
-	private ListDataProvider<RequestParameterSummary> dataProvider = new ListDataProvider<RequestParameterSummary>();
-	
-	@Override
-	public void init(JobDetailsPresenter p) {
-		Column<RequestParameterSummary, String> paramKeyColumn = new Column<RequestParameterSummary, String>(new TextCell()) {
-        	@Override
+    @Inject
+    @DataField
+    private Label jobRetries;
+
+    @Inject
+    @DataField
+    private DataGrid<RequestParameterSummary> executionParametersGrid;
+
+    @Inject
+    @DataField
+    private VerticalPanel errorsOccurredList;
+
+    private ListDataProvider<RequestParameterSummary> dataProvider = new ListDataProvider<RequestParameterSummary>();
+
+    @Override
+    public void init(JobDetailsPresenter p) {
+        Column<RequestParameterSummary, String> paramKeyColumn = new Column<RequestParameterSummary, String>(new TextCell()) {
+            @Override
             public String getValue(RequestParameterSummary rowObject) {
-        		return rowObject.getKey();
-        	}
+                return rowObject.getKey();
+            }
         };
         executionParametersGrid.setHeight("200px");
 
-        //      Set the message to display when the table is empty.
+        // Set the message to display when the table is empty.
         executionParametersGrid.setEmptyTableWidget(new Label(constants.No_Parameters_added_yet()));
-        executionParametersGrid.addColumn(paramKeyColumn, 
-        		new ResizableHeader<RequestParameterSummary>("Key", executionParametersGrid, paramKeyColumn));
+        executionParametersGrid.addColumn(paramKeyColumn, new ResizableHeader<RequestParameterSummary>("Key",
+                executionParametersGrid, paramKeyColumn));
 
         Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>(new TextCell()) {
-        	@Override
+            @Override
             public String getValue(RequestParameterSummary rowObject) {
-        		return rowObject.getValue();
-        	}
+                return rowObject.getValue();
+            }
         };
-        executionParametersGrid.addColumn(paramValueColumn, 
-        		new ResizableHeader<RequestParameterSummary>("Value", executionParametersGrid, paramValueColumn));
-	}
-	
-	@Override
+        executionParametersGrid.addColumn(paramValueColumn, new ResizableHeader<RequestParameterSummary>("Value",
+                executionParametersGrid, paramValueColumn));
+    }
+
+    @Override
     public void setRequest(RequestSummary r, List<ErrorSummary> errors, List<RequestParameterSummary> params) {
-		this.jobRetries.setText(String.valueOf(r.getExecutions()));
-		if (errors != null) {
-			for (ErrorSummary error : errors) {
-				String html = "<strong>" + error.getMessage() + "</strong><br/>" + error.getStacktrace();
-				this.errorsOccurredList.add(new HTML(SafeHtmlUtils.fromTrustedString(html)));
-			}
-		}
-		if (params != null) {
-			for (RequestParameterSummary param : params) {
-				this.dataProvider.getList().add(param);
-			}
-			dataProvider.addDataDisplay(executionParametersGrid);
-		}
-	}
+        this.jobRetries.setText(String.valueOf(r.getExecutions()));
+        if (errors != null) {
+            for (ErrorSummary error : errors) {
+                String html = "<strong>" + error.getMessage() + "</strong><br/>" + error.getStacktrace();
+                this.errorsOccurredList.add(new HTML(SafeHtmlUtils.fromTrustedString(html)));
+            }
+        }
+        if (params != null) {
+            for (RequestParameterSummary param : params) {
+                this.dataProvider.getList().add(param);
+            }
+            dataProvider.addDataDisplay(executionParametersGrid);
+        }
+    }
+
 }

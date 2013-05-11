@@ -20,30 +20,28 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 
-public interface ProcessRuntimeImages
-        extends
-        ClientBundle {
+public interface ProcessRuntimeImages extends ClientBundle {
 
-    ProcessRuntimeImages INSTANCE = GWT.create( ProcessRuntimeImages.class );
+    ProcessRuntimeImages INSTANCE = GWT.create(ProcessRuntimeImages.class);
 
     @Source("org/jbpm/console/ng/pr/public/images/icons/abort-grid-icon.png")
     public ImageResource abortGridIcon();
-    
+
     @Source("org/jbpm/console/ng/pr/public/images/icons/signal-grid-icon.png")
     public ImageResource signalGridIcon();
-    
+
     @Source("org/jbpm/console/ng/pr/public/images/icons/refresh-grid-icon.png")
     public ImageResource refreshGridIcon();
-    
+
     @Source("org/jbpm/console/ng/pr/public/images/icons/details-grid-icon.png")
     public ImageResource detailsGridIcon();
-    
+
     @Source("org/jbpm/console/ng/pr/public/images/icons/edit-grid-icon.png")
     public ImageResource editGridIcon();
-    
+
     @Source("org/jbpm/console/ng/pr/public/images/icons/start-grid-icon.png")
     public ImageResource startGridIcon();
-   
+
     @Source("org/jbpm/console/ng/pr/public/images/icons/history-grid-icon.png")
     public ImageResource historyGridIcon();
 

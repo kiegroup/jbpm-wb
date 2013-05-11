@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.es.backend.server;
 
 import java.io.ByteArrayInputStream;
@@ -29,54 +30,51 @@ import org.jbpm.executor.entities.ErrorInfo;
 import org.jbpm.executor.entities.RequestInfo;
 import org.jbpm.executor.entities.STATUS;
 
-/**
- *
-
- */
 public class RequestSummaryHelper {
-    public static List<RequestSummary> adaptRequestList(List<RequestInfo> requests){
+
+    public static List<RequestSummary> adaptRequestList(List<RequestInfo> requests) {
         List<RequestSummary> requestSummaries = new ArrayList<RequestSummary>(requests.size());
-        for(RequestInfo request : requests){
+        for (RequestInfo request : requests) {
             requestSummaries.add(adaptRequest(request));
         }
         return requestSummaries;
     }
-    
-    public static RequestSummary adaptRequest(RequestInfo request) {
-		return new RequestSummary(request.getId(), request.getTime(), request.getStatus().name(),
-                request.getCommandName(), request.getMessage(), request.getKey());
-	}
 
-	public static List<ErrorSummary> adaptErrorList(List<ErrorInfo> errors){
+    public static RequestSummary adaptRequest(RequestInfo request) {
+        return new RequestSummary(request.getId(), request.getTime(), request.getStatus().name(), request.getCommandName(),
+                request.getMessage(), request.getKey());
+    }
+
+    public static List<ErrorSummary> adaptErrorList(List<ErrorInfo> errors) {
         List<ErrorSummary> errorSummaries = new ArrayList<ErrorSummary>(errors.size());
-        for(ErrorInfo error : errors){
-            errorSummaries.add(new ErrorSummary(error.getId(), error.getTime(), error.getMessage(),
-                    error.getStacktrace(), error.getRequestInfo().getId()));
+        for (ErrorInfo error : errors) {
+            errorSummaries.add(new ErrorSummary(error.getId(), error.getTime(), error.getMessage(), error.getStacktrace(),
+                    error.getRequestInfo().getId()));
         }
         return errorSummaries;
     }
-    
+
     public static List<STATUS> adaptStatusList(List<String> statuses) {
-    	List<STATUS> statusList = new ArrayList<STATUS>(statuses.size());
-    	for (String status : statuses) {
-    		statusList.add(STATUS.valueOf(status));
-    	}
-    	return statusList;
+        List<STATUS> statusList = new ArrayList<STATUS>(statuses.size());
+        for (String status : statuses) {
+            statusList.add(STATUS.valueOf(status));
+        }
+        return statusList;
     }
 
-	public static List<RequestParameterSummary> adaptInternalMap(RequestInfo request) {
-		ByteArrayInputStream bain = new ByteArrayInputStream(request.getRequestData());
-		List<RequestParameterSummary> retval = new ArrayList<RequestParameterSummary>();
-		try {
-			ObjectInputStream oin = new ObjectInputStream(bain);
-			CommandContext ctx = (CommandContext) oin.readObject();
-			Map<String, Object> map = ctx.getData();
-			for (Map.Entry<String, Object> entry : map.entrySet()) {
-				retval.add(new RequestParameterSummary(entry.getKey(), String.valueOf(entry.getValue())));
-			}
-		} catch (Exception e) {
-			//TODO handle exception
-		}
-		return retval;
-	}
+    public static List<RequestParameterSummary> adaptInternalMap(RequestInfo request) {
+        ByteArrayInputStream bain = new ByteArrayInputStream(request.getRequestData());
+        List<RequestParameterSummary> retval = new ArrayList<RequestParameterSummary>();
+        try {
+            ObjectInputStream oin = new ObjectInputStream(bain);
+            CommandContext ctx = (CommandContext) oin.readObject();
+            Map<String, Object> map = ctx.getData();
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                retval.add(new RequestParameterSummary(entry.getKey(), String.valueOf(entry.getValue())));
+            }
+        } catch (Exception e) {
+            // TODO handle exception
+        }
+        return retval;
+    }
 }

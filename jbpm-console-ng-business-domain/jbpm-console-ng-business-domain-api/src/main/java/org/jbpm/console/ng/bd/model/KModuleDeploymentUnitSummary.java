@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.bd.model;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class KModuleDeploymentUnitSummary extends DeploymentUnitSummary{
-   
+public class KModuleDeploymentUnitSummary extends DeploymentUnitSummary {
+
     private String groupId;
     private String artifactId;
     private String version;
@@ -30,10 +31,11 @@ public class KModuleDeploymentUnitSummary extends DeploymentUnitSummary{
     }
 
     public KModuleDeploymentUnitSummary(String id, String type) {
-      super(id, type);
+        super(id, type);
     }
 
-    public KModuleDeploymentUnitSummary(String id, String groupId, String artifactId, String version, String kbaseName, String ksessionName) {
+    public KModuleDeploymentUnitSummary(String id, String groupId, String artifactId, String version, String kbaseName,
+            String ksessionName) {
         super(id, "kjar");
         this.groupId = groupId;
         this.artifactId = artifactId;
@@ -41,8 +43,6 @@ public class KModuleDeploymentUnitSummary extends DeploymentUnitSummary{
         this.kbaseName = kbaseName;
         this.ksessionName = ksessionName;
     }
-    
-    
 
     public String getGroupId() {
         return groupId;
@@ -84,13 +84,4 @@ public class KModuleDeploymentUnitSummary extends DeploymentUnitSummary{
         this.ksessionName = ksessionName;
     }
 
-    
-    
-  
-
-    
-   
-   
-  
-    
 }

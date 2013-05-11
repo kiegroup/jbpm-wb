@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.model;
 
 import java.io.Serializable;
@@ -29,8 +30,8 @@ public class ProcessInstanceSummary implements Serializable {
     private String deploymentId;
     private String initiator;
 
-    public ProcessInstanceSummary(long id, String processId, String deploymentId,  String processName,
-            String processVersion, int state, String startTime, String initiator) {
+    public ProcessInstanceSummary(long id, String processId, String deploymentId, String processName, String processVersion,
+            int state, String startTime, String initiator) {
         super();
         this.id = id;
         this.processId = processId;
@@ -108,4 +109,5 @@ public class ProcessInstanceSummary implements Serializable {
     public void setInitiator(String initiator) {
         this.initiator = initiator;
     }
+
 }

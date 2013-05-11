@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.client.editors.instance.details;
 
 import java.util.Comparator;
@@ -67,94 +68,104 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 
-
 @Dependent
 @Templated(value = "ProcessInstanceDetailsViewImpl.html")
-public class ProcessInstanceDetailsViewImpl extends Composite
-        implements
+public class ProcessInstanceDetailsViewImpl extends Composite implements
         ProcessInstanceDetailsPresenter.ProcessInstanceDetailsView {
 
     private ProcessInstanceDetailsPresenter presenter;
+
     @Inject
     @DataField
     public TextBox processIdText;
+
     @Inject
     @DataField
     public TextBox processNameText;
-    
+
     @Inject
     @DataField
     public TextBox processPackageText;
-    
+
     @Inject
     @DataField
     public FlowPanel listContainer;
-    
+
     @Inject
     @DataField
     public TextBox processVersionText;
-    
+
     @Inject
     @DataField
     public TextBox stateText;
+
     @Inject
     @DataField
     public ListBox currentActivitiesListBox;
+
     @Inject
     @DataField
     public TextArea logTextArea;
+
     @Inject
     @DataField
     public IconAnchor refreshIcon;
-    
+
     @Inject
-    @DataField 
+    @DataField
     public Label processInstanceDetailsLabel;
+
     @Inject
-    @DataField 
+    @DataField
     public Label processIdLabel;
-    
+
     @Inject
-    @DataField 
+    @DataField
     public Label processNameLabel;
-    
+
     @Inject
-    @DataField 
+    @DataField
     public Label processPackageLabel;
-    
+
     @Inject
-    @DataField 
+    @DataField
     public Label processVersionLabel;
-    
+
     @Inject
-    @DataField 
+    @DataField
     public Label stateLabel;
-    
+
     @Inject
-    @DataField 
+    @DataField
     public Label currentActivitiesListLabel;
-    
+
     @Inject
     @DataField
     public Label logTextLabel;
-    
+
     @Inject
     @DataField
     public NavLink viewProcessDiagramButton;
+
     @Inject
     @DataField
     public DataGrid<VariableSummary> processDataGrid;
+
     @Inject
     @DataField
     public SimplePager pager;
+
     @Inject
     private Identity identity;
+
     @Inject
     private PlaceManager placeManager;
+
     private ColumnSortEvent.ListHandler<VariableSummary> sortHandler;
+
     @Inject
     private Event<NotificationEvent> notification;
-    
+
     private Constants constants = GWT.create(Constants.class);
     private ProcessRuntimeImages images = GWT.create(ProcessRuntimeImages.class);
     private ProcessInstanceSummary processInstance;
@@ -162,7 +173,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     private String encodedProcessSource;
     private List<NodeInstanceSummary> activeNodes;
     private List<NodeInstanceSummary> completedNodes;
-    
+
     @Override
     public void init(final ProcessInstanceDetailsPresenter presenter) {
         this.presenter = presenter;
@@ -174,14 +185,12 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         stateText.setEnabled(false);
         logTextArea.setEnabled(false);
         currentActivitiesListBox.setEnabled(false);
-        
+
         viewProcessDiagramButton.setText(constants.View_Process_Model());
         listContainer.add(processDataGrid);
         listContainer.add(pager);
         processDataGrid.setHeight("200px");
-        
-        
-        
+
         processNameLabel.setText(constants.Process_Definition_Name());
         processIdLabel.setText(constants.Process_Instance_ID());
         processPackageLabel.setText(constants.Process_Definition_Package());
@@ -189,7 +198,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         stateLabel.setText(constants.Process_Instance_State());
         currentActivitiesListLabel.setText(constants.Current_Activities());
         logTextLabel.setText(constants.Process_Instance_Log());
-        
+
         processInstanceDetailsLabel.setText(constants.Process_Instance_Details());
         processInstanceDetailsLabel.setStyleName("");
         // Set the message to display when the table is empty.
@@ -198,8 +207,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         processDataGrid.setEmptyTableWidget(emptyTable);
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
-        sortHandler =
-                new ColumnSortEvent.ListHandler<VariableSummary>(presenter.getDataProvider().getList());
+        sortHandler = new ColumnSortEvent.ListHandler<VariableSummary>(presenter.getDataProvider().getList());
 
         processDataGrid.addColumnSortHandler(sortHandler);
 
@@ -212,7 +220,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         refreshIcon.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                presenter.refreshProcessInstanceData(processIdText.getText(),processNameText.getText());
+                presenter.refreshProcessInstanceData(processIdText.getText(), processNameText.getText());
                 displayNotification(constants.Process_Instances_Details_Refreshed());
             }
         });
@@ -220,49 +228,43 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         initTableColumns();
 
         presenter.addDataDisplay(processDataGrid);
-        
     }
 
-   
-
-    
     @EventHandler("viewProcessDiagramButton")
-    public void viewProcessDiagramButton(ClickEvent e){
+    public void viewProcessDiagramButton(ClickEvent e) {
         StringBuffer nodeParam = new StringBuffer();
         for (NodeInstanceSummary activeNode : activeNodes) {
             nodeParam.append(activeNode.getNodeUniqueName() + ",");
         }
         if (nodeParam.length() > 0) {
-            nodeParam.deleteCharAt(nodeParam.length()-1);
+            nodeParam.deleteCharAt(nodeParam.length() - 1);
         }
-        
+
         StringBuffer completedNodeParam = new StringBuffer();
         for (NodeInstanceSummary completedNode : completedNodes) {
             if (completedNode.isCompleted()) {
-                // insert outgoing sequence flow and node as this is for on entry event                 
+                // insert outgoing sequence flow and node as this is for on entry event
                 completedNodeParam.append(completedNode.getNodeUniqueName() + ",");
                 completedNodeParam.append(completedNode.getConnection() + ",");
             } else if (completedNode.getConnection() != null) {
                 // insert only incoming sequence flow as node id was already inserted
                 completedNodeParam.append(completedNode.getConnection() + ",");
             }
-                        
+
         }
-        completedNodeParam.deleteCharAt(completedNodeParam.length()-1);
-        
+        completedNodeParam.deleteCharAt(completedNodeParam.length() - 1);
+
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Designer");
         placeRequestImpl.addParameter("activeNodes", nodeParam.toString());
         placeRequestImpl.addParameter("completedNodes", completedNodeParam.toString());
         placeRequestImpl.addParameter("readOnly", "true");
-        if(encodedProcessSource != null) {
+        if (encodedProcessSource != null) {
             placeRequestImpl.addParameter("encodedProcessSource", encodedProcessSource);
         }
-        
+
         placeManager.goTo(processAssetPath, placeRequestImpl);
     }
-    
-    
-    
+
     @Override
     public TextBox getProcessIdText() {
         return processIdText;
@@ -293,70 +295,56 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
         // mouse selection.
 
-
-        // Id 
-        Column<VariableSummary, String> variableId =
-                new Column<VariableSummary, String>(new TextCell()) {
-                    @Override
-                    public String getValue(VariableSummary object) {
-                        return object.getVariableId();
-                    }
-                };
+        // Id
+        Column<VariableSummary, String> variableId = new Column<VariableSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(VariableSummary object) {
+                return object.getVariableId();
+            }
+        };
         variableId.setSortable(true);
 
-        processDataGrid.addColumn(variableId,
-                new ResizableHeader(constants.Name(), processDataGrid, variableId));
-        sortHandler.setComparator(variableId,
-                new Comparator<VariableSummary>() {
-                    @Override
-                    public int compare(VariableSummary o1,
-                            VariableSummary o2) {
-                        return o1.getVariableId().compareTo(o2.getVariableId());
-                    }
-                });
+        processDataGrid.addColumn(variableId, new ResizableHeader(constants.Name(), processDataGrid, variableId));
+        sortHandler.setComparator(variableId, new Comparator<VariableSummary>() {
+            @Override
+            public int compare(VariableSummary o1, VariableSummary o2) {
+                return o1.getVariableId().compareTo(o2.getVariableId());
+            }
+        });
 
         // Value.
-        Column<VariableSummary, String> valueColumn =
-                new Column<VariableSummary, String>(new TextCell()) {
-                    @Override
-                    public String getValue(VariableSummary object) {
-                        return object.getNewValue();
-                    }
-                };
+        Column<VariableSummary, String> valueColumn = new Column<VariableSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(VariableSummary object) {
+                return object.getNewValue();
+            }
+        };
         valueColumn.setSortable(true);
 
-        processDataGrid.addColumn(valueColumn,
-                new ResizableHeader(constants.Value(), processDataGrid, valueColumn));
-        sortHandler.setComparator(valueColumn,
-                new Comparator<VariableSummary>() {
-                    @Override
-                    public int compare(VariableSummary o1,
-                            VariableSummary o2) {
-                        return o1.getNewValue().compareTo(o2.getNewValue());
-                    }
-                });
+        processDataGrid.addColumn(valueColumn, new ResizableHeader(constants.Value(), processDataGrid, valueColumn));
+        sortHandler.setComparator(valueColumn, new Comparator<VariableSummary>() {
+            @Override
+            public int compare(VariableSummary o1, VariableSummary o2) {
+                return o1.getNewValue().compareTo(o2.getNewValue());
+            }
+        });
 
         // Type.
-        Column<VariableSummary, String> typeColumn =
-                new Column<VariableSummary, String>(new TextCell()) {
-                    @Override
-                    public String getValue(VariableSummary object) {
-                        return object.getType();
-                    }
-                };
-                typeColumn.setSortable(true);
+        Column<VariableSummary, String> typeColumn = new Column<VariableSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(VariableSummary object) {
+                return object.getType();
+            }
+        };
+        typeColumn.setSortable(true);
 
-        processDataGrid.addColumn(typeColumn,
-                new ResizableHeader(constants.Type(), processDataGrid, typeColumn));
-        sortHandler.setComparator(typeColumn,
-                new Comparator<VariableSummary>() {
-                    @Override
-                    public int compare(VariableSummary o1,
-                            VariableSummary o2) {
-                        return o1.getType().compareTo(o2.getType());
-                    }
-                });
-        
+        processDataGrid.addColumn(typeColumn, new ResizableHeader(constants.Type(), processDataGrid, typeColumn));
+        sortHandler.setComparator(typeColumn, new Comparator<VariableSummary>() {
+            @Override
+            public int compare(VariableSummary o1, VariableSummary o2) {
+                return o1.getType().compareTo(o2.getType());
+            }
+        });
 
         // Last Time Changed Date.
         Column<VariableSummary, String> dueDateColumn = new Column<VariableSummary, String>(new TextCell()) {
@@ -369,21 +357,18 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         };
         dueDateColumn.setSortable(true);
 
-        processDataGrid.addColumn(dueDateColumn,
-                new ResizableHeader(constants.Last_Modification(), processDataGrid, dueDateColumn));
-        sortHandler.setComparator(dueDateColumn,
-                new Comparator<VariableSummary>() {
-                    @Override
-                    public int compare(VariableSummary o1,
-                            VariableSummary o2) {
-                       
-                        return o1.getTimestamp().compareTo(o2.getTimestamp());
-                    }
-                });
+        processDataGrid.addColumn(dueDateColumn, new ResizableHeader(constants.Last_Modification(), processDataGrid,
+                dueDateColumn));
+        sortHandler.setComparator(dueDateColumn, new Comparator<VariableSummary>() {
+            @Override
+            public int compare(VariableSummary o1, VariableSummary o2) {
+
+                return o1.getTimestamp().compareTo(o2.getTimestamp());
+            }
+        });
 
         List<HasCell<VariableSummary, ?>> cells = new LinkedList<HasCell<VariableSummary, ?>>();
-        
-        
+
         cells.add(new EditVariableActionHasCell("Edit Variable", new Delegate<VariableSummary>() {
             @Override
             public void execute(VariableSummary variable) {
@@ -395,7 +380,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
                 placeManager.goTo(placeRequestImpl);
             }
         }));
-        
+
         cells.add(new VariableHistoryActionHasCell("Variable History", new Delegate<VariableSummary>() {
             @Override
             public void execute(VariableSummary variable) {
@@ -406,7 +391,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
                 placeManager.goTo(placeRequestImpl);
             }
         }));
-        
+
         CompositeCell<VariableSummary> cell = new CompositeCell<VariableSummary>(cells);
         processDataGrid.addColumn(new Column<VariableSummary, VariableSummary>(cell) {
             @Override
@@ -414,9 +399,8 @@ public class ProcessInstanceDetailsViewImpl extends Composite
                 return object;
             }
         }, constants.Actions());
-
     }
-    
+
     private class EditVariableActionHasCell implements HasCell<VariableSummary, VariableSummary> {
 
         private ActionCell<VariableSummary> cell;
@@ -428,7 +412,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
                     if (processInstance.getState() == ProcessInstance.STATE_ACTIVE) {
                         AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.editGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='"+constants.Edit_Variable()+"'>");
+                        mysb.appendHtmlConstant("<span title='" + constants.Edit_Variable() + "'>");
                         mysb.append(imageProto.getSafeHtml());
                         mysb.appendHtmlConstant("</span>");
                         sb.append(mysb.toSafeHtml());
@@ -451,8 +435,9 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         public VariableSummary getValue(VariableSummary object) {
             return object;
         }
+
     }
-    
+
     private class VariableHistoryActionHasCell implements HasCell<VariableSummary, VariableSummary> {
 
         private ActionCell<VariableSummary> cell;
@@ -461,10 +446,10 @@ public class ProcessInstanceDetailsViewImpl extends Composite
             cell = new ActionCell<VariableSummary>(text, delegate) {
                 @Override
                 public void render(Cell.Context context, VariableSummary value, SafeHtmlBuilder sb) {
-                    
+
                     AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.historyGridIcon());
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='"+constants.Variables_History()+"'>");
+                    mysb.appendHtmlConstant("<span title='" + constants.Variables_History() + "'>");
                     mysb.append(imageProto.getSafeHtml());
                     mysb.appendHtmlConstant("</span>");
                     sb.append(mysb.toSafeHtml());
@@ -486,9 +471,10 @@ public class ProcessInstanceDetailsViewImpl extends Composite
         public VariableSummary getValue(VariableSummary object) {
             return object;
         }
+
     }
-    
-    public void formClosed(@Observes BeforeClosePlaceEvent closed){
+
+    public void formClosed(@Observes BeforeClosePlaceEvent closed) {
         if ("Edit Variable Popup".equals(closed.getPlace().getIdentifier())) {
             presenter.loadVariables(processIdText.getText(), processNameText.getText());
         }
@@ -513,7 +499,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     public TextBox getProcessVersionText() {
         return processVersionText;
     }
-    
+
     @Override
     public void setProcessAssetPath(Path processAssetPath) {
         this.processAssetPath = processAssetPath;
@@ -522,7 +508,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite
     @Override
     public void setCurrentActiveNodes(List<NodeInstanceSummary> activeNodes) {
         this.activeNodes = activeNodes;
-        
+
     }
 
     @Override
