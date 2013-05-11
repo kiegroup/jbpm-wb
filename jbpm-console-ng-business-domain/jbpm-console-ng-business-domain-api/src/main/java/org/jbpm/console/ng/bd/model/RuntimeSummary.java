@@ -18,10 +18,6 @@ package org.jbpm.console.ng.bd.model;
 import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- * @author salaboy
- */
 @Portable
 public class RuntimeSummary implements Serializable {
     private long id;

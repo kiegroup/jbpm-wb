@@ -15,10 +15,6 @@
  */
 package org.jbpm.console.ng.es.client.util;
 
-/**
- *
- * @author salaboy
- */
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.Cell.Context;

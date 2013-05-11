@@ -38,10 +38,6 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 
-/**
- *
- * @author salaboy
- */
 @Service
 @ApplicationScoped
 @Transactional

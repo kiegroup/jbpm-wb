@@ -25,10 +25,6 @@ import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.VariableSummary;
 
-/**
- *
- * @author salaboy
- */
 @Remote
 public interface DataServiceEntryPoint {
     Collection<ProcessInstanceSummary> getProcessInstances();

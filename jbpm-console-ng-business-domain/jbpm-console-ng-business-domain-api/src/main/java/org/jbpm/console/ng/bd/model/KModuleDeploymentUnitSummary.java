@@ -17,10 +17,6 @@ package org.jbpm.console.ng.bd.model;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- * @author salaboy
- */
 @Portable
 public class KModuleDeploymentUnitSummary extends DeploymentUnitSummary{
    

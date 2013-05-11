@@ -44,9 +44,6 @@ import org.uberfire.client.workbench.widgets.toolbar.impl.DefaultToolBar;
 import org.uberfire.client.workbench.widgets.toolbar.impl.DefaultToolBarItem;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
-/**
- * @author salaboy
- */
 @ApplicationScoped
 @WorkbenchPerspective(identifier = "Authoring")
 public class ProjectAuthoringPerspective {

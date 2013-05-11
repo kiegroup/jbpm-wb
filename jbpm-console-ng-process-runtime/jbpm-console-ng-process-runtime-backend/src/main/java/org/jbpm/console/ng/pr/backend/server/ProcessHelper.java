@@ -20,10 +20,6 @@ import java.util.Collection;
 import java.util.List;
 import org.jbpm.kie.services.impl.model.ProcessDesc;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
-/**
- *
- * @author salaboy
- */
 public class ProcessHelper {
     public static Collection<ProcessSummary> adaptCollection(Collection<ProcessDesc> processes){
         List<ProcessSummary> processesSummary = new ArrayList<ProcessSummary>();

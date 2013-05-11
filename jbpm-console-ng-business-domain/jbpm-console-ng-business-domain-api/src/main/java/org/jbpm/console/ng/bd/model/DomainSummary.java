@@ -19,10 +19,6 @@ import java.io.Serializable;
 import java.util.List;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- * @author salaboy
- */
 @Portable
 public class DomainSummary implements Serializable{
     private long id;

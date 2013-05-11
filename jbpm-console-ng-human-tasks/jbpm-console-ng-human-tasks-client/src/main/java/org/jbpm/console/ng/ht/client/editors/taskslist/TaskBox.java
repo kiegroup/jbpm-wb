@@ -30,10 +30,6 @@ import org.uberfire.security.Identity;
 import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
-/**
- *
- * @author salaboy
- */
 public class TaskBox extends Composite {
 
     private String taskName = "Default Task Name";

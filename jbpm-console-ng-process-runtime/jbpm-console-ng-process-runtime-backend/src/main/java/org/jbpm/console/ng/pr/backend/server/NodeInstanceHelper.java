@@ -23,10 +23,6 @@ import java.util.List;
 import org.jbpm.kie.services.impl.model.NodeInstanceDesc;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 
-/**
- *
- * @author salaboy
- */
 public class NodeInstanceHelper {
     public static Collection<NodeInstanceSummary> adaptCollection(Collection<NodeInstanceDesc> nodeInstances){
         List<NodeInstanceSummary> nodeInstancesSummary = new ArrayList<NodeInstanceSummary>();

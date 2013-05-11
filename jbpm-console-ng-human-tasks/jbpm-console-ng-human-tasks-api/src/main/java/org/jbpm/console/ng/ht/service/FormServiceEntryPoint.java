@@ -17,10 +17,6 @@ package org.jbpm.console.ng.ht.service;
 
 import org.jboss.errai.bus.server.annotations.Remote;
 
-/**
- *
- * @author salaboy
- */
 @Remote
 public interface FormServiceEntryPoint {
 

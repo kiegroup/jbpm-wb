@@ -35,10 +35,6 @@ import java.io.Serializable;
 import java.util.Date;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- * @author salaboy
- */
 @Portable
 public class RequestSummary implements Serializable{
 

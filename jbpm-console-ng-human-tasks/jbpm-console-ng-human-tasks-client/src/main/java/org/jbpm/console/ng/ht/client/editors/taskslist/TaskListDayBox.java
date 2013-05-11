@@ -32,10 +32,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 
-/**
- * 
- * @author salaboy
- */
 public class TaskListDayBox extends Composite implements RequiresResize {
     private static IconType ICON_TASKS_COLLAPSED = IconType.DOUBLE_ANGLE_DOWN;
     private static IconType ICON_TASKS_VISIBLE = IconType.DOUBLE_ANGLE_UP;

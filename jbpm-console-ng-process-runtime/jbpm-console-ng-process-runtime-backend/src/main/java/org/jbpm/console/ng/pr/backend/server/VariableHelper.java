@@ -25,10 +25,6 @@ import java.util.Map.Entry;
 import org.jbpm.kie.services.impl.model.VariableStateDesc;
 import org.jbpm.console.ng.pr.model.VariableSummary;
 
-/**
- *
- * @author salaboy
- */
 public class VariableHelper {
     
     private static final List<String> excludedVariables = Arrays.asList(new String[] {"processId"});

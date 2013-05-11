@@ -17,10 +17,6 @@ package org.jbpm.console.ng.ht.model.fb.events;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- * @author salaboy
- */
 @Portable
 public class FormLoadedEvent {
     private String jsonForm;

@@ -45,10 +45,6 @@ import org.jbpm.form.builder.services.model.menu.MenuItemDescription;
 import org.jbpm.form.builder.services.model.menu.MenuOptionDescription;
 import org.jbpm.shared.services.api.FileService;
 
-/**
- *
- * @author salaboy
- */
 @Service
 @ApplicationScoped
 @Transactional

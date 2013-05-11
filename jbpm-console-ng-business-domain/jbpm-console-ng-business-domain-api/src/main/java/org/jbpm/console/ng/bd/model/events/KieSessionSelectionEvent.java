@@ -18,10 +18,6 @@ package org.jbpm.console.ng.bd.model.events;
 import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- * @author salaboy
- */
 @Portable
 public class KieSessionSelectionEvent implements Serializable{
   private long ksessionId;

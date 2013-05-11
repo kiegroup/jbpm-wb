@@ -19,10 +19,6 @@ package org.jbpm.console.ng.bd.backend.server;
 import org.jbpm.console.ng.bd.model.KieSessionSummary;
 import org.kie.api.runtime.KieSession;
 
-/**
- *
- * @author salaboy
- */
 public class KieSessionHelper {
     public static KieSessionSummary adapt(KieSession ksession){
         KieSessionSummary ksessionSummary 

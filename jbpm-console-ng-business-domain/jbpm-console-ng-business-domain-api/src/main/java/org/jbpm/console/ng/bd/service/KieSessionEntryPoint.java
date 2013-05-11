@@ -19,10 +19,6 @@ import java.util.Collection;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
 
-/**
- *
- * @author salaboy
- */
 @Remote
 public interface KieSessionEntryPoint {
     long startProcess(String domainId, String processId);

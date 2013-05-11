@@ -31,10 +31,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import java.util.Date;
 
-/**
- * 
- * @author salaboy
- */
 public class TaskListMultiDayBox extends Composite implements RequiresResize {
 
     private FlowPanel tasksContainer = new FlowPanel();

@@ -21,10 +21,6 @@ import java.util.List;
 
 import org.jbpm.console.ng.ht.model.TaskDefSummary;
 import org.kie.internal.task.api.model.TaskDef;
-/**
- *
- * @author salaboy
- */
 public class TaskDefHelper {
     public static Collection<TaskDefSummary> adaptCollection(Collection<? extends TaskDef> tasks){
         List<TaskDefSummary> tasksdefSummary = new ArrayList<TaskDefSummary>();

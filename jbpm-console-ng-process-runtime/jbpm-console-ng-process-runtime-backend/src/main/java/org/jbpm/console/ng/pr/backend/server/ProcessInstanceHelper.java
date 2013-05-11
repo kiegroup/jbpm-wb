@@ -26,10 +26,6 @@ import org.jbpm.workflow.instance.node.CompositeNodeInstance;
 import org.jbpm.workflow.instance.node.EventNodeInstance;
 import org.kie.api.runtime.process.NodeInstance;
 
-/**
- *
- * @author salaboy
- */
 public class ProcessInstanceHelper {
     public static Collection<ProcessInstanceSummary> adaptCollection(Collection<ProcessInstanceDesc> processInstances){
         List<ProcessInstanceSummary> processInstancesSummary = new ArrayList<ProcessInstanceSummary>();
