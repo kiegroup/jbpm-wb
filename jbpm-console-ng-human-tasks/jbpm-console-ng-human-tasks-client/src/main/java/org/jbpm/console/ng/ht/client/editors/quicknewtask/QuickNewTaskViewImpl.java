@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
 import com.github.gwtbootstrap.client.ui.ControlLabel;
-import com.github.gwtbootstrap.client.ui.base.HtmlWidget;
 import java.util.Date;
 
 import javax.enterprise.context.Dependent;
@@ -46,68 +46,78 @@ import org.jbpm.console.ng.ht.client.i8n.Constants;
 
 @Dependent
 @Templated(value = "QuickNewTaskViewImpl.html")
-public class QuickNewTaskViewImpl extends Composite
-        implements
-        QuickNewTaskPresenter.QuickNewTaskView {
+public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPresenter.QuickNewTaskView {
 
     @Inject
     private Identity identity;
+
     @Inject
     private PlaceManager placeManager;
+
     private QuickNewTaskPresenter presenter;
+
     @Inject
     @DataField
     public Button addTaskButton;
+
     @Inject
     @DataField
     public TextBox taskNameText;
+
     @Inject
     @DataField
     public DateTimeBox dueDate;
+
     @Inject
     @DataField
     public TextBox userText;
+
     @Inject
     @DataField
     public TextBox taskPriorityListBox;
+
     @Inject
     @DataField
     public CheckBox quickTaskCheck;
+
     @Inject
     @DataField
     public ControlLabel dueDateLabel;
-    
+
     @Inject
     @DataField
     public ControlLabel userLabel;
-    
+
     @Inject
     @DataField
     public ControlLabel advancedLabel;
-    
+
     @Inject
     @DataField
     public ControlLabel taskNameLabel;
-    
+
     @Inject
     @DataField
     public ControlLabel taskPriorityLabel;
+
     @Inject
     private Event<NotificationEvent> notification;
+
     @Inject
     private Event<UserTaskEvent> userTaskChanges;
-    
+
     private HandlerRegistration textKeyPressHandler;
-    
+
     private HandlerRegistration checkKeyPressHandler;
-    
+
     private Constants constants = GWT.create(Constants.class);
 
     @Override
     public void init(QuickNewTaskPresenter presenter) {
         this.presenter = presenter;
-        
+
         KeyPressHandler keyPressHandlerText = new KeyPressHandler() {
+            @Override
             public void onKeyPress(KeyPressEvent event) {
                 if (event.getNativeEvent().getKeyCode() == 13) {
                     addTask();
@@ -115,8 +125,9 @@ public class QuickNewTaskViewImpl extends Composite
             }
         };
         textKeyPressHandler = taskNameText.addKeyPressHandler(keyPressHandlerText);
-        
+
         KeyPressHandler keyPressHandlerCheck = new KeyPressHandler() {
+            @Override
             public void onKeyPress(KeyPressEvent event) {
                 if (event.getNativeEvent().getKeyCode() == 13) {
                     addTask();
@@ -124,22 +135,21 @@ public class QuickNewTaskViewImpl extends Composite
             }
         };
         checkKeyPressHandler = quickTaskCheck.addKeyPressHandler(keyPressHandlerCheck);
-        quickTaskCheck.setHTML(" "+constants.Quick_Task());
+        quickTaskCheck.setHTML(" " + constants.Quick_Task());
         taskNameText.setFocus(true);
-        
+
         userText.setText(identity.getName());
         taskPriorityListBox.setText("5");
         dueDate.setValue(new Date());
-        
+
         addTaskButton.setText(constants.Create());
         dueDateLabel.add(new HTMLPanel(constants.Due_On()));
         userLabel.add(new HTMLPanel(constants.User()));
         taskPriorityLabel.add(new HTMLPanel(constants.Priority()));
-        
+
         advancedLabel.add(new HTMLPanel(constants.Advanced()));
         taskNameLabel.add(new HTMLPanel(constants.Task_Name()));
-        
-        
+
     }
 
     @EventHandler("addTaskButton")
@@ -147,29 +157,33 @@ public class QuickNewTaskViewImpl extends Composite
         addTask();
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
         userTaskChanges.fire(new UserTaskEvent(identity.getName()));
     }
 
+    @Override
     public TextBox getTaskNameText() {
         return taskNameText;
     }
 
     private void addTask() {
-        if(!taskNameText.getText().equals("")){
-          addTaskButton.setEnabled(false);
-          checkKeyPressHandler.removeHandler();
-          textKeyPressHandler.removeHandler();
+        if (!taskNameText.getText().equals("")) {
+            addTaskButton.setEnabled(false);
+            checkKeyPressHandler.removeHandler();
+            textKeyPressHandler.removeHandler();
 
-          presenter.addTask(userText.getText(),
-                    taskNameText.getText(), Integer.parseInt(taskPriorityListBox.getText()), quickTaskCheck.getValue(), dueDate.getValue());
-        }else{
-          displayNotification(constants.Task_Must_Have_A_Name());
+            presenter.addTask(userText.getText(), taskNameText.getText(), Integer.parseInt(taskPriorityListBox.getText()),
+                    quickTaskCheck.getValue(), dueDate.getValue());
+        } else {
+            displayNotification(constants.Task_Must_Have_A_Name());
         }
     }
 
+    @Override
     public Button getAddTaskButton() {
-      return addTaskButton;
+        return addTaskButton;
     }
+
 }

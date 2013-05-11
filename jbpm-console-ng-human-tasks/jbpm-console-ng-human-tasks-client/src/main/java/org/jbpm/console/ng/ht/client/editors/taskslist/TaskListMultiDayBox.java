@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
 import java.util.LinkedHashMap;
@@ -31,15 +32,13 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import java.util.Date;
 
-/**
- * 
- * @author salaboy
- */
 public class TaskListMultiDayBox extends Composite implements RequiresResize {
 
     private FlowPanel tasksContainer = new FlowPanel();
+
     @Inject
     private Identity identity;
+
     @Inject
     private PlaceManager placeManager;
 
@@ -48,7 +47,6 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
     private Map<Day, List<TaskSummary>> sectionTasks = new LinkedHashMap<Day, List<TaskSummary>>();
 
     public TaskListMultiDayBox() {
-        
     }
 
     public TasksListPresenter getPresenter() {
@@ -65,7 +63,7 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
     }
 
     public void refresh() {
-        
+
         for (Day section : sectionTasks.keySet()) {
             TaskListDayBox taskList = new TaskListDayBox(section, sectionTasks.get(section), identity, placeManager, presenter);
             taskList.init();
@@ -74,13 +72,13 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
     }
 
     public void addTasksByDay(String day, List<TaskSummary> taskSummaries) {
-       sectionTasks.put(new Day(new Date(), day), taskSummaries); 
+        sectionTasks.put(new Day(new Date(), day), taskSummaries);
     }
-    
+
     public void addTasksByDay(Day day, List<TaskSummary> taskSummaries) {
         sectionTasks.put(day, taskSummaries);
     }
-    
+
     public void clear() {
         tasksContainer.clear();
         sectionTasks.clear();
@@ -89,4 +87,5 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
     @Override
     public void onResize() {
     }
+
 }

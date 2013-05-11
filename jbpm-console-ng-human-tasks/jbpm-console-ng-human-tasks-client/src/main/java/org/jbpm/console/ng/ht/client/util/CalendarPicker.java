@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.util;
 
 import java.util.Date;
@@ -20,11 +21,9 @@ import java.util.Date;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ButtonGroup;
 import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.Tooltip;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.github.gwtbootstrap.client.ui.constants.IconSize;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.github.gwtbootstrap.client.ui.constants.Placement;
 import com.github.gwtbootstrap.datepicker.client.ui.DateBox;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -39,8 +38,8 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 
 /**
- * Encapsulates set of components which are able to select day/week/monht. Contains also
- * buttons for going to previous or next day/week/month.
+ * Encapsulates set of components which are able to select day/week/month. Contains also buttons for going to previous or next
+ * day/week/month.
  */
 public class CalendarPicker extends Composite implements HasValueChangeHandlers<Date> {
 
@@ -81,7 +80,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
     public void init() {
         mainPanel.add(calendarLabel);
         mainPanel.add(calendarPanel);
-        
+
         initCalendarIcon();
         calendarPanel.add(calendarIcon);
 
@@ -129,10 +128,13 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
 
     /**
      * Updates the label text based on current view type and current date.
-     * Examples:
-     *  - day view: 2013-05-02
-     *  - week view: May 06 - May 10 2013
-     *  - month view: May 2013
+     * 
+     * Examples for day, week and month:
+     * <ul>
+     * <li>day view: 2013-05-02
+     * <li>week view: May 06 - May 10 2013
+     * <li>month view: May 2013
+     * </ul>
      */
     private void updateCalendarLabelText() {
         switch (viewType) {
@@ -212,4 +214,5 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
             }
         });
     }
+
 }

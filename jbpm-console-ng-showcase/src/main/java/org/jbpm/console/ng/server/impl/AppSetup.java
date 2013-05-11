@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.server.impl;
 
 import java.net.URI;
@@ -37,7 +38,6 @@ import org.jbpm.kie.services.api.DeploymentService;
 import org.jbpm.kie.services.api.DeploymentUnit;
 import org.jbpm.kie.services.api.Kjar;
 import org.jbpm.kie.services.api.Vfs;
-import org.jbpm.kie.services.impl.KModuleDeploymentUnit;
 import org.jbpm.kie.services.impl.VFSDeploymentUnit;
 import org.kie.commons.io.IOService;
 import org.kie.commons.io.impl.IOServiceDotFileImpl;
@@ -62,7 +62,7 @@ public class AppSetup {
 
     private static final String DEPLOYMENT_SERVICE_TYPE_CONFIG = "deployment.service";
     private static final String REPO_PLAYGROUND = "jbpm-playground";
-    private static final String ORIGIN_URL      = "https://github.com/guvnorngtestuser1/jbpm-console-ng-playground.git";
+    private static final String ORIGIN_URL = "https://github.com/guvnorngtestuser1/jbpm-console-ng-playground.git";
     private final IOService ioService = new IOServiceDotFileImpl();
 
     @Produces
@@ -101,7 +101,7 @@ public class AppSetup {
     public void onStartup() {
 
         repository = repositoryService.getRepository(REPO_PLAYGROUND);
-        if(repository == null) {
+        if (repository == null) {
             final String userName = "guvnorngtestuser1";
             final String password = "test1234";
             repositoryService.cloneRepository("git", REPO_PLAYGROUND, ORIGIN_URL, userName, password);
@@ -121,7 +121,7 @@ public class AppSetup {
 
         }
         ConfigGroup deploymentServiceTypeConfig = null;
-        List<ConfigGroup> configGroups = configurationService.getConfiguration( ConfigType.GLOBAL );
+        List<ConfigGroup> configGroups = configurationService.getConfiguration(ConfigType.GLOBAL);
         if (configGroups != null) {
             for (ConfigGroup configGroup : configGroups) {
                 if (DEPLOYMENT_SERVICE_TYPE_CONFIG.equals(configGroup.getName())) {
@@ -131,7 +131,8 @@ public class AppSetup {
             }
         }
         if (deploymentServiceTypeConfig == null) {
-            deploymentServiceTypeConfig = configurationFactory.newConfigGroup(ConfigType.GLOBAL, DEPLOYMENT_SERVICE_TYPE_CONFIG, "");
+            deploymentServiceTypeConfig = configurationFactory.newConfigGroup(ConfigType.GLOBAL,
+                    DEPLOYMENT_SERVICE_TYPE_CONFIG, "");
             deploymentServiceTypeConfig.addConfigItem(configurationFactory.newConfigItem("type", "kjar"));
 
             configurationService.addConfiguration(deploymentServiceTypeConfig);
@@ -140,7 +141,7 @@ public class AppSetup {
         deploymentServiceType = deploymentServiceTypeConfig.getConfigItemValue("type");
 
         Set<DeploymentUnit> deploymentUnits = produceDeploymentUnits();
-        ((Initializable)deploymentManager).initDeployments(deploymentUnits);
+        ((Initializable) deploymentManager).initDeployments(deploymentUnits);
     }
 
     @Produces
@@ -155,15 +156,16 @@ public class AppSetup {
         }
 
         if (deploymentUnits.isEmpty() && deploymentServiceType.equals("vfs")) {
-            Iterable<Path> assetDirectories = ioService.newDirectoryStream( ioService.get( repository.getUri() + "/processes" ), new DirectoryStream.Filter<Path>() {
-                @Override
-                public boolean accept( final Path entry ) {
-                    if ( org.kie.commons.java.nio.file.Files.isDirectory(entry) ) {
-                        return true;
-                    }
-                    return false;
-                }
-            } );
+            Iterable<Path> assetDirectories = ioService.newDirectoryStream(ioService.get(repository.getUri() + "/processes"),
+                    new DirectoryStream.Filter<Path>() {
+                        @Override
+                        public boolean accept(final Path entry) {
+                            if (org.kie.commons.java.nio.file.Files.isDirectory(entry)) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    });
 
             for (Path p : assetDirectories) {
                 String folder = p.toString();
@@ -172,21 +174,23 @@ public class AppSetup {
                 }
                 deploymentUnits.add(new VFSDeploymentUnit(p.getFileName().toString(), REPO_PLAYGROUND, folder));
             }
-//            DeploymentUnit deploymentUnit = new KModuleDeploymentUnit("org.jbpm.test", "test-module", "1.0.0-SNAPSHOT");
-//            deploymentUnits.add(deploymentUnit);
+            // DeploymentUnit deploymentUnit = new KModuleDeploymentUnit("org.jbpm.test", "test-module", "1.0.0-SNAPSHOT");
+            // deploymentUnits.add(deploymentUnit);
         }
         return deploymentUnits;
     }
 
-
     @Produces
     public DeploymentService getDeploymentService() {
         if (deploymentServiceType.equals("kjar")) {
-            return this.deploymentService.select(new AnnotationLiteral<Kjar>() {}).get();
+            return this.deploymentService.select(new AnnotationLiteral<Kjar>() {
+            }).get();
         } else if (deploymentServiceType.equals("vfs")) {
-            return this.deploymentService.select(new AnnotationLiteral<Vfs>() {}).get();
+            return this.deploymentService.select(new AnnotationLiteral<Vfs>() {
+            }).get();
         } else {
             throw new IllegalStateException("Unknown type of deployment service " + deploymentServiceType);
         }
     }
+
 }

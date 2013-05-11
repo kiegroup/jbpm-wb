@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.bd.client.resources;
 
 import com.google.gwt.resources.client.CssResource;
 
 /**
- * General CSS for Guvnor. Use of standalone CSS files should be migrated to
- * here
+ * General CSS for Guvnor. Use of standalone CSS files should be migrated to here
  */
-public interface ShowcaseCss
-        extends
-        CssResource {
-    
+public interface ShowcaseCss extends CssResource {
+
     @ClassName("header")
     String mainClass();
 

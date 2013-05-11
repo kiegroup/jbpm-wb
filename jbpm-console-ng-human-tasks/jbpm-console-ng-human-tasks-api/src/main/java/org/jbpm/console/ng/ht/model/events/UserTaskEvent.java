@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.model.events;
 
 import java.io.Serializable;
 import java.util.List;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- */
 @Portable
-public class UserTaskEvent implements Serializable{
+public class UserTaskEvent implements Serializable {
 
     private String userId;
     private List<String> groupsId;
@@ -57,7 +55,5 @@ public class UserTaskEvent implements Serializable{
     public void setGroupsId(List<String> groupsId) {
         this.groupsId = groupsId;
     }
-    
-    
-    
+
 }

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2013 JBoss by Red Hat.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.jbpm.console.ng.pr.client.editors.instance.signal;
 
 import com.github.gwtbootstrap.client.ui.Label;
@@ -25,41 +41,44 @@ import com.google.gwt.user.client.ui.TextBox;
 
 @Dependent
 @Templated(value = "ProcessInstanceSignalViewImpl.html")
-public class ProcessInstanceSignalViewImpl extends Composite implements
-        ProcessInstanceSignalPresenter.PopupView {
+public class ProcessInstanceSignalViewImpl extends Composite implements ProcessInstanceSignalPresenter.PopupView {
+    private Constants constants = GWT.create(Constants.class);
 
     private ProcessInstanceSignalPresenter presenter;
     @Inject
     @DataField
     public Button signalButton;
+
     @Inject
     @DataField
     public Button clearButton;
-    
-    @Inject 
+
+    @Inject
     @DataField
     public Label signalRefLabel;
-    
-    @Inject 
+
+    @Inject
     @DataField
     public Label eventLabel;
-    
+
     @Inject
     @DataField
     public TextBox eventText;
-    
+
     @DataField
     public SuggestBox signalRefText;
+
     @Inject
     private Event<NotificationEvent> notification;
+
     public List<Long> processInstanceIds = new ArrayList<Long>();
-    private Constants constants = GWT.create(Constants.class);
+
     private MultiWordSuggestOracle oracle;
 
     public ProcessInstanceSignalViewImpl() {
         oracle = new MultiWordSuggestOracle();
         signalRefText = new SuggestBox(oracle);
-        
+
     }
 
     @Override
@@ -71,6 +90,7 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
         eventLabel.setText(constants.Event());
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
@@ -80,8 +100,8 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
 
         for (Long processInstanceId : this.processInstanceIds) {
             presenter.signalProcessInstance(processInstanceId);
-            displayNotification(constants.Signalling_Process_Instance() + processInstanceId + " " +constants.Signal() + " = " + 
-                                    signalRefText.getText() + " - " + constants.Event() + " = " + eventText.getText());
+            displayNotification(constants.Signalling_Process_Instance() + processInstanceId + " " + constants.Signal() + " = "
+                    + signalRefText.getText() + " - " + constants.Event() + " = " + eventText.getText());
         }
     }
 
@@ -96,10 +116,12 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
         this.processInstanceIds.add(processInstanceId);
     }
 
+    @Override
     public String getSignalRefText() {
         return signalRefText.getText();
     }
 
+    @Override
     public String getEventText() {
         return eventText.getText();
     }
@@ -108,4 +130,5 @@ public class ProcessInstanceSignalViewImpl extends Composite implements
     public void setAvailableSignals(Collection<String> signals) {
         oracle.addAll(signals);
     }
+
 }

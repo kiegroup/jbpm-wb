@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public abstract class HumanTasksBackendBaseTest {
 
     protected static Logger logger = LoggerFactory.getLogger(HumanTasksBackendBaseTest.class);
-    
+
     protected static boolean usersLoaded = false;
 
     @Inject
@@ -85,4 +85,5 @@ public abstract class HumanTasksBackendBaseTest {
                     e);
         }
     }
+
 }

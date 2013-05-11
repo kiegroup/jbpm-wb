@@ -21,9 +21,7 @@ import java.util.List;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class TaskSummary
-        implements
-        Serializable {
+public class TaskSummary implements Serializable {
 
     private long id;
     private String name;
@@ -34,9 +32,9 @@ public class TaskSummary
     private int priority;
     private int parentId;
     private boolean skipable;
-    //Was User
+    // Was User
     private String actualOwner;
-    //Was User
+    // Was User
     private String createdBy;
     private Date createdOn;
     private Date activationTime;
@@ -45,27 +43,13 @@ public class TaskSummary
     private String processId;
     private int processSessionId;
     private String subTaskStrategy;
-    
 
     private List<String> potentialOwners;
 
-    public TaskSummary(long id,
-            long processInstanceId,
-            String name,
-            String subject,
-            String description,
-            String status,
-            int priority,
-            boolean skipable,
-            String actualOwner,
-            String createdBy,
-            Date createdOn,
-            Date activationTime,
-            Date expirationTime,
-            String processId,
-            int processSessionId,
-            String subTaskStrategy,
-            int parentId, List<String> potentialOwners) {
+    public TaskSummary(long id, long processInstanceId, String name, String subject, String description, String status,
+            int priority, boolean skipable, String actualOwner, String createdBy, Date createdOn, Date activationTime,
+            Date expirationTime, String processId, int processSessionId, String subTaskStrategy, int parentId,
+            List<String> potentialOwners) {
         super();
         this.id = id;
         this.processInstanceId = processInstanceId;
@@ -86,7 +70,6 @@ public class TaskSummary
         this.parentId = parentId;
         this.potentialOwners = potentialOwners;
     }
-    
 
     public TaskSummary() {
     }
@@ -301,10 +284,12 @@ public class TaskSummary
         if (this.createdOn != other.createdOn && (this.createdOn == null || !this.createdOn.equals(other.createdOn))) {
             return false;
         }
-        if (this.activationTime != other.activationTime && (this.activationTime == null || !this.activationTime.equals(other.activationTime))) {
+        if (this.activationTime != other.activationTime
+                && (this.activationTime == null || !this.activationTime.equals(other.activationTime))) {
             return false;
         }
-        if (this.expirationTime != other.expirationTime && (this.expirationTime == null || !this.expirationTime.equals(other.expirationTime))) {
+        if (this.expirationTime != other.expirationTime
+                && (this.expirationTime == null || !this.expirationTime.equals(other.expirationTime))) {
             return false;
         }
         if (this.processInstanceId != other.processInstanceId) {
@@ -316,10 +301,12 @@ public class TaskSummary
         if (this.processSessionId != other.processSessionId) {
             return false;
         }
-        if ((this.subTaskStrategy == null) ? (other.subTaskStrategy != null) : !this.subTaskStrategy.equals(other.subTaskStrategy)) {
+        if ((this.subTaskStrategy == null) ? (other.subTaskStrategy != null) : !this.subTaskStrategy
+                .equals(other.subTaskStrategy)) {
             return false;
         }
-        if (this.potentialOwners != other.potentialOwners && (this.potentialOwners == null || !this.potentialOwners.equals(other.potentialOwners))) {
+        if (this.potentialOwners != other.potentialOwners
+                && (this.potentialOwners == null || !this.potentialOwners.equals(other.potentialOwners))) {
             return false;
         }
         return true;
@@ -327,18 +314,12 @@ public class TaskSummary
 
     @Override
     public String toString() {
-        return "TaskSummary{" + "id=" + id + ", name=" + name + ", subject=" + subject + ", description=" + description + ", status=" + status + ", priority=" + priority + ", parentId=" + parentId + ", skipable=" + skipable + ", actualOwner=" + actualOwner + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", activationTime=" + activationTime + ", expirationTime=" + expirationTime + ", processInstanceId=" + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", subTaskStrategy=" + subTaskStrategy + ", potentialOwners=" + potentialOwners + '}';
+        return "TaskSummary{" + "id=" + id + ", name=" + name + ", subject=" + subject + ", description=" + description
+                + ", status=" + status + ", priority=" + priority + ", parentId=" + parentId + ", skipable=" + skipable
+                + ", actualOwner=" + actualOwner + ", createdBy=" + createdBy + ", createdOn=" + createdOn
+                + ", activationTime=" + activationTime + ", expirationTime=" + expirationTime + ", processInstanceId="
+                + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId
+                + ", subTaskStrategy=" + subTaskStrategy + ", potentialOwners=" + potentialOwners + '}';
     }
 
-    
-    
-    
-    
-
-    
-    
-
-
-
-    
 }

@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.model.events;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- * @author salaboy
- */
 @Portable
 public class ProcessInstanceCreated {
 
     public ProcessInstanceCreated() {
     }
-    
-    
-    
+
 }

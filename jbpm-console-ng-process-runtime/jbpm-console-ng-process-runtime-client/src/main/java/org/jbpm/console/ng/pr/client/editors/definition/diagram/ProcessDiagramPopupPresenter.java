@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.client.editors.definition.diagram;
 
 import com.google.gwt.core.client.GWT;
@@ -43,10 +44,9 @@ import org.uberfire.shared.mvp.PlaceRequest;
 @Dependent
 @WorkbenchPopup(identifier = "Process Diagram Popup")
 public class ProcessDiagramPopupPresenter {
+    private Constants constants = GWT.create(Constants.class);
 
-    public interface InboxView
-            extends
-            UberView<ProcessDiagramPopupPresenter> {
+    public interface InboxView extends UberView<ProcessDiagramPopupPresenter> {
 
         void displayNotification(String text);
 
@@ -55,28 +55,31 @@ public class ProcessDiagramPopupPresenter {
         TextBox getProcessDiagramURLText();
 
         Button getGenerateUrlButton();
-        
+
         TextBox getProcessInstanceIdText();
-        
+
         TextBox getProcessPackageNameText();
 
         TextBox getProcessVersionText();
     }
+
     @Inject
     private PlaceManager placeManager;
+
     @Inject
     InboxView view;
+
     @Inject
     Identity identity;
+
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
-    
+
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
+
     private PlaceRequest place;
 
-    private Constants constants = GWT.create(Constants.class);
-    
     @OnStart
     public void onStart(final PlaceRequest place) {
         this.place = place;
@@ -92,28 +95,26 @@ public class ProcessDiagramPopupPresenter {
         return view;
     }
 
-    public void generateURL(final String processDefinitionId, final Long processInstanceId, 
-                            final String packageName, final String version) {
-        dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
+    public void generateURL(final String processDefinitionId, final Long processInstanceId, final String packageName,
+            final String version) {
+        dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
-            public void callback( List<NodeInstanceSummary> details ) {
-                String fullLog = "?processDefId="+processDefinitionId+""
-                         + "?processPackage="+packageName
-                        + "?processVersion="+version
-                        + "?nodeIds=";
-                for ( NodeInstanceSummary nis : details ) {
-                    fullLog +=  nis.getNodeUniqueName()+ ",";
+            public void callback(List<NodeInstanceSummary> details) {
+                String fullLog = "?processDefId=" + processDefinitionId + "" + "?processPackage=" + packageName
+                        + "?processVersion=" + version + "?nodeIds=";
+                for (NodeInstanceSummary nis : details) {
+                    fullLog += nis.getNodeUniqueName() + ",";
                 }
-                view.getProcessDiagramURLText().setText( fullLog );
+                view.getProcessDiagramURLText().setText(fullLog);
             }
-        } ).getProcessInstanceHistory( processInstanceId );
+        }).getProcessInstanceHistory(processInstanceId);
 
     }
 
     @OnReveal
     public void onReveal() {
         String processDefinitionId = place.getParameter("processDefId", "").toString();
-        Long processInstanceId = Long.parseLong( place.getParameter("processInstanceId", "0").toString());
+        Long processInstanceId = Long.parseLong(place.getParameter("processInstanceId", "0").toString());
         String packageName = place.getParameter("processPackage", "").toString();
         String version = place.getParameter("processVersion", "0").toString();
         view.getProcessDefIdText().setText(processDefinitionId);
@@ -126,4 +127,5 @@ public class ProcessDiagramPopupPresenter {
     public void close() {
         closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
+
 }

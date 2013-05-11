@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.bd.client.editors.session.notifications;
 
 import javax.enterprise.context.Dependent;
@@ -37,11 +38,9 @@ import org.uberfire.shared.mvp.PlaceRequest;
 @WorkbenchPopup(identifier = "Session Notifications Popup")
 public class SessionNotificationsPopupPresenter {
 
-    public interface InboxView
-            extends
-            UberView<SessionNotificationsPopupPresenter> {
+    public interface InboxView extends UberView<SessionNotificationsPopupPresenter> {
 
-        void displayNotification( String text );
+        void displayNotification(String text);
 
         TextBox getSessionIdText();
 
@@ -52,19 +51,22 @@ public class SessionNotificationsPopupPresenter {
 
     @Inject
     private PlaceManager placeManager;
+
     @Inject
     InboxView view;
-    @Inject
-    Identity  identity;
 
-//    @Inject
-//    private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
     @Inject
-    private Event<BeforeClosePlaceEvent>             closePlaceEvent;
-    private PlaceRequest                             place;
+    Identity identity;
+
+    // @Inject
+    // private Caller<KnowledgeDomainServiceEntryPoint> knowledgeServices;
+    @Inject
+    private Event<BeforeClosePlaceEvent> closePlaceEvent;
+
+    private PlaceRequest place;
 
     @OnStart
-    public void onStart( final PlaceRequest place ) {
+    public void onStart(final PlaceRequest place) {
         this.place = place;
     }
 
@@ -78,32 +80,33 @@ public class SessionNotificationsPopupPresenter {
         return view;
     }
 
-    public void getSessionNotifications( final int sessionId ) {
+    public void getSessionNotifications(final int sessionId) {
 
-//        knowledgeServices.call( new RemoteCallback<List<RuleNotificationSummary>>() {
-//            @Override
-//            public void callback( List<RuleNotificationSummary> notifications ) {
-//                String notificationsText = "";
-//                for ( RuleNotificationSummary n : notifications ) {
-//                    notificationsText += n.getDataTimeStamp().toString() + " - " + n.getNotification() + "\n";
-//                }
-//                view.getSessionNotificationsTextArea().setText( "" );
-//                view.getSessionNotificationsTextArea().setText( notificationsText );
-//                view.displayNotification( " Session Notifications updated" );
-//
-//            }
-//        } ).getAllNotificationInstance();
+        // knowledgeServices.call( new RemoteCallback<List<RuleNotificationSummary>>() {
+        // @Override
+        // public void callback( List<RuleNotificationSummary> notifications ) {
+        // String notificationsText = "";
+        // for ( RuleNotificationSummary n : notifications ) {
+        // notificationsText += n.getDataTimeStamp().toString() + " - " + n.getNotification() + "\n";
+        // }
+        // view.getSessionNotificationsTextArea().setText( "" );
+        // view.getSessionNotificationsTextArea().setText( notificationsText );
+        // view.displayNotification( " Session Notifications updated" );
+        //
+        // }
+        // } ).getAllNotificationInstance();
 
     }
 
     @OnReveal
     public void onReveal() {
-        int taskId = Integer.parseInt( place.getParameter( "sessionId", "0" ).toString() );
-        view.getSessionIdText().setText( String.valueOf( taskId ) );
-        getSessionNotifications( Integer.parseInt( view.getSessionIdText().getText() ) );
+        int taskId = Integer.parseInt(place.getParameter("sessionId", "0").toString());
+        view.getSessionIdText().setText(String.valueOf(taskId));
+        getSessionNotifications(Integer.parseInt(view.getSessionIdText().getText()));
     }
 
     public void close() {
-        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
+        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
+
 }

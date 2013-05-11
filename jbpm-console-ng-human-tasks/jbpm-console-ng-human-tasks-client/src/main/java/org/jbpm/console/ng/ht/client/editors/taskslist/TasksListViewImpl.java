@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
 import com.github.gwtbootstrap.client.ui.Label;
@@ -24,7 +25,6 @@ import javax.inject.Inject;
 
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -48,66 +48,76 @@ import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
 @Templated(value = "TasksListViewImpl.html")
-public class TasksListViewImpl extends Composite
-        implements
-        TasksListPresenter.TaskListView {
+public class TasksListViewImpl extends Composite implements TasksListPresenter.TaskListView {
+    private Constants constants = GWT.create(Constants.class);
 
     @Inject
     private Identity identity;
+
     @Inject
     private PlaceManager placeManager;
+
     private TasksListPresenter presenter;
+
     @Inject
     @DataField
     public NavLink dayViewTasksNavLink;
+
     @Inject
     @DataField
     public NavLink advancedViewTasksNavLink;
+
     @Inject
     @DataField
     public NavLink monthViewTasksNavLink;
+
     @Inject
     @DataField
     public NavLink weekViewTasksNavLink;
+
     @Inject
     @DataField
     public NavLink createQuickTaskNavLink;
+
     @Inject
     @DataField
     public NavLink showAllTasksNavLink;
+
     @Inject
     @DataField
     public NavLink showPersonalTasksNavLink;
+
     @Inject
     @DataField
     public NavLink showGroupTasksNavLink;
+
     @Inject
     @DataField
     public NavLink showActiveTasksNavLink;
+
     @Inject
     @DataField
     public Label taskCalendarViewLabel;
-    
+
     @Inject
     @DataField
     private CalendarPicker calendarPicker;
-   
-    
+
     @Inject
     @DataField
     public FlowPanel tasksViewContainer;
+
     @Inject
     private TaskListMultiDayBox taskListMultiDayBox;
+
     @Inject
     private Event<NotificationEvent> notification;
-    
+
     private Date currentDate;
-    
+
     private TaskView currentView = TaskView.DAY;
 
     private TaskType currentTaskType = TaskType.ACTIVE;
-    
-    private Constants constants = GWT.create(Constants.class);
 
     @Override
     public void init(final TasksListPresenter presenter) {
@@ -221,7 +231,6 @@ public class TasksListViewImpl extends Composite
             }
         });
 
-
         showActiveTasksNavLink.setText(constants.Active());
         showActiveTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
@@ -251,8 +260,7 @@ public class TasksListViewImpl extends Composite
 
         taskCalendarViewLabel.setText(constants.Tasks_List_Calendar_View());
         taskCalendarViewLabel.setStyleName("");
-        
-        
+
     }
 
     public void recieveStatusChanged(@Observes UserTaskEvent event) {
@@ -260,17 +268,19 @@ public class TasksListViewImpl extends Composite
 
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
 
     @Override
     public void refreshTasks() {
-       presenter.refreshTasks(currentDate, currentView, currentTaskType);
+        presenter.refreshTasks(currentDate, currentView, currentTaskType);
     }
 
     @Override
     public TaskListMultiDayBox getTaskListMultiDayBox() {
         return taskListMultiDayBox;
     }
+
 }

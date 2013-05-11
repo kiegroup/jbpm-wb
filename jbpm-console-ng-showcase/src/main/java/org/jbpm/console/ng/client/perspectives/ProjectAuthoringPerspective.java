@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.client.perspectives;
 
 import com.google.gwt.core.client.GWT;
@@ -44,30 +45,28 @@ import org.uberfire.client.workbench.widgets.toolbar.impl.DefaultToolBar;
 import org.uberfire.client.workbench.widgets.toolbar.impl.DefaultToolBarItem;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
-/**
- * @author salaboy
- */
 @ApplicationScoped
 @WorkbenchPerspective(identifier = "Authoring")
 public class ProjectAuthoringPerspective {
+    private Constants constants = GWT.create(Constants.class);
 
     @Inject
-    private PlaceManager          placeManager;
+    private PlaceManager placeManager;
     private PerspectiveDefinition perspective;
-    private Menus                 menus;
+    private Menus menus;
 
     @Inject
     private NewResourcePresenter newResourcePresenter;
-    
+
     @Inject
     private NewResourcesMenu newResourcesMenu;
-    
+
     @Inject
     private ToolsMenu toolsMenu;
-    
-        private ToolBar               toolBar;
-        
-    private Constants constants = GWT.create(Constants.class);
+
+    private ToolBar toolBar;
+
+
 
     public ProjectAuthoringPerspective() {
     }
@@ -78,10 +77,9 @@ public class ProjectAuthoringPerspective {
         buildMenuBar();
         buildToolBar();
     }
-    
-    
+
     private void buildToolBar() {
-        this.toolBar = new DefaultToolBar( "guvnor.new.item" );
+        this.toolBar = new DefaultToolBar("guvnor.new.item");
         final String tooltip = constants.newItem();
         final Command command = new Command() {
             @Override
@@ -89,25 +87,21 @@ public class ProjectAuthoringPerspective {
                 newResourcePresenter.show();
             }
         };
-        toolBar.addItem( new DefaultToolBarItem( IconType.FILE,
-                                                 tooltip,
-                                                 command ) );
+        toolBar.addItem(new DefaultToolBarItem(IconType.FILE, tooltip, command));
 
     }
-
-    
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
-        p.setName( "Project Authoring Perspective" );
+        p.setName("Project Authoring Perspective");
 
         final PanelDefinition west = new PanelDefinitionImpl();
-        west.setWidth( 300 );
-        west.setMinWidth( 200 );
-        west.addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "org.kie.guvnor.explorer" ) ) );
-        p.getRoot().insertChild( Position.WEST, west );
-        p.setTransient( true );
+        west.setWidth(300);
+        west.setMinWidth(200);
+        west.addPart(new PartDefinitionImpl(new DefaultPlaceRequest("org.kie.guvnor.explorer")));
+        p.getRoot().insertChild(Position.WEST, west);
+        p.setTransient(true);
         return p;
     }
 
@@ -115,7 +109,7 @@ public class ProjectAuthoringPerspective {
     public Menus getMenus() {
         return this.menus;
     }
-    
+
     @WorkbenchToolBar
     public ToolBar getToolBar() {
         return this.toolBar;
@@ -123,27 +117,24 @@ public class ProjectAuthoringPerspective {
 
     private void buildMenuBar() {
         this.menus = MenuFactory
-                .newTopLevelMenu( "Projects" )
-                    .respondsWith( new Command() {
+                .newTopLevelMenu("Projects")
+                    .respondsWith(new Command() {
                         @Override
                         public void execute() {
-                            placeManager.goTo( "org.kie.guvnor.explorer" );
+                            placeManager.goTo("org.kie.guvnor.explorer");
                         }
                     } )
                 .endMenu()
-                .newTopLevelMenu( "New" )
-                    .withItems( newResourcesMenu.getMenuItems() )
                 
-                
-                .endMenu()
-                 .newTopLevelMenu( "Tools" )
-                    .withItems( toolsMenu.getMenuItems() )
-                
-                
+                .newTopLevelMenu("New")
+                    .withItems(newResourcesMenu.getMenuItems())
                 .endMenu()
                 
-                
-                .build();
+                .newTopLevelMenu("Tools")
+                    .withItems(toolsMenu.getMenuItems())
+                .endMenu()
 
+                .build();
     }
+    
 }

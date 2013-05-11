@@ -1,3 +1,19 @@
+/*
+ * Copyright 2013 JBoss by Red Hat.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.jbpm.console.ng.pr.client.editors.variables.history;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
@@ -23,43 +39,45 @@ import org.jbpm.console.ng.pr.model.VariableSummary;
 
 @Dependent
 @Templated(value = "VariableHistoryViewImpl.html")
-public class VariableHistoryViewImpl extends Composite implements
-        VariableHistoryPresenter.PopupView {
+public class VariableHistoryViewImpl extends Composite implements VariableHistoryPresenter.PopupView {
+    private Constants constants = GWT.create(Constants.class);
 
     private long processInstanceId;
+
     private String variableId;
-    
+
     private VariableHistoryPresenter presenter;
-    
+
     @Inject
     @DataField
     public Label variableHistoryLabel;
-    
+
     @Inject
     @DataField
     public Label variableNameText;
+
     @Inject
-    @DataField 
+    @DataField
     public FlowPanel listContainer;
+
     @Inject
     @DataField
     public DataGrid<VariableSummary> processVarListGrid;
+
     @Inject
     @DataField
     public SimplePager pager;
-    
-    
+
     @Inject
     private Event<NotificationEvent> notification;
-    private Constants constants = GWT.create(Constants.class);
 
     @Override
     public void init(VariableHistoryPresenter presenter) {
         this.presenter = presenter;
-        
+
         listContainer.add(processVarListGrid);
         listContainer.add(pager);
-        
+
         processVarListGrid.setHeight("200px");
         // Set the message to display when the table is empty.
         Label emptyTable = new Label(constants.No_History_For_This_Variable());
@@ -70,31 +88,28 @@ public class VariableHistoryViewImpl extends Composite implements
 
         pager.setDisplay(processVarListGrid);
         pager.setPageSize(5);
-        
-        // Value.
-        Column<VariableSummary, String> valueColumn =
-                new Column<VariableSummary, String>(new TextCell()) {
-                    @Override
-                    public String getValue(VariableSummary object) {
-                        return object.getNewValue();
-                    }
-                };
 
-        processVarListGrid.addColumn(valueColumn,
-                new ResizableHeader(constants.Value(), processVarListGrid, valueColumn));
-        
         // Value.
-        Column<VariableSummary, String> oldValueColumn =
-                new Column<VariableSummary, String>(new TextCell()) {
-                    @Override
-                    public String getValue(VariableSummary object) {
-                        return object.getOldValue();
-                    }
-                };
+        Column<VariableSummary, String> valueColumn = new Column<VariableSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(VariableSummary object) {
+                return object.getNewValue();
+            }
+        };
 
-        processVarListGrid.addColumn(oldValueColumn,
-                new ResizableHeader(constants.Previous_Value(), processVarListGrid, oldValueColumn));
-        
+        processVarListGrid.addColumn(valueColumn, new ResizableHeader(constants.Value(), processVarListGrid, valueColumn));
+
+        // Value.
+        Column<VariableSummary, String> oldValueColumn = new Column<VariableSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(VariableSummary object) {
+                return object.getOldValue();
+            }
+        };
+
+        processVarListGrid.addColumn(oldValueColumn, new ResizableHeader(constants.Previous_Value(), processVarListGrid,
+                oldValueColumn));
+
         // Last Time Changed Date.
         Column<VariableSummary, String> dueDateColumn = new Column<VariableSummary, String>(new TextCell()) {
             @Override
@@ -106,16 +121,17 @@ public class VariableHistoryViewImpl extends Composite implements
         };
         dueDateColumn.setSortable(true);
 
-        processVarListGrid.addColumn(dueDateColumn,
-                new ResizableHeader(constants.Last_Modification(), processVarListGrid, dueDateColumn));
-        
+        processVarListGrid.addColumn(dueDateColumn, new ResizableHeader(constants.Last_Modification(), processVarListGrid,
+                dueDateColumn));
+
         presenter.addDataDisplay(processVarListGrid);
-        
+
         variableHistoryLabel.setText(constants.Variable_History());
         variableHistoryLabel.setStyleName("");
-        
+
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
@@ -123,23 +139,23 @@ public class VariableHistoryViewImpl extends Composite implements
     @Override
     public void setProcessInstanceId(long processInstanceId) {
         this.processInstanceId = processInstanceId;
-        
+
     }
-    
+
     @Override
     public void setVariableId(String variableId) {
         this.variableId = variableId;
         this.variableNameText.setText(variableId);
     }
 
+    @Override
     public long getProcessInstanceId() {
         return processInstanceId;
     }
 
+    @Override
     public String getVariableId() {
         return variableId;
     }
-    
-    
 
 }

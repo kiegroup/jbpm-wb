@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.model;
 
 import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- * @author salaboy
- */
 @Portable
 public class NodeInstanceSummary implements Serializable {
 
@@ -33,9 +30,9 @@ public class NodeInstanceSummary implements Serializable {
     private String timestamp;
     private String connection;
     private boolean completed;
-    
-    public NodeInstanceSummary(long id, long processId, String nodeName, String nodeUniqueName, 
-            String type, String timestamp, String connection, boolean completed) {
+
+    public NodeInstanceSummary(long id, long processId, String nodeName, String nodeUniqueName, String type, String timestamp,
+            String connection, boolean completed) {
         super();
         this.id = id;
         this.processId = processId;
@@ -109,5 +106,5 @@ public class NodeInstanceSummary implements Serializable {
     public void setCompleted(boolean completed) {
         this.completed = completed;
     }
-    
+
 }

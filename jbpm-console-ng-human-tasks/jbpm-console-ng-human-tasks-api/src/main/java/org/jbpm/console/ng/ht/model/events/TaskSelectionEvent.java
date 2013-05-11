@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.model.events;
 
 import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- */
 @Portable
-public class TaskSelectionEvent implements Serializable{
+public class TaskSelectionEvent implements Serializable {
     private long taskId;
-    // This should be removed from here 
+    // This should be removed from here
     private String userId;
 
     public TaskSelectionEvent() {
@@ -42,7 +40,7 @@ public class TaskSelectionEvent implements Serializable{
     public String getUserId() {
         return userId;
     }
-    
+
     public long getTaskId() {
         return taskId;
     }
@@ -54,7 +52,5 @@ public class TaskSelectionEvent implements Serializable{
     public void setUserId(String userId) {
         this.userId = userId;
     }
-    
-    
-    
+
 }

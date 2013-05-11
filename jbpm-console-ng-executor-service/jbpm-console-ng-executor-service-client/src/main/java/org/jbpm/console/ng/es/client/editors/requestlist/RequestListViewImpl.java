@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.es.client.editors.requestlist;
 
+package org.jbpm.console.ng.es.client.editors.requestlist;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -68,89 +68,99 @@ import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
 
-
 @Dependent
 @Templated(value = "RequestListViewImpl.html")
-public class RequestListViewImpl extends Composite
-        implements
-        RequestListPresenter.InboxView {
+public class RequestListViewImpl extends Composite implements RequestListPresenter.InboxView {
+    private Constants constants = GWT.create(Constants.class);
 
     @Inject
     private PlaceManager placeManager;
+
     private RequestListPresenter presenter;
+
     @Inject
     @DataField
     public Button createRequestButton;
+
     @Inject
     @DataField
     public Button refreshRequestsButton;
+
     @Inject
     @DataField
     public FlowPanel listContainer;
-    
+
     @Inject
     @DataField
     public Button serviceSettingsButton;
-    
+
     @Inject
     @DataField
     public DataGrid<RequestSummary> myRequestListGrid;
+
     @Inject
     @DataField
     public SimplePager pager;
+
     @Inject
     @DataField
     public CheckBox showQueuedCheck;
+
     @Inject
     @DataField
     public CheckBox showRunningCheck;
+
     @Inject
     @DataField
     public CheckBox showRetryingCheck;
+
     @Inject
     @DataField
     public CheckBox showErrorCheck;
+
     @Inject
     @DataField
     public CheckBox showCompletedCheck;
+
     @Inject
     @DataField
     public CheckBox showCancelledCheck;
-    
+
     private Set<RequestSummary> selectedRequests;
+
     @Inject
     private Event<NotificationEvent> notification;
+
     @Inject
     private Event<RequestSelectionEvent> requestSelection;
+
     private ListHandler<RequestSummary> sortHandler;
-    private Constants constants = GWT.create(Constants.class);
 
     @Override
     public void init(RequestListPresenter presenter) {
         this.presenter = presenter;
-        
+
         listContainer.add(myRequestListGrid);
         listContainer.add(pager);
-        
+
         myRequestListGrid.setHeight("350px");
 
-//         Set the message to display when the table is empty.
+        // Set the message to display when the table is empty.
         myRequestListGrid.setEmptyTableWidget(new Label(constants.Hooray_you_don_t_have_any_pending_Task__()));
 
-//         Attach a column sort handler to the ListDataProvider to sort the list.
-        sortHandler =
-                new ListHandler<RequestSummary>(presenter.getDataProvider().getList());
+        // Attach a column sort handler to the ListDataProvider to sort the list.
+        sortHandler = new ListHandler<RequestSummary>(presenter.getDataProvider().getList());
         myRequestListGrid.addColumnSortHandler(sortHandler);
 
-//         Create a Pager to control the table.
+        // Create a Pager to control the table.
 
         pager.setDisplay(myRequestListGrid);
         pager.setPageSize(6);
 
-//         Add a selection model so we can select cells.
-        final MultiSelectionModel<RequestSummary> selectionModel =
-                new MultiSelectionModel<RequestSummary>();
+        // Add a selection model so we can select cells.
+        final MultiSelectionModel<RequestSummary> selectionModel = new MultiSelectionModel<RequestSummary>();
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            @Override
             public void onSelectionChange(SelectionChangeEvent event) {
                 selectedRequests = selectionModel.getSelectedSet();
                 for (RequestSummary r : selectedRequests) {
@@ -160,140 +170,123 @@ public class RequestListViewImpl extends Composite
         });
 
         myRequestListGrid.setSelectionModel(selectionModel,
-                DefaultSelectionEventManager
-                .<RequestSummary>createCheckboxManager());
+                DefaultSelectionEventManager.<RequestSummary> createCheckboxManager());
 
         initTableColumns(selectionModel);
-
-
 
         presenter.addDataDisplay(myRequestListGrid);
 
     }
 
     public void requestCreated(@Observes RequestChangedEvent event) {
-    	fireRefreshList();
+        fireRefreshList();
     }
 
     @EventHandler("refreshRequestsButton")
     public void refreshRequestsButton(ClickEvent e) {
-    	fireRefreshList();
+        fireRefreshList();
     }
 
-	private void fireRefreshList() {
-		List<String> statuses = new ArrayList<String>();
-    	if (showCompletedCheck.getValue()) {
-    		statuses.add("DONE");
-    	}
-    	if (showCancelledCheck.getValue()) {
-    		statuses.add("CANCELLED");
-    	}
-    	if (showErrorCheck.getValue()) {
-    		statuses.add("ERROR");
-    	}
-    	if (showQueuedCheck.getValue()) {
-    		statuses.add("QUEUED");
-    	}
-    	if (showRetryingCheck.getValue()) {
-    		statuses.add("RETRYING");
-    	}
-    	if (showRunningCheck.getValue()) {
-    		statuses.add("RUNNING");
-    	}
+    private void fireRefreshList() {
+        List<String> statuses = new ArrayList<String>();
+        if (showCompletedCheck.getValue()) {
+            statuses.add("DONE");
+        }
+        if (showCancelledCheck.getValue()) {
+            statuses.add("CANCELLED");
+        }
+        if (showErrorCheck.getValue()) {
+            statuses.add("ERROR");
+        }
+        if (showQueuedCheck.getValue()) {
+            statuses.add("QUEUED");
+        }
+        if (showRetryingCheck.getValue()) {
+            statuses.add("RETRYING");
+        }
+        if (showRunningCheck.getValue()) {
+            statuses.add("RUNNING");
+        }
         presenter.refreshRequests(statuses);
-	}
-    
+    }
+
     @EventHandler("serviceSettingsButton")
     public void serviceSettingsButton(ClickEvent e) {
         placeManager.goTo(new DefaultPlaceRequest("Job Service Settings"));
-        //presenter.init();
+        // presenter.init();
     }
-    
+
     @EventHandler("createRequestButton")
     public void createRequestButton(ClickEvent e) {
         placeManager.goTo(new DefaultPlaceRequest("Quick New Job"));
-        //presenter.createRequest();
+        // presenter.createRequest();
     }
 
     private void initTableColumns(final SelectionModel<RequestSummary> selectionModel) {
-//         Checkbox column. This table will uses a checkbox column for selection.
-//         Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
-//         mouse selection.
+        // Checkbox column. This table will uses a checkbox column for selection.
+        // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
+        // mouse selection.
 
-        Column<RequestSummary, Boolean> checkColumn =
-                new Column<RequestSummary, Boolean>(new CheckboxCell(true,
-                false)) {
+        Column<RequestSummary, Boolean> checkColumn = new Column<RequestSummary, Boolean>(new CheckboxCell(true, false)) {
             @Override
             public Boolean getValue(RequestSummary object) {
                 // Get the value from the selection model.
                 return selectionModel.isSelected(object);
             }
         };
-        myRequestListGrid.addColumn(checkColumn,
-                SafeHtmlUtils.fromSafeConstant("<br/>"));
+        myRequestListGrid.addColumn(checkColumn, SafeHtmlUtils.fromSafeConstant("<br/>"));
         myRequestListGrid.setColumnWidth(checkColumn, "40px");
 
         // Id
-        Column<RequestSummary, Number> taskIdColumn =
-                new Column<RequestSummary, Number>(new NumberCell()) {
+        Column<RequestSummary, Number> taskIdColumn = new Column<RequestSummary, Number>(new NumberCell()) {
             @Override
             public Number getValue(RequestSummary object) {
                 return object.getId();
             }
         };
         taskIdColumn.setSortable(true);
-        sortHandler.setComparator(taskIdColumn,
-                new Comparator<RequestSummary>() {
-            public int compare(RequestSummary o1,
-                    RequestSummary o2) {
+        sortHandler.setComparator(taskIdColumn, new Comparator<RequestSummary>() {
+            @Override
+            public int compare(RequestSummary o1, RequestSummary o2) {
                 return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
             }
         });
-        
-        myRequestListGrid.addColumn(taskIdColumn,
-                new ResizableHeader(constants.Id(), myRequestListGrid, taskIdColumn));
+
+        myRequestListGrid.addColumn(taskIdColumn, new ResizableHeader(constants.Id(), myRequestListGrid, taskIdColumn));
         myRequestListGrid.setColumnWidth(taskIdColumn, "40px");
 
         // Task name.
-        Column<RequestSummary, String> taskNameColumn =
-                new Column<RequestSummary, String>(new EditTextCell()) {
+        Column<RequestSummary, String> taskNameColumn = new Column<RequestSummary, String>(new EditTextCell()) {
             @Override
             public String getValue(RequestSummary object) {
                 return object.getCommandName();
             }
         };
         taskNameColumn.setSortable(true);
-        sortHandler.setComparator(taskNameColumn,
-                new Comparator<RequestSummary>() {
-            public int compare(RequestSummary o1,
-                    RequestSummary o2) {
+        sortHandler.setComparator(taskNameColumn, new Comparator<RequestSummary>() {
+            @Override
+            public int compare(RequestSummary o1, RequestSummary o2) {
                 return o1.getCommandName().compareTo(o2.getCommandName());
             }
         });
-        myRequestListGrid.addColumn(taskNameColumn,
-                new ResizableHeader("Job Name", myRequestListGrid, taskNameColumn));
-
+        myRequestListGrid.addColumn(taskNameColumn, new ResizableHeader("Job Name", myRequestListGrid, taskNameColumn));
 
         // Status
-        Column<RequestSummary, String> statusColumn =
-                new Column<RequestSummary, String>(new EditTextCell()) {
+        Column<RequestSummary, String> statusColumn = new Column<RequestSummary, String>(new EditTextCell()) {
             @Override
             public String getValue(RequestSummary object) {
                 return object.getStatus();
             }
         };
         statusColumn.setSortable(true);
-        sortHandler.setComparator(statusColumn,
-                new Comparator<RequestSummary>() {
-            public int compare(RequestSummary o1,
-                    RequestSummary o2) {
+        sortHandler.setComparator(statusColumn, new Comparator<RequestSummary>() {
+            @Override
+            public int compare(RequestSummary o1, RequestSummary o2) {
                 return o1.getStatus().compareTo(o2.getStatus());
             }
         });
-        myRequestListGrid.addColumn(statusColumn,
-                new ResizableHeader("Status", myRequestListGrid, taskNameColumn));
+        myRequestListGrid.addColumn(statusColumn, new ResizableHeader("Status", myRequestListGrid, taskNameColumn));
         myRequestListGrid.setColumnWidth(statusColumn, "100px");
-
 
         // Due Date.
         Column<RequestSummary, String> dueDateColumn = new Column<RequestSummary, String>(new TextCell()) {
@@ -307,8 +300,7 @@ public class RequestListViewImpl extends Composite
         };
         dueDateColumn.setSortable(true);
 
-        myRequestListGrid.addColumn(dueDateColumn,
-                new ResizableHeader(constants.Due_On(), myRequestListGrid, dueDateColumn));
+        myRequestListGrid.addColumn(dueDateColumn, new ResizableHeader(constants.Due_On(), myRequestListGrid, dueDateColumn));
 
         // actions (icons)
         List<HasCell<RequestSummary, ?>> cells = new LinkedList<HasCell<RequestSummary, ?>>();
@@ -316,74 +308,73 @@ public class RequestListViewImpl extends Composite
         cells.add(new ActionHasCell("Details", new Delegate<RequestSummary>() {
             @Override
             public void execute(RequestSummary job) {
-            	DefaultPlaceRequest request = new DefaultPlaceRequest("Job Request Details");
-            	request.addParameter("requestId", String.valueOf(job.getId()));
-            	placeManager.goTo(request);
+                DefaultPlaceRequest request = new DefaultPlaceRequest("Job Request Details");
+                request.addParameter("requestId", String.valueOf(job.getId()));
+                placeManager.goTo(request);
             }
         }));
         cells.add(new ActionHasCell("Cancel", new Delegate<RequestSummary>() {
             @Override
             public void execute(RequestSummary job) {
-            	if (Window.confirm("Are you sure you want to cancel this Job?")) {
-            		presenter.cancelRequest(job.getId());
-            	}
+                if (Window.confirm("Are you sure you want to cancel this Job?")) {
+                    presenter.cancelRequest(job.getId());
+                }
             }
         }));
 
         CompositeCell<RequestSummary> cell = new CompositeCell<RequestSummary>(cells);
-        Column<RequestSummary, RequestSummary> actionsColumn = 
-        	new Column<RequestSummary, RequestSummary>(cell) {
-        		public RequestSummary getValue(RequestSummary object) {
-                	return object;
-        		}
+        Column<RequestSummary, RequestSummary> actionsColumn = new Column<RequestSummary, RequestSummary>(cell) {
+            @Override
+            public RequestSummary getValue(RequestSummary object) {
+                return object;
+            }
         };
 
-        myRequestListGrid.addColumn(actionsColumn,
-                new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant(constants.Actions())));
+        myRequestListGrid.addColumn(actionsColumn, new SafeHtmlHeader(SafeHtmlUtils.fromSafeConstant(constants.Actions())));
         myRequestListGrid.setColumnWidth(actionsColumn, "100px");
-
-
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
 
-   
-
+    @Override
     public CheckBox getShowCompletedCheck() {
         return showCompletedCheck;
     }
-    
-    public CheckBox getShowCancelledCheck() {
-		return showCancelledCheck;
-	}
-    
-    public CheckBox getShowErrorCheck() {
-		return showErrorCheck;
-	}
-    
-    public CheckBox getShowQueuedCheck() {
-		return showQueuedCheck;
-	}
-    
-    public CheckBox getShowRetryingCheck() {
-		return showRetryingCheck;
-	}
-    
-    public CheckBox getShowRunningCheck() {
-		return showRunningCheck;
-	}
 
+    public CheckBox getShowCancelledCheck() {
+        return showCancelledCheck;
+    }
+
+    public CheckBox getShowErrorCheck() {
+        return showErrorCheck;
+    }
+
+    public CheckBox getShowQueuedCheck() {
+        return showQueuedCheck;
+    }
+
+    public CheckBox getShowRetryingCheck() {
+        return showRetryingCheck;
+    }
+
+    public CheckBox getShowRunningCheck() {
+        return showRunningCheck;
+    }
+
+    @Override
     public DataGrid<RequestSummary> getDataGrid() {
         return myRequestListGrid;
     }
 
+    @Override
     public ListHandler<RequestSummary> getSortHandler() {
         return sortHandler;
     }
-    
-	private class ActionHasCell implements HasCell<RequestSummary, RequestSummary> {
+
+    private class ActionHasCell implements HasCell<RequestSummary, RequestSummary> {
         private ActionCell<RequestSummary> cell;
 
         public ActionHasCell(String text, Delegate<RequestSummary> delegate) {
@@ -404,5 +395,6 @@ public class RequestListViewImpl extends Composite
         public RequestSummary getValue(RequestSummary object) {
             return object;
         }
-	}
+    }
+
 }

@@ -8,8 +8,8 @@
     </encoder>
   </appender>
 
-  <logger name="org.kie" level="info"/>
-  <logger name="org.hibernate" level="warn"/>
+  <logger name="org.kie" level="info" />
+  <logger name="org.hibernate" level="warn" />
 
   <root level="error">
     <appender-ref ref="consoleAppender" />

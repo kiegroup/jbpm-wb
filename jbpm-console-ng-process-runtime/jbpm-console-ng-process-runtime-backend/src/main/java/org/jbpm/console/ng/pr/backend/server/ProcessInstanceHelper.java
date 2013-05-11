@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.backend.server;
 
 import java.text.SimpleDateFormat;
@@ -26,46 +27,43 @@ import org.jbpm.workflow.instance.node.CompositeNodeInstance;
 import org.jbpm.workflow.instance.node.EventNodeInstance;
 import org.kie.api.runtime.process.NodeInstance;
 
-/**
- *
- * @author salaboy
- */
 public class ProcessInstanceHelper {
-    public static Collection<ProcessInstanceSummary> adaptCollection(Collection<ProcessInstanceDesc> processInstances){
+    public static Collection<ProcessInstanceSummary> adaptCollection(Collection<ProcessInstanceDesc> processInstances) {
         List<ProcessInstanceSummary> processInstancesSummary = new ArrayList<ProcessInstanceSummary>();
-        for(ProcessInstanceDesc pi : processInstances){
+        for (ProcessInstanceDesc pi : processInstances) {
             processInstancesSummary.add(adapt(pi));
         }
-        
+
         return processInstancesSummary;
     }
-    
-    public static ProcessInstanceSummary adapt(ProcessInstanceDesc processInstance){
+
+    public static ProcessInstanceSummary adapt(ProcessInstanceDesc processInstance) {
         Date date = processInstance.getDataTimeStamp();
         String formattedDate = new SimpleDateFormat("d/MMM/yy HH:mm:ss").format(date);
-        return new ProcessInstanceSummary(processInstance.getId(), processInstance.getProcessId(), processInstance.getDeploymentId(),
-                processInstance.getProcessName(), processInstance.getProcessVersion(), processInstance.getState(), 
-                formattedDate, processInstance.getInitiator());
+        return new ProcessInstanceSummary(processInstance.getId(), processInstance.getProcessId(),
+                processInstance.getDeploymentId(), processInstance.getProcessName(), processInstance.getProcessVersion(),
+                processInstance.getState(), formattedDate, processInstance.getInitiator());
     }
-    
+
     public static Collection<String> collectActiveSignals(Collection<NodeInstance> activeNodes) {
         Collection<String> activeNodesComposite = new ArrayList<String>();
         for (NodeInstance nodeInstance : activeNodes) {
             if (nodeInstance instanceof EventNodeInstance) {
-                String type = ((EventNodeInstance)nodeInstance).getEventNode().getType();
+                String type = ((EventNodeInstance) nodeInstance).getEventNode().getType();
                 if (type != null && !type.startsWith("Message-")) {
                     activeNodesComposite.add(type);
                 }
-                
+
             }
             if (nodeInstance instanceof CompositeNodeInstance) {
                 Collection<NodeInstance> currentNodeInstances = ((CompositeNodeInstance) nodeInstance).getNodeInstances();
-                
+
                 // recursively check current nodes
                 activeNodesComposite.addAll(collectActiveSignals(currentNodeInstances));
             }
         }
-        
+
         return activeNodesComposite;
     }
+
 }

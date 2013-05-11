@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.es.client.i18n;
 
 import com.google.gwt.core.client.GWT;
@@ -20,16 +21,13 @@ import com.google.gwt.i18n.client.Messages;
 
 /**
  * This uses GWT to provide client side compile time resolving of locales. See:
- * http://code.google.com/docreader/#p=google-web-toolkit-doc-1-5&s=google-web-
- * toolkit-doc-1-5&t=DevGuideInternationalization (for more information).
+ * http://code.google.com/docreader/#p=google-web-toolkit-doc-1-5&s=google-web- toolkit-doc-1-5&t=DevGuideInternationalization
+ * (for more information).
  * <p/>
- * Each method name matches up with a key in Constants.properties (the
- * properties file can still be used on the server). To use this, use
- * <code>GWT.create(Constants.class)</code>.
+ * Each method name matches up with a key in Constants.properties (the properties file can still be used on the server). To use
+ * this, use <code>GWT.create(Constants.class)</code>.
  */
-public interface Constants
-        extends
-        Messages {
+public interface Constants extends Messages {
 
     Constants INSTANCE = GWT.create(Constants.class);
 
@@ -45,15 +43,15 @@ public interface Constants
 
     String Last_Time_Changed();
 
-    String View_History ();
+    String View_History();
 
-    String Variable_History_Perspective ();
+    String Variable_History_Perspective();
 
-    String Show_me_my_pending_Tasks ();
+    String Show_me_my_pending_Tasks();
 
-    String I_want_to_start_a_new_Process ();
+    String I_want_to_start_a_new_Process();
 
-    String I_want_to_design_a_new_Process_Model ();
+    String I_want_to_design_a_new_Process_Model();
 
     String I_want_to_design_a_new_Form();
 
@@ -63,7 +61,7 @@ public interface Constants
 
     String Show_me_my_Inbox();
 
-    String Hooray_you_don_t_have_any_pending_Task__ ();
+    String Hooray_you_don_t_have_any_pending_Task__();
 
     String Id();
 
@@ -83,7 +81,6 @@ public interface Constants
 
     String Priority();
 
-
     String No_Parent();
 
     String Parent();
@@ -92,69 +89,70 @@ public interface Constants
 
     String Task_Edit_Perspective();
 
-    String Work ();
+    String Work();
 
-    String Form_Perspective ();
+    String Form_Perspective();
 
-    String No_Process_Definitions_Available ();
+    String No_Process_Definitions_Available();
 
-    String Name ();
+    String Name();
 
-    String Package ();
+    String Package();
 
-    String Type ();
+    String Type();
 
-    String Version ();
+    String Version();
 
-    String Start_Process ();
+    String Start_Process();
 
-    String Actions ();
+    String Actions();
 
     String Process_Definition_Details();
 
-    String No_Process_Instances_Available ();
+    String No_Process_Instances_Available();
 
-    String Aborting_Process_Instance ();
+    String Aborting_Process_Instance();
 
-    String Signaling_Process_Instance ();
+    String Signaling_Process_Instance();
 
-    String Process_Id ();
+    String Process_Id();
 
-    String Process_Name ();
-    
-    String Process_Version ();
+    String Process_Name();
 
-    String State ();
-    
+    String Process_Version();
+
+    String State();
+
     String Process_Instance_Start_Time();
 
     String Process_Instance_Details();
 
     String Hooray_you_don_t_have_any_Group_Task_to_Claim__();
 
-    String Task_Id ();
+    String Task_Id();
 
-    String Task_Name ();
+    String Task_Name();
 
-    String Actual_Owner ();
+    String Actual_Owner();
 
-    String Description ();
+    String Description();
 
-    String Completed ();
+    String Completed();
 
-    String Pending ();
+    String Pending();
 
-    String Personal_Task_Statistics ();
+    String Personal_Task_Statistics();
 
     String Aborting_Process_Instance_Not_Allowed();
 
     String Signaling_Process_Instance_Not_Allowed();
 
     String Old_Value();
-    
+
     String No_Parameters_added_yet();
-    
+
     String Started();
-    
+
     String Stopped();
+
 }

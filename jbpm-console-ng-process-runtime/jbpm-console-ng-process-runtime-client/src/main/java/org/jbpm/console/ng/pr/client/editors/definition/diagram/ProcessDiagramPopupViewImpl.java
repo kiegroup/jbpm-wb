@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.client.editors.definition.diagram;
 
 import com.google.gwt.core.client.GWT;
@@ -22,8 +23,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-
-
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -37,12 +36,10 @@ import org.uberfire.client.mvp.PlaceManager;
 
 @Dependent
 @Templated(value = "ProcessDiagramPopupViewImpl.html")
-public class ProcessDiagramPopupViewImpl extends Composite
-        implements
-        ProcessDiagramPopupPresenter.InboxView {
+public class ProcessDiagramPopupViewImpl extends Composite implements ProcessDiagramPopupPresenter.InboxView {
 
     private ProcessDiagramPopupPresenter presenter;
-  
+
     @Inject
     @DataField
     public TextBox processDefIdText;
@@ -50,7 +47,7 @@ public class ProcessDiagramPopupViewImpl extends Composite
     @Inject
     @DataField
     public TextBox processInstanceIdText;
-    
+
     @Inject
     @DataField
     public TextBox processPackageNameText;
@@ -58,7 +55,7 @@ public class ProcessDiagramPopupViewImpl extends Composite
     @Inject
     @DataField
     public TextBox processVersionText;
-    
+
     @Inject
     @DataField
     public TextBox processDiagramURLText;
@@ -67,32 +64,28 @@ public class ProcessDiagramPopupViewImpl extends Composite
     @DataField
     public Button generateUrlButton;
 
-    
     @Inject
     @DataField
     public Button closeButton;
 
-   
-    
     @Inject
     private PlaceManager placeManager;
-   
+
     @Inject
     private Event<NotificationEvent> notification;
-    
+
     private Constants constants = GWT.create(Constants.class);
 
     @Override
     public void init(ProcessDiagramPopupPresenter presenter) {
         this.presenter = presenter;
 
-
     }
 
     @EventHandler("generateUrlButton")
     public void generateUrlButton(ClickEvent e) {
-        presenter.generateURL(processDefIdText.getText() ,Long.parseLong(processInstanceIdText.getText()), 
-                                processPackageNameText.getText(), processVersionText.getText() );
+        presenter.generateURL(processDefIdText.getText(), Long.parseLong(processInstanceIdText.getText()),
+                processPackageNameText.getText(), processVersionText.getText());
     }
 
     @EventHandler("closeButton")
@@ -100,42 +93,39 @@ public class ProcessDiagramPopupViewImpl extends Composite
         presenter.close();
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
 
+    @Override
     public TextBox getProcessDefIdText() {
         return processDefIdText;
     }
 
+    @Override
     public TextBox getProcessDiagramURLText() {
         return processDiagramURLText;
     }
 
+    @Override
     public TextBox getProcessPackageNameText() {
         return processPackageNameText;
     }
 
+    @Override
     public TextBox getProcessVersionText() {
         return processVersionText;
     }
 
+    @Override
     public Button getGenerateUrlButton() {
         return generateUrlButton;
     }
 
+    @Override
     public TextBox getProcessInstanceIdText() {
         return processInstanceIdText;
     }
 
-    
-   
-
-
-
-  
-
-    
-    
-    
 }

@@ -24,19 +24,18 @@ import org.uberfire.client.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.client.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
-
 /**
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Home Perspective", isDefault=true)
+@WorkbenchPerspective(identifier = "Home Perspective", isDefault = true)
 public class HomePerspective {
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
-        p.setName( "Home Perspective" );
-        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Home Screen" ) ) );
+        p.setName("Home Perspective");
+        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Home Screen")));
         p.setTransient(true);
         return p;
     }

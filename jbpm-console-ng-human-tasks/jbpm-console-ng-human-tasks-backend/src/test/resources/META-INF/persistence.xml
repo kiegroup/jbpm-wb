@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.0"
-             xmlns="http://java.sun.com/xml/ns/persistence" 
-             xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd 
                       http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd">
 
   <persistence-unit name="org.jbpm.services.task" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
-    
+
     <mapping-file>META-INF/Taskorm.xml</mapping-file>
 
     <class>org.jbpm.services.task.impl.model.AttachmentImpl</class>
@@ -37,7 +35,7 @@
     
     <!-- Event Classes -->
     <class>org.jbpm.services.task.impl.model.TaskEventImpl</class>
-   
+
     <properties>
       <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
       <property name="hibernate.connection.autocommit" value="false" />
@@ -51,9 +49,9 @@
       <property name="hibernate.connection.username" value="sa" />
       <property name="hibernate.connection.password" value="sasa" />
 
-      <!-- BZ 841786: AS7/EAP 6/Hib 4 uses new (sequence) generators which seem to cause problems -->      
-      <property name="hibernate.id.new_generator_mappings" value="false" />            
+      <!-- BZ 841786: AS7/EAP 6/Hib 4 uses new (sequence) generators which seem to cause problems -->
+      <property name="hibernate.id.new_generator_mappings" value="false" />
     </properties>
   </persistence-unit>
-  
+
 </persistence>

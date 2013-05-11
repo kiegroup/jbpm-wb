@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pm.client.editors.newprocess;
 
-import com.google.gwt.user.client.Window;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -36,30 +36,29 @@ import org.uberfire.shared.mvp.PlaceRequest;
 @WorkbenchPopup(identifier = "New Process Definition")
 public class NewProcessDefinitionPresenter {
 
-    public interface NewProcessDefinitionView
-            extends
-            UberView<NewProcessDefinitionPresenter> {
+    public interface NewProcessDefinitionView extends UberView<NewProcessDefinitionPresenter> {
 
         void displayNotification(String text);
 
-       
     }
+
     @Inject
     NewProcessDefinitionView view;
+
     @Inject
     Identity identity;
-    
+
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
-    
+
     private PlaceRequest place;
-    
+
     @Inject
     private PlaceManager placeManager;
 
     public NewProcessDefinitionPresenter() {
     }
-    
+
     @OnStart
     public void onStart(final PlaceRequest place) {
         this.place = place;
@@ -75,29 +74,26 @@ public class NewProcessDefinitionPresenter {
         return view;
     }
 
-   
-
     @PostConstruct
     public void init() {
     }
 
     public void createNewProcess(final String path) {
-//
-//            fileService.call(new RemoteCallback<String>() {
-//                @Override
-//                public void callback(String path) {
-//                    view.displayNotification("File Created "+path.toString());
-//                    Window.open("http://localhost:8080/designer/editor?profile=jbpm&pp=&uuid=git://jbpm-playground"+path.toString(), "_blank", "");
-//                }
-//            }).createProcessDefinitionFile(path);
-//
+        //
+        // fileService.call(new RemoteCallback<String>() {
+        // @Override
+        // public void callback(String path) {
+        // view.displayNotification("File Created "+path.toString());
+        // Window.open("http://localhost:8080/designer/editor?profile=jbpm&pp=&uuid=git://jbpm-playground"+path.toString(),
+        // "_blank", "");
+        // }
+        // }).createProcessDefinitionFile(path);
+        //
 
     }
 
-     public void close() {
+    public void close() {
         closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
-   
 
-   
 }

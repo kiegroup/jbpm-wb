@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.bd.model;
 
 import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- * @author salaboy
- */
 @Portable
 public class RuntimeSummary implements Serializable {
     private long id;
@@ -32,7 +29,6 @@ public class RuntimeSummary implements Serializable {
     public RuntimeSummary() {
     }
 
-    
     public RuntimeSummary(long id, String name, String reference, String type) {
         this.id = id;
         this.name = name;
@@ -71,6 +67,5 @@ public class RuntimeSummary implements Serializable {
     public void setType(String type) {
         this.type = type;
     }
-    
-    
+
 }

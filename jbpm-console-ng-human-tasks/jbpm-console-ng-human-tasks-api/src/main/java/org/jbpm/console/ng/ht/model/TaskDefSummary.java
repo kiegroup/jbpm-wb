@@ -19,20 +19,16 @@ import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class TaskDefSummary
-        implements
-        Serializable {
+public class TaskDefSummary implements Serializable {
 
     private long id;
     private String name;
-    
 
-    public TaskDefSummary(long id,
-            String name) {
+    public TaskDefSummary(long id, String name) {
         super();
         this.id = id;
         this.name = name;
-       
+
     }
 
     public TaskDefSummary() {
@@ -54,7 +50,4 @@ public class TaskDefSummary
         this.name = name;
     }
 
-   
-    
-    
 }

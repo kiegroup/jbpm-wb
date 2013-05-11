@@ -15,8 +15,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 /**
- * This class should contain all RequestScoped producers
- * required by the application.
+ * This class should contain all RequestScoped producers required by the application.
  */
 @RequestScoped
 public class RequestScopedProducer {
@@ -33,10 +32,9 @@ public class RequestScopedProducer {
 
     @Produces
     public Logger createLogger(InjectionPoint injectionPoint) {
-        return Logger.getLogger(injectionPoint.getMember().getDeclaringClass()
-                .getName());
+        return Logger.getLogger(injectionPoint.getMember().getDeclaringClass().getName());
     }
-    
+
     public void close(@Disposes EntityManager em) {
         em.close();
     }

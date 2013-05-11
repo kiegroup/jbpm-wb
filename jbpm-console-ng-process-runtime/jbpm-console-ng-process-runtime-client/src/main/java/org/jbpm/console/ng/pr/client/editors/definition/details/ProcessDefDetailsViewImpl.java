@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.client.editors.definition.details;
 
 import com.github.gwtbootstrap.client.ui.Label;
@@ -44,75 +45,95 @@ import org.jbpm.console.ng.pr.client.i18n.Constants;
 
 @Dependent
 @Templated(value = "ProcessDefDetailsViewImpl.html")
-public class ProcessDefDetailsViewImpl extends Composite
-        implements
-        ProcessDefDetailsPresenter.ProcessDefDetailsView {
+public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDetailsPresenter.ProcessDefDetailsView {
+    private Constants constants = GWT.create(Constants.class);
 
     @Inject
     private PlaceManager placeManager;
+
     private ProcessDefDetailsPresenter presenter;
+
     @Inject
     @DataField
     public TextBox processNameText;
+
     @Inject
     @DataField
     public TextBox nroOfHumanTasksText;
+
     @Inject
     @DataField
     public ListBox humanTasksListBox;
+
     @Inject
     @DataField
     public ListBox usersGroupsListBox;
+
     @Inject
     @DataField
     public ListBox processDataListBox;
+
     @Inject
     @DataField
     public ListBox subprocessListBox;
+
     @Inject
     @DataField
     public TextBox domainIdText;
+
     @Inject
     @DataField
     public IconAnchor refreshIcon;
+
     @Inject
     @DataField
     public NavLink viewProcessInstancesButton;
+
     @Inject
     @DataField
     public NavLink createProcessInstanceButton;
+
     @Inject
     @DataField
     public NavLink openProcessDesignerButton;
+
     @Inject
     @DataField
     public Label processDetailsLabel;
+
     @Inject
     @DataField
     public Label processNameLabel;
+
     @Inject
     @DataField
     public Label nroOfHumanTasksLabel;
+
     @Inject
     @DataField
     public Label domainIdLabel;
+
     @Inject
     @DataField
     public Label humanTasksListLabel;
+
     @Inject
     @DataField
     public Label usersGroupsListLabel;
+
     @Inject
     @DataField
     public Label subprocessListLabel;
+
     @Inject
     @DataField
     public Label processDataListLabel;
+
     @Inject
     private Event<NotificationEvent> notification;
-    private Constants constants = GWT.create(Constants.class);
+
     private Path processAssetPath;
-    
+
     private String encodedProcessSource;
 
     @Override
@@ -141,7 +162,7 @@ public class ProcessDefDetailsViewImpl extends Composite
 
         processDetailsLabel.setText(constants.Process_Definition_Details());
         processDetailsLabel.setStyleName("");
-        
+
         processNameLabel.setText(constants.Process_Definition_Name());
         nroOfHumanTasksLabel.setText(constants.Human_Tasks_Count());
         domainIdLabel.setText(constants.Domain_Name());
@@ -164,8 +185,6 @@ public class ProcessDefDetailsViewImpl extends Composite
 
     }
 
-   
-
     @EventHandler("createProcessInstanceButton")
     public void createProcessInstance(ClickEvent e) {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
@@ -184,44 +203,52 @@ public class ProcessDefDetailsViewImpl extends Composite
 
     @EventHandler("openProcessDesignerButton")
     public void openProcessDesignerButton(ClickEvent e) {
-       PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Designer");
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Designer");
 
-      if(encodedProcessSource != null) {
-          placeRequestImpl.addParameter("readOnly", "true");
-          placeRequestImpl.addParameter("encodedProcessSource", encodedProcessSource);
-      }
-      placeManager.goTo(processAssetPath, placeRequestImpl);
+        if (encodedProcessSource != null) {
+            placeRequestImpl.addParameter("readOnly", "true");
+            placeRequestImpl.addParameter("encodedProcessSource", encodedProcessSource);
+        }
+        placeManager.goTo(processAssetPath, placeRequestImpl);
 
     }
 
+    @Override
     public TextBox getProcessNameText() {
         return processNameText;
     }
 
+    @Override
     public TextBox getNroOfHumanTasksText() {
         return nroOfHumanTasksText;
     }
 
+    @Override
     public ListBox getHumanTasksListBox() {
         return humanTasksListBox;
     }
 
+    @Override
     public ListBox getUsersGroupsListBox() {
         return usersGroupsListBox;
     }
 
+    @Override
     public ListBox getProcessDataListBox() {
         return processDataListBox;
     }
 
+    @Override
     public ListBox getSubprocessListBox() {
         return subprocessListBox;
     }
 
+    @Override
     public TextBox getDomainIdText() {
         return domainIdText;
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
@@ -230,8 +257,10 @@ public class ProcessDefDetailsViewImpl extends Composite
     public void setProcessAssetPath(Path processAssetPath) {
         this.processAssetPath = processAssetPath;
     }
-    
+
+    @Override
     public void setEncodedProcessSource(String encodedProcessSource) {
-      this.encodedProcessSource = encodedProcessSource;
-   }
+        this.encodedProcessSource = encodedProcessSource;
+    }
+
 }

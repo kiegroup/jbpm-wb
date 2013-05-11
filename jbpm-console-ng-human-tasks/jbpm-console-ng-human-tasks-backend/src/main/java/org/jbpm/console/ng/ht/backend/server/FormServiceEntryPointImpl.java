@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.backend.server;
 
 import java.util.ArrayList;
@@ -38,17 +39,13 @@ import org.jbpm.form.builder.services.api.MenuServiceException;
 import org.jbpm.form.builder.services.encoders.FormRepresentationDecoderImpl;
 import org.jbpm.form.builder.services.encoders.FormRepresentationEncoderImpl;
 import org.jbpm.form.builder.services.model.FormItemRepresentation;
-import org.jbpm.form.builder.services.model.FormRepresentation; 
+import org.jbpm.form.builder.services.model.FormRepresentation;
 import org.jbpm.form.builder.services.model.forms.FormEncodingException;
 import org.jbpm.form.builder.services.model.forms.FormEncodingFactory;
 import org.jbpm.form.builder.services.model.menu.MenuItemDescription;
 import org.jbpm.form.builder.services.model.menu.MenuOptionDescription;
 import org.jbpm.shared.services.api.FileService;
 
-/**
- *
- * @author salaboy
- */
 @Service
 @ApplicationScoped
 @Transactional
@@ -56,12 +53,16 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
 
     @Inject
     private MenuService menuService;
+
     @Inject
     private FileService fileService;
+
     @Inject
     private FormProviderService displayService;
+
     @Inject
     private FormBuilderService formService;
+
     @Inject
     Event<PaletteItemAddedEvent> itemAddedEvents;
 
@@ -71,7 +72,6 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
 
     }
 
-    
     public List<Map<String, Object>> listOptions() {
         try {
             List<MenuOptionDescription> options = menuService.listOptions();
@@ -87,7 +87,6 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
         return null;
     }
 
-    
     public void listMenuItems() {
         try {
             Map<String, List<MenuItemDescription>> listMenuItems = menuService.listMenuItems();
@@ -103,7 +102,6 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
         }
     }
 
-   
     public Map<String, String> getFormBuilderProperties() {
         try {
             return menuService.getFormBuilderProperties();
@@ -114,11 +112,7 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
         return null;
     }
 
-    
-
-   
-   
-
+    @Override
     public String getFormDisplayTask(long taskId) {
         return displayService.getFormDisplayTask(taskId);
     }
@@ -156,7 +150,9 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
         return formMap;
     }
 
+    @Override
     public String getFormDisplayProcess(String processId) {
         return displayService.getFormDisplayProcess(processId);
     }
+
 }

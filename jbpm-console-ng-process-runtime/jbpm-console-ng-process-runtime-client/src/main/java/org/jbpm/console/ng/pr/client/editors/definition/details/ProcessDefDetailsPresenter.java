@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.client.editors.definition.details;
 
 import java.util.Collection;
@@ -50,13 +51,9 @@ public class ProcessDefDetailsPresenter {
 
     private PlaceRequest place;
 
-  
+    public interface ProcessDefDetailsView extends UberView<ProcessDefDetailsPresenter> {
 
-    public interface ProcessDefDetailsView
-            extends
-            UberView<ProcessDefDetailsPresenter> {
-
-        void displayNotification( String text );
+        void displayNotification(String text);
 
         TextBox getNroOfHumanTasksText();
 
@@ -69,7 +66,7 @@ public class ProcessDefDetailsPresenter {
         ListBox getProcessDataListBox();
 
         ListBox getSubprocessListBox();
-        
+
         TextBox getDomainIdText();
 
         void setProcessAssetPath(Path processAssetPath);
@@ -79,17 +76,20 @@ public class ProcessDefDetailsPresenter {
 
     @Inject
     private PlaceManager placeManager;
+
     @Inject
     private ProcessDefDetailsView view;
+
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
+
     @Inject
     private Caller<VFSService> fileServices;
-    
+
     private Constants constants = GWT.create(Constants.class);
-    
+
     @OnStart
-    public void onStart( final PlaceRequest place ) {
+    public void onStart(final PlaceRequest place) {
         this.place = place;
     }
 
@@ -103,57 +103,58 @@ public class ProcessDefDetailsPresenter {
         return view;
     }
 
-    public void refreshProcessDef( final String processId ) {
-
-        dataServices.call( new RemoteCallback<List<TaskDefSummary>>() {
+    public void refreshProcessDef(final String processId) {
+        dataServices.call(new RemoteCallback<List<TaskDefSummary>>() {
             @Override
-            public void callback( List<TaskDefSummary> tasks ) {
-                view.getNroOfHumanTasksText().setText( String.valueOf( tasks.size() ) );
+            public void callback(List<TaskDefSummary> tasks) {
+                view.getNroOfHumanTasksText().setText(String.valueOf(tasks.size()));
                 view.getHumanTasksListBox().clear();
-                for ( TaskDefSummary t : tasks ) {
-                    view.getHumanTasksListBox().addItem( t.getName(), String.valueOf( t.getId() ) );
+                for (TaskDefSummary t : tasks) {
+                    view.getHumanTasksListBox().addItem(t.getName(), String.valueOf(t.getId()));
                 }
             }
-        } ).getAllTasksDef( processId );
-        dataServices.call( new RemoteCallback<Map<String, String>>() {
-            @Override
-            public void callback( Map<String, String> entities ) {
-                view.getUsersGroupsListBox().clear();
-                for ( String key : entities.keySet() ) {
-                    view.getUsersGroupsListBox().addItem( entities.get( key ) + "- " + key, key );
-                }
-            }
-        } ).getAssociatedEntities( processId );
-        dataServices.call( new RemoteCallback<Map<String, String>>() {
-            @Override
-            public void callback( Map<String, String> inputs ) {
-                view.getProcessDataListBox().clear();
-                for ( String key : inputs.keySet() ) {
-                    view.getProcessDataListBox().addItem( key + "- " + inputs.get( key ), key );
-                }
-            }
-        } ).getRequiredInputData( processId );
+        }).getAllTasksDef(processId);
 
-        dataServices.call( new RemoteCallback<Collection<String>>() {
+        dataServices.call(new RemoteCallback<Map<String, String>>() {
             @Override
-            public void callback( Collection<String> subprocesses ) {
-                view.getSubprocessListBox().clear();
-                for ( String key : subprocesses ) {
-                    view.getSubprocessListBox().addItem( key, key );
+            public void callback(Map<String, String> entities) {
+                view.getUsersGroupsListBox().clear();
+                for (String key : entities.keySet()) {
+                    view.getUsersGroupsListBox().addItem(entities.get(key) + "- " + key, key);
                 }
             }
-        } ).getReusableSubProcesses( processId );
-        
+        }).getAssociatedEntities(processId);
+
+        dataServices.call(new RemoteCallback<Map<String, String>>() {
+            @Override
+            public void callback(Map<String, String> inputs) {
+                view.getProcessDataListBox().clear();
+                for (String key : inputs.keySet()) {
+                    view.getProcessDataListBox().addItem(key + "- " + inputs.get(key), key);
+                }
+            }
+        }).getRequiredInputData(processId);
+
+        dataServices.call(new RemoteCallback<Collection<String>>() {
+            @Override
+            public void callback(Collection<String> subprocesses) {
+                view.getSubprocessListBox().clear();
+                for (String key : subprocesses) {
+                    view.getSubprocessListBox().addItem(key, key);
+                }
+            }
+        }).getReusableSubProcesses(processId);
+
         dataServices.call(new RemoteCallback<ProcessSummary>() {
             @Override
             public void callback(ProcessSummary process) {
                 view.setEncodedProcessSource(process.getEncodedProcessSource());
                 if (process.getOriginalPath() != null) {
                     fileServices.call(new RemoteCallback<Path>() {
-                         @Override
-                         public void callback(Path processPath) {
-                             view.setProcessAssetPath(processPath);
-                         }
+                        @Override
+                        public void callback(Path processPath) {
+                            view.setProcessAssetPath(processPath);
+                        }
                     }).get(process.getOriginalPath());
                 } else {
                     view.setProcessAssetPath(new DummyProcessPath(process.getId()));
@@ -164,14 +165,13 @@ public class ProcessDefDetailsPresenter {
 
     @OnReveal
     public void onReveal() {
-        String processId = place.getParameter( "processId", "" );
-        view.getProcessNameText().setText( processId );
-        
-        String domainId = place.getParameter( "domainId", "none" );
+        String processId = place.getParameter("processId", "");
+        view.getProcessNameText().setText(processId);
+
+        String domainId = place.getParameter("domainId", "none");
         view.getDomainIdText().setText(domainId);
 
-        refreshProcessDef( processId );
+        refreshProcessDef(processId);
     }
-    
-  
+
 }

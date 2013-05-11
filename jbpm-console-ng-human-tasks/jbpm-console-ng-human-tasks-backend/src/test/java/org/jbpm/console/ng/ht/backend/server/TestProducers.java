@@ -22,14 +22,10 @@ import org.kie.commons.io.IOService;
 import org.kie.commons.io.impl.IOServiceNio2WrapperImpl;
 import org.kie.internal.task.api.UserGroupCallback;
 
-/**
- *
- */
 public class TestProducers {
 
-    
     private EntityManagerFactory emf;
-    
+
     @Inject
     @Selectable
     private UserGroupCallback userGroupCallback;
@@ -71,16 +67,16 @@ public class TestProducers {
     }
 
     private final IOService ioService = new IOServiceNio2WrapperImpl();
-    
+
     @Produces
     public Logger createLogger(InjectionPoint injectionPoint) {
-        return Logger.getLogger(injectionPoint.getMember()
-                .getDeclaringClass().getName());
+        return Logger.getLogger(injectionPoint.getMember().getDeclaringClass().getName());
     }
-    
+
     @Produces
     @Named("ioStrategy")
-    public IOService createIOService(){
+    public IOService createIOService() {
         return ioService;
     }
+
 }

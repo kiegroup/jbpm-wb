@@ -1,3 +1,19 @@
+/*
+ * Copyright 2013 JBoss by Red Hat.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.jbpm.console.ng.pr.client.editors.variables.edit;
 
 import com.github.gwtbootstrap.client.ui.Button;
@@ -18,46 +34,43 @@ import com.google.gwt.event.dom.client.ClickEvent;
 
 import com.google.gwt.user.client.ui.Composite;
 
-
-
 @Dependent
 @Templated(value = "VariableEditViewImpl.html")
-public class VariableEditViewImpl extends Composite implements
-        VariableEditPresenter.PopupView {
-    
+public class VariableEditViewImpl extends Composite implements VariableEditPresenter.PopupView {
+    private Constants constants = GWT.create(Constants.class);
+
     private long processInstanceId;
     private String variableId;
     private String variableText;
-    
-    
+
     private VariableEditPresenter presenter;
-    
+
     @Inject
     @DataField
     public TextBox variableTextBox;
-    
+
     @Inject
     @DataField
     public Label variableIdLabel;
-    
+
     @Inject
     @DataField
     public Label variableIdUILabel;
-    
-     @Inject
+
+    @Inject
     @DataField
     public Label variableTextLabel;
 
-    
     @Inject
     @DataField
     public Button saveButton;
+
     @Inject
     @DataField
     public Button clearButton;
+
     @Inject
     private Event<NotificationEvent> notification;
-    private Constants constants = GWT.create(Constants.class);
 
     @Override
     public void init(VariableEditPresenter presenter) {
@@ -66,9 +79,9 @@ public class VariableEditViewImpl extends Composite implements
         saveButton.setText(constants.Save());
         variableIdUILabel.setText(constants.Variables_Name());
         variableTextLabel.setText(constants.Variable_Value());
-
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
@@ -76,7 +89,7 @@ public class VariableEditViewImpl extends Composite implements
     @Override
     public void setProcessInstanceId(long processInstanceId) {
         this.processInstanceId = processInstanceId;
-        
+
     }
 
     @Override
@@ -104,24 +117,22 @@ public class VariableEditViewImpl extends Composite implements
     public String getVariableId() {
         return this.variableId;
     }
-    
+
     @EventHandler("clearButton")
     public void clearButton(ClickEvent e) {
         variableTextBox.setValue("");
     }
- 
+
     @EventHandler("saveButton")
     public void saveButton(ClickEvent e) {
-
         // TODO do not hardcode business key for session
         presenter.setProcessVariable(variableTextBox.getText());
         displayNotification("Variable updated " + variableId);
-        
     }
 
-  @Override
-  public void setVariableIdLabel(String variableId) {
-    variableIdLabel.setText(variableId);
-  }
+    @Override
+    public void setVariableIdLabel(String variableId) {
+        variableIdLabel.setText(variableId);
+    }
 
 }

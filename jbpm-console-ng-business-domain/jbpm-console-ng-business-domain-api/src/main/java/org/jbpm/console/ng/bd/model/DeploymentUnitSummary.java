@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.bd.model;
 
 import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- * @author salaboy
- */
 @Portable
-public class DeploymentUnitSummary implements Serializable{
-   
+public class DeploymentUnitSummary implements Serializable {
+
     private String id;
     private String type;
-    
 
     public DeploymentUnitSummary() {
     }
@@ -37,7 +33,6 @@ public class DeploymentUnitSummary implements Serializable{
         this.type = type;
     }
 
-    
     public String getId() {
         return id;
     }
@@ -54,9 +49,4 @@ public class DeploymentUnitSummary implements Serializable{
         this.type = type;
     }
 
-    
-   
-   
-  
-    
 }

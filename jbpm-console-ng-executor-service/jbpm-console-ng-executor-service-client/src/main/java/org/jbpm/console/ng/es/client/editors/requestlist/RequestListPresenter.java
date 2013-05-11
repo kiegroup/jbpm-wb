@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
@@ -33,7 +34,6 @@ import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 
-
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -43,18 +43,17 @@ import org.uberfire.client.mvp.UberView;
 @WorkbenchScreen(identifier = "Requests List")
 public class RequestListPresenter {
 
-    public interface InboxView
-            extends
-            UberView<RequestListPresenter> {
+    public interface InboxView extends UberView<RequestListPresenter> {
 
         void displayNotification(String text);
 
         CheckBox getShowCompletedCheck();
 
         DataGrid<RequestSummary> getDataGrid();
-        
+
         ColumnSortEvent.ListHandler<RequestSummary> getSortHandler();
     }
+
     @Inject
     private InboxView view;
     @Inject
@@ -75,32 +74,26 @@ public class RequestListPresenter {
     }
 
     public void refreshRequests(List<String> statuses) {
+        if (statuses.isEmpty()) {
+            executorServices.call(new RemoteCallback<List<RequestSummary>>() {
+                @Override
+                public void callback(List<RequestSummary> requests) {
+                    dataProvider.setList(requests);
+                    dataProvider.refresh();
+                    view.getSortHandler().getList().addAll(dataProvider.getList());
 
-    	if (statuses.isEmpty()) {
-    		executorServices.call(new RemoteCallback<List<RequestSummary>>() {
-	            @Override
-	            public void callback(List<RequestSummary> requests) {
-	                dataProvider.setList(requests);
-	                dataProvider.refresh();
-	                view.getSortHandler().getList().addAll(dataProvider.getList());
-	
-	            }
-	        }).getAllRequests();
-    	} else {
-	        executorServices.call(new RemoteCallback<List<RequestSummary>>() {
-	            @Override
-	            public void callback(List<RequestSummary> requests) {
-	                dataProvider.setList(requests);
-	                dataProvider.refresh();
-	                view.getSortHandler().getList().addAll(dataProvider.getList());
-	
-	            }
-	        }).getRequestsByStatus(statuses);
-    	}
-
-
-
-
+                }
+            }).getAllRequests();
+        } else {
+            executorServices.call(new RemoteCallback<List<RequestSummary>>() {
+                @Override
+                public void callback(List<RequestSummary> requests) {
+                    dataProvider.setList(requests);
+                    dataProvider.refresh();
+                    view.getSortHandler().getList().addAll(dataProvider.getList());
+                }
+            }).getRequestsByStatus(statuses);
+        }
     }
 
     public void init() {
@@ -113,7 +106,6 @@ public class RequestListPresenter {
     }
 
     public void createRequest() {
-
         Map<String, String> ctx = new HashMap<String, String>();
         ctx.put("businessKey", "1234");
         executorServices.call(new RemoteCallback<Long>() {
@@ -123,10 +115,6 @@ public class RequestListPresenter {
 
             }
         }).scheduleRequest("PrintOutCmd", ctx);
-
-
-
-
     }
 
     public void addDataDisplay(HasData<RequestSummary> display) {
@@ -141,13 +129,14 @@ public class RequestListPresenter {
         dataProvider.refresh();
     }
 
-	public void cancelRequest(final Long requestId) {
-		executorServices.call(new RemoteCallback<Void>() {
-			@Override
-			public void callback(Void nothing) {
-				view.displayNotification("Request " + requestId + " cancelled");
-				requestChangedEvent.fire(new RequestChangedEvent(requestId));
-			}
-		}).cancelRequest(requestId);
-	}
+    public void cancelRequest(final Long requestId) {
+        executorServices.call(new RemoteCallback<Void>() {
+            @Override
+            public void callback(Void nothing) {
+                view.displayNotification("Request " + requestId + " cancelled");
+                requestChangedEvent.fire(new RequestChangedEvent(requestId));
+            }
+        }).cancelRequest(requestId);
+    }
+
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.backend.server;
 
 import java.text.SimpleDateFormat;
@@ -23,25 +24,21 @@ import java.util.List;
 import org.jbpm.kie.services.impl.model.NodeInstanceDesc;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 
-/**
- *
- * @author salaboy
- */
 public class NodeInstanceHelper {
-    public static Collection<NodeInstanceSummary> adaptCollection(Collection<NodeInstanceDesc> nodeInstances){
+    public static Collection<NodeInstanceSummary> adaptCollection(Collection<NodeInstanceDesc> nodeInstances) {
         List<NodeInstanceSummary> nodeInstancesSummary = new ArrayList<NodeInstanceSummary>();
-        for(NodeInstanceDesc ni : nodeInstances){
+        for (NodeInstanceDesc ni : nodeInstances) {
             nodeInstancesSummary.add(adapt(ni));
         }
-        
+
         return nodeInstancesSummary;
     }
-    
-    public static NodeInstanceSummary adapt(NodeInstanceDesc ni){
+
+    public static NodeInstanceSummary adapt(NodeInstanceDesc ni) {
         Date date = ni.getDataTimeStamp();
         String formattedDate = new SimpleDateFormat("d/MMM/yy HH:mm:ss").format(date);
-        return new NodeInstanceSummary(ni.getId(), ni.getProcessInstanceId(), 
-                    ni.getName(), ni.getNodeId(), ni.getNodeType(), formattedDate
-                    , ni.getConnection(), ni.isCompleted());
+        return new NodeInstanceSummary(ni.getId(), ni.getProcessInstanceId(), ni.getName(), ni.getNodeId(), ni.getNodeType(),
+                formattedDate, ni.getConnection(), ni.isCompleted());
     }
+
 }

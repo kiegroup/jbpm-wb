@@ -1,3 +1,19 @@
+/*
+ * Copyright 2013 JBoss by Red Hat.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.jbpm.console.ng.pr.client.editors.instance.signal;
 
 import com.google.gwt.core.client.GWT;
@@ -26,6 +42,7 @@ import org.uberfire.shared.mvp.PlaceRequest;
 @Dependent
 @WorkbenchPopup(identifier = "Signal Process Popup")
 public class ProcessInstanceSignalPresenter {
+    private Constants constants = GWT.create(Constants.class);
 
     public interface PopupView extends UberView<ProcessInstanceSignalPresenter> {
 
@@ -34,31 +51,32 @@ public class ProcessInstanceSignalPresenter {
         void addProcessInstanceId(long processInstanceId);
 
         String getSignalRefText();
-        
+
         String getEventText();
-        
+
         void setAvailableSignals(Collection<String> signals);
 
     }
-    
+
     @Inject
     private PopupView view;
+
     @Inject
     private Identity identity;
+
     @Inject
     private PlaceManager placeManager;
+
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
+
     private PlaceRequest place;
 
-    @Inject 
+    @Inject
     private Caller<KieSessionEntryPoint> kieSessionServices;
-    
-    private Constants constants = GWT.create(Constants.class);
-    
+
     @PostConstruct
     public void init() {
-     
 
     }
 
@@ -66,7 +84,7 @@ public class ProcessInstanceSignalPresenter {
     public void onStart(final PlaceRequest place) {
         this.place = place;
     }
-    
+
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.Signaling_Process_Instance();
@@ -76,18 +94,18 @@ public class ProcessInstanceSignalPresenter {
     public UberView<ProcessInstanceSignalPresenter> getView() {
         return view;
     }
-    
+
     public void signalProcessInstance(long processInstanceId) {
 
         kieSessionServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void v) {
                 close();
-                
+
             }
         }).signalProcessInstance(processInstanceId, view.getSignalRefText(), view.getEventText());
     }
-    
+
     @OnReveal
     public void onReveal() {
         String processInstanceIds = place.getParameter("processInstanceId", "-1").toString();
@@ -96,7 +114,7 @@ public class ProcessInstanceSignalPresenter {
             long processInstanceId = Long.parseLong(id);
             view.addProcessInstanceId(processInstanceId);
         }
-        
+
         // for single process instance load available signals
         if (ids.length == 1 && Long.parseLong(ids[0]) != -1) {
             getAvailableSignals(Long.parseLong(ids[0]));
@@ -106,17 +124,18 @@ public class ProcessInstanceSignalPresenter {
     public void close() {
         closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
-    
+
     public void getAvailableSignals(long processInstanceId) {
         kieSessionServices.call(new RemoteCallback<Collection<String>>() {
             @Override
             public void callback(Collection<String> signals) {
-                for(String s: signals){
+                for (String s : signals) {
                     System.out.println("Signal: ");
                 }
                 view.setAvailableSignals(signals);
-                
+
             }
         }).getAvailableSignals(processInstanceId);
     }
+
 }

@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.pr.client.editors.instance.details;
 
+package org.jbpm.console.ng.pr.client.editors.instance.details;
 
 import java.util.List;
 
@@ -50,18 +50,16 @@ import com.google.gwt.view.client.ProvidesKey;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 
-
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance Details")
 public class ProcessInstanceDetailsPresenter {
+    private Constants constants = GWT.create(Constants.class);
 
     private PlaceRequest place;
 
-    public interface ProcessInstanceDetailsView
-            extends
-            UberView<ProcessInstanceDetailsPresenter> {
+    public interface ProcessInstanceDetailsView extends UberView<ProcessInstanceDetailsPresenter> {
 
-        void displayNotification( String text );
+        void displayNotification(String text);
 
         ListBox getCurrentActivitiesListBox();
 
@@ -73,16 +71,16 @@ public class ProcessInstanceDetailsPresenter {
 
         TextBox getStateText();
 
-        void setProcessInstance( ProcessInstanceSummary processInstance );
-        
+        void setProcessInstance(ProcessInstanceSummary processInstance);
+
         TextBox getProcessPackageText();
-        
+
         TextBox getProcessVersionText();
-        
+
         void setProcessAssetPath(Path processAssetPath);
-        
+
         void setCurrentActiveNodes(List<NodeInstanceSummary> activeNodes);
-        
+
         void setCurrentCompletedNodes(List<NodeInstanceSummary> completedNodes);
 
         void setEncodedProcessSource(String encodedProcessSource);
@@ -90,18 +88,21 @@ public class ProcessInstanceDetailsPresenter {
 
     @Inject
     private PlaceManager placeManager;
+
     @Inject
-    private ProcessInstanceDetailsView                                view;
+    private ProcessInstanceDetailsView view;
+
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
+
     @Inject
     private Caller<VFSService> fileServices;
-    
-    private Constants constants = GWT.create(Constants.class);
-    
-    private             ListDataProvider<VariableSummary> dataProvider = new ListDataProvider<VariableSummary>();
-    public static final ProvidesKey<VariableSummary>      KEY_PROVIDER = new ProvidesKey<VariableSummary>() {
-        public Object getKey( VariableSummary item ) {
+
+    private ListDataProvider<VariableSummary> dataProvider = new ListDataProvider<VariableSummary>();
+
+    public static final ProvidesKey<VariableSummary> KEY_PROVIDER = new ProvidesKey<VariableSummary>() {
+        @Override
+        public Object getKey(VariableSummary item) {
             return item == null ? null : item.getVariableId();
         }
     };
@@ -116,79 +117,80 @@ public class ProcessInstanceDetailsPresenter {
         return view;
     }
 
-    public void refreshProcessInstanceData( final String processId,
-                                            final String processDefId ) {
-        dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
+    public void refreshProcessInstanceData(final String processId, final String processDefId) {
+        dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
-            public void callback( List<NodeInstanceSummary> details ) {
+            public void callback(List<NodeInstanceSummary> details) {
                 view.getLogTextArea().setText("");
                 String fullLog = "";
-                for ( NodeInstanceSummary nis : details ) {
-                    fullLog += nis.getTimestamp() + ": " + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType() + ") \n";
+                for (NodeInstanceSummary nis : details) {
+                    fullLog += nis.getTimestamp() + ": " + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType()
+                            + ") \n";
                 }
-                view.getLogTextArea().setText( fullLog );
+                view.getLogTextArea().setText(fullLog);
             }
-        } ).getProcessInstanceHistory( Long.parseLong( processId ) );
-        dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
+        }).getProcessInstanceHistory(Long.parseLong(processId));
+        dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
-            public void callback( List<NodeInstanceSummary> details ) {
+            public void callback(List<NodeInstanceSummary> details) {
                 view.setCurrentActiveNodes(details);
                 view.getCurrentActivitiesListBox().clear();
-                for ( NodeInstanceSummary nis : details ) {
-                  
-                    view.getCurrentActivitiesListBox().addItem( nis.getTimestamp() + ":" + nis.getId() + " - " + nis.getNodeName() +" (" + nis.getType() + ")" ,
-                                                                String.valueOf( nis.getId() ) );
+                for (NodeInstanceSummary nis : details) {
+
+                    view.getCurrentActivitiesListBox().addItem(
+                            nis.getTimestamp() + ":" + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType() + ")",
+                            String.valueOf(nis.getId()));
                 }
             }
-        } ).getProcessInstanceActiveNodes( Long.parseLong( processId ) );
+        }).getProcessInstanceActiveNodes(Long.parseLong(processId));
 
-        dataServices.call( new RemoteCallback<ProcessSummary>() {
+        dataServices.call(new RemoteCallback<ProcessSummary>() {
             @Override
-            public void callback( ProcessSummary process ) {
-                view.getProcessNameText().setText( process.getId() );
+            public void callback(ProcessSummary process) {
+                view.getProcessNameText().setText(process.getId());
                 view.getProcessPackageText().setText(process.getPackageName());
                 view.getProcessVersionText().setText(process.getVersion());
             }
-        } ).getProcessDesc( processDefId );
+        }).getProcessDesc(processDefId);
 
-        dataServices.call( new RemoteCallback<ProcessInstanceSummary>() {
+        dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
             @Override
-            public void callback( ProcessInstanceSummary process ) {
-                view.setProcessInstance( process );
+            public void callback(ProcessInstanceSummary process) {
+                view.setProcessInstance(process);
 
                 String statusStr = "Unknown";
-                switch ( process.getState()) {
-               case ProcessInstance.STATE_ACTIVE:
-                   statusStr = "Active";
-                   break;
-               case ProcessInstance.STATE_ABORTED:
-                   statusStr = "Aborted";
-                   break;
-               case ProcessInstance.STATE_COMPLETED:
-                   statusStr = "Completed";
-                   break;
-               case ProcessInstance.STATE_PENDING:
-                   statusStr = "Pending";
-                   break;
-               case ProcessInstance.STATE_SUSPENDED:
-                   statusStr = "Suspended";
-                   break;
-               default:
-                   break;
-               }
-               
-               view.getStateText().setText(statusStr);
-           }
-       }).getProcessInstanceById( Long.parseLong(processId));
-        
-        dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
+                switch (process.getState()) {
+                    case ProcessInstance.STATE_ACTIVE:
+                        statusStr = "Active";
+                        break;
+                    case ProcessInstance.STATE_ABORTED:
+                        statusStr = "Aborted";
+                        break;
+                    case ProcessInstance.STATE_COMPLETED:
+                        statusStr = "Completed";
+                        break;
+                    case ProcessInstance.STATE_PENDING:
+                        statusStr = "Pending";
+                        break;
+                    case ProcessInstance.STATE_SUSPENDED:
+                        statusStr = "Suspended";
+                        break;
+                    default:
+                        break;
+                }
+
+                view.getStateText().setText(statusStr);
+            }
+        }).getProcessInstanceById(Long.parseLong(processId));
+
+        dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
-            public void callback( List<NodeInstanceSummary> details ) {
+            public void callback(List<NodeInstanceSummary> details) {
                 view.setCurrentCompletedNodes(details);
             }
-        } ).getProcessInstanceCompletedNodes( Long.parseLong( processId ) );
-       
-       loadVariables(processId, processDefId);
+        }).getProcessInstanceCompletedNodes(Long.parseLong(processId));
+
+        loadVariables(processId, processDefId);
 
         dataServices.call(new RemoteCallback<ProcessSummary>() {
             @Override
@@ -233,17 +235,16 @@ public class ProcessInstanceDetailsPresenter {
         view.getProcessNameText().setText(processDefId);
         refreshProcessInstanceData(processId, processDefId);
     }
-    
+
     public void loadVariables(final String processId, final String processDefId) {
         dataServices.call(new RemoteCallback<List<VariableSummary>>() {
             @Override
             public void callback(List<VariableSummary> variables) {
-                    dataProvider.getList().clear();
-                    dataProvider.getList().addAll(variables);
-                    dataProvider.refresh();
+                dataProvider.getList().clear();
+                dataProvider.getList().addAll(variables);
+                dataProvider.refresh();
             }
         }).getVariablesCurrentState(Long.parseLong(processId), processDefId);
     }
-    
-    
+
 }

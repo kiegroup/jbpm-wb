@@ -1,3 +1,4 @@
+
 #set( $symbol_pound = '#' )
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
@@ -24,15 +25,15 @@
 <module>
 
     <!-- Inherit the core Web Toolkit stuff. -->
-  <inherits name="com.google.gwt.i18n.I18N"/>
-  <inherits name="com.google.gwt.http.HTTP"/>
-  <inherits name="com.google.gwt.user.User"/>
+  <inherits name="com.google.gwt.i18n.I18N" />
+  <inherits name="com.google.gwt.http.HTTP" />
+  <inherits name="com.google.gwt.user.User" />
 
-  <inherits name='org.jboss.errai.bus.ErraiBus'/>
+  <inherits name='org.jboss.errai.bus.ErraiBus' />
 
-  <inherits name="org.uberfire.UberfireWorkbench"/>
-  <inherits name="org.uberfire.UberfireWidgetsCommons"/>
+  <inherits name="org.uberfire.UberfireWorkbench" />
+  <inherits name="org.uberfire.UberfireWidgetsCommons" />
 
-  <inherits name="${package}.JbpmConsoleNGHumanTasksAPI"/>
+  <inherits name="${package}.JbpmConsoleNGHumanTasksAPI" />
 
 </module>

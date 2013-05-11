@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.model;
 
 import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- * @author salaboy
- */
 @Portable
 public class VariableSummary implements Serializable {
 
-    
     private String variableId;
     private String variableInstanceId;
     private long processInstanceId;
@@ -33,11 +29,10 @@ public class VariableSummary implements Serializable {
     private String newValue;
     private String timestamp;
     private String type;
-   
-    
-    public VariableSummary(String variableId, String variableInstanceId, long processInstanceId, 
-                            String oldValue, String newValue, String timestamp, String type) {
-        
+
+    public VariableSummary(String variableId, String variableInstanceId, long processInstanceId, String oldValue,
+            String newValue, String timestamp, String type) {
+
         this.variableId = variableId;
         this.variableInstanceId = variableInstanceId;
         this.processInstanceId = processInstanceId;
@@ -105,6 +100,5 @@ public class VariableSummary implements Serializable {
     public void setType(String type) {
         this.type = type;
     }
-    
-    
+
 }

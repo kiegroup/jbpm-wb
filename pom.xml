@@ -13,7 +13,9 @@
 ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 ~ See the License for the specific language governing permissions and
 ~ limitations under the License.
---><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -24,11 +26,11 @@
 
   <groupId>org.jbpm</groupId>
   <artifactId>jbpm-console-ng</artifactId>
-    
+
   <packaging>pom</packaging>
   <name>jBPM Console NG</name>
   <description>jBPM Console NG Modules</description>
- 
+
   <modules>
     <module>jbpm-console-ng-module-archetype</module>
     <module>jbpm-console-ng-human-tasks</module>
@@ -56,13 +58,17 @@
       </snapshots>
     </repository>
     <repository>
-     <id>sonatype</id>
-     <url>http://oss.sonatype.org/content/repositories/snapshots</url>
-     <snapshots><enabled>true</enabled></snapshots>
-     <releases><enabled>false</enabled></releases>
+      <id>sonatype</id>
+      <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
     </repository>
   </repositories>
-             
+
   <build>
 
     <plugins>
@@ -109,18 +115,18 @@
     </plugins>
 
   </build>
-    <profiles>
-        <profile>
-            <id>fullProfile</id>
-            <activation>
-                <property>
-                    <name>full</name>
-                </property>
-            </activation>
-            <modules>
-                <module>jbpm-console-ng-distribution-wars</module>
-                <module>jbpm-console-ng-docs</module>
-            </modules>
-        </profile>
-    </profiles>
+  <profiles>
+    <profile>
+      <id>fullProfile</id>
+      <activation>
+        <property>
+          <name>full</name>
+        </property>
+      </activation>
+      <modules>
+        <module>jbpm-console-ng-distribution-wars</module>
+        <module>jbpm-console-ng-docs</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

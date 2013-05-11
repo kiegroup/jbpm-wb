@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.pr.client.editors.definition.list;
 
 import com.github.gwtbootstrap.client.ui.Button;
@@ -69,48 +70,54 @@ import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
 
 @Dependent
 @Templated(value = "ProcessDefinitionListViewImpl.html")
-public class ProcessDefinitionListViewImpl extends Composite
-        implements
-        ProcessDefinitionListPresenter.InboxView {
+public class ProcessDefinitionListViewImpl extends Composite implements ProcessDefinitionListPresenter.InboxView {
+    private Constants constants = GWT.create(Constants.class);
+    private ProcessRuntimeImages images = GWT.create(ProcessRuntimeImages.class);
 
     @Inject
     private Identity identity;
+
     @Inject
     private PlaceManager placeManager;
+
     private ProcessDefinitionListPresenter presenter;
+
     @Inject
     @DataField
     public TextBox filterKSessionText;
+
     @Inject
     @DataField
     public Button filterKSessionButton;
+
     @Inject
     @DataField
     public IconAnchor refreshIcon;
+
     @Inject
     @DataField
     public DataGrid<ProcessSummary> processdefListGrid;
+
     @Inject
-    @DataField 
+    @DataField
     public FlowPanel listContainer;
+
     @Inject
     @DataField
     public SimplePager pager;
-    
+
     @Inject
     @DataField
     public Label processDefinitionsLabel;
-    
+
     private Set<ProcessSummary> selectedProcessDef;
-    
+
     @Inject
     private Event<NotificationEvent> notification;
+
     @Inject
     private Event<ProcessDefSelectionEvent> processSelection;
     private ListHandler<ProcessSummary> sortHandler;
-    
-    private Constants constants = GWT.create(Constants.class);
-    private ProcessRuntimeImages images = GWT.create(ProcessRuntimeImages.class);
 
     @Override
     public void init(final ProcessDefinitionListPresenter presenter) {
@@ -122,13 +129,13 @@ public class ProcessDefinitionListViewImpl extends Composite
         refreshIcon.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                 presenter.reloadRepository();
+                presenter.reloadRepository();
             }
         });
-        
+
         listContainer.add(processdefListGrid);
         listContainer.add(pager);
-        
+
         processdefListGrid.setHeight("350px");
         // Set the message to display when the table is empty.
         Label emptyTable = new Label(constants.No_Process_Definitions_Available());
@@ -136,8 +143,7 @@ public class ProcessDefinitionListViewImpl extends Composite
         processdefListGrid.setEmptyTableWidget(emptyTable);
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
-        sortHandler =
-                new ListHandler<ProcessSummary>(presenter.getDataProvider().getList());
+        sortHandler = new ListHandler<ProcessSummary>(presenter.getDataProvider().getList());
         processdefListGrid.addColumnSortHandler(sortHandler);
 
         // Create a Pager to control the table.
@@ -146,9 +152,9 @@ public class ProcessDefinitionListViewImpl extends Composite
         pager.setPageSize(10);
 
         // Add a selection model so we can select cells.
-        final MultiSelectionModel<ProcessSummary> selectionModel =
-                new MultiSelectionModel<ProcessSummary>();
+        final MultiSelectionModel<ProcessSummary> selectionModel = new MultiSelectionModel<ProcessSummary>();
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            @Override
             public void onSelectionChange(SelectionChangeEvent event) {
                 selectedProcessDef = selectionModel.getSelectedSet();
                 for (ProcessSummary pd : selectedProcessDef) {
@@ -158,12 +164,9 @@ public class ProcessDefinitionListViewImpl extends Composite
         });
 
         processdefListGrid.setSelectionModel(selectionModel,
-                DefaultSelectionEventManager
-                .<ProcessSummary>createCheckboxManager());
+                DefaultSelectionEventManager.<ProcessSummary> createCheckboxManager());
 
         initTableColumns(selectionModel);
-
-
 
         presenter.addDataDisplay(processdefListGrid);
 
@@ -173,54 +176,48 @@ public class ProcessDefinitionListViewImpl extends Composite
     public void filterKSessionButton(ClickEvent e) {
         presenter.refreshProcessList(filterKSessionText.getText());
     }
-    
-   
-    
+
     private void initTableColumns(final SelectionModel<ProcessSummary> selectionModel) {
 
-
-
         // Process Name String.
-        Column<ProcessSummary, String> processNameColumn =
-                new Column<ProcessSummary, String>(new TextCell()) {
+        Column<ProcessSummary, String> processNameColumn = new Column<ProcessSummary, String>(new TextCell()) {
             @Override
             public String getValue(ProcessSummary object) {
                 return object.getName();
             }
         };
         processNameColumn.setSortable(true);
-        sortHandler.setComparator(processNameColumn,
-                new Comparator<ProcessSummary>() {
-            public int compare(ProcessSummary o1,
-                    ProcessSummary o2) {
+        sortHandler.setComparator(processNameColumn, new Comparator<ProcessSummary>() {
+            @Override
+            public int compare(ProcessSummary o1, ProcessSummary o2) {
                 return o1.getName().compareTo(o2.getName());
             }
         });
-        processdefListGrid.addColumn(processNameColumn,
-                new ResizableHeader(constants.Name(), processdefListGrid, processNameColumn));
+        processdefListGrid.addColumn(processNameColumn, new ResizableHeader(constants.Name(), processdefListGrid,
+                processNameColumn));
 
-        // Version Type 
-        Column<ProcessSummary, String> versionColumn =
-                new Column<ProcessSummary, String>(new TextCell()) {
+        // Version Type
+        Column<ProcessSummary, String> versionColumn = new Column<ProcessSummary, String>(new TextCell()) {
             @Override
             public String getValue(ProcessSummary object) {
                 return object.getVersion();
             }
         };
         versionColumn.setSortable(true);
-        sortHandler.setComparator(versionColumn,
-                new Comparator<ProcessSummary>() {
-            public int compare(ProcessSummary o1,
-                    ProcessSummary o2) {
-                Integer version1 = ((o1.getVersion() == null || o1.getVersion().equals("")))?0:Integer.valueOf(o1.getVersion());
-                Integer version2 = ((o2.getVersion() == null || o2.getVersion().equals("")))?0:Integer.valueOf(o2.getVersion());
+        sortHandler.setComparator(versionColumn, new Comparator<ProcessSummary>() {
+            @Override
+            public int compare(ProcessSummary o1, ProcessSummary o2) {
+                Integer version1 = ((o1.getVersion() == null || o1.getVersion().equals(""))) ? 0 : Integer.valueOf(o1
+                        .getVersion());
+                Integer version2 = ((o2.getVersion() == null || o2.getVersion().equals(""))) ? 0 : Integer.valueOf(o2
+                        .getVersion());
                 return version1.compareTo(version2);
             }
         });
-        processdefListGrid.addColumn(versionColumn,
-                new ResizableHeader(constants.Version(), processdefListGrid, versionColumn));
+        processdefListGrid
+        .addColumn(versionColumn, new ResizableHeader(constants.Version(), processdefListGrid, versionColumn));
         processdefListGrid.setColumnWidth(versionColumn, "90px");
-        
+
         // actions (icons)
         List<HasCell<ProcessSummary, ?>> cells = new LinkedList<HasCell<ProcessSummary, ?>>();
 
@@ -247,19 +244,21 @@ public class ProcessDefinitionListViewImpl extends Composite
 
         CompositeCell<ProcessSummary> cell = new CompositeCell<ProcessSummary>(cells);
         Column<ProcessSummary, ProcessSummary> actionsColumn = new Column<ProcessSummary, ProcessSummary>(cell) {
-                                                        @Override
-                                                        public ProcessSummary getValue(ProcessSummary object) {
-                                                            return object;
-                                                        }
-                                                    };
+            @Override
+            public ProcessSummary getValue(ProcessSummary object) {
+                return object;
+            }
+        };
         processdefListGrid.addColumn(actionsColumn, constants.Actions());
         processdefListGrid.setColumnWidth(actionsColumn, "70px");
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
 
+    @Override
     public DataGrid<ProcessSummary> getDataGrid() {
         return processdefListGrid;
     }
@@ -268,13 +267,14 @@ public class ProcessDefinitionListViewImpl extends Composite
         return sortHandler;
     }
 
+    @Override
     public TextBox getSessionIdText() {
         return filterKSessionText;
     }
-    
+
     @Override
-    public void showBusyIndicator( final String message ) {
-        BusyPopup.showMessage( message );
+    public void showBusyIndicator(final String message) {
+        BusyPopup.showMessage(message);
     }
 
     @Override
@@ -293,7 +293,7 @@ public class ProcessDefinitionListViewImpl extends Composite
 
                     AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.startGridIcon());
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='"+constants.Start()+"'>");
+                    mysb.appendHtmlConstant("<span title='" + constants.Start() + "'>");
                     mysb.append(imageProto.getSafeHtml());
                     mysb.appendHtmlConstant("</span>");
                     sb.append(mysb.toSafeHtml());
@@ -328,7 +328,7 @@ public class ProcessDefinitionListViewImpl extends Composite
 
                     AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.detailsGridIcon());
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='"+constants.Details()+"'>");
+                    mysb.appendHtmlConstant("<span title='" + constants.Details() + "'>");
                     mysb.append(imageProto.getSafeHtml());
                     mysb.appendHtmlConstant("</span>");
                     sb.append(mysb.toSafeHtml());
@@ -351,4 +351,5 @@ public class ProcessDefinitionListViewImpl extends Composite
             return object;
         }
     }
+
 }

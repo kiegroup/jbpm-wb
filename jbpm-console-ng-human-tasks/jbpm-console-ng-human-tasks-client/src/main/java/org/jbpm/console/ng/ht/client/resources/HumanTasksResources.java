@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.resources;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 
-public interface HumanTasksResources
-        extends
-        ClientBundle {
+public interface HumanTasksResources extends ClientBundle {
 
-    HumanTasksResources INSTANCE = GWT.create( HumanTasksResources.class );
+    HumanTasksResources INSTANCE = GWT.create(HumanTasksResources.class);
 
-   
-
-//    @Source("css/HumanTasks.css")
-//    HumanTasksCss css();
+    // @Source("css/HumanTasks.css")
+    // HumanTasksCss css();
 
     HumanTasksImages images();
 

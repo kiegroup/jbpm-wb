@@ -15,7 +15,8 @@
 ~ limitations under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jbpm</groupId>
@@ -27,7 +28,7 @@
   <packaging>jar</packaging>
 
   <name>jBPM Console NG - Business Domain Client</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -49,12 +50,12 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-workbench</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>javax.enterprise</groupId>
       <artifactId>cdi-api</artifactId>
@@ -71,9 +72,7 @@
       <artifactId>errai-bus</artifactId>
     </dependency>
     
-    <!-- Errai UI --> 
-    
-    
+    <!-- Errai UI -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-ui</artifactId>
@@ -106,5 +105,5 @@
       </resource>
     </resources>
   </build>
-  
+
 </project>

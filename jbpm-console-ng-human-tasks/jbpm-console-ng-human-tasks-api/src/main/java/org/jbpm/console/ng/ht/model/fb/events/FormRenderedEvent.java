@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.model.fb.events;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- */
 @Portable
 public class FormRenderedEvent {
     private String form;
@@ -27,7 +25,6 @@ public class FormRenderedEvent {
     public FormRenderedEvent() {
     }
 
-    
     public FormRenderedEvent(String form) {
         this.form = form;
     }
@@ -35,6 +32,5 @@ public class FormRenderedEvent {
     public String getForm() {
         return form;
     }
-    
-    
+
 }

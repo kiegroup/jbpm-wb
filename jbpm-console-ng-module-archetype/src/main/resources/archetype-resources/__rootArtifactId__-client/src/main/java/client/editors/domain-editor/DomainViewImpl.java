@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
 import com.google.gwt.core.client.GWT;
@@ -38,19 +39,18 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.security.Identity;
 
-
-
 @Dependent
 @Templated(value = "DomainViewImpl.html")
-public class DomainViewImpl extends Composite
-        implements
-        DomainPresenter.DomainView {
+public class DomainViewImpl extends Composite implements DomainPresenter.DomainView {
 
     @Inject
     private Identity identity;
+    
     @Inject
     private PlaceManager placeManager;
+    
     private DomainPresenter presenter;
+    
     @Inject
     @DataField
     public Button sayHelloButton;
@@ -82,16 +82,12 @@ public class DomainViewImpl extends Composite
                 }
             }
         };
-        
-        
     }
 
     @EventHandler("sayHelloButton")
     public void sayHelloButton(ClickEvent e) {
         sayHello();
     }
-
-    
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
@@ -106,6 +102,4 @@ public class DomainViewImpl extends Composite
                 helloText.getText(), new Date());
 
     }
-
-   
 }

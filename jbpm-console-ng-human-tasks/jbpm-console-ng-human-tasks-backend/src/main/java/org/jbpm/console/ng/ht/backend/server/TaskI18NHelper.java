@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.backend.server;
 
 import java.util.ArrayList;
@@ -21,14 +22,10 @@ import java.util.List;
 import org.jbpm.services.task.impl.model.I18NTextImpl;
 import org.kie.api.task.model.I18NText;
 
-/**
- *
-
- */
 public class TaskI18NHelper {
-    public static List<I18NText> adaptI18NList(List<String> list){
+    public static List<I18NText> adaptI18NList(List<String> list) {
         List<I18NText> result = new ArrayList<I18NText>(list.size());
-        for(String s : list){
+        for (String s : list) {
             // FIX
             result.add(new I18NTextImpl("en-UK", s));
         }
@@ -37,10 +34,11 @@ public class TaskI18NHelper {
 
     static List<String> adaptStringList(List<I18NText> descriptions) {
         List<String> result = new ArrayList<String>(descriptions.size());
-        for(I18NText t : descriptions){
+        for (I18NText t : descriptions) {
             // FIX
             result.add(t.getText());
         }
         return result;
     }
+
 }

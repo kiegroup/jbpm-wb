@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- ~ Copyright 2012 JBoss Inc ~ ~ Licensed under the Apache License, Version 
-  2.0 (the "License"); ~ you may not use this file except in compliance with 
-  the License. ~ You may obtain a copy of the License at ~ ~ http://www.apache.org/licenses/LICENSE-2.0 
-  ~ ~ Unless required by applicable law or agreed to in writing, software ~ 
-  distributed under the License is distributed on an "AS IS" BASIS, ~ WITHOUT 
-  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. ~ See the 
-  License for the specific language governing permissions and ~ limitations 
-  under the License. -->
-
+<!--
+~ Copyright 2012 JBoss Inc
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~       http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
@@ -17,7 +23,6 @@
     <artifactId>jbpm-console-ng</artifactId>
     <version>6.0.0-SNAPSHOT</version>
   </parent>
-  <groupId>org.jbpm</groupId>
   <artifactId>jbpm-console-ng-showcase</artifactId>
   <packaging>war</packaging>
 
@@ -172,7 +177,7 @@
       <groupId>org.kie.commons</groupId>
       <artifactId>kie-nio2-fs</artifactId>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.kie.commons</groupId>
       <artifactId>kie-commons-io</artifactId>
     </dependency>
@@ -349,7 +354,7 @@
       <groupId>org.kie.guvnor</groupId>
       <artifactId>guvnor-core-services-backend</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.kie.guvnor</groupId>
       <artifactId>guvnor-project-editor-client</artifactId>
@@ -394,7 +399,7 @@
       <groupId> org.kie.workbench.widgets</groupId>
       <artifactId>kie-wb-view-source-widget</artifactId>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.kie.workbench.widgets</groupId>
       <artifactId>kie-wb-decorated-grid-widget</artifactId>
     </dependency>
@@ -410,7 +415,7 @@
       <groupId>org.kie.guvnor</groupId>
       <artifactId>guvnor-commons-builder</artifactId>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.kie.guvnor</groupId>
       <artifactId>guvnor-explorer-backend</artifactId>
     </dependency>
@@ -447,7 +452,6 @@
     </resources>
 
     <plugins>
-
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
@@ -456,7 +460,7 @@
           <logLevel>INFO</logLevel>
           <compileSourcesArtifacts>
             <compileSourcesArtifact>org.drools:drools-workbench-models-commons</compileSourcesArtifact>
-            
+
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-api</compileSourcesArtifact>
@@ -468,26 +472,24 @@
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-decorated-grid-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-view-source-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-commons-ui</compileSourcesArtifact>
-            <compileSourcesArtifact>org.kie.guvnor:guvnor-commons-security</compileSourcesArtifact> 
-            <compileSourcesArtifact>org.kie.guvnor:guvnor-commons-services-api</compileSourcesArtifact>  
+            <compileSourcesArtifact>org.kie.guvnor:guvnor-commons-security</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.guvnor:guvnor-commons-services-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-metadata-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-config-resource-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-core-services-api</compileSourcesArtifact>
-            
-            
+
             <compileSourcesArtifact>org.kie.guvnor:guvnor-project-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-project-editor-client</compileSourcesArtifact>
 
             <compileSourcesArtifact>org.kie.guvnor:guvnor-project-config-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-project-config-editor-client</compileSourcesArtifact>
-            
+
             <compileSourcesArtifact>org.guvnor:guvnor-m2repo-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.guvnor:guvnor-m2repo-editor-client</compileSourcesArtifact>
-            
+
             <compileSourcesArtifact>org.kie.guvnor:guvnor-explorer-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-explorer-client</compileSourcesArtifact>
-            
-            
+
             <compileSourcesArtifact>org.uberfire:uberfire-security-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-security-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-api</compileSourcesArtifact>
@@ -506,7 +508,7 @@
           <strict>false</strict>
           <server>org.jboss.errai.cdi.server.gwt.JettyLauncher</server>
           <!-- drools-compiler has dependency on org.eclipse.jdt.core.compiler:ecj:jar:3.5.1:compile, 
-            see http://code.google.com/p/google-web-toolkit/issues/detail?id=4479 -->
+               see http://code.google.com/p/google-web-toolkit/issues/detail?id=4479 -->
           <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
         </configuration>
         <executions>
@@ -537,7 +539,7 @@
       </plugin>
 
       <!-- Tests are skipped by default because they require additional GWT 
-        dependencies. Run mvn with -Pintegration-test to enable testing. -->
+           dependencies. Run mvn with -Pintegration-test to enable testing. -->
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>

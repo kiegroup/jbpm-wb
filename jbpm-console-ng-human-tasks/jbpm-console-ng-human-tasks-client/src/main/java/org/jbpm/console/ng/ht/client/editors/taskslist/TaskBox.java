@@ -1,7 +1,19 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 JBoss by Red Hat.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -19,15 +31,11 @@ import org.uberfire.security.Identity;
 import org.uberfire.shared.mvp.PlaceRequest;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
-/**
- *
- * @author salaboy
- */
 public class TaskBox extends Composite {
 
     private String taskName = "Default Task Name";
     private FocusPanel taskContainer = new FocusPanel();
-   
+
     private FlowPanel taskPanel = new FlowPanel();
     private FlowPanel hourPanel = new FlowPanel();
     private FlowPanel taskPriorityPanel = new FlowPanel();
@@ -41,13 +49,11 @@ public class TaskBox extends Composite {
     private TasksListPresenter presenter;
     private Identity identity;
     private PlaceManager placeManager;
-    
 
     public TaskBox() {
-        
-        
+
         taskPanel.setStyleName("task");
-        
+
         taskNamePanel.add(taskNameLabel);
         hourPanel.setStyleName("hour");
         taskPanel.add(taskPriorityPanel);
@@ -62,33 +68,30 @@ public class TaskBox extends Composite {
         // All composites must call initWidget() in their constructors.
         initWidget(taskContainer);
 
-        
-
     }
 
-    public TaskBox(final PlaceManager placeManager, final TasksListPresenter presenter, 
-            final Identity identity, final long taskId, final String taskName, 
-            final String actualOwner, final List<String> potentialOwners, final String status) {
+    public TaskBox(final PlaceManager placeManager, final TasksListPresenter presenter, final Identity identity,
+            final long taskId, final String taskName, final String actualOwner, final List<String> potentialOwners,
+            final String status) {
         this();
         this.taskId = taskId;
         this.taskName = taskName;
         taskNameLabel.setText(taskName);
         this.actualOwner = actualOwner;
-        this.potentialOwners = potentialOwners==null?Collections.EMPTY_LIST:potentialOwners;
+        this.potentialOwners = potentialOwners == null ? Collections.EMPTY_LIST : potentialOwners;
         this.status = status;
         this.presenter = presenter;
         this.identity = identity;
-        
+
         taskContainer.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Popup");
-                placeRequestImpl.addParameter("taskId", String.valueOf( taskId ) );
+                placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
                 placeManager.goTo(placeRequestImpl);
             }
         });
-        
-        
+
         List<FocusPanel> options = new ArrayList<FocusPanel>();
         FlowPanel personalOrGroupTask = new FlowPanel();
 
@@ -110,9 +113,8 @@ public class TaskBox extends Composite {
             panel.setStyleName("clickable claim");
             options.add(focusPanel);
 
-        } else if (!"".equals(actualOwner) && potentialOwners != null && !potentialOwners.isEmpty() 
-                && !potentialOwners.contains(identity.getName()) && 
-                (status.equals("Reserved") || status.equals("InProgress"))) {
+        } else if (!"".equals(actualOwner) && potentialOwners != null && !potentialOwners.isEmpty()
+                && !potentialOwners.contains(identity.getName()) && (status.equals("Reserved") || status.equals("InProgress"))) {
             personalOrGroupTask.setStyleName("group-task");
             personalOrGroupTask.add(new HTML("Group Task"));
             FlowPanel panel = new FlowPanel();
@@ -181,4 +183,5 @@ public class TaskBox extends Composite {
         this.taskName = taskName;
         taskNameLabel.setText(taskName);
     }
+
 }

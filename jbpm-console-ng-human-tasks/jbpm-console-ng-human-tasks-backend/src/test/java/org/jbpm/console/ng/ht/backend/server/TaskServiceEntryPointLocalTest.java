@@ -20,10 +20,8 @@ public class TaskServiceEntryPointLocalTest extends TaskServiceEntryPointBaseTes
                 // seam-persistence
                 .addPackage("org.jboss.seam.transaction")
                 // core jbpm
-                .addPackage("org.jbpm.shared.services.api")
-                .addPackage("org.jbpm.shared.services.impl")
-                .addPackage("org.jbpm.services.task")
-                .addPackage("org.jbpm.services.task.annotations")
+                .addPackage("org.jbpm.shared.services.api").addPackage("org.jbpm.shared.services.impl")
+                .addPackage("org.jbpm.services.task").addPackage("org.jbpm.services.task.annotations")
                 .addPackage("org.jbpm.services.task.api")
                 .addPackage("org.jbpm.services.task.impl")
                 .addPackage("org.jbpm.services.task.impl.model")
@@ -45,10 +43,9 @@ public class TaskServiceEntryPointLocalTest extends TaskServiceEntryPointBaseTes
                 .addPackages(true, Filters.exclude(FormServiceEntryPointImpl.class), "org.jbpm.console.ng.ht.backend.server")
                 // .addPackage("org.jbpm.services.task.commands") // This should not be
                 // required here
-                .addAsManifestResource("META-INF/persistence.xml",
-                        ArchivePaths.create("persistence.xml"))
-                .addAsManifestResource("META-INF/Taskorm.xml",
-                        ArchivePaths.create("Taskorm.xml"))
+                .addAsManifestResource("META-INF/persistence.xml", ArchivePaths.create("persistence.xml"))
+                .addAsManifestResource("META-INF/Taskorm.xml", ArchivePaths.create("Taskorm.xml"))
                 .addAsManifestResource("META-INF/beans.xml", ArchivePaths.create("beans.xml"));
     }
+
 }

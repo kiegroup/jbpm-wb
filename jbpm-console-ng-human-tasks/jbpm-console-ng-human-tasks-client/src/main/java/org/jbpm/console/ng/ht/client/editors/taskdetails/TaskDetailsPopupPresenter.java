@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.editors.taskdetails;
 
 import java.util.ArrayList;
@@ -59,10 +60,9 @@ import org.jbpm.console.ng.ht.client.i8n.Constants;
 @Dependent
 @WorkbenchPopup(identifier = "Task Details Popup")
 public class TaskDetailsPopupPresenter {
+    private Constants constants = GWT.create(Constants.class);
 
-    public interface TaskDetailsPopupView
-            extends
-            UberView<TaskDetailsPopupPresenter> {
+    public interface TaskDetailsPopupView extends UberView<TaskDetailsPopupPresenter> {
 
         void displayNotification(String text);
 
@@ -79,36 +79,41 @@ public class TaskDetailsPopupPresenter {
         TextBox getUserText();
 
         TextBox getProcessInstanceIdText();
-        
+
         TextBox getProcessIdText();
-// Commented out until we add the posibility of adding sub tasks
-//        ListBox getSubTaskStrategyListBox();
-// Commented out until we add the posibility of adding sub tasks
-//        public String[] getSubTaskStrategies();
+
+        // Commented out until we add the posibility of adding sub tasks
+        // ListBox getSubTaskStrategyListBox();
+        // Commented out until we add the posibility of adding sub tasks
+        // public String[] getSubTaskStrategies();
 
         public String[] getPriorities();
 
         TextBox getTaskStatusText();
-        
+
         Button getpIDetailsButton();
-        
+
         UnorderedList getNavBarUL();
     }
+
     @Inject
     private PlaceManager placeManager;
+
     @Inject
     TaskDetailsPopupView view;
+
     @Inject
     Identity identity;
+
     @Inject
     Caller<TaskServiceEntryPoint> taskServices;
+
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
+
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
-    
-    private Constants constants = GWT.create(Constants.class);
-    
+
     private PlaceRequest place;
 
     @OnStart
@@ -138,12 +143,10 @@ public class TaskDetailsPopupPresenter {
             }
         }).getProcessInstanceById(Long.parseLong(view.getProcessInstanceIdText().getText()));
 
-
-
     }
 
-    public void updateTask(final long taskId, final String taskName, final String taskDescription, final String userId, 
-            //final String subTaskStrategy,
+    public void updateTask(final long taskId, final String taskName, final String taskDescription, final String userId,
+            // final String subTaskStrategy,
             final Date dueDate, final int priority) {
 
         if (taskId > 0) {
@@ -159,9 +162,9 @@ public class TaskDetailsPopupPresenter {
                     view.displayNotification("Task Details Updated for Task id = " + taskId + ")");
 
                 }
-            }).updateSimpleTaskDetails(taskId, names, Integer.valueOf(priority), descriptions, 
-                                        //subTaskStrategy,
-                                         dueDate);
+            }).updateSimpleTaskDetails(taskId, names, Integer.valueOf(priority), descriptions,
+                    // subTaskStrategy,
+                    dueDate);
 
         }
 
@@ -190,26 +193,25 @@ public class TaskDetailsPopupPresenter {
                 view.getUserText().setEnabled(false);
                 view.getTaskStatusText().setText(details.getStatus());
                 view.getTaskStatusText().setEnabled(false);
-                if(details.getProcessInstanceId() == -1 ){
+                if (details.getProcessInstanceId() == -1) {
                     view.getProcessInstanceIdText().setText("None");
                     view.getProcessIdText().setText("None");
                     view.getpIDetailsButton().setEnabled(false);
-                }else{
+                } else {
                     view.getProcessInstanceIdText().setText(String.valueOf(details.getProcessInstanceId()));
                     view.getProcessIdText().setText(details.getProcessId());
                 }
-                
+
                 view.getProcessInstanceIdText().setEnabled(false);
-                
-                
+
                 int i = 0;
                 // Commented out until we add the posibility of adding sub tasks
-//                for (String strategy : view.getSubTaskStrategies()) {
-//                    if (details.getSubTaskStrategy().equals(strategy)) {
-//                        view.getSubTaskStrategyListBox().setSelectedIndex(i);
-//                    }
-//                    i++;
-//                }
+                // for (String strategy : view.getSubTaskStrategies()) {
+                // if (details.getSubTaskStrategy().equals(strategy)) {
+                // view.getSubTaskStrategyListBox().setSelectedIndex(i);
+                // }
+                // i++;
+                // }
                 i = 0;
                 for (String priority : view.getPriorities()) {
                     if (details.getPriority() == i) {
@@ -217,8 +219,6 @@ public class TaskDetailsPopupPresenter {
                     }
                     i++;
                 }
-
-
 
             }
         }).getTaskDetails(taskId);
@@ -236,31 +236,31 @@ public class TaskDetailsPopupPresenter {
         view.getNavBarUL().clear();
         NavLink detailsLink = new NavLink(constants.Details());
         detailsLink.setStyleName("active");
-        
+
         NavLink workLink = new NavLink(constants.Work());
-        
-        workLink.addClickHandler(new ClickHandler(){
+
+        workLink.addClickHandler(new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent event) {
-              close();
-              PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
-              placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
-              placeManager.goTo(placeRequestImpl);
+                close();
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
+                placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
+                placeManager.goTo(placeRequestImpl);
             }
         });
         NavLink commentsLink = new NavLink(constants.Comments());
-        commentsLink.addClickHandler(new ClickHandler(){
+        commentsLink.addClickHandler(new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent event) {
-              close();
-              PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Comments Popup");
-              placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
-              placeManager.goTo(placeRequestImpl);
+                close();
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Comments Popup");
+                placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
+                placeManager.goTo(placeRequestImpl);
             }
         });
-        
+
         view.getNavBarUL().add(workLink);
         view.getNavBarUL().add(detailsLink);
         view.getNavBarUL().add(commentsLink);
@@ -270,4 +270,5 @@ public class TaskDetailsPopupPresenter {
     public void close() {
         closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
+
 }

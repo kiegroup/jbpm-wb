@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.bd.client.editors.session.list;
 
 import com.github.gwtbootstrap.client.ui.Button;
@@ -66,9 +67,7 @@ import org.jbpm.console.ng.bd.model.events.KieSessionSelectionEvent;
 
 @Dependent
 @Templated(value = "KieSessionsListViewImpl.html")
-public class KieSessionsListViewImpl extends Composite
-        implements
-        KieSessionsListPresenter.KieSessionsListView {
+public class KieSessionsListViewImpl extends Composite implements KieSessionsListPresenter.KieSessionsListView {
 
     @Inject
     private Identity identity;
@@ -78,47 +77,46 @@ public class KieSessionsListViewImpl extends Composite
     @Inject
     @DataField
     public TextBox groupText;
-    
+
     @Inject
     @DataField
     public TextBox artifactText;
-   
+
     @Inject
     @DataField
     public TextBox versionText;
-    
+
     @Inject
     @DataField
     public TextBox kbaseNameText;
-    
+
     @Inject
     @DataField
     public TextBox kieSessionNameText;
-    
+
     @Inject
     @DataField
     public Button newSessionButton;
-    
 
     @Inject
     @DataField
     public DataGrid<String> ksessionsListGrid;
 
     @Inject
-    @DataField 
+    @DataField
     public FlowPanel listContainerKsessions;
 
     @Inject
     @DataField
     public SimplePager pagerKsessions;
-    
+
     private Set<String> selectedKieSession;
     @Inject
     private Event<NotificationEvent> notification;
     @Inject
     private Event<KieSessionSelectionEvent> kieSessionSelection;
     private ListHandler<String> sortHandler;
-    
+
     private Constants constants = GWT.create(Constants.class);
     private ShowcaseImages images = GWT.create(ShowcaseImages.class);
 
@@ -126,19 +124,17 @@ public class KieSessionsListViewImpl extends Composite
     public void init(KieSessionsListPresenter presenter) {
         this.presenter = presenter;
 
-       
         listContainerKsessions.add(ksessionsListGrid);
         listContainerKsessions.add(pagerKsessions);
-        
+
         ksessionsListGrid.setHeight("350px");
-        //         Set the message to display when the table is empty.
+        // Set the message to display when the table is empty.
         Label emptyTable = new Label(constants.No_Deployment_Units_Available());
         emptyTable.setStyleName("");
         ksessionsListGrid.setEmptyTableWidget(emptyTable);
 
-//         Attach a column sort handler to the ListDataProvider to sort the list.
-        sortHandler =
-                new ListHandler<String>(presenter.getDataProvider().getList());
+        // Attach a column sort handler to the ListDataProvider to sort the list.
+        sortHandler = new ListHandler<String>(presenter.getDataProvider().getList());
         ksessionsListGrid.addColumnSortHandler(sortHandler);
 
         // Create a Pager to control the table.
@@ -147,24 +143,20 @@ public class KieSessionsListViewImpl extends Composite
         pagerKsessions.setPageSize(10);
 
         // Add a selection model so we can select cells.
-        final MultiSelectionModel<String> selectionModel =
-                new MultiSelectionModel<String>();
+        final MultiSelectionModel<String> selectionModel = new MultiSelectionModel<String>();
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            @Override
             public void onSelectionChange(SelectionChangeEvent event) {
                 selectedKieSession = selectionModel.getSelectedSet();
                 for (String kieSession : selectedKieSession) {
-                    
+
                 }
             }
         });
 
-        ksessionsListGrid.setSelectionModel(selectionModel,
-                DefaultSelectionEventManager
-                .<String>createCheckboxManager());
+        ksessionsListGrid.setSelectionModel(selectionModel, DefaultSelectionEventManager.<String> createCheckboxManager());
 
         initTableColumns(selectionModel);
-
-
 
         presenter.addDataDisplay(ksessionsListGrid);
 
@@ -172,48 +164,41 @@ public class KieSessionsListViewImpl extends Composite
 
     @EventHandler("newSessionButton")
     public void newSessionButton(ClickEvent e) {
-        presenter.newKieSessionButton(groupText.getText(), artifactText.getText(), 
-                      versionText.getText(), kbaseNameText.getText(), kieSessionNameText.getText());
+        presenter.newKieSessionButton(groupText.getText(), artifactText.getText(), versionText.getText(),
+                kbaseNameText.getText(), kieSessionNameText.getText());
     }
-    
-    
 
     private void initTableColumns(final SelectionModel<String> selectionModel) {
         // Checkbox column. This table will uses a checkbox column for selection.
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
         // mouse selection.
 
-        Column<String, Boolean> checkColumn =
-                new Column<String, Boolean>(new CheckboxCell(true, false)) {
+        Column<String, Boolean> checkColumn = new Column<String, Boolean>(new CheckboxCell(true, false)) {
             @Override
             public Boolean getValue(String object) {
                 // Get the value from the selection model.
                 return selectionModel.isSelected(object);
             }
         };
-        
-        ksessionsListGrid.addColumn(checkColumn,
-                SafeHtmlUtils.fromSafeConstant("<br/>"));
+
+        ksessionsListGrid.addColumn(checkColumn, SafeHtmlUtils.fromSafeConstant("<br/>"));
         ksessionsListGrid.setColumnWidth(checkColumn, "40px");
 
         // Id.
-        Column<String, String> sessionIdColumn =
-                new Column<String, String>(new TextCell()) {
+        Column<String, String> sessionIdColumn = new Column<String, String>(new TextCell()) {
             @Override
             public String getValue(String object) {
                 return object;
             }
         };
         sessionIdColumn.setSortable(true);
-        sortHandler.setComparator(sessionIdColumn,
-                new Comparator<String>() {
-            public int compare(String o1,
-                    String o2) {
+        sortHandler.setComparator(sessionIdColumn, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
                 return o1.compareTo(o2);
             }
         });
-        ksessionsListGrid.addColumn(sessionIdColumn,
-                new ResizableHeader("Id", ksessionsListGrid, sessionIdColumn));
+        ksessionsListGrid.addColumn(sessionIdColumn, new ResizableHeader("Id", ksessionsListGrid, sessionIdColumn));
 
         // actions (icons)
         List<HasCell<String, ?>> cells = new LinkedList<HasCell<String, ?>>();
@@ -221,12 +206,12 @@ public class KieSessionsListViewImpl extends Composite
         cells.add(new DeleteActionHasCell("Delete Kie Session", new Delegate<String>() {
             @Override
             public void execute(String session) {
-//                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
-//                System.out.println("Opening form for process id = "+process.getId());
-//                placeRequestImpl.addParameter("processId", process.getId());
-//                placeRequestImpl.addParameter("sessionId", String.valueOf(process.getSessionId()));
-//                placeManager.goTo(placeRequestImpl);
-                displayNotification("Session "+session+ "needs to be deleted here!!");
+                // PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
+                // System.out.println("Opening form for process id = "+process.getId());
+                // placeRequestImpl.addParameter("processId", process.getId());
+                // placeRequestImpl.addParameter("sessionId", String.valueOf(process.getSessionId()));
+                // placeManager.goTo(placeRequestImpl);
+                displayNotification("Session " + session + "needs to be deleted here!!");
             }
         }));
 
@@ -234,25 +219,26 @@ public class KieSessionsListViewImpl extends Composite
             @Override
             public void execute(String session) {
 
-//                PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Definition_Details());
-//                placeRequestImpl.addParameter("processId", process.getId());
-//                placeRequestImpl.addParameter("sessionId", Integer.toString(process.getSessionId()));
-//                placeManager.goTo(placeRequestImpl);
-              displayNotification("Session "+session+ " go to details here!!");
+                // PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Definition_Details());
+                // placeRequestImpl.addParameter("processId", process.getId());
+                // placeRequestImpl.addParameter("sessionId", Integer.toString(process.getSessionId()));
+                // placeManager.goTo(placeRequestImpl);
+                displayNotification("Session " + session + " go to details here!!");
             }
         }));
 
         CompositeCell<String> cell = new CompositeCell<String>(cells);
         Column<String, String> actionsColumn = new Column<String, String>(cell) {
-                                                        @Override
-                                                        public String getValue(String object) {
-                                                            return object;
-                                                        }
-                                                    };
+            @Override
+            public String getValue(String object) {
+                return object;
+            }
+        };
         ksessionsListGrid.addColumn(actionsColumn, "Actions");
         ksessionsListGrid.setColumnWidth(actionsColumn, "70px");
     }
 
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
@@ -264,8 +250,6 @@ public class KieSessionsListViewImpl extends Composite
     public ListHandler<String> getSortHandler() {
         return sortHandler;
     }
-
-    
 
     private class DeleteActionHasCell implements HasCell<String, String> {
 
@@ -336,4 +320,5 @@ public class KieSessionsListViewImpl extends Composite
             return object;
         }
     }
+
 }

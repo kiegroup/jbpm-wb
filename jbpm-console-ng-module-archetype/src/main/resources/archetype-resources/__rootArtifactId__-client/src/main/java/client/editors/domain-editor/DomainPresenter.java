@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.client.editors.domain-editor;
 
 import com.google.gwt.user.client.ui.TextBox;
@@ -45,13 +46,15 @@ public class DomainPresenter {
             UberView<DomainPresenter> {
 
         void displayNotification(String text);
-
        
     }
+    
     @Inject
     DomainView view;
+    
     @Inject
     Identity identity;
+    
     @Inject
     Caller<DomainService> domainService;
     
@@ -96,8 +99,5 @@ public class DomainPresenter {
         
 
     }
-
-   
-
    
 }

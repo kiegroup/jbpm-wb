@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.bd.model;
 
 import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- * @author salaboy
- */
 @Portable
-public class KieSessionSummary implements Serializable{
+public class KieSessionSummary implements Serializable {
     private long sessionId;
 
     public KieSessionSummary(long sessionId) {
@@ -40,7 +37,5 @@ public class KieSessionSummary implements Serializable{
     public void setSessionId(long sessionId) {
         this.sessionId = sessionId;
     }
-    
-    
-    
+
 }
