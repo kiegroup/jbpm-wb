@@ -1,34 +1,30 @@
 <div class="row-fluid">
   <div class="span12">
-      <label data-field="taskNameLabel"></label>
-      <input type="text" class="span12" data-field="taskNameText" />
-      <input type="checkbox" style="display:inline" id="quickTaskCheck" data-field="quickTaskCheck"/>
-      
-     <div class="accordion">
-    <!-- GROUP -->
-    <div class="accordion-group">
-      <div class="accordion-heading">
-        <a class="accordion-toggle">
-          <label data-field="advancedLabel"></label>
-        </a>
-      </div>
-      <div id="desc_collapse" class="accordion-body collapse in" style="position: relative;">
-        <div class="accordion-inner">
-              <label data-field="dueDateLabel"></label>
-              <input type="text" data-field="dueDate" id="dueDate">
-              <label data-field="userLabel"></label>
-              <input type="text" data-field="userText" id="userText" />
-              <label data-field="taskPriorityLabel"></label>
-              <select data-field="taskPriorityListBox" id="taskPriorityListBox">
-              </select>
+    <label data-field="taskNameLabel"></label>
+    <input type="text" class="span12" data-field="taskNameText" />
+    <input type="checkbox" style="display: inline" id="quickTaskCheck" data-field="quickTaskCheck" />
+
+    <div class="accordion">
+      <!-- GROUP -->
+      <div class="accordion-group">
+        <div class="accordion-heading">
+          <a class="accordion-toggle"> <label data-field="advancedLabel"></label>
+          </a>
+        </div>
+        <div id="desc_collapse" class="accordion-body collapse in" style="position: relative;">
+          <div class="accordion-inner">
+            <label data-field="dueDateLabel"></label>
+            <input type="text" data-field="dueDate" id="dueDate" />
+            <label data-field="userLabel"></label>
+            <input type="text" data-field="userText" id="userText" />
+            <label data-field="taskPriorityLabel"></label>
+            <select data-field="taskPriorityListBox" id="taskPriorityListBox"></select>
+          </div>
         </div>
       </div>
-    </div> 
-     </div>
+    </div>
     <div class="modal-footer span12">
-      <button class="btn" data-field="addTaskButton" id="addTaskButton" ></button>
+      <button class="btn" data-field="addTaskButton" id="addTaskButton"></button>
     </div>
   </div>
 </div>
-
-
