@@ -1,3 +1,4 @@
+
 #set( $symbol_pound = '#' )
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
@@ -23,9 +24,9 @@
     "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
 <module>
 
-  <inherits name='org.jboss.errai.bus.ErraiBus'/>
+  <inherits name='org.jboss.errai.bus.ErraiBus' />
 
-  <source path="model"/>
-  <source path="service"/>
+  <source path="model" />
+  <source path="service" />
 
 </module>

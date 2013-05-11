@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         version="2.5">
-
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 
   <listener>
     <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
@@ -15,9 +12,7 @@
 
   <filter>
     <filter-name>UberFire Security Filter</filter-name>
-    <filter-class>
-      org.uberfire.security.server.UberFireSecurityFilter
-    </filter-class>
+    <filter-class>org.uberfire.security.server.UberFireSecurityFilter</filter-class>
     <init-param>
       <param-name>org.uberfire.cookie.id</param-name>
       <param-value>jbpm.console</param-value>
@@ -82,9 +77,7 @@ profile in pom.xml to use that. -->
   </filter-mapping>
   <filter>
     <filter-name>Redirect Filter</filter-name>
-    <filter-class>
-      org.jbpm.designer.filter.DesignerResourcesRedirectFilter
-    </filter-class>
+    <filter-class>org.jbpm.designer.filter.DesignerResourcesRedirectFilter</filter-class>
     <init-param>
       <param-name>redirectTo</param-name>
       <param-value>/org.jbpm.console.ng.jBPMShowcase</param-value>
@@ -350,14 +343,14 @@ profile in pom.xml to use that. -->
     <url-pattern>/stencilset/*</url-pattern>
   </servlet-mapping>
   <!-- the number within the session-timout element must be expressed in
-minutes. it is now 24 hours. -->
+       minutes. it is now 24 hours. -->
   <session-config>
     <session-timeout>1440</session-timeout>
   </session-config>
   <!-- jBoss' default mapping is to "image/svg", which causes the client
-not to parse the SVG content as XML. However, the Oryx Editor client relies
-on that behaviour. The mimetype as per W3C specification must be "image/svg+xml".
-See http://www.w3.org/TR/SVG/intro.html#MIMEType. -->
+       not to parse the SVG content as XML. However, the Oryx Editor client relies
+       on that behaviour. The mimetype as per W3C specification must be "image/svg+xml".
+       See http://www.w3.org/TR/SVG/intro.html#MIMEType. -->
   <mime-mapping>
     <extension>svg</extension>
     <mime-type>image/svg+xml</mime-type>

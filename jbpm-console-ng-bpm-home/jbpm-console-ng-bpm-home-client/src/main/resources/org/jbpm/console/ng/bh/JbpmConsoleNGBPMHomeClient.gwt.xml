@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ Copyright 2012 JBoss Inc
   ~
@@ -21,13 +20,13 @@
 <module>
 
     <!-- Inherit the core Web Toolkit stuff. -->
-  <inherits name="com.google.gwt.i18n.I18N"/>
-  <inherits name="com.google.gwt.http.HTTP"/>
-  <inherits name="com.google.gwt.user.User"/>
+  <inherits name="com.google.gwt.i18n.I18N" />
+  <inherits name="com.google.gwt.http.HTTP" />
+  <inherits name="com.google.gwt.user.User" />
 
-  <inherits name='org.jboss.errai.bus.ErraiBus'/>
+  <inherits name='org.jboss.errai.bus.ErraiBus' />
 
-  <inherits name="org.uberfire.UberfireWorkbench"/>
-  <inherits name="org.uberfire.UberfireWidgetsCommons"/>
+  <inherits name="org.uberfire.UberfireWorkbench" />
+  <inherits name="org.uberfire.UberfireWidgetsCommons" />
 
 </module>

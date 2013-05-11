@@ -15,7 +15,8 @@
 ~ limitations under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jbpm</groupId>
@@ -27,20 +28,20 @@
   <packaging>jar</packaging>
 
   <name>jBPM Console NG - Process Runtime Client</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-process-runtime-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-business-domain-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-kie-services</artifactId>
@@ -51,7 +52,7 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-backend-api</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-widgets-commons</artifactId>
@@ -83,9 +84,9 @@
       <artifactId>errai-bus</artifactId>
     </dependency>
     
-    <!-- Errai UI --> 
-    
-    
+    <!-- Errai UI -->
+
+
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-ui</artifactId>
@@ -118,5 +119,5 @@
       </resource>
     </resources>
   </build>
-  
+
 </project>
