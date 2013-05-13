@@ -30,11 +30,6 @@ public class RequestScopedProducer {
         return em;
     }
 
-    @Produces
-    public Logger createLogger(InjectionPoint injectionPoint) {
-        return Logger.getLogger(injectionPoint.getMember().getDeclaringClass().getName());
-    }
-
     public void close(@Disposes EntityManager em) {
         em.close();
     }

@@ -1,9 +1,11 @@
 package org.jbpm.console.ng.server.impl;
 
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.naming.InitialContext;
@@ -16,6 +18,8 @@ import org.jbpm.runtime.manager.impl.DefaultRuntimeEnvironment;
 import org.jbpm.runtime.manager.impl.SimpleRuntimeEnvironment;
 import org.jbpm.services.task.identity.JBossUserGroupCallbackImpl;
 import org.jbpm.shared.services.cdi.Selectable;
+import org.kie.commons.io.IOService;
+import org.kie.commons.io.impl.IOServiceDotFileImpl;
 import org.kie.internal.runtime.manager.RuntimeEnvironment;
 import org.kie.internal.runtime.manager.cdi.qualifier.PerProcessInstance;
 import org.kie.internal.runtime.manager.cdi.qualifier.PerRequest;
@@ -31,6 +35,7 @@ import org.uberfire.backend.server.repositories.DefaultSystemRepository;
 public class ApplicationScopedProvider {
 
     private final DefaultSystemRepository systemRepository = new DefaultSystemRepository();
+    private final IOService ioService = new IOServiceDotFileImpl();
 
     @Inject
     @Selectable
@@ -75,4 +80,15 @@ public class ApplicationScopedProvider {
         return environment;
     }
 
+    @Produces
+    @Named("ioStrategy")
+    public IOService ioService() {
+        return ioService;
+    }
+
+
+    @Produces
+    public Logger createLogger(InjectionPoint injectionPoint) {
+        return Logger.getLogger(injectionPoint.getMember().getDeclaringClass().getName());
+    }
 }
