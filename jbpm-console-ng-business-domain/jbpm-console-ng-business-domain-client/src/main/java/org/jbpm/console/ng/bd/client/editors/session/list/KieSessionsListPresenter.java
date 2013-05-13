@@ -54,7 +54,7 @@ public class KieSessionsListPresenter {
 
     private Constants constants = GWT.create(Constants.class);
 
-    private ListDataProvider<String> dataProvider = new ListDataProvider<String>();
+    private ListDataProvider<KModuleDeploymentUnitSummary> dataProvider = new ListDataProvider<KModuleDeploymentUnitSummary>();
 
     public KieSessionsListPresenter() {
     }
@@ -73,20 +73,31 @@ public class KieSessionsListPresenter {
     public void init() {
     }
 
-    public void newKieSessionButton(String group, String artifact, String version, String kbaseName, final String kieSessionName) {
+    public void deployUnit(final String id, final String group, final String artifact, final String version, final String kbaseName, final String kieSessionName) {
         deploymentManager.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
-                view.displayNotification(" Kjar Deployed " + kieSessionName);
-
+                view.displayNotification(" Kjar Deployed " + group + ":" + artifact + ":" + version);
+                refreshDeployedUnits();
             }
-        }).deploy(new KModuleDeploymentUnitSummary(kbaseName, group, artifact, version, kbaseName, kieSessionName));
+        }).deploy(new KModuleDeploymentUnitSummary(id, group, artifact, version, kbaseName, kieSessionName));
+    }
+    
+    public void undeployUnit(final String id, final String group, final String artifact, final String version, 
+                            final String kbaseName, final String kieSessionName) {
+        deploymentManager.call(new RemoteCallback<Void>() {
+            @Override
+            public void callback(Void nothing) {
+                view.displayNotification(" Kjar Undeployed " + group + ":" + artifact + ":" + version);
+                refreshDeployedUnits();
+            }
+        }).undeploy(new KModuleDeploymentUnitSummary(id, group, artifact, version, kbaseName, kieSessionName));
     }
 
     public void refreshDeployedUnits() {
-        deploymentManager.call(new RemoteCallback<List<String>>() {
+        deploymentManager.call(new RemoteCallback<List<KModuleDeploymentUnitSummary>>() {
             @Override
-            public void callback(List<String> ids) {
+            public void callback(List<KModuleDeploymentUnitSummary> ids) {
                 dataProvider.getList().clear();
                 dataProvider.getList().addAll(ids);
                 dataProvider.refresh();
@@ -95,11 +106,11 @@ public class KieSessionsListPresenter {
 
     }
 
-    public void addDataDisplay(HasData<String> display) {
+    public void addDataDisplay(HasData<KModuleDeploymentUnitSummary> display) {
         dataProvider.addDataDisplay(display);
     }
 
-    public ListDataProvider<String> getDataProvider() {
+    public ListDataProvider<KModuleDeploymentUnitSummary> getDataProvider() {
         return dataProvider;
     }
 

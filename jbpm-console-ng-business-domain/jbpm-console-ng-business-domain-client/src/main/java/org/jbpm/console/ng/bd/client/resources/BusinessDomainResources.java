@@ -18,21 +18,13 @@ package org.jbpm.console.ng.bd.client.resources;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.client.ImageResource.ImageOptions;
-import com.google.gwt.resources.client.ImageResource.RepeatStyle;
 
-public interface ShowcaseResources extends ClientBundle {
+public interface BusinessDomainResources extends ClientBundle {
 
-    ShowcaseResources INSTANCE = GWT.create(ShowcaseResources.class);
+    BusinessDomainResources INSTANCE = GWT.create(BusinessDomainResources.class);
 
-    @ImageOptions(repeatStyle = RepeatStyle.Horizontal)
-    @Source("images/jbossrulesBlue.gif")
-    ImageResource jbossrulesBlue();
+    
 
-    @Source("css/Showcase.css")
-    ShowcaseCss showcaseCss();
-
-    ShowcaseImages showcaseImages();
+    BusinessDomainImages showcaseImages();
 
 }

@@ -76,6 +76,25 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         }
 
     }
+    
+    @Override
+    public void undeploy(DeploymentUnitSummary unitSummary) {
+        DeploymentUnit unit = null;
+        if (unitSummary.getType().equals("kjar")) {
+            unit = new KModuleDeploymentUnit(((KModuleDeploymentUnitSummary) unitSummary).getGroupId(),
+                    ((KModuleDeploymentUnitSummary) unitSummary).getArtifactId(),
+                    ((KModuleDeploymentUnitSummary) unitSummary).getVersion(),
+                    ((KModuleDeploymentUnitSummary) unitSummary).getKbaseName(),
+                    ((KModuleDeploymentUnitSummary) unitSummary).getKsessionName());
+        }// add for vfs
+
+        if (deploymentService.getDeployedUnit(unit.getIdentifier()) == null) {
+            cleanup(unit.getIdentifier());
+            deploymentService.undeploy(unit);
+        }
+
+    }
+    
 
     @Override
     public void redeploy() {
@@ -119,12 +138,15 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
     }
 
     @Override
-    public List<String> getDeploymentUnits() {
+    public List<KModuleDeploymentUnitSummary> getDeploymentUnits() { 
         Collection<DeployedUnit> deployedUnits = deploymentService.getDeployedUnits();
-        List<String> unitsIds = new ArrayList<String>(deployedUnits.size());
-        for (DeployedUnit du : deployedUnits) {
-            unitsIds.add(du.getDeploymentUnit().getIdentifier());
-
+        List<KModuleDeploymentUnitSummary> unitsIds = new ArrayList<KModuleDeploymentUnitSummary>(deployedUnits.size());
+        for (DeployedUnit du : deployedUnits) {          
+                KModuleDeploymentUnit kdu =  (KModuleDeploymentUnit)du.getDeploymentUnit();
+                KModuleDeploymentUnitSummary duSummary = new KModuleDeploymentUnitSummary(kdu.getIdentifier(), kdu.getGroupId(),
+                                                            kdu.getArtifactId(), kdu.getVersion(), kdu.getKbaseName(), kdu.getKsessionName());
+                unitsIds.add(duSummary);
+  
         }
         return unitsIds;
     }

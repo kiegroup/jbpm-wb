@@ -21,6 +21,7 @@ import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.cell.client.ActionCell;
 import java.util.Set;
 
@@ -45,6 +46,7 @@ import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
@@ -61,8 +63,9 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
-import org.jbpm.console.ng.bd.client.resources.ShowcaseImages;
+import org.jbpm.console.ng.bd.client.resources.BusinessDomainImages;
 import org.jbpm.console.ng.bd.client.util.ResizableHeader;
+import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 import org.jbpm.console.ng.bd.model.events.KieSessionSelectionEvent;
 
 @Dependent
@@ -74,6 +77,15 @@ public class KieSessionsListViewImpl extends Composite implements KieSessionsLis
     @Inject
     private PlaceManager placeManager;
     private KieSessionsListPresenter presenter;
+    
+    @Inject
+    @DataField
+    public Label deploymentIDLabel;
+    
+    @Inject
+    @DataField
+    public TextBox deploymentIDText;
+    
     @Inject
     @DataField
     public TextBox groupText;
@@ -96,146 +108,259 @@ public class KieSessionsListViewImpl extends Composite implements KieSessionsLis
 
     @Inject
     @DataField
-    public Button newSessionButton;
+    public Button deployUnitButton;
 
     @Inject
     @DataField
-    public DataGrid<String> ksessionsListGrid;
+    public Label deployedUnitsLabel;
+    
+    @Inject
+    @DataField
+    public Label groupLabel;
+    
+    @Inject
+    @DataField
+    public Label artifactLabel;
+    
+    @Inject
+    @DataField
+    public Label versionLabel;
+    
+    @Inject
+    @DataField
+    public Label kbaseNameLabel;
+    
+    @Inject
+    @DataField
+    public Label kieSessionNameLabel;
+    
+    @Inject
+    @DataField
+    public DataGrid<KModuleDeploymentUnitSummary> deployedUnitsListGrid;
 
     @Inject
     @DataField
-    public FlowPanel listContainerKsessions;
+    public FlowPanel listContainerDeployedUnits;
 
     @Inject
     @DataField
-    public SimplePager pagerKsessions;
+    public SimplePager pager;
+    
+    @Inject
+    @DataField
+    public IconAnchor refreshIcon;
 
-    private Set<String> selectedKieSession;
+    private Set<KModuleDeploymentUnitSummary> selectedKieSession;
     @Inject
     private Event<NotificationEvent> notification;
     @Inject
     private Event<KieSessionSelectionEvent> kieSessionSelection;
-    private ListHandler<String> sortHandler;
+    private ListHandler<KModuleDeploymentUnitSummary> sortHandler;
 
     private Constants constants = GWT.create(Constants.class);
-    private ShowcaseImages images = GWT.create(ShowcaseImages.class);
+    private BusinessDomainImages images = GWT.create(BusinessDomainImages.class);
 
     @Override
-    public void init(KieSessionsListPresenter presenter) {
+    public void init(final KieSessionsListPresenter presenter) {
         this.presenter = presenter;
 
-        listContainerKsessions.add(ksessionsListGrid);
-        listContainerKsessions.add(pagerKsessions);
-
-        ksessionsListGrid.setHeight("350px");
+        listContainerDeployedUnits.add(deployedUnitsListGrid);
+        listContainerDeployedUnits.add(pager);
+        
+        deployUnitButton.setText(constants.Deploy_Unit());
+        deployedUnitsLabel.setText(constants.Deploy_A_New_Unit());
+        groupLabel.setText(constants.GroupID());
+        artifactLabel.setText(constants.Artifact());
+        versionLabel.setText(constants.Version());
+        kbaseNameLabel.setText(constants.KieBaseName());
+        kieSessionNameLabel.setText(constants.KieSessionName());
+        deploymentIDLabel.setText(constants.Deploy_Unit());
+        
+        refreshIcon.setTitle(constants.Refresh());
+        refreshIcon.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                presenter.refreshDeployedUnits();
+                displayNotification(constants.Deployed_Units_Refreshed());
+            }
+        });
+        
+        deployedUnitsListGrid.setHeight("350px");
         // Set the message to display when the table is empty.
         Label emptyTable = new Label(constants.No_Deployment_Units_Available());
         emptyTable.setStyleName("");
-        ksessionsListGrid.setEmptyTableWidget(emptyTable);
+        deployedUnitsListGrid.setEmptyTableWidget(emptyTable);
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
-        sortHandler = new ListHandler<String>(presenter.getDataProvider().getList());
-        ksessionsListGrid.addColumnSortHandler(sortHandler);
+        sortHandler = new ListHandler<KModuleDeploymentUnitSummary>(presenter.getDataProvider().getList());
+        deployedUnitsListGrid.addColumnSortHandler(sortHandler);
 
         // Create a Pager to control the table.
 
-        pagerKsessions.setDisplay(ksessionsListGrid);
-        pagerKsessions.setPageSize(10);
+        pager.setDisplay(deployedUnitsListGrid);
+        pager.setPageSize(10);
 
         // Add a selection model so we can select cells.
-        final MultiSelectionModel<String> selectionModel = new MultiSelectionModel<String>();
+        final MultiSelectionModel<KModuleDeploymentUnitSummary> selectionModel = new MultiSelectionModel<KModuleDeploymentUnitSummary>();
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             @Override
             public void onSelectionChange(SelectionChangeEvent event) {
                 selectedKieSession = selectionModel.getSelectedSet();
-                for (String kieSession : selectedKieSession) {
-
+                for (KModuleDeploymentUnitSummary unit : selectedKieSession) {
+                    //
                 }
             }
         });
 
-        ksessionsListGrid.setSelectionModel(selectionModel, DefaultSelectionEventManager.<String> createCheckboxManager());
+        deployedUnitsListGrid.setSelectionModel(selectionModel, DefaultSelectionEventManager.<KModuleDeploymentUnitSummary> createCheckboxManager());
 
         initTableColumns(selectionModel);
 
-        presenter.addDataDisplay(ksessionsListGrid);
+        presenter.addDataDisplay(deployedUnitsListGrid);
 
     }
 
-    @EventHandler("newSessionButton")
-    public void newSessionButton(ClickEvent e) {
-        presenter.newKieSessionButton(groupText.getText(), artifactText.getText(), versionText.getText(),
+    @EventHandler("deployUnitButton")
+    public void deployUnitButton(ClickEvent e) {
+        presenter.deployUnit(deploymentIDText.getText(), groupText.getText(), artifactText.getText(), versionText.getText(),
                 kbaseNameText.getText(), kieSessionNameText.getText());
     }
 
-    private void initTableColumns(final SelectionModel<String> selectionModel) {
-        // Checkbox column. This table will uses a checkbox column for selection.
-        // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
-        // mouse selection.
+    private void initTableColumns(final SelectionModel<KModuleDeploymentUnitSummary> selectionModel) {
+        
 
-        Column<String, Boolean> checkColumn = new Column<String, Boolean>(new CheckboxCell(true, false)) {
+        // Unit Id
+        Column<KModuleDeploymentUnitSummary, String> unitIdColumn = new Column<KModuleDeploymentUnitSummary, String>(new TextCell()) {
             @Override
-            public Boolean getValue(String object) {
-                // Get the value from the selection model.
-                return selectionModel.isSelected(object);
+            public String getValue(KModuleDeploymentUnitSummary unit) {
+                return unit.getId();
             }
         };
-
-        ksessionsListGrid.addColumn(checkColumn, SafeHtmlUtils.fromSafeConstant("<br/>"));
-        ksessionsListGrid.setColumnWidth(checkColumn, "40px");
-
-        // Id.
-        Column<String, String> sessionIdColumn = new Column<String, String>(new TextCell()) {
+        unitIdColumn.setSortable(true);
+        sortHandler.setComparator(unitIdColumn, new Comparator<KModuleDeploymentUnitSummary>() {
             @Override
-            public String getValue(String object) {
-                return object;
-            }
-        };
-        sessionIdColumn.setSortable(true);
-        sortHandler.setComparator(sessionIdColumn, new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.compareTo(o2);
+            public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
+                return o1.getId().compareTo(o2.getId());
             }
         });
-        ksessionsListGrid.addColumn(sessionIdColumn, new ResizableHeader("Id", ksessionsListGrid, sessionIdColumn));
+        deployedUnitsListGrid.addColumn(unitIdColumn, new ResizableHeader(constants.Unit(), deployedUnitsListGrid, unitIdColumn));
+        
+        
+        // Unit Group Id
+        Column<KModuleDeploymentUnitSummary, String> groupIdColumn = new Column<KModuleDeploymentUnitSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(KModuleDeploymentUnitSummary unit) {
+                return unit.getGroupId();
+            }
+        };
+        groupIdColumn.setSortable(true);
+        sortHandler.setComparator(groupIdColumn, new Comparator<KModuleDeploymentUnitSummary>() {
+            @Override
+            public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
+                return o1.getGroupId().compareTo(o2.getGroupId());
+            }
+        });
+        deployedUnitsListGrid.addColumn(groupIdColumn, new ResizableHeader(constants.GroupID(), deployedUnitsListGrid, groupIdColumn));
+        
+        // Unit Artifact Id
+        Column<KModuleDeploymentUnitSummary, String> artifactIdColumn = new Column<KModuleDeploymentUnitSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(KModuleDeploymentUnitSummary unit) {
+                return unit.getArtifactId();
+            }
+        };
+        artifactIdColumn.setSortable(true);
+        sortHandler.setComparator(artifactIdColumn, new Comparator<KModuleDeploymentUnitSummary>() {
+            @Override
+            public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
+                return o1.getArtifactId().compareTo(o2.getArtifactId());
+            }
+        });
+        deployedUnitsListGrid.addColumn(artifactIdColumn, new ResizableHeader(constants.Artifact(), deployedUnitsListGrid, artifactIdColumn));
+        
+        
+         // Unit Version
+        Column<KModuleDeploymentUnitSummary, String> versionColumn = new Column<KModuleDeploymentUnitSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(KModuleDeploymentUnitSummary unit) {
+                return unit.getVersion();
+            }
+        };
+        versionColumn.setSortable(true);
+        sortHandler.setComparator(versionColumn, new Comparator<KModuleDeploymentUnitSummary>() {
+            @Override
+            public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
+                return o1.getVersion().compareTo(o2.getVersion());
+            }
+        });
+        deployedUnitsListGrid.addColumn(versionColumn, new ResizableHeader(constants.Version(), deployedUnitsListGrid, versionColumn));
+        
+         // Unit KBase
+        Column<KModuleDeploymentUnitSummary, String> kbaseColumn = new Column<KModuleDeploymentUnitSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(KModuleDeploymentUnitSummary unit) {
+                return unit.getKbaseName();
+            }
+        };
+        kbaseColumn.setSortable(true);
+        sortHandler.setComparator(kbaseColumn, new Comparator<KModuleDeploymentUnitSummary>() {
+            @Override
+            public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
+                return o1.getKbaseName().compareTo(o2.getKbaseName());
+            }
+        });
+        deployedUnitsListGrid.addColumn(kbaseColumn, new ResizableHeader(constants.KieBaseName(), deployedUnitsListGrid, kbaseColumn));
+        
+         // Unit KBase
+        Column<KModuleDeploymentUnitSummary, String> ksessionColumn = new Column<KModuleDeploymentUnitSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(KModuleDeploymentUnitSummary unit) {
+                return unit.getKsessionName();
+            }
+        };
+        ksessionColumn.setSortable(true);
+        sortHandler.setComparator(ksessionColumn, new Comparator<KModuleDeploymentUnitSummary>() {
+            @Override
+            public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
+                return o1.getKsessionName().compareTo(o2.getKsessionName());
+            }
+        });
+        deployedUnitsListGrid.addColumn(ksessionColumn, new ResizableHeader(constants.KieSessionName(), deployedUnitsListGrid, ksessionColumn));
+        
+        
 
         // actions (icons)
-        List<HasCell<String, ?>> cells = new LinkedList<HasCell<String, ?>>();
+        List<HasCell<KModuleDeploymentUnitSummary, ?>> cells = new LinkedList<HasCell<KModuleDeploymentUnitSummary, ?>>();
 
-        cells.add(new DeleteActionHasCell("Delete Kie Session", new Delegate<String>() {
+        cells.add(new DeleteActionHasCell("Undeploy", new Delegate<KModuleDeploymentUnitSummary>() {
             @Override
-            public void execute(String session) {
-                // PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
-                // System.out.println("Opening form for process id = "+process.getId());
-                // placeRequestImpl.addParameter("processId", process.getId());
-                // placeRequestImpl.addParameter("sessionId", String.valueOf(process.getSessionId()));
-                // placeManager.goTo(placeRequestImpl);
-                displayNotification("Session " + session + "needs to be deleted here!!");
+            public void execute(KModuleDeploymentUnitSummary unit) {
+                
+                presenter.undeployUnit(unit.getId(), unit.getGroupId(), unit.getArtifactId(), 
+                                            unit.getVersion(), unit.getKbaseName(), unit.getKsessionName());
+                displayNotification("Deployment Unit " + unit.getId() + " undeployed!");
             }
         }));
 
-        cells.add(new DetailsActionHasCell("Details", new Delegate<String>() {
+        cells.add(new DetailsActionHasCell("Details", new Delegate<KModuleDeploymentUnitSummary>() {
             @Override
-            public void execute(String session) {
+            public void execute(KModuleDeploymentUnitSummary unit) {
 
-                // PlaceRequest placeRequestImpl = new DefaultPlaceRequest(constants.Process_Definition_Details());
-                // placeRequestImpl.addParameter("processId", process.getId());
-                // placeRequestImpl.addParameter("sessionId", Integer.toString(process.getSessionId()));
-                // placeManager.goTo(placeRequestImpl);
-                displayNotification("Session " + session + " go to details here!!");
+               
+                displayNotification("Deployment Unit " + unit.getId() + " go to details here!!");
             }
         }));
 
-        CompositeCell<String> cell = new CompositeCell<String>(cells);
-        Column<String, String> actionsColumn = new Column<String, String>(cell) {
+        CompositeCell<KModuleDeploymentUnitSummary> cell = new CompositeCell<KModuleDeploymentUnitSummary>(cells);
+        Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> actionsColumn 
+                        = new Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary>(cell) {
             @Override
-            public String getValue(String object) {
+            public KModuleDeploymentUnitSummary getValue(KModuleDeploymentUnitSummary object) {
                 return object;
             }
         };
-        ksessionsListGrid.addColumn(actionsColumn, "Actions");
-        ksessionsListGrid.setColumnWidth(actionsColumn, "70px");
+        deployedUnitsListGrid.addColumn(actionsColumn, constants.Actions());
+        deployedUnitsListGrid.setColumnWidth(actionsColumn, "70px");
     }
 
     @Override
@@ -243,26 +368,26 @@ public class KieSessionsListViewImpl extends Composite implements KieSessionsLis
         notification.fire(new NotificationEvent(text));
     }
 
-    public DataGrid<String> getDataGrid() {
-        return ksessionsListGrid;
+    public DataGrid<KModuleDeploymentUnitSummary> getDataGrid() {
+        return deployedUnitsListGrid;
     }
 
-    public ListHandler<String> getSortHandler() {
+    public ListHandler<KModuleDeploymentUnitSummary> getSortHandler() {
         return sortHandler;
     }
 
-    private class DeleteActionHasCell implements HasCell<String, String> {
+    private class DeleteActionHasCell implements HasCell<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> {
 
-        private ActionCell<String> cell;
+        private ActionCell<KModuleDeploymentUnitSummary> cell;
 
-        public DeleteActionHasCell(String text, Delegate<String> delegate) {
-            cell = new ActionCell<String>(text, delegate) {
+        public DeleteActionHasCell(String text, Delegate<KModuleDeploymentUnitSummary> delegate) {
+            cell = new ActionCell<KModuleDeploymentUnitSummary>(text, delegate) {
                 @Override
-                public void render(Cell.Context context, String value, SafeHtmlBuilder sb) {
+                public void render(Cell.Context context, KModuleDeploymentUnitSummary value, SafeHtmlBuilder sb) {
 
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.startIcon());
+                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.undeployGridIcon());
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='Start'>");
+                    mysb.appendHtmlConstant("<span title='"+constants.Undeploy()+"'>");
                     mysb.append(imageProto.getSafeHtml());
                     mysb.appendHtmlConstant("</span>");
                     sb.append(mysb.toSafeHtml());
@@ -271,33 +396,33 @@ public class KieSessionsListViewImpl extends Composite implements KieSessionsLis
         }
 
         @Override
-        public Cell<String> getCell() {
+        public Cell<KModuleDeploymentUnitSummary> getCell() {
             return cell;
         }
 
         @Override
-        public FieldUpdater<String, String> getFieldUpdater() {
+        public FieldUpdater<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> getFieldUpdater() {
             return null;
         }
 
         @Override
-        public String getValue(String object) {
+        public KModuleDeploymentUnitSummary getValue(KModuleDeploymentUnitSummary object) {
             return object;
         }
     }
 
-    private class DetailsActionHasCell implements HasCell<String, String> {
+    private class DetailsActionHasCell implements HasCell<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> {
 
-        private ActionCell<String> cell;
+        private ActionCell<KModuleDeploymentUnitSummary> cell;
 
-        public DetailsActionHasCell(String text, Delegate<String> delegate) {
-            cell = new ActionCell<String>(text, delegate) {
+        public DetailsActionHasCell(String text, Delegate<KModuleDeploymentUnitSummary> delegate) {
+            cell = new ActionCell<KModuleDeploymentUnitSummary>(text, delegate) {
                 @Override
-                public void render(Cell.Context context, String value, SafeHtmlBuilder sb) {
+                public void render(Cell.Context context, KModuleDeploymentUnitSummary value, SafeHtmlBuilder sb) {
 
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.detailsIcon());
+                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.detailsGridIcon());
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='Details'>");
+                    mysb.appendHtmlConstant("<span title='"+constants.Details()+"'>");
                     mysb.append(imageProto.getSafeHtml());
                     mysb.appendHtmlConstant("</span>");
                     sb.append(mysb.toSafeHtml());
@@ -306,17 +431,17 @@ public class KieSessionsListViewImpl extends Composite implements KieSessionsLis
         }
 
         @Override
-        public Cell<String> getCell() {
+        public Cell<KModuleDeploymentUnitSummary> getCell() {
             return cell;
         }
 
         @Override
-        public FieldUpdater<String, String> getFieldUpdater() {
+        public FieldUpdater<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> getFieldUpdater() {
             return null;
         }
 
         @Override
-        public String getValue(String object) {
+        public KModuleDeploymentUnitSummary getValue(KModuleDeploymentUnitSummary object) {
             return object;
         }
     }

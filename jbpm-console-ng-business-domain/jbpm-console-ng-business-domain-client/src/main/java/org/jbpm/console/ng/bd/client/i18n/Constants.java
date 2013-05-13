@@ -31,8 +31,34 @@ public interface Constants extends Messages {
 
     Constants INSTANCE = GWT.create(Constants.class);
 
-    public String No_Deployment_Units_Available();
+    String No_Deployment_Units_Available();
 
-    public String Deployment_Units();
+    String Deployment_Units();
+
+    String Undeploy();
+
+    String Details();
+
+    String Deploy_Unit();
+
+    String Deploy_A_New_Unit();
+
+    String GroupID();
+
+    String Artifact();
+
+    String Version();
+
+    String KieBaseName();
+
+    String KieSessionName();
+    
+    String Actions();
+
+    String Refresh();
+    
+    String Deployed_Units_Refreshed();
+
+    String Unit();
 
 }

@@ -19,14 +19,17 @@ package org.jbpm.console.ng.bd.service;
 import java.util.List;
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.bd.model.DeploymentUnitSummary;
+import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 
 @Remote
 public interface DeploymentManagerEntryPoint {
 
     void redeploy();
 
-    List<String> getDeploymentUnits();
+    List<KModuleDeploymentUnitSummary> getDeploymentUnits();
 
     void deploy(DeploymentUnitSummary unit);
+    
+    void undeploy(DeploymentUnitSummary unitSummary);
 
 }
