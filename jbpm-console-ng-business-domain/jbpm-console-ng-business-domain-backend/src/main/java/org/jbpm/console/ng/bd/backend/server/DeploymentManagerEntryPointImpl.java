@@ -71,7 +71,6 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         }// add for vfs
 
         if (deploymentService.getDeployedUnit(unit.getIdentifier()) == null) {
-            cleanup(unit.getIdentifier());
             deploymentService.deploy(unit);
         }
 
@@ -88,8 +87,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
                     ((KModuleDeploymentUnitSummary) unitSummary).getKsessionName());
         }// add for vfs
 
-        if (deploymentService.getDeployedUnit(unit.getIdentifier()) == null) {
-            cleanup(unit.getIdentifier());
+        if (deploymentService.getDeployedUnit(unit.getIdentifier()) != null) {
             deploymentService.undeploy(unit);
         }
 
