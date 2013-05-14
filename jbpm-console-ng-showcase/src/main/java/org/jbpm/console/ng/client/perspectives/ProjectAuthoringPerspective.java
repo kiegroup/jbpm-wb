@@ -16,15 +16,14 @@
 
 package org.jbpm.console.ng.client.perspectives;
 
-import com.google.gwt.core.client.GWT;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import org.jbpm.console.ng.client.i18n.Constants;
-import org.kie.guvnor.commons.ui.client.handlers.NewResourcePresenter;
 
-import org.kie.guvnor.commons.ui.client.handlers.NewResourcesMenu;
-import org.kie.guvnor.commons.ui.client.menu.ToolsMenu;
+import org.jbpm.console.ng.client.i18n.Constants;
+import org.kie.workbench.widgets.common.client.handlers.NewResourcePresenter;
+import org.kie.workbench.widgets.common.client.handlers.NewResourcesMenu;
+import org.kie.workbench.widgets.common.client.menu.ToolsMenu;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -44,6 +43,8 @@ import org.uberfire.client.workbench.widgets.toolbar.ToolBar;
 import org.uberfire.client.workbench.widgets.toolbar.impl.DefaultToolBar;
 import org.uberfire.client.workbench.widgets.toolbar.impl.DefaultToolBarItem;
 import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
+
+import com.google.gwt.core.client.GWT;
 
 @ApplicationScoped
 @WorkbenchPerspective(identifier = "Authoring")
@@ -125,16 +126,16 @@ public class ProjectAuthoringPerspective {
                         }
                     } )
                 .endMenu()
-                
+
                 .newTopLevelMenu("New")
                     .withItems(newResourcesMenu.getMenuItems())
                 .endMenu()
-                
+
                 .newTopLevelMenu("Tools")
                     .withItems(toolsMenu.getMenuItems())
                 .endMenu()
 
                 .build();
     }
-    
+
 }

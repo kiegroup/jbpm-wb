@@ -115,13 +115,6 @@
       <version>${project.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-process-modeling-client</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-
     <!-- UberFire -->
     <dependency>
       <groupId>org.uberfire</groupId>
@@ -343,8 +336,8 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.kie.guvnor</groupId>
-      <artifactId>guvnor-commons-ui</artifactId>
+      <groupId>org.kie.workbench.widgets</groupId>
+      <artifactId>kie-wb-common-ui</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.guvnor</groupId>
@@ -409,19 +402,15 @@
     </dependency>
     <dependency>
       <groupId>org.kie.guvnor</groupId>
-      <artifactId>guvnor-commons-ui</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.guvnor</groupId>
       <artifactId>guvnor-commons-builder</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.guvnor</groupId>
-      <artifactId>guvnor-explorer-backend</artifactId>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-project-explorer-backend</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.guvnor</groupId>
-      <artifactId>guvnor-explorer-client</artifactId>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-project-explorer-client</artifactId>
     </dependency>
     <dependency>
       <groupId>org.drools</groupId>
@@ -467,11 +456,10 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-client</compileSourcesArtifact>
-            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-modeling-client</compileSourcesArtifact>
 
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-decorated-grid-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-view-source-widget</compileSourcesArtifact>
-            <compileSourcesArtifact>org.kie.guvnor:guvnor-commons-ui</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-common-ui</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-commons-security</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.guvnor:guvnor-commons-services-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-metadata-widget</compileSourcesArtifact>
@@ -487,8 +475,7 @@
             <compileSourcesArtifact>org.guvnor:guvnor-m2repo-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.guvnor:guvnor-m2repo-editor-client</compileSourcesArtifact>
 
-            <compileSourcesArtifact>org.kie.guvnor:guvnor-explorer-client</compileSourcesArtifact>
-            <compileSourcesArtifact>org.kie.guvnor:guvnor-explorer-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-explorer-client</compileSourcesArtifact>
 
             <compileSourcesArtifact>org.uberfire:uberfire-security-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-security-client</compileSourcesArtifact>
