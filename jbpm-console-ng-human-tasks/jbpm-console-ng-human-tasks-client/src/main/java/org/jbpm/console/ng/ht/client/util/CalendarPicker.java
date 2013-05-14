@@ -18,6 +18,8 @@ package org.jbpm.console.ng.ht.client.util;
 
 import java.util.Date;
 
+import org.jbpm.console.ng.ht.client.i8n.Constants;
+
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ButtonGroup;
 import com.github.gwtbootstrap.client.ui.Label;
@@ -25,6 +27,7 @@ import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.github.gwtbootstrap.client.ui.constants.IconSize;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.github.gwtbootstrap.datepicker.client.ui.DateBox;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
@@ -42,6 +45,7 @@ import com.google.gwt.user.datepicker.client.CalendarUtil;
  * day/week/month.
  */
 public class CalendarPicker extends Composite implements HasValueChangeHandlers<Date> {
+    private Constants constants = GWT.create(Constants.class);
 
     public enum ViewType {
         DAY, WEEK, MONTH;
@@ -56,6 +60,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
     private IconAnchor calendarIcon;
     private Button previousButton;
     private Button nextButton;
+    private Button todayButton;
 
     public CalendarPicker() {
         currentDate = new Date();
@@ -65,6 +70,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
         calendarIcon = new IconAnchor();
         previousButton = new Button();
         nextButton = new Button();
+        todayButton = new Button();
         initWidget(mainPanel);
     }
 
@@ -84,9 +90,10 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
         initCalendarIcon();
         calendarPanel.add(calendarIcon);
 
-        initPrevNextButtons();
+        initPrevNextTodayButtons();
         ButtonGroup btnGroup = new ButtonGroup();
         btnGroup.add(previousButton);
+        btnGroup.add(todayButton);
         btnGroup.add(nextButton);
         mainPanel.add(btnGroup);
         updateCalendarLabelText();
@@ -94,7 +101,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
 
     /**
      * Adjust the date (back or to future) based on current view type (day/week/month).
-     * 
+     *
      * @param back flag that indicates if the date should be adjusted to future (+) or back (-)
      */
     private void adjustDate(boolean back) {
@@ -128,7 +135,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
 
     /**
      * Updates the label text based on current view type and current date.
-     * 
+     *
      * Examples for day, week and month:
      * <ul>
      * <li>day view: 2013-05-02
@@ -196,7 +203,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
         });
     }
 
-    private void initPrevNextButtons() {
+    private void initPrevNextTodayButtons() {
         previousButton.setIcon(IconType.CARET_LEFT);
         previousButton.setIconSize(IconSize.LARGE);
         previousButton.addClickHandler(new ClickHandler() {
@@ -211,6 +218,14 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
             @Override
             public void onClick(ClickEvent event) {
                 adjustDate(false);
+            }
+        });
+        todayButton.setText(constants.Today());
+        todayButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                currentDate = new Date();
+                propagateDateChanges();
             }
         });
     }
