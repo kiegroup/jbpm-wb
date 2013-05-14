@@ -30,7 +30,7 @@ public class AppSetup {
 
     // demo repository settings
     private static final String REPO_PLAYGROUND = "jbpm-playground";
-    private static final String ORIGIN_URL = "https://github.com/guvnorngtestuser1/jbpm-console-ng-playground.git";
+    private static final String ORIGIN_URL = "https://github.com/guvnorngtestuser1/jbpm-console-ng-playground-kjar.git";
     private static final String USER_NAME = "guvnorngtestuser1";
     private static final String PASSWORD = "test1234";
 
