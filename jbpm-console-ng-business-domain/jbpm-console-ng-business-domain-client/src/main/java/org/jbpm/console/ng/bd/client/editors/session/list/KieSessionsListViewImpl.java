@@ -33,6 +33,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+import org.uberfire.client.common.BusyPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 import org.uberfire.security.Identity;
@@ -338,7 +339,7 @@ public class KieSessionsListViewImpl extends Composite implements KieSessionsLis
                 
                 presenter.undeployUnit(unit.getId(), unit.getGroupId(), unit.getArtifactId(), 
                                             unit.getVersion(), unit.getKbaseName(), unit.getKsessionName());
-                displayNotification("Deployment Unit " + unit.getId() + " undeployed!");
+
             }
         }));
 
@@ -366,6 +367,26 @@ public class KieSessionsListViewImpl extends Composite implements KieSessionsLis
     @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
+    }
+
+    @Override
+    public void showBusyIndicator(final String message) {
+        BusyPopup.showMessage(message);
+    }
+
+    @Override
+    public void hideBusyIndicator() {
+        BusyPopup.close();
+    }
+
+    @Override
+    public void cleanForm() {
+        this.artifactText.setText("");
+        this.groupText.setText("");
+        this.versionText.setText("");
+        this.kbaseNameText.setText("");
+        this.kieSessionNameText.setText("");
+        this.deploymentIDText.setText("");
     }
 
     public DataGrid<KModuleDeploymentUnitSummary> getDataGrid() {

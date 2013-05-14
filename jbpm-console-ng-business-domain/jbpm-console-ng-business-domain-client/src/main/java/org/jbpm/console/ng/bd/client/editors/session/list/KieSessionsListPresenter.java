@@ -24,6 +24,9 @@ import javax.inject.Inject;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import java.util.List;
+
+import org.jboss.errai.bus.client.api.ErrorCallback;
+import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
@@ -44,6 +47,11 @@ public class KieSessionsListPresenter {
 
         void displayNotification(String text);
 
+        void showBusyIndicator(String message);
+
+        void hideBusyIndicator();
+
+        void cleanForm();
     }
 
     @Inject
@@ -74,24 +82,44 @@ public class KieSessionsListPresenter {
     }
 
     public void deployUnit(final String id, final String group, final String artifact, final String version, final String kbaseName, final String kieSessionName) {
+        view.showBusyIndicator(constants.Please_Wait());
         deploymentManager.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
+                view.cleanForm();
+                view.hideBusyIndicator();
                 view.displayNotification(" Kjar Deployed " + group + ":" + artifact + ":" + version);
                 refreshDeployedUnits();
             }
-        }).deploy(new KModuleDeploymentUnitSummary(id, group, artifact, version, kbaseName, kieSessionName));
+        }, new ErrorCallback() {
+           @Override
+           public boolean error(Message message, Throwable throwable) {
+               view.cleanForm();
+               view.hideBusyIndicator();
+               view.displayNotification("Error: Deploy failed " + throwable.getMessage());
+               return true;
+           }
+       }).deploy(new KModuleDeploymentUnitSummary(id, group, artifact, version, kbaseName, kieSessionName));
     }
     
     public void undeployUnit(final String id, final String group, final String artifact, final String version, 
                             final String kbaseName, final String kieSessionName) {
+        view.showBusyIndicator(constants.Please_Wait());
         deploymentManager.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
+                view.hideBusyIndicator();
                 view.displayNotification(" Kjar Undeployed " + group + ":" + artifact + ":" + version);
                 refreshDeployedUnits();
             }
-        }).undeploy(new KModuleDeploymentUnitSummary(id, group, artifact, version, kbaseName, kieSessionName));
+        }, new ErrorCallback() {
+           @Override
+           public boolean error(Message message, Throwable throwable) {
+               view.hideBusyIndicator();
+               view.displayNotification("Error: Undeploy failed " + throwable.getMessage());
+               return true;
+           }
+       }).undeploy(new KModuleDeploymentUnitSummary(id, group, artifact, version, kbaseName, kieSessionName));
     }
 
     public void refreshDeployedUnits() {

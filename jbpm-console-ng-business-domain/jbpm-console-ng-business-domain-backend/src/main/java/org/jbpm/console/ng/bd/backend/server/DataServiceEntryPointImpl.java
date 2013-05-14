@@ -62,8 +62,8 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
     }
 
     @Override
-    public Collection<ProcessInstanceSummary> getProcessInstancesBySessionId(String deploymentId) {
-        return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstancesByDeploymentId(deploymentId));
+    public Collection<ProcessInstanceSummary> getProcessInstancesByDeploymentId(String deploymentId, List<Integer> states) {
+        return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstancesByDeploymentId(deploymentId, states));
     }
 
     @Override

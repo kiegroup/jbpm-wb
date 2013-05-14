@@ -31,7 +31,7 @@ public interface DataServiceEntryPoint {
 
     Collection<ProcessInstanceSummary> getProcessInstances();
 
-    Collection<ProcessInstanceSummary> getProcessInstancesBySessionId(String sessionId);
+    Collection<ProcessInstanceSummary> getProcessInstancesByDeploymentId(String sessionId, List<Integer> states);
 
     Collection<ProcessSummary> getProcessesByFilter(String filter);
 

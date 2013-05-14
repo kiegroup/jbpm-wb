@@ -13,6 +13,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.bd.exception.DeploymentException;
 import org.jbpm.console.ng.bd.model.DeploymentUnitSummary;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
@@ -86,11 +87,13 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
                     ((KModuleDeploymentUnitSummary) unitSummary).getKbaseName(),
                     ((KModuleDeploymentUnitSummary) unitSummary).getKsessionName());
         }// add for vfs
-
-        if (deploymentService.getDeployedUnit(unit.getIdentifier()) != null) {
-            deploymentService.undeploy(unit);
+        try {
+            if (deploymentService.getDeployedUnit(unit.getIdentifier()) != null) {
+                deploymentService.undeploy(unit);
+            }
+        } catch (IllegalStateException e) {
+            throw new DeploymentException(e.getMessage(), e);
         }
-
     }
     
 

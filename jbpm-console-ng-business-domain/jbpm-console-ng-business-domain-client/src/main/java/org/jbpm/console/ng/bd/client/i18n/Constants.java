@@ -61,4 +61,6 @@ public interface Constants extends Messages {
 
     String Unit();
 
+    String Please_Wait();
+
 }
