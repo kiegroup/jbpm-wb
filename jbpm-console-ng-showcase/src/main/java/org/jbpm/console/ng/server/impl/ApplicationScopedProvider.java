@@ -1,8 +1,6 @@
 package org.jbpm.console.ng.server.impl;
 
-import java.util.Properties;
 import java.util.logging.Logger;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -14,16 +12,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceUnit;
 
-import org.jbpm.runtime.manager.impl.DefaultRuntimeEnvironment;
-import org.jbpm.runtime.manager.impl.SimpleRuntimeEnvironment;
-import org.jbpm.services.task.identity.JBossUserGroupCallbackImpl;
 import org.jbpm.shared.services.cdi.Selectable;
 import org.kie.commons.io.IOService;
 import org.kie.commons.io.impl.IOServiceDotFileImpl;
-import org.kie.internal.runtime.manager.RuntimeEnvironment;
-import org.kie.internal.runtime.manager.cdi.qualifier.PerProcessInstance;
-import org.kie.internal.runtime.manager.cdi.qualifier.PerRequest;
-import org.kie.internal.runtime.manager.cdi.qualifier.Singleton;
 import org.kie.internal.task.api.UserGroupCallback;
 import org.uberfire.backend.repositories.Repository;
 import org.uberfire.backend.server.repositories.DefaultSystemRepository;
@@ -67,17 +58,6 @@ public class ApplicationScopedProvider {
 
         }
         return this.emf;
-    }
-
-    @Produces
-    @Singleton
-    @PerRequest
-    @PerProcessInstance
-    public RuntimeEnvironment produceEnvironment(EntityManagerFactory emf) {
-        SimpleRuntimeEnvironment environment = new DefaultRuntimeEnvironment(emf);
-        Properties properties = new Properties();
-        environment.setUserGroupCallback(new JBossUserGroupCallbackImpl(properties));
-        return environment;
     }
 
     @Produces
