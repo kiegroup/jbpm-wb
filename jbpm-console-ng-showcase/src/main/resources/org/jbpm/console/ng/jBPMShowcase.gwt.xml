@@ -17,7 +17,7 @@
   <inherits name="org.kie.guvnor.commons.data.GuvnorCommonsData" />
   <inherits name="org.kie.guvnor.commons.service.GuvnorCommonsServicesAPI" />
   <inherits name="org.kie.guvnor.services.GuvnorCoreServicesAPI" />
-  <inherits name="org.kie.guvnor.commons.ui.GuvnorCommonsUI" />
+  <inherits name="org.kie.workbench.widgets.common.KieWorkbenchWidgetsCommon" />
   <inherits name="org.kie.guvnor.commons.security.GuvnorCommonsSecurity" />
   <!-- Panels -->
   <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksClient" />
@@ -25,7 +25,6 @@
   <inherits name="org.jbpm.console.ng.bd.JbpmConsoleNGBusinessDomainClient" />
   <inherits name="org.jbpm.console.ng.es.JbpmConsoleNGExecutorServiceClient" />
   <inherits name="org.jbpm.console.ng.bh.JbpmConsoleNGBPMHomeClient" />
-  <inherits name="org.jbpm.console.ng.pm.JbpmConsoleNGProcessModelingClient" />
   
   <!-- projects -->
 
@@ -34,7 +33,7 @@
   <inherits name="org.kie.guvnor.projecteditor.GuvnorProjectEditorClient" />
   <inherits name="org.kie.guvnor.projectconfigscreen.GuvnorProjectConfigScreenClient" />
   <inherits name="org.kie.workbench.widgets.configresource.KieWorkbenchConfigResourceWidget" />
-  <inherits name="org.kie.guvnor.explorer.GuvnorExplorerClient" />
+  <inherits name="org.kie.workbench.screens.explorer.KieWorkbenchProjectExplorerClient" />
   
   <!-- designer -->
   <inherits name="org.jbpm.designer.jBPMDesignerAPI" />
