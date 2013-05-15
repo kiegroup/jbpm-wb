@@ -27,9 +27,9 @@ import com.google.gwt.user.datepicker.client.CalendarUtil;
 public class DateUtils {
     /**
      * Creates new {@link Date} object using default format - "yyyy-MM-dd" (e.g. 2013-04-25).
-     * 
+     *
      * @param dateString string representation of date
-     * 
+     *
      * @return new {@link Date} create from string representation
      */
     public static Date createDate(String dateString) {
@@ -38,7 +38,7 @@ public class DateUtils {
 
     /**
      * Creates new {@link Date} object from specified date string and date format.
-     * 
+     *
      * @param dateString string representation
      * @param dateFormat format of the date
      * @return new {@link Date} create from string representation
@@ -51,7 +51,7 @@ public class DateUtils {
     /**
      * Returns a {@link DateRange} starting on first working day of week in which the specified date is and ending on last
      * working day (Friday) of that week. Total of 5 days are returned.
-     * 
+     *
      * @param date date from which to get the week date range
      * @return {@link DateRange} representing the week in which the specified date is
      */
@@ -70,7 +70,7 @@ public class DateUtils {
     /**
      * Returns a {@link DateRange} starting on first day of month in which the specified date is and ending on last day of that
      * month.
-     * 
+     *
      * @param date date from which to get the mont date range
      * @return {@link DateRange} representing the month in which the specified date is
      */
@@ -87,6 +87,48 @@ public class DateUtils {
         CalendarUtil.addDaysToDate(endDate, -1);
         endDate.setHours(0);
         return new DateRange(startDate, endDate);
+    }
+
+    /**
+     * Determines if the specified date is within the specified range. Including both start and end date.
+     *
+     * @param date  the date to test
+     * @param dateRange  date range to be tested with
+     *
+     * @return true if the date is within the range, otherwise false
+     */
+    public static boolean isDateInRange(Date date, DateRange dateRange) {
+        if (date.compareTo(dateRange.getStartDate()) >= 0 &&
+                date.compareTo(dateRange.getEndDate()) <= 0) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Compares two dates based only on day, month and year. Time information is not considered.
+     *
+     * @param firstDate  first date
+     * @param secondDate  second date
+     * @return  -1 if first date if before the second, 0 if the dates are equal, otherwise 1 (first is after the second)
+     */
+    @SuppressWarnings("deprecation")
+    public static int compareDates(Date firstDate, Date secondDate) {
+        Date firstDateClone = new Date(firstDate.getYear(), firstDate.getMonth(), firstDate.getDate());
+        Date secondDateClone = new Date(secondDate.getYear(), secondDate.getMonth(), secondDate.getDate());
+        return firstDateClone.compareTo(secondDateClone);
+    }
+
+    /**
+     * Determines if two dates are equal based only on day, month and year. Time information is not considered.
+     *
+     * @param firstDate  first date
+     * @param secondDate  second date
+     *
+     * @return  true if the dates have identical year, month and day
+     */
+    public static boolean areDatesEqual(Date firstDate, Date secondDate) {
+        return compareDates(firstDate, secondDate) == 0;
     }
 
 }
