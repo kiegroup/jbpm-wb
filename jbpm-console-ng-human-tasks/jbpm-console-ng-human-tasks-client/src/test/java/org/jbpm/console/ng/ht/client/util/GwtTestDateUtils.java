@@ -86,6 +86,70 @@ public class GwtTestDateUtils extends GWTTestCase {
         assertEquals(createDate("2013-01-31"), monthRange.getEndDate());
     }
 
+    @Test
+    public void testIsDateInRange() {
+        // single day in range
+        Date date = createDate("2013-05-15");
+        DateRange dateRange = new DateRange(createDate("2013-05-15"), createDate("2013-05-15"));
+        assertTrue(DateUtils.isDateInRange(date, dateRange));
+
+        // start date same as specified
+        date = createDate("2013-05-15");
+        dateRange = new DateRange(createDate("2013-05-15"), createDate("2014-05-19"));
+        assertTrue(DateUtils.isDateInRange(date, dateRange));
+
+        // end date same as specified
+        date = createDate("2013-05-15");
+        dateRange = new DateRange(createDate("2013-05-13"), createDate("2013-05-15"));
+        assertTrue(DateUtils.isDateInRange(date, dateRange));
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testCompareDates() {
+        // simple case
+        Date date1 = createDate("2013-04-15");
+        Date date2 = createDate("2013-04-15");
+        assertTrue(DateUtils.compareDates(date1, date2) == 0);
+
+        // same date, but different time -> should be equal
+        date1 = createDate("2013-04-15");
+        date1.setHours(8);
+        date1.setMinutes(15);
+        date2 = createDate("2013-04-15");
+        date2.setHours(10);
+        date2.setMinutes(20);
+        assertTrue(DateUtils.compareDates(date1, date2) == 0);
+
+        // different dates
+        date1 = createDate("2013-04-15");
+        date2 = createDate("2013-04-18");
+        assertTrue(DateUtils.compareDates(date1, date2) == -1);
+        assertTrue(DateUtils.compareDates(date2, date1) == 1);
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testAreDatesEqual() {
+        // simple case
+        Date date1 = createDate("2013-04-15");
+        Date date2 = createDate("2013-04-15");
+        assertTrue(DateUtils.areDatesEqual(date1, date2));
+
+        // same date, but different time -> should be equal
+        date1 = createDate("2013-04-15");
+        date1.setHours(8);
+        date1.setMinutes(15);
+        date2 = createDate("2013-04-15");
+        date2.setHours(10);
+        date2.setMinutes(20);
+        assertTrue(DateUtils.areDatesEqual(date1, date2));
+
+        date1 = createDate("2013-04-15");
+        date2 = createDate("2013-04-18");
+        assertFalse(DateUtils.areDatesEqual(date1, date2));
+    }
+
     @Override
     public String getModuleName() {
         return "org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksClient";
