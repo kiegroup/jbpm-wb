@@ -134,7 +134,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 refreshTasks();
             }
         });
-        refreshTasks();
+        
         // By Default we will start in Day View
         tasksViewContainer.setStyleName("day");
         tasksViewContainer.add(taskListMultiDayBox);
@@ -260,7 +260,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
         taskCalendarViewLabel.setText(constants.Tasks_List_Calendar_View());
         taskCalendarViewLabel.setStyleName("");
-
+        refreshTasks();
     }
 
     public void recieveStatusChanged(@Observes UserTaskEvent event) {

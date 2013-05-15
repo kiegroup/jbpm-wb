@@ -23,7 +23,9 @@ import org.jbpm.console.ng.ht.client.i8n.Constants;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ButtonGroup;
 import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
+import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.github.gwtbootstrap.client.ui.constants.IconSize;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.github.gwtbootstrap.datepicker.client.ui.DateBox;
@@ -39,6 +41,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
+import javax.inject.Inject;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
 
 /**
  * Encapsulates set of components which are able to select day/week/month. Contains also buttons for going to previous or next
@@ -54,23 +58,28 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
     private Date currentDate;
     private ViewType viewType;
 
-    private HorizontalPanel mainPanel = new HorizontalPanel();
-    private FlowPanel calendarPanel = new FlowPanel();
+    private UnorderedList mainPanel = new UnorderedList();
+    
+   
+    private NavLink calendarPanel = new NavLink();
     private Label calendarLabel;
     private IconAnchor calendarIcon;
-    private Button previousButton;
-    private Button nextButton;
-    private Button todayButton;
+    private NavLink previousButton;
+    private NavLink nextButton;
+    private NavLink todayButton;
+    
+    
 
     public CalendarPicker() {
         currentDate = new Date();
         viewType = ViewType.DAY;
 
         calendarLabel = new Label();
+        calendarLabel.setStyleName("");
         calendarIcon = new IconAnchor();
-        previousButton = new Button();
-        nextButton = new Button();
-        todayButton = new Button();
+        previousButton = new NavLink();
+        nextButton = new NavLink();
+        todayButton = new NavLink();
         initWidget(mainPanel);
     }
 
@@ -84,18 +93,21 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
     }
 
     public void init() {
-        mainPanel.add(calendarLabel);
-        mainPanel.add(calendarPanel);
+        
+        
 
         initCalendarIcon();
+        calendarPanel.add(calendarLabel);
         calendarPanel.add(calendarIcon);
-
+        mainPanel.add(calendarPanel);
+        
+        
         initPrevNextTodayButtons();
-        ButtonGroup btnGroup = new ButtonGroup();
-        btnGroup.add(previousButton);
-        btnGroup.add(todayButton);
-        btnGroup.add(nextButton);
-        mainPanel.add(btnGroup);
+        mainPanel.add(previousButton);
+        mainPanel.add(todayButton);
+        mainPanel.add(nextButton);
+     
+        
         updateCalendarLabelText();
     }
 

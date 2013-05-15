@@ -127,18 +127,18 @@
     overflow: hidden;
     text-indent: -9000px;
     background-color: #333333;
-    
-    
+
+
 }
 .task .task-options .personal-task {
-   /* gwt-image: 'images.personalTaskCalIcon';*/
+    /* gwt-image: 'images.personalTaskCalIcon';*/
     background-image: url(../images/icons/personaltask-cal-icon.png);
     width: 43px;
     height: 43px;
     overflow: hidden;
     text-indent: -9000px;
     background-color: #333333;
-    
+
 }
 .task .task-options .clickable {
     width: 43px;
@@ -160,12 +160,12 @@
 } 
 
 .task .task-options .complete {
-   /*  gwt-image: 'images.completeCalIcon';*/
-   background-image: url(../images/icons/complete-cal-icon.png); 
+    /*  gwt-image: 'images.completeCalIcon';*/
+    background-image: url(../images/icons/complete-cal-icon.png); 
 } 
 
 .task .task-options .claim {
-   /* gwt-image: 'images.claimCalIcon';*/
+    /* gwt-image: 'images.claimCalIcon';*/
     background-image: url(../images/icons/claim-cal-icon.png); 
 }
 .task .task-options .release {
@@ -173,7 +173,7 @@
     background-image: url(../images/icons/release-cal-icon.png); 
 }
 
- 
+
 
 .task .task-options .sub-options {
     position: relative;
@@ -187,7 +187,7 @@
     position: absolute;
     right: -1px;
     top: 0;
-    
+
     width: 10px;
     height: 43px;
     background-repeat: no-repeat;
@@ -333,21 +333,21 @@
 
 .month .day-tasks-container {
     width:  14.28%; 
-	width: -moz-calc(100%/7);
-	width: -webkit-calc(100%/7);
-	width: calc(100%/7);
+    width: -moz-calc(100%/7);
+    width: -webkit-calc(100%/7);
+    width: calc(100%/7);
     float: left;
-    min-height: 150px;
-  height:  20%; 
-  /*height: -moz-calc(100%/5);
-  height: -webkit-calc(100%/5);
-  height: calc(100%/5);*/
-   
+    min-height: 100px;
+    height:  15%; 
+    /*height: -moz-calc(100%/5);
+    height: -webkit-calc(100%/5);
+    height: calc(100%/5);*/
+
     overflow: hidden;
     position: relative;
     border-bottom: 1px solid #929292;
     margin-bottom: -2px;
-    
+
 }
 
 .month .day-tasks-container .tasks-list {
@@ -356,7 +356,7 @@
     overflow-y: auto;
     overflow-x: hidden;
     border-right: 1px solid #929292;
-    
+
 }
 
 .month .day-tasks-container .top {

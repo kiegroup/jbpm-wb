@@ -47,9 +47,9 @@ import org.uberfire.security.Role;
 @Dependent
 @WorkbenchScreen(identifier = "Tasks List")
 public class TasksListPresenter {
-    public static final int DAYS_FOR_DAY_VIEW = 3;
+    public static final int DAYS_FOR_DAY_VIEW = 1;
     public static final int DAYS_FOR_WEEK_VIEW = 5;
-    public static final int DAYS_FOR_MONTH_VIEW = 21;
+    public static final int DAYS_FOR_MONTH_VIEW = 35;
 
     public interface TaskListView extends UberView<TasksListPresenter> {
 

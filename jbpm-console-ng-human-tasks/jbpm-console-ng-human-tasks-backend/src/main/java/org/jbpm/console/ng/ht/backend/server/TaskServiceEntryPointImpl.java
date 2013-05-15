@@ -172,8 +172,9 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     @Override
     public Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(String userId,
             List<String> groupIds, Date from, int nrOfDaysTotal, String language) {
+        long totalDays = (nrOfDaysTotal - 1) * (long)DateTimeConstants.MILLIS_PER_DAY;
         return getTasksAssignedFromDateToDatePersonalAndGroupsTasksByDays(userId, groupIds, from, new Date(from.getTime()
-                + (nrOfDaysTotal - 1) * DateTimeConstants.MILLIS_PER_DAY), language);
+                + totalDays), language);
     }
 
     @Override
@@ -186,7 +187,8 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         tasksByDay.put(new Day(from, dayFormat.format(from)), firstDayTasks);
         int nrOfDays = Days.daysBetween(new LocalDate(from), new LocalDate(to)).getDays();
         for (int i = 1; i <= nrOfDays; i++) {
-            Date currentDay = new Date(from.getTime() + i * DateTimeConstants.MILLIS_PER_DAY);
+            long plusDays = i * (long)DateTimeConstants.MILLIS_PER_DAY;
+            Date currentDay = new Date(from.getTime() + plusDays);
             List<TaskSummary> dayTasks = TaskSummaryHelper.adaptCollection(taskService
                     .getTasksAssignedByGroupsByExpirationDate(groupIds, language, currentDay));
             tasksByDay.put(new Day(currentDay, dayFormat.format(currentDay)), dayTasks);
@@ -198,8 +200,8 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     @Override
     public Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDays(List<String> groupIds, Date from,
             int nrOfDaysTotal, String language) {
-        return getTasksAssignedFromDateToDateByGroupsByDays(groupIds, from, new Date(from.getTime() + (nrOfDaysTotal - 1)
-                * DateTimeConstants.MILLIS_PER_DAY), language);
+        long plusDays = (nrOfDaysTotal - 1) * (long)DateTimeConstants.MILLIS_PER_DAY;
+        return getTasksAssignedFromDateToDateByGroupsByDays(groupIds, from, new Date(from.getTime() + plusDays), language);
     }
 
     @Override
@@ -216,7 +218,8 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         tasksByDay.put(new Day(from, dayFormat.format(from)), firstDayTasks);
         int nrOfDays = Days.daysBetween(new LocalDate(from), new LocalDate(to)).getDays();
         for (int i = 1; i <= nrOfDays; i++) {
-            Date currentDay = new Date(from.getTime() + i * DateTimeConstants.MILLIS_PER_DAY);
+            long plusDays = i * (long)DateTimeConstants.MILLIS_PER_DAY;
+            Date currentDay = new Date(from.getTime() + plusDays);
             List<TaskSummary> dayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByExpirationDate(userId,
                     statuses, currentDay));
             tasksByDay.put(new Day(currentDay, dayFormat.format(currentDay)), dayTasks);
@@ -227,8 +230,8 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     @Override
     public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, List<String> strStatuses, Date from,
             int nrOfDaysTotal, String language) {
-        return getTasksOwnedFromDateToDateByDays(userId, strStatuses, from, new Date(from.getTime() + (nrOfDaysTotal - 1)
-                * DateTimeConstants.MILLIS_PER_DAY), language);
+        long plusDays = (nrOfDaysTotal - 1) * (long)DateTimeConstants.MILLIS_PER_DAY;
+        return getTasksOwnedFromDateToDateByDays(userId, strStatuses, from, new Date(from.getTime() + plusDays), language);
     }
 
     @Override
@@ -243,8 +246,8 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     @Override
     public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, Date from, int nrOfDaysTotal,
             String language) {
-        return getTasksOwnedFromDateToDateByDays(userId, from, new Date(from.getTime() + (nrOfDaysTotal - 1)
-                * DateTimeConstants.MILLIS_PER_DAY), language);
+        long plusDays = (nrOfDaysTotal - 1) * (long)DateTimeConstants.MILLIS_PER_DAY;
+        return getTasksOwnedFromDateToDateByDays(userId, from, new Date(from.getTime() + plusDays), language);
     }
 
     @Override
