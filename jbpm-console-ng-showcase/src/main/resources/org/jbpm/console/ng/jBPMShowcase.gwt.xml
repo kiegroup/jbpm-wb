@@ -14,11 +14,10 @@
   <inherits name="org.drools.workbench.models.commons.DroolsWorkbenchModelsCommon" />
   <inherits name="org.kie.guvnor.project.GuvnorProjectAPI" />
   <inherits name='org.kie.guvnor.datamodel.GuvnorDataModelAPI' />
-  <inherits name="org.kie.guvnor.commons.data.GuvnorCommonsData" />
-  <inherits name="org.kie.guvnor.commons.service.GuvnorCommonsServicesAPI" />
-  <inherits name="org.kie.guvnor.services.GuvnorCoreServicesAPI" />
-  <inherits name="org.kie.workbench.widgets.common.KieWorkbenchWidgetsCommon" />
-  <inherits name="org.kie.guvnor.commons.security.GuvnorCommonsSecurity" />
+  <inherits name="org.kie.workbench.common.services.data.KieWorkbenchCommonData" />
+  <inherits name="org.kie.workbench.common.services.KieWorkbenchCommonServicesAPI" />
+  <inherits name="org.kie.workbench.common.widgets.KieWorkbenchWidgetsCommon" />
+  <inherits name="org.kie.workbench.common.services.security.KieWorkbenchCommonSecurity" />
   <!-- Panels -->
   <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksClient" />
   <inherits name="org.jbpm.console.ng.pr.JbpmConsoleNGProcessRuntimeClient" />
@@ -28,12 +27,13 @@
   
   <!-- projects -->
 
-  <inherits name="org.kie.workbench.widgets.metadata.KieWorkbenchMetadataWidget" />
+  <inherits name="org.kie.workbench.common.widgets.metadata.KieWorkbenchMetadataWidget" />
   <inherits name="org.guvnor.m2repo.GuvnorM2RepoEditorClient" />
   <inherits name="org.kie.guvnor.projecteditor.GuvnorProjectEditorClient" />
   <inherits name="org.kie.guvnor.projectconfigscreen.GuvnorProjectConfigScreenClient" />
-  <inherits name="org.kie.workbench.widgets.configresource.KieWorkbenchConfigResourceWidget" />
-  <inherits name="org.kie.workbench.screens.explorer.KieWorkbenchProjectExplorerClient" />
+  <inherits name="org.kie.workbench.common.widgets.configresource.KieWorkbenchConfigResourceWidget" />
+  <inherits name="org.kie.workbench.common.screens.explorer.KieWorkbenchProjectExplorerClient" />
+  <inherits name="org.kie.workbench.common.services.workingset.KieWorkbenchWorkingsetAPI"/>
   
   <!-- designer -->
   <inherits name="org.jbpm.designer.jBPMDesignerAPI" />

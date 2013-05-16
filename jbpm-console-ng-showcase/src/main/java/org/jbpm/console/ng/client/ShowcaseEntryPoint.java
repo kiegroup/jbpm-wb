@@ -35,7 +35,7 @@ import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.IOCBeanManager;
 import org.jbpm.console.ng.client.i18n.Constants;
-import org.kie.workbench.widgets.common.client.resources.RoundedCornersResource;
+import org.kie.workbench.common.widgets.client.resources.RoundedCornersResource;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.Command;

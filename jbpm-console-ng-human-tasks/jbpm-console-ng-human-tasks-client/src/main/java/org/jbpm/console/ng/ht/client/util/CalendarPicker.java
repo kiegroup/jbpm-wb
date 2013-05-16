@@ -239,13 +239,10 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
     private void updateTodayButtonEnabled() {
         boolean todayBtnDisabled = false;
         Date today = new Date();
-        System.out.println(today);
-        System.out.println(currentDate);
+    
         switch (viewType) {
             case DAY:
-                System.out.println("In day");
                 if (DateUtils.areDatesEqual(today, currentDate)) {
-                    System.out.println("dates equal");
                     todayBtnDisabled = true;
                 }
                 break;
@@ -267,7 +264,6 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
             default:
                 throw new IllegalStateException("Unrecognized calendar view type: " + viewType);
         }
-        System.out.println(todayBtnDisabled);
         todayButton.setDisabled(todayBtnDisabled);
     }
 
