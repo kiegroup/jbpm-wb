@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+
+  <servlet-mapping>
+    <servlet-name>javax.ws.rs.core.Application</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
 
   <filter>
     <filter-name>UberFire Security Filter</filter-name>
@@ -390,6 +396,16 @@ minutes. it is now 24 hours. -->
     <web-resource-collection>
       <web-resource-name>console</web-resource-name>
       <url-pattern>/org.jbpm.console.ng.jBPMShowcase/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>jbpm-console-user</role-name>
+    </auth-constraint>
+  </security-constraint>
+
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>rest</web-resource-name>
+      <url-pattern>/rest/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>jbpm-console-user</role-name>

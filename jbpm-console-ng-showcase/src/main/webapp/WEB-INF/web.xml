@@ -9,6 +9,19 @@
   <listener>
     <listener-class>org.jboss.solder.servlet.event.ServletEventBridgeListener</listener-class>
   </listener>
+  <listener>
+    <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+  </listener>
+
+  <context-param>
+    <param-name>resteasy.scan</param-name>
+    <param-value>true</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>resteasy.servlet.mapping.prefix</param-name>
+    <param-value>/rest</param-value>
+  </context-param>
 
   <filter>
     <filter-name>UberFire Security Filter</filter-name>
@@ -23,6 +36,16 @@
     <filter-name>UberFire Security Filter</filter-name>
     <url-pattern>/org.jbpm.console.ng.jBPMShowcase/*</url-pattern>
   </filter-mapping>
+
+  <servlet>
+    <servlet-name>Resteasy</servlet-name>
+    <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>Resteasy</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
 
   <servlet>
     <servlet-name>UberFireServlet</servlet-name>
