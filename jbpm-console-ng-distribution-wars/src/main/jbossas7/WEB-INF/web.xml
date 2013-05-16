@@ -26,6 +26,14 @@
     <url-pattern>/org.jbpm.console.ng.jBPMShowcase/*</url-pattern>
   </filter-mapping>
 
+  <!-- disable UF security filter until redirect will be moved to forward to preserve http method
+    UF pull request https://github.com/droolsjbpm/uberfire/pull/4
+  -->
+  <!--filter-mapping>
+    <filter-name>UberFire Security Filter</filter-name>
+    <url-pattern>/rest/*</url-pattern>
+  </filter-mapping-->
+
   <servlet>
     <servlet-name>UberFireServlet</servlet-name>
     <servlet-class>org.uberfire.server.UberfireServlet</servlet-class>

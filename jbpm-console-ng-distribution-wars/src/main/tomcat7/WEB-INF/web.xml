@@ -3,11 +3,15 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 
+
   <listener>
     <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
   </listener>
   <listener>
     <listener-class>org.jboss.solder.servlet.event.ServletEventBridgeListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
   </listener>
 
   <filter>
@@ -22,6 +26,10 @@
   <filter-mapping>
     <filter-name>UberFire Security Filter</filter-name>
     <url-pattern>/org.jbpm.console.ng.jBPMShowcase/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>UberFire Security Filter</filter-name>
+    <url-pattern>/rest/*</url-pattern>
   </filter-mapping>
 
   <servlet>
@@ -63,6 +71,17 @@ profile in pom.xml to use that. -->
   <servlet-mapping>
     <servlet-name>ErraiServlet</servlet-name>
     <url-pattern>*.erraiBus</url-pattern>
+  </servlet-mapping>
+
+  <!-- rest easy -->
+  <servlet>
+    <servlet-name>Resteasy</servlet-name>
+    <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>Resteasy</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
   </servlet-mapping>
 
   <!-- Designer -->
@@ -406,6 +425,22 @@ profile in pom.xml to use that. -->
   <context-param>
     <param-name>org.jboss.seam.transaction.disableListener</param-name>
     <param-value>true</param-value>
+  </context-param>
+
+
+  <context-param>
+    <param-name>resteasy.scan</param-name>
+    <param-value>true</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>resteasy.injector.factory</param-name>
+    <param-value>org.jboss.resteasy.cdi.CdiInjectorFactory</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>resteasy.servlet.mapping.prefix</param-name>
+    <param-value>/rest</param-value>
   </context-param>
 
   <welcome-file-list>
