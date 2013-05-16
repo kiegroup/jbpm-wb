@@ -267,7 +267,6 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
             default:
                 throw new IllegalStateException("Unrecognized calendar view type: " + viewType);
         }
-        System.out.println(todayBtnDisabled);
         todayButton.setDisabled(todayBtnDisabled);
     }
 
