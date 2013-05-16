@@ -20,8 +20,6 @@ import java.util.Date;
 
 import org.jbpm.console.ng.ht.client.i8n.Constants;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.ButtonGroup;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
@@ -38,11 +36,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
-import javax.inject.Inject;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
 
 /**
  * Encapsulates set of components which are able to select day/week/month. Contains also buttons for going to previous or next
@@ -59,16 +53,12 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
     private ViewType viewType;
 
     private UnorderedList mainPanel = new UnorderedList();
-    
-   
     private NavLink calendarPanel = new NavLink();
     private Label calendarLabel;
     private IconAnchor calendarIcon;
     private NavLink previousButton;
     private NavLink nextButton;
     private NavLink todayButton;
-    
-    
 
     public CalendarPicker() {
         currentDate = new Date();
@@ -90,24 +80,20 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
     public void setViewType(String viewType) {
         this.viewType = ViewType.valueOf(viewType.toUpperCase());
         updateCalendarLabelText();
+        updateTodayButtonEnabled();
     }
 
     public void init() {
-        
-        
-
         initCalendarIcon();
         calendarPanel.add(calendarLabel);
         calendarPanel.add(calendarIcon);
         mainPanel.add(calendarPanel);
-        
-        
+
         initPrevNextTodayButtons();
         mainPanel.add(previousButton);
         mainPanel.add(todayButton);
         mainPanel.add(nextButton);
-     
-        
+
         updateCalendarLabelText();
     }
 
@@ -142,6 +128,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
 
     private void propagateDateChanges() {
         updateCalendarLabelText();
+        updateTodayButtonEnabled();
         ValueChangeEvent.fire(this, currentDate);
     }
 
@@ -233,6 +220,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
             }
         });
         todayButton.setText(constants.Today());
+        todayButton.setDisabled(true);
         todayButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -240,6 +228,46 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
                 propagateDateChanges();
             }
         });
+    }
+
+    /**
+     * Determines if 'today' is within the currently displayed date range (e.g. week or month). If it is, the 'Today' button is
+     * disabled, otherwise its enabled.
+     *
+     * Clicking on "Today" button when current day (today) is already displayed is useless, so its better to disable the button.
+     */
+    private void updateTodayButtonEnabled() {
+        boolean todayBtnDisabled = false;
+        Date today = new Date();
+        System.out.println(today);
+        System.out.println(currentDate);
+        switch (viewType) {
+            case DAY:
+                System.out.println("In day");
+                if (DateUtils.areDatesEqual(today, currentDate)) {
+                    System.out.println("dates equal");
+                    todayBtnDisabled = true;
+                }
+                break;
+
+            case WEEK:
+                DateRange weekRange = DateUtils.getWeekDateRange(currentDate);
+                if (DateUtils.isDateInRange(today, weekRange)) {
+                    todayBtnDisabled = true;
+                }
+                break;
+
+            case MONTH:
+                DateRange monthRange = DateUtils.getMonthDateRange(currentDate);
+                if (DateUtils.isDateInRange(today, monthRange)) {
+                    todayBtnDisabled = true;
+                }
+                break;
+
+            default:
+                throw new IllegalStateException("Unrecognized calendar view type: " + viewType);
+        }
+        todayButton.setDisabled(todayBtnDisabled);
     }
 
 }
