@@ -14,6 +14,7 @@
 ~ See the License for the specific language governing permissions and
 ~ limitations under the License.
 -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
@@ -42,19 +43,20 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- jBPM Console Panels -->
-    <!--Logs -->
+
+    <!--Logs-->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
-    <!-- This is a war file, so logback is not in scope test, but in scope 
-      compile -->
+
+    <!-- This is a war file, so logback is not in scope test, but in scope compile -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
     </dependency>
 
+    <!-- jBPM Console Panels -->
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
@@ -108,6 +110,7 @@
       <artifactId>jbpm-console-ng-executor-service-backend</artifactId>
       <version>${project.version}</version>
     </dependency>
+
 
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -170,6 +173,7 @@
       <groupId>org.kie.commons</groupId>
       <artifactId>kie-nio2-fs</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.kie.commons</groupId>
       <artifactId>kie-commons-io</artifactId>
@@ -183,7 +187,6 @@
       <artifactId>kie-commons-data</artifactId>
     </dependency>
     
-
     <!-- Errai Core -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
@@ -346,12 +349,12 @@
     </dependency>
 
     <dependency>
-      <groupId>org.kie.guvnor</groupId>
-      <artifactId>guvnor-project-editor-client</artifactId>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-project-editor-client</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.guvnor</groupId>
-      <artifactId>guvnor-project-editor-backend</artifactId>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-project-editor-backend</artifactId>
     </dependency>
     <dependency>
       <groupId>org.guvnor</groupId>
@@ -378,12 +381,8 @@
       <artifactId>kie-wb-common-workingset-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.guvnor</groupId>
-      <artifactId>guvnor-project-config-editor-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.guvnor</groupId>
-      <artifactId>guvnor-project-config-editor-backend</artifactId>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-project-imports-editor-client</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.guvnor</groupId>
@@ -436,8 +435,7 @@
       <resource>
         <directory>src/main/java</directory>
       </resource>
-      <!-- Include module descriptors from src/main/resources in order not 
-        to break the Intellij GWT plug-in -->
+      <!-- Include module descriptors from src/main/resources in order not to break the Intellij GWT plug-in -->
       <resource>
         <directory>src/main/resources</directory>
       </resource>
@@ -451,7 +449,6 @@
           <module>org.jbpm.console.ng.FastCompiledjBPMShowcase</module>
           <logLevel>INFO</logLevel>
           <compileSourcesArtifacts>
-            <compileSourcesArtifact>org.drools:drools-workbench-models-commons</compileSourcesArtifact>
 
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-client</compileSourcesArtifact>
@@ -460,6 +457,13 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-client</compileSourcesArtifact>
 
+            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-project-editor-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-project-editor-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-project-imports-editor-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-project-imports-editor-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-explorer-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-explorer-api</compileSourcesArtifact>
+            
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-decorated-grid-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-view-source-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-common-ui</compileSourcesArtifact>
@@ -469,16 +473,7 @@
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-config-resource-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-services-api</compileSourcesArtifact>
 
-            <compileSourcesArtifact>org.kie.guvnor:guvnor-project-editor-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.kie.guvnor:guvnor-project-editor-client</compileSourcesArtifact>
-
-            <compileSourcesArtifact>org.kie.guvnor:guvnor-project-config-editor-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.kie.guvnor:guvnor-project-config-editor-client</compileSourcesArtifact>
-
-            <compileSourcesArtifact>org.guvnor:guvnor-m2repo-editor-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.guvnor:guvnor-m2repo-editor-client</compileSourcesArtifact>
-
-            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-explorer-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.drools:drools-workbench-models-commons</compileSourcesArtifact>
 
             <compileSourcesArtifact>org.uberfire:uberfire-security-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-security-client</compileSourcesArtifact>
@@ -486,10 +481,20 @@
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-core-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-commons</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-workbench</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-backend-api</compileSourcesArtifact>
+
+            <compileSourcesArtifact>org.guvnor:guvnor-m2repo-editor-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.guvnor:guvnor-m2repo-editor-client</compileSourcesArtifact>
 
             <compileSourcesArtifact>org.jbpm:jbpm-designer-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-designer-client</compileSourcesArtifact>
+            
+             <!-- To be refactored.... -->
+            <compileSourcesArtifact>org.kie.guvnor:guvnor-project-api</compileSourcesArtifact>
 
+            <!-- Kie Commons -->
+            <compileSourcesArtifact>org.kie.commons:kie-commons-data</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.commons:kie-commons-validation</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.commons:kie-nio2-model</compileSourcesArtifact>
           </compileSourcesArtifacts>
           <runTarget>org.jbpm.console.ng.jBPMShowcase/jBPM.html</runTarget>

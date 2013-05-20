@@ -2,45 +2,52 @@
 <!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.4.0//EN"
     "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
 <module>
-  <inherits name="org.jboss.errai.enterprise.CDI" />
-
-  <inherits name="org.uberfire.security.UberfireSecurityClient" />
-
-  <inherits name="org.uberfire.UberfireWorkbench" />
-  <inherits name="org.uberfire.UberfireWidgetsCore" />
-  <inherits name="org.uberfire.UberfireBackend" />
-    
-   <!-- Infrastructure -->
-  <inherits name="org.drools.workbench.models.commons.DroolsWorkbenchModelsCommon" />
-  <inherits name="org.kie.guvnor.project.GuvnorProjectAPI" />
-  <inherits name='org.kie.guvnor.datamodel.GuvnorDataModelAPI' />
-  <inherits name="org.kie.workbench.common.services.data.KieWorkbenchCommonData" />
-  <inherits name="org.kie.workbench.common.services.KieWorkbenchCommonServicesAPI" />
-  <inherits name="org.kie.workbench.common.widgets.KieWorkbenchWidgetsCommon" />
-  <inherits name="org.kie.workbench.common.services.security.KieWorkbenchCommonSecurity" />
-  <!-- Panels -->
-  <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksClient" />
-  <inherits name="org.jbpm.console.ng.pr.JbpmConsoleNGProcessRuntimeClient" />
-  <inherits name="org.jbpm.console.ng.bd.JbpmConsoleNGBusinessDomainClient" />
-  <inherits name="org.jbpm.console.ng.es.JbpmConsoleNGExecutorServiceClient" />
   <inherits name="org.jbpm.console.ng.bh.JbpmConsoleNGBPMHomeClient" />
-  
-  <!-- projects -->
-
-  <inherits name="org.kie.workbench.common.widgets.metadata.KieWorkbenchMetadataWidget" />
-  <inherits name="org.guvnor.m2repo.GuvnorM2RepoEditorClient" />
-  <inherits name="org.kie.guvnor.projecteditor.GuvnorProjectEditorClient" />
-  <inherits name="org.kie.guvnor.projectconfigscreen.GuvnorProjectConfigScreenClient" />
-  <inherits name="org.kie.workbench.common.widgets.configresource.KieWorkbenchConfigResourceWidget" />
-  <inherits name="org.kie.workbench.common.screens.explorer.KieWorkbenchProjectExplorerClient" />
-  <inherits name="org.kie.workbench.common.services.workingset.KieWorkbenchWorkingsetAPI"/>
+    
+  <!-- UberFire -->
+  <inherits name="org.uberfire.security.UberfireSecurityClient"/>
+  <inherits name="org.uberfire.UberfireWorkbench"/>
+  <inherits name="org.uberfire.UberfireWidgetsCore"/>
+  <inherits name="org.uberfire.UberfireBackend"/>
+    
+  <!-- jbpm-wb -->
+  <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksClient"/>
+  <inherits name="org.jbpm.console.ng.pr.JbpmConsoleNGProcessRuntimeClient"/>
+  <inherits name="org.jbpm.console.ng.bd.JbpmConsoleNGBusinessDomainClient"/>
+  <inherits name="org.jbpm.console.ng.es.JbpmConsoleNGExecutorServiceClient"/>
   
   <!-- designer -->
-  <inherits name="org.jbpm.designer.jBPMDesignerAPI" />
-  <inherits name="org.jbpm.designer.jBPMDesignerClient" />
+  <inherits name="org.jbpm.designer.jBPMDesignerAPI"/>
+  <inherits name="org.jbpm.designer.jBPMDesignerClient"/>
+
+  <!-- Guvnor dependencies -->
+  <inherits name="org.guvnor.m2repo.GuvnorM2RepoEditorClient"/>
+  
+  <!--Common Screens -->
+  <inherits name="org.kie.workbench.common.screens.explorer.KieWorkbenchProjectExplorerClient"/>
+  <inherits name="org.kie.workbench.projecteditor.GuvnorProjectEditorClient" />
+  <inherits name="org.kie.workbench.projectimportsscreen.GuvnorProjectConfigScreenClient" />
+  <!-- Common Services -->
+  <inherits name="org.kie.workbench.common.services.KieWorkbenchCommonServicesAPI"/>
+  <inherits name="org.kie.workbench.common.services.data.KieWorkbenchCommonData"/>
+  <inherits name='org.kie.workbench.common.services.datamodel.KieWorkbenchCommonDataModelAPI'/>
+  
+  <!-- Models for Drools Workbench Screens -->
+  <inherits name="org.drools.workbench.models.commons.DroolsWorkbenchModelsCommon"/>
+ 
+  
+  <!-- To be refactored -->
+  <inherits name="org.kie.guvnor.project.GuvnorProjectAPI"/>
+ 
+  
+  
+  
+  <inherits name="com.google.gwt.xml.XML" />
+
   
   <!--inherits name='com.googlecode.gchart.GChart'/-->
   <inherits name="org.jboss.errai.ui.UI" />
+  <inherits name="org.jboss.errai.enterprise.CDI" />
   
   <!-- Specify the application specific style sheet. -->
   <stylesheet src='css/uberfire-showcase.css' />
