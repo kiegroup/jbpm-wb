@@ -381,6 +381,10 @@
       <artifactId>kie-wb-common-workingset-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.kie.workbench.services</groupId>
+      <artifactId>kie-wb-common-workingset-client</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.kie.workbench.screens</groupId>
       <artifactId>kie-wb-project-imports-editor-client</artifactId>
     </dependency>
@@ -388,6 +392,11 @@
       <groupId>org.kie.guvnor</groupId>
       <artifactId>guvnor-project-api</artifactId>
     </dependency>
+     <dependency>
+      <groupId>org.kie.workbench.widgets</groupId>
+      <artifactId>kie-wb-error-messages-widget</artifactId>
+    </dependency>
+
     <dependency>
       <groupId> org.kie.workbench.widgets</groupId>
       <artifactId>kie-wb-view-source-widget</artifactId>
