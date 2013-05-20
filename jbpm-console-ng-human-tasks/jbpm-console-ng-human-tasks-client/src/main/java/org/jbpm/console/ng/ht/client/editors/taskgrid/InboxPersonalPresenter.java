@@ -129,6 +129,8 @@ public class InboxPersonalPresenter {
 
             }
         }).getTasksOwned(identity.getName(), "en-UK");
+
+
     }
 
     public void refreshPersonalTasks() {

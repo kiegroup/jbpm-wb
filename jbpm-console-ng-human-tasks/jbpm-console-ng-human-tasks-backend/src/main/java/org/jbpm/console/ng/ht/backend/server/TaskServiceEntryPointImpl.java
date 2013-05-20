@@ -144,16 +144,14 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Override
     public List<TaskSummary> getTasksAssignedPersonalAndGroupsTasks(String userId, List<String> groupIds, String language) {
-        List<TaskSummary> groupTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedByGroups(groupIds,
-                language));
         List<Status> statuses = new ArrayList<Status>();
         statuses.add(Status.Ready);
         statuses.add(Status.InProgress);
         statuses.add(Status.Reserved);
         statuses.add(Status.Created);
-        List<TaskSummary> personalTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByStatus(userId, statuses,
-                language));
-        groupTasks.addAll(personalTasks);
+        List<TaskSummary> groupTasks = TaskSummaryHelper.adaptCollection(
+                taskService.getTasksAssignedAsPotentialOwnerByStatusByGroup(userId, groupIds, statuses, language));
+
         return groupTasks;
     }
 
