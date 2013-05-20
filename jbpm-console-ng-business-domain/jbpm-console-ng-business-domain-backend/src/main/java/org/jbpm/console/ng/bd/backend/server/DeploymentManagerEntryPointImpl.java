@@ -28,6 +28,8 @@ import org.jbpm.kie.services.impl.event.Undeploy;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.uberfire.backend.deployment.DeploymentConfigService;
 
+import org.kie.workbench.common.services.shared.builder.model.DeployResult;
+
 @Service
 @ApplicationScoped
 public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPoint, Initializable {
@@ -152,4 +154,19 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         return unitsIds;
     }
 
+    public void autoDeploy(@Observes DeployResult result) {
+        try {
+            KModuleDeploymentUnitSummary unit = new KModuleDeploymentUnitSummary("",
+                    result.getGroupId(),
+                    result.getArtifactId(),
+                    result.getVersion(), "", "");
+
+            undeploy(unit);
+            deploy(unit);
+
+        } catch (Exception e) {
+            // always catch exceptions to not break originator of the event
+            e.printStackTrace();
+        }
+    }
 }
