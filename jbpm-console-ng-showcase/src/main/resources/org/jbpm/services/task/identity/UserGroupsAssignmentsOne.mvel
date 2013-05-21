@@ -6,6 +6,7 @@ usersgroups = [
                 new User('tiho') : [new Group( "Writer" ),  new Group( "jBPM Developer" )],
                 new User('john') : [new Group( "Accounting" )],          
                 new User('katy') : [new Group( "HR" )],
+                new User('jack') : [new Group( "IT" )],
                 new User('Administrator') : [new Group( "Adminitrators" )],
                 
                 

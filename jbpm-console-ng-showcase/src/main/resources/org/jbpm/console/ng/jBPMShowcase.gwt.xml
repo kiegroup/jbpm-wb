@@ -46,7 +46,7 @@
  
   
   <!-- To be refactored -->
-  <inherits name="org.kie.guvnor.project.GuvnorProjectAPI"/>
+  <inherits name="org.kie.workbench.common.services.project.GuvnorProjectAPI"/>
  
   
   
