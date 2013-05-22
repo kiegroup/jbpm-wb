@@ -117,7 +117,6 @@
       <version>${project.version}</version>
     </dependency>
 
-
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-bpm-home-client</artifactId>
@@ -507,6 +506,7 @@
             <compileSourcesArtifact>org.uberfire:uberfire-workbench</compileSourcesArtifact>
 
             <!-- jBPM Console -->
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-bpm-home-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-api</compileSourcesArtifact>
