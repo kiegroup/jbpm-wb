@@ -99,9 +99,7 @@ public class FormDisplayModelerPopupPresenter {
     
     private FormRenderContextTO context;
 
-    @Inject
-    private FormRendererIncluderPanelView formView;
-
+   
     @Inject
     private Event<NotificationEvent> notification;
 
@@ -186,7 +184,7 @@ public class FormDisplayModelerPopupPresenter {
             @Override
             public void callback(FormRenderContextTO ctx) {
                 context = ctx;
-                formView.loadContext(ctx);
+                view.loadContext(ctx);
             }
         }).launchTest();
        
