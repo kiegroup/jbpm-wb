@@ -147,7 +147,7 @@ public class FormDisplayModelerPopupViewImpl extends Composite implements FormDi
     }
     
     @EventHandler("startTestButton")
-    public void startTest(ClickEvent event) {
+    public void startTestButton(ClickEvent event) {
         presenter.renderTaskForm(1);
         
     }
