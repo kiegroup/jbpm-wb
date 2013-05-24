@@ -128,9 +128,9 @@ public class TaskCommentsPopupPresenter {
             @Override
             public void onClick( ClickEvent event ) {
                 close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display" );
-                placeRequestImpl.addParameter( "taskId", String.valueOf( taskId ) );
-                placeManager.goTo( placeRequestImpl );
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display Modeler");
+                placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
+                placeManager.goTo(placeRequestImpl);
             }
         } );
         NavLink detailsLink = new NavLink( constants.Details() );
