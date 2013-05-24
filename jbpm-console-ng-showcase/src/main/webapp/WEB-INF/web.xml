@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 
-  <distributable/>
 
   <listener>
     <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
@@ -414,15 +413,16 @@ profile in pom.xml to use that. -->
     </servlet-mapping>
 
     <!-- end form-modeler component -->
+    
   <!-- the number within the session-timout element must be expressed in
        minutes. it is now 24 hours. -->
   <session-config>
     <session-timeout>1440</session-timeout>
   </session-config>
-  <!-- jBoss' default mapping is to "image/svg", which causes the client
-       not to parse the SVG content as XML. However, the Oryx Editor client relies
-       on that behaviour. The mimetype as per W3C specification must be "image/svg+xml".
-       See http://www.w3.org/TR/SVG/intro.html#MIMEType. -->
+    <!-- jBoss' default mapping is to "image/svg", which causes the client
+         not to parse the SVG content as XML. However, the Oryx Editor client relies
+         on that behaviour. The mimetype as per W3C specification must be "image/svg+xml".
+         See http://www.w3.org/TR/SVG/intro.html#MIMEType. -->
   <mime-mapping>
     <extension>svg</extension>
     <mime-type>image/svg+xml</mime-type>
@@ -435,12 +435,12 @@ profile in pom.xml to use that. -->
     <extension>css</extension>
     <mime-type>text/css</mime-type>
   </mime-mapping>
-  <!-- Set Favourites Icon MIME-Type -->
+    <!-- Set Favourites Icon MIME-Type -->
   <mime-mapping>
     <extension>ico</extension>
     <mime-type>image/x-icon</mime-type>
   </mime-mapping>
-  <!-- end designer -->
+    <!-- end designer -->
 
   <resource-ref>
     <description>Console DS</description>
