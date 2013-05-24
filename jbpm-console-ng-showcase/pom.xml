@@ -484,6 +484,20 @@
       <version>6.0.0-SNAPSHOT</version>
     </dependency>
     
+     <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-data-modeller-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-data-modeller-backend</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-data-modeller-client</artifactId>
+    </dependency>
     
     
   </dependencies>
@@ -534,6 +548,9 @@
             <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-workingset-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-datamodel-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-project-api</compileSourcesArtifact>
+            
+            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-client</compileSourcesArtifact>
 
             <!-- Kie Commons -->
             <compileSourcesArtifact>org.kie.commons:kie-commons-data</compileSourcesArtifact>
