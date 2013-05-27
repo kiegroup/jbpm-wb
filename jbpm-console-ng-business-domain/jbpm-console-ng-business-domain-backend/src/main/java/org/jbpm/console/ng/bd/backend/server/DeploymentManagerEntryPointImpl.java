@@ -32,7 +32,7 @@ import org.kie.workbench.common.services.shared.builder.model.DeployResult;
 
 @Service
 @ApplicationScoped
-public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPoint, Initializable {
+public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPoint, Initializable<DeploymentUnit> {
 
     @Inject
     private DeploymentService deploymentService;

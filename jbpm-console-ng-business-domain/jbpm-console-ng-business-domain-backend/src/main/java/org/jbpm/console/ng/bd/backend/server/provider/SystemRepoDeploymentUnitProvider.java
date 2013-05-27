@@ -32,7 +32,7 @@ import org.uberfire.backend.deployment.DeploymentConfigService;
 @ApplicationScoped
 @Vfs
 @Kjar
-public class SystemRepoDeploymentUnitProvider implements DeploymentUnitProvider {
+public class SystemRepoDeploymentUnitProvider implements DeploymentUnitProvider<DeploymentUnit> {
 
 
     @Inject

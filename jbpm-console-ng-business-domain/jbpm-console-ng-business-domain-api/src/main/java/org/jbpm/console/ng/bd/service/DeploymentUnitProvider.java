@@ -17,9 +17,7 @@ package org.jbpm.console.ng.bd.service;
 
 import java.util.Set;
 
-import org.jbpm.kie.services.api.DeploymentUnit;
+public interface DeploymentUnitProvider<T> {
 
-public interface DeploymentUnitProvider {
-
-    Set<DeploymentUnit> getDeploymentUnits();
+    Set<T> getDeploymentUnits();
 }
