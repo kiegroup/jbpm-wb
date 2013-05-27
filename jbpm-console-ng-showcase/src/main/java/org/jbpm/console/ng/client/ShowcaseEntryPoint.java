@@ -38,20 +38,21 @@ import org.jbpm.console.ng.client.i18n.Constants;
 import org.kie.workbench.common.widgets.client.resources.RoundedCornersResource;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityManager;
-import org.uberfire.client.mvp.Command;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.widgets.menu.MenuFactory;
-import org.uberfire.client.workbench.widgets.menu.MenuItem;
-import org.uberfire.client.workbench.widgets.menu.MenuPosition;
-import org.uberfire.client.workbench.widgets.menu.Menus;
 import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.security.Role;
-import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.MenuItem;
+import org.uberfire.workbench.model.menu.MenuPosition;
+import org.uberfire.workbench.model.menu.Menus;
 
 @EntryPoint
 public class ShowcaseEntryPoint {
-    private Constants constants = GWT.create(Constants.class);
+
+    private Constants constants = GWT.create( Constants.class );
 
     @Inject
     private PlaceManager placeManager;
@@ -85,113 +86,113 @@ public class ShowcaseEntryPoint {
 
         final AbstractWorkbenchPerspectiveActivity defaultPerspective = getDefaultPerspectiveActivity();
 
-        final Menus menus = MenuFactory.newTopLevelMenu(constants.Home()).respondsWith(new Command() {
+        final Menus menus = MenuFactory.newTopLevelMenu( constants.Home() ).respondsWith( new Command() {
             @Override
             public void execute() {
-                if (defaultPerspective != null) {
-                    placeManager.goTo(new DefaultPlaceRequest(defaultPerspective.getIdentifier()));
+                if ( defaultPerspective != null ) {
+                    placeManager.goTo( new DefaultPlaceRequest( defaultPerspective.getIdentifier() ) );
                 } else {
-                    Window.alert("Default perspective not found.");
+                    Window.alert( "Default perspective not found." );
                 }
             }
-        }).endMenu().newTopLevelMenu(constants.Authoring()).withItems(getAuthoringViews()).endMenu()
-                .newTopLevelMenu(constants.Deploy()).withItems(getDeploymentViews()).endMenu()
-                .newTopLevelMenu(constants.Process_Management()).withItems(getProcessMGMTViews()).endMenu()
-                .newTopLevelMenu(constants.Work()).withItems(getWorkViews()).endMenu().newTopLevelMenu(constants.BAM())
-                .withItems(getBAMViews()).endMenu().newTopLevelMenu(constants.LogOut()).respondsWith(new Command() {
+        } ).endMenu().newTopLevelMenu( constants.Authoring() ).withItems( getAuthoringViews() ).endMenu()
+                .newTopLevelMenu( constants.Deploy() ).withItems( getDeploymentViews() ).endMenu()
+                .newTopLevelMenu( constants.Process_Management() ).withItems( getProcessMGMTViews() ).endMenu()
+                .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu().newTopLevelMenu( constants.BAM() )
+                .withItems( getBAMViews() ).endMenu().newTopLevelMenu( constants.LogOut() ).respondsWith( new Command() {
                     @Override
                     public void execute() {
-                        redirect(GWT.getModuleBaseURL() + "uf_logout");
+                        redirect( GWT.getModuleBaseURL() + "uf_logout" );
                     }
-                }).endMenu().newTopLevelMenu(identity.getName()).position(MenuPosition.RIGHT).withItems(getRoles()).endMenu()
+                } ).endMenu().newTopLevelMenu( identity.getName() ).position( MenuPosition.RIGHT ).withItems( getRoles() ).endMenu()
                 .build();
 
-        menubar.aggregateWorkbenchMenus(menus);
+        menubar.aggregateWorkbenchMenus( menus );
     }
 
     private List<? extends MenuItem> getRoles() {
-        final List<MenuItem> result = new ArrayList<MenuItem>(identity.getRoles().size());
-        for (final Role role : identity.getRoles()) {
-            result.add(MenuFactory.newSimpleItem(role.getName()).endMenu().build().getItems().get(0));
+        final List<MenuItem> result = new ArrayList<MenuItem>( identity.getRoles().size() );
+        for ( final Role role : identity.getRoles() ) {
+            result.add( MenuFactory.newSimpleItem( role.getName() ).endMenu().build().getItems().get( 0 ) );
         }
 
         return result;
     }
 
     private List<? extends MenuItem> getAuthoringViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>(1);
+        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
 
-        result.add(MenuFactory.newSimpleItem(constants.Process_Authoring()).respondsWith(new Command() {
+        result.add( MenuFactory.newSimpleItem( constants.Process_Authoring() ).respondsWith( new Command() {
             @Override
             public void execute() {
-                placeManager.goTo(new DefaultPlaceRequest("Authoring"));
+                placeManager.goTo( new DefaultPlaceRequest( "Authoring" ) );
             }
-        }).endMenu().build().getItems().get(0));
+        } ).endMenu().build().getItems().get( 0 ) );
 
         return result;
     }
 
     private List<? extends MenuItem> getProcessMGMTViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>(2);
+        final List<MenuItem> result = new ArrayList<MenuItem>( 2 );
 
-        result.add(MenuFactory.newSimpleItem(constants.Process_Definitions()).respondsWith(new Command() {
+        result.add( MenuFactory.newSimpleItem( constants.Process_Definitions() ).respondsWith( new Command() {
             @Override
             public void execute() {
-                placeManager.goTo(new DefaultPlaceRequest("Process Definitions"));
+                placeManager.goTo( new DefaultPlaceRequest( "Process Definitions" ) );
             }
-        }).endMenu().build().getItems().get(0));
+        } ).endMenu().build().getItems().get( 0 ) );
 
-        result.add(MenuFactory.newSimpleItem(constants.Process_Instances()).respondsWith(new Command() {
+        result.add( MenuFactory.newSimpleItem( constants.Process_Instances() ).respondsWith( new Command() {
             @Override
             public void execute() {
-                placeManager.goTo(new DefaultPlaceRequest("Process Instances"));
+                placeManager.goTo( new DefaultPlaceRequest( "Process Instances" ) );
             }
-        }).endMenu().build().getItems().get(0));
+        } ).endMenu().build().getItems().get( 0 ) );
 
         return result;
     }
 
     private List<? extends MenuItem> getDeploymentViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>(1);
+        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
 
-        result.add(MenuFactory.newSimpleItem(constants.Deployments()).respondsWith(new Command() {
+        result.add( MenuFactory.newSimpleItem( constants.Deployments() ).respondsWith( new Command() {
             @Override
             public void execute() {
-                placeManager.goTo(new DefaultPlaceRequest("Deployments"));
+                placeManager.goTo( new DefaultPlaceRequest( "Deployments" ) );
             }
-        }).endMenu().build().getItems().get(0));
+        } ).endMenu().build().getItems().get( 0 ) );
 
         return result;
     }
 
     private List<? extends MenuItem> getWorkViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>(2);
+        final List<MenuItem> result = new ArrayList<MenuItem>( 2 );
 
-        result.add(MenuFactory.newSimpleItem(constants.Tasks_Calendar_View()).respondsWith(new Command() {
+        result.add( MenuFactory.newSimpleItem( constants.Tasks_Calendar_View() ).respondsWith( new Command() {
             @Override
             public void execute() {
-                placeManager.goTo(new DefaultPlaceRequest("Tasks"));
+                placeManager.goTo( new DefaultPlaceRequest( "Tasks" ) );
             }
-        }).endMenu().build().getItems().get(0));
+        } ).endMenu().build().getItems().get( 0 ) );
 
-        result.add(MenuFactory.newSimpleItem(constants.Tasks_Grid_View()).respondsWith(new Command() {
+        result.add( MenuFactory.newSimpleItem( constants.Tasks_Grid_View() ).respondsWith( new Command() {
             @Override
             public void execute() {
-                placeManager.goTo(new DefaultPlaceRequest("Grid Tasks List"));
+                placeManager.goTo( new DefaultPlaceRequest( "Grid Tasks List" ) );
             }
-        }).endMenu().build().getItems().get(0));
+        } ).endMenu().build().getItems().get( 0 ) );
 
         return result;
     }
 
     private List<? extends MenuItem> getBAMViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>(1);
-        result.add(MenuFactory.newSimpleItem(constants.Process_Dashboard()).respondsWith(new Command() {
+        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
+        result.add( MenuFactory.newSimpleItem( constants.Process_Dashboard() ).respondsWith( new Command() {
             @Override
             public void execute() {
-                Window.open("http://localhost:8080/dashbuilder/workspace/jbpm-dashboard", "_blank", "");
+                Window.open( "http://localhost:8080/dashbuilder/workspace/jbpm-dashboard", "_blank", "" );
             }
-        }).endMenu().build().getItems().get(0));
+        } ).endMenu().build().getItems().get( 0 ) );
 
         return result;
     }
@@ -199,16 +200,17 @@ public class ShowcaseEntryPoint {
     private AbstractWorkbenchPerspectiveActivity getDefaultPerspectiveActivity() {
         AbstractWorkbenchPerspectiveActivity defaultPerspective = null;
         final Collection<IOCBeanDef<AbstractWorkbenchPerspectiveActivity>> perspectives = iocManager
-                .lookupBeans(AbstractWorkbenchPerspectiveActivity.class);
+                .lookupBeans( AbstractWorkbenchPerspectiveActivity.class );
         final Iterator<IOCBeanDef<AbstractWorkbenchPerspectiveActivity>> perspectivesIterator = perspectives.iterator();
-        outer_loop: while (perspectivesIterator.hasNext()) {
+        outer_loop:
+        while ( perspectivesIterator.hasNext() ) {
             final IOCBeanDef<AbstractWorkbenchPerspectiveActivity> perspective = perspectivesIterator.next();
             final AbstractWorkbenchPerspectiveActivity instance = perspective.getInstance();
-            if (instance.isDefault()) {
+            if ( instance.isDefault() ) {
                 defaultPerspective = instance;
                 break outer_loop;
             } else {
-                iocManager.destroyBean(instance);
+                iocManager.destroyBean( instance );
             }
         }
         return defaultPerspective;
@@ -218,17 +220,18 @@ public class ShowcaseEntryPoint {
 
         // Get Perspective Providers
         final Set<AbstractWorkbenchPerspectiveActivity> activities = activityManager
-                .getActivities(AbstractWorkbenchPerspectiveActivity.class);
+                .getActivities( AbstractWorkbenchPerspectiveActivity.class );
 
         // Sort Perspective Providers so they're always in the same sequence!
         List<AbstractWorkbenchPerspectiveActivity> sortedActivities = new ArrayList<AbstractWorkbenchPerspectiveActivity>(
-                activities);
-        Collections.sort(sortedActivities, new Comparator<AbstractWorkbenchPerspectiveActivity>() {
+                activities );
+        Collections.sort( sortedActivities, new Comparator<AbstractWorkbenchPerspectiveActivity>() {
             @Override
-            public int compare(AbstractWorkbenchPerspectiveActivity o1, AbstractWorkbenchPerspectiveActivity o2) {
-                return o1.getPerspective().getName().compareTo(o2.getPerspective().getName());
+            public int compare( AbstractWorkbenchPerspectiveActivity o1,
+                                AbstractWorkbenchPerspectiveActivity o2 ) {
+                return o1.getPerspective().getName().compareTo( o2.getPerspective().getName() );
             }
-        });
+        } );
 
         return sortedActivities;
     }
@@ -236,22 +239,22 @@ public class ShowcaseEntryPoint {
     // Fade out the "Loading application" pop-up
 
     private void hideLoadingPopup() {
-        final Element e = RootPanel.get("loading").getElement();
+        final Element e = RootPanel.get( "loading" ).getElement();
 
         new Animation() {
             @Override
-            protected void onUpdate(double progress) {
-                e.getStyle().setOpacity(1.0 - progress);
+            protected void onUpdate( double progress ) {
+                e.getStyle().setOpacity( 1.0 - progress );
             }
 
             @Override
             protected void onComplete() {
-                e.getStyle().setVisibility(Style.Visibility.HIDDEN);
+                e.getStyle().setVisibility( Style.Visibility.HIDDEN );
             }
-        }.run(500);
+        }.run( 500 );
     }
 
-    public static native void redirect(String url)/*-{
+    public static native void redirect( String url )/*-{
         $wnd.location = url;
     }-*/;
 

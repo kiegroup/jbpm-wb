@@ -3,6 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
+  <distributable/>
+
   <servlet-mapping>
     <servlet-name>javax.ws.rs.core.Application</servlet-name>
     <url-pattern>/rest/*</url-pattern>
@@ -370,15 +372,15 @@ profile in pom.xml to use that. -->
     <servlet-name>StencilSetServiceServlet</servlet-name>
     <url-pattern>/stencilset/*</url-pattern>
   </servlet-mapping>
-    <!-- the number within the session-timout element must be expressed in
+  <!-- the number within the session-timout element must be expressed in
 minutes. it is now 24 hours. -->
   <session-config>
     <session-timeout>1440</session-timeout>
   </session-config>
-    <!-- jBoss' default mapping is to "image/svg", which causes the client
-  not to parse the SVG content as XML. However, the Oryx Editor client relies
-  on that behaviour. The mimetype as per W3C specification must be "image/svg+xml".
-  See http://www.w3.org/TR/SVG/intro.html#MIMEType. -->
+  <!-- jBoss' default mapping is to "image/svg", which causes the client
+not to parse the SVG content as XML. However, the Oryx Editor client relies
+on that behaviour. The mimetype as per W3C specification must be "image/svg+xml".
+See http://www.w3.org/TR/SVG/intro.html#MIMEType. -->
   <mime-mapping>
     <extension>svg</extension>
     <mime-type>image/svg+xml</mime-type>
@@ -391,14 +393,14 @@ minutes. it is now 24 hours. -->
     <extension>css</extension>
     <mime-type>text/css</mime-type>
   </mime-mapping>
-    <!-- Set Favourites Icon MIME-Type -->
+  <!-- Set Favourites Icon MIME-Type -->
   <mime-mapping>
     <extension>ico</extension>
     <mime-type>image/x-icon</mime-type>
   </mime-mapping>
-    <!-- end designer -->
+  <!-- end designer -->
 
-    <!-- security settings -->
+  <!-- security settings -->
 
   <security-constraint>
     <web-resource-collection>

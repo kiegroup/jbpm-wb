@@ -16,18 +16,17 @@
 
 package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.TextBox;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Event;
-
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
@@ -39,18 +38,19 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
-import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
 @WorkbenchPopup(identifier = "Quick New Task")
 public class QuickNewTaskPresenter {
-    private Constants constants = GWT.create(Constants.class);
+
+    private Constants constants = GWT.create( Constants.class );
 
     public interface QuickNewTaskView extends UberView<QuickNewTaskPresenter> {
 
-        void displayNotification(String text);
+        void displayNotification( String text );
 
         TextBox getTaskNameText();
 
@@ -71,13 +71,11 @@ public class QuickNewTaskPresenter {
 
     private PlaceRequest place;
 
-
-
     @Inject
     private PlaceManager placeManager;
 
     @OnStart
-    public void onStart(final PlaceRequest place) {
+    public void onStart( final PlaceRequest place ) {
         this.place = place;
     }
 
@@ -98,47 +96,51 @@ public class QuickNewTaskPresenter {
     public void init() {
     }
 
-    public void addTask(final String userId, String taskName, int priority, boolean isQuickTask, Date due) {
+    public void addTask( final String userId,
+                         String taskName,
+                         int priority,
+                         boolean isQuickTask,
+                         Date due ) {
 
         Map<String, Object> templateVars = new HashMap<String, Object>();
-        templateVars.put("due", due);
+        templateVars.put( "due", due );
 
         String str = "(with (new Task()) { priority = " + priority
                 + ", taskData = (with( new TaskData()) { expirationTime = due } ), ";
         str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
-        if (userId != null && !userId.equals("")) {
+        if ( userId != null && !userId.equals( "" ) ) {
             str += " [new User('" + userId + "')  ], }),";
         }
         str += "names = [ new I18NText( 'en-UK', '" + taskName + "')]})";
-        if (isQuickTask) {
-            taskServices.call(new RemoteCallback<Long>() {
+        if ( isQuickTask ) {
+            taskServices.call( new RemoteCallback<Long>() {
                 @Override
-                public void callback(Long taskId) {
-                    view.displayNotification("Task Created and Started (id = " + taskId + ")");
+                public void callback( Long taskId ) {
+                    view.displayNotification( "Task Created and Started (id = " + taskId + ")" );
                     close();
 
                 }
-            }).addTaskAndStart(str, null, identity.getName(), templateVars);
+            } ).addTaskAndStart( str, null, identity.getName(), templateVars );
         } else {
-            taskServices.call(new RemoteCallback<Long>() {
+            taskServices.call( new RemoteCallback<Long>() {
                 @Override
-                public void callback(Long taskId) {
-                    view.displayNotification("Task Created (id = " + taskId + ")");
+                public void callback( Long taskId ) {
+                    view.displayNotification( "Task Created (id = " + taskId + ")" );
                     close();
 
                 }
-            }).addTask(str, null, templateVars);
+            } ).addTask( str, null, templateVars );
         }
 
     }
 
     @OnReveal
     public void onReveal() {
-        view.getTaskNameText().setFocus(true);
+        view.getTaskNameText().setFocus( true );
 
     }
 
     public void close() {
-        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
+        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }
 }

@@ -17,7 +17,6 @@
 package org.jbpm.console.ng.es.client.editors.jobdetails;
 
 import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -34,7 +33,7 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.mvp.PlaceRequest;
 
 @Dependent
 @WorkbenchPopup(identifier = "Job Request Details")
@@ -42,7 +41,9 @@ public class JobDetailsPresenter {
 
     public interface JobDetailsView extends UberView<JobDetailsPresenter> {
 
-        void setRequest(RequestSummary request, List<ErrorSummary> errors, List<RequestParameterSummary> params);
+        void setRequest( RequestSummary request,
+                         List<ErrorSummary> errors,
+                         List<RequestParameterSummary> params );
     }
 
     private Long requestId;
@@ -71,14 +72,14 @@ public class JobDetailsPresenter {
     }
 
     @OnStart
-    public void onStart(final PlaceRequest place) {
-        this.requestId = Long.valueOf(place.getParameter("requestId", "0"));
-        this.executorServices.call(new RemoteCallback<RequestDetails>() {
+    public void onStart( final PlaceRequest place ) {
+        this.requestId = Long.valueOf( place.getParameter( "requestId", "0" ) );
+        this.executorServices.call( new RemoteCallback<RequestDetails>() {
             @Override
-            public void callback(RequestDetails response) {
-                view.setRequest(response.getRequest(), response.getErrors(), response.getParams());
+            public void callback( RequestDetails response ) {
+                view.setRequest( response.getRequest(), response.getErrors(), response.getParams() );
             }
-        }).getRequestDetails(Long.valueOf(this.requestId));
+        } ).getRequestDetails( Long.valueOf( this.requestId ) );
     }
 
 }

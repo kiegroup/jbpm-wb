@@ -16,23 +16,21 @@
 
 package org.jbpm.console.ng.pr.client.editors.definition.diagram;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextBox;
-
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "ProcessDiagramPopupViewImpl.html")
@@ -74,28 +72,28 @@ public class ProcessDiagramPopupViewImpl extends Composite implements ProcessDia
     @Inject
     private Event<NotificationEvent> notification;
 
-    private Constants constants = GWT.create(Constants.class);
+    private Constants constants = GWT.create( Constants.class );
 
     @Override
-    public void init(ProcessDiagramPopupPresenter presenter) {
+    public void init( ProcessDiagramPopupPresenter presenter ) {
         this.presenter = presenter;
 
     }
 
     @EventHandler("generateUrlButton")
-    public void generateUrlButton(ClickEvent e) {
-        presenter.generateURL(processDefIdText.getText(), Long.parseLong(processInstanceIdText.getText()),
-                processPackageNameText.getText(), processVersionText.getText());
+    public void generateUrlButton( ClickEvent e ) {
+        presenter.generateURL( processDefIdText.getText(), Long.parseLong( processInstanceIdText.getText() ),
+                               processPackageNameText.getText(), processVersionText.getText() );
     }
 
     @EventHandler("closeButton")
-    public void closeButton(ClickEvent e) {
+    public void closeButton( ClickEvent e ) {
         presenter.close();
     }
 
     @Override
-    public void displayNotification(String text) {
-        notification.fire(new NotificationEvent(text));
+    public void displayNotification( String text ) {
+        notification.fire( new NotificationEvent( text ) );
     }
 
     @Override

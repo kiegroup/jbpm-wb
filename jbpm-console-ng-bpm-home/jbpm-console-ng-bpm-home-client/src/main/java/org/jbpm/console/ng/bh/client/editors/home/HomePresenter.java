@@ -16,13 +16,13 @@
 
 package org.jbpm.console.ng.bh.client.editors.home;
 
-import com.google.gwt.core.client.GWT;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+
+import com.google.gwt.core.client.GWT;
 import org.jbpm.console.ng.bh.client.i18n.Constants;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -30,8 +30,8 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.shared.mvp.PlaceRequest;
-import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
 @WorkbenchScreen(identifier = "Home Screen")
@@ -39,14 +39,14 @@ public class HomePresenter {
 
     public interface HomeView extends UberView<HomePresenter> {
 
-        void displayNotification(String text);
+        void displayNotification( String text );
 
     }
 
     @Inject
     private PlaceManager placeManager;
 
-    private Constants constants = GWT.create(Constants.class);
+    private Constants constants = GWT.create( Constants.class );
 
     @Inject
     HomeView view;
@@ -67,16 +67,16 @@ public class HomePresenter {
         return view;
     }
 
-    public void doAction(String action) {
-        String locatedAction = actions.get(action);
-        if (locatedAction == null || locatedAction.equals("")) {
-            view.displayNotification(" Action Not Implemented Yet!");
+    public void doAction( String action ) {
+        String locatedAction = actions.get( action );
+        if ( locatedAction == null || locatedAction.equals( "" ) ) {
+            view.displayNotification( " Action Not Implemented Yet!" );
             return;
         }
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(locatedAction);
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( locatedAction );
         // placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
 
-        placeManager.goTo(placeRequestImpl);
+        placeManager.goTo( placeRequestImpl );
     }
 
     @OnReveal

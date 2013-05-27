@@ -16,28 +16,27 @@
 
 package org.jbpm.console.ng.pr.client.editors.variables.edit;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-
-import com.google.gwt.user.client.ui.Composite;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "VariableEditViewImpl.html")
 public class VariableEditViewImpl extends Composite implements VariableEditPresenter.PopupView {
-    private Constants constants = GWT.create(Constants.class);
+
+    private Constants constants = GWT.create( Constants.class );
 
     private long processInstanceId;
     private String variableId;
@@ -73,21 +72,21 @@ public class VariableEditViewImpl extends Composite implements VariableEditPrese
     private Event<NotificationEvent> notification;
 
     @Override
-    public void init(VariableEditPresenter presenter) {
+    public void init( VariableEditPresenter presenter ) {
         this.presenter = presenter;
-        clearButton.setText(constants.Clear());
-        saveButton.setText(constants.Save());
-        variableIdUILabel.setText(constants.Variables_Name());
-        variableTextLabel.setText(constants.Variable_Value());
+        clearButton.setText( constants.Clear() );
+        saveButton.setText( constants.Save() );
+        variableIdUILabel.setText( constants.Variables_Name() );
+        variableTextLabel.setText( constants.Variable_Value() );
     }
 
     @Override
-    public void displayNotification(String text) {
-        notification.fire(new NotificationEvent(text));
+    public void displayNotification( String text ) {
+        notification.fire( new NotificationEvent( text ) );
     }
 
     @Override
-    public void setProcessInstanceId(long processInstanceId) {
+    public void setProcessInstanceId( long processInstanceId ) {
         this.processInstanceId = processInstanceId;
 
     }
@@ -103,13 +102,13 @@ public class VariableEditViewImpl extends Composite implements VariableEditPrese
     }
 
     @Override
-    public void setVariableText(String value) {
+    public void setVariableText( String value ) {
         this.variableText = value;
-        this.variableTextBox.setText(value);
+        this.variableTextBox.setText( value );
     }
 
     @Override
-    public void setVariableId(String variableId) {
+    public void setVariableId( String variableId ) {
         this.variableId = variableId;
     }
 
@@ -119,20 +118,20 @@ public class VariableEditViewImpl extends Composite implements VariableEditPrese
     }
 
     @EventHandler("clearButton")
-    public void clearButton(ClickEvent e) {
-        variableTextBox.setValue("");
+    public void clearButton( ClickEvent e ) {
+        variableTextBox.setValue( "" );
     }
 
     @EventHandler("saveButton")
-    public void saveButton(ClickEvent e) {
+    public void saveButton( ClickEvent e ) {
         // TODO do not hardcode business key for session
-        presenter.setProcessVariable(variableTextBox.getText());
-        displayNotification("Variable updated " + variableId);
+        presenter.setProcessVariable( variableTextBox.getText() );
+        displayNotification( "Variable updated " + variableId );
     }
 
     @Override
-    public void setVariableIdLabel(String variableId) {
-        variableIdLabel.setText(variableId);
+    public void setVariableIdLabel( String variableId ) {
+        variableIdLabel.setText( variableId );
     }
 
 }

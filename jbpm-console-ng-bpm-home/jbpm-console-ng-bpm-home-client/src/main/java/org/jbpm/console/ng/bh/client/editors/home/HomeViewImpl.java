@@ -16,31 +16,28 @@
 
 package org.jbpm.console.ng.bh.client.editors.home;
 
+import java.util.List;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
-import java.util.List;
-
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.security.Identity;
-import org.uberfire.security.Role;
-
 import org.jbpm.console.ng.bh.client.i18n.Constants;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.shared.mvp.PlaceRequest;
-import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.security.Identity;
+import org.uberfire.security.Role;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "HomeViewImpl.html")
@@ -174,7 +171,7 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
 
     @Inject
     private Event<NotificationEvent> notification;
-    private Constants constants = GWT.create(Constants.class);
+    private Constants constants = GWT.create( Constants.class );
 
     public HomeViewImpl() {
 
@@ -188,100 +185,100 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
     }
 
     @Override
-    public void init(final HomePresenter presenter) {
+    public void init( final HomePresenter presenter ) {
         this.presenter = presenter;
         String url = GWT.getHostPageBaseURL();
         // avatar.setUrl(url + "images/avatars/" + identity.getName() + ".png");
         // avatar.setSize("64px", "64px");
         List<Role> roles = identity.getRoles();
 
-        carouselImg5.setUrl(url + "images/mountain.jpg");
-        carouselImg4.setUrl(url + "images/mountain.jpg");
-        carouselImg3.setUrl(url + "images/mountain.jpg");
-        carouselImg2.setUrl(url + "images/mountain.jpg");
-        carouselImg1.setUrl(url + "images/mountain.jpg");
-        carouselImg0.setUrl(url + "images/mountain.jpg");
+        carouselImg5.setUrl( url + "images/mountain.jpg" );
+        carouselImg4.setUrl( url + "images/mountain.jpg" );
+        carouselImg3.setUrl( url + "images/mountain.jpg" );
+        carouselImg2.setUrl( url + "images/mountain.jpg" );
+        carouselImg1.setUrl( url + "images/mountain.jpg" );
+        carouselImg0.setUrl( url + "images/mountain.jpg" );
 
-        authoringLabel.setText(constants.Authoring());
-        modelProcessAnchor.setText(constants.Business_Processes());
-        workLabel.setText(constants.Work());
-        workTaskListAnchor.setText(constants.Tasks_List());
-        workProcessDefinitionsAnchor.setText(constants.Process_Definitions());
-        workProcessInstancesAnchor.setText(constants.Process_Instances());
-        monitorLabel.setText(constants.Monitor());
-        monitorBAMAnchor.setText(constants.Business_Activity_Monitoring());
-        thejBPMCycle.setText(constants.The_jBPM_Cycle());
-        thejBPMCycle.setStyleName("");
+        authoringLabel.setText( constants.Authoring() );
+        modelProcessAnchor.setText( constants.Business_Processes() );
+        workLabel.setText( constants.Work() );
+        workTaskListAnchor.setText( constants.Tasks_List() );
+        workProcessDefinitionsAnchor.setText( constants.Process_Definitions() );
+        workProcessInstancesAnchor.setText( constants.Process_Instances() );
+        monitorLabel.setText( constants.Monitor() );
+        monitorBAMAnchor.setText( constants.Business_Activity_Monitoring() );
+        thejBPMCycle.setText( constants.The_jBPM_Cycle() );
+        thejBPMCycle.setStyleName( "" );
 
-        discoverLabel.setText(constants.Discover());
-        discoverLabel.setStyleName("");
-        discoverTextLabel.setText(constants.Discover_Text());
-        discoverTextLabel.setStyleName("");
-        designLabel.setText(constants.Design());
-        designLabel.setStyleName("");
-        designTextLabel.setText(constants.Design_Text());
-        designTextLabel.setStyleName("");
-        deployLabel.setText(constants.Deploy());
-        deployLabel.setStyleName("");
-        deployTextLabel.setText(constants.Deploy_Text());
-        deployTextLabel.setStyleName("");
-        workTasksLabel.setText(constants.Work());
-        workTasksLabel.setStyleName("");
-        workTasksTextLabel.setText(constants.Work_Text());
-        workTasksTextLabel.setStyleName("");
-        bamLabel.setText(constants.Business_Activity_Monitoring());
-        bamLabel.setStyleName("");
-        bamTextLabel.setText(constants.BAM_Text());
-        bamTextLabel.setStyleName("");
-        improveLabel.setText(constants.Improve());
-        improveLabel.setStyleName("");
-        improveTextLabel.setText(constants.Improve_Text());
-        improveTextLabel.setStyleName("");
+        discoverLabel.setText( constants.Discover() );
+        discoverLabel.setStyleName( "" );
+        discoverTextLabel.setText( constants.Discover_Text() );
+        discoverTextLabel.setStyleName( "" );
+        designLabel.setText( constants.Design() );
+        designLabel.setStyleName( "" );
+        designTextLabel.setText( constants.Design_Text() );
+        designTextLabel.setStyleName( "" );
+        deployLabel.setText( constants.Deploy() );
+        deployLabel.setStyleName( "" );
+        deployTextLabel.setText( constants.Deploy_Text() );
+        deployTextLabel.setStyleName( "" );
+        workTasksLabel.setText( constants.Work() );
+        workTasksLabel.setStyleName( "" );
+        workTasksTextLabel.setText( constants.Work_Text() );
+        workTasksTextLabel.setStyleName( "" );
+        bamLabel.setText( constants.Business_Activity_Monitoring() );
+        bamLabel.setStyleName( "" );
+        bamTextLabel.setText( constants.BAM_Text() );
+        bamTextLabel.setStyleName( "" );
+        improveLabel.setText( constants.Improve() );
+        improveLabel.setStyleName( "" );
+        improveTextLabel.setText( constants.Improve_Text() );
+        improveTextLabel.setStyleName( "" );
 
-        modelProcessAnchor.addClickHandler(new ClickHandler() {
+        modelProcessAnchor.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Authoring");
-                placeManager.goTo(placeRequestImpl);
+            public void onClick( ClickEvent event ) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Authoring" );
+                placeManager.goTo( placeRequestImpl );
             }
-        });
+        } );
 
-        workTaskListAnchor.addClickHandler(new ClickHandler() {
+        workTaskListAnchor.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Tasks List");
-                placeManager.goTo(placeRequestImpl);
+            public void onClick( ClickEvent event ) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Tasks List" );
+                placeManager.goTo( placeRequestImpl );
             }
-        });
+        } );
 
-        workProcessDefinitionsAnchor.addClickHandler(new ClickHandler() {
+        workProcessDefinitionsAnchor.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Definition List");
-                placeManager.goTo(placeRequestImpl);
+            public void onClick( ClickEvent event ) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Definition List" );
+                placeManager.goTo( placeRequestImpl );
             }
-        });
+        } );
 
-        workProcessInstancesAnchor.addClickHandler(new ClickHandler() {
+        workProcessInstancesAnchor.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instances");
-                placeManager.goTo(placeRequestImpl);
+            public void onClick( ClickEvent event ) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instances" );
+                placeManager.goTo( placeRequestImpl );
             }
-        });
+        } );
 
-        monitorBAMAnchor.addClickHandler(new ClickHandler() {
+        monitorBAMAnchor.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                Window.open("http://localhost:8080/dashbuilder/workspace/jbpm-dashboard", "_blank", "");
+            public void onClick( ClickEvent event ) {
+                Window.open( "http://localhost:8080/dashbuilder/workspace/jbpm-dashboard", "_blank", "" );
             }
-        });
+        } );
 
     }
 
     @Override
-    public void displayNotification(String text) {
-        notification.fire(new NotificationEvent(text));
+    public void displayNotification( String text ) {
+        notification.fire( new NotificationEvent( text ) );
     }
 
 }

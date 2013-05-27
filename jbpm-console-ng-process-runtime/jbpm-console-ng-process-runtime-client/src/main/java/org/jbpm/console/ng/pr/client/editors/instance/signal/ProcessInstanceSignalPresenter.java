@@ -16,14 +16,13 @@
 
 package org.jbpm.console.ng.pr.client.editors.instance.signal;
 
-import com.google.gwt.core.client.GWT;
 import java.util.Collection;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
@@ -35,26 +34,27 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
-import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
 @WorkbenchPopup(identifier = "Signal Process Popup")
 public class ProcessInstanceSignalPresenter {
-    private Constants constants = GWT.create(Constants.class);
+
+    private Constants constants = GWT.create( Constants.class );
 
     public interface PopupView extends UberView<ProcessInstanceSignalPresenter> {
 
-        void displayNotification(String text);
+        void displayNotification( String text );
 
-        void addProcessInstanceId(long processInstanceId);
+        void addProcessInstanceId( long processInstanceId );
 
         String getSignalRefText();
 
         String getEventText();
 
-        void setAvailableSignals(Collection<String> signals);
+        void setAvailableSignals( Collection<String> signals );
 
     }
 
@@ -81,7 +81,7 @@ public class ProcessInstanceSignalPresenter {
     }
 
     @OnStart
-    public void onStart(final PlaceRequest place) {
+    public void onStart( final PlaceRequest place ) {
         this.place = place;
     }
 
@@ -95,47 +95,47 @@ public class ProcessInstanceSignalPresenter {
         return view;
     }
 
-    public void signalProcessInstance(long processInstanceId) {
+    public void signalProcessInstance( long processInstanceId ) {
 
-        kieSessionServices.call(new RemoteCallback<Void>() {
+        kieSessionServices.call( new RemoteCallback<Void>() {
             @Override
-            public void callback(Void v) {
+            public void callback( Void v ) {
                 close();
 
             }
-        }).signalProcessInstance(processInstanceId, view.getSignalRefText(), view.getEventText());
+        } ).signalProcessInstance( processInstanceId, view.getSignalRefText(), view.getEventText() );
     }
 
     @OnReveal
     public void onReveal() {
-        String processInstanceIds = place.getParameter("processInstanceId", "-1").toString();
-        String[] ids = processInstanceIds.split(",");
-        for (String id : ids) {
-            long processInstanceId = Long.parseLong(id);
-            view.addProcessInstanceId(processInstanceId);
+        String processInstanceIds = place.getParameter( "processInstanceId", "-1" ).toString();
+        String[] ids = processInstanceIds.split( "," );
+        for ( String id : ids ) {
+            long processInstanceId = Long.parseLong( id );
+            view.addProcessInstanceId( processInstanceId );
         }
 
         // for single process instance load available signals
-        if (ids.length == 1 && Long.parseLong(ids[0]) != -1) {
-            getAvailableSignals(Long.parseLong(ids[0]));
+        if ( ids.length == 1 && Long.parseLong( ids[ 0 ] ) != -1 ) {
+            getAvailableSignals( Long.parseLong( ids[ 0 ] ) );
         }
     }
 
     public void close() {
-        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
+        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }
 
-    public void getAvailableSignals(long processInstanceId) {
-        kieSessionServices.call(new RemoteCallback<Collection<String>>() {
+    public void getAvailableSignals( long processInstanceId ) {
+        kieSessionServices.call( new RemoteCallback<Collection<String>>() {
             @Override
-            public void callback(Collection<String> signals) {
-                for (String s : signals) {
-                    System.out.println("Signal: ");
+            public void callback( Collection<String> signals ) {
+                for ( String s : signals ) {
+                    System.out.println( "Signal: " );
                 }
-                view.setAvailableSignals(signals);
+                view.setAvailableSignals( signals );
 
             }
-        }).getAvailableSignals(processInstanceId);
+        } ).getAvailableSignals( processInstanceId );
     }
 
 }

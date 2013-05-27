@@ -20,37 +20,36 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import org.jbpm.console.ng.client.i18n.Constants;
-
+import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
+import org.kie.workbench.common.widgets.client.handlers.NewResourcesMenu;
+import org.kie.workbench.common.widgets.client.menu.ToolsMenu;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.annotations.WorkbenchToolBar;
-import org.uberfire.client.mvp.Command;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.Position;
-import org.uberfire.client.workbench.model.PanelDefinition;
-import org.uberfire.client.workbench.model.PerspectiveDefinition;
-import org.uberfire.client.workbench.model.impl.PanelDefinitionImpl;
-import org.uberfire.client.workbench.model.impl.PartDefinitionImpl;
-import org.uberfire.client.workbench.model.impl.PerspectiveDefinitionImpl;
-import org.uberfire.client.workbench.widgets.menu.MenuFactory;
-import org.uberfire.client.workbench.widgets.menu.Menus;
-import org.uberfire.client.workbench.widgets.toolbar.IconType;
-import org.uberfire.client.workbench.widgets.toolbar.ToolBar;
-import org.uberfire.client.workbench.widgets.toolbar.impl.DefaultToolBar;
-import org.uberfire.client.workbench.widgets.toolbar.impl.DefaultToolBarItem;
-import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
-
-import com.google.gwt.core.client.GWT;
-import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
-import org.kie.workbench.common.widgets.client.handlers.NewResourcesMenu;
-import org.kie.workbench.common.widgets.client.menu.ToolsMenu;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.PanelDefinition;
+import org.uberfire.workbench.model.PerspectiveDefinition;
+import org.uberfire.workbench.model.Position;
+import org.uberfire.workbench.model.impl.PanelDefinitionImpl;
+import org.uberfire.workbench.model.impl.PartDefinitionImpl;
+import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.Menus;
+import org.uberfire.workbench.model.toolbar.IconType;
+import org.uberfire.workbench.model.toolbar.ToolBar;
+import org.uberfire.workbench.model.toolbar.impl.DefaultToolBar;
+import org.uberfire.workbench.model.toolbar.impl.DefaultToolBarItem;
 
 @ApplicationScoped
 @WorkbenchPerspective(identifier = "Authoring")
 public class ProjectAuthoringPerspective {
-    private Constants constants = GWT.create(Constants.class);
+
+    private Constants constants = GWT.create( Constants.class );
 
     @Inject
     private PlaceManager placeManager;
@@ -68,8 +67,6 @@ public class ProjectAuthoringPerspective {
 
     private ToolBar toolBar;
 
-
-
     public ProjectAuthoringPerspective() {
     }
 
@@ -81,7 +78,7 @@ public class ProjectAuthoringPerspective {
     }
 
     private void buildToolBar() {
-        this.toolBar = new DefaultToolBar("guvnor.new.item");
+        this.toolBar = new DefaultToolBar( "guvnor.new.item" );
         final String tooltip = constants.newItem();
         final Command command = new Command() {
             @Override
@@ -89,21 +86,21 @@ public class ProjectAuthoringPerspective {
                 newResourcePresenter.show();
             }
         };
-        toolBar.addItem(new DefaultToolBarItem(IconType.FILE, tooltip, command));
+        toolBar.addItem( new DefaultToolBarItem( IconType.FILE, tooltip, command ) );
 
     }
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
-        p.setName("Project Authoring Perspective");
+        p.setName( "Project Authoring Perspective" );
 
         final PanelDefinition west = new PanelDefinitionImpl();
-        west.setWidth(300);
-        west.setMinWidth(200);
-        west.addPart(new PartDefinitionImpl(new DefaultPlaceRequest("org.kie.guvnor.explorer")));
-        p.getRoot().insertChild(Position.WEST, west);
-        p.setTransient(true);
+        west.setWidth( 300 );
+        west.setMinWidth( 200 );
+        west.addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "org.kie.guvnor.explorer" ) ) );
+        p.getRoot().insertChild( Position.WEST, west );
+        p.setTransient( true );
         return p;
     }
 
@@ -119,21 +116,21 @@ public class ProjectAuthoringPerspective {
 
     private void buildMenuBar() {
         this.menus = MenuFactory
-                .newTopLevelMenu("Projects")
-                    .respondsWith(new Command() {
-                        @Override
-                        public void execute() {
-                            placeManager.goTo("org.kie.guvnor.explorer");
-                        }
-                    } )
+                .newTopLevelMenu( "Projects" )
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        placeManager.goTo( "org.kie.guvnor.explorer" );
+                    }
+                } )
                 .endMenu()
 
-                .newTopLevelMenu("New")
-                    .withItems(newResourcesMenu.getMenuItems())
+                .newTopLevelMenu( "New" )
+                .withItems( newResourcesMenu.getMenuItems() )
                 .endMenu()
 
-                .newTopLevelMenu("Tools")
-                    .withItems(toolsMenu.getMenuItems())
+                .newTopLevelMenu( "Tools" )
+                .withItems( toolsMenu.getMenuItems() )
                 .endMenu()
 
                 .build();

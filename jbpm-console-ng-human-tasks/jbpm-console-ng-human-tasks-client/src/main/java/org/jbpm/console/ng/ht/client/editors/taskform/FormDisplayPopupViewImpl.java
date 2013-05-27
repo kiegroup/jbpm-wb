@@ -16,22 +16,19 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskform;
 
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-
 import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.workbench.events.NotificationEvent;
 
 /**
  * Main view.
@@ -73,14 +70,14 @@ public class FormDisplayPopupViewImpl extends Composite implements FormDisplayPo
     private Event<NotificationEvent> notification;
 
     @Override
-    public void init(FormDisplayPopupPresenter presenter) {
+    public void init( FormDisplayPopupPresenter presenter ) {
         this.presenter = presenter;
 
     }
 
     @Override
-    public void displayNotification(String text) {
-        notification.fire(new NotificationEvent(text));
+    public void displayNotification( String text ) {
+        notification.fire( new NotificationEvent( text ) );
     }
 
     @Override
@@ -89,7 +86,7 @@ public class FormDisplayPopupViewImpl extends Composite implements FormDisplayPo
     }
 
     @Override
-    public void setTaskId(long taskId) {
+    public void setTaskId( long taskId ) {
         this.taskId = taskId;
     }
 
@@ -99,7 +96,7 @@ public class FormDisplayPopupViewImpl extends Composite implements FormDisplayPo
     }
 
     @Override
-    public void setProcessId(String processId) {
+    public void setProcessId( String processId ) {
         this.processId = processId;
     }
 
@@ -134,7 +131,7 @@ public class FormDisplayPopupViewImpl extends Composite implements FormDisplayPo
     }
 
     @Override
-    public void setDomainId(String domainId) {
+    public void setDomainId( String domainId ) {
         this.domainId = domainId;
     }
 
