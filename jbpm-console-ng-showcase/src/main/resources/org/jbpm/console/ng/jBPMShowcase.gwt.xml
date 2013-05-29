@@ -46,7 +46,7 @@
   <inherits name="org.jbpm.designer.jBPMDesignerClient"/>
 
   <!-- Form-Modelere -->
-  <inherits name="org.jbpm.formModeler.editor.FormModelerClient"/>
+  <inherits name="org.jbpm.formModeler.editor.FormModelerEditorClient"/>
   <inherits name="org.jbpm.formModeler.renderer.FormRendererClient"/>
 
   

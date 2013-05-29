@@ -24,6 +24,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.jbpm.formModeler.api.client.FormRenderContextTO;
 import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 import com.google.gwt.user.client.ui.Composite;
@@ -32,7 +33,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.formModeler.api.processing.FormRenderContextTO;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 
 import org.uberfire.client.mvp.PlaceManager;
