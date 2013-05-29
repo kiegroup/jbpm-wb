@@ -44,7 +44,7 @@ import org.jbpm.console.ng.ht.service.FormServiceEntryPoint;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
-import org.jbpm.formModeler.api.processing.FormRenderContextTO;
+import org.jbpm.formModeler.api.client.FormRenderContextTO;
 import org.jbpm.formModeler.renderer.includer.FormRendererPanelIncluderPresenter.FormRendererIncluderPanelView;
 import org.jbpm.formModeler.renderer.service.FormRendererIncluderService;
 import org.uberfire.client.annotations.OnReveal;
