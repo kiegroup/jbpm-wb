@@ -16,13 +16,13 @@
 package org.jbpm.console.ng.pr.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
-import org.uberfire.client.annotations.Perspective;
 
+import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.client.workbench.model.PerspectiveDefinition;
-import org.uberfire.client.workbench.model.impl.PartDefinitionImpl;
-import org.uberfire.client.workbench.model.impl.PerspectiveDefinitionImpl;
-import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.PerspectiveDefinition;
+import org.uberfire.workbench.model.impl.PartDefinitionImpl;
+import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 /**
  * A Perspective to show File Explorer
@@ -34,9 +34,9 @@ public class ProcessRuntimePerspective {
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
-        p.setName("Process Definitions");
-        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Process Definition List")));
-        p.setTransient(true);
+        p.setName( "Process Definitions" );
+        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Process Definition List" ) ) );
+        p.setTransient( true );
         return p;
     }
 

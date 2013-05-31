@@ -16,19 +16,18 @@
 
 package org.jbpm.console.ng.pr.client.editors.instance.list;
 
-import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.google.gwt.core.client.GWT;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
-import javax.enterprise.event.Observes;
-
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -43,8 +42,8 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
-import org.uberfire.shared.mvp.PlaceRequest;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance List")
@@ -52,15 +51,15 @@ public class ProcessInstanceListPresenter {
 
     public interface ProcessInstanceListView extends UberView<ProcessInstanceListPresenter> {
 
-        void displayNotification(String text);
+        void displayNotification( String text );
 
         String getFilterProcessText();
 
-        void setFilterProcessText(String processText);
+        void setFilterProcessText( String processText );
 
         DataGrid<ProcessInstanceSummary> getDataGrid();
 
-        void setAvailableProcesses(Collection<ProcessInstanceSummary> processes);
+        void setAvailableProcesses( Collection<ProcessInstanceSummary> processes );
     }
 
     private String currentProcessDefinition;
@@ -80,7 +79,7 @@ public class ProcessInstanceListPresenter {
 
     private ListDataProvider<ProcessInstanceSummary> dataProvider = new ListDataProvider<ProcessInstanceSummary>();
 
-    private Constants constants = GWT.create(Constants.class);
+    private Constants constants = GWT.create( Constants.class );
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -101,62 +100,62 @@ public class ProcessInstanceListPresenter {
 
     public void refreshActiveProcessList() {
         List<Integer> states = new ArrayList<Integer>();
-        states.add(ProcessInstance.STATE_ACTIVE);
-        dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+        states.add( ProcessInstance.STATE_ACTIVE );
+        dataServices.call( new RemoteCallback<List<ProcessInstanceSummary>>() {
             @Override
-            public void callback(List<ProcessInstanceSummary> processInstances) {
+            public void callback( List<ProcessInstanceSummary> processInstances ) {
                 dataProvider.getList().clear();
-                dataProvider.getList().addAll(processInstances);
+                dataProvider.getList().addAll( processInstances );
                 dataProvider.refresh();
             }
-        }).getProcessInstances(states, view.getFilterProcessText(), null);
+        } ).getProcessInstances( states, view.getFilterProcessText(), null );
     }
 
     public void refreshRelatedToMeProcessList() {
         List<Integer> states = new ArrayList<Integer>();
-        states.add(ProcessInstance.STATE_ACTIVE);
-        dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+        states.add( ProcessInstance.STATE_ACTIVE );
+        dataServices.call( new RemoteCallback<List<ProcessInstanceSummary>>() {
             @Override
-            public void callback(List<ProcessInstanceSummary> processInstances) {
+            public void callback( List<ProcessInstanceSummary> processInstances ) {
                 dataProvider.getList().clear();
-                dataProvider.getList().addAll(processInstances);
+                dataProvider.getList().addAll( processInstances );
                 dataProvider.refresh();
             }
-        }).getProcessInstances(states, view.getFilterProcessText(), identity.getName());
+        } ).getProcessInstances( states, view.getFilterProcessText(), identity.getName() );
     }
 
     public void refreshAbortedProcessList() {
         List<Integer> states = new ArrayList<Integer>();
-        states.add(ProcessInstance.STATE_ABORTED);
-        dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+        states.add( ProcessInstance.STATE_ABORTED );
+        dataServices.call( new RemoteCallback<List<ProcessInstanceSummary>>() {
             @Override
-            public void callback(List<ProcessInstanceSummary> processInstances) {
+            public void callback( List<ProcessInstanceSummary> processInstances ) {
                 dataProvider.getList().clear();
-                dataProvider.getList().addAll(processInstances);
+                dataProvider.getList().addAll( processInstances );
                 dataProvider.refresh();
             }
-        }).getProcessInstances(states, view.getFilterProcessText(), null);
+        } ).getProcessInstances( states, view.getFilterProcessText(), null );
     }
 
     public void refreshCompletedProcessList() {
         List<Integer> states = new ArrayList<Integer>();
-        states.add(ProcessInstance.STATE_COMPLETED);
-        dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+        states.add( ProcessInstance.STATE_COMPLETED );
+        dataServices.call( new RemoteCallback<List<ProcessInstanceSummary>>() {
             @Override
-            public void callback(List<ProcessInstanceSummary> processInstances) {
+            public void callback( List<ProcessInstanceSummary> processInstances ) {
                 dataProvider.getList().clear();
-                dataProvider.getList().addAll(processInstances);
+                dataProvider.getList().addAll( processInstances );
                 dataProvider.refresh();
             }
-        }).getProcessInstances(states, view.getFilterProcessText(), null);
+        } ).getProcessInstances( states, view.getFilterProcessText(), null );
     }
 
-    public void newInstanceCreated(@Observes ProcessInstanceCreated pi) {
+    public void newInstanceCreated( @Observes ProcessInstanceCreated pi ) {
         refreshActiveProcessList();
     }
 
-    public void addDataDisplay(HasData<ProcessInstanceSummary> display) {
-        dataProvider.addDataDisplay(display);
+    public void addDataDisplay( HasData<ProcessInstanceSummary> display ) {
+        dataProvider.addDataDisplay( display );
     }
 
     public ListDataProvider<ProcessInstanceSummary> getDataProvider() {
@@ -168,56 +167,58 @@ public class ProcessInstanceListPresenter {
     }
 
     @OnStart
-    public void onStart(final PlaceRequest place) {
+    public void onStart( final PlaceRequest place ) {
         this.place = place;
     }
 
     @OnReveal
     public void onReveal() {
 
-        this.currentProcessDefinition = place.getParameter("processDefId", "");
+        this.currentProcessDefinition = place.getParameter( "processDefId", "" );
         listProcessInstances();
         refreshActiveProcessList();
     }
 
-    public void abortProcessInstance(String processDefId, long processInstanceId) {
-        kieSessionServices.call(new RemoteCallback<Void>() {
+    public void abortProcessInstance( String processDefId,
+                                      long processInstanceId ) {
+        kieSessionServices.call( new RemoteCallback<Void>() {
             @Override
-            public void callback(Void v) {
+            public void callback( Void v ) {
                 refreshActiveProcessList();
 
             }
-        }).abortProcessInstance(processInstanceId);
+        } ).abortProcessInstance( processInstanceId );
     }
 
-    public void suspendProcessInstance(String processDefId, long processInstanceId) {
-        kieSessionServices.call(new RemoteCallback<Void>() {
+    public void suspendProcessInstance( String processDefId,
+                                        long processInstanceId ) {
+        kieSessionServices.call( new RemoteCallback<Void>() {
             @Override
-            public void callback(Void v) {
+            public void callback( Void v ) {
                 refreshActiveProcessList();
 
             }
-        }).suspendProcessInstance(processInstanceId);
+        } ).suspendProcessInstance( processInstanceId );
     }
 
     public void listProcessInstances() {
 
-        if (!this.currentProcessDefinition.equals("")) {
-            dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+        if ( !this.currentProcessDefinition.equals( "" ) ) {
+            dataServices.call( new RemoteCallback<List<ProcessInstanceSummary>>() {
                 @Override
-                public void callback(List<ProcessInstanceSummary> processes) {
-                    view.setAvailableProcesses(processes);
+                public void callback( List<ProcessInstanceSummary> processes ) {
+                    view.setAvailableProcesses( processes );
 
                 }
-            }).getProcessInstancesByProcessDefinition(this.currentProcessDefinition);
+            } ).getProcessInstancesByProcessDefinition( this.currentProcessDefinition );
         } else {
-            dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+            dataServices.call( new RemoteCallback<List<ProcessInstanceSummary>>() {
                 @Override
-                public void callback(List<ProcessInstanceSummary> processes) {
-                    view.setAvailableProcesses(processes);
+                public void callback( List<ProcessInstanceSummary> processes ) {
+                    view.setAvailableProcesses( processes );
 
                 }
-            }).getProcessInstances();
+            } ).getProcessInstances();
 
         }
     }

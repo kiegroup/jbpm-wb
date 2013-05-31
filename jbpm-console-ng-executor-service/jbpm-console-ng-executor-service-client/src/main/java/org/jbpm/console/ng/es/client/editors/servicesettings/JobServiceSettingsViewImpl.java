@@ -20,12 +20,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.es.client.i18n.Constants;
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -35,11 +29,17 @@ import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.es.client.i18n.Constants;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "JobServiceSettingsViewImpl.html")
 public class JobServiceSettingsViewImpl extends Composite implements JobServiceSettingsPresenter.JobServiceSettingsView {
-    private Constants constants = GWT.create(Constants.class);
+
+    private Constants constants = GWT.create( Constants.class );
 
     @Inject
     @DataField
@@ -63,19 +63,19 @@ public class JobServiceSettingsViewImpl extends Composite implements JobServiceS
     private JobServiceSettingsPresenter presenter;
 
     @Override
-    public void init(JobServiceSettingsPresenter p) {
+    public void init( JobServiceSettingsPresenter p ) {
         this.presenter = p;
         this.presenter.init();
     }
 
     @EventHandler("startStopButton")
-    public void startStopButton(ClickEvent e) {
-        presenter.initService(numberOfExecutorsText.getValue(), frequencyText.getText());
+    public void startStopButton( ClickEvent e ) {
+        presenter.initService( numberOfExecutorsText.getValue(), frequencyText.getText() );
     }
 
     @Override
-    public void displayNotification(String notification) {
-        notificationEvents.fire(new NotificationEvent(notification));
+    public void displayNotification( String notification ) {
+        notificationEvents.fire( new NotificationEvent( notification ) );
     }
 
     @Override
@@ -84,22 +84,22 @@ public class JobServiceSettingsViewImpl extends Composite implements JobServiceS
     }
 
     @Override
-    public void setFrequencyText(String frequency) {
-        this.frequencyText.setValue(frequency);
+    public void setFrequencyText( String frequency ) {
+        this.frequencyText.setValue( frequency );
     }
 
     @Override
-    public void setNumberOfExecutors(Integer numberOfExecutors) {
-        this.numberOfExecutorsText.setValue(numberOfExecutors);
+    public void setNumberOfExecutors( Integer numberOfExecutors ) {
+        this.numberOfExecutorsText.setValue( numberOfExecutors );
     }
 
     @Override
-    public void setStartedLabel(Boolean started) {
-        this.startedLabel.setText(started ? constants.Started() : constants.Stopped());
+    public void setStartedLabel( Boolean started ) {
+        this.startedLabel.setText( started ? constants.Started() : constants.Stopped() );
     }
 
     @Override
-    public void alert(String message) {
-        Window.alert(message); // TODO improve??
+    public void alert( String message ) {
+        Window.alert( message ); // TODO improve??
     }
 }

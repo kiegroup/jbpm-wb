@@ -35,7 +35,7 @@ import org.uberfire.backend.repositories.RepositoryService;
 
 @ApplicationScoped
 @Vfs
-public class VFSRepoDeploymentUnitProvider implements DeploymentUnitProvider {
+public class VFSRepoDeploymentUnitProvider implements DeploymentUnitProvider<DeploymentUnit> {
 
     @Inject
     @Named("ioStrategy")

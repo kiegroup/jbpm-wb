@@ -16,12 +16,12 @@
 
 package org.jbpm.console.ng.pr.client.editors.variables.edit;
 
-import com.google.gwt.core.client.GWT;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
@@ -33,30 +33,31 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
-import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
 @WorkbenchPopup(identifier = "Edit Variable Popup")
 public class VariableEditPresenter {
-    private Constants constants = GWT.create(Constants.class);
+
+    private Constants constants = GWT.create( Constants.class );
 
     public interface PopupView extends UberView<VariableEditPresenter> {
 
-        void displayNotification(String text);
+        void displayNotification( String text );
 
-        void setProcessInstanceId(long processInstanceId);
+        void setProcessInstanceId( long processInstanceId );
 
         long getProcessInstanceId();
 
         String getVariableText();
 
-        void setVariableText(String value);
+        void setVariableText( String value );
 
-        void setVariableId(String variableId);
+        void setVariableId( String variableId );
 
-        void setVariableIdLabel(String variableId);
+        void setVariableIdLabel( String variableId );
 
         String getVariableId();
 
@@ -85,7 +86,7 @@ public class VariableEditPresenter {
     }
 
     @OnStart
-    public void onStart(final PlaceRequest place) {
+    public void onStart( final PlaceRequest place ) {
         this.place = place;
     }
 
@@ -101,25 +102,25 @@ public class VariableEditPresenter {
 
     @OnReveal
     public void onReveal() {
-        view.setProcessInstanceId(Long.parseLong(place.getParameter("processInstanceId", "-1").toString()));
-        view.setVariableId(place.getParameter("variableId", "-1").toString());
-        view.setVariableIdLabel(view.getVariableId());
-        view.setVariableText(place.getParameter("value", "-1").toString());
+        view.setProcessInstanceId( Long.parseLong( place.getParameter( "processInstanceId", "-1" ).toString() ) );
+        view.setVariableId( place.getParameter( "variableId", "-1" ).toString() );
+        view.setVariableIdLabel( view.getVariableId() );
+        view.setVariableText( place.getParameter( "value", "-1" ).toString() );
     }
 
     public void close() {
-        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
+        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }
 
-    public void setProcessVariable(Object value) {
+    public void setProcessVariable( Object value ) {
 
-        kieSessionServices.call(new RemoteCallback<Void>() {
+        kieSessionServices.call( new RemoteCallback<Void>() {
             @Override
-            public void callback(Void v) {
+            public void callback( Void v ) {
                 close();
 
             }
-        }).setProcessVariable(view.getProcessInstanceId(), view.getVariableId(), value);
+        } ).setProcessVariable( view.getProcessInstanceId(), view.getVariableId(), value );
     }
 
 }

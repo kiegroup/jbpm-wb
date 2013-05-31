@@ -17,12 +17,20 @@
 package org.jbpm.console.ng.pr.client.editors.instance.details;
 
 import java.util.List;
-
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.ListBox;
+import com.github.gwtbootstrap.client.ui.TextArea;
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.ProvidesKey;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.DummyProcessPath;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
@@ -38,28 +46,19 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.shared.mvp.PlaceRequest;
-
-import com.github.gwtbootstrap.client.ui.ListBox;
-import com.github.gwtbootstrap.client.ui.TextArea;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.ProvidesKey;
-import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
-import org.jbpm.console.ng.pr.client.i18n.Constants;
+import org.uberfire.mvp.PlaceRequest;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance Details")
 public class ProcessInstanceDetailsPresenter {
-    private Constants constants = GWT.create(Constants.class);
+
+    private Constants constants = GWT.create( Constants.class );
 
     private PlaceRequest place;
 
     public interface ProcessInstanceDetailsView extends UberView<ProcessInstanceDetailsPresenter> {
 
-        void displayNotification(String text);
+        void displayNotification( String text );
 
         ListBox getCurrentActivitiesListBox();
 
@@ -71,19 +70,19 @@ public class ProcessInstanceDetailsPresenter {
 
         TextBox getStateText();
 
-        void setProcessInstance(ProcessInstanceSummary processInstance);
+        void setProcessInstance( ProcessInstanceSummary processInstance );
 
         TextBox getProcessPackageText();
 
         TextBox getProcessVersionText();
 
-        void setProcessAssetPath(Path processAssetPath);
+        void setProcessAssetPath( Path processAssetPath );
 
-        void setCurrentActiveNodes(List<NodeInstanceSummary> activeNodes);
+        void setCurrentActiveNodes( List<NodeInstanceSummary> activeNodes );
 
-        void setCurrentCompletedNodes(List<NodeInstanceSummary> completedNodes);
+        void setCurrentCompletedNodes( List<NodeInstanceSummary> completedNodes );
 
-        void setEncodedProcessSource(String encodedProcessSource);
+        void setEncodedProcessSource( String encodedProcessSource );
     }
 
     @Inject
@@ -102,7 +101,7 @@ public class ProcessInstanceDetailsPresenter {
 
     public static final ProvidesKey<VariableSummary> KEY_PROVIDER = new ProvidesKey<VariableSummary>() {
         @Override
-        public Object getKey(VariableSummary item) {
+        public Object getKey( VariableSummary item ) {
             return item == null ? null : item.getVariableId();
         }
     };
@@ -117,49 +116,50 @@ public class ProcessInstanceDetailsPresenter {
         return view;
     }
 
-    public void refreshProcessInstanceData(final String processId, final String processDefId) {
-        dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
+    public void refreshProcessInstanceData( final String processId,
+                                            final String processDefId ) {
+        dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
-            public void callback(List<NodeInstanceSummary> details) {
-                view.getLogTextArea().setText("");
+            public void callback( List<NodeInstanceSummary> details ) {
+                view.getLogTextArea().setText( "" );
                 String fullLog = "";
-                for (NodeInstanceSummary nis : details) {
+                for ( NodeInstanceSummary nis : details ) {
                     fullLog += nis.getTimestamp() + ": " + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType()
                             + ") \n";
                 }
-                view.getLogTextArea().setText(fullLog);
+                view.getLogTextArea().setText( fullLog );
             }
-        }).getProcessInstanceHistory(Long.parseLong(processId));
-        dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
+        } ).getProcessInstanceHistory( Long.parseLong( processId ) );
+        dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
-            public void callback(List<NodeInstanceSummary> details) {
-                view.setCurrentActiveNodes(details);
+            public void callback( List<NodeInstanceSummary> details ) {
+                view.setCurrentActiveNodes( details );
                 view.getCurrentActivitiesListBox().clear();
-                for (NodeInstanceSummary nis : details) {
+                for ( NodeInstanceSummary nis : details ) {
 
                     view.getCurrentActivitiesListBox().addItem(
                             nis.getTimestamp() + ":" + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType() + ")",
-                            String.valueOf(nis.getId()));
+                            String.valueOf( nis.getId() ) );
                 }
             }
-        }).getProcessInstanceActiveNodes(Long.parseLong(processId));
+        } ).getProcessInstanceActiveNodes( Long.parseLong( processId ) );
 
-        dataServices.call(new RemoteCallback<ProcessSummary>() {
+        dataServices.call( new RemoteCallback<ProcessSummary>() {
             @Override
-            public void callback(ProcessSummary process) {
-                view.getProcessNameText().setText(process.getId());
-                view.getProcessPackageText().setText(process.getPackageName());
-                view.getProcessVersionText().setText(process.getVersion());
+            public void callback( ProcessSummary process ) {
+                view.getProcessNameText().setText( process.getId() );
+                view.getProcessPackageText().setText( process.getPackageName() );
+                view.getProcessVersionText().setText( process.getVersion() );
             }
-        }).getProcessDesc(processDefId);
+        } ).getProcessDesc( processDefId );
 
-        dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
+        dataServices.call( new RemoteCallback<ProcessInstanceSummary>() {
             @Override
-            public void callback(ProcessInstanceSummary process) {
-                view.setProcessInstance(process);
+            public void callback( ProcessInstanceSummary process ) {
+                view.setProcessInstance( process );
 
                 String statusStr = "Unknown";
-                switch (process.getState()) {
+                switch ( process.getState() ) {
                     case ProcessInstance.STATE_ACTIVE:
                         statusStr = "Active";
                         break;
@@ -179,39 +179,39 @@ public class ProcessInstanceDetailsPresenter {
                         break;
                 }
 
-                view.getStateText().setText(statusStr);
+                view.getStateText().setText( statusStr );
             }
-        }).getProcessInstanceById(Long.parseLong(processId));
+        } ).getProcessInstanceById( Long.parseLong( processId ) );
 
-        dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
+        dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
-            public void callback(List<NodeInstanceSummary> details) {
-                view.setCurrentCompletedNodes(details);
+            public void callback( List<NodeInstanceSummary> details ) {
+                view.setCurrentCompletedNodes( details );
             }
-        }).getProcessInstanceCompletedNodes(Long.parseLong(processId));
+        } ).getProcessInstanceCompletedNodes( Long.parseLong( processId ) );
 
-        loadVariables(processId, processDefId);
+        loadVariables( processId, processDefId );
 
-        dataServices.call(new RemoteCallback<ProcessSummary>() {
+        dataServices.call( new RemoteCallback<ProcessSummary>() {
             @Override
-            public void callback(ProcessSummary process) {
-                view.setEncodedProcessSource(process.getEncodedProcessSource());
-                if (process.getOriginalPath() != null) {
-                    fileServices.call(new RemoteCallback<Path>() {
+            public void callback( ProcessSummary process ) {
+                view.setEncodedProcessSource( process.getEncodedProcessSource() );
+                if ( process.getOriginalPath() != null ) {
+                    fileServices.call( new RemoteCallback<Path>() {
                         @Override
-                        public void callback(Path processPath) {
-                            view.setProcessAssetPath(processPath);
+                        public void callback( Path processPath ) {
+                            view.setProcessAssetPath( processPath );
                         }
-                    }).get(process.getOriginalPath());
+                    } ).get( process.getOriginalPath() );
                 } else {
-                    view.setProcessAssetPath(new DummyProcessPath(process.getId()));
+                    view.setProcessAssetPath( new DummyProcessPath( process.getId() ) );
                 }
             }
-        }).getProcessById(processDefId);
+        } ).getProcessById( processDefId );
     }
 
-    public void addDataDisplay(HasData<VariableSummary> display) {
-        dataProvider.addDataDisplay(display);
+    public void addDataDisplay( HasData<VariableSummary> display ) {
+        dataProvider.addDataDisplay( display );
     }
 
     public ListDataProvider<VariableSummary> getDataProvider() {
@@ -223,28 +223,29 @@ public class ProcessInstanceDetailsPresenter {
     }
 
     @OnStart
-    public void onStart(final PlaceRequest place) {
+    public void onStart( final PlaceRequest place ) {
         this.place = place;
     }
 
     @OnReveal
     public void onReveal() {
-        String processId = place.getParameter("processInstanceId", "");
-        String processDefId = place.getParameter("processDefId", "");
-        view.getProcessIdText().setText(processId);
-        view.getProcessNameText().setText(processDefId);
-        refreshProcessInstanceData(processId, processDefId);
+        String processId = place.getParameter( "processInstanceId", "" );
+        String processDefId = place.getParameter( "processDefId", "" );
+        view.getProcessIdText().setText( processId );
+        view.getProcessNameText().setText( processDefId );
+        refreshProcessInstanceData( processId, processDefId );
     }
 
-    public void loadVariables(final String processId, final String processDefId) {
-        dataServices.call(new RemoteCallback<List<VariableSummary>>() {
+    public void loadVariables( final String processId,
+                               final String processDefId ) {
+        dataServices.call( new RemoteCallback<List<VariableSummary>>() {
             @Override
-            public void callback(List<VariableSummary> variables) {
+            public void callback( List<VariableSummary> variables ) {
                 dataProvider.getList().clear();
-                dataProvider.getList().addAll(variables);
+                dataProvider.getList().addAll( variables );
                 dataProvider.refresh();
             }
-        }).getVariablesCurrentState(Long.parseLong(processId), processDefId);
+        } ).getVariablesCurrentState( Long.parseLong( processId ), processDefId );
     }
 
 }

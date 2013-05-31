@@ -16,19 +16,18 @@
 
 package org.jbpm.console.ng.pr.client.editors.definition.diagram;
 
-import com.google.gwt.core.client.GWT;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
@@ -37,18 +36,19 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
-import org.uberfire.shared.mvp.PlaceRequest;
+import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
 @WorkbenchPopup(identifier = "Process Diagram Popup")
 public class ProcessDiagramPopupPresenter {
-    private Constants constants = GWT.create(Constants.class);
+
+    private Constants constants = GWT.create( Constants.class );
 
     public interface InboxView extends UberView<ProcessDiagramPopupPresenter> {
 
-        void displayNotification(String text);
+        void displayNotification( String text );
 
         TextBox getProcessDefIdText();
 
@@ -81,7 +81,7 @@ public class ProcessDiagramPopupPresenter {
     private PlaceRequest place;
 
     @OnStart
-    public void onStart(final PlaceRequest place) {
+    public void onStart( final PlaceRequest place ) {
         this.place = place;
     }
 
@@ -95,37 +95,39 @@ public class ProcessDiagramPopupPresenter {
         return view;
     }
 
-    public void generateURL(final String processDefinitionId, final Long processInstanceId, final String packageName,
-            final String version) {
-        dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
+    public void generateURL( final String processDefinitionId,
+                             final Long processInstanceId,
+                             final String packageName,
+                             final String version ) {
+        dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
-            public void callback(List<NodeInstanceSummary> details) {
+            public void callback( List<NodeInstanceSummary> details ) {
                 String fullLog = "?processDefId=" + processDefinitionId + "" + "?processPackage=" + packageName
                         + "?processVersion=" + version + "?nodeIds=";
-                for (NodeInstanceSummary nis : details) {
+                for ( NodeInstanceSummary nis : details ) {
                     fullLog += nis.getNodeUniqueName() + ",";
                 }
-                view.getProcessDiagramURLText().setText(fullLog);
+                view.getProcessDiagramURLText().setText( fullLog );
             }
-        }).getProcessInstanceHistory(processInstanceId);
+        } ).getProcessInstanceHistory( processInstanceId );
 
     }
 
     @OnReveal
     public void onReveal() {
-        String processDefinitionId = place.getParameter("processDefId", "").toString();
-        Long processInstanceId = Long.parseLong(place.getParameter("processInstanceId", "0").toString());
-        String packageName = place.getParameter("processPackage", "").toString();
-        String version = place.getParameter("processVersion", "0").toString();
-        view.getProcessDefIdText().setText(processDefinitionId);
-        view.getProcessInstanceIdText().setText(processInstanceId.toString());
-        view.getProcessPackageNameText().setText(packageName);
-        view.getProcessVersionText().setText(version);
-        generateURL(processDefinitionId, processInstanceId, packageName, version);
+        String processDefinitionId = place.getParameter( "processDefId", "" ).toString();
+        Long processInstanceId = Long.parseLong( place.getParameter( "processInstanceId", "0" ).toString() );
+        String packageName = place.getParameter( "processPackage", "" ).toString();
+        String version = place.getParameter( "processVersion", "0" ).toString();
+        view.getProcessDefIdText().setText( processDefinitionId );
+        view.getProcessInstanceIdText().setText( processInstanceId.toString() );
+        view.getProcessPackageNameText().setText( packageName );
+        view.getProcessVersionText().setText( version );
+        generateURL( processDefinitionId, processInstanceId, packageName, version );
     }
 
     public void close() {
-        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
+        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }
 
 }

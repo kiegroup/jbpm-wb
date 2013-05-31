@@ -16,36 +16,21 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskgrid;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.SimplePager;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.ht.client.i8n.Constants;
-import org.jbpm.console.ng.ht.client.util.ResizableHeader;
-import org.jbpm.console.ng.ht.model.TaskSummary;
-import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
-import org.uberfire.security.Identity;
-import org.uberfire.shared.mvp.PlaceRequest;
-import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
-
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.NavLink;
+import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
@@ -68,18 +53,31 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.ht.client.i8n.Constants;
 import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
+import org.jbpm.console.ng.ht.client.util.ResizableHeader;
+import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
+import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.security.Identity;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "InboxPersonalViewImpl.html")
 public class InboxPersonalViewImpl extends Composite implements InboxPersonalPresenter.InboxView {
-    private Constants constants = GWT.create(Constants.class);
-    private HumanTasksImages images = GWT.create(HumanTasksImages.class);
+
+    private Constants constants = GWT.create( Constants.class );
+    private HumanTasksImages images = GWT.create( HumanTasksImages.class );
 
     @Inject
     private Identity identity;
@@ -145,241 +143,246 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
     private MultiSelectionModel<TaskSummary> selectionModel;
 
     @Override
-    public void init(final InboxPersonalPresenter presenter) {
+    public void init( final InboxPersonalPresenter presenter ) {
         this.presenter = presenter;
 
-        listContainer.add(myTaskListGrid);
-        listContainer.add(pager);
-        taskAdvancedViewLabel.setText(constants.Tasks_List_Advanced_View());
-        taskAdvancedViewLabel.setStyleName("");
+        listContainer.add( myTaskListGrid );
+        listContainer.add( pager );
+        taskAdvancedViewLabel.setText( constants.Tasks_List_Advanced_View() );
+        taskAdvancedViewLabel.setStyleName( "" );
 
-        myTaskListGrid.setHeight("350px");
+        myTaskListGrid.setHeight( "350px" );
         // Set the message to display when the table is empty.
-        myTaskListGrid.setEmptyTableWidget(new Label(constants.No_Pending_Tasks_Enjoy()));
+        myTaskListGrid.setEmptyTableWidget( new Label( constants.No_Pending_Tasks_Enjoy() ) );
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
-        sortHandler = new ListHandler<TaskSummary>(presenter.getDataProvider().getList());
+        sortHandler = new ListHandler<TaskSummary>( presenter.getDataProvider().getList() );
 
-        myTaskListGrid.addColumnSortHandler(sortHandler);
+        myTaskListGrid.addColumnSortHandler( sortHandler );
 
         // Filters
-        showPersonalTasksNavLink.setText(constants.Personal());
-        showPersonalTasksNavLink.addClickHandler(new ClickHandler() {
+        showPersonalTasksNavLink.setText( constants.Personal() );
+        showPersonalTasksNavLink.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                showPersonalTasksNavLink.setStyleName("active");
-                showGroupTasksNavLink.setStyleName("");
-                showActiveTasksNavLink.setStyleName("");
-                showAllTasksNavLink.setStyleName("");
+            public void onClick( ClickEvent event ) {
+                showPersonalTasksNavLink.setStyleName( "active" );
+                showGroupTasksNavLink.setStyleName( "" );
+                showActiveTasksNavLink.setStyleName( "" );
+                showAllTasksNavLink.setStyleName( "" );
                 presenter.refreshPersonalTasks();
             }
-        });
+        } );
 
-        showGroupTasksNavLink.setText(constants.Group());
-        showGroupTasksNavLink.addClickHandler(new ClickHandler() {
+        showGroupTasksNavLink.setText( constants.Group() );
+        showGroupTasksNavLink.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                showGroupTasksNavLink.setStyleName("active");
-                showPersonalTasksNavLink.setStyleName("");
-                showActiveTasksNavLink.setStyleName("");
-                showAllTasksNavLink.setStyleName("");
+            public void onClick( ClickEvent event ) {
+                showGroupTasksNavLink.setStyleName( "active" );
+                showPersonalTasksNavLink.setStyleName( "" );
+                showActiveTasksNavLink.setStyleName( "" );
+                showAllTasksNavLink.setStyleName( "" );
                 presenter.refreshGroupTasks();
             }
-        });
+        } );
 
-        showActiveTasksNavLink.setText(constants.Active());
-        showActiveTasksNavLink.addClickHandler(new ClickHandler() {
+        showActiveTasksNavLink.setText( constants.Active() );
+        showActiveTasksNavLink.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                showGroupTasksNavLink.setStyleName("");
-                showPersonalTasksNavLink.setStyleName("");
-                showActiveTasksNavLink.setStyleName("active");
-                showAllTasksNavLink.setStyleName("");
+            public void onClick( ClickEvent event ) {
+                showGroupTasksNavLink.setStyleName( "" );
+                showPersonalTasksNavLink.setStyleName( "" );
+                showActiveTasksNavLink.setStyleName( "active" );
+                showAllTasksNavLink.setStyleName( "" );
                 presenter.refreshActiveTasks();
             }
-        });
+        } );
 
-        showAllTasksNavLink.setText(constants.All());
-        showAllTasksNavLink.addClickHandler(new ClickHandler() {
+        showAllTasksNavLink.setText( constants.All() );
+        showAllTasksNavLink.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                showGroupTasksNavLink.setStyleName("");
-                showPersonalTasksNavLink.setStyleName("");
-                showActiveTasksNavLink.setStyleName("");
-                showAllTasksNavLink.setStyleName("active");
+            public void onClick( ClickEvent event ) {
+                showGroupTasksNavLink.setStyleName( "" );
+                showPersonalTasksNavLink.setStyleName( "" );
+                showActiveTasksNavLink.setStyleName( "" );
+                showAllTasksNavLink.setStyleName( "active" );
                 presenter.refreshAllTasks();
             }
-        });
+        } );
 
-        createQuickTaskNavLink.setText(constants.New_Task());
-        createQuickTaskNavLink.addClickHandler(new ClickHandler() {
+        createQuickTaskNavLink.setText( constants.New_Task() );
+        createQuickTaskNavLink.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Quick New Task");
-                placeManager.goTo(placeRequestImpl);
+            public void onClick( ClickEvent event ) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Quick New Task" );
+                placeManager.goTo( placeRequestImpl );
             }
-        });
+        } );
 
         // Create a Pager to control the table.
 
-        pager.setDisplay(myTaskListGrid);
-        pager.setPageSize(30);
+        pager.setDisplay( myTaskListGrid );
+        pager.setPageSize( 30 );
 
         // Add a selection model so we can select cells.
         selectionModel = new MultiSelectionModel<TaskSummary>();
-        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+        selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
             @Override
-            public void onSelectionChange(SelectionChangeEvent event) {
+            public void onSelectionChange( SelectionChangeEvent event ) {
                 selectedTasks = selectionModel.getSelectedSet();
-                for (TaskSummary ts : selectedTasks) {
-                    taskSelection.fire(new TaskSelectionEvent(ts.getId()));
+                for ( TaskSummary ts : selectedTasks ) {
+                    taskSelection.fire( new TaskSelectionEvent( ts.getId() ) );
                 }
             }
-        });
+        } );
 
-        myTaskListGrid.setSelectionModel(selectionModel, DefaultSelectionEventManager.<TaskSummary> createCheckboxManager());
+        myTaskListGrid.setSelectionModel( selectionModel, DefaultSelectionEventManager.<TaskSummary>createCheckboxManager() );
 
-        initTableColumns(selectionModel);
-        presenter.addDataDisplay(myTaskListGrid);
+        initTableColumns( selectionModel );
+        presenter.addDataDisplay( myTaskListGrid );
 
         KeyPressHandler refreshPressHandler = new KeyPressHandler() {
             @Override
-            public void onKeyPress(KeyPressEvent event) {
+            public void onKeyPress( KeyPressEvent event ) {
                 // System.out.println("event.getUnicodeCharCode() -> "+event.getUnicodeCharCode());
                 // System.out.println("event.getNativeEvent().getKeyCode() = "+event.getNativeEvent().getKeyCode());
-                if (event.isControlKeyDown() && event.getUnicodeCharCode() == 114) {
+                if ( event.isControlKeyDown() && event.getUnicodeCharCode() == 114 ) {
                     refreshTasks();
                 }
 
             }
         };
 
-        refreshTasksButton.addDomHandler(refreshPressHandler, KeyPressEvent.getType());
+        refreshTasksButton.addDomHandler( refreshPressHandler, KeyPressEvent.getType() );
 
         refreshTasks();
 
-        filtersLabel.setText(constants.Filters());
+        filtersLabel.setText( constants.Filters() );
 
     }
 
-    public void recieveStatusChanged(@Observes UserTaskEvent event) {
+    public void recieveStatusChanged( @Observes UserTaskEvent event ) {
         refreshTasks();
 
     }
 
     @EventHandler("refreshTasksButton")
-    public void refreshTasksButton(ClickEvent e) {
+    public void refreshTasksButton( ClickEvent e ) {
         refreshTasks();
     }
 
-    private void initTableColumns(final SelectionModel<TaskSummary> selectionModel) {
+    private void initTableColumns( final SelectionModel<TaskSummary> selectionModel ) {
         // Checkbox column. This table will uses a checkbox column for selection.
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
         // mouse selection.
 
-        Column<TaskSummary, Boolean> checkColumn = new Column<TaskSummary, Boolean>(new CheckboxCell(true, false)) {
+        Column<TaskSummary, Boolean> checkColumn = new Column<TaskSummary, Boolean>( new CheckboxCell( true, false ) ) {
             @Override
-            public Boolean getValue(TaskSummary object) {
+            public Boolean getValue( TaskSummary object ) {
                 // Get the value from the selection model.
-                return selectionModel.isSelected(object);
+                return selectionModel.isSelected( object );
             }
         };
-        myTaskListGrid.addColumn(checkColumn, SafeHtmlUtils.fromSafeConstant("<br/>"));
-        myTaskListGrid.setColumnWidth(checkColumn, "40px");
+        myTaskListGrid.addColumn( checkColumn, SafeHtmlUtils.fromSafeConstant( "<br/>" ) );
+        myTaskListGrid.setColumnWidth( checkColumn, "40px" );
 
         // Id
-        Column<TaskSummary, Number> taskIdColumn = new Column<TaskSummary, Number>(new NumberCell()) {
+        Column<TaskSummary, Number> taskIdColumn = new Column<TaskSummary, Number>( new NumberCell() ) {
             @Override
-            public Number getValue(TaskSummary object) {
+            public Number getValue( TaskSummary object ) {
                 return object.getId();
             }
         };
-        taskIdColumn.setSortable(true);
-        myTaskListGrid.setColumnWidth(taskIdColumn, "40px");
+        taskIdColumn.setSortable( true );
+        myTaskListGrid.setColumnWidth( taskIdColumn, "40px" );
 
-        myTaskListGrid.addColumn(taskIdColumn, new ResizableHeader(constants.Id(), myTaskListGrid, taskIdColumn));
-        sortHandler.setComparator(taskIdColumn, new Comparator<TaskSummary>() {
+        myTaskListGrid.addColumn( taskIdColumn, new ResizableHeader( constants.Id(), myTaskListGrid, taskIdColumn ) );
+        sortHandler.setComparator( taskIdColumn, new Comparator<TaskSummary>() {
             @Override
-            public int compare(TaskSummary o1, TaskSummary o2) {
-                return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
+            public int compare( TaskSummary o1,
+                                TaskSummary o2 ) {
+                return Long.valueOf( o1.getId() ).compareTo( Long.valueOf( o2.getId() ) );
             }
-        });
+        } );
 
         // Task name.
-        Column<TaskSummary, String> taskNameColumn = new Column<TaskSummary, String>(new TextCell()) {
+        Column<TaskSummary, String> taskNameColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
-            public String getValue(TaskSummary object) {
+            public String getValue( TaskSummary object ) {
                 return object.getName();
             }
         };
-        taskNameColumn.setSortable(true);
+        taskNameColumn.setSortable( true );
 
-        myTaskListGrid.addColumn(taskNameColumn, new ResizableHeader(constants.Task(), myTaskListGrid, taskNameColumn));
-        sortHandler.setComparator(taskNameColumn, new Comparator<TaskSummary>() {
+        myTaskListGrid.addColumn( taskNameColumn, new ResizableHeader( constants.Task(), myTaskListGrid, taskNameColumn ) );
+        sortHandler.setComparator( taskNameColumn, new Comparator<TaskSummary>() {
             @Override
-            public int compare(TaskSummary o1, TaskSummary o2) {
-                return o1.getName().compareTo(o2.getName());
+            public int compare( TaskSummary o1,
+                                TaskSummary o2 ) {
+                return o1.getName().compareTo( o2.getName() );
             }
-        });
+        } );
 
         // Task priority.
-        Column<TaskSummary, Number> taskPriorityColumn = new Column<TaskSummary, Number>(new NumberCell()) {
+        Column<TaskSummary, Number> taskPriorityColumn = new Column<TaskSummary, Number>( new NumberCell() ) {
             @Override
-            public Number getValue(TaskSummary object) {
+            public Number getValue( TaskSummary object ) {
                 return object.getPriority();
             }
         };
-        taskPriorityColumn.setSortable(true);
-        taskPriorityColumn.setSortable(true);
-        myTaskListGrid.addColumn(taskPriorityColumn, new ResizableHeader(constants.Priority(), myTaskListGrid,
-                taskPriorityColumn));
-        myTaskListGrid.setColumnWidth(taskPriorityColumn, "100px");
-        sortHandler.setComparator(taskPriorityColumn, new Comparator<TaskSummary>() {
+        taskPriorityColumn.setSortable( true );
+        taskPriorityColumn.setSortable( true );
+        myTaskListGrid.addColumn( taskPriorityColumn, new ResizableHeader( constants.Priority(), myTaskListGrid,
+                                                                           taskPriorityColumn ) );
+        myTaskListGrid.setColumnWidth( taskPriorityColumn, "100px" );
+        sortHandler.setComparator( taskPriorityColumn, new Comparator<TaskSummary>() {
             @Override
-            public int compare(TaskSummary o1, TaskSummary o2) {
-                return Integer.valueOf(o1.getPriority()).compareTo(o2.getPriority());
+            public int compare( TaskSummary o1,
+                                TaskSummary o2 ) {
+                return Integer.valueOf( o1.getPriority() ).compareTo( o2.getPriority() );
             }
-        });
+        } );
         // Status.
-        Column<TaskSummary, String> statusColumn = new Column<TaskSummary, String>(new TextCell()) {
+        Column<TaskSummary, String> statusColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
-            public String getValue(TaskSummary object) {
+            public String getValue( TaskSummary object ) {
                 return object.getStatus();
             }
         };
-        statusColumn.setSortable(true);
+        statusColumn.setSortable( true );
 
-        myTaskListGrid.addColumn(statusColumn, new ResizableHeader(constants.Status(), myTaskListGrid, statusColumn));
-        sortHandler.setComparator(statusColumn, new Comparator<TaskSummary>() {
+        myTaskListGrid.addColumn( statusColumn, new ResizableHeader( constants.Status(), myTaskListGrid, statusColumn ) );
+        sortHandler.setComparator( statusColumn, new Comparator<TaskSummary>() {
             @Override
-            public int compare(TaskSummary o1, TaskSummary o2) {
-                return o1.getStatus().compareTo(o2.getStatus());
+            public int compare( TaskSummary o1,
+                                TaskSummary o2 ) {
+                return o1.getStatus().compareTo( o2.getStatus() );
             }
-        });
-        myTaskListGrid.setColumnWidth(statusColumn, "100px");
+        } );
+        myTaskListGrid.setColumnWidth( statusColumn, "100px" );
 
         // Due Date.
-        Column<TaskSummary, String> dueDateColumn = new Column<TaskSummary, String>(new TextCell()) {
+        Column<TaskSummary, String> dueDateColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
-            public String getValue(TaskSummary object) {
-                if (object.getExpirationTime() != null) {
+            public String getValue( TaskSummary object ) {
+                if ( object.getExpirationTime() != null ) {
                     return object.getExpirationTime().toString();
                 }
                 return "";
             }
         };
-        dueDateColumn.setSortable(true);
+        dueDateColumn.setSortable( true );
 
-        myTaskListGrid.addColumn(dueDateColumn, new ResizableHeader(constants.Due_On(), myTaskListGrid, dueDateColumn));
-        sortHandler.setComparator(dueDateColumn, new Comparator<TaskSummary>() {
+        myTaskListGrid.addColumn( dueDateColumn, new ResizableHeader( constants.Due_On(), myTaskListGrid, dueDateColumn ) );
+        sortHandler.setComparator( dueDateColumn, new Comparator<TaskSummary>() {
             @Override
-            public int compare(TaskSummary o1, TaskSummary o2) {
-                if (o1.getExpirationTime() == null || o2.getExpirationTime() == null) {
+            public int compare( TaskSummary o1,
+                                TaskSummary o2 ) {
+                if ( o1.getExpirationTime() == null || o2.getExpirationTime() == null ) {
                     return 0;
                 }
-                return o1.getExpirationTime().compareTo(o2.getExpirationTime());
+                return o1.getExpirationTime().compareTo( o2.getExpirationTime() );
             }
-        });
+        } );
 
         // Task parent id.
         // Column<TaskSummary, String> taskParentIdColumn =
@@ -403,75 +406,75 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
         // });
 
         List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
-        cells.add(new StartActionHasCell("Start", new Delegate<TaskSummary>() {
+        cells.add( new StartActionHasCell( "Start", new Delegate<TaskSummary>() {
             @Override
-            public void execute(TaskSummary task) {
-                Set<TaskSummary> tasks = new HashSet<TaskSummary>(1);
-                tasks.add(task);
-                presenter.startTasks(tasks, identity.getName());
+            public void execute( TaskSummary task ) {
+                Set<TaskSummary> tasks = new HashSet<TaskSummary>( 1 );
+                tasks.add( task );
+                presenter.startTasks( tasks, identity.getName() );
             }
-        }));
+        } ) );
 
-        cells.add(new CompleteActionHasCell("Complete", new Delegate<TaskSummary>() {
+        cells.add( new CompleteActionHasCell( "Complete", new Delegate<TaskSummary>() {
             @Override
-            public void execute(TaskSummary task) {
-                Set<TaskSummary> tasks = new HashSet<TaskSummary>(1);
-                tasks.add(task);
-                presenter.completeTasks(tasks, identity.getName());
+            public void execute( TaskSummary task ) {
+                Set<TaskSummary> tasks = new HashSet<TaskSummary>( 1 );
+                tasks.add( task );
+                presenter.completeTasks( tasks, identity.getName() );
             }
-        }));
+        } ) );
 
-        cells.add(new ClaimActionHasCell("Claim", new Delegate<TaskSummary>() {
+        cells.add( new ClaimActionHasCell( "Claim", new Delegate<TaskSummary>() {
             @Override
-            public void execute(TaskSummary task) {
-                Set<TaskSummary> tasks = new HashSet<TaskSummary>(1);
-                tasks.add(task);
-                presenter.claimTasks(tasks, identity.getName());
+            public void execute( TaskSummary task ) {
+                Set<TaskSummary> tasks = new HashSet<TaskSummary>( 1 );
+                tasks.add( task );
+                presenter.claimTasks( tasks, identity.getName() );
             }
-        }));
+        } ) );
 
-        cells.add(new ReleaseActionHasCell("Release", new Delegate<TaskSummary>() {
+        cells.add( new ReleaseActionHasCell( "Release", new Delegate<TaskSummary>() {
             @Override
-            public void execute(TaskSummary task) {
-                Set<TaskSummary> tasks = new HashSet<TaskSummary>(1);
-                tasks.add(task);
-                presenter.releaseTasks(tasks, identity.getName());
+            public void execute( TaskSummary task ) {
+                Set<TaskSummary> tasks = new HashSet<TaskSummary>( 1 );
+                tasks.add( task );
+                presenter.releaseTasks( tasks, identity.getName() );
             }
-        }));
+        } ) );
 
-        cells.add(new DetailsHasCell("Edit", new Delegate<TaskSummary>() {
+        cells.add( new DetailsHasCell( "Edit", new Delegate<TaskSummary>() {
             @Override
-            public void execute(TaskSummary task) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Popup");
-                placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
-                placeManager.goTo(placeRequestImpl);
+            public void execute( TaskSummary task ) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Task Details Popup" );
+                placeRequestImpl.addParameter( "taskId", Long.toString( task.getId() ) );
+                placeManager.goTo( placeRequestImpl );
             }
-        }));
+        } ) );
 
-        cells.add(new PopupActionHasCell("Work Popup", new Delegate<TaskSummary>() {
+        cells.add( new PopupActionHasCell( "Work Popup", new Delegate<TaskSummary>() {
             @Override
-            public void execute(TaskSummary task) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display Modeler");
-                placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
+            public void execute( TaskSummary task ) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display" );
+                placeRequestImpl.addParameter( "taskId", Long.toString( task.getId() ) );
 
-                placeManager.goTo(placeRequestImpl);
+                placeManager.goTo( placeRequestImpl );
             }
-        }));
+        } ) );
 
-        CompositeCell<TaskSummary> cell = new CompositeCell<TaskSummary>(cells);
-        Column<TaskSummary, TaskSummary> actionsColumn = new Column<TaskSummary, TaskSummary>(cell) {
+        CompositeCell<TaskSummary> cell = new CompositeCell<TaskSummary>( cells );
+        Column<TaskSummary, TaskSummary> actionsColumn = new Column<TaskSummary, TaskSummary>( cell ) {
             @Override
-            public TaskSummary getValue(TaskSummary object) {
+            public TaskSummary getValue( TaskSummary object ) {
                 return object;
             }
         };
-        myTaskListGrid.addColumn(actionsColumn, constants.Actions());
+        myTaskListGrid.addColumn( actionsColumn, constants.Actions() );
 
     }
 
     @Override
-    public void displayNotification(String text) {
-        notification.fire(new NotificationEvent(text));
+    public void displayNotification( String text ) {
+        notification.fire( new NotificationEvent( text ) );
     }
 
     @Override
@@ -491,10 +494,10 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
 
     @Override
     public void refreshTasks() {
-        showGroupTasksNavLink.setStyleName("");
-        showPersonalTasksNavLink.setStyleName("");
-        showActiveTasksNavLink.setStyleName("active");
-        showAllTasksNavLink.setStyleName("");
+        showGroupTasksNavLink.setStyleName( "" );
+        showPersonalTasksNavLink.setStyleName( "" );
+        showActiveTasksNavLink.setStyleName( "active" );
+        showAllTasksNavLink.setStyleName( "" );
         presenter.refreshActiveTasks();
     }
 
@@ -502,18 +505,21 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
 
         private ActionCell<TaskSummary> cell;
 
-        public DetailsHasCell(String text, Delegate<TaskSummary> delegate) {
-            cell = new ActionCell<TaskSummary>(text, delegate) {
+        public DetailsHasCell( String text,
+                               Delegate<TaskSummary> delegate ) {
+            cell = new ActionCell<TaskSummary>( text, delegate ) {
                 @Override
-                public void render(Context context, TaskSummary value, SafeHtmlBuilder sb) {
+                public void render( Context context,
+                                    TaskSummary value,
+                                    SafeHtmlBuilder sb ) {
 
                     ImageResource detailsIcon = images.detailsIcon();
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(detailsIcon);
+                    AbstractImagePrototype imageProto = AbstractImagePrototype.create( detailsIcon );
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='" + constants.Details() + "'>");
-                    mysb.append(imageProto.getSafeHtml());
-                    mysb.appendHtmlConstant("</span>");
-                    sb.append(mysb.toSafeHtml());
+                    mysb.appendHtmlConstant( "<span title='" + constants.Details() + "'>" );
+                    mysb.append( imageProto.getSafeHtml() );
+                    mysb.appendHtmlConstant( "</span>" );
+                    sb.append( mysb.toSafeHtml() );
                 }
             };
 
@@ -530,7 +536,7 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
         }
 
         @Override
-        public TaskSummary getValue(TaskSummary object) {
+        public TaskSummary getValue( TaskSummary object ) {
             return object;
         }
     }
@@ -539,17 +545,20 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
 
         private ActionCell<TaskSummary> cell;
 
-        public StartActionHasCell(String text, Delegate<TaskSummary> delegate) {
-            cell = new ActionCell<TaskSummary>(text, delegate) {
+        public StartActionHasCell( String text,
+                                   Delegate<TaskSummary> delegate ) {
+            cell = new ActionCell<TaskSummary>( text, delegate ) {
                 @Override
-                public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
-                    if (value.getActualOwner() != null && (value.getStatus().equals("Reserved"))) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.startGridIcon());
+                public void render( Cell.Context context,
+                                    TaskSummary value,
+                                    SafeHtmlBuilder sb ) {
+                    if ( value.getActualOwner() != null && ( value.getStatus().equals( "Reserved" ) ) ) {
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create( images.startGridIcon() );
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.Start() + "'>");
-                        mysb.append(imageProto.getSafeHtml());
-                        mysb.appendHtmlConstant("</span>");
-                        sb.append(mysb.toSafeHtml());
+                        mysb.appendHtmlConstant( "<span title='" + constants.Start() + "'>" );
+                        mysb.append( imageProto.getSafeHtml() );
+                        mysb.appendHtmlConstant( "</span>" );
+                        sb.append( mysb.toSafeHtml() );
 
                     }
                 }
@@ -567,7 +576,7 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
         }
 
         @Override
-        public TaskSummary getValue(TaskSummary object) {
+        public TaskSummary getValue( TaskSummary object ) {
             return object;
         }
     }
@@ -576,17 +585,20 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
 
         private ActionCell<TaskSummary> cell;
 
-        public CompleteActionHasCell(String text, Delegate<TaskSummary> delegate) {
-            cell = new ActionCell<TaskSummary>(text, delegate) {
+        public CompleteActionHasCell( String text,
+                                      Delegate<TaskSummary> delegate ) {
+            cell = new ActionCell<TaskSummary>( text, delegate ) {
                 @Override
-                public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
-                    if (value.getActualOwner() != null && value.getStatus().equals("InProgress")) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.completeGridIcon());
+                public void render( Cell.Context context,
+                                    TaskSummary value,
+                                    SafeHtmlBuilder sb ) {
+                    if ( value.getActualOwner() != null && value.getStatus().equals( "InProgress" ) ) {
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create( images.completeGridIcon() );
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.Complete() + "'>");
-                        mysb.append(imageProto.getSafeHtml());
-                        mysb.appendHtmlConstant("</span>");
-                        sb.append(mysb.toSafeHtml());
+                        mysb.appendHtmlConstant( "<span title='" + constants.Complete() + "'>" );
+                        mysb.append( imageProto.getSafeHtml() );
+                        mysb.appendHtmlConstant( "</span>" );
+                        sb.append( mysb.toSafeHtml() );
 
                     }
                 }
@@ -604,7 +616,7 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
         }
 
         @Override
-        public TaskSummary getValue(TaskSummary object) {
+        public TaskSummary getValue( TaskSummary object ) {
             return object;
         }
     }
@@ -613,18 +625,21 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
 
         private ActionCell<TaskSummary> cell;
 
-        public PopupActionHasCell(String text, Delegate<TaskSummary> delegate) {
-            cell = new ActionCell<TaskSummary>(text, delegate) {
+        public PopupActionHasCell( String text,
+                                   Delegate<TaskSummary> delegate ) {
+            cell = new ActionCell<TaskSummary>( text, delegate ) {
                 @Override
-                public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
-                    if (value.getActualOwner() != null
-                            && (value.getStatus().equals("Reserved") || value.getStatus().equals("InProgress"))) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.popupIcon());
+                public void render( Cell.Context context,
+                                    TaskSummary value,
+                                    SafeHtmlBuilder sb ) {
+                    if ( value.getActualOwner() != null
+                            && ( value.getStatus().equals( "Reserved" ) || value.getStatus().equals( "InProgress" ) ) ) {
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create( images.popupIcon() );
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.Work() + "'>");
-                        mysb.append(imageProto.getSafeHtml());
-                        mysb.appendHtmlConstant("</span>");
-                        sb.append(mysb.toSafeHtml());
+                        mysb.appendHtmlConstant( "<span title='" + constants.Work() + "'>" );
+                        mysb.append( imageProto.getSafeHtml() );
+                        mysb.appendHtmlConstant( "</span>" );
+                        sb.append( mysb.toSafeHtml() );
 
                     }
                 }
@@ -642,7 +657,7 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
         }
 
         @Override
-        public TaskSummary getValue(TaskSummary object) {
+        public TaskSummary getValue( TaskSummary object ) {
             return object;
         }
     }
@@ -651,18 +666,21 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
 
         private ActionCell<TaskSummary> cell;
 
-        public ClaimActionHasCell(String text, Delegate<TaskSummary> delegate) {
-            cell = new ActionCell<TaskSummary>(text, delegate) {
+        public ClaimActionHasCell( String text,
+                                   Delegate<TaskSummary> delegate ) {
+            cell = new ActionCell<TaskSummary>( text, delegate ) {
                 @Override
-                public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
-                    if (value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty()
-                            && value.getStatus().equals("Ready")) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.releaseGridIcon());
+                public void render( Cell.Context context,
+                                    TaskSummary value,
+                                    SafeHtmlBuilder sb ) {
+                    if ( value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty()
+                            && value.getStatus().equals( "Ready" ) ) {
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create( images.releaseGridIcon() );
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.Claim() + "'>");
-                        mysb.append(imageProto.getSafeHtml());
-                        mysb.appendHtmlConstant("</span>");
-                        sb.append(mysb.toSafeHtml());
+                        mysb.appendHtmlConstant( "<span title='" + constants.Claim() + "'>" );
+                        mysb.append( imageProto.getSafeHtml() );
+                        mysb.appendHtmlConstant( "</span>" );
+                        sb.append( mysb.toSafeHtml() );
 
                     }
                 }
@@ -680,7 +698,7 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
         }
 
         @Override
-        public TaskSummary getValue(TaskSummary object) {
+        public TaskSummary getValue( TaskSummary object ) {
             return object;
         }
     }
@@ -689,18 +707,21 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
 
         private ActionCell<TaskSummary> cell;
 
-        public ReleaseActionHasCell(String text, Delegate<TaskSummary> delegate) {
-            cell = new ActionCell<TaskSummary>(text, delegate) {
+        public ReleaseActionHasCell( String text,
+                                     Delegate<TaskSummary> delegate ) {
+            cell = new ActionCell<TaskSummary>( text, delegate ) {
                 @Override
-                public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
-                    if (value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty()
-                            && !value.getPotentialOwners().contains(identity.getName()) && value.getStatus().equals("Reserved")) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.claimGridIcon());
+                public void render( Cell.Context context,
+                                    TaskSummary value,
+                                    SafeHtmlBuilder sb ) {
+                    if ( value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty()
+                            && !value.getPotentialOwners().contains( identity.getName() ) && value.getStatus().equals( "Reserved" ) ) {
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create( images.claimGridIcon() );
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.Release() + "'>");
-                        mysb.append(imageProto.getSafeHtml());
-                        mysb.appendHtmlConstant("</span>");
-                        sb.append(mysb.toSafeHtml());
+                        mysb.appendHtmlConstant( "<span title='" + constants.Release() + "'>" );
+                        mysb.append( imageProto.getSafeHtml() );
+                        mysb.appendHtmlConstant( "</span>" );
+                        sb.append( mysb.toSafeHtml() );
 
                     }
                 }
@@ -718,7 +739,7 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
         }
 
         @Override
-        public TaskSummary getValue(TaskSummary object) {
+        public TaskSummary getValue( TaskSummary object ) {
             return object;
         }
     }

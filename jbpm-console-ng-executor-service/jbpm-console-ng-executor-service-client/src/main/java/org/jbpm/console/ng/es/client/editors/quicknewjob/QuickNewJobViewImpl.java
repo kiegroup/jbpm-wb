@@ -19,18 +19,9 @@ package org.jbpm.console.ng.es.client.editors.quicknewjob;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.es.client.i18n.Constants;
-import org.jbpm.console.ng.es.client.util.ResizableHeader;
-import org.jbpm.console.ng.es.model.RequestParameterSummary;
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
 import com.google.gwt.cell.client.ActionCell;
@@ -51,11 +42,19 @@ import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.view.client.ListDataProvider;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.es.client.i18n.Constants;
+import org.jbpm.console.ng.es.client.util.ResizableHeader;
+import org.jbpm.console.ng.es.model.RequestParameterSummary;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "QuickNewJobViewImpl.html")
 public class QuickNewJobViewImpl extends Composite implements QuickNewJobPresenter.QuickNewJobView {
-    private Constants constants = GWT.create(Constants.class);
+
+    private Constants constants = GWT.create( Constants.class );
 
     @Inject
     @DataField
@@ -92,93 +91,99 @@ public class QuickNewJobViewImpl extends Composite implements QuickNewJobPresent
     private QuickNewJobPresenter presenter;
 
     @Override
-    public void init(QuickNewJobPresenter p) {
+    public void init( QuickNewJobPresenter p ) {
         this.presenter = p;
 
-        myParametersGrid.setHeight("200px");
+        myParametersGrid.setHeight( "200px" );
 
         // Set the message to display when the table is empty.
-        myParametersGrid.setEmptyTableWidget(new Label(constants.No_Parameters_added_yet()));
+        myParametersGrid.setEmptyTableWidget( new Label( constants.No_Parameters_added_yet() ) );
 
         initGridColumns();
 
-        jobDueDate.setValue(new Date());
+        jobDueDate.setValue( new Date() );
     }
 
     private void initGridColumns() {
-        Column<RequestParameterSummary, String> paramKeyColumn = new Column<RequestParameterSummary, String>(new EditTextCell()) {
+        Column<RequestParameterSummary, String> paramKeyColumn = new Column<RequestParameterSummary, String>( new EditTextCell() ) {
             @Override
-            public String getValue(RequestParameterSummary rowObject) {
+            public String getValue( RequestParameterSummary rowObject ) {
                 return rowObject.getKey();
             }
         };
-        paramKeyColumn.setFieldUpdater(new FieldUpdater<RequestParameterSummary, String>() {
+        paramKeyColumn.setFieldUpdater( new FieldUpdater<RequestParameterSummary, String>() {
             @Override
-            public void update(int index, RequestParameterSummary object, String value) {
-                object.setKey(value);
-                dataProvider.getList().set(index, object);
+            public void update( int index,
+                                RequestParameterSummary object,
+                                String value ) {
+                object.setKey( value );
+                dataProvider.getList().set( index, object );
             }
-        });
-        myParametersGrid.addColumn(paramKeyColumn, new ResizableHeader<RequestParameterSummary>("Key", myParametersGrid,
-                paramKeyColumn));
+        } );
+        myParametersGrid.addColumn( paramKeyColumn, new ResizableHeader<RequestParameterSummary>( "Key", myParametersGrid,
+                                                                                                  paramKeyColumn ) );
 
         Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>(
-                new EditTextCell()) {
+                new EditTextCell() ) {
             @Override
-            public String getValue(RequestParameterSummary rowObject) {
+            public String getValue( RequestParameterSummary rowObject ) {
                 return rowObject.getValue();
             }
         };
-        paramValueColumn.setFieldUpdater(new FieldUpdater<RequestParameterSummary, String>() {
+        paramValueColumn.setFieldUpdater( new FieldUpdater<RequestParameterSummary, String>() {
             @Override
-            public void update(int index, RequestParameterSummary object, String value) {
-                object.setValue(value);
-                dataProvider.getList().set(index, object);
+            public void update( int index,
+                                RequestParameterSummary object,
+                                String value ) {
+                object.setValue( value );
+                dataProvider.getList().set( index, object );
             }
-        });
-        myParametersGrid.addColumn(paramValueColumn, new ResizableHeader<RequestParameterSummary>("Value", myParametersGrid,
-                paramValueColumn));
+        } );
+        myParametersGrid.addColumn( paramValueColumn, new ResizableHeader<RequestParameterSummary>( "Value", myParametersGrid,
+                                                                                                    paramValueColumn ) );
 
         // actions (icons)
         List<HasCell<RequestParameterSummary, ?>> cells = new LinkedList<HasCell<RequestParameterSummary, ?>>();
 
-        cells.add(new ActionHasCell("Remove", new Delegate<RequestParameterSummary>() {
+        cells.add( new ActionHasCell( "Remove", new Delegate<RequestParameterSummary>() {
             @Override
-            public void execute(RequestParameterSummary parameter) {
-                presenter.removeParameter(parameter);
+            public void execute( RequestParameterSummary parameter ) {
+                presenter.removeParameter( parameter );
             }
-        }));
+        } ) );
 
-        CompositeCell<RequestParameterSummary> cell = new CompositeCell<RequestParameterSummary>(cells);
+        CompositeCell<RequestParameterSummary> cell = new CompositeCell<RequestParameterSummary>( cells );
         Column<RequestParameterSummary, RequestParameterSummary> actionsColumn = new Column<RequestParameterSummary, RequestParameterSummary>(
-                cell) {
+                cell ) {
             @Override
-            public RequestParameterSummary getValue(RequestParameterSummary object) {
+            public RequestParameterSummary getValue( RequestParameterSummary object ) {
                 return object;
             }
         };
-        myParametersGrid.addColumn(actionsColumn, "Actions");
-        myParametersGrid.setColumnWidth(actionsColumn, "70px");
+        myParametersGrid.addColumn( actionsColumn, "Actions" );
+        myParametersGrid.setColumnWidth( actionsColumn, "70px" );
 
-        dataProvider.addDataDisplay(myParametersGrid);
+        dataProvider.addDataDisplay( myParametersGrid );
     }
 
     @EventHandler("newParametersButton")
-    public void newParametersButton(ClickEvent e) {
+    public void newParametersButton( ClickEvent e ) {
         presenter.addNewParameter();
     }
 
     @EventHandler("createButton")
-    public void createButton(ClickEvent e) {
-        presenter.createJob(jobNameText.getText(), jobDueDate.getValue(), jobTypeText.getText(), dataTriesNumber.getValue(),
-                dataProvider.getList());
+    public void createButton( ClickEvent e ) {
+        presenter.createJob( jobNameText.getText(), jobDueDate.getValue(), jobTypeText.getText(), dataTriesNumber.getValue(),
+                             dataProvider.getList() );
     }
 
     private class ActionHasCell implements HasCell<RequestParameterSummary, RequestParameterSummary> {
+
         private ActionCell<RequestParameterSummary> cell;
 
-        public ActionHasCell(String text, Delegate<RequestParameterSummary> delegate) {
-            cell = new ActionCell<RequestParameterSummary>(text, delegate);
+        public ActionHasCell( String text,
+                              Delegate<RequestParameterSummary> delegate ) {
+            cell = new ActionCell<RequestParameterSummary>( text, delegate );
         }
 
         @Override
@@ -192,28 +197,28 @@ public class QuickNewJobViewImpl extends Composite implements QuickNewJobPresent
         }
 
         @Override
-        public RequestParameterSummary getValue(RequestParameterSummary object) {
+        public RequestParameterSummary getValue( RequestParameterSummary object ) {
             return object;
         }
     }
 
-    public void makeRowEditable(RequestParameterSummary parameter) {
-        myParametersGrid.getSelectionModel().setSelected(parameter, true);
+    public void makeRowEditable( RequestParameterSummary parameter ) {
+        myParametersGrid.getSelectionModel().setSelected( parameter, true );
     }
 
     @Override
-    public void removeRow(RequestParameterSummary parameter) {
-        dataProvider.getList().remove(parameter);
+    public void removeRow( RequestParameterSummary parameter ) {
+        dataProvider.getList().remove( parameter );
     }
 
     @Override
-    public void addRow(RequestParameterSummary parameter) {
-        dataProvider.getList().add(parameter);
+    public void addRow( RequestParameterSummary parameter ) {
+        dataProvider.getList().add( parameter );
     }
 
     @Override
-    public void displayNotification(String notification) {
-        notificationEvents.fire(new NotificationEvent(notification));
+    public void displayNotification( String notification ) {
+        notificationEvents.fire( new NotificationEvent( notification ) );
     }
 
     @Override

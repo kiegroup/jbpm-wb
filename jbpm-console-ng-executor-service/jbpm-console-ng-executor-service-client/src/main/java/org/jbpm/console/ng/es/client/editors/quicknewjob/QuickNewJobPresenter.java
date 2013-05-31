@@ -20,12 +20,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.Focusable;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
@@ -37,10 +37,8 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
-import org.uberfire.shared.mvp.PlaceRequest;
-
-import com.google.gwt.user.client.ui.Focusable;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
 @WorkbenchPopup(identifier = "Quick New Job")
@@ -50,11 +48,11 @@ public class QuickNewJobPresenter {
 
         Focusable getJobNameText();
 
-        void removeRow(RequestParameterSummary parameter);
+        void removeRow( RequestParameterSummary parameter );
 
-        void addRow(RequestParameterSummary parameter);
+        void addRow( RequestParameterSummary parameter );
 
-        void displayNotification(String notification);
+        void displayNotification( String notification );
     }
 
     @Inject
@@ -80,55 +78,56 @@ public class QuickNewJobPresenter {
         return view;
     }
 
-
-
     @PostConstruct
     public void init() {
     }
 
     @OnStart
-    public void onStart(final PlaceRequest place) {
+    public void onStart( final PlaceRequest place ) {
         this.place = place;
     }
 
-    public void removeParameter(RequestParameterSummary parameter) {
-        view.removeRow(parameter);
+    public void removeParameter( RequestParameterSummary parameter ) {
+        view.removeRow( parameter );
     }
 
     public void addNewParameter() {
-        view.addRow(new RequestParameterSummary("click to edit", "click to edit"));
+        view.addRow( new RequestParameterSummary( "click to edit", "click to edit" ) );
     }
 
-    public void createJob(String jobName, Date dueDate, String jobType, Integer numberOfTries,
-            List<RequestParameterSummary> parameters) {
+    public void createJob( String jobName,
+                           Date dueDate,
+                           String jobType,
+                           Integer numberOfTries,
+                           List<RequestParameterSummary> parameters ) {
 
         Map<String, String> ctx = new HashMap<String, String>();
-        if (parameters != null) {
-            for (RequestParameterSummary param : parameters) {
-                ctx.put(param.getKey(), param.getValue());
+        if ( parameters != null ) {
+            for ( RequestParameterSummary param : parameters ) {
+                ctx.put( param.getKey(), param.getValue() );
             }
         }
-        ctx.put("retries", String.valueOf(numberOfTries)); // TODO make legacy keys hard to repeat by accident
-        ctx.put("jobName", jobName); // TODO make legacy keys hard to repeat by accident
+        ctx.put( "retries", String.valueOf( numberOfTries ) ); // TODO make legacy keys hard to repeat by accident
+        ctx.put( "jobName", jobName ); // TODO make legacy keys hard to repeat by accident
 
-        executorServices.call(new RemoteCallback<Long>() {
+        executorServices.call( new RemoteCallback<Long>() {
             @Override
-            public void callback(Long requestId) {
-                view.displayNotification("Request Schedulled: " + requestId);
-                requestCreatedEvent.fire(new RequestChangedEvent(requestId));
+            public void callback( Long requestId ) {
+                view.displayNotification( "Request Schedulled: " + requestId );
+                requestCreatedEvent.fire( new RequestChangedEvent( requestId ) );
                 close();
             }
-        }).scheduleRequest(jobType, dueDate, ctx);
+        } ).scheduleRequest( jobType, dueDate, ctx );
 
     }
 
     @OnReveal
     public void onReveal() {
-        view.getJobNameText().setFocus(true);
+        view.getJobNameText().setFocus( true );
     }
 
     public void close() {
-        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
+        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }
 
 }

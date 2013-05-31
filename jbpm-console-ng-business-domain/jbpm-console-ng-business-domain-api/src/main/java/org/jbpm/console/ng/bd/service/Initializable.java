@@ -18,10 +18,8 @@ package org.jbpm.console.ng.bd.service;
 
 import java.util.Set;
 
-import org.jbpm.kie.services.api.DeploymentUnit;
+public interface Initializable<T> {
 
-public interface Initializable {
-
-    void initDeployments(Set<DeploymentUnit> deploymentUnits);
+    void initDeployments(Set<T> deploymentUnits);
 
 }

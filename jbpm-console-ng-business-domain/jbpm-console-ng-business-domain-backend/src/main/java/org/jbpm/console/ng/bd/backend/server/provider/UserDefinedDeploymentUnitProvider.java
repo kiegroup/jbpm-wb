@@ -50,7 +50,7 @@ import org.jbpm.kie.services.impl.KModuleDeploymentUnit;
  */
 @ApplicationScoped
 @Kjar
-public class UserDefinedDeploymentUnitProvider implements DeploymentUnitProvider {
+public class UserDefinedDeploymentUnitProvider implements DeploymentUnitProvider<DeploymentUnit> {
 
     @Inject
     private Logger logger;

@@ -19,30 +19,10 @@ package org.jbpm.console.ng.ht.client.editors.taskdetails;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-
-import org.jboss.errai.bus.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
-import org.jbpm.console.ng.ht.model.TaskSummary;
-import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
-import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
-import org.uberfire.client.annotations.OnReveal;
-import org.uberfire.client.annotations.OnStart;
-import org.uberfire.client.annotations.WorkbenchPartTitle;
-import org.uberfire.client.annotations.WorkbenchPartView;
-import org.uberfire.client.annotations.WorkbenchPopup;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
-import org.uberfire.security.Identity;
-import org.uberfire.shared.mvp.PlaceRequest;
-import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
 
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
@@ -55,16 +35,35 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+import org.jboss.errai.bus.client.api.RemoteCallback;
+import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
+import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
+import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
+import org.uberfire.client.annotations.OnReveal;
+import org.uberfire.client.annotations.OnStart;
+import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchPartView;
+import org.uberfire.client.annotations.WorkbenchPopup;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.UberView;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.security.Identity;
+import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
 @WorkbenchPopup(identifier = "Task Details Popup")
 public class TaskDetailsPopupPresenter {
-    private Constants constants = GWT.create(Constants.class);
+
+    private Constants constants = GWT.create( Constants.class );
 
     public interface TaskDetailsPopupView extends UberView<TaskDetailsPopupPresenter> {
 
-        void displayNotification(String text);
+        void displayNotification( String text );
 
         Label getTaskIdText();
 
@@ -117,7 +116,7 @@ public class TaskDetailsPopupPresenter {
     private PlaceRequest place;
 
     @OnStart
-    public void onStart(final PlaceRequest place) {
+    public void onStart( final PlaceRequest place ) {
         this.place = place;
     }
 
@@ -133,76 +132,80 @@ public class TaskDetailsPopupPresenter {
 
     public void goToProcessInstanceDetails() {
 
-        dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
+        dataServices.call( new RemoteCallback<ProcessInstanceSummary>() {
             @Override
-            public void callback(ProcessInstanceSummary processInstance) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance Details");
-                placeRequestImpl.addParameter("processInstanceId", view.getProcessInstanceIdText().getText());
-                placeRequestImpl.addParameter("processDefId", processInstance.getProcessId());
-                placeManager.goTo(placeRequestImpl);
+            public void callback( ProcessInstanceSummary processInstance ) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instance Details" );
+                placeRequestImpl.addParameter( "processInstanceId", view.getProcessInstanceIdText().getText() );
+                placeRequestImpl.addParameter( "processDefId", processInstance.getProcessId() );
+                placeManager.goTo( placeRequestImpl );
             }
-        }).getProcessInstanceById(Long.parseLong(view.getProcessInstanceIdText().getText()));
+        } ).getProcessInstanceById( Long.parseLong( view.getProcessInstanceIdText().getText() ) );
 
     }
 
-    public void updateTask(final long taskId, final String taskName, final String taskDescription, final String userId,
-            // final String subTaskStrategy,
-            final Date dueDate, final int priority) {
+    public void updateTask( final long taskId,
+                            final String taskName,
+                            final String taskDescription,
+                            final String userId,
+                            // final String subTaskStrategy,
+                            final Date dueDate,
+                            final int priority ) {
 
-        if (taskId > 0) {
+        if ( taskId > 0 ) {
             List<String> descriptions = new ArrayList<String>();
-            descriptions.add(taskDescription);
+            descriptions.add( taskDescription );
 
             List<String> names = new ArrayList<String>();
-            names.add(taskName);
+            names.add( taskName );
 
-            taskServices.call(new RemoteCallback<Void>() {
+            taskServices.call( new RemoteCallback<Void>() {
                 @Override
-                public void callback(Void nothing) {
-                    view.displayNotification("Task Details Updated for Task id = " + taskId + ")");
+                public void callback( Void nothing ) {
+                    view.displayNotification( "Task Details Updated for Task id = " + taskId + ")" );
 
                 }
-            }).updateSimpleTaskDetails(taskId, names, Integer.valueOf(priority), descriptions,
-                    // subTaskStrategy,
-                    dueDate);
+            } ).updateSimpleTaskDetails( taskId, names, Integer.valueOf( priority ), descriptions,
+                                         // subTaskStrategy,
+                                         dueDate );
 
         }
 
     }
 
-    public void refreshTask(long taskId) {
+    public void refreshTask( long taskId ) {
 
-        taskServices.call(new RemoteCallback<TaskSummary>() {
+        taskServices.call( new RemoteCallback<TaskSummary>() {
             @Override
-            public void callback(TaskSummary details) {
-                if (details.getStatus().equals("Completed")) {
+            public void callback( TaskSummary details ) {
+                if ( details.getStatus().equals( "Completed" ) ) {
 
-                    view.getTaskDescriptionTextArea().setEnabled(false);
-                    view.getDueDate().setEnabled(false);
-                    view.getUserText().setEnabled(false);
-                    view.getTaskStatusText().setEnabled(false);
+                    view.getTaskDescriptionTextArea().setEnabled( false );
+                    view.getDueDate().setEnabled( false );
+                    view.getUserText().setEnabled( false );
+                    view.getTaskStatusText().setEnabled( false );
 
-                    view.getProcessInstanceIdText().setEnabled(false);
+                    view.getProcessInstanceIdText().setEnabled( false );
                 }
 
-                view.getTaskIdText().setText(String.valueOf(details.getId()));
-                view.getTaskNameText().setText(details.getName());
-                view.getTaskDescriptionTextArea().setText(details.getDescription());
-                view.getDueDate().setValue(details.getExpirationTime());
-                view.getUserText().setText(details.getActualOwner());
-                view.getUserText().setEnabled(false);
-                view.getTaskStatusText().setText(details.getStatus());
-                view.getTaskStatusText().setEnabled(false);
-                if (details.getProcessInstanceId() == -1) {
-                    view.getProcessInstanceIdText().setText("None");
-                    view.getProcessIdText().setText("None");
-                    view.getpIDetailsButton().setEnabled(false);
+                view.getTaskIdText().setText( String.valueOf( details.getId() ) );
+                view.getTaskNameText().setText( details.getName() );
+                view.getTaskDescriptionTextArea().setText( details.getDescription() );
+                view.getDueDate().setValue( details.getExpirationTime() );
+                view.getUserText().setText( details.getActualOwner() );
+                view.getUserText().setEnabled( false );
+                view.getTaskStatusText().setText( details.getStatus() );
+                view.getTaskStatusText().setEnabled( false );
+                if ( details.getProcessInstanceId() == -1 ) {
+                    view.getProcessInstanceIdText().setText( "None" );
+                    view.getProcessIdText().setText( "None" );
+                    view.getpIDetailsButton().setEnabled( false );
                 } else {
-                    view.getProcessInstanceIdText().setText(String.valueOf(details.getProcessInstanceId()));
-                    view.getProcessIdText().setText(details.getProcessId());
+                    view.getProcessInstanceIdText().setText( String.valueOf( details.getProcessInstanceId() ) );
+                    view.getProcessIdText().setText( details.getProcessId() );
                 }
 
-                view.getProcessInstanceIdText().setEnabled(false);
+                view.getProcessInstanceIdText().setEnabled( false );
 
                 int i = 0;
                 // Commented out until we add the posibility of adding sub tasks
@@ -213,62 +216,62 @@ public class TaskDetailsPopupPresenter {
                 // i++;
                 // }
                 i = 0;
-                for (String priority : view.getPriorities()) {
-                    if (details.getPriority() == i) {
-                        view.getTaskPriorityListBox().setSelectedIndex(i);
+                for ( String priority : view.getPriorities() ) {
+                    if ( details.getPriority() == i ) {
+                        view.getTaskPriorityListBox().setSelectedIndex( i );
                     }
                     i++;
                 }
 
             }
-        }).getTaskDetails(taskId);
+        } ).getTaskDetails( taskId );
 
     }
 
-    public void onTaskSelected(@Observes TaskSelectionEvent taskSelection) {
-        refreshTask(taskSelection.getTaskId());
+    public void onTaskSelected( @Observes TaskSelectionEvent taskSelection ) {
+        refreshTask( taskSelection.getTaskId() );
     }
 
     @OnReveal
     public void onReveal() {
-        final long taskId = Long.parseLong(place.getParameter("taskId", "0").toString());
-        view.getTaskIdText().setText(String.valueOf(taskId));
+        final long taskId = Long.parseLong( place.getParameter( "taskId", "0" ).toString() );
+        view.getTaskIdText().setText( String.valueOf( taskId ) );
         view.getNavBarUL().clear();
-        NavLink detailsLink = new NavLink(constants.Details());
-        detailsLink.setStyleName("active");
+        NavLink detailsLink = new NavLink( constants.Details() );
+        detailsLink.setStyleName( "active" );
 
-        NavLink workLink = new NavLink(constants.Work());
+        NavLink workLink = new NavLink( constants.Work() );
 
-        workLink.addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(ClickEvent event) {
-                close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display Modeler");
-                placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
-                placeManager.goTo(placeRequestImpl);
-            }
-        });
-        NavLink commentsLink = new NavLink(constants.Comments());
-        commentsLink.addClickHandler(new ClickHandler() {
+        workLink.addClickHandler( new ClickHandler() {
 
             @Override
-            public void onClick(ClickEvent event) {
+            public void onClick( ClickEvent event ) {
                 close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Comments Popup");
-                placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
-                placeManager.goTo(placeRequestImpl);
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display" );
+                placeRequestImpl.addParameter( "taskId", String.valueOf( taskId ) );
+                placeManager.goTo( placeRequestImpl );
             }
-        });
+        } );
+        NavLink commentsLink = new NavLink( constants.Comments() );
+        commentsLink.addClickHandler( new ClickHandler() {
 
-        view.getNavBarUL().add(workLink);
-        view.getNavBarUL().add(detailsLink);
-        view.getNavBarUL().add(commentsLink);
-        refreshTask(Long.parseLong(view.getTaskIdText().getText()));
+            @Override
+            public void onClick( ClickEvent event ) {
+                close();
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Task Comments Popup" );
+                placeRequestImpl.addParameter( "taskId", String.valueOf( taskId ) );
+                placeManager.goTo( placeRequestImpl );
+            }
+        } );
+
+        view.getNavBarUL().add( workLink );
+        view.getNavBarUL().add( detailsLink );
+        view.getNavBarUL().add( commentsLink );
+        refreshTask( Long.parseLong( view.getTaskIdText().getText() ) );
     }
 
     public void close() {
-        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
+        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }
 
 }

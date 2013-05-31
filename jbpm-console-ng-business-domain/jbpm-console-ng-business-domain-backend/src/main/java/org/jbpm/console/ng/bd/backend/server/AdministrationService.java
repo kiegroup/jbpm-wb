@@ -18,8 +18,10 @@ package org.jbpm.console.ng.bd.backend.server;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -38,7 +40,6 @@ import org.jbpm.kie.services.api.DeploymentUnit;
 import org.jbpm.kie.services.api.Kjar;
 import org.jbpm.kie.services.api.Vfs;
 import org.kie.commons.io.IOService;
-import org.kie.commons.io.impl.IOServiceDotFileImpl;
 import org.kie.commons.java.nio.file.FileSystemAlreadyExistsException;
 import org.uberfire.backend.group.Group;
 import org.uberfire.backend.group.GroupService;
@@ -53,7 +54,6 @@ import org.uberfire.backend.server.config.ConfigurationService;
 public class AdministrationService {
 
     private static final String DEPLOYMENT_SERVICE_TYPE_CONFIG = "deployment.service";
-
 
     @Inject
     @Named("ioStrategy")
@@ -84,55 +84,63 @@ public class AdministrationService {
 
     private String deploymentServiceType;
 
-    public void bootstrapRepository(String repoAlias, String repoUrl, String userName, String password) {
+    public void bootstrapRepository( String repoAlias,
+                                     String repoUrl,
+                                     String userName,
+                                     String password ) {
 
-        Repository repository = repositoryService.getRepository(repoAlias);
-        if (repository == null) {
+        Repository repository = repositoryService.getRepository( repoAlias );
+        if ( repository == null ) {
 
-            repositoryService.cloneRepository("git", repoAlias, repoUrl, userName, password);
-            repository = repositoryService.getRepository(repoAlias);
+            final Map<String, Object> env = new HashMap<String, Object>( 3 );
+            env.put( "origin", repoUrl );
+            env.put( "username", userName );
+            env.put( "crypt:password", password );
+
+            repositoryService.createRepository( "git", repoAlias, env );
+            repository = repositoryService.getRepository( repoAlias );
         }
         Collection<Group> groups = groupService.getGroups();
-        if (groups == null || groups.isEmpty()) {
+        if ( groups == null || groups.isEmpty() ) {
             List<Repository> repositories = new ArrayList<Repository>();
-            repositories.add(repository);
-            groupService.createGroup("demo", "demo@jbpm.org", repositories);
+            repositories.add( repository );
+            groupService.createGroup( "demo", "demo@jbpm.org", repositories );
         }
         try {
-            ioService.newFileSystem(URI.create(repository.getUri()), repository.getEnvironment());
+            ioService.newFileSystem( URI.create( repository.getUri() ), repository.getEnvironment() );
 
-        } catch (FileSystemAlreadyExistsException e) {
-            ioService.getFileSystem(URI.create(repository.getUri()));
+        } catch ( FileSystemAlreadyExistsException e ) {
+            ioService.getFileSystem( URI.create( repository.getUri() ) );
 
         }
     }
 
     public void bootstrapConfig() {
         ConfigGroup deploymentServiceTypeConfig = null;
-        List<ConfigGroup> configGroups = configurationService.getConfiguration(ConfigType.GLOBAL);
-        if (configGroups != null) {
-            for (ConfigGroup configGroup : configGroups) {
-                if (DEPLOYMENT_SERVICE_TYPE_CONFIG.equals(configGroup.getName())) {
+        List<ConfigGroup> configGroups = configurationService.getConfiguration( ConfigType.GLOBAL );
+        if ( configGroups != null ) {
+            for ( ConfigGroup configGroup : configGroups ) {
+                if ( DEPLOYMENT_SERVICE_TYPE_CONFIG.equals( configGroup.getName() ) ) {
                     deploymentServiceTypeConfig = configGroup;
                     break;
                 }
             }
         }
-        if (deploymentServiceTypeConfig == null) {
-            deploymentServiceTypeConfig = configurationFactory.newConfigGroup(ConfigType.GLOBAL,
-                    DEPLOYMENT_SERVICE_TYPE_CONFIG, "");
-            deploymentServiceTypeConfig.addConfigItem(configurationFactory.newConfigItem("type", "kjar"));
+        if ( deploymentServiceTypeConfig == null ) {
+            deploymentServiceTypeConfig = configurationFactory.newConfigGroup( ConfigType.GLOBAL,
+                                                                               DEPLOYMENT_SERVICE_TYPE_CONFIG, "" );
+            deploymentServiceTypeConfig.addConfigItem( configurationFactory.newConfigItem( "type", "kjar" ) );
 
-            configurationService.addConfiguration(deploymentServiceTypeConfig);
+            configurationService.addConfiguration( deploymentServiceTypeConfig );
         }
 
-        deploymentServiceType = deploymentServiceTypeConfig.getConfigItemValue("type");
+        deploymentServiceType = deploymentServiceTypeConfig.getConfigItemValue( "type" );
     }
 
     public void bootstrapDeployments() {
 
         Set<DeploymentUnit> deploymentUnits = produceDeploymentUnits();
-        ((Initializable) deploymentManager).initDeployments(deploymentUnits);
+        ( (Initializable) deploymentManager ).initDeployments( deploymentUnits );
     }
 
     @Produces
@@ -140,10 +148,10 @@ public class AdministrationService {
     public Set<DeploymentUnit> produceDeploymentUnits() {
         Set<DeploymentUnit> deploymentUnits = new HashSet<DeploymentUnit>();
 
-        Instance<DeploymentUnitProvider> suitableProviders = this.deploymentUnitProviders.select(getDeploymentType());
+        Instance<DeploymentUnitProvider> suitableProviders = this.deploymentUnitProviders.select( getDeploymentType() );
 
-        for (DeploymentUnitProvider provider : suitableProviders) {
-            deploymentUnits.addAll(provider.getDeploymentUnits());
+        for ( DeploymentUnitProvider provider : suitableProviders ) {
+            deploymentUnits.addAll( provider.getDeploymentUnits() );
         }
 
         return deploymentUnits;
@@ -151,18 +159,19 @@ public class AdministrationService {
 
     @Produces
     public DeploymentService getDeploymentService() {
-        return this.deploymentService.select(getDeploymentType()).get();
+        return this.deploymentService.select( getDeploymentType() ).get();
     }
 
     protected AnnotationLiteral getDeploymentType() {
-        if (deploymentServiceType.equals("kjar")) {
-            return new AnnotationLiteral<Kjar>(){};
-        } else if (deploymentServiceType.equals("vfs")) {
-            return new AnnotationLiteral<Vfs>(){};
+        if ( deploymentServiceType.equals( "kjar" ) ) {
+            return new AnnotationLiteral<Kjar>() {
+            };
+        } else if ( deploymentServiceType.equals( "vfs" ) ) {
+            return new AnnotationLiteral<Vfs>() {
+            };
         } else {
-            throw new IllegalStateException("Unknown type of deployment service " + deploymentServiceType);
+            throw new IllegalStateException( "Unknown type of deployment service " + deploymentServiceType );
         }
     }
-
 
 }
