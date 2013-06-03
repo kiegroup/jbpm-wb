@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.client.i18n;
+package org.jbpm.dashboard.renderer.client.panel.i18n;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Messages;
@@ -31,36 +31,5 @@ public interface Constants extends Messages {
 
     Constants INSTANCE = GWT.create(Constants.class);
 
-    String Tasks_Calendar_View();
-
-    String Tasks_Grid_View();
-
-    String Process_Dashboard();
-
-    String Process_Authoring();
-
-    String Authoring();
-
-    String Process_Management();
-
-    String Work();
-
-    String BAM();
-
-    String LogOut();
-
-    String Home();
-
-    String Process_Definitions();
-
-    String Process_Instances();
-
-    String Deploy();
-
-    String Deployments();
-
-    String newItem();
-
-    String Dashboard();
-
+    String Instructions();
 }
