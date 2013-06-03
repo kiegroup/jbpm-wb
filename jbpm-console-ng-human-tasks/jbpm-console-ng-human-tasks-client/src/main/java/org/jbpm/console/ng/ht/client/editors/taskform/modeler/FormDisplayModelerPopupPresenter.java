@@ -28,6 +28,7 @@ import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -54,11 +55,11 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.widgets.events.BeforeClosePlaceEvent;
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
-import org.uberfire.shared.mvp.PlaceRequest;
-import org.uberfire.shared.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.events.BeforeClosePlaceEvent;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @WorkbenchPopup(identifier = "Form Display Modeler")
@@ -122,7 +123,6 @@ public class FormDisplayModelerPopupPresenter {
 
         String getDomainId();
 
-
         Label getNameText();
 
         Label getTaskIdText();
@@ -133,6 +133,7 @@ public class FormDisplayModelerPopupPresenter {
         
         void loadContext(FormRenderContextTO ctx);
 
+        void loadContext(String ctxUID);
     }
 
     @PostConstruct
@@ -193,7 +194,14 @@ public class FormDisplayModelerPopupPresenter {
 
     public void renderProcessForm(final String processId) {
         view.getNavBarUL().clear();
-        
+        formServices.call( new RemoteCallback<String>() {
+            @Override
+            public void callback( String form ) {
+                if (SafeHtmlUtils.htmlEscape(form).equalsIgnoreCase(form)) {
+                    view.loadContext(form);
+                }
+            }
+        } ).getFormDisplayProcess( processId );
 
     }
 

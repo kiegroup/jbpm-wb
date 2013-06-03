@@ -472,16 +472,19 @@
       <artifactId>jbpm-form-modeler-renderer-api</artifactId>
       <version>6.0.0-SNAPSHOT</version>
     </dependency>
+
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-form-modeler-renderer-client</artifactId>
       <version>6.0.0-SNAPSHOT</version>
     </dependency>
+
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-form-modeler-renderer-backend</artifactId>
       <version>6.0.0-SNAPSHOT</version>
     </dependency>
+
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-form-modeler-editor-api</artifactId>
@@ -493,12 +496,19 @@
       <artifactId>jbpm-form-modeler-editor-client</artifactId>
       <version>6.0.0-SNAPSHOT</version>
     </dependency>
+
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-form-modeler-editor-backend</artifactId>
       <version>6.0.0-SNAPSHOT</version>
     </dependency>
-    
+
+    <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-form-provider</artifactId>
+        <version>6.0.0-SNAPSHOT</version>
+    </dependency>
+
      <dependency>
       <groupId>org.kie.workbench.screens</groupId>
       <artifactId>kie-wb-common-data-modeller-api</artifactId>
@@ -624,6 +634,22 @@
           <archive>
             <addMavenDescriptor>false</addMavenDescriptor>
           </archive>
+            <overlays>
+                <overlay>
+                    <groupId>org.jbpm</groupId>
+                    <artifactId>jbpm-form-modeler-app</artifactId>
+                </overlay>
+            </overlays>
+            <webResources>
+                <resource>
+                    <directory>${basedir}/src/main/webapp/WEB-INF</directory>
+                    <filtering>true</filtering>
+                    <targetPath>WEB-INF</targetPath>
+                    <includes>
+                        <include>**/web.xml</include>
+                    </includes>
+                </resource>
+            </webResources>
         </configuration>
       </plugin>
 

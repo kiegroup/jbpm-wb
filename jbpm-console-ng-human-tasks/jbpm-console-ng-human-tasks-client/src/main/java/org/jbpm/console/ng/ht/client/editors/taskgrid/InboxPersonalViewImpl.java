@@ -454,7 +454,7 @@ public class InboxPersonalViewImpl extends Composite implements InboxPersonalPre
         cells.add( new PopupActionHasCell( "Work Popup", new Delegate<TaskSummary>() {
             @Override
             public void execute( TaskSummary task ) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display" );
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display Modeler" );
                 placeRequestImpl.addParameter( "taskId", Long.toString( task.getId() ) );
 
                 placeManager.goTo( placeRequestImpl );
