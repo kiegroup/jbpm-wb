@@ -25,7 +25,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.jbpm.formModeler.api.client.FormRenderContextTO;
-import org.uberfire.client.workbench.widgets.events.NotificationEvent;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -36,6 +35,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.workbench.events.NotificationEvent;
 
 /**
  * Main view.
@@ -159,4 +159,10 @@ public class FormDisplayModelerPopupViewImpl extends Composite implements FormDi
         }
     }
 
+    @Override
+    public void loadContext(String ctxUID) {
+        if (ctxUID != null) {
+            formRenderer.loadContext(ctxUID);
+        }
+    }
 }

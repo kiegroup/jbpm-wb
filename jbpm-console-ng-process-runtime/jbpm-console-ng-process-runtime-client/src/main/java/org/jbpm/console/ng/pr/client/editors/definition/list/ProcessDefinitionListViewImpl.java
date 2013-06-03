@@ -224,7 +224,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
         cells.add( new StartActionHasCell( "Start process", new Delegate<ProcessSummary>() {
             @Override
             public void execute( ProcessSummary process ) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display" );
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display Modeler" );
                 placeRequestImpl.addParameter( "processId", process.getId() );
                 placeRequestImpl.addParameter( "domainId", process.getDomainId() );
                 placeManager.goTo( placeRequestImpl );

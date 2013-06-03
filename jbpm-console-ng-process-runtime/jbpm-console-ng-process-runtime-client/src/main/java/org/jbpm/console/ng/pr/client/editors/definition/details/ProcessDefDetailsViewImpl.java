@@ -186,7 +186,7 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
 
     @EventHandler("createProcessInstanceButton")
     public void createProcessInstance( ClickEvent e ) {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display" );
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display Modeler" );
         placeRequestImpl.addParameter( "processId", processNameText.getText() );
         placeRequestImpl.addParameter( "domainId", domainIdText.getText() );
         placeManager.goTo( placeRequestImpl );
