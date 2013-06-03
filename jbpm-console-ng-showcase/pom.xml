@@ -429,8 +429,8 @@
       <artifactId>kie-wb-error-messages-widget</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.workbench.services</groupId>
-      <artifactId>kie-wb-common-builder</artifactId>
+      <groupId>org.eclipse</groupId>
+      <artifactId>org.eclipse.bpmn2</artifactId>
     </dependency>
 
 
@@ -453,6 +453,77 @@
           <version>6.0.0-SNAPSHOT</version>
       </dependency>
 
+    <dependency>
+      <groupId>org.kie.remote</groupId>
+      <artifactId>kie-services-remote</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+    </dependency>
+    
+      <!-- formModeler dependencies -->
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-app</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-renderer-api</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-renderer-client</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-renderer-backend</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-editor-api</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-editor-client</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-editor-backend</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-form-provider</artifactId>
+        <version>6.0.0-SNAPSHOT</version>
+    </dependency>
+
+     <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-data-modeller-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-data-modeller-backend</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-data-modeller-client</artifactId>
+    </dependency>
+    
   </dependencies>
 
   <build>
@@ -500,6 +571,9 @@
             <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-workingset-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-datamodel-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-project-api</compileSourcesArtifact>
+            
+            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-client</compileSourcesArtifact>
 
             <!-- Kie Commons -->
             <compileSourcesArtifact>org.kie.commons:kie-commons-data</compileSourcesArtifact>
@@ -560,6 +634,22 @@
           <archive>
             <addMavenDescriptor>false</addMavenDescriptor>
           </archive>
+            <overlays>
+                <overlay>
+                    <groupId>org.jbpm</groupId>
+                    <artifactId>jbpm-form-modeler-app</artifactId>
+                </overlay>
+            </overlays>
+            <webResources>
+                <resource>
+                    <directory>${basedir}/src/main/webapp/WEB-INF</directory>
+                    <filtering>true</filtering>
+                    <targetPath>WEB-INF</targetPath>
+                    <includes>
+                        <include>**/web.xml</include>
+                    </includes>
+                </resource>
+            </webResources>
         </configuration>
       </plugin>
 
