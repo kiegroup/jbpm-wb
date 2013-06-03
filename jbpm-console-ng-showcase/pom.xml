@@ -123,6 +123,20 @@
       <version>${project.version}</version>
     </dependency>
 
+    <!-- jBPM Designer -->
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-designer-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-designer-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-designer-backend</artifactId>
+    </dependency>
+
     <!-- UberFire -->
     <dependency>
       <groupId>org.uberfire</groupId>
@@ -141,17 +155,12 @@
 
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-api</artifactId>
-    </dependency>
+          <artifactId>uberfire-client-api</artifactId>
+      </dependency>
 
-    <dependency>
-      <groupId>org.uberfire</groupId>
+      <dependency>
+          <groupId>org.uberfire</groupId>
       <artifactId>uberfire-widgets-core-client</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-widgets-core-backend</artifactId>
     </dependency>
 
     <dependency>
@@ -321,25 +330,80 @@
       <artifactId>jta</artifactId>
     </dependency>
 
-    <!-- jBPM Designer -->
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-designer-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-designer-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-designer-backend</artifactId>
-    </dependency>
-
+    <!--Miscellaneous -->
     <dependency>
       <groupId>org.opensymphony.quartz</groupId>
       <artifactId>quartz</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-bpmn2-emfextmodel</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse</groupId>
+      <artifactId>org.eclipse.bpmn2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.remote</groupId>
+      <artifactId>kie-services-remote</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+    </dependency>
+
+    <!-- Kie Workbench -->
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-m2repo-editor-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-m2repo-editor-backend</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.services</groupId>
+      <artifactId>kie-wb-common-project-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-project-explorer-backend</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-project-explorer-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-project-editor-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-project-editor-backend</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-project-imports-editor-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.services</groupId>
+      <artifactId>kie-wb-common-datamodel-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.services</groupId>
+      <artifactId>kie-wb-common-workingset-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.services</groupId>
+      <artifactId>kie-wb-common-workingset-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.services</groupId>
+      <artifactId>kie-wb-common-security</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.kie.workbench.widgets</groupId>
       <artifactId>kie-wb-common-ui</artifactId>
@@ -353,26 +417,6 @@
       <artifactId>kie-wb-common-services-backend</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.workbench.services</groupId>
-      <artifactId>kie-wb-common-datamodel-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.workbench.screens</groupId>
-      <artifactId>kie-wb-common-project-editor-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.workbench.screens</groupId>
-      <artifactId>kie-wb-common-project-editor-backend</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-m2repo-editor-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-m2repo-editor-backend</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.kie.workbench.widgets</groupId>
       <artifactId>kie-wb-metadata-widget</artifactId>
     </dependency>
@@ -381,125 +425,34 @@
       <artifactId>kie-wb-config-resource-widget</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.workbench.services</groupId>
-      <artifactId>kie-wb-common-security</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.workbench.services</groupId>
-      <artifactId>kie-wb-common-workingset-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.workbench.services</groupId>
-      <artifactId>kie-wb-common-workingset-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.workbench.screens</groupId>
-      <artifactId>kie-wb-common-project-imports-editor-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.workbench.services</groupId>
-      <artifactId>kie-wb-common-project-api</artifactId>
-    </dependency>
-     <dependency>
       <groupId>org.kie.workbench.widgets</groupId>
       <artifactId>kie-wb-error-messages-widget</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId> org.kie.workbench.widgets</groupId>
-      <artifactId>kie-wb-view-source-widget</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.workbench.widgets</groupId>
-      <artifactId>kie-wb-decorated-grid-widget</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.workbench.services</groupId>
       <artifactId>kie-wb-common-builder</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.kie.workbench.screens</groupId>
-      <artifactId>kie-wb-common-project-explorer-backend</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.workbench.screens</groupId>
-      <artifactId>kie-wb-common-project-explorer-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-workbench-models-commons</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-bpmn2-emfextmodel</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse</groupId>
-      <artifactId>org.eclipse.bpmn2</artifactId>
-    </dependency>
 
-    <dependency>
-      <groupId>org.kie.remote</groupId>
-      <artifactId>kie-services-remote</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
-    </dependency>
-    
-      <!-- formModeler dependencies -->
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-app</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
-      <type>war</type>
-    </dependency>
 
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-renderer-api</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-renderer-client</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-renderer-backend</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-editor-api</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
-    </dependency>
 
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-editor-client</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-editor-backend</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
-    </dependency>
-    
-     <dependency>
-      <groupId>org.kie.workbench.screens</groupId>
-      <artifactId>kie-wb-common-data-modeller-api</artifactId>
-    </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-dashboard-client</artifactId>
+          <version>6.0.0-SNAPSHOT</version>
+      </dependency>
 
-    <dependency>
-      <groupId>org.kie.workbench.screens</groupId>
-      <artifactId>kie-wb-common-data-modeller-backend</artifactId>
-    </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-dashboard-backend</artifactId>
+          <version>6.0.0-SNAPSHOT</version>
+      </dependency>
 
-    <dependency>
-      <groupId>org.kie.workbench.screens</groupId>
-      <artifactId>kie-wb-common-data-modeller-client</artifactId>
-    </dependency>
-    
-    
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-dashboard-api</artifactId>
+          <version>6.0.0-SNAPSHOT</version>
+      </dependency>
+
   </dependencies>
 
   <build>
@@ -536,7 +489,6 @@
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-explorer-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-explorer-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-common-ui</compileSourcesArtifact>
-            <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-decorated-grid-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-view-source-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-error-messages-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-metadata-widget</compileSourcesArtifact>
@@ -548,9 +500,6 @@
             <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-workingset-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-datamodel-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-project-api</compileSourcesArtifact>
-            
-            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-client</compileSourcesArtifact>
 
             <!-- Kie Commons -->
             <compileSourcesArtifact>org.kie.commons:kie-commons-data</compileSourcesArtifact>
@@ -576,11 +525,6 @@
 
             <compileSourcesArtifact>org.jbpm:jbpm-designer-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-designer-client</compileSourcesArtifact>
-
-            <compileSourcesArtifact>org.jbpm:jbpm-form-modeler-editor-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.jbpm:jbpm-form-modeler-editor-client</compileSourcesArtifact>
-            <compileSourcesArtifact>org.jbpm:jbpm-form-modeler-renderer-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.jbpm:jbpm-form-modeler-renderer-client</compileSourcesArtifact>
 
           </compileSourcesArtifacts>
           <runTarget>org.jbpm.console.ng.jBPMShowcase/jBPM.html</runTarget>
@@ -616,62 +560,6 @@
           <archive>
             <addMavenDescriptor>false</addMavenDescriptor>
           </archive>
-            <overlays>
-                <overlay>
-                    <groupId>org.jbpm</groupId>
-                    <artifactId>jbpm-form-modeler-app</artifactId>
-                </overlay>
-            </overlays>
-            <webResources>
-                <resource>
-                    <directory>${basedir}/src/main/webapp/WEB-INF</directory>
-                    <filtering>true</filtering>
-                    <targetPath>WEB-INF</targetPath>
-                    <includes>
-                        <include>**/web.xml</include>
-                    </includes>
-                </resource>
-            </webResources>
-        </configuration>
-      </plugin>
-      
-      <plugin>
-        <artifactId>maven-war-plugin</artifactId>
-        <configuration>
-          <packagingExcludes>**/javax/**/*.*,**/client/**/*.class</packagingExcludes>
-          <archive>
-            <addMavenDescriptor>false</addMavenDescriptor>
-          </archive>
-          <overlays>
-            <overlay>
-              <groupId>org.jbpm</groupId>
-              <artifactId>jbpm-form-modeler-app</artifactId>
-            </overlay>
-          </overlays>
-          <webResources>
-            <resource>
-              <directory>${basedir}/src/main/webapp/WEB-INF</directory>
-              <filtering>true</filtering>
-              <targetPath>WEB-INF</targetPath>
-              <includes>
-                <include>**/web.xml</include>
-              </includes>
-            </resource>
-          </webResources>
-          <dependentWarExcludes>
-            WEB-INF/lib/drools-compiler*.jar,
-            WEB-INF/lib/drools-core*.jar,
-            WEB-INF/lib/drools-workbench-models-commons-*.jar,
-            WEB-INF/lib/guvnor-m2repo-editor-*.jar,
-            WEB-INF/lib/guvnor-project-*.jar,
-            WEB-INF/lib/kie-api*.jar,
-            WEB-INF/lib/kie-ci*.jar,
-            WEB-INF/lib/kie-commons-*.jar,
-            WEB-INF/lib/kie-internal*.jar,
-            WEB-INF/lib/kie-nio2-fs*.jar,
-            WEB-INF/lib/kie-wb-common-*.jar,
-            WEB-INF/lib/uberfire-*.jar,
-          </dependentWarExcludes>
         </configuration>
       </plugin>
 
