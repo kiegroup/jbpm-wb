@@ -155,11 +155,11 @@
 
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-client-api</artifactId>
-    </dependency>
+          <artifactId>uberfire-client-api</artifactId>
+      </dependency>
 
-    <dependency>
-      <groupId>org.uberfire</groupId>
+      <dependency>
+          <groupId>org.uberfire</groupId>
       <artifactId>uberfire-widgets-core-client</artifactId>
     </dependency>
 
