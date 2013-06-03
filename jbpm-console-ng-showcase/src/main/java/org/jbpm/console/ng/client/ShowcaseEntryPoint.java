@@ -86,34 +86,42 @@ public class ShowcaseEntryPoint {
 
         final AbstractWorkbenchPerspectiveActivity defaultPerspective = getDefaultPerspectiveActivity();
 
-        final Menus menus = MenuFactory.newTopLevelMenu( constants.Home() ).respondsWith( new Command() {
+        final Menus menus = MenuFactory.newTopLevelMenu(constants.Home()).respondsWith(new Command() {
             @Override
             public void execute() {
-                if ( defaultPerspective != null ) {
-                    placeManager.goTo( new DefaultPlaceRequest( defaultPerspective.getIdentifier() ) );
+                if (defaultPerspective != null) {
+                    placeManager.goTo(new DefaultPlaceRequest(defaultPerspective.getIdentifier()));
                 } else {
-                    Window.alert( "Default perspective not found." );
+                    Window.alert("Default perspective not found.");
                 }
             }
-        } ).endMenu().newTopLevelMenu( constants.Authoring() ).withItems( getAuthoringViews() ).endMenu()
-                .newTopLevelMenu( constants.Deploy() ).withItems( getDeploymentViews() ).endMenu()
-                .newTopLevelMenu( constants.Process_Management() ).withItems( getProcessMGMTViews() ).endMenu()
-                .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu().newTopLevelMenu( constants.BAM() )
-                .withItems( getBAMViews() ).endMenu().newTopLevelMenu( constants.LogOut() ).respondsWith( new Command() {
+        }).endMenu().newTopLevelMenu(constants.Authoring()).withItems(getAuthoringViews()).endMenu()
+                .newTopLevelMenu(constants.Deploy()).withItems(getDeploymentViews()).endMenu()
+                .newTopLevelMenu(constants.Process_Management()).withItems(getProcessMGMTViews()).endMenu()
+                .newTopLevelMenu(constants.Work()).withItems(getWorkViews()).endMenu()
+                .newTopLevelMenu( "Dashboard" )
+                    .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                            placeManager.goTo( new DefaultPlaceRequest( "DashboardPerspective" ) );
+
+                        }
+                    } ).endMenu()
+                .newTopLevelMenu(constants.LogOut()).position(MenuPosition.RIGHT).respondsWith(new Command() {
                     @Override
                     public void execute() {
                         redirect( GWT.getModuleBaseURL() + "uf_logout" );
                     }
-                } ).endMenu().newTopLevelMenu( identity.getName() ).position( MenuPosition.RIGHT ).withItems( getRoles() ).endMenu()
+                }).endMenu().newTopLevelMenu(identity.getName()).position(MenuPosition.RIGHT).withItems(getRoles()).endMenu()
                 .build();
 
         menubar.aggregateWorkbenchMenus( menus );
     }
 
     private List<? extends MenuItem> getRoles() {
-        final List<MenuItem> result = new ArrayList<MenuItem>( identity.getRoles().size() );
-        for ( final Role role : identity.getRoles() ) {
-            result.add( MenuFactory.newSimpleItem( role.getName() ).endMenu().build().getItems().get( 0 ) );
+        final List<MenuItem> result = new ArrayList<MenuItem>(identity.getRoles().size());
+        for (final Role role : identity.getRoles()) {
+            result.add(MenuFactory.newSimpleItem(role.getName()).endMenu().build().getItems().get(0));
         }
 
         return result;
@@ -179,17 +187,6 @@ public class ShowcaseEntryPoint {
         return result;
     }
 
-    private List<? extends MenuItem> getBAMViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
-        result.add( MenuFactory.newSimpleItem( constants.Process_Dashboard() ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                Window.open( "http://localhost:8080/dashbuilder/workspace/jbpm-dashboard", "_blank", "" );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
-
-        return result;
-    }
 
     private AbstractWorkbenchPerspectiveActivity getDefaultPerspectiveActivity() {
         AbstractWorkbenchPerspectiveActivity defaultPerspective = null;

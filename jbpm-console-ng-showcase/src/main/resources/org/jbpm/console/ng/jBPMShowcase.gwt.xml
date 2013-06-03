@@ -49,7 +49,10 @@
   <inherits name="org.jbpm.formModeler.editor.FormModelerEditorClient"/>
   <inherits name="org.jbpm.formModeler.renderer.FormRendererClient"/>
 
-  
+  <!-- Dashbuilder -->
+   <inherits name="org.jbpm.dashboard.renderer.DashboardRendererApi"/>
+   <inherits name="org.jbpm.dashboard.renderer.client.DashboardRendererClient"/>
+
   <!-- Specify the application specific style sheet. -->
   <stylesheet src='css/uberfire-showcase.css' />
   <stylesheet src='css/chome-override.css' />
