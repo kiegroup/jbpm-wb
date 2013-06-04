@@ -74,6 +74,7 @@ public class FormDisplayModelerPopupViewImpl extends Composite implements FormDi
     private long taskId;
     private String domainId;
     private String processId;
+    private String action;
 
     @Inject
     private PlaceManager placeManager;
@@ -113,8 +114,6 @@ public class FormDisplayModelerPopupViewImpl extends Composite implements FormDi
     public void setProcessId(String processId) {
         this.processId = processId;
     }
-
-   
 
     @Override
     public Label getNameText() {
@@ -164,5 +163,35 @@ public class FormDisplayModelerPopupViewImpl extends Composite implements FormDi
         if (ctxUID != null) {
             formRenderer.loadContext(ctxUID);
         }
+    }
+
+    @Override
+    public void submitStartProcessForm() {
+        submitForm(FormDisplayModelerPopupPresenter.ACTION_START_PROCESS);
+    }
+
+    @Override
+    public void submitSaveTaskStateForm() {
+        submitForm(FormDisplayModelerPopupPresenter.ACTION_SAVE_TASK);
+    }
+
+    @Override
+    public void submitCompleteTaskForm() {
+        submitForm(FormDisplayModelerPopupPresenter.ACTION_COMPLETE_TASK);
+    }
+
+    protected void submitForm(String action) {
+        this.action = action;
+        formRenderer.submitFormAndPersist();
+    }
+
+    @Override
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    @Override
+    public String getAction() {
+        return action;
     }
 }
