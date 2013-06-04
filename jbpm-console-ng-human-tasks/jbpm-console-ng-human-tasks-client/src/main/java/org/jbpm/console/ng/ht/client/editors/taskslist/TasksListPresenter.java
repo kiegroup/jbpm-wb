@@ -48,6 +48,7 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.security.Identity;
 import org.uberfire.security.Role;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
+import org.uberfire.workbench.model.menu.MenuSearchItem;
 
 
 @Dependent
@@ -62,12 +63,12 @@ public class TasksListPresenter {
     private List<TaskSummary> allTaskSummaries;
 
     private Map<Day, List<TaskSummary>> currentDayTasks;
-    
+
     public List<TaskSummary> getAllTaskSummaries() {
         return allTaskSummaries;
     }
-    
-    
+
+
 
     public interface TaskListView extends UberView<TasksListPresenter> {
 
@@ -76,7 +77,7 @@ public class TasksListPresenter {
         TaskListMultiDayBox getTaskListMultiDayBox();
 
         MultiSelectionModel<TaskSummary> getSelectionModel();
-        
+
         TextBox getSearchBox();
 
         void refreshTasks();
@@ -127,22 +128,22 @@ public class TasksListPresenter {
 
     public void filterTasks(String text) {
         if(text.equals("")){
-                if(allTaskSummaries != null){
-                    dataProvider.getList().clear();
-                    dataProvider.setList(allTaskSummaries);
-                    dataProvider.refresh();
-                    view.getTaskListMultiDayBox().clear();
+            if(allTaskSummaries != null){
+                dataProvider.getList().clear();
+                dataProvider.setList(new ArrayList<TaskSummary>(allTaskSummaries));
+                dataProvider.refresh();
+
+            }
+            if(currentDayTasks != null){
+                view.getTaskListMultiDayBox().clear();
+                for (Day day : currentDayTasks.keySet()) {
+                    view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(currentDayTasks.get(day)));
                 }
-                
-                if(currentDayTasks != null){
-                    for (Day day : currentDayTasks.keySet()) {
-                         view.getTaskListMultiDayBox().addTasksByDay(day, currentDayTasks.get(day));
-                    }
-                    view.getTaskListMultiDayBox().refresh();
-                }
+                view.getTaskListMultiDayBox().refresh();
+            }
         }else{
-            if(allTaskSummaries != null){    
-                List<TaskSummary> tasks = allTaskSummaries;
+            if(allTaskSummaries != null){
+                List<TaskSummary> tasks = new ArrayList<TaskSummary>(allTaskSummaries);
                 List<TaskSummary> filteredTasksSimple = new ArrayList<TaskSummary>();
                 for(TaskSummary ts : tasks){
                     if(ts.getName().toLowerCase().contains(text.toLowerCase())){
@@ -154,12 +155,12 @@ public class TasksListPresenter {
                 dataProvider.refresh();
             }
             if(currentDayTasks != null){
-                Map<Day, List<TaskSummary>> tasksCalendar = currentDayTasks;
+                Map<Day, List<TaskSummary>> tasksCalendar = new HashMap<Day, List<TaskSummary>>(currentDayTasks);
                 Map<Day, List<TaskSummary>> filteredTasksCalendar = new HashMap<Day, List<TaskSummary>>();
                 view.getTaskListMultiDayBox().clear();
                 for(Day d : tasksCalendar.keySet()){
                     if(filteredTasksCalendar.get(d) == null){
-                                filteredTasksCalendar.put(d, new ArrayList<TaskSummary>());
+                        filteredTasksCalendar.put(d, new ArrayList<TaskSummary>());
                     }
                     for(TaskSummary ts : tasksCalendar.get(d)){
                         if(ts.getName().toLowerCase().contains(text.toLowerCase())){
@@ -168,12 +169,12 @@ public class TasksListPresenter {
                     }
                 }
                 for (Day day : filteredTasksCalendar.keySet()) {
-                     view.getTaskListMultiDayBox().addTasksByDay(day, filteredTasksCalendar.get(day));
+                    view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(filteredTasksCalendar.get(day)));
                 }
                 view.getTaskListMultiDayBox().refresh();
             }
-         }
-        
+        }
+
 
     }
 
@@ -274,23 +275,15 @@ public class TasksListPresenter {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                     allTaskSummaries = tasks;
-                    dataProvider.getList().clear();
-                    dataProvider.getList().addAll(allTaskSummaries);
-                    dataProvider.refresh();
-                    view.getSelectionModel().clear();
+                    filterTasks(view.getSearchBox().getText());
                 }
-            }).getTasksOwnedByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
+            }).getTasksOwnedByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
 
         } else {
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
                     currentDayTasks = tasks;
-                    view.getTaskListMultiDayBox().clear();
-                    for (Day day : currentDayTasks.keySet()) {
-                        view.getTaskListMultiDayBox().addTasksByDay(day, currentDayTasks.get(day));
-                    }
-                    view.getTaskListMultiDayBox().refresh();
                     filterTasks(view.getSearchBox().getText());
                 }
             }).getTasksOwnedFromDateToDateByDays(identity.getName(), statuses, fromDate, daysTotal, "en-UK");
@@ -355,26 +348,15 @@ public class TasksListPresenter {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                     allTaskSummaries = tasks;
-                    dataProvider.getList().clear();
-                    dataProvider.getList().addAll(allTaskSummaries);
-                    dataProvider.refresh();
                     filterTasks(view.getSearchBox().getText());
                     view.getSelectionModel().clear();
                 }
-            }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
+            }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
         } else {
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
                     currentDayTasks = tasks;
-                    view.getTaskListMultiDayBox().clear();
-                    if(tasks != null){
-                        for (Day day : currentDayTasks.keySet()) {
-
-                            view.getTaskListMultiDayBox().addTasksByDay(day, currentDayTasks.get(day));
-                        }
-                    }
-                    view.getTaskListMultiDayBox().refresh();
                     filterTasks(view.getSearchBox().getText());
                 }
             }).getTasksAssignedAsPotentialOwnerFromDateToDateByDays(identity.getName(), fromDate, daysTotal, "en-UK");
@@ -393,26 +375,16 @@ public class TasksListPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
-                   allTaskSummaries = tasks;
-                   dataProvider.getList().clear();
-                   dataProvider.getList().addAll(allTaskSummaries);
-                   dataProvider.refresh();
-                   view.getSelectionModel().clear();
-                   filterTasks(view.getSearchBox().getText());
+                    allTaskSummaries = tasks;
+                    filterTasks(view.getSearchBox().getText());
+                    view.getSelectionModel().clear();
                 }
-            }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
+            }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
         } else {
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
                     currentDayTasks = tasks;
-                    view.getTaskListMultiDayBox().clear();
-                    if( tasks != null ){
-                        for (Day day : currentDayTasks.keySet()) {
-                            view.getTaskListMultiDayBox().addTasksByDay(day, currentDayTasks.get(day));
-                        }
-                    }
-                    view.getTaskListMultiDayBox().refresh();
                     filterTasks(view.getSearchBox().getText());
                 }
             }).getTasksAssignedFromDateToDateByGroupsByDays(identity.getName(), groups, fromDate, daysTotal, "en-UK");
@@ -440,26 +412,16 @@ public class TasksListPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
-                   allTaskSummaries = tasks;
-                   dataProvider.getList().clear();
-                   dataProvider.getList().addAll(allTaskSummaries);
-                   dataProvider.refresh();
-                   view.getSelectionModel().clear();
-                   filterTasks(view.getSearchBox().getText());
+                    allTaskSummaries = tasks;
+                    filterTasks(view.getSearchBox().getText());
+                    view.getSelectionModel().clear();
                 }
-            }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
+            }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
         } else {
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
                     currentDayTasks = tasks;
-                    view.getTaskListMultiDayBox().clear();
-                    if( tasks != null ){
-                        for (Day day : currentDayTasks.keySet()) {
-                            view.getTaskListMultiDayBox().addTasksByDay(day, currentDayTasks.get(day));
-                        }
-                    }
-                    view.getTaskListMultiDayBox().refresh();
                     filterTasks(view.getSearchBox().getText());
                 }
             }).getTasksAssignedAsPotentialOwnerFromDateToDateByDays(identity.getName(), statuses, fromDate, daysTotal, "en-UK");

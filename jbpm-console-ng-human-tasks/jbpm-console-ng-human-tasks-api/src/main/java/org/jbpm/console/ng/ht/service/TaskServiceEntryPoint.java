@@ -29,46 +29,46 @@ import org.jbpm.console.ng.ht.model.TaskSummary;
 @Remote
 public interface TaskServiceEntryPoint {
 
-    List<TaskSummary> getTasksAssignedAsPotentialOwnerByExpirationDateOptional(String userId, List<String> status, Date from, 
-            String language);
-    
+    List<TaskSummary> getTasksAssignedAsPotentialOwnerByExpirationDateOptional(String userId, List<String> status, Date from,
+                                                                               String language);
+
     Map<Day, List<TaskSummary>> getTasksAssignedAsPotentialOwnerFromDateToDateByDays(String userId,
-                                                        Date from, int nrOfDaysTotal, String language);
-    
+                                                                                     Date from, int nrOfDaysTotal, String language);
+
     Map<Day, List<TaskSummary>> getTasksAssignedAsPotentialOwnerFromDateToDateByDays(String userId, List<String> strStatuses,
-                                                        Date from, int nrOfDaysTotal, String language);
+                                                                                     Date from, int nrOfDaysTotal, String language);
 
 
     /**
      * Gets the mapping '{@link Day} -> list of owned tasks' starting from specified dayand for specified number of days. Only
      * tasks with specified statuses are considered.
-     * 
+     *
      * @param userId id of the task owner
      * @param from start day
      * @param nrOfDaysTotal how many days to return including start date
      * @param language
-     * 
+     *
      * @return list of tasks per day for specified days (dates)
      */
     Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, List<String> strStatuses, Date from,
-            int nrOfDaysTotal, String language);
+                                                                  int nrOfDaysTotal, String language);
 
     /**
      * Gets the mapping '{@link Day} -> list of assigned groups tasks' starting from specified day and for specified number of
      * days.
-     * 
+     *
      * @param groupIds list of group ids
      * @param from start day
      * @param nrOfDaysTotal how many days to return including start date
      * @param language
-     * 
+     *
      * @return list of tasks per day for specified days (dates)
      */
     Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDays(String userId, List<String> groupIds, Date from,
-            int nrOfDaysTotal, String language);
-    
+                                                                             int nrOfDaysTotal, String language);
+
     List<TaskSummary> getTasksOwnedByExpirationDateOptional(String userId, List<String> strStatuses, Date from,
-            String language);
+                                                            String language);
 
     long addTask(String taskString, Map<String, Object> inputs, Map<String, Object> templateInputs);
 
@@ -135,7 +135,10 @@ public interface TaskServiceEntryPoint {
     CommentSummary getCommentById(long commentId);
 
     void updateSimpleTaskDetails(long taskId, List<String> taskNames, int priority, List<String> taskDescription,
-    // String subTaskStrategy,
-            Date dueDate);
+                                 // String subTaskStrategy,
+                                 Date dueDate);
+
+
+    Map<Long, List<String>> getPotentialOwnersForTaskIds(List<Long> taskIds);
 
 }

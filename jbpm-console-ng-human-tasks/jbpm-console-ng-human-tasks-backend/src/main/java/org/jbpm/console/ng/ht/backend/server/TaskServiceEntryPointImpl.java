@@ -62,13 +62,18 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Override
     public List<TaskSummary> getTasksAssignedAsPotentialOwnerByExpirationDateOptional(String userId, List<String> status, Date from,
-            String language) { //@TODO: MUST ADD LANGUAGE FILTER
+                                                                                      String language) { //@TODO: MUST ADD LANGUAGE FILTER
         List<Status> statuses = new ArrayList<Status>();
         for (String s : status) {
             statuses.add(Status.valueOf(s));
         }
-        List<TaskSummary> taskSummaries = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedAsPotentialOwnerByExpirationDateOptional(
-                userId, statuses, from));
+        List<TaskSummary> taskSummaries = null;
+        if(from != null){
+            taskSummaries = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedAsPotentialOwnerByExpirationDateOptional(
+                    userId, statuses, from));
+        }else{
+            taskSummaries = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedAsPotentialOwnerByStatus(userId, statuses, "en-UK"));
+        }
         //This is a hack we need to find a way to get the PotentialOwners in a performant way
         List<Long> taskIds = new ArrayList<Long>(taskSummaries.size());
         for (TaskSummary ts : taskSummaries) {
@@ -87,7 +92,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Override
     public List<TaskSummary> getTasksOwnedByExpirationDateOptional(String userId, List<String> status, Date from,
-            String language) { //@TODO: MUST ADD LANGUAGE FILTER
+                                                                   String language) { //@TODO: MUST ADD LANGUAGE FILTER
         List<Status> statuses = new ArrayList<Status>();
         for (String s : status) {
             statuses.add(Status.valueOf(s));
@@ -109,8 +114,23 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
 
 
+    @Override
     public Map<Long, List<String>> getPotentialOwnersForTaskIds(List<Long> taskIds) {
-        return taskService.getPotentialOwnersForTaskIds(taskIds);
+        Map<Long, List<OrganizationalEntity>> potentialOwnersForTaskIds = taskService.getPotentialOwnersForTaskIds(taskIds);
+        Map<Long, List<String>> potentialOwnersForTaskIdsSimple = new HashMap<Long, List<String>>();
+        for(Long taskId : potentialOwnersForTaskIds.keySet()){
+            List<OrganizationalEntity> orgEntities = potentialOwnersForTaskIds.get(taskId);
+            List<String> orgEntitiesSimple = new ArrayList<String>(orgEntities.size());
+            for(OrganizationalEntity entity : orgEntities){
+                if(entity instanceof Group){
+                    orgEntitiesSimple.add("Group:"+entity.getId());
+                }else if(entity instanceof User){
+                    orgEntitiesSimple.add("User:"+entity.getId());
+                }
+            }
+            potentialOwnersForTaskIdsSimple.put(taskId, orgEntitiesSimple);
+        }
+        return potentialOwnersForTaskIdsSimple;
     }
 
     /**
@@ -118,13 +138,13 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
      */
 
     public Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByDays(String userId,
-            Date from, Date to, String language) {
+                                                                            Date from, Date to, String language) {
         return getTasksOwnedFromDateToDateByDays(userId, from, to, language);
     }
 
 
     public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, List<String> strStatuses, Date from,
-            Date to, String language) {
+                                                                         Date to, String language) {
         List<Status> statuses = new ArrayList<Status>();
         for (String s : strStatuses) {
             statuses.add(Status.valueOf(s));
@@ -172,13 +192,13 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Override
     public Map<Day, List<TaskSummary>> getTasksAssignedAsPotentialOwnerFromDateToDateByDays(String userId, List<String> strStatuses, Date from,
-            int nrOfDaysTotal, String language) {
+                                                                                            int nrOfDaysTotal, String language) {
         long plusDays = (nrOfDaysTotal - 1) * (long) DateTimeConstants.MILLIS_PER_DAY;
         return getTasksAssignedAsPotentialOwnerFromDateToDateByDays(userId, strStatuses, from, new Date(from.getTime() + plusDays), language);
     }
 
     public Map<Day, List<TaskSummary>> getTasksAssignedAsPotentialOwnerFromDateToDateByDays(String userId, List<String> strStatuses, Date from,
-            Date to, String language) {
+                                                                                            Date to, String language) {
         List<Status> statuses = new ArrayList<Status>();
         for (String s : strStatuses) {
             statuses.add(Status.valueOf(s));
@@ -232,7 +252,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Override
     public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, List<String> strStatuses, Date from,
-            int nrOfDaysTotal, String language) {
+                                                                         int nrOfDaysTotal, String language) {
         long plusDays = (nrOfDaysTotal - 1) * (long) DateTimeConstants.MILLIS_PER_DAY;
         return getTasksOwnedFromDateToDateByDays(userId, strStatuses, from, new Date(from.getTime() + plusDays), language);
     }
@@ -272,16 +292,16 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Override
     public Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDays(String userId, List<String> groupIds, Date from,
-            int nrOfDaysTotal, String language) {
+                                                                                    int nrOfDaysTotal, String language) {
         long plusDays = (nrOfDaysTotal - 1) * (long) DateTimeConstants.MILLIS_PER_DAY;
         return getTasksAssignedFromDateToDateByGroupsByDays(userId, groupIds, from, new Date(from.getTime() + plusDays), language);
     }
 
     public Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDays(String userId, List<String> groupIds, Date from, Date to,
-            String language) {
+                                                                                    String language) {
 
         Map<Day, List<TaskSummary>> tasksByDay = new LinkedHashMap<Day, List<TaskSummary>>();
-        
+
         List<Status> statuses = new ArrayList<Status>();
         statuses.add(Status.Ready);
         List<TaskSummary> firstDayTasks = TaskSummaryHelper.adaptCollection(taskService
@@ -436,7 +456,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
                 .getNames().size() > 0)) ? task.getNames().get(0).getText() : "", ((task.getSubjects() != null && task
                 .getSubjects().size() > 0)) ? task.getSubjects().get(0).getText() : "",
                 ((task.getDescriptions() != null && task.getDescriptions().size() > 0)) ? task.getDescriptions().get(0)
-                .getText() : "", task.getTaskData().getStatus().name(), task.getPriority(), task.getTaskData()
+                        .getText() : "", task.getTaskData().getStatus().name(), task.getPriority(), task.getTaskData()
                 .isSkipable(), (task.getTaskData().getActualOwner() != null) ? task.getTaskData().getActualOwner()
                 .getId() : "", (task.getTaskData().getCreatedBy() != null) ? task.getTaskData().getCreatedBy().getId()
                 : "", task.getTaskData().getCreatedOn(), task.getTaskData().getActivationTime(), task.getTaskData()
@@ -572,8 +592,8 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Override
     public void updateSimpleTaskDetails(long taskId, List<String> taskNames, int priority, List<String> taskDescription,
-            // String subTaskStrategy,
-            Date dueDate) {
+                                        // String subTaskStrategy,
+                                        Date dueDate) {
         // TODO: update only the changed bits
         setPriority(taskId, priority);
         setTaskNames(taskId, taskNames);

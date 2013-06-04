@@ -218,7 +218,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
                 dateBox.show();
                 dateBox.removeFromParent();
                 calendarPanel.add(calendarLabel);
-               // calendarPanel.add(calendarIcon);
+                // calendarPanel.add(calendarIcon);
             }
         });
     }
