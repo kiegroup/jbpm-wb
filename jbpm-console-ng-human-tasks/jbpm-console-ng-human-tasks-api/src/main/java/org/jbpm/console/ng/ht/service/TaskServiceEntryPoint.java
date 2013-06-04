@@ -122,10 +122,6 @@ public interface TaskServiceEntryPoint {
 
     Map<String, String> getContentListByTaskId(long taskId);
 
-    int getCompletedTaskByUserId(String userId);
-
-    int getPendingTaskByUserId(String userId);
-
     IdentitySummary getOrganizationalEntityById(String entityId);
 
     List<IdentitySummary> getOrganizationalEntities();

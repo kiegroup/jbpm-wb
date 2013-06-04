@@ -60,9 +60,6 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     @Inject
     private InternalTaskService taskService;
 
-   
-   
-  
 
     @Override
     public List<TaskSummary> getTasksAssignedAsPotentialOwnerByExpirationDateOptional(String userId, List<String> status, Date from,
@@ -74,8 +71,15 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         List<TaskSummary> taskSummaries = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedAsPotentialOwnerByExpirationDateOptional(
                 userId, statuses, from));
         //This is a hack we need to find a way to get the PotentialOwners in a performant way
+        List<Long> taskIds = new ArrayList<Long>(taskSummaries.size());
         for (TaskSummary ts : taskSummaries) {
-            ts.setPotentialOwners(taskService.getPotentialOwnersForTaskId(ts.getId()));
+            taskIds.add(ts.getId());
+        }
+        if(taskIds.size() > 0){
+            Map<Long, List<String>> potentialOwnersForTaskIds = getPotentialOwnersForTaskIds(taskIds);
+            for (TaskSummary ts : taskSummaries) {
+                ts.setPotentialOwners(potentialOwnersForTaskIds.get(ts.getId()));
+            }
         }
 
         return taskSummaries;
@@ -92,14 +96,22 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         List<TaskSummary> taskSummaries = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByExpirationDateOptional(
                 userId, statuses, from));
         //This is a hack we need to find a way to get the PotentialOwners in a performant way
+        List<Long> taskIds = new ArrayList<Long>(taskSummaries.size());
         for (TaskSummary ts : taskSummaries) {
-            ts.setPotentialOwners(taskService.getPotentialOwnersForTaskId(ts.getId()));
+            taskIds.add(ts.getId());
+        }
+        if(taskIds.size() > 0){
+            Map<Long, List<String>> potentialOwnersForTaskIds = getPotentialOwnersForTaskIds(taskIds);
+            for (TaskSummary ts : taskSummaries) {
+                ts.setPotentialOwners(potentialOwnersForTaskIds.get(ts.getId()));
+            }
         }
         return taskSummaries;
     }
 
-    public List<String> getPotentialOwnersForTaskId(Long taskId) {
-        return taskService.getPotentialOwnersForTaskId(taskId);
+    
+    public Map<Long, List<String>> getPotentialOwnersForTaskIds(List<Long> taskIds) {
+        return taskService.getPotentialOwnersForTaskIds(taskIds);
     }
 
     /**
@@ -122,8 +134,16 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         List<TaskSummary> firstDayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByExpirationDateOptional(
                 userId, statuses, from));
         //This is a hack we need to find a way to get the PotentialOwners in a performant way
+        List<Long> taskIds = new ArrayList<Long>(firstDayTasks.size());
         for (TaskSummary ts : firstDayTasks) {
-            ts.setPotentialOwners(taskService.getPotentialOwnersForTaskId(ts.getId()));
+            taskIds.add(ts.getId());
+        }
+        Map<Long, List<String>> potentialOwnersForTaskIds = null;
+        if(taskIds.size() > 0){
+            potentialOwnersForTaskIds = getPotentialOwnersForTaskIds(taskIds);
+            for (TaskSummary ts : firstDayTasks) {
+                ts.setPotentialOwners(potentialOwnersForTaskIds.get(ts.getId()));
+            }
         }
 
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE dd");
@@ -135,8 +155,16 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
             List<TaskSummary> dayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksOwnedByExpirationDate(userId,
                     statuses, currentDay));
             //This is a hack we need to find a way to get the PotentialOwners in a performant way
+            taskIds = new ArrayList<Long>(dayTasks.size());
+            
             for (TaskSummary ts : dayTasks) {
-                ts.setPotentialOwners(taskService.getPotentialOwnersForTaskId(ts.getId()));
+                taskIds.add(ts.getId());
+            }
+            if(taskIds.size() > 0){
+                potentialOwnersForTaskIds = getPotentialOwnersForTaskIds(taskIds);
+                for (TaskSummary ts : dayTasks) {
+                    ts.setPotentialOwners(potentialOwnersForTaskIds.get(ts.getId()));
+                }
             }
             tasksByDay.put(new Day(currentDay, dayFormat.format(currentDay)), dayTasks);
         }
@@ -160,8 +188,16 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         List<TaskSummary> firstDayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedAsPotentialOwnerByExpirationDateOptional(
                 userId, statuses, from));
         //This is a hack we need to find a way to get the PotentialOwners in a performant way
+        List<Long> taskIds = new ArrayList<Long>(firstDayTasks.size());
         for (TaskSummary ts : firstDayTasks) {
-            ts.setPotentialOwners(taskService.getPotentialOwnersForTaskId(ts.getId()));
+            taskIds.add(ts.getId());
+        }
+        Map<Long, List<String>> potentialOwnersForTaskIds = null;
+        if(taskIds.size() > 0){
+            potentialOwnersForTaskIds = getPotentialOwnersForTaskIds(taskIds);
+            for (TaskSummary ts : firstDayTasks) {
+                ts.setPotentialOwners(potentialOwnersForTaskIds.get(ts.getId()));
+            }
         }
 
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE dd");
@@ -173,8 +209,16 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
             List<TaskSummary> dayTasks = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedAsPotentialOwnerByExpirationDate(userId,
                     statuses, currentDay));
             //This is a hack we need to find a way to get the PotentialOwners in a performant way
+            taskIds = new ArrayList<Long>(dayTasks.size());
+            
             for (TaskSummary ts : dayTasks) {
-                ts.setPotentialOwners(taskService.getPotentialOwnersForTaskId(ts.getId()));
+                taskIds.add(ts.getId());
+            }
+            if(taskIds.size() > 0){
+                potentialOwnersForTaskIds = getPotentialOwnersForTaskIds(taskIds);
+                for (TaskSummary ts : dayTasks) {
+                    ts.setPotentialOwners(potentialOwnersForTaskIds.get(ts.getId()));
+                }
             }
             tasksByDay.put(new Day(currentDay, dayFormat.format(currentDay)), dayTasks);
         }
@@ -243,8 +287,16 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         List<TaskSummary> firstDayTasks = TaskSummaryHelper.adaptCollection(taskService
                 .getTasksAssignedAsPotentialOwnerByExpirationDateOptional(userId, statuses, from));
         //This is a hack we need to find a way to get the PotentialOwners in a performant way
+        List<Long> taskIds = new ArrayList<Long>(firstDayTasks.size());
         for (TaskSummary ts : firstDayTasks) {
-            ts.setPotentialOwners(taskService.getPotentialOwnersForTaskId(ts.getId()));
+            taskIds.add(ts.getId());
+        }
+        Map<Long, List<String>> potentialOwnersForTaskIds = null;
+        if(taskIds.size() > 0){
+            potentialOwnersForTaskIds = getPotentialOwnersForTaskIds(taskIds);
+            for (TaskSummary ts : firstDayTasks) {
+                ts.setPotentialOwners(potentialOwnersForTaskIds.get(ts.getId()));
+            }
         }
 
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE dd");
@@ -257,8 +309,15 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
             List<TaskSummary> currentDayGroupTasks = TaskSummaryHelper.adaptCollection(taskService
                     .getTasksAssignedAsPotentialOwnerByExpirationDate(userId, statuses, currentDay));
             //This is a hack we need to find a way to get the PotentialOwners in a performant way
-            for (TaskSummary ts : firstDayTasks) {
-                ts.setPotentialOwners(taskService.getPotentialOwnersForTaskId(ts.getId()));
+            taskIds = new ArrayList<Long>(currentDayGroupTasks.size());
+            for (TaskSummary ts : currentDayGroupTasks) {
+                taskIds.add(ts.getId());
+            }
+            if(taskIds.size() > 0){
+                potentialOwnersForTaskIds = getPotentialOwnersForTaskIds(taskIds);
+                for (TaskSummary ts : currentDayGroupTasks) {
+                    ts.setPotentialOwners(potentialOwnersForTaskIds.get(ts.getId()));
+                }
             }
             tasksByDay.put(new Day(currentDay, dayFormat.format(currentDay)), currentDayGroupTasks);
 
@@ -450,15 +509,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return new HashMap<String, String>();
     }
 
-    @Override
-    public int getCompletedTaskByUserId(String userId) {
-        return taskService.getCompletedTaskByUserId(userId);
-    }
-
-    @Override
-    public int getPendingTaskByUserId(String userId) {
-        return taskService.getPendingTaskByUserId(userId);
-    }
+   
 
     @Override
     public IdentitySummary getOrganizationalEntityById(String entityId) {
