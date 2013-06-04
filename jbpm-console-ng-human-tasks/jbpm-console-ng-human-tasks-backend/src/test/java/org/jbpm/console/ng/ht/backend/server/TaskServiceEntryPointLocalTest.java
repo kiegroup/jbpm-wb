@@ -20,8 +20,10 @@ public class TaskServiceEntryPointLocalTest extends TaskServiceEntryPointBaseTes
                 // seam-persistence
                 .addPackage("org.jboss.seam.transaction")
                 // core jbpm
-                .addPackage("org.jbpm.shared.services.api").addPackage("org.jbpm.shared.services.impl")
-                .addPackage("org.jbpm.services.task").addPackage("org.jbpm.services.task.annotations")
+                .addPackage("org.jbpm.shared.services.api")
+                .addPackage("org.jbpm.shared.services.impl")
+                .addPackage("org.jbpm.services.task")
+                .addPackage("org.jbpm.services.task.annotations")
                 .addPackage("org.jbpm.services.task.api")
                 .addPackage("org.jbpm.services.task.impl")
                 .addPackage("org.jbpm.services.task.impl.model")

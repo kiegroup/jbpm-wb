@@ -31,9 +31,7 @@ public interface Constants extends Messages {
 
     Constants INSTANCE = GWT.create(Constants.class);
 
-    String Tasks_List_Calendar_View();
-
-    String Tasks_List_Advanced_View();
+    String Tasks_List();
 
     String Day();
 
@@ -41,7 +39,7 @@ public interface Constants extends Messages {
 
     String Month();
 
-    String Advanced();
+    String Grid();
 
     String New_Task();
 

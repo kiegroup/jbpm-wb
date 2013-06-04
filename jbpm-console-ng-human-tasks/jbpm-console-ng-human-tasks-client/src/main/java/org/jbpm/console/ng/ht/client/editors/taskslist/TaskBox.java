@@ -102,8 +102,13 @@ public class TaskBox extends Composite {
         FlowPanel personalOrGroupTask = new FlowPanel();
 
         if ( "".equals( actualOwner ) && status.equals( "Ready" ) ) {
-            personalOrGroupTask.setStyleName( "group-task" );
-            personalOrGroupTask.add( new HTML( "Group Task" ) );
+            if(!potentialOwners.isEmpty() && !(potentialOwners.size() == 1 && potentialOwners.contains(identity.getName()))){
+                personalOrGroupTask.setStyleName( "group-task" );
+                personalOrGroupTask.add( new HTML( "Group Task" ) );
+            }else{
+                personalOrGroupTask.setStyleName( "personal-task" );
+                personalOrGroupTask.add( new HTML( "Personal Task" ) );
+            }
             FlowPanel panel = new FlowPanel();
             FocusPanel focusPanel = new FocusPanel( panel );
             focusPanel.addClickHandler( new ClickHandler() {
@@ -120,9 +125,16 @@ public class TaskBox extends Composite {
             options.add( focusPanel );
 
         } else if ( !"".equals( actualOwner ) && potentialOwners != null && !potentialOwners.isEmpty()
-                && !potentialOwners.contains( identity.getName() ) && ( status.equals( "Reserved" ) || status.equals( "InProgress" ) ) ) {
-            personalOrGroupTask.setStyleName( "group-task" );
-            personalOrGroupTask.add( new HTML( "Group Task" ) );
+                && ( status.equals( "Reserved" ) || status.equals( "InProgress" ) ) ) {
+   
+            if(!potentialOwners.isEmpty() &&
+                    !(potentialOwners.size() == 1 && potentialOwners.contains(identity.getName()))){
+                personalOrGroupTask.setStyleName( "group-task" );
+                personalOrGroupTask.add( new HTML( "Group Task" ) );
+            }else{
+                personalOrGroupTask.setStyleName( "personal-task" );
+                personalOrGroupTask.add( new HTML( "Personal Task" ) );
+            }
             FlowPanel panel = new FlowPanel();
             FocusPanel focusPanel = new FocusPanel( panel );
             focusPanel.addClickHandler( new ClickHandler() {

@@ -16,6 +16,8 @@
 
 package org.jbpm.console.ng.ht.client.util;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.Heading;
 import java.util.Date;
 
 import org.jbpm.console.ng.ht.client.i8n.Constants;
@@ -23,6 +25,7 @@ import org.jbpm.console.ng.ht.client.i8n.Constants;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
+import com.github.gwtbootstrap.client.ui.base.Style;
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.github.gwtbootstrap.client.ui.constants.IconSize;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
@@ -36,7 +39,10 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
+import java.util.Locale;
 
 /**
  * Encapsulates set of components which are able to select day/week/month. Contains also buttons for going to previous or next
@@ -46,30 +52,36 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
     private Constants constants = GWT.create(Constants.class);
 
     public enum ViewType {
-        DAY, WEEK, MONTH;
+        DAY, WEEK, MONTH, GRID;
     }
 
     private Date currentDate;
     private ViewType viewType;
-
-    private UnorderedList mainPanel = new UnorderedList();
-    private NavLink calendarPanel = new NavLink();
-    private Label calendarLabel;
+    
+    private FlowPanel mainPanel = new FlowPanel();
+    private FlowPanel calendarPanel = new FlowPanel();
+    private FlowPanel iconPanel = new FlowPanel();
+    private FlowPanel rightPanel = new FlowPanel();
+    
+    private Heading calendarLabel;
     private IconAnchor calendarIcon;
-    private NavLink previousButton;
-    private NavLink nextButton;
-    private NavLink todayButton;
+    private Button previousButton;
+    private Button nextButton;
+    private Button todayButton;
 
     public CalendarPicker() {
         currentDate = new Date();
         viewType = ViewType.DAY;
-
-        calendarLabel = new Label();
-        calendarLabel.setStyleName("");
+        calendarPanel.setStyleName("span2");
+        calendarLabel = new Heading(4);
+        iconPanel.setStyleName("span2");
+        
         calendarIcon = new IconAnchor();
-        previousButton = new NavLink();
-        nextButton = new NavLink();
-        todayButton = new NavLink();
+        
+        
+        previousButton = new Button();
+        nextButton = new Button();
+        todayButton = new Button();
         initWidget(mainPanel);
     }
 
@@ -86,14 +98,19 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
     public void init() {
         initCalendarIcon();
         calendarPanel.add(calendarLabel);
-        calendarPanel.add(calendarIcon);
+        //calendarPanel.add(calendarIcon);
         mainPanel.add(calendarPanel);
-
+        iconPanel.add(calendarIcon);
+        mainPanel.add(iconPanel);
         initPrevNextTodayButtons();
-        mainPanel.add(previousButton);
-        mainPanel.add(todayButton);
-        mainPanel.add(nextButton);
+        rightPanel.add(previousButton);
+        rightPanel.add(todayButton);
+        rightPanel.add(nextButton);
 
+        rightPanel.setStyleName("btn-group pull-right");
+
+        mainPanel.add(rightPanel);
+        
         updateCalendarLabelText();
     }
 
@@ -115,6 +132,9 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
 
             case MONTH:
                 dayDiff = 30;
+                break;
+            case GRID:
+                dayDiff = 0;
                 break;
 
         }
@@ -145,25 +165,30 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
     private void updateCalendarLabelText() {
         switch (viewType) {
             case DAY: {
-                DateTimeFormat fmt = DateTimeFormat.getFormat("yyyy-MM-dd");
+                mainPanel.setVisible(true);
+                DateTimeFormat fmt = DateTimeFormat.getFormat("EEE, dd MMMM");
                 calendarLabel.setText(fmt.format(currentDate));
                 break;
             }
             case WEEK: {
-                DateTimeFormat fmt = DateTimeFormat.getFormat("MMM dd");
+                mainPanel.setVisible(true);
+                DateTimeFormat fmt = DateTimeFormat.getFormat("dd MMMM");
                 DateRange weekRange = DateUtils.getWeekDateRange(currentDate);
                 String text = fmt.format(weekRange.getStartDate());
                 text = text + " - " + fmt.format(weekRange.getEndDate());
-                fmt = DateTimeFormat.getFormat("yyyy");
-                text = text + " " + fmt.format(weekRange.getEndDate());
                 calendarLabel.setText(text);
                 break;
             }
             case MONTH: {
-                DateTimeFormat fmt = DateTimeFormat.getFormat("MMM yyyy");
+                mainPanel.setVisible(true);
+                DateTimeFormat fmt = DateTimeFormat.getFormat("MMMM");
                 calendarLabel.setText(fmt.format(currentDate));
                 break;
             }
+            case GRID:
+                mainPanel.setVisible(false);
+                break;
+                
             default:
                 throw new IllegalStateException("Unrecognized view type " + viewType);
         }
@@ -197,7 +222,8 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
                 calendarPanel.add(dateBox);
                 dateBox.show();
                 dateBox.removeFromParent();
-                calendarPanel.add(calendarIcon);
+                calendarPanel.add(calendarLabel);
+               // calendarPanel.add(calendarIcon);
             }
         });
     }
@@ -220,7 +246,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
             }
         });
         todayButton.setText(constants.Today());
-        todayButton.setDisabled(true);
+        todayButton.setEnabled(false);
         todayButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -237,34 +263,36 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
      * Clicking on "Today" button when current day (today) is already displayed is useless, so its better to disable the button.
      */
     private void updateTodayButtonEnabled() {
-        boolean todayBtnDisabled = false;
+        boolean todayBtnEnabled = true;
         Date today = new Date();
     
         switch (viewType) {
             case DAY:
                 if (DateUtils.areDatesEqual(today, currentDate)) {
-                    todayBtnDisabled = true;
+                    todayBtnEnabled = false;
                 }
                 break;
 
             case WEEK:
                 DateRange weekRange = DateUtils.getWeekDateRange(currentDate);
                 if (DateUtils.isDateInRange(today, weekRange)) {
-                    todayBtnDisabled = true;
+                    todayBtnEnabled = false;
                 }
                 break;
 
             case MONTH:
                 DateRange monthRange = DateUtils.getMonthDateRange(currentDate);
                 if (DateUtils.isDateInRange(today, monthRange)) {
-                    todayBtnDisabled = true;
+                    todayBtnEnabled = false;
                 }
                 break;
-
+            case GRID:
+                todayBtnEnabled = false;
+                break;
             default:
                 throw new IllegalStateException("Unrecognized calendar view type: " + viewType);
         }
-        todayButton.setDisabled(todayBtnDisabled);
+        todayButton.setEnabled(todayBtnEnabled);
     }
 
 }

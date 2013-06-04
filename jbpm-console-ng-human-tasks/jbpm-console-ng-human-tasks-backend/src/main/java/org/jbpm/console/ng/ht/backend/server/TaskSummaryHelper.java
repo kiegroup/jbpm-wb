@@ -47,5 +47,27 @@ public class TaskSummaryHelper {
         }
         return taskSummaries;
     }
+    
+    public static TaskSummary adapt(org.kie.api.task.model.TaskSummary taskSum) {
+        return new TaskSummary(
+                    taskSum.getId(), 
+                    taskSum.getProcessInstanceId(),
+                    taskSum.getName(),
+                    taskSum.getSubject(),
+                    taskSum.getDescription(),
+                    (taskSum.getStatus() != null) ? taskSum.getStatus().name() : "",
+                    taskSum.getPriority(),
+                    taskSum.isSkipable(),
+                    (taskSum.getActualOwner() != null) ? taskSum.getActualOwner().getId() : "",
+                    (taskSum.getCreatedBy() != null) ? taskSum.getCreatedBy().getId() : "",
+                    taskSum.getCreatedOn(),
+                    taskSum.getActivationTime(),
+                    taskSum.getExpirationTime(),
+                    taskSum.getProcessId(),
+                    taskSum.getProcessSessionId(),
+                    ((InternalTaskSummary) taskSum).getSubTaskStrategy().name(),
+                    (int) ((InternalTaskSummary) taskSum).getParentId(), taskSum.getPotentialOwners());
+    
+    }
 
 }
