@@ -27,8 +27,6 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
     @Test
     public void dummyTest(){}
     
-    
-    
 //    @Test
 //    public void testGetTasksOwnedFromDateToDateByDaysNoTasks() {
 //        Map<Day, List<TaskSummary>> tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",

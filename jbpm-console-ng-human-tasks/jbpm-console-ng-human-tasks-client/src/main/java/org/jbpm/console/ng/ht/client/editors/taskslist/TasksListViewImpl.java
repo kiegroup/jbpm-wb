@@ -541,7 +541,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         cells.add(new PopupActionHasCell("Work Popup", new ActionCell.Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display Modeler");
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
                 placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
 
                 placeManager.goTo(placeRequestImpl);
