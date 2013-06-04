@@ -67,6 +67,7 @@ public class FormDisplayModelerPopupPresenter {
     private Constants constants = GWT.create(Constants.class);
 
     public static final String ACTION_START_PROCESS = "startProcess";
+    public static final String ACTION_START_TASK = "startTask";
     public static final String ACTION_SAVE_TASK = "saveTask";
     public static final String ACTION_COMPLETE_TASK = "completeTask";
 
@@ -144,9 +145,13 @@ public class FormDisplayModelerPopupPresenter {
 
         void submitStartProcessForm();
 
+        void submitStartTaskForm();
+
         void submitSaveTaskStateForm();
 
         void submitCompleteTaskForm();
+
+        void submitForm();
 
         void setAction(String action);
 
@@ -175,6 +180,7 @@ public class FormDisplayModelerPopupPresenter {
 
             @Override
             public void onClick(ClickEvent event) {
+                view.submitForm();
                 close();
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Popup");
                 placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
@@ -187,6 +193,7 @@ public class FormDisplayModelerPopupPresenter {
 
             @Override
             public void onClick(ClickEvent event) {
+                view.submitForm();
                 close();
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Comments Popup");
                 placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
@@ -198,67 +205,74 @@ public class FormDisplayModelerPopupPresenter {
         view.getNavBarUL().add(detailsLink);
         view.getNavBarUL().add(commentsLink);
 
-        formServices.call( new RemoteCallback<String>() {
-            @Override
-            public void callback( String form ) {
-
-                if (SafeHtmlUtils.htmlEscape(form).equalsIgnoreCase(form)) {
-                    view.loadContext(form);
-                    ctxUID = form;
-                    taskServices.call( new RemoteCallback<TaskSummary>() {
-                        @Override
-                        public void callback( final TaskSummary task ) {
-                            view.getOptionsDiv().clear();
-                            FlowPanel wrapperFlowPanel = new FlowPanel();
-                            wrapperFlowPanel.setStyleName( "wrapper" );
-                            view.getOptionsDiv().add( wrapperFlowPanel );
-                            view.getNameText().setText( task.getName() );
-                            view.getTaskIdText().setText( String.valueOf( task.getId() ) );
-                            if ( task.getStatus().equals( "Reserved" ) ) {
-                                FocusPanel startFlowPanel = new FocusPanel();
-                                startFlowPanel.setStyleName( "option-button start" );
-                                startFlowPanel.setTitle( "Start Task" );
-                                startFlowPanel.addClickHandler( new ClickHandler() {
-
-                                    @Override
-                                    public void onClick( ClickEvent event ) {
-                                        startTask(Long.valueOf(view.getTaskId()), identity.getName());
-                                    };
-                                } );
-                                wrapperFlowPanel.add( startFlowPanel );
-                                view.getOptionsDiv().add( wrapperFlowPanel );
-                            } else if ( task.getStatus().equals( "InProgress" ) ) {
-                                FocusPanel saveTaskFlowPanel = new FocusPanel();
-                                saveTaskFlowPanel.setStyleName( "option-button save" );
-                                saveTaskFlowPanel.setTitle( "Save Task" );
-                                saveTaskFlowPanel.addClickHandler( new ClickHandler() {
-
-                                    @Override
-                                    public void onClick( ClickEvent event ) {
-                                        view.submitSaveTaskStateForm();
-                                    };
-                                } );
-                                wrapperFlowPanel.add( saveTaskFlowPanel );
-                                FocusPanel completeTaskFlowPanel = new FocusPanel();
-                                completeTaskFlowPanel.setStyleName( "option-button complete" );
-                                completeTaskFlowPanel.setTitle( "Complete Task" );
-                                completeTaskFlowPanel.addClickHandler( new ClickHandler() {
-
-                                    @Override
-                                    public void onClick( ClickEvent event ) {
-                                        view.submitCompleteTaskForm();
-                                    };
-                                } );
-                                wrapperFlowPanel.add( completeTaskFlowPanel );
-                                view.getOptionsDiv().add( wrapperFlowPanel );
-
-                            }
-                        }
-                    } ).getTaskDetails( taskId );
+        if (ctxUID == null || "".equals(ctxUID.trim())) {
+            formServices.call( new RemoteCallback<String>() {
+                @Override
+                public void callback( String form ) {
+                    initTaskForm(form);
                 }
-            }
-        } ).getFormDisplayTask(taskId);
+            } ).getFormDisplayTask(taskId);
+        } else {
+            initTaskForm(ctxUID);
+        }
 
+    }
+
+    protected void initTaskForm(String form) {
+        if (SafeHtmlUtils.htmlEscape(form).equalsIgnoreCase(form)) {
+            view.loadContext(form);
+            ctxUID = form;
+            taskServices.call( new RemoteCallback<TaskSummary>() {
+                @Override
+                public void callback( final TaskSummary task ) {
+                    view.getOptionsDiv().clear();
+                    FlowPanel wrapperFlowPanel = new FlowPanel();
+                    wrapperFlowPanel.setStyleName( "wrapper" );
+                    view.getOptionsDiv().add( wrapperFlowPanel );
+                    view.getNameText().setText( task.getName() );
+                    view.getTaskIdText().setText( String.valueOf( task.getId() ) );
+                    if ( task.getStatus().equals( "Reserved" ) ) {
+                        FocusPanel startFlowPanel = new FocusPanel();
+                        startFlowPanel.setStyleName( "option-button start" );
+                        startFlowPanel.setTitle( "Start Task" );
+                        startFlowPanel.addClickHandler( new ClickHandler() {
+
+                            @Override
+                            public void onClick( ClickEvent event ) {
+                                view.submitStartTaskForm();
+                            };
+                        } );
+                        wrapperFlowPanel.add( startFlowPanel );
+                        view.getOptionsDiv().add( wrapperFlowPanel );
+                    } else if ( task.getStatus().equals( "InProgress" ) ) {
+                        FocusPanel saveTaskFlowPanel = new FocusPanel();
+                        saveTaskFlowPanel.setStyleName( "option-button save" );
+                        saveTaskFlowPanel.setTitle( "Save Task" );
+                        saveTaskFlowPanel.addClickHandler( new ClickHandler() {
+
+                            @Override
+                            public void onClick( ClickEvent event ) {
+                                view.submitSaveTaskStateForm();
+                            };
+                        } );
+                        wrapperFlowPanel.add( saveTaskFlowPanel );
+                        FocusPanel completeTaskFlowPanel = new FocusPanel();
+                        completeTaskFlowPanel.setStyleName( "option-button complete" );
+                        completeTaskFlowPanel.setTitle( "Complete Task" );
+                        completeTaskFlowPanel.addClickHandler( new ClickHandler() {
+
+                            @Override
+                            public void onClick( ClickEvent event ) {
+                                view.submitCompleteTaskForm();
+                            };
+                        } );
+                        wrapperFlowPanel.add( completeTaskFlowPanel );
+                        view.getOptionsDiv().add( wrapperFlowPanel );
+
+                    }
+                }
+            } ).getTaskDetails(view.getTaskId());
+        }
     }
 
     public void renderProcessForm(final String idProcess) {
@@ -301,6 +315,8 @@ public class FormDisplayModelerPopupPresenter {
             if (event.getContext().getErrors() == 0) {
                 if(ACTION_START_PROCESS.equals(view.getAction())) {
                     startProcess();
+                } else if (ACTION_START_TASK.equals(view.getAction())) {
+                    startTask(view.getTaskId(), identity.getName());
                 } else if (ACTION_SAVE_TASK.equals(view.getAction())) {
                     saveTaskState();
                 } else if (ACTION_COMPLETE_TASK.equals(view.getAction())) {
@@ -487,6 +503,7 @@ public class FormDisplayModelerPopupPresenter {
     }
 
     public void close() {
+        ctxUID = null;
         closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
 
