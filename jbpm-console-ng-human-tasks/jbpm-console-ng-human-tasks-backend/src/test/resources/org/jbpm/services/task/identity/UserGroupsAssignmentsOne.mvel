@@ -1,4 +1,5 @@
 usersGroups = [ new User( "Yoda" ) : [ new Group( "Star Wars" ), new Group( "Jedi Knights" ) ],
+                new User( "Anakin" ) : [ new Group( "Star Wars" ), new Group( "Jedi Knights" ), new Group( "Sith Lords" ) ],
                 new User( "Obi-Wan Kenobi" ) : [ new Group( "Star Wars" ), new Group( "Jedi Knights" ) ],
                 new User( "Darth Vader" ) : [ new Group( "Star Wars" ), new Group( "Sith Lords" ) ],
                 new User( "Darth Maul" ) : [ new Group( "Star Wars" ), new Group( "Sith Lords" ) ],

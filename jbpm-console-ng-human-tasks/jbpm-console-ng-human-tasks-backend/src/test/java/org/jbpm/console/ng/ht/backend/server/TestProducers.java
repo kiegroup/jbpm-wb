@@ -12,6 +12,8 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -24,7 +26,22 @@ import org.kie.internal.task.api.UserGroupCallback;
 
 public class TestProducers {
 
+    @PersistenceUnit(unitName = "org.jbpm.servies.task")
     private EntityManagerFactory emf;
+
+    @Produces
+    public EntityManagerFactory getEntityManagerFactory() {
+        if ( this.emf == null ) {
+            // this needs to be here for non EE containers
+            try {
+                this.emf = InitialContext.doLookup( "jBPMEMF" );
+            } catch ( NamingException e ) {
+                this.emf = Persistence.createEntityManagerFactory( "org.jbpm.servies.task" );
+            }
+
+        }
+        return this.emf;
+    }
 
     @Inject
     @Selectable
@@ -35,18 +52,6 @@ public class TestProducers {
         return userGroupCallback;
     }
 
-    @PersistenceUnit(unitName = "org.jbpm.servies.task")
-    @ApplicationScoped
-    @Produces
-    public EntityManagerFactory getEntityManagerFactory() {
-        if (this.emf == null) {
-            // this needs to be here for non EE containers
-
-            this.emf = Persistence.createEntityManagerFactory("org.jbpm.services.task");
-
-        }
-        return this.emf;
-    }
 
     @Produces
     @ApplicationScoped

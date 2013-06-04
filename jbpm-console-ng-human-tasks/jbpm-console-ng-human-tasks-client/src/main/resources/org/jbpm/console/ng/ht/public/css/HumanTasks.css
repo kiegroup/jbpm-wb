@@ -18,6 +18,11 @@
  *  TASK CSS
  */
 
+.navbar .nav .navtask {
+    margin: 0px;
+}
+
+
 .day-tasks-container .top {
     background-color: #bfbfbf;
     padding: 0 10px;

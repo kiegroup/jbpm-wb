@@ -31,9 +31,7 @@ public interface Constants extends Messages {
 
     Constants INSTANCE = GWT.create(Constants.class);
 
-    String Tasks_Calendar_View();
-
-    String Tasks_Grid_View();
+    String Tasks_List();
 
     String Process_Dashboard();
 
