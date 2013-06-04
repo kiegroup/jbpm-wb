@@ -66,10 +66,6 @@ public class FormDisplayModelerPopupViewImpl extends Composite implements FormDi
     @Inject
     @DataField
     public UnorderedList navBarUL;
-    
-    @Inject
-    @DataField
-    public Button startTestButton;
 
     private long taskId;
     private String domainId;
@@ -85,9 +81,6 @@ public class FormDisplayModelerPopupViewImpl extends Composite implements FormDi
     @Override
     public void init(FormDisplayModelerPopupPresenter presenter) {
         this.presenter = presenter;
-        
-        startTestButton.setText("Start");
-
     }
 
     @Override
@@ -145,12 +138,6 @@ public class FormDisplayModelerPopupViewImpl extends Composite implements FormDi
         this.domainId = domainId;
     }
     
-    @EventHandler("startTestButton")
-    public void startTestButton(ClickEvent event) {
-        presenter.renderTaskForm(1);
-        
-    }
-    
     @Override
     public void loadContext(FormRenderContextTO ctx) {
         if (ctx != null) {
@@ -171,6 +158,11 @@ public class FormDisplayModelerPopupViewImpl extends Composite implements FormDi
     }
 
     @Override
+    public void submitStartTaskForm() {
+        submitForm(FormDisplayModelerPopupPresenter.ACTION_START_TASK);
+    }
+
+    @Override
     public void submitSaveTaskStateForm() {
         submitForm(FormDisplayModelerPopupPresenter.ACTION_SAVE_TASK);
     }
@@ -178,6 +170,11 @@ public class FormDisplayModelerPopupViewImpl extends Composite implements FormDi
     @Override
     public void submitCompleteTaskForm() {
         submitForm(FormDisplayModelerPopupPresenter.ACTION_COMPLETE_TASK);
+    }
+
+    @Override
+    public void submitForm() {
+        formRenderer.submitForm();
     }
 
     protected void submitForm(String action) {
