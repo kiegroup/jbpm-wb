@@ -224,7 +224,7 @@ public class TasksListPresenter {
     }
 
     public void formClosed( @Observes BeforeClosePlaceEvent closed ) {
-        if(closed.getPlace().getIdentifier().equals("Form Display") ||
+        if(closed.getPlace().getIdentifier().equals("Form Display Modeler") || 
                 closed.getPlace().getIdentifier().equals("Quick New Task")){
             view.refreshTasks();
         }
@@ -241,6 +241,12 @@ public class TasksListPresenter {
 
     /**
      * Refresh tasks based on specified date, view (day/week/month) and task type.
+<<<<<<< HEAD
+=======
+     * @param date
+     * @param taskType
+     * @param taskView
+>>>>>>> - unifying task lists
      */
     public void refreshTasks(Date date, TaskView taskView, TaskType taskType) {
         switch (taskType) {
