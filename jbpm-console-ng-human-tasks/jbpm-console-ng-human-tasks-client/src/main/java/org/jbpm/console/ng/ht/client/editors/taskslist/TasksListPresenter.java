@@ -160,7 +160,7 @@ public class TasksListPresenter {
     }
 
     public void formClosed( @Observes BeforeClosePlaceEvent closed ) {
-        if(closed.getPlace().getIdentifier().equals("Form Display Modeler") || 
+        if(closed.getPlace().getIdentifier().equals("Form Display Modeler") ||
                 closed.getPlace().getIdentifier().equals("Quick New Task")){
             view.refreshTasks();
         }
