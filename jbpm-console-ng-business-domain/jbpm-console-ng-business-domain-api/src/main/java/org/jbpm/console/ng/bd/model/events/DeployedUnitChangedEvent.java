@@ -20,22 +20,22 @@ import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class KieSessionSelectionEvent implements Serializable {
-    private long ksessionId;
+public class DeployedUnitChangedEvent implements Serializable {
+    private String unitId;
 
-    public KieSessionSelectionEvent() {
+    public DeployedUnitChangedEvent() {
     }
 
-    public KieSessionSelectionEvent(long ksessionId) {
-        this.ksessionId = ksessionId;
+    public DeployedUnitChangedEvent(String unitId) {
+        this.unitId = unitId;
     }
 
-    public long getKsessionId() {
-        return ksessionId;
+    public String getUnitId() {
+        return unitId;
     }
 
-    public void setKsessionId(long ksessionId) {
-        this.ksessionId = ksessionId;
+    public void setUnitId(String unitId) {
+        this.unitId = unitId;
     }
 
 }

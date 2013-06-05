@@ -63,4 +63,6 @@ public interface Constants extends Messages {
 
     String Please_Wait();
 
+    String KIE_Configurations();
+
 }

@@ -1,0 +1,60 @@
+<div class="row-fluid">
+    <div class="span12">
+        <div class="form-horizontal">
+
+            <div class="control-group">
+                <label class="control-label" for="groupText" data-field="groupLabel"></label>
+                <div class="controls">
+                    <input type="text" data-field="groupText" id="groupText" placeholder="" />
+                </div>
+            </div>    
+            <div class="control-group">
+                <label class="control-label" for="artifactText" data-field="artifactLabel"></label>
+                <div class="controls">
+                    <input type="text" data-field="artifactText" id="artifactText" placeholder="" />
+                </div>
+            </div>  
+            <div class="control-group">
+                <label class="control-label" for="versionText" data-field="versionLabel"></label>
+                <div class="controls">
+                    <input type="text" data-field="versionText" id="versionText" placeholder="" />
+                </div>
+            </div>  
+        </div>
+
+        <div class="accordion">
+            <!-- GROUP -->
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle"> <label data-field="advancedLabel"></label>
+                    </a>
+                </div>
+                <div id="desc_collapse" class="accordion-body collapse in" style="position: relative;">
+                    <div class="accordion-inner">
+                        <div class="form-horizontal">
+
+                           
+
+                            <div class="control-group">
+                                <label class="control-label" for="kbaseNameText" data-field="kbaseNameLabel"></label>
+                                <div class="controls">
+                                    <input type="text" data-field="kbaseNameText" id="kbaseNameText" placeholder="" />
+                                </div>
+                            </div>  
+                            <div class="control-group">
+                                <label class="control-label" for="kieSessionNameText" data-field="kieSessionNameLabel"></label>
+                                <div class="controls">
+                                    <input type="text" data-field="kieSessionNameText" id="kieSessionNameText" placeholder="" />
+                                </div>
+                            </div> 
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer span12">
+            <button class="btn pull-right" id="deployUnitButton" data-field="deployUnitButton"></button>
+        </div>
+    </div>
+</div>

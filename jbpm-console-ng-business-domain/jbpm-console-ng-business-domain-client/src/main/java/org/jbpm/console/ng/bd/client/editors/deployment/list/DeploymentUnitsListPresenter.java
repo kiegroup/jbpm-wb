@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.bd.client.editors.session.list;
+package org.jbpm.console.ng.bd.client.editors.deployment.list;
 
 import com.google.gwt.core.client.GWT;
 import javax.annotation.PostConstruct;
@@ -40,10 +40,10 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 
 @Dependent
-@WorkbenchScreen(identifier = "Deployments")
-public class KieSessionsListPresenter {
+@WorkbenchScreen(identifier = "Deployments List")
+public class DeploymentUnitsListPresenter {
 
-    public interface KieSessionsListView extends UberView<KieSessionsListPresenter> {
+    public interface DeploymentUnitsListView extends UberView<DeploymentUnitsListPresenter> {
 
         void displayNotification(String text);
 
@@ -51,11 +51,11 @@ public class KieSessionsListPresenter {
 
         void hideBusyIndicator();
 
-        void cleanForm();
+        
     }
 
     @Inject
-    private KieSessionsListView view;
+    private DeploymentUnitsListView view;
 
     @Inject
     private Caller<DeploymentManagerEntryPoint> deploymentManager;
@@ -64,7 +64,7 @@ public class KieSessionsListPresenter {
 
     private ListDataProvider<KModuleDeploymentUnitSummary> dataProvider = new ListDataProvider<KModuleDeploymentUnitSummary>();
 
-    public KieSessionsListPresenter() {
+    public DeploymentUnitsListPresenter() {
     }
 
     @WorkbenchPartTitle
@@ -73,7 +73,7 @@ public class KieSessionsListPresenter {
     }
 
     @WorkbenchPartView
-    public UberView<KieSessionsListPresenter> getView() {
+    public UberView<DeploymentUnitsListPresenter> getView() {
         return view;
     }
 
@@ -81,26 +81,7 @@ public class KieSessionsListPresenter {
     public void init() {
     }
 
-    public void deployUnit(final String id, final String group, final String artifact, final String version, final String kbaseName, final String kieSessionName) {
-        view.showBusyIndicator(constants.Please_Wait());
-        deploymentManager.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void nothing) {
-                view.cleanForm();
-                view.hideBusyIndicator();
-                view.displayNotification(" Kjar Deployed " + group + ":" + artifact + ":" + version);
-                refreshDeployedUnits();
-            }
-        }, new ErrorCallback() {
-           @Override
-           public boolean error(Message message, Throwable throwable) {
-               view.cleanForm();
-               view.hideBusyIndicator();
-               view.displayNotification("Error: Deploy failed " + throwable.getMessage());
-               return true;
-           }
-       }).deploy(new KModuleDeploymentUnitSummary(id, group, artifact, version, kbaseName, kieSessionName));
-    }
+    
     
     public void undeployUnit(final String id, final String group, final String artifact, final String version, 
                             final String kbaseName, final String kieSessionName) {

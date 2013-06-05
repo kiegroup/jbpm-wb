@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.bd.client.editors.session.list;
+package org.jbpm.console.ng.bd.client.editors.deployment.list;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -24,10 +24,10 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.Heading;
+import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
@@ -50,84 +50,32 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
+import javax.enterprise.event.Observes;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.client.resources.BusinessDomainImages;
 import org.jbpm.console.ng.bd.client.util.ResizableHeader;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
-import org.jbpm.console.ng.bd.model.events.KieSessionSelectionEvent;
+import org.jbpm.console.ng.bd.model.events.DeployedUnitChangedEvent;
 import org.uberfire.client.common.BusyPopup;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
-@Templated(value = "KieSessionsListViewImpl.html")
-public class KieSessionsListViewImpl extends Composite implements KieSessionsListPresenter.KieSessionsListView {
+@Templated(value = "DeploymentUnitsListViewImpl.html")
+public class DeploymentUnitsListViewImpl extends Composite implements DeploymentUnitsListPresenter.DeploymentUnitsListView {
 
     @Inject
     private Identity identity;
     @Inject
     private PlaceManager placeManager;
-    private KieSessionsListPresenter presenter;
+    private DeploymentUnitsListPresenter presenter;
 
-    @Inject
-    @DataField
-    public Label deploymentIDLabel;
-
-    @Inject
-    @DataField
-    public TextBox deploymentIDText;
-
-    @Inject
-    @DataField
-    public TextBox groupText;
-
-    @Inject
-    @DataField
-    public TextBox artifactText;
-
-    @Inject
-    @DataField
-    public TextBox versionText;
-
-    @Inject
-    @DataField
-    public TextBox kbaseNameText;
-
-    @Inject
-    @DataField
-    public TextBox kieSessionNameText;
-
-    @Inject
-    @DataField
-    public Button deployUnitButton;
-
-    @Inject
-    @DataField
-    public Label deployedUnitsLabel;
-
-    @Inject
-    @DataField
-    public Label groupLabel;
-
-    @Inject
-    @DataField
-    public Label artifactLabel;
-
-    @Inject
-    @DataField
-    public Label versionLabel;
-
-    @Inject
-    @DataField
-    public Label kbaseNameLabel;
-
-    @Inject
-    @DataField
-    public Label kieSessionNameLabel;
+    
 
     @Inject
     @DataField
@@ -144,33 +92,44 @@ public class KieSessionsListViewImpl extends Composite implements KieSessionsLis
     @Inject
     @DataField
     public IconAnchor refreshIcon;
+    
+    @Inject
+    @DataField
+    public NavLink newUnitNavLink;
+    
+    
+    @DataField
+    public Heading deployedUnitsLabel = new Heading(4);
 
     private Set<KModuleDeploymentUnitSummary> selectedKieSession;
     @Inject
     private Event<NotificationEvent> notification;
     @Inject
-    private Event<KieSessionSelectionEvent> kieSessionSelection;
+    private Event<DeployedUnitChangedEvent> unitChanged;
     private ListHandler<KModuleDeploymentUnitSummary> sortHandler;
 
     private Constants constants = GWT.create( Constants.class );
     private BusinessDomainImages images = GWT.create( BusinessDomainImages.class );
 
     @Override
-    public void init( final KieSessionsListPresenter presenter ) {
+    public void init( final DeploymentUnitsListPresenter presenter ) {
         this.presenter = presenter;
 
         listContainerDeployedUnits.add( deployedUnitsListGrid );
         listContainerDeployedUnits.add( pager );
 
-        deployUnitButton.setText( constants.Deploy_Unit() );
-        deployedUnitsLabel.setText( constants.Deploy_A_New_Unit() );
-        groupLabel.setText( constants.GroupID() );
-        artifactLabel.setText( constants.Artifact() );
-        versionLabel.setText( constants.Version() );
-        kbaseNameLabel.setText( constants.KieBaseName() );
-        kieSessionNameLabel.setText( constants.KieSessionName() );
-        deploymentIDLabel.setText( constants.Deploy_Unit() );
+        deployedUnitsLabel.setText(constants.Deployment_Units());
 
+         newUnitNavLink.setText( constants.Deploy_Unit() );
+        newUnitNavLink.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "New Deployment" );
+                placeManager.goTo( placeRequestImpl );
+            }
+        } );
+        
+        
         refreshIcon.setTitle( constants.Refresh() );
         refreshIcon.addClickHandler( new ClickHandler() {
             @Override
@@ -215,11 +174,16 @@ public class KieSessionsListViewImpl extends Composite implements KieSessionsLis
 
     }
 
-    @EventHandler("deployUnitButton")
-    public void deployUnitButton( ClickEvent e ) {
-        presenter.deployUnit( deploymentIDText.getText(), groupText.getText(), artifactText.getText(), versionText.getText(),
-                              kbaseNameText.getText(), kieSessionNameText.getText() );
+    public void refreshDeployedUnits(){
+        presenter.refreshDeployedUnits();
     }
+    
+    public void refreshOnChangedUnit(@Observes DeployedUnitChangedEvent event){
+        refreshDeployedUnits();
+    }
+    
+    
+    
 
     private void initTableColumns( final SelectionModel<KModuleDeploymentUnitSummary> selectionModel ) {
 
@@ -372,17 +336,7 @@ public class KieSessionsListViewImpl extends Composite implements KieSessionsLis
     public void hideBusyIndicator() {
         BusyPopup.close();
     }
-
-    @Override
-    public void cleanForm() {
-        this.artifactText.setText( "" );
-        this.groupText.setText( "" );
-        this.versionText.setText( "" );
-        this.kbaseNameText.setText( "" );
-        this.kieSessionNameText.setText( "" );
-        this.deploymentIDText.setText( "" );
-    }
-
+    
     public DataGrid<KModuleDeploymentUnitSummary> getDataGrid() {
         return deployedUnitsListGrid;
     }
