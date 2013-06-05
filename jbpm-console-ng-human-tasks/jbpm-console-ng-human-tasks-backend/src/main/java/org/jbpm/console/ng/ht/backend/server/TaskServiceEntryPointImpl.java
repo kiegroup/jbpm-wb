@@ -40,7 +40,6 @@ import org.jbpm.services.task.utils.ContentMarshallerHelper;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
-import org.kie.api.task.TaskService;
 import org.kie.api.task.model.Content;
 import org.kie.api.task.model.Group;
 import org.kie.api.task.model.OrganizationalEntity;
@@ -109,7 +108,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return taskSummaries;
     }
 
-    
+
     public Map<Long, List<String>> getPotentialOwnersForTaskIds(List<Long> taskIds) {
         return taskService.getPotentialOwnersForTaskIds(taskIds);
     }
@@ -117,13 +116,13 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     /**
      * Day adaptors
      */
-    
+
     public Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByDays(String userId,
             Date from, Date to, String language) {
         return getTasksOwnedFromDateToDateByDays(userId, from, to, language);
     }
 
-   
+
     public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, List<String> strStatuses, Date from,
             Date to, String language) {
         List<Status> statuses = new ArrayList<Status>();
@@ -156,7 +155,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
                     statuses, currentDay));
             //This is a hack we need to find a way to get the PotentialOwners in a performant way
             taskIds = new ArrayList<Long>(dayTasks.size());
-            
+
             for (TaskSummary ts : dayTasks) {
                 taskIds.add(ts.getId());
             }
@@ -210,7 +209,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
                     statuses, currentDay));
             //This is a hack we need to find a way to get the PotentialOwners in a performant way
             taskIds = new ArrayList<Long>(dayTasks.size());
-            
+
             for (TaskSummary ts : dayTasks) {
                 taskIds.add(ts.getId());
             }
@@ -238,6 +237,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return getTasksOwnedFromDateToDateByDays(userId, strStatuses, from, new Date(from.getTime() + plusDays), language);
     }
 
+
     public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, Date from, Date to, String language) {
         List<String> statuses = new ArrayList<String>();
         statuses.add("InProgress");
@@ -246,7 +246,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return getTasksOwnedFromDateToDateByDays(userId, statuses, from, to, language);
     }
 
-    
+
     public Map<Day, List<TaskSummary>> getTasksAssignedAsPotentialOwnerFromDateToDateByDays(String userId, Date from, Date to, String language) {
         List<String> statuses = new ArrayList<String>();
         statuses.add("Ready");
@@ -292,7 +292,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
             taskIds.add(ts.getId());
         }
         Map<Long, List<String>> potentialOwnersForTaskIds = null;
-        if(taskIds.size() > 0){
+        if(taskIds.size() > 0) {
             potentialOwnersForTaskIds = getPotentialOwnersForTaskIds(taskIds);
             for (TaskSummary ts : firstDayTasks) {
                 ts.setPotentialOwners(potentialOwnersForTaskIds.get(ts.getId()));
@@ -303,7 +303,6 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         tasksByDay.put(new Day(from, dayFormat.format(from)), firstDayTasks);
         int nrOfDays = Days.daysBetween(new LocalDate(from), new LocalDate(to)).getDays();
         for (int i = 1; i <= nrOfDays; i++) {
-
             long plusDays = i * (long) DateTimeConstants.MILLIS_PER_DAY;
             Date currentDay = new Date(from.getTime() + plusDays);
             List<TaskSummary> currentDayGroupTasks = TaskSummaryHelper.adaptCollection(taskService
@@ -509,7 +508,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return new HashMap<String, String>();
     }
 
-   
+
 
     @Override
     public IdentitySummary getOrganizationalEntityById(String entityId) {

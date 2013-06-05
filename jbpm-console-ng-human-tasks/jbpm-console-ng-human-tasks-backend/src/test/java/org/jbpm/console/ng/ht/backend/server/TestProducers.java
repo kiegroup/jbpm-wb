@@ -25,20 +25,20 @@ import org.kie.commons.io.impl.IOServiceNio2WrapperImpl;
 import org.kie.internal.task.api.UserGroupCallback;
 
 public class TestProducers {
+    private final IOService ioService = new IOServiceNio2WrapperImpl();
 
     @PersistenceUnit(unitName = "org.jbpm.servies.task")
     private EntityManagerFactory emf;
 
     @Produces
     public EntityManagerFactory getEntityManagerFactory() {
-        if ( this.emf == null ) {
+        if (this.emf == null) {
             // this needs to be here for non EE containers
             try {
-                this.emf = InitialContext.doLookup( "jBPMEMF" );
-            } catch ( NamingException e ) {
-                this.emf = Persistence.createEntityManagerFactory( "org.jbpm.servies.task" );
+                this.emf = InitialContext.doLookup("jBPMEMF");
+            } catch (NamingException e) {
+                this.emf = Persistence.createEntityManagerFactory("org.jbpm.servies.task");
             }
-
         }
         return this.emf;
     }
@@ -51,7 +51,6 @@ public class TestProducers {
     public UserGroupCallback produceSelectedUserGroupCalback() {
         return userGroupCallback;
     }
-
 
     @Produces
     @ApplicationScoped
@@ -70,8 +69,6 @@ public class TestProducers {
 
         }
     }
-
-    private final IOService ioService = new IOServiceNio2WrapperImpl();
 
     @Produces
     public Logger createLogger(InjectionPoint injectionPoint) {
