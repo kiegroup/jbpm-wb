@@ -121,4 +121,6 @@ public interface Constants extends Messages {
 
     String Today();
 
+    String Advanced();
+
 }

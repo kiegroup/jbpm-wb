@@ -95,7 +95,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Inject
     @DataField
-    public NavLink advancedViewTasksNavLink;
+    public NavLink gridViewTasksNavLink;
 
     @Inject
     @DataField
@@ -192,7 +192,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 dayViewTasksNavLink.setStyleName("active");
                 weekViewTasksNavLink.setStyleName("");
                 monthViewTasksNavLink.setStyleName("");
-                advancedViewTasksNavLink.setStyleName("");
+                gridViewTasksNavLink.setStyleName("");
                 currentView = TaskView.DAY;
                 calendarPicker.setViewType( "day" );
                 refreshTasks();
@@ -207,7 +207,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 tasksViewContainer.setStyleName("week");
                 dayViewTasksNavLink.setStyleName("");
                 monthViewTasksNavLink.setStyleName("");
-                advancedViewTasksNavLink.setStyleName("");
+                gridViewTasksNavLink.setStyleName("");
                 weekViewTasksNavLink.setStyleName("active");
                 currentView = TaskView.WEEK;
                 calendarPicker.setViewType( "week" );
@@ -223,7 +223,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 tasksViewContainer.add(taskListMultiDayBox);
                 tasksViewContainer.setStyleName("month");
                 dayViewTasksNavLink.setStyleName("");
-                advancedViewTasksNavLink.setStyleName("");
+                gridViewTasksNavLink.setStyleName("");
                 weekViewTasksNavLink.setStyleName("");
                 monthViewTasksNavLink.setStyleName("active");
                 currentView = TaskView.MONTH;
@@ -232,8 +232,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             }
         } );
 
-        advancedViewTasksNavLink.setText( constants.Grid() );
-        advancedViewTasksNavLink.addClickHandler( new ClickHandler() {
+        gridViewTasksNavLink.setText( constants.Grid() );
+        gridViewTasksNavLink.addClickHandler( new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 
@@ -316,7 +316,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         dayViewTasksNavLink.setStyleName("");
         weekViewTasksNavLink.setStyleName("");
         monthViewTasksNavLink.setStyleName("");
-        advancedViewTasksNavLink.setStyleName("active");
+        gridViewTasksNavLink.setStyleName("active");
         currentView = TaskView.GRID;
         calendarPicker.setViewType( "grid" );
         myTaskListGrid = new DataGrid<TaskSummary>();

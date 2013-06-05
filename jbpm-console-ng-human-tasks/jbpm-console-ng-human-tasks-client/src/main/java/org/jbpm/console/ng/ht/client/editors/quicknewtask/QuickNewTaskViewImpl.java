@@ -145,7 +145,7 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
         userLabel.add( new HTMLPanel( constants.User() ) );
         taskPriorityLabel.add( new HTMLPanel( constants.Priority() ) );
 
-        advancedLabel.add( new HTMLPanel( constants.Grid() ) );
+        advancedLabel.add( new HTMLPanel( constants.Advanced() ) );
         taskNameLabel.add( new HTMLPanel( constants.Task_Name() ) );
 
     }
