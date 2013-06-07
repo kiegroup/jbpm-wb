@@ -124,7 +124,9 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
                 break;
 
             case MONTH:
-                dayDiff = 30;
+                Date nextMonthSameDate = new Date(currentDate.getTime());
+                CalendarUtil.addMonthsToDate(nextMonthSameDate, 1);
+                dayDiff = CalendarUtil.getDaysBetween(currentDate, nextMonthSameDate);
                 break;
             case GRID:
                 dayDiff = 0;
