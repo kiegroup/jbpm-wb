@@ -281,7 +281,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
             String language) {
 
         Map<Day, List<TaskSummary>> tasksByDay = new LinkedHashMap<Day, List<TaskSummary>>();
-
+        
         List<Status> statuses = new ArrayList<Status>();
         statuses.add(Status.Ready);
         List<TaskSummary> firstDayTasks = TaskSummaryHelper.adaptCollection(taskService

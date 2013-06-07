@@ -15,6 +15,7 @@ import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.services.task.impl.factories.TaskFactory;
 import org.jbpm.services.task.impl.model.TaskImpl;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -110,6 +111,8 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
             taskStr += "names = [ new I18NText( 'en-UK', 'Third day task " + i + "')] })";
             createAndAddTask(taskStr);
         }
+        long beforeCreatingHundreadTasks = System.currentTimeMillis();
+        System.out.println(beforeCreatingHundreadTasks);
         // fourth day tasks
         for (int i = 0; i < fourthDayTasksNr; i++) {
             taskStr = "(with (new Task()) { priority = 55, taskData = (with( new TaskData()) {";
@@ -118,6 +121,8 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
             taskStr += "names = [ new I18NText( 'en-UK', 'Fourth day task " + i + "')] })";
             createAndAddTask(taskStr);
         }
+        long afterCreatingHundreadTasks = System.currentTimeMillis();
+        System.out.println(afterCreatingHundreadTasks);
         List<String> statuses = new ArrayList<String>();
         statuses.add("InProgress");
         statuses.add("Reserved");
