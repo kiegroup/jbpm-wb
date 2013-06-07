@@ -54,7 +54,7 @@ import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 public class TasksListPresenter {
 
     public static final int DAYS_FOR_DAY_VIEW = 1;
-    public static final int DAYS_FOR_WEEK_VIEW = 5;
+    public static final int DAYS_FOR_WEEK_VIEW = 7;
     public static final int DAYS_FOR_MONTH_VIEW = 35;
     public static final int DAYS_FOR_GRID_VIEW = 365;
 
@@ -210,7 +210,7 @@ public class TasksListPresenter {
                 break;
             case WEEK:
                 daysTotal = DAYS_FOR_WEEK_VIEW;
-                DateRange weekRange = DateUtils.getWeekDateRange( date );
+                DateRange weekRange = DateUtils.getWorkWeekDateRange( date );
                 fromDate = weekRange.getStartDate();
                 break;
             case MONTH:
@@ -266,7 +266,7 @@ public class TasksListPresenter {
                 break;
             case WEEK:
                 daysTotal = DAYS_FOR_WEEK_VIEW;
-                DateRange weekRange = DateUtils.getWeekDateRange(date);
+                DateRange weekRange = DateUtils.getWorkWeekDateRange(date);
                 fromDate = weekRange.getStartDate();
                 break;
             case MONTH:
@@ -324,7 +324,7 @@ public class TasksListPresenter {
                 break;
             case WEEK:
                 daysTotal = DAYS_FOR_WEEK_VIEW;
-                DateRange weekRange = DateUtils.getWeekDateRange(date);
+                DateRange weekRange = DateUtils.getWorkWeekDateRange(date);
                 fromDate = weekRange.getStartDate();
                 break;
             case MONTH:
@@ -379,7 +379,7 @@ public class TasksListPresenter {
                 break;
             case WEEK:
                 daysTotal = DAYS_FOR_WEEK_VIEW;
-                DateRange weekRange = DateUtils.getWeekDateRange(date);
+                DateRange weekRange = DateUtils.getWorkWeekDateRange(date);
                 fromDate = weekRange.getStartDate();
                 break;
             case MONTH:

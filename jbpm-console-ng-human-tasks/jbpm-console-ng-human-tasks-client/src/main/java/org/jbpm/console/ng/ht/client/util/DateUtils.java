@@ -55,17 +55,26 @@ public class DateUtils {
      * @param date date from which to get the week date range
      * @return {@link DateRange} representing the week in which the specified date is
      */
-    @SuppressWarnings("deprecation")
+
+    public static DateRange getWorkWeekDateRange(Date date) {
+        return getDateRangeStartingOnMonday(date, 5);
+    }
+
     public static DateRange getWeekDateRange(Date date) {
-        // TODO handle different week starts (Sunday X Monday)
-        Date startDate = new Date(date.getTime());
+        return getDateRangeStartingOnMonday(date, 7);
+    }
+
+    @SuppressWarnings("deprecation")
+    private static DateRange getDateRangeStartingOnMonday(Date dateWithinTheWeek, int nrOfDaysTotal) {
+        Date startDate = new Date(dateWithinTheWeek.getTime());
         int day = startDate.getDay() - 1;
         CalendarUtil.addDaysToDate(startDate, -day);
-
         Date endDate = new Date(startDate.getTime());
-        CalendarUtil.addDaysToDate(endDate, 4);
+        CalendarUtil.addDaysToDate(endDate, nrOfDaysTotal - 1);
         return new DateRange(startDate, endDate);
+
     }
+
 
     /**
      * Returns a {@link DateRange} starting on first day of month in which the specified date is and ending on last day of that
