@@ -16,17 +16,13 @@
 
 package org.jbpm.console.ng.ht.client.util;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Heading;
 import java.util.Date;
 
 import org.jbpm.console.ng.ht.client.i8n.Constants;
 
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.NavLink;
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.Heading;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
-import com.github.gwtbootstrap.client.ui.base.Style;
-import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.github.gwtbootstrap.client.ui.constants.IconSize;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.github.gwtbootstrap.datepicker.client.ui.DateBox;
@@ -40,9 +36,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
-import java.util.Locale;
 
 /**
  * Encapsulates set of components which are able to select day/week/month. Contains also buttons for going to previous or next
@@ -57,12 +51,12 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
 
     private Date currentDate;
     private ViewType viewType;
-    
+
     private FlowPanel mainPanel = new FlowPanel();
     private FlowPanel calendarPanel = new FlowPanel();
     private FlowPanel iconPanel = new FlowPanel();
     private FlowPanel rightPanel = new FlowPanel();
-    
+
     private Heading calendarLabel;
     private IconAnchor calendarIcon;
     private Button previousButton;
@@ -75,10 +69,9 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
         calendarPanel.setStyleName("span2");
         calendarLabel = new Heading(4);
         iconPanel.setStyleName("span2");
-        
+
         calendarIcon = new IconAnchor();
-        
-        
+
         previousButton = new Button();
         nextButton = new Button();
         todayButton = new Button();
@@ -110,7 +103,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
         rightPanel.setStyleName("btn-group pull-right");
 
         mainPanel.add(rightPanel);
-        
+
         updateCalendarLabelText();
     }
 
@@ -158,7 +151,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
      * Examples for day, week and month:
      * <ul>
      * <li>day view: 2013-05-02
-     * <li>week view: May 06 - May 10 2013
+     * <li>week view: May 06 - May 12 2013
      * <li>month view: May 2013
      * </ul>
      */
@@ -188,7 +181,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
             case GRID:
                 mainPanel.setVisible(false);
                 break;
-                
+
             default:
                 throw new IllegalStateException("Unrecognized view type " + viewType);
         }
@@ -265,7 +258,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
     private void updateTodayButtonEnabled() {
         boolean todayBtnEnabled = true;
         Date today = new Date();
-    
+
         switch (viewType) {
             case DAY:
                 if (DateUtils.areDatesEqual(today, currentDate)) {
