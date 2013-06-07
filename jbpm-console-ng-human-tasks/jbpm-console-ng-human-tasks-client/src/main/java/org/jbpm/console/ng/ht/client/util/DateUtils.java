@@ -68,13 +68,17 @@ public class DateUtils {
     private static DateRange getDateRangeStartingOnMonday(Date dateWithinTheWeek, int nrOfDaysTotal) {
         Date startDate = new Date(dateWithinTheWeek.getTime());
         int day = startDate.getDay() - 1;
-        CalendarUtil.addDaysToDate(startDate, -day);
+        int daysAfterMonday = day;
+        if (day == -1) {
+            // corner case when the date within the week in Sunday and thus getDay() == 0 (and day == -1), so we need Monday
+            // from that week, which is 6 days back
+            daysAfterMonday = 6;
+        }
+        CalendarUtil.addDaysToDate(startDate, -daysAfterMonday);
         Date endDate = new Date(startDate.getTime());
         CalendarUtil.addDaysToDate(endDate, nrOfDaysTotal - 1);
         return new DateRange(startDate, endDate);
-
     }
-
 
     /**
      * Returns a {@link DateRange} starting on first day of month in which the specified date is and ending on last day of that
@@ -101,8 +105,8 @@ public class DateUtils {
     /**
      * Determines if the specified date is within the specified range. Including both start and end date.
      *
-     * @param date  the date to test
-     * @param dateRange  date range to be tested with
+     * @param date the date to test
+     * @param dateRange date range to be tested with
      *
      * @return true if the date is within the range, otherwise false
      */
@@ -117,9 +121,9 @@ public class DateUtils {
     /**
      * Compares two dates based only on day, month and year. Time information is not considered.
      *
-     * @param firstDate  first date
-     * @param secondDate  second date
-     * @return  -1 if first date if before the second, 0 if the dates are equal, otherwise 1 (first is after the second)
+     * @param firstDate first date
+     * @param secondDate second date
+     * @return -1 if first date if before the second, 0 if the dates are equal, otherwise 1 (first is after the second)
      */
     @SuppressWarnings("deprecation")
     public static int compareDates(Date firstDate, Date secondDate) {
@@ -131,10 +135,10 @@ public class DateUtils {
     /**
      * Determines if two dates are equal based only on day, month and year. Time information is not considered.
      *
-     * @param firstDate  first date
-     * @param secondDate  second date
+     * @param firstDate first date
+     * @param secondDate second date
      *
-     * @return  true if the dates have identical year, month and day
+     * @return true if the dates have identical year, month and day
      */
     public static boolean areDatesEqual(Date firstDate, Date secondDate) {
         return compareDates(firstDate, secondDate) == 0;

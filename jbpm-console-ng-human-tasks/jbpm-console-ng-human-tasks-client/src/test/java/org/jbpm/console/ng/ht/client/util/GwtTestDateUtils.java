@@ -69,6 +69,11 @@ public class GwtTestDateUtils extends GWTTestCase {
         weekRange = DateUtils.getWeekDateRange(date);
         assertEquals(createDate("2012-12-31"), weekRange.getStartDate());
         assertEquals(createDate("2013-01-06"), weekRange.getEndDate());
+
+        date = createDate("2013-09-01");
+        weekRange = DateUtils.getWeekDateRange(date);
+        assertEquals(createDate("2013-08-26"), weekRange.getStartDate());
+        assertEquals(createDate("2013-09-01"), weekRange.getEndDate());
     }
 
     @Test

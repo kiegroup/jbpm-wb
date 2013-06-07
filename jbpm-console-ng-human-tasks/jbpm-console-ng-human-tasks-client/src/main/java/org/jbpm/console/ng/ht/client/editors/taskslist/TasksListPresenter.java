@@ -206,7 +206,7 @@ public class TasksListPresenter {
         statuses.add("InProgress");
         statuses.add("Created");
         statuses.add("Reserved");
-        if(taskView.equals(TaskView.GRID)){
+        if (taskView.equals(TaskView.GRID)){
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
@@ -217,7 +217,7 @@ public class TasksListPresenter {
                 }
             }).getTasksOwnedByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
 
-        }else{
+        } else {
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
@@ -264,7 +264,8 @@ public class TasksListPresenter {
                 break;
             case MONTH:
                 DateRange monthRange = DateUtils.getMonthDateRange(date);
-                fromDate = monthRange.getStartDate();
+                DateRange firstWeekRange = DateUtils.getWeekDateRange(monthRange.getStartDate());
+                fromDate = firstWeekRange.getStartDate();
                 break;
             case GRID:
                 fromDate = new Date(date.getTime());
@@ -293,7 +294,7 @@ public class TasksListPresenter {
                     view.getSelectionModel().clear();
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
-        } else{
+        } else {
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
@@ -318,7 +319,7 @@ public class TasksListPresenter {
         List<String> statuses = new ArrayList<String>(4);
         statuses.add("Ready");
 
-        if(taskView.equals(TaskView.GRID)) {
+        if (taskView.equals(TaskView.GRID)) {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
@@ -328,7 +329,7 @@ public class TasksListPresenter {
                    view.getSelectionModel().clear();
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
-        }else{
+        } else {
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
@@ -361,7 +362,7 @@ public class TasksListPresenter {
         statuses.add("Obsolete");
         statuses.add("Completed");
 
-        if(taskView.equals(TaskView.GRID)){
+        if (taskView.equals(TaskView.GRID)) {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
@@ -371,7 +372,7 @@ public class TasksListPresenter {
                    view.getSelectionModel().clear();
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
-        } else{
+        } else {
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
