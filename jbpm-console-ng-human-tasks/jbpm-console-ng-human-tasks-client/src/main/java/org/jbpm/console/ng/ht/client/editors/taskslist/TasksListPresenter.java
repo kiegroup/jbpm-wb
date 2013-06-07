@@ -54,7 +54,7 @@ import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 public class TasksListPresenter {
 
     public static final int DAYS_FOR_DAY_VIEW = 1;
-    public static final int DAYS_FOR_WEEK_VIEW = 5;
+    public static final int DAYS_FOR_WEEK_VIEW = 7;
     public static final int DAYS_FOR_MONTH_VIEW = 35;
     public static final int DAYS_FOR_GRID_VIEW = 365;
 
@@ -65,7 +65,7 @@ public class TasksListPresenter {
         TaskListMultiDayBox getTaskListMultiDayBox();
 
         MultiSelectionModel<TaskSummary> getSelectionModel();
-        
+
         void refreshTasks();
     }
 
@@ -83,7 +83,7 @@ public class TasksListPresenter {
     private Identity identity;
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
-    
+
     private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
     public static final ProvidesKey<TaskSummary> KEY_PROVIDER = new ProvidesKey<TaskSummary>() {
         @Override
@@ -91,7 +91,7 @@ public class TasksListPresenter {
             return item == null ? null : item.getId();
         }
     };
-    
+
 
     private Constants constants = GWT.create( Constants.class );
 
@@ -112,7 +112,7 @@ public class TasksListPresenter {
     public void init() {
     }
 
-   
+
 
     public void startTasks( final List<Long> selectedTasks,
                             final String userId ) {
@@ -160,7 +160,7 @@ public class TasksListPresenter {
     }
 
     public void formClosed( @Observes BeforeClosePlaceEvent closed ) {
-        if(closed.getPlace().getIdentifier().equals("Form Display") || 
+        if(closed.getPlace().getIdentifier().equals("Form Display") ||
                 closed.getPlace().getIdentifier().equals("Quick New Task")){
             view.refreshTasks();
         }
@@ -177,9 +177,6 @@ public class TasksListPresenter {
 
     /**
      * Refresh tasks based on specified date, view (day/week/month) and task type.
-     * @param fromDate
-     * @param taskType
-     * @param taskView
      */
     public void refreshTasks(Date date, TaskView taskView, TaskType taskType) {
         switch (taskType) {
@@ -199,39 +196,17 @@ public class TasksListPresenter {
                 throw new IllegalStateException("Unrecognized task type '" + taskType + "'!");
         }
     }
-    
+
     public void refreshPersonalTasks(Date date, TaskView taskView) {
-        Date fromDate;
-        int daysTotal;
-        switch ( taskView ) {
-            case DAY:
-                daysTotal = DAYS_FOR_DAY_VIEW;
-                fromDate = new Date( date.getTime() );
-                break;
-            case WEEK:
-                daysTotal = DAYS_FOR_WEEK_VIEW;
-                DateRange weekRange = DateUtils.getWeekDateRange( date );
-                fromDate = weekRange.getStartDate();
-                break;
-            case MONTH:
-                daysTotal = DAYS_FOR_MONTH_VIEW;
-                DateRange monthRange = DateUtils.getMonthDateRange( date );
-                fromDate = monthRange.getStartDate();
-                break;
-            case GRID:
-                daysTotal = DAYS_FOR_GRID_VIEW;
-                fromDate = new Date(date.getTime());
-                break;
-            default:
-                throw new IllegalStateException( "Unreconginized view type '" + taskView + "'!" );
-        }
-        
+        Date fromDate = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
+        int daysTotal = determineNumberOfDaysForTaskView(taskView);
+
         List<String> statuses = new ArrayList<String>(4);
         statuses.add("Ready");
         statuses.add("InProgress");
         statuses.add("Created");
         statuses.add("Reserved");
-        if(taskView.equals(TaskView.GRID)){
+        if (taskView.equals(TaskView.GRID)){
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
@@ -241,8 +216,8 @@ public class TasksListPresenter {
                     view.getSelectionModel().clear();
                 }
             }).getTasksOwnedByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
-        
-        }else{
+
+        } else {
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
@@ -255,39 +230,61 @@ public class TasksListPresenter {
             }).getTasksOwnedFromDateToDateByDays(identity.getName(), statuses, fromDate, daysTotal, "en-UK");
         }
     }
-    
-    public void refreshActiveTasks(Date date, TaskView taskView) {
-        Date fromDate;
+
+    private int determineNumberOfDaysForTaskView(TaskView taskView) {
         int daysTotal;
         switch (taskView) {
             case DAY:
                 daysTotal = DAYS_FOR_DAY_VIEW;
-                fromDate = new Date(date.getTime());
                 break;
             case WEEK:
                 daysTotal = DAYS_FOR_WEEK_VIEW;
-                DateRange weekRange = DateUtils.getWeekDateRange(date);
-                fromDate = weekRange.getStartDate();
                 break;
             case MONTH:
                 daysTotal = DAYS_FOR_MONTH_VIEW;
-                DateRange monthRange = DateUtils.getMonthDateRange(date);
-                fromDate = monthRange.getStartDate();
                 break;
             case GRID:
                 daysTotal = DAYS_FOR_GRID_VIEW;
+                break;
+            default:
+                throw new IllegalStateException("Unreconginized view type '" + taskView + "'!");
+        }
+        return daysTotal;
+    }
+
+    private Date determineFirstDateForTaskViewBasedOnSpecifiedDate(Date date, TaskView taskView) {
+        Date fromDate;
+        switch (taskView) {
+            case DAY:
+                fromDate = new Date(date.getTime());
+                break;
+            case WEEK:
+                DateRange weekRange = DateUtils.getWorkWeekDateRange(date);
+                fromDate = weekRange.getStartDate();
+                break;
+            case MONTH:
+                DateRange monthRange = DateUtils.getMonthDateRange(date);
+                DateRange firstWeekRange = DateUtils.getWeekDateRange(monthRange.getStartDate());
+                fromDate = firstWeekRange.getStartDate();
+                break;
+            case GRID:
                 fromDate = new Date(date.getTime());
                 break;
             default:
                 throw new IllegalStateException("Unreconginized view type '" + taskView + "'!");
         }
-        
-        
+        return fromDate;
+    }
+
+    public void refreshActiveTasks(Date date, TaskView taskView) {
+        Date fromDate = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
+        int daysTotal = determineNumberOfDaysForTaskView(taskView);
+
         List<String> statuses = new ArrayList<String>(4);
         statuses.add("Ready");
         statuses.add("Reserved");
         statuses.add("InProgress");
-        if(taskView.equals(TaskView.GRID)){
+        if(taskView.equals(TaskView.GRID)) {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
@@ -297,7 +294,7 @@ public class TasksListPresenter {
                     view.getSelectionModel().clear();
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
-        } else{
+        } else {
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
@@ -313,37 +310,16 @@ public class TasksListPresenter {
             }).getTasksAssignedAsPotentialOwnerFromDateToDateByDays(identity.getName(), fromDate, daysTotal, "en-UK");
         }
     }
-    
+
     public void refreshGroupTasks(Date date, TaskView taskView) {
-        Date fromDate;
-        int daysTotal;
-        switch (taskView) {
-            case DAY:
-                daysTotal = DAYS_FOR_DAY_VIEW;
-                fromDate = new Date(date.getTime());
-                break;
-            case WEEK:
-                daysTotal = DAYS_FOR_WEEK_VIEW;
-                DateRange weekRange = DateUtils.getWeekDateRange(date);
-                fromDate = weekRange.getStartDate();
-                break;
-            case MONTH:
-                daysTotal = DAYS_FOR_MONTH_VIEW;
-                DateRange monthRange = DateUtils.getMonthDateRange(date);
-                fromDate = monthRange.getStartDate();
-                break;
-            case GRID:
-                daysTotal = DAYS_FOR_GRID_VIEW;
-                fromDate = new Date(date.getTime());
-                break;
-            default:
-                throw new IllegalStateException("Unreconginized view type '" + taskView + "'!");
-        }
+        Date fromDate = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
+        int daysTotal = determineNumberOfDaysForTaskView(taskView);
+
         List<String> groups = getGroups(identity);
         List<String> statuses = new ArrayList<String>(4);
         statuses.add("Ready");
-  
-        if(taskView.equals(TaskView.GRID)){
+
+        if (taskView.equals(TaskView.GRID)) {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
@@ -353,7 +329,7 @@ public class TasksListPresenter {
                    view.getSelectionModel().clear();
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
-        }else{
+        } else {
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
@@ -368,33 +344,11 @@ public class TasksListPresenter {
             }).getTasksAssignedFromDateToDateByGroupsByDays(identity.getName(), groups, fromDate, daysTotal, "en-UK");
         }
     }
-    
+
     public void refreshAllTasks(Date date, TaskView taskView) {
-        Date fromDate;
-        int daysTotal;
-        switch (taskView) {
-            case DAY:
-                daysTotal = DAYS_FOR_DAY_VIEW;
-                fromDate = new Date(date.getTime());
-                break;
-            case WEEK:
-                daysTotal = DAYS_FOR_WEEK_VIEW;
-                DateRange weekRange = DateUtils.getWeekDateRange(date);
-                fromDate = weekRange.getStartDate();
-                break;
-            case MONTH:
-                daysTotal = DAYS_FOR_MONTH_VIEW;
-                DateRange monthRange = DateUtils.getMonthDateRange(date);
-                fromDate = monthRange.getStartDate();
-                break;
-            case GRID:
-                daysTotal = DAYS_FOR_GRID_VIEW;
-                fromDate = new Date(date.getTime());
-                break;
-            default:
-                throw new IllegalStateException("Unreconginized view type '" + taskView + "'!");
-        }
-        
+        Date fromDate = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
+        int daysTotal = determineNumberOfDaysForTaskView(taskView);
+
         List<String> statuses = new ArrayList<String>(4);
         statuses.add("Created");
         statuses.add("Ready");
@@ -407,8 +361,8 @@ public class TasksListPresenter {
         statuses.add("Exited");
         statuses.add("Obsolete");
         statuses.add("Completed");
-        
-        if(taskView.equals(TaskView.GRID)){
+
+        if (taskView.equals(TaskView.GRID)) {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
@@ -418,7 +372,7 @@ public class TasksListPresenter {
                    view.getSelectionModel().clear();
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
-        } else{
+        } else {
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
@@ -434,8 +388,6 @@ public class TasksListPresenter {
         }
     }
 
-    
-    
     public void addDataDisplay(HasData<TaskSummary> display) {
         dataProvider.addDataDisplay(display);
     }

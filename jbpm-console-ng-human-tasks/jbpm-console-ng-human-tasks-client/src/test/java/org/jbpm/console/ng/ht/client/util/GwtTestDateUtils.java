@@ -50,20 +50,30 @@ public class GwtTestDateUtils extends GWTTestCase {
     @Test
     public void testGetWeekRange() {
         Date date = createDate("2013-05-01");
-        DateRange weekRange = DateUtils.getWeekDateRange(date);
+        DateRange weekRange = DateUtils.getWorkWeekDateRange(date);
         assertEquals(createDate("2013-04-29"), weekRange.getStartDate());
         assertEquals(createDate("2013-05-03"), weekRange.getEndDate());
 
         // part of the week is in 2013 and part in 2012
         date = createDate("2013-01-02");
-        weekRange = DateUtils.getWeekDateRange(date);
+        weekRange = DateUtils.getWorkWeekDateRange(date);
         assertEquals(createDate("2012-12-31"), weekRange.getStartDate());
         assertEquals(createDate("2013-01-04"), weekRange.getEndDate());
         // same as above, but the specified date is in 2012
         date = createDate("2012-12-31");
-        weekRange = DateUtils.getWeekDateRange(date);
+        weekRange = DateUtils.getWorkWeekDateRange(date);
         assertEquals(createDate("2012-12-31"), weekRange.getStartDate());
         assertEquals(createDate("2013-01-04"), weekRange.getEndDate());
+
+        date = createDate("2012-12-31");
+        weekRange = DateUtils.getWeekDateRange(date);
+        assertEquals(createDate("2012-12-31"), weekRange.getStartDate());
+        assertEquals(createDate("2013-01-06"), weekRange.getEndDate());
+
+        date = createDate("2013-09-01");
+        weekRange = DateUtils.getWeekDateRange(date);
+        assertEquals(createDate("2013-08-26"), weekRange.getStartDate());
+        assertEquals(createDate("2013-09-01"), weekRange.getEndDate());
     }
 
     @Test
