@@ -180,7 +180,6 @@ public class FormDisplayModelerPopupPresenter {
 
             @Override
             public void onClick(ClickEvent event) {
-                view.submitForm();
                 close();
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Popup");
                 placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
@@ -193,7 +192,6 @@ public class FormDisplayModelerPopupPresenter {
 
             @Override
             public void onClick(ClickEvent event) {
-                view.submitForm();
                 close();
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Comments Popup");
                 placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
@@ -239,7 +237,7 @@ public class FormDisplayModelerPopupPresenter {
 
                             @Override
                             public void onClick( ClickEvent event ) {
-                                view.submitStartTaskForm();
+                                startTask(view.getTaskId(), identity.getName());
                             };
                         } );
                         wrapperFlowPanel.add( startFlowPanel );
@@ -315,8 +313,6 @@ public class FormDisplayModelerPopupPresenter {
             if (event.getContext().getErrors() == 0) {
                 if(ACTION_START_PROCESS.equals(view.getAction())) {
                     startProcess();
-                } else if (ACTION_START_TASK.equals(view.getAction())) {
-                    startTask(view.getTaskId(), identity.getName());
                 } else if (ACTION_SAVE_TASK.equals(view.getAction())) {
                     saveTaskState();
                 } else if (ACTION_COMPLETE_TASK.equals(view.getAction())) {
