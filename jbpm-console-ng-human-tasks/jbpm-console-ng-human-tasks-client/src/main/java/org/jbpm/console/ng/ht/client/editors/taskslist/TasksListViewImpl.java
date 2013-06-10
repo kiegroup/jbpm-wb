@@ -33,9 +33,14 @@ import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -104,6 +109,10 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     @Inject
     @DataField
     public NavLink weekViewTasksNavLink;
+    
+    @Inject
+    @DataField
+    public TextBox searchBox;
 
     @Inject
     @DataField
@@ -176,6 +185,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             public void onValueChange( ValueChangeEvent<Date> event ) {
                 currentDate = event.getValue();
                 refreshTasks();
+                
             }
         } );
 
@@ -196,6 +206,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 currentView = TaskView.DAY;
                 calendarPicker.setViewType( "day" );
                 refreshTasks();
+                
             }
         } );
         weekViewTasksNavLink.setText( constants.Week() );
@@ -212,6 +223,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 currentView = TaskView.WEEK;
                 calendarPicker.setViewType( "week" );
                 refreshTasks();
+                
             }
         } );
 
@@ -229,6 +241,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 currentView = TaskView.MONTH;
                 calendarPicker.setViewType( "month" );
                 refreshTasks();
+                
             }
         } );
 
@@ -239,6 +252,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 
                 initializeGridView();
                 refreshTasks();
+                
            }
 
         });
@@ -263,6 +277,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 showAllTasksNavLink.setStyleName( "" );
                 currentTaskType = TaskType.PERSONAL;
                 refreshTasks();
+                
             }
         } );
 
@@ -276,6 +291,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 showAllTasksNavLink.setStyleName( "" );
                 currentTaskType = TaskType.GROUP;
                 refreshTasks();
+                
             }
         } );
 
@@ -289,6 +305,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 showAllTasksNavLink.setStyleName( "" );
                 currentTaskType = TaskType.ACTIVE;
                 refreshTasks();
+                
             }
         } );
 
@@ -302,16 +319,35 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 showAllTasksNavLink.setStyleName( "active" );
                 currentTaskType = TaskType.ALL;
                 refreshTasks();
+                
 
             }
         } );
 
         taskCalendarViewLabel.setText( constants.Tasks_List() );
         taskCalendarViewLabel.setStyleName( "" );
+        
+        searchBox.addKeyUpHandler(new KeyUpHandler() {
+
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32){
+                    displayNotification("Filter: |"+searchBox.getText()+"|");
+                    filterTasks(searchBox.getText());
+                }
+                
+            }
+        });
+
+        
         refreshTasks();
     }
     
-     private void initializeGridView() {
+    public void filterTasks(String text){
+        presenter.filterTasks(text);
+    }
+    
+    private void initializeGridView() {
         tasksViewContainer.clear();
         dayViewTasksNavLink.setStyleName("");
         weekViewTasksNavLink.setStyleName("");
@@ -334,7 +370,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         myTaskListGrid.setEmptyTableWidget(new Label(constants.No_Pending_Tasks_Enjoy()));
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
-        sortHandler = new ColumnSortEvent.ListHandler<TaskSummary>(presenter.getDataProvider().getList());
+        sortHandler = new ColumnSortEvent.ListHandler<TaskSummary>(presenter.getAllTaskSummaries());
 
         myTaskListGrid.addColumnSortHandler(sortHandler);
 
@@ -380,6 +416,10 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     @Override
     public MultiSelectionModel<TaskSummary> getSelectionModel() {
         return selectionModel;
+    }
+
+    public TextBox getSearchBox() {
+        return searchBox;
     }
     
      private void initTableColumns(final SelectionModel<TaskSummary> selectionModel) {
