@@ -67,9 +67,10 @@ public class FormDisplayModelerPopupPresenter {
     private Constants constants = GWT.create(Constants.class);
 
     public static final String ACTION_START_PROCESS = "startProcess";
-    public static final String ACTION_START_TASK = "startTask";
     public static final String ACTION_SAVE_TASK = "saveTask";
     public static final String ACTION_COMPLETE_TASK = "completeTask";
+    public static final String ACTION_TASK_DETAILS = "Task Details Popup";
+    public static final String ACTION_TASK_COMMENTS = "Task Comments Popup";
 
     @Inject
     private FormDisplayModelerView view;
@@ -145,7 +146,7 @@ public class FormDisplayModelerPopupPresenter {
 
         void submitStartProcessForm();
 
-        void submitStartTaskForm();
+        void submitChangeTab(String tab);
 
         void submitSaveTaskStateForm();
 
@@ -180,10 +181,7 @@ public class FormDisplayModelerPopupPresenter {
 
             @Override
             public void onClick(ClickEvent event) {
-                close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Popup");
-                placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
-                placeManager.goTo(placeRequestImpl);
+                view.submitChangeTab(ACTION_TASK_DETAILS);
             }
         });
 
@@ -192,10 +190,7 @@ public class FormDisplayModelerPopupPresenter {
 
             @Override
             public void onClick(ClickEvent event) {
-                close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Comments Popup");
-                placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
-                placeManager.goTo(placeRequestImpl);
+                view.submitChangeTab(ACTION_TASK_COMMENTS);
             }
         });
 
@@ -317,6 +312,8 @@ public class FormDisplayModelerPopupPresenter {
                     saveTaskState();
                 } else if (ACTION_COMPLETE_TASK.equals(view.getAction())) {
                     completeTask();
+                } else if (ACTION_TASK_COMMENTS.equals(view.getAction()) || ACTION_TASK_DETAILS.equals(view.getAction())) {
+                    changeActionTab();
                 }
             }
         }
@@ -383,6 +380,18 @@ public class FormDisplayModelerPopupPresenter {
             public void callback(Long contentId) {
                 view.displayNotification("Task Id: " + view.getTaskId() + " State was Saved! ContentId : " + contentId);
                 renderTaskForm(Long.valueOf(view.getTaskId()));
+            }
+        }).saveTaskStateFromRenderContext(ctxUID, Long.valueOf(view.getTaskId()));
+    }
+
+    protected void changeActionTab() {
+        renderContextServices.call(new RemoteCallback<Long>() {
+            @Override
+            public void callback(Long contentId) {
+                close();
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest(view.getAction());
+                placeRequestImpl.addParameter("taskId", String.valueOf(view.getTaskId()));
+                placeManager.goTo(placeRequestImpl);
             }
         }).saveTaskStateFromRenderContext(ctxUID, Long.valueOf(view.getTaskId()));
     }
