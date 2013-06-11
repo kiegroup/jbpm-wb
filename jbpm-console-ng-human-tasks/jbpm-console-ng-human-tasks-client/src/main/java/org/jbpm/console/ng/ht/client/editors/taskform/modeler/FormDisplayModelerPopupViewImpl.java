@@ -16,10 +16,9 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskform.modeler;
 
-import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
-import com.google.gwt.event.dom.client.ClickEvent;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -30,7 +29,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 
@@ -158,8 +156,8 @@ public class FormDisplayModelerPopupViewImpl extends Composite implements FormDi
     }
 
     @Override
-    public void submitStartTaskForm() {
-        submitForm(FormDisplayModelerPopupPresenter.ACTION_START_TASK);
+    public void submitChangeTab(String tab) {
+        submitForm(tab);
     }
 
     @Override
