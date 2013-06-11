@@ -16,8 +16,7 @@ public class TaskServiceEntryPointLocalTest extends TaskServiceEntryPointBaseTes
     public static Archive<?> createDeployment() {
         return ShrinkWrap
                 .create(JavaArchive.class, "jbpm-console-ng-human-task-cdi.jar")
-                .addPackage("org.jboss.seam.persistence")
-                // seam-persistence
+                
                 .addPackage("org.jboss.seam.transaction")
                 // core jbpm
                 .addPackage("org.jbpm.shared.services.api")
@@ -29,6 +28,8 @@ public class TaskServiceEntryPointLocalTest extends TaskServiceEntryPointBaseTes
                 .addPackage("org.jbpm.services.task.impl.model")
                 .addPackage("org.jbpm.services.task.events")
                 .addPackage("org.jbpm.services.task.exception")
+                .addPackage("org.jbpm.services.task.rule")
+                .addPackage("org.jbpm.services.task.rule.impl")
                 .addPackage("org.jbpm.services.task.identity")
                 .addPackage("org.jbpm.services.task.factories")
                 .addPackage("org.jbpm.services.task.internals")
