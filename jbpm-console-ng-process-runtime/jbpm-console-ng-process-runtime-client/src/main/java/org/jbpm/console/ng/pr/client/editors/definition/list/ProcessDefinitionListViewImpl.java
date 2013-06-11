@@ -24,7 +24,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextBox;
@@ -39,6 +38,8 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
@@ -67,7 +68,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "ProcessDefinitionListViewImpl.html")
-public class ProcessDefinitionListViewImpl extends Composite implements ProcessDefinitionListPresenter.InboxView {
+public class ProcessDefinitionListViewImpl extends Composite implements ProcessDefinitionListPresenter.ProcessDefinitionListView {
 
     private Constants constants = GWT.create( Constants.class );
     private ProcessRuntimeImages images = GWT.create( ProcessRuntimeImages.class );
@@ -82,11 +83,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
 
     @Inject
     @DataField
-    public TextBox filterKSessionText;
-
-    @Inject
-    @DataField
-    public Button filterKSessionButton;
+    public TextBox searchBox;
 
     @Inject
     @DataField
@@ -128,6 +125,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
             @Override
             public void onClick( ClickEvent event ) {
                 presenter.reloadRepository();
+                searchBox.setText("");
             }
         } );
 
@@ -163,16 +161,23 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
 
         processdefListGrid.setSelectionModel( selectionModel,
                                               DefaultSelectionEventManager.<ProcessSummary>createCheckboxManager() );
+        
+        searchBox.addKeyUpHandler(new KeyUpHandler() {
+
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32){
+                    displayNotification("Filter: |"+searchBox.getText()+"|");
+                    presenter.filterProcessList(searchBox.getText());
+                }
+                
+            }
+        });
 
         initTableColumns( selectionModel );
 
         presenter.addDataDisplay( processdefListGrid );
 
-    }
-
-    @EventHandler("filterKSessionButton")
-    public void filterKSessionButton( ClickEvent e ) {
-        presenter.refreshProcessList( filterKSessionText.getText() );
     }
 
     private void initTableColumns( final SelectionModel<ProcessSummary> selectionModel ) {
@@ -267,9 +272,8 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
         return sortHandler;
     }
 
-    @Override
-    public TextBox getSessionIdText() {
-        return filterKSessionText;
+    public TextBox getSearchBox() {
+        return searchBox;
     }
 
     @Override

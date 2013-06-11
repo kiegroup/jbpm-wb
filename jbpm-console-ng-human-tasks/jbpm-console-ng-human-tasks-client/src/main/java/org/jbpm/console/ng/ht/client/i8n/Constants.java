@@ -123,4 +123,9 @@ public interface Constants extends Messages {
 
     String Advanced();
 
+    String Refresh();
+    
+    String Tasks_Refreshed();
+    
+
 }

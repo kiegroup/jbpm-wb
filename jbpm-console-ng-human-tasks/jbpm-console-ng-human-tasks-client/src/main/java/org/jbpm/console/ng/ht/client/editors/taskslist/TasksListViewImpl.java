@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -136,7 +137,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     
     @DataField
-    public Heading taskCalendarViewLabel = new Heading(3);
+    public Heading taskCalendarViewLabel = new Heading(4);
 
     @Inject
     @DataField
@@ -161,6 +162,10 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     @Inject
     private Event<TaskSelectionEvent> taskSelection;
 
+    @Inject
+    @DataField
+    public IconAnchor refreshIcon;
+    
     private Set<TaskSummary> selectedTasks;
     private ListHandler<TaskSummary> sortHandler;
     private MultiSelectionModel<TaskSummary> selectionModel;
@@ -170,10 +175,22 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
    
     public SimplePager pager;
     
+    
+    
 
     @Override
     public void init( final TasksListPresenter presenter ) {
         this.presenter = presenter;
+        
+        refreshIcon.setTitle( constants.Refresh() );
+        refreshIcon.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                refreshTasks();
+                searchBox.setText("");
+                displayNotification( constants.Tasks_Refreshed() );
+            }
+        } );
         
         taskListMultiDayBox.init();
         taskListMultiDayBox.setPresenter( presenter );

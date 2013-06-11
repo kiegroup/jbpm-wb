@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
+import java.util.ArrayList;
 
 import javax.enterprise.event.Event;
 
@@ -47,11 +48,11 @@ import org.uberfire.client.mvp.UberView;
 @WorkbenchScreen(identifier = "Process Definition List")
 public class ProcessDefinitionListPresenter {
 
-    public interface InboxView extends UberView<ProcessDefinitionListPresenter> {
+    public interface ProcessDefinitionListView extends UberView<ProcessDefinitionListPresenter> {
 
         void displayNotification(String text);
 
-        TextBox getSessionIdText();
+        TextBox getSearchBox();
 
         DataGrid<ProcessSummary> getDataGrid();
 
@@ -61,7 +62,7 @@ public class ProcessDefinitionListPresenter {
     }
 
     @Inject
-    private InboxView view;
+    private ProcessDefinitionListView view;
 
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
@@ -75,6 +76,8 @@ public class ProcessDefinitionListPresenter {
 
     private Constants constants = GWT.create(Constants.class);
 
+    private List<ProcessSummary> currentProcesses;
+    
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.Process_Definitions();
@@ -88,27 +91,41 @@ public class ProcessDefinitionListPresenter {
     public ProcessDefinitionListPresenter() {
     }
 
-    public void refreshProcessList(final String filter) {
-
-        if (filter != null && !filter.equals("")) {
-            dataServices.call(new RemoteCallback<List<ProcessSummary>>() {
-                @Override
-                public void callback(List<ProcessSummary> processes) {
+    public void refreshProcessList() {
+        dataServices.call(new RemoteCallback<List<ProcessSummary>>() {
+            @Override
+            public void callback(List<ProcessSummary> processes) {
+                currentProcesses = processes;
+                dataProvider.getList().clear();
+                dataProvider.getList().addAll(new ArrayList<ProcessSummary>(currentProcesses));
+                dataProvider.refresh();
+            }
+        }).getProcesses();
+    }
+    
+    public void filterProcessList(String filter){
+        if(filter.equals("")){
+                if(currentProcesses != null){
                     dataProvider.getList().clear();
-                    dataProvider.getList().addAll(processes);
+                    dataProvider.setList(new ArrayList<ProcessSummary>(currentProcesses));
                     dataProvider.refresh();
+                    
                 }
-            }).getProcessesByFilter(filter);
-        } else {
-            dataServices.call(new RemoteCallback<List<ProcessSummary>>() {
-                @Override
-                public void callback(List<ProcessSummary> processes) {
-                    dataProvider.getList().clear();
-                    dataProvider.getList().addAll(processes);
-                    dataProvider.refresh();
+        }else{
+            if(currentProcesses != null){    
+                List<ProcessSummary> processes = new ArrayList<ProcessSummary>(currentProcesses);
+                List<ProcessSummary> filteredProcesses = new ArrayList<ProcessSummary>();
+                for(ProcessSummary ps : processes){
+                    if(ps.getName().toLowerCase().contains(filter.toLowerCase())){
+                        filteredProcesses.add(ps);
+                    }
                 }
-            }).getProcesses();
+                dataProvider.getList().clear();
+                dataProvider.setList(filteredProcesses);
+                dataProvider.refresh();
+            }
         }
+    
     }
 
     public void reloadRepository() {
@@ -117,7 +134,7 @@ public class ProcessDefinitionListPresenter {
         deploymentManager.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void organizations) {
-                refreshProcessList(null);
+                refreshProcessList();
                 view.hideBusyIndicator();
                 view.displayNotification(constants.Processes_Refreshed_From_The_Repo());
             }
@@ -147,7 +164,7 @@ public class ProcessDefinitionListPresenter {
 
     @OnReveal
     public void onReveal() {
-        refreshProcessList("");
+        refreshProcessList();
     }
 
 }

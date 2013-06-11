@@ -31,6 +31,7 @@ import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
@@ -43,6 +44,8 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
@@ -87,16 +90,14 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
 
     private ProcessInstanceListPresenter presenter;
 
+    @Inject
     @DataField
-    public SuggestBox filterProcessText;
+    public TextBox searchBox;
 
     @Inject
     @DataField
     public FlowPanel listContainer;
 
-    @Inject
-    @DataField
-    public Button filterButton;
 
     @Inject
     @DataField
@@ -142,8 +143,6 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
     @DataField
     public SimplePager pager;
 
-    private MultiWordSuggestOracle oracle;
-
     private Set<ProcessInstanceSummary> selectedProcessInstances;
 
     @Inject
@@ -155,14 +154,17 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
     private ListHandler<ProcessInstanceSummary> sortHandler;
 
     public ProcessInstanceListViewImpl() {
-        oracle = new MultiWordSuggestOracle();
-        filterProcessText = new SuggestBox( oracle );
+        
     }
 
+    public TextBox getSearchBox() {
+        return searchBox;
+    }
+    
     @Override
     public void init( final ProcessInstanceListPresenter presenter ) {
         this.presenter = presenter;
-        filterButton.setText( constants.Filter() );
+        
         processInstanceLabel.setText( constants.Process_Instances() );
         processInstanceLabel.setStyleName( "" );
         listContainer.add( processInstanceListGrid );
@@ -172,9 +174,14 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         fiterLabel.setText( constants.Showing() );
 
         showAllLink.setText( constants.Active() );
+        showAllLink.setStyleName( "active" );
         showAllLink.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
+                showAllLink.setStyleName( "active" );
+                showCompletedLink.setStyleName( "" );
+                showAbortedLink.setStyleName( "" );
+                showRelatedToMeLink.setStyleName( "" );
                 presenter.refreshActiveProcessList();
             }
         } );
@@ -183,6 +190,10 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         showCompletedLink.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
+                showAllLink.setStyleName( "" );
+                showCompletedLink.setStyleName( "active" );
+                showAbortedLink.setStyleName( "" );
+                showRelatedToMeLink.setStyleName( "" );
                 presenter.refreshCompletedProcessList();
             }
         } );
@@ -190,6 +201,10 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         showAbortedLink.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
+                showAllLink.setStyleName( "" );
+                showCompletedLink.setStyleName( "" );
+                showAbortedLink.setStyleName( "active" );
+                showRelatedToMeLink.setStyleName( "" );
                 presenter.refreshAbortedProcessList();
             }
         } );
@@ -197,6 +212,10 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         showRelatedToMeLink.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
+                showAllLink.setStyleName( "" );
+                showCompletedLink.setStyleName( "" );
+                showAbortedLink.setStyleName( "" );
+                showRelatedToMeLink.setStyleName( "active" );
                 presenter.refreshRelatedToMeProcessList();
             }
         } );
@@ -259,6 +278,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
             @Override
             public void onClick( ClickEvent event ) {
                 presenter.refreshActiveProcessList();
+                searchBox.setText("");
                 displayNotification( constants.Process_Instances_Refreshed() );
             }
         } );
@@ -290,6 +310,18 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
 
         processInstanceListGrid.setSelectionModel( selectionModel,
                                                    DefaultSelectionEventManager.<ProcessInstanceSummary>createCheckboxManager() );
+        
+        searchBox.addKeyUpHandler(new KeyUpHandler() {
+
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32){
+                    displayNotification("Filter: |"+searchBox.getText()+"|");
+                    presenter.filterProcessList(searchBox.getText());
+                }
+                
+            }
+        });
 
         initTableColumns( selectionModel );
 
@@ -297,10 +329,6 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
 
     }
 
-    @EventHandler("filterButton")
-    public void filterKSessionButton( ClickEvent e ) {
-        presenter.refreshActiveProcessList();
-    }
 
     private void initTableColumns( final SelectionModel<ProcessInstanceSummary> selectionModel ) {
         // Checkbox column. This table will uses a checkbox column for selection.
@@ -489,15 +517,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         return sortHandler;
     }
 
-    @Override
-    public String getFilterProcessText() {
-        return this.filterProcessText.getText();
-    }
-
-    @Override
-    public void setFilterProcessText( String processText ) {
-        this.filterProcessText.setText( processText );
-    }
+   
 
     private class DetailsActionHasCell implements HasCell<ProcessInstanceSummary, ProcessInstanceSummary> {
 
@@ -618,17 +638,6 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
     public void formClosed( @Observes BeforeClosePlaceEvent closed ) {
         if ( "Signal Process Popup".equals( closed.getPlace().getIdentifier() ) ) {
             presenter.refreshActiveProcessList();
-        }
-    }
-
-    @Override
-    public void setAvailableProcesses( Collection<ProcessInstanceSummary> processes ) {
-        oracle.clear();
-        if ( processes != null && !processes.isEmpty() ) {
-            for ( ProcessInstanceSummary process : processes ) {
-                oracle.add( process.getProcessName() );
-
-            }
         }
     }
 
