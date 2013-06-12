@@ -29,6 +29,9 @@ import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.uberfire.backend.deployment.DeploymentConfigService;
 
 import org.kie.workbench.common.services.shared.builder.model.DeployResult;
+import org.uberfire.backend.server.config.Added;
+import org.uberfire.backend.server.config.Removed;
+import org.uberfire.backend.server.deployment.DeploymentConfigChangedEvent;
 
 @Service
 @ApplicationScoped
@@ -72,11 +75,13 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
                     ((KModuleDeploymentUnitSummary) unitSummary).getKbaseName(),
                     ((KModuleDeploymentUnitSummary) unitSummary).getKsessionName());
         }// add for vfs
+        deploy(unit);
+    }
 
+    protected void deploy(DeploymentUnit unit) {
         if (deploymentService.getDeployedUnit(unit.getIdentifier()) == null) {
             deploymentService.deploy(unit);
         }
-
     }
     
     @Override
@@ -89,15 +94,19 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
                     ((KModuleDeploymentUnitSummary) unitSummary).getKbaseName(),
                     ((KModuleDeploymentUnitSummary) unitSummary).getKsessionName());
         }// add for vfs
+        undeploy(unit);
+    }
+
+    protected void undeploy(DeploymentUnit unit) {
         try {
             if (deploymentService.getDeployedUnit(unit.getIdentifier()) != null) {
                 deploymentService.undeploy(unit);
+                cleanup(unit.getIdentifier());
             }
         } catch (IllegalStateException e) {
             throw new DeploymentException(e.getMessage(), e);
         }
     }
-    
 
     @Override
     public void redeploy() {
@@ -130,30 +139,45 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         }
     }
 
+    @Override
+    public List<KModuleDeploymentUnitSummary> getDeploymentUnits() {
+        Collection<DeployedUnit> deployedUnits = deploymentService.getDeployedUnits();
+        List<KModuleDeploymentUnitSummary> unitsIds = new ArrayList<KModuleDeploymentUnitSummary>(deployedUnits.size());
+        for (DeployedUnit du : deployedUnits) {
+            KModuleDeploymentUnit kdu =  (KModuleDeploymentUnit)du.getDeploymentUnit();
+            KModuleDeploymentUnitSummary duSummary = new KModuleDeploymentUnitSummary(kdu.getIdentifier(), kdu.getGroupId(),
+                    kdu.getArtifactId(), kdu.getVersion(), kdu.getKbaseName(), kdu.getKsessionName());
+            unitsIds.add(duSummary);
+
+        }
+        return unitsIds;
+    }
+
+    /**
+     * Reacts on events fired by deployment service upon successful deployment to runtime environment so that can be stored in
+     * system repository
+     * @param event deploymentEvent that holds all required information from runtime point of view
+     */
     public void saveDeployment(@Observes @Deploy DeploymentEvent event) {
         if (deploymentConfigService.getDeployment(event.getDeploymentId()) == null) {
             deploymentConfigService.addDeployment(event.getDeploymentId(), event.getDeployedUnit().getDeploymentUnit());
         }
     }
 
+    /**
+     * Reacts on events fired by deployment service upon successful undeployment from runtime environment
+     * so that can be stored in system repository
+     * @param event deploymentEvent that holds all required information from runtime point of view
+     */
     public void removeDeployment(@Observes @Undeploy DeploymentEvent event) {
         deploymentConfigService.removeDeployment(event.getDeploymentId());
     }
 
-    @Override
-    public List<KModuleDeploymentUnitSummary> getDeploymentUnits() { 
-        Collection<DeployedUnit> deployedUnits = deploymentService.getDeployedUnits();
-        List<KModuleDeploymentUnitSummary> unitsIds = new ArrayList<KModuleDeploymentUnitSummary>(deployedUnits.size());
-        for (DeployedUnit du : deployedUnits) {          
-                KModuleDeploymentUnit kdu =  (KModuleDeploymentUnit)du.getDeploymentUnit();
-                KModuleDeploymentUnitSummary duSummary = new KModuleDeploymentUnitSummary(kdu.getIdentifier(), kdu.getGroupId(),
-                                                            kdu.getArtifactId(), kdu.getVersion(), kdu.getKbaseName(), kdu.getKsessionName());
-                unitsIds.add(duSummary);
-  
-        }
-        return unitsIds;
-    }
 
+    /**
+     * Auto deployed reacts to events fired from authoring environment after successful build and deploy (to maven)
+     * @param result Maven deploy result that holds GAV to construct KModuleDeploymentUnit
+     */
     public void autoDeploy(@Observes DeployResult result) {
         try {
             KModuleDeploymentUnitSummary unit = new KModuleDeploymentUnitSummary("",
@@ -168,5 +192,23 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
             // always catch exceptions to not break originator of the event
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Reacts on events fired based on changes to system repository - important in cluster environment
+     * where system repo will ny synchronized
+     * @param event - event that carries the complete DeploymentUnit to be undeployed
+     */
+    public void undeployOnEvent(@Observes @Removed DeploymentConfigChangedEvent event) {
+        undeploy((DeploymentUnit) event.getDeploymentUnit());
+    }
+
+    /**
+     * Reacts on events fired based on changes to system repository - important in cluster environment
+     * where system repo will ny synchronized
+     * @param event - event that carries the complete DeploymentUnit to be deployed
+     */
+    public void deployOnEvent(@Observes @Added DeploymentConfigChangedEvent event) {
+        deploy((DeploymentUnit) event.getDeploymentUnit());
     }
 }
