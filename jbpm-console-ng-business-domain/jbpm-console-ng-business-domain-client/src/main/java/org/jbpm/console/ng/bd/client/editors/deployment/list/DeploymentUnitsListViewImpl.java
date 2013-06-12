@@ -28,6 +28,7 @@ import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.Heading;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
@@ -39,6 +40,8 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
@@ -98,6 +101,10 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
     public NavLink newUnitNavLink;
     
     
+    @Inject
+    @DataField
+    public TextBox searchBox;
+    
     @DataField
     public Heading deployedUnitsLabel = new Heading(4);
 
@@ -120,7 +127,7 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
 
         deployedUnitsLabel.setText(constants.Deployment_Units());
 
-         newUnitNavLink.setText( constants.Deploy_Unit() );
+        newUnitNavLink.setText( constants.New_Deployment_Unit() );
         newUnitNavLink.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
@@ -129,6 +136,18 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
             }
         } );
         
+        searchBox.addKeyUpHandler(new KeyUpHandler() {
+
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32){
+                    displayNotification("Filter: |"+searchBox.getText()+"|");
+                    presenter.filterDeployedUnits(searchBox.getText());
+                }
+                
+            }
+        });
+
         
         refreshIcon.setTitle( constants.Refresh() );
         refreshIcon.addClickHandler( new ClickHandler() {
@@ -181,9 +200,11 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
     public void refreshOnChangedUnit(@Observes DeployedUnitChangedEvent event){
         refreshDeployedUnits();
     }
-    
-    
-    
+
+    @Override
+    public TextBox getSearchBox() {
+        return searchBox;
+    }
 
     private void initTableColumns( final SelectionModel<KModuleDeploymentUnitSummary> selectionModel ) {
 

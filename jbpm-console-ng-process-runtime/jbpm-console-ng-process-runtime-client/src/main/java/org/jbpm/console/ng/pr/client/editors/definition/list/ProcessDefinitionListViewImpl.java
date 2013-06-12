@@ -124,7 +124,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
         refreshIcon.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
-                presenter.reloadRepository();
+                presenter.refreshProcessList();
                 searchBox.setText("");
             }
         } );

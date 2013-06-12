@@ -65,4 +65,6 @@ public interface Constants extends Messages {
 
     String KIE_Configurations();
 
+    String New_Deployment_Unit();
+
 }

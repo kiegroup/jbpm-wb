@@ -16,13 +16,16 @@
 
 package org.jbpm.console.ng.bd.client.editors.deployment.list;
 
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.errai.bus.client.api.ErrorCallback;
@@ -51,6 +54,7 @@ public class DeploymentUnitsListPresenter {
 
         void hideBusyIndicator();
 
+        TextBox getSearchBox();
         
     }
 
@@ -64,6 +68,7 @@ public class DeploymentUnitsListPresenter {
 
     private ListDataProvider<KModuleDeploymentUnitSummary> dataProvider = new ListDataProvider<KModuleDeploymentUnitSummary>();
 
+    private List<KModuleDeploymentUnitSummary> currentDeployedUnits;
     public DeploymentUnitsListPresenter() {
     }
 
@@ -81,7 +86,6 @@ public class DeploymentUnitsListPresenter {
     public void init() {
     }
 
-    
     
     public void undeployUnit(final String id, final String group, final String artifact, final String version, 
                             final String kbaseName, final String kieSessionName) {
@@ -102,14 +106,40 @@ public class DeploymentUnitsListPresenter {
            }
        }).undeploy(new KModuleDeploymentUnitSummary(id, group, artifact, version, kbaseName, kieSessionName));
     }
+    
+    public void filterDeployedUnits(String filter){
+        if(filter.equals("")){
+                if(currentDeployedUnits != null){
+                    dataProvider.getList().clear();
+                    dataProvider.setList(new ArrayList<KModuleDeploymentUnitSummary>(currentDeployedUnits));
+                    dataProvider.refresh();
+                    
+                }
+        }else{
+            if(currentDeployedUnits != null){    
+                List<KModuleDeploymentUnitSummary> deployedUnits = new ArrayList<KModuleDeploymentUnitSummary>(currentDeployedUnits);
+                List<KModuleDeploymentUnitSummary> filteredDeployedUnits = new ArrayList<KModuleDeploymentUnitSummary>();
+                for(KModuleDeploymentUnitSummary ps : deployedUnits){
+                    if(ps.getArtifactId().toLowerCase().contains(filter.toLowerCase())
+                            || ps.getGroupId().toLowerCase().contains(filter.toLowerCase())){
+                        filteredDeployedUnits.add(ps);
+                    }
+                }
+                dataProvider.getList().clear();
+                dataProvider.setList(filteredDeployedUnits);
+                dataProvider.refresh();
+            }
+        }
+    
+    
+    }
 
     public void refreshDeployedUnits() {
         deploymentManager.call(new RemoteCallback<List<KModuleDeploymentUnitSummary>>() {
             @Override
-            public void callback(List<KModuleDeploymentUnitSummary> ids) {
-                dataProvider.getList().clear();
-                dataProvider.getList().addAll(ids);
-                dataProvider.refresh();
+            public void callback(List<KModuleDeploymentUnitSummary> units) {
+                currentDeployedUnits = units;
+                filterDeployedUnits(view.getSearchBox().getText());
             }
         }).getDeploymentUnits();
 
