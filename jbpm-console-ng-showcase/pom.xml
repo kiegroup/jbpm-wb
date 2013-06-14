@@ -155,7 +155,7 @@
 
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-client-api</artifactId>
+      <artifactId>uberfire-api</artifactId>
     </dependency>
 
     <dependency>
@@ -489,7 +489,7 @@
             <!-- UberFire -->
             <compileSourcesArtifact>org.uberfire:uberfire-security-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-security-client</compileSourcesArtifact>
-            <compileSourcesArtifact>org.uberfire:uberfire-client-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-core-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-commons</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-workbench</compileSourcesArtifact>
@@ -508,7 +508,7 @@
 
           </compileSourcesArtifacts>
           <runTarget>org.jbpm.console.ng.jBPMShowcase/jBPM.html</runTarget>
-          <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m</extraJvmArgs>
+          <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m -Djetty.custom.sys.classes=bitronix;javax.transaction</extraJvmArgs>
           <soyc>false</soyc>
           <strict>false</strict>
           <server>org.jboss.errai.cdi.server.gwt.JettyLauncher</server>
