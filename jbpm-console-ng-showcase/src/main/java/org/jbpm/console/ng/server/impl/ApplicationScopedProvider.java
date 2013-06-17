@@ -22,6 +22,8 @@ import org.kie.internal.task.api.UserGroupCallback;
 import org.uberfire.backend.repositories.Repository;
 
 import static org.uberfire.backend.server.repositories.SystemRepository.*;
+import org.uberfire.security.impl.authz.RuntimeAuthorizationManager;
+import org.uberfire.security.server.cdi.SecurityFactory;
 
 /**
  * This class should contain all ApplicationScoped producers required by the application.
@@ -37,6 +39,7 @@ public class ApplicationScopedProvider {
 
     @PostConstruct
     public void setup() {
+        SecurityFactory.setAuthzManager( new RuntimeAuthorizationManager() );
         if ( clusterServiceFactory == null ) {
             ioService = new IOServiceDotFileImpl();
         } else {

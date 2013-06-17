@@ -96,9 +96,7 @@ public class ProcessDefinitionListPresenter {
             @Override
             public void callback(List<ProcessSummary> processes) {
                 currentProcesses = processes;
-                dataProvider.getList().clear();
-                dataProvider.getList().addAll(new ArrayList<ProcessSummary>(currentProcesses));
-                dataProvider.refresh();
+                filterProcessList(view.getSearchBox().getText());
             }
         }).getProcesses();
     }
