@@ -16,9 +16,44 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskType;
+import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskView;
+import org.jbpm.console.ng.ht.client.history.ActionHistoryEnum;
+import org.jbpm.console.ng.ht.client.history.PointHistory;
+import org.jbpm.console.ng.ht.client.i8n.Constants;
+import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
+import org.jbpm.console.ng.ht.client.util.CalendarPicker;
+import org.jbpm.console.ng.ht.client.util.ResizableHeader;
+import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
+import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.security.Identity;
+import org.uberfire.workbench.events.NotificationEvent;
+
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.Heading;
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CheckboxCell;
@@ -27,17 +62,7 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -57,29 +82,6 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import javax.enterprise.event.Observes;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskType;
-import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskView;
-import org.jbpm.console.ng.ht.client.i8n.Constants;
-import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
-import org.jbpm.console.ng.ht.client.util.CalendarPicker;
-import org.jbpm.console.ng.ht.client.util.ResizableHeader;
-import org.jbpm.console.ng.ht.model.TaskSummary;
-import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.security.Identity;
-import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "TasksListViewImpl.html")
@@ -161,6 +163,9 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     
     @Inject
     private Event<TaskSelectionEvent> taskSelection;
+    
+    @Inject
+    private Event<PointHistory> pointHistory;
 
     @Inject
     @DataField
@@ -278,6 +283,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         createQuickTaskNavLink.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
+                displayNotification("***invoke fire ***");
+                pointHistory.fire(new PointHistory(ActionHistoryEnum.NEW_TASK.getDescription()));
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Quick New Task" );
                 placeManager.goTo( placeRequestImpl );
             }

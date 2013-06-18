@@ -16,16 +16,29 @@
 
 package org.jbpm.console.ng.ht.client.history;
 
+import java.util.LinkedList;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 
 @Dependent
 /* @WorkbenchScreen(identifier = "Histories List") */
 public class HistoryPresenter {
     
+    @Inject
+    private ActionHistory actionHistory;
+    
 
     public void saveHistory(@Observes @History PointHistory pointHistory) {
-        System.out.println("*********@Observes @History***************");
+        updateHistory(pointHistory);
+    }
+    
+    private void updateHistory(PointHistory pointHistory){
+        if(actionHistory.getPoints()==null){
+            actionHistory.setPoints(new LinkedList<PointHistory>());
+        }
+        actionHistory.getPoints().add(pointHistory);
     }
 
     // public interface HistoryListView extends UberView<HistoryPresenter> {

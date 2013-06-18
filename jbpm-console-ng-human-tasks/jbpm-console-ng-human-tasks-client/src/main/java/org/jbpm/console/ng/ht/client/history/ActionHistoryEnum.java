@@ -16,13 +16,13 @@
 
 package org.jbpm.console.ng.ht.client.history;
 
-public enum ActionsHistories {
+public enum ActionHistoryEnum {
 
     NEW_TASK("New Task - pasarla a constante");
     
     private String description;
     
-    ActionsHistories(String description){
+    ActionHistoryEnum(String description){
         this.description = description;
     }
     
