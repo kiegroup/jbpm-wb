@@ -283,7 +283,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         createQuickTaskNavLink.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
-                displayNotification("***invoke fire ***");
+                displayNotification("**ffff*invoke fire ***");
                 pointHistory.fire(new PointHistory(ActionHistoryEnum.NEW_TASK.getDescription()));
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Quick New Task" );
                 //placeManager.goTo( placeRequestImpl );

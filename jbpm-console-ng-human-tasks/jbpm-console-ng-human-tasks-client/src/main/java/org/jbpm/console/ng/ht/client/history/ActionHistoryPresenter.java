@@ -16,14 +16,25 @@
 
 package org.jbpm.console.ng.ht.client.history;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.ht.client.editors.taskslist.TaskListMultiDayBox;
+import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskType;
+import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskView;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
+import org.jbpm.console.ng.ht.model.Day;
+import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -31,7 +42,11 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.security.Identity;
 
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.MultiSelectionModel;
 
 @Dependent
 @WorkbenchScreen(identifier = "Actions Histories")
@@ -47,6 +62,31 @@ public class ActionHistoryPresenter {
     private Identity identity;
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
+    
+    private List<TaskSummary> allTaskSummaries;
+    
+    private Map<Day, List<TaskSummary>> currentDayTasks;
+    
+    private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
+    
+    public List<TaskSummary> getAllTaskSummaries() {
+        return allTaskSummaries;
+    }
+    
+    public interface ActionHistoryView extends UberView<ActionHistoryPresenter> {
+    
+     void displayNotification( String text );
+    
+     TaskListMultiDayBox getTaskListMultiDayBox();
+    
+     MultiSelectionModel<TaskSummary> getSelectionModel();
+     
+     
+    
+     TextBox getSearchBox();
+    
+     void refreshTasks();
+    }
     
     @WorkbenchPartView
     public UberView<ActionHistoryPresenter> getView() {
@@ -73,18 +113,93 @@ public class ActionHistoryPresenter {
         }
         actionHistory.getPoints().add(pointHistory);
     }
+    
+    public void refreshTasks(Date date, TaskView taskView, TaskType taskType) {
+         refreshPersonalTasks(date, taskView);
+    }
+    public void refreshPersonalTasks(Date date, TaskView taskView) {
+        Date fromDate = new Date(); //determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
+        int daysTotal = 1; // determineNumberOfDaysForTaskView(taskView);
 
-    public interface ActionHistoryView extends UberView<ActionHistoryPresenter> {
+        List<String> statuses = new ArrayList<String>(4);
+        statuses.add("Ready");
+        statuses.add("InProgress");
+        statuses.add("Created");
+        statuses.add("Reserved");
+        if (taskView.equals(TaskView.GRID)){
+            taskServices.call(new RemoteCallback<List<TaskSummary>>() {
+                @Override
+                public void callback(List<TaskSummary> tasks) {
+                    allTaskSummaries = tasks;
+                    filterTasks(view.getSearchBox().getText());
+                }
+            }).getTasksOwnedByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
+
+        } else {
+            taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
+                @Override
+                public void callback(Map<Day, List<TaskSummary>> tasks) {
+                    currentDayTasks = tasks;
+                    filterTasks(view.getSearchBox().getText());
+                }
+            }).getTasksOwnedFromDateToDateByDays(identity.getName(), statuses, fromDate, daysTotal, "en-UK");
+        }
+    }
     
-     void displayNotification( String text );
+    public void filterTasks(String text) {
+        if(text.equals("")){
+                if(allTaskSummaries != null){
+                    dataProvider.getList().clear();
+                    dataProvider.setList(new ArrayList<TaskSummary>(allTaskSummaries));
+                    dataProvider.refresh();
+                    
+                }
+                if(currentDayTasks != null){
+                    view.getTaskListMultiDayBox().clear();
+                    for (Day day : currentDayTasks.keySet()) {
+                         view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(currentDayTasks.get(day)));
+                    }
+                    view.getTaskListMultiDayBox().refresh();
+                }
+        }else{
+            if(allTaskSummaries != null){    
+                List<TaskSummary> tasks = new ArrayList<TaskSummary>(allTaskSummaries);
+                List<TaskSummary> filteredTasksSimple = new ArrayList<TaskSummary>();
+                for(TaskSummary ts : tasks){
+                    if(ts.getName().toLowerCase().contains(text.toLowerCase())){
+                        filteredTasksSimple.add(ts);
+                    }
+                }
+                dataProvider.getList().clear();
+                dataProvider.setList(filteredTasksSimple);
+                dataProvider.refresh();
+            }
+            if(currentDayTasks != null){
+                Map<Day, List<TaskSummary>> tasksCalendar = new HashMap<Day, List<TaskSummary>>(currentDayTasks);
+                Map<Day, List<TaskSummary>> filteredTasksCalendar = new HashMap<Day, List<TaskSummary>>();
+                view.getTaskListMultiDayBox().clear();
+                for(Day d : tasksCalendar.keySet()){
+                    if(filteredTasksCalendar.get(d) == null){
+                                filteredTasksCalendar.put(d, new ArrayList<TaskSummary>());
+                    }
+                    for(TaskSummary ts : tasksCalendar.get(d)){
+                        if(ts.getName().toLowerCase().contains(text.toLowerCase())){
+                            filteredTasksCalendar.get(d).add(ts);
+                        }
+                    }
+                }
+                for (Day day : filteredTasksCalendar.keySet()) {
+                     view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(filteredTasksCalendar.get(day)));
+                }
+                view.getTaskListMultiDayBox().refresh();
+            }
+         }
+        
+
+    }
     
-     //TaskListMultiDayBox getTaskListMultiDayBox();
-    
-     //MultiSelectionModel<TaskSummary> getSelectionModel();
-    
-     //TextBox getSearchBox();
-    
-     //void refreshTasks();
+    public void addDataDisplay(HasData<TaskSummary> display) {
+        dataProvider.addDataDisplay(display);
     }
 
 }
