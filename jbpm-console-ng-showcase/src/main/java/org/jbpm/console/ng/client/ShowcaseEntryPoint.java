@@ -98,6 +98,7 @@ public class ShowcaseEntryPoint {
         } ).endMenu().newTopLevelMenu( constants.Authoring() ).withItems( getAuthoringViews() ).endMenu()
                 .newTopLevelMenu( constants.Deploy() ).withItems( getDeploymentViews() ).endMenu()
                 .newTopLevelMenu( constants.Process_Management() ).withItems( getProcessMGMTViews() ).endMenu()
+                .newTopLevelMenu( "History" ).withItems( getHistoryViews() ).endMenu()
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu().newTopLevelMenu( constants.BAM() )
                 .withItems( getBAMViews() ).endMenu().newTopLevelMenu( constants.LogOut() ).respondsWith( new Command() {
                     @Override
@@ -169,6 +170,20 @@ public class ShowcaseEntryPoint {
         final List<MenuItem> result = new ArrayList<MenuItem>( 2 );
 
         result.add( MenuFactory.newSimpleItem( constants.Tasks_List() ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "Tasks" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+
+
+        return result;
+    }
+    
+    private List<? extends MenuItem> getHistoryViews() {
+        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
+
+        result.add( MenuFactory.newSimpleItem( "History" ).respondsWith( new Command() {
             @Override
             public void execute() {
                 placeManager.goTo( new DefaultPlaceRequest( "Tasks" ) );
