@@ -22,8 +22,16 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.ht.client.i8n.Constants;
+import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.security.Identity;
+
+import com.google.gwt.core.client.GWT;
 
 @Dependent
 @WorkbenchScreen(identifier = "Actions Histories")
@@ -31,6 +39,28 @@ public class ActionHistoryPresenter {
     
     @Inject
     private ActionHistory actionHistory;
+    
+    @Inject
+    private ActionHistoryView view;
+    
+    @Inject
+    private Identity identity;
+    @Inject
+    private Caller<TaskServiceEntryPoint> taskServices;
+    
+    @WorkbenchPartView
+    public UberView<ActionHistoryPresenter> getView() {
+        return view;
+    }
+    
+    
+    private Constants constants = GWT.create( Constants.class );
+    
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return constants.Tasks_List();
+    }
+    
     
 
     public void saveHistory(@Observes @History PointHistory pointHistory) {

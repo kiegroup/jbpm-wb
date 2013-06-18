@@ -31,8 +31,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 @Dependent
-@Templated(value = "HistoryListViewImpl.html")
-public class HistoryListViewImpl extends Composite{
+@Templated(value = "ActionHistoryListViewImpl.html")
+public class ActionHistoryListViewImpl extends Composite implements ActionHistoryPresenter.ActionHistoryView{
 
     @Inject
     @DataField
@@ -89,5 +89,19 @@ public class HistoryListViewImpl extends Composite{
     @Inject
     @DataField
     public IconAnchor refreshIcon;
+    
+    private ActionHistoryPresenter presenter;
+
+    @Override
+    public void init(ActionHistoryPresenter presenter) {
+        this.presenter = presenter;
+        
+    }
+
+    @Override
+    public void displayNotification(String text) {
+        // TODO Auto-generated method stub
+        
+    }
 
 }

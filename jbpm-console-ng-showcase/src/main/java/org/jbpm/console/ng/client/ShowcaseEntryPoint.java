@@ -186,7 +186,7 @@ public class ShowcaseEntryPoint {
         result.add( MenuFactory.newSimpleItem( "History" ).respondsWith( new Command() {
             @Override
             public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Tasks" ) );
+                placeManager.goTo( new DefaultPlaceRequest( "Histories" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
