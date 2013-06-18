@@ -22,9 +22,12 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.UberView;
+
 @Dependent
-/* @WorkbenchScreen(identifier = "Histories List") */
-public class HistoryPresenter {
+@WorkbenchScreen(identifier = "Actions Histories")
+public class ActionHistoryPresenter {
     
     @Inject
     private ActionHistory actionHistory;
@@ -41,17 +44,17 @@ public class HistoryPresenter {
         actionHistory.getPoints().add(pointHistory);
     }
 
-    // public interface HistoryListView extends UberView<HistoryPresenter> {
-    //
-    // void displayNotification( String text );
-    //
-    // TaskListMultiDayBox getTaskListMultiDayBox();
-    //
-    // MultiSelectionModel<TaskSummary> getSelectionModel();
-    //
-    // TextBox getSearchBox();
-    //
-    // void refreshTasks();
-    // }
+    public interface ActionHistoryView extends UberView<ActionHistoryPresenter> {
+    
+     void displayNotification( String text );
+    
+     //TaskListMultiDayBox getTaskListMultiDayBox();
+    
+     //MultiSelectionModel<TaskSummary> getSelectionModel();
+    
+     //TextBox getSearchBox();
+    
+     //void refreshTasks();
+    }
 
 }
