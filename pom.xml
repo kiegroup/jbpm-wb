@@ -38,6 +38,7 @@
     <module>jbpm-console-ng-business-domain</module>
     <module>jbpm-console-ng-executor-service</module>
     <module>jbpm-console-ng-bpm-home</module>
+    <module>jbpm-console-ng-human-events</module>
     <module>jbpm-console-ng-showcase</module>
   </modules>
 
