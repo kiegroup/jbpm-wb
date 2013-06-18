@@ -24,5 +24,7 @@ public interface FormModelerProcessStarterEntryPoint {
 
     Long startProcessFromRenderContext(String ctxUID, String domainId, String processId);
     Long saveTaskStateFromRenderContext(String ctxUID, Long taskId);
+    Long saveTaskStateFromRenderContext(String ctxUID, Long taskId, boolean clearStatus);
     void completeTaskFromContext(String ctxUID, Long taskId, String identityName);
+    void clearContext(String ctxUID);
 }

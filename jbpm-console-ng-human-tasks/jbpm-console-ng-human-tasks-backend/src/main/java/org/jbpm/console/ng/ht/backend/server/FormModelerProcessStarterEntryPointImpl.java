@@ -47,9 +47,15 @@ public class FormModelerProcessStarterEntryPointImpl implements FormModelerProce
     }
 
     @Override
-    public Long saveTaskStateFromRenderContext(String ctxUID, Long taskId) {
+    public Long saveTaskStateFromRenderContext(String ctxUID, Long taskId, boolean clearStatus) {
         Map params = formRenderContextManager.getFormRenderContext(ctxUID).getPersistedData();
+        if (clearStatus) formRenderContextManager.removeContext(ctxUID);
         return taskServiceEntryPoint.saveContent(taskId, params);
+    }
+
+    @Override
+    public Long saveTaskStateFromRenderContext(String ctxUID, Long taskId) {
+        return saveTaskStateFromRenderContext(ctxUID, taskId, false);
     }
 
     @Override
@@ -57,5 +63,10 @@ public class FormModelerProcessStarterEntryPointImpl implements FormModelerProce
         Map params = formRenderContextManager.getFormRenderContext(ctxUID).getPersistedData();
         formRenderContextManager.removeContext(ctxUID);
         taskServiceEntryPoint.complete(taskId,  identityName, params);
+    }
+
+    @Override
+    public void clearContext(String ctxUID) {
+        formRenderContextManager.removeContext(ctxUID);
     }
 }

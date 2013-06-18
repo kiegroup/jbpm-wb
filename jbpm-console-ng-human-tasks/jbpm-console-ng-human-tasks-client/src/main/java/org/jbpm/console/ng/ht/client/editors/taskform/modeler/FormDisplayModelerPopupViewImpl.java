@@ -23,11 +23,11 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.jbpm.formModeler.api.client.FormRenderContextTO;
-
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;
@@ -44,6 +44,9 @@ public class FormDisplayModelerPopupViewImpl extends Composite implements FormDi
 
     private FormDisplayModelerPopupPresenter presenter;
 
+    @Inject
+    @DataField
+    public VerticalPanel formView;
     
     @Inject
     @DataField
@@ -69,6 +72,7 @@ public class FormDisplayModelerPopupViewImpl extends Composite implements FormDi
     private String domainId;
     private String processId;
     private String action;
+    private boolean formModeler;
 
     @Inject
     private PlaceManager placeManager;
@@ -135,13 +139,6 @@ public class FormDisplayModelerPopupViewImpl extends Composite implements FormDi
     public void setDomainId(String domainId) {
         this.domainId = domainId;
     }
-    
-    @Override
-    public void loadContext(FormRenderContextTO ctx) {
-        if (ctx != null) {
-            formRenderer.loadContext(ctx);
-        }
-    }
 
     @Override
     public void loadContext(String ctxUID) {
@@ -181,12 +178,32 @@ public class FormDisplayModelerPopupViewImpl extends Composite implements FormDi
     }
 
     @Override
-    public void setAction(String action) {
-        this.action = action;
+    public String getAction() {
+        return action;
     }
 
     @Override
-    public String getAction() {
-        return action;
+    public VerticalPanel getFormView() {
+        return formView;
+    }
+
+    @Override
+    public void loadForm(String form) {
+        formModeler = formRenderer.isValidContextUID(form);
+        if (formModeler) {
+            loadContext(form);
+            formView.setVisible(false);
+            formRenderer.setVisible(true);
+        } else {
+            formView.clear();
+            formView.add(new HTMLPanel(form));
+            formView.setVisible(true);
+            formRenderer.setVisible(false);
+        }
+    }
+
+    @Override
+    public boolean isFormModeler() {
+        return formModeler;
     }
 }
