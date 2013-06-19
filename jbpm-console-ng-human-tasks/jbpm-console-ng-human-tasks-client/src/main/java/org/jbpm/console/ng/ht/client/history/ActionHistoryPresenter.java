@@ -22,12 +22,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
+import org.jboss.errai.bus.server.util.SessionContext;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.ht.client.editors.taskslist.TaskListMultiDayBox;
 import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskType;
@@ -69,6 +71,10 @@ public class ActionHistoryPresenter {
     
     private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
     
+    private final String keyHistory = "EventHistory";
+    
+    
+    
     public List<TaskSummary> getAllTaskSummaries() {
         return allTaskSummaries;
     }
@@ -83,7 +89,7 @@ public class ActionHistoryPresenter {
      
      
     
-     TextBox getSearchBox();
+     //TextBox getSearchBox();
     
      void refreshTasks();
     }
@@ -107,11 +113,24 @@ public class ActionHistoryPresenter {
         updateHistory(pointHistory);
     }
     
+    
+    public enum EventType {
+        HISTORY
+    }
+    
     private void updateHistory(PointHistory pointHistory){
-        if(actionHistory.getPoints()==null){
+        /*if(actionHistory.getPoints()==null){
             actionHistory.setPoints(new LinkedList<PointHistory>());
         }
-        actionHistory.getPoints().add(pointHistory);
+        actionHistory.getPoints().add(pointHistory);*/
+    	SessionContext sessionEvent = SessionContext.get(actionHistory.getPoints());
+    	Queue<PointHistory> points = sessionEvent.getAttribute(LinkedList.class, EventType.HISTORY);
+    	if(points==null){
+    		points = new LinkedList<PointHistory>();
+    	}else{
+    		points.add(pointHistory);
+    	}
+    	sessionEvent.setAttribute(EventType.HISTORY, points);
     }
     
     public void refreshTasks(Date date, TaskView taskView, TaskType taskType) {
@@ -131,7 +150,7 @@ public class ActionHistoryPresenter {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                     allTaskSummaries = tasks;
-                    filterTasks(view.getSearchBox().getText());
+                    //filterTasks(view.getSearchBox().getText());
                 }
             }).getTasksOwnedByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
 
@@ -140,7 +159,7 @@ public class ActionHistoryPresenter {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
                     currentDayTasks = tasks;
-                    filterTasks(view.getSearchBox().getText());
+                    //filterTasks(view.getSearchBox().getText());
                 }
             }).getTasksOwnedFromDateToDateByDays(identity.getName(), statuses, fromDate, daysTotal, "en-UK");
         }

@@ -32,20 +32,16 @@ import org.jbpm.console.ng.ht.client.editors.taskslist.TaskListMultiDayBox;
 import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskType;
 import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskView;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
-import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
 import org.jbpm.console.ng.ht.client.util.CalendarPicker;
 import org.jbpm.console.ng.ht.client.util.ResizableHeader;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.Heading;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
@@ -55,8 +51,6 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -74,31 +68,6 @@ import com.google.gwt.view.client.SelectionModel;
 @Templated(value = "ActionHistoryListViewImpl.html")
 public class ActionHistoryListViewImpl extends Composite implements ActionHistoryPresenter.ActionHistoryView{
 	private Constants constants = GWT.create(Constants.class);
-    private HumanTasksImages images = GWT.create(HumanTasksImages.class);
-
-    @Inject
-    @DataField
-    public NavLink dayViewTasksNavLink;
-
-    @Inject
-    @DataField
-    public NavLink gridViewTasksNavLink;
-
-    @Inject
-    @DataField
-    public NavLink monthViewTasksNavLink;
-
-    @Inject
-    @DataField
-    public NavLink weekViewTasksNavLink;
-    
-    @Inject
-    @DataField
-    public TextBox searchBox;
-
-    @Inject
-    @DataField
-    public NavLink createQuickTaskNavLink;
 
     @Inject
     @DataField
@@ -112,11 +81,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     @DataField
     public NavLink showGroupTasksNavLink;
 
-    @Inject
-    @DataField
-    public NavLink showActiveTasksNavLink;
-
-    
     @DataField
     public Heading taskCalendarViewLabel = new Heading(4);
 
@@ -171,7 +135,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             @Override
             public void onClick( ClickEvent event ) {
                 refreshTasks();
-                searchBox.setText("");
                 displayNotification( constants.Tasks_Refreshed() );
             }
         } );
@@ -193,83 +156,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
      // By Default we will start in Grid View
         initializeGridView();
         
-        dayViewTasksNavLink.setText( constants.Day() );
-        dayViewTasksNavLink.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                tasksViewContainer.clear();
-                tasksViewContainer.add(taskListMultiDayBox);
-                tasksViewContainer.setStyleName("day");
-                dayViewTasksNavLink.setStyleName("active");
-                weekViewTasksNavLink.setStyleName("");
-                monthViewTasksNavLink.setStyleName("");
-                gridViewTasksNavLink.setStyleName("");
-                currentView = TaskView.DAY;
-                calendarPicker.setViewType( "day" );
-                refreshTasks();
-                
-            }
-        } );
-        
-        weekViewTasksNavLink.setText( constants.Week() );
-        weekViewTasksNavLink.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                tasksViewContainer.clear();
-                tasksViewContainer.add(taskListMultiDayBox);
-                tasksViewContainer.setStyleName("week");
-                dayViewTasksNavLink.setStyleName("");
-                monthViewTasksNavLink.setStyleName("");
-                gridViewTasksNavLink.setStyleName("");
-                weekViewTasksNavLink.setStyleName("active");
-                currentView = TaskView.WEEK;
-                calendarPicker.setViewType( "week" );
-                refreshTasks();
-                
-            }
-        } );
-        
-        monthViewTasksNavLink.setText( constants.Month() );
-        monthViewTasksNavLink.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                tasksViewContainer.clear();
-                tasksViewContainer.add(taskListMultiDayBox);
-                tasksViewContainer.setStyleName("month");
-                dayViewTasksNavLink.setStyleName("");
-                gridViewTasksNavLink.setStyleName("");
-                weekViewTasksNavLink.setStyleName("");
-                monthViewTasksNavLink.setStyleName("active");
-                currentView = TaskView.MONTH;
-                calendarPicker.setViewType( "month" );
-                refreshTasks();
-                
-            }
-        } );
-        
-        gridViewTasksNavLink.setText( constants.Grid() );
-        gridViewTasksNavLink.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                
-                initializeGridView();
-                refreshTasks();
-                
-           }
-
-        });
-        
-        createQuickTaskNavLink.setText( constants.New_Task() );
-        createQuickTaskNavLink.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                displayNotification("**eee*invoke fire ***");
-                //pointHistory.fire(new PointHistory(ActionHistoryEnum.NEW_TASK.getDescription()));
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Quick New Task" );
-                //placeManager.goTo( placeRequestImpl );
-            }
-        } );
-
         // Filters
         showPersonalTasksNavLink.setText( constants.Personal() );
         showPersonalTasksNavLink.addClickHandler( new ClickHandler() {
@@ -277,7 +163,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             public void onClick( ClickEvent event ) {
                 showPersonalTasksNavLink.setStyleName( "active" );
                 showGroupTasksNavLink.setStyleName( "" );
-                showActiveTasksNavLink.setStyleName( "" );
                 showAllTasksNavLink.setStyleName( "" );
                 currentTaskType = TaskType.PERSONAL;
                 refreshTasks();
@@ -291,23 +176,8 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             public void onClick( ClickEvent event ) {
                 showGroupTasksNavLink.setStyleName( "active" );
                 showPersonalTasksNavLink.setStyleName( "" );
-                showActiveTasksNavLink.setStyleName( "" );
                 showAllTasksNavLink.setStyleName( "" );
                 currentTaskType = TaskType.GROUP;
-                refreshTasks();
-                
-            }
-        } );
-
-        showActiveTasksNavLink.setText( constants.Active() );
-        showActiveTasksNavLink.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                showGroupTasksNavLink.setStyleName( "" );
-                showPersonalTasksNavLink.setStyleName( "" );
-                showActiveTasksNavLink.setStyleName( "active" );
-                showAllTasksNavLink.setStyleName( "" );
-                currentTaskType = TaskType.ACTIVE;
                 refreshTasks();
                 
             }
@@ -319,7 +189,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             public void onClick( ClickEvent event ) {
                 showGroupTasksNavLink.setStyleName( "" );
                 showPersonalTasksNavLink.setStyleName( "" );
-                showActiveTasksNavLink.setStyleName( "" );
                 showAllTasksNavLink.setStyleName( "active" );
                 currentTaskType = TaskType.ALL;
                 refreshTasks();
@@ -328,21 +197,10 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             }
         } );
 
-        taskCalendarViewLabel.setText( constants.Tasks_List() );
+        taskCalendarViewLabel.setText( "Human Events" /*constants.Tasks_List()*/ );
         taskCalendarViewLabel.setStyleName( "" );
         
-        searchBox.addKeyUpHandler(new KeyUpHandler() {
-
-            @Override
-            public void onKeyUp(KeyUpEvent event) {
-                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32){
-                    displayNotification("Filter: |"+searchBox.getText()+"|");
-                    //filterTasks(searchBox.getText());
-                }
-                
-            }
-        });
-
+        
         
         refreshTasks();
         
@@ -350,10 +208,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     
     private void initializeGridView() {
         tasksViewContainer.clear();
-        dayViewTasksNavLink.setStyleName("");
-        weekViewTasksNavLink.setStyleName("");
-        monthViewTasksNavLink.setStyleName("");
-        gridViewTasksNavLink.setStyleName("active");
         currentView = TaskView.GRID;
         calendarPicker.setViewType( "grid" );
         myTaskListGrid = new DataGrid<TaskSummary>();
@@ -427,7 +281,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             }
         });
 
-        // Task name.
+        // Human event.
         Column<TaskSummary, String> taskNameColumn = new Column<TaskSummary, String>(new TextCell()) {
             @Override
             public String getValue(TaskSummary object) {
@@ -436,7 +290,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         };
         taskNameColumn.setSortable(true);
 
-        myTaskListGrid.addColumn(taskNameColumn, new ResizableHeader(constants.Task(), myTaskListGrid, taskNameColumn));
+        myTaskListGrid.addColumn(taskNameColumn, new ResizableHeader("Human Event"/*constants.Task()*/, myTaskListGrid, taskNameColumn));
         sortHandler.setComparator(taskNameColumn, new Comparator<TaskSummary>() {
             @Override
             public int compare(TaskSummary o1, TaskSummary o2) {
@@ -445,7 +299,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         });
 
         // Task priority.
-        Column<TaskSummary, Number> taskPriorityColumn = new Column<TaskSummary, Number>(new NumberCell()) {
+        /*Column<TaskSummary, Number> taskPriorityColumn = new Column<TaskSummary, Number>(new NumberCell()) {
             @Override
             public Number getValue(TaskSummary object) {
                 return object.getPriority();
@@ -460,9 +314,11 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             public int compare(TaskSummary o1, TaskSummary o2) {
                 return Integer.valueOf(o1.getPriority()).compareTo(o2.getPriority());
             }
-        });
+        });*/
+
+        
         // Status.
-        Column<TaskSummary, String> statusColumn = new Column<TaskSummary, String>(new TextCell()) {
+        /*Column<TaskSummary, String> statusColumn = new Column<TaskSummary, String>(new TextCell()) {
             @Override
             public String getValue(TaskSummary object) {
                 return object.getStatus();
@@ -477,8 +333,8 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
                 return o1.getStatus().compareTo(o2.getStatus());
             }
         });
-        myTaskListGrid.setColumnWidth(statusColumn, "100px");
-
+        myTaskListGrid.setColumnWidth(statusColumn, "100px");*/
+		
         // Due Date.
         Column<TaskSummary, String> dueDateColumn = new Column<TaskSummary, String>(new TextCell()) {
             @Override
@@ -491,7 +347,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         };
         dueDateColumn.setSortable(true);
 
-        myTaskListGrid.addColumn(dueDateColumn, new ResizableHeader(constants.Due_On(), myTaskListGrid, dueDateColumn));
+        myTaskListGrid.addColumn(dueDateColumn, new ResizableHeader("Time" /*constants.Due_On()*/, myTaskListGrid, dueDateColumn));
         sortHandler.setComparator(dueDateColumn, new Comparator<TaskSummary>() {
             @Override
             public int compare(TaskSummary o1, TaskSummary o2) {
@@ -577,10 +433,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         
     }
 
-	@Override
-	public TextBox getSearchBox() {
-		return searchBox;
-	}
+	
 
 	@Override
 	public MultiSelectionModel<TaskSummary> getSelectionModel() {

@@ -16,21 +16,23 @@
 
 package org.jbpm.console.ng.ht.client.history;
 
-import java.util.Queue;
+import org.jboss.errai.bus.client.api.QueueSession;
 
-import javax.enterprise.context.SessionScoped;
-
-@SessionScoped
+//@SessionScoped
 public class ActionHistory {
     
-    private Queue<PointHistory> points;
+    //private Queue<PointHistory> points;
+    
+	private QueueSession points;
 
-    public Queue<PointHistory> getPoints() {
-        return points;
-    }
+	public QueueSession getPoints() {
+		return points;
+	}
 
-    public void setPoints(Queue<PointHistory> points) {
-        this.points = points;
-    }
+	public void setPoints(QueueSession points) {
+		this.points = points;
+	}
+
+    
 
 }
