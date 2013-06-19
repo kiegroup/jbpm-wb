@@ -55,7 +55,7 @@
           <archive>
             <addMavenDescriptor>false</addMavenDescriptor>
             <manifestEntries>
-              <Dependencies>io.netty</Dependencies>
+              <Dependencies>org.jboss.netty</Dependencies>
             </manifestEntries>
           </archive>
         </configuration>
