@@ -347,7 +347,6 @@
     <dependency>
       <groupId>org.kie.remote</groupId>
       <artifactId>kie-services-remote</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
     </dependency>
 
     <!-- Kie Workbench -->
@@ -446,61 +445,6 @@
           <artifactId>resteasy-cdi</artifactId>
       </dependency>
 
-    <dependency>
-      <groupId>org.kie.remote</groupId>
-      <artifactId>kie-services-remote</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
-    </dependency>
-    
-      <!-- formModeler dependencies -->
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-app</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
-      <type>war</type>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-editor-client</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-editor-backend</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
-    </dependency>
-
-    <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-form-modeler-form-provider</artifactId>
-        <version>6.0.0-SNAPSHOT</version>
-    </dependency>
-
-     <dependency>
-      <groupId>org.kie.workbench.screens</groupId>
-      <artifactId>kie-wb-common-data-modeller-api</artifactId>
-    </dependency>
-
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-dashboard-backend</artifactId>
-          <version>6.0.0-SNAPSHOT</version>
-      </dependency>
-
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-dashboard-api</artifactId>
-          <version>6.0.0-SNAPSHOT</version>
-      </dependency>
-
-    <dependency>
-      <groupId>org.kie.workbench.screens</groupId>
-      <artifactId>kie-wb-common-data-modeller-client</artifactId>
-    </dependency>
-
       <dependency>
           <groupId>org.jbpm</groupId>
           <artifactId>jbpm-console-ng-dashboard-client</artifactId>
@@ -519,12 +463,6 @@
           <version>6.0.0-SNAPSHOT</version>
       </dependency>
 
-    <dependency>
-      <groupId>org.kie.remote</groupId>
-      <artifactId>kie-services-remote</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
-    </dependency>
-    
       <!-- formModeler dependencies -->
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -673,7 +611,7 @@
 
           </compileSourcesArtifacts>
           <runTarget>org.jbpm.console.ng.jBPMShowcase/jBPM.html</runTarget>
-          <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m</extraJvmArgs>
+          <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m -Djetty.custom.sys.classes=bitronix;javax.transaction</extraJvmArgs>
           <soyc>false</soyc>
           <strict>false</strict>
           <server>org.jboss.errai.cdi.server.gwt.JettyLauncher</server>
