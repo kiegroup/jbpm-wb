@@ -1,0 +1,12 @@
+org.jbpm.console.ng.he.client.perspectives.ActionHistoryPerspective
+org.jbpm.console.ng.he.client.history.TaskListDayBox
+org.jbpm.console.ng.he.client.perspectives.ActionHistoryPerspectiveActivity
+org.jbpm.console.ng.he.client.util.ResizableHeader
+org.jbpm.console.ng.he.client.history.History
+org.jbpm.console.ng.he.client.history.ActionHistory
+org.jbpm.console.ng.he.client.history.TaskListMultiDayBox
+org.jbpm.console.ng.he.client.history.ActionHistoryListViewImpl
+org.jbpm.console.ng.he.client.history.ActionHistoryPresenter
+org.jbpm.console.ng.he.client.history.ActionHistoryPresenterActivity
+org.jbpm.console.ng.he.client.history.TaskBox
+org.jbpm.console.ng.he.client.i8n.Constants
