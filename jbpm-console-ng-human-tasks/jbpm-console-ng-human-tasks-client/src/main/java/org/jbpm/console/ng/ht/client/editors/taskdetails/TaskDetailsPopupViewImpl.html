@@ -21,18 +21,44 @@
       </div>
       <div id="desc_collapse" class="accordion-body collapse in" style="position: relative;">
         <div class="accordion-inner">
+          <div class="form-horizontal">
 
-          <label data-field="taskDescriptionLabel"></label>
-          <textarea data-field="taskDescriptionTextArea" id="taskDescriptionTextArea"></textarea>
-          <label data-field="taskStatusLabel"></label>
-          <input type="text" data-field="taskStatusText" />
-          <label data-field="userLabel"></label>
-          <input type="text" data-field="userText" id="userText" />
-          <label data-field="dueDateLabel"></label>
-          <input type="text" data-field="dueDate" id="dueDate">
-          <label data-field="taskPriorityLabel"></label>
-          <select data-field="taskPriorityListBox" id="taskPriorityListBox">
-          </select>
+                <div class="control-group">
+                  <label class="control-label" for="taskDescriptionTextArea" data-field="taskDescriptionLabel"></label>
+                  <div class="controls">
+                    <input type="text" data-field="taskDescriptionTextArea" id="taskDescriptionTextArea" placeholder="" />
+                  </div>
+                </div>
+              
+                <div class="control-group">
+                  <label class="control-label" for="taskStatusText" data-field="taskStatusLabel"></label>
+                  <div class="controls">
+                    <input type="text" data-field="taskStatusText" id="taskStatusText" placeholder="" />
+                  </div>
+                </div>
+              
+          
+                <div class="control-group">
+                  <label class="control-label" for="dueDate" data-field="dueDateLabel"></label>
+                  <div class="controls">
+                    <input type="text" data-field="dueDate" id="dueDate" placeholder="" />
+                  </div>
+                </div>
+              
+                <div class="control-group">
+                  <label class="control-label" for="taskPriorityListBox" data-field="taskPriorityLabel"></label>
+                  <div class="controls">
+                    <select data-field="taskPriorityListBox" id="taskPriorityListBox"></select>
+                  </div>
+                </div>
+              
+               <div class="control-group">
+                  <label class="control-label" for="userText" data-field="userLabel"></label>
+                  <div class="controls">
+                    <select data-field="userText" id="userText"></select>
+                  </div>
+               </div>
+          </div>
 
         </div>
       </div>
@@ -44,14 +70,29 @@
       </div>
       <div id="context_collapse" class="accordion-body collapse in" style="position: relative;">
         <div class="accordion-inner">
+          <div class="form-horizontal">
 
-          <label data-field="processInstanceIdLabel"></label>
-          <input type="text" data-field="processInstanceIdText" id="processInstanceIdText">
-          <label data-field="processIdLabel"></label>
-          <input type="text" data-field="processIdText" id="processIdText">
-          <label data-field="pIDetailsLabel"></label>
-          <button class="button main" data-field="pIDetailsButton" id="pIDetailsButton"></button>
-
+                <div class="control-group">
+                  <label class="control-label" for="processInstanceIdText" data-field="processInstanceIdLabel"></label>
+                  <div class="controls">
+                    <input type="text" data-field="processInstanceIdText" id="processInstanceIdText" placeholder="" />
+                  </div>
+                </div>  
+              
+                <div class="control-group">
+                  <label class="control-label" for="processIdText" data-field="processIdLabel"></label>
+                  <div class="controls">
+                    <input type="text" data-field="processIdText" id="processIdText" placeholder="" />
+                  </div>
+                </div> 
+              
+                <div class="control-group">
+                  <label class="control-label" for="processIdText" data-field="pIDetailsLabel"></label>
+                  <div class="controls">
+                    <button class="button main" data-field="pIDetailsButton" id="pIDetailsButton"></button>
+                  </div>
+                </div> 
+          </div>
         </div>
       </div>
     </div>

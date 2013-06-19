@@ -137,5 +137,8 @@ public interface TaskServiceEntryPoint {
     void updateSimpleTaskDetails(long taskId, List<String> taskNames, int priority, List<String> taskDescription,
     // String subTaskStrategy,
             Date dueDate);
+    
+    
+    Map<Long, List<String>> getPotentialOwnersForTaskIds(List<Long> taskIds);
 
 }

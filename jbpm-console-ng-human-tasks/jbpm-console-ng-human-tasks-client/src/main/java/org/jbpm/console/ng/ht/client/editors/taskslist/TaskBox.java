@@ -102,7 +102,7 @@ public class TaskBox extends Composite {
         FlowPanel personalOrGroupTask = new FlowPanel();
 
         if ( "".equals( actualOwner ) && status.equals( "Ready" ) ) {
-            if(!potentialOwners.isEmpty() && !(potentialOwners.size() == 1 && potentialOwners.contains(identity.getName()))){
+            if(!potentialOwners.isEmpty() && !(potentialOwners.size() == 1 && potentialOwners.contains("User:"+identity.getName()))){
                 personalOrGroupTask.setStyleName( "group-task" );
                 personalOrGroupTask.add( new HTML( "Group Task" ) );
             }else{
@@ -128,7 +128,7 @@ public class TaskBox extends Composite {
                 && ( status.equals( "Reserved" ) || status.equals( "InProgress" ) ) ) {
    
             if(!potentialOwners.isEmpty() &&
-                    !(potentialOwners.size() == 1 && potentialOwners.contains(identity.getName()))){
+                    !(potentialOwners.size() == 1 && potentialOwners.contains("User:"+identity.getName()))){
                 personalOrGroupTask.setStyleName( "group-task" );
                 personalOrGroupTask.add( new HTML( "Group Task" ) );
             }else{

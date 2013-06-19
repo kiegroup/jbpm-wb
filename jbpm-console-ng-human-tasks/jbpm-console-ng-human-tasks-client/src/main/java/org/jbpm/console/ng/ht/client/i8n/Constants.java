@@ -126,6 +126,16 @@ public interface Constants extends Messages {
     String Refresh();
     
     String Tasks_Refreshed();
+
+    String Add_User();
+
+    String Add_Group();
+
+    String Remove_User();
+
+    String Remove_Group();
+
+    String Assignments();
     
 
 }

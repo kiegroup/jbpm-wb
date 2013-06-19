@@ -67,8 +67,13 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         for (String s : status) {
             statuses.add(Status.valueOf(s));
         }
-        List<TaskSummary> taskSummaries = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedAsPotentialOwnerByExpirationDateOptional(
+        List<TaskSummary> taskSummaries = null;
+        if(from != null){
+            taskSummaries = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedAsPotentialOwnerByExpirationDateOptional(
                 userId, statuses, from));
+        }else{
+            taskSummaries = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedAsPotentialOwnerByStatus(userId, statuses, "en-UK"));
+        }
         //This is a hack we need to find a way to get the PotentialOwners in a performant way
         List<Long> taskIds = new ArrayList<Long>(taskSummaries.size());
         for (TaskSummary ts : taskSummaries) {
@@ -109,8 +114,23 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
 
 
+    @Override
     public Map<Long, List<String>> getPotentialOwnersForTaskIds(List<Long> taskIds) {
-        return taskService.getPotentialOwnersForTaskIds(taskIds);
+        Map<Long, List<OrganizationalEntity>> potentialOwnersForTaskIds = taskService.getPotentialOwnersForTaskIds(taskIds);
+        Map<Long, List<String>> potentialOwnersForTaskIdsSimple = new HashMap<Long, List<String>>();
+        for(Long taskId : potentialOwnersForTaskIds.keySet()){
+            List<OrganizationalEntity> orgEntities = potentialOwnersForTaskIds.get(taskId);
+            List<String> orgEntitiesSimple = new ArrayList<String>(orgEntities.size());
+            for(OrganizationalEntity entity : orgEntities){
+                if(entity instanceof Group){
+                    orgEntitiesSimple.add("Group:"+entity.getId());
+                }else if(entity instanceof User){
+                    orgEntitiesSimple.add("User:"+entity.getId());
+                }
+            }
+            potentialOwnersForTaskIdsSimple.put(taskId, orgEntitiesSimple);
+        }
+        return potentialOwnersForTaskIdsSimple;
     }
 
     /**
