@@ -286,7 +286,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 displayNotification("**ggggggggggggg*invoke fire ***");
                 pointHistory.fire(new PointHistory(ActionHistoryEnum.NEW_TASK.getDescription()));
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Quick New Task" );
-                //placeManager.goTo( placeRequestImpl );
+                placeManager.goTo( placeRequestImpl );
             }
         } );
 
