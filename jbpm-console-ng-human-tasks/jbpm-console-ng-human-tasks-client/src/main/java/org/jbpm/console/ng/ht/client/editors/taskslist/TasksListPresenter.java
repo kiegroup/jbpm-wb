@@ -241,12 +241,10 @@ public class TasksListPresenter {
 
     /**
      * Refresh tasks based on specified date, view (day/week/month) and task type.
-<<<<<<< HEAD
-=======
+
      * @param date
      * @param taskType
      * @param taskView
->>>>>>> - unifying task lists
      */
     public void refreshTasks(Date date, TaskView taskView, TaskType taskType) {
         switch (taskType) {

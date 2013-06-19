@@ -118,7 +118,7 @@ profile in pom.xml to use that. -->
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
-
+  
   <!-- Designer -->
   <!-- Designer Injection Filter -->
   <filter>
