@@ -137,7 +137,7 @@ public class ActionHistoryPresenter {
 		 * refreshAllTasks(date, taskView); break;
 		 */
 		default:
-			throw new IllegalStateException("Unrecognized task type '"
+			throw new IllegalStateException("Unrecognized event type '"
 					+ eventType + "'!");
 		}
 	}
