@@ -30,10 +30,10 @@ import javax.inject.Inject;
 
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.he.model.ActionHistoryEnum;
+import org.jbpm.console.ng.he.model.PointHistory;
 import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskType;
 import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskView;
-import org.jbpm.console.ng.ht.client.history.ActionHistoryEnum;
-import org.jbpm.console.ng.ht.client.history.PointHistory;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
 import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
 import org.jbpm.console.ng.ht.client.util.CalendarPicker;
@@ -82,6 +82,7 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
+
 
 @Dependent
 @Templated(value = "TasksListViewImpl.html")

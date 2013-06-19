@@ -47,6 +47,12 @@
       <artifactId>jbpm-console-ng-business-domain-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-human-event-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.uberfire</groupId>

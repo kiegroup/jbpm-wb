@@ -1,1 +1,2 @@
-org.jbpm.App
+org.jbpm.console.ng.he.model.PointHistory
+org.jbpm.console.ng.he.model.ActionHistoryEnum

@@ -534,6 +534,10 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-client</compileSourcesArtifact>
 
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-event-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-event-client</compileSourcesArtifact>
+            
+            
             <compileSourcesArtifact>org.jbpm:jbpm-designer-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-designer-client</compileSourcesArtifact>
 
