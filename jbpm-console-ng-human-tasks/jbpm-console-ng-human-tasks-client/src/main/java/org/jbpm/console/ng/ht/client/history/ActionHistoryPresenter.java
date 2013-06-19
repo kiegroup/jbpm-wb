@@ -19,17 +19,14 @@ package org.jbpm.console.ng.ht.client.history;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
-import org.jboss.errai.bus.server.util.SessionContext;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.ht.client.editors.taskslist.TaskListMultiDayBox;
 import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskType;
@@ -44,7 +41,6 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.security.Identity;
 
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
@@ -70,9 +66,6 @@ public class ActionHistoryPresenter {
     private Map<Day, List<TaskSummary>> currentDayTasks;
     
     private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
-    
-    private final String keyHistory = "EventHistory";
-    
     
     
     public List<TaskSummary> getAllTaskSummaries() {
@@ -123,14 +116,17 @@ public class ActionHistoryPresenter {
             actionHistory.setPoints(new LinkedList<PointHistory>());
         }
         actionHistory.getPoints().add(pointHistory);*/
-    	SessionContext sessionEvent = SessionContext.get(actionHistory.getPoints());
+    	
+    	
+    	
+    	/*SessionContext sessionEvent = SessionContext.get(actionHistory.getPoints());
     	Queue<PointHistory> points = sessionEvent.getAttribute(LinkedList.class, EventType.HISTORY);
     	if(points==null){
     		points = new LinkedList<PointHistory>();
     	}else{
     		points.add(pointHistory);
     	}
-    	sessionEvent.setAttribute(EventType.HISTORY, points);
+    	sessionEvent.setAttribute(EventType.HISTORY, points);*/
     }
     
     public void refreshTasks(Date date, TaskView taskView, TaskType taskType) {

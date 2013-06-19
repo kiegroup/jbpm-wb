@@ -36,6 +36,7 @@ import org.jbpm.console.ng.ht.client.util.CalendarPicker;
 import org.jbpm.console.ng.ht.client.util.ResizableHeader;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
+import org.uberfire.workbench.events.NotificationEvent;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.Heading;
@@ -95,6 +96,9 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     @Inject
     @DataField
     public IconAnchor refreshIcon;
+    
+    @Inject
+    private Event<NotificationEvent> notification;
     
     
     private ActionHistoryPresenter presenter;
@@ -429,8 +433,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
 
     @Override
     public void displayNotification(String text) {
-        // TODO Auto-generated method stub
-        
+    	notification.fire( new NotificationEvent( text ) );
     }
 
 	
