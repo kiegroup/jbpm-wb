@@ -48,17 +48,11 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.security.Identity;
 import org.uberfire.security.Role;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
-import org.uberfire.workbench.model.menu.MenuSearchItem;
 
 
 @Dependent
 @WorkbenchScreen(identifier = "Tasks List")
 public class TasksListPresenter {
-
-    public static final int DAYS_FOR_DAY_VIEW = 1;
-    public static final int DAYS_FOR_WEEK_VIEW = 7;
-    public static final int DAYS_FOR_MONTH_VIEW = 35;
-    public static final int DAYS_FOR_GRID_VIEW = 365;
 
     private List<TaskSummary> allTaskSummaries;
 
@@ -88,7 +82,17 @@ public class TasksListPresenter {
     }
 
     public enum TaskView {
-        DAY, WEEK, MONTH, GRID
+        DAY(1), WEEK(7), MONTH(35), GRID(365);
+
+        private int nrOfDaysToShow;
+
+        TaskView(int nrOfDaysToShow) {
+            this.nrOfDaysToShow = nrOfDaysToShow;
+        }
+
+        public int getNrOfDaysToShow() {
+            return nrOfDaysToShow;
+        }
     }
 
     @Inject
@@ -263,7 +267,7 @@ public class TasksListPresenter {
 
     public void refreshPersonalTasks(Date date, TaskView taskView) {
         Date fromDate = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
-        int daysTotal = determineNumberOfDaysForTaskView(taskView);
+        int daysTotal = taskView.getNrOfDaysToShow();
 
         List<String> statuses = new ArrayList<String>(4);
         statuses.add("Ready");
@@ -288,27 +292,6 @@ public class TasksListPresenter {
                 }
             }).getTasksOwnedFromDateToDateByDays(identity.getName(), statuses, fromDate, daysTotal, "en-UK");
         }
-    }
-
-    private int determineNumberOfDaysForTaskView(TaskView taskView) {
-        int daysTotal;
-        switch (taskView) {
-            case DAY:
-                daysTotal = DAYS_FOR_DAY_VIEW;
-                break;
-            case WEEK:
-                daysTotal = DAYS_FOR_WEEK_VIEW;
-                break;
-            case MONTH:
-                daysTotal = DAYS_FOR_MONTH_VIEW;
-                break;
-            case GRID:
-                daysTotal = DAYS_FOR_GRID_VIEW;
-                break;
-            default:
-                throw new IllegalStateException("Unreconginized view type '" + taskView + "'!");
-        }
-        return daysTotal;
     }
 
     private Date determineFirstDateForTaskViewBasedOnSpecifiedDate(Date date, TaskView taskView) {
@@ -337,7 +320,7 @@ public class TasksListPresenter {
 
     public void refreshActiveTasks(Date date, TaskView taskView) {
         Date fromDate = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
-        int daysTotal = determineNumberOfDaysForTaskView(taskView);
+        int daysTotal = taskView.getNrOfDaysToShow();
 
         List<String> statuses = new ArrayList<String>(4);
         statuses.add("Ready");
@@ -365,7 +348,7 @@ public class TasksListPresenter {
 
     public void refreshGroupTasks(Date date, TaskView taskView) {
         Date fromDate = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
-        int daysTotal = determineNumberOfDaysForTaskView(taskView);
+        int daysTotal = taskView.getNrOfDaysToShow();
 
         List<String> groups = getGroups(identity);
         List<String> statuses = new ArrayList<String>(4);
@@ -393,7 +376,7 @@ public class TasksListPresenter {
 
     public void refreshAllTasks(Date date, TaskView taskView) {
         Date fromDate = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
-        int daysTotal = determineNumberOfDaysForTaskView(taskView);
+        int daysTotal = taskView.getNrOfDaysToShow();
 
         List<String> statuses = new ArrayList<String>(4);
         statuses.add("Created");
