@@ -9,5 +9,7 @@ import org.jbpm.console.ng.he.model.HumanEventSummary;
 public interface EventServiceEntryPoint {
 	
 	Queue<HumanEventSummary> getAllHumanEvent();
+	
+	Queue<HumanEventSummary> saveNewHumanEvent(HumanEventSummary pointHistory);
 
 }

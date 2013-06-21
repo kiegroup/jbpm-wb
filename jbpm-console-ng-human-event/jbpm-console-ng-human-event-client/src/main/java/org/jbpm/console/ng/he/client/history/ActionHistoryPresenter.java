@@ -63,6 +63,10 @@ public class ActionHistoryPresenter {
     public enum HumanEventView {
         DAY, WEEK, MONTH, GRID
     }
+    
+    public enum EventType {
+        HISTORY
+    }
 
     public List<HumanEventSummary> getAllEventsSummaries() {
         return allEventsSummaries;
@@ -102,30 +106,14 @@ public class ActionHistoryPresenter {
         return constants.Tasks_List();
     }
 
-    public void saveHistory(@Observes @History HumanEventSummary pointHistory) {
-        addHumanEvent(pointHistory);
-    }
-
-    public enum EventType {
-        HISTORY
-    }
-
-    private void addHumanEvent(HumanEventSummary pointHistory) {
-        throw new IllegalStateException("***************Entro al OBSERVES***************************");
-        /*
-         * if(actionHistory.getPoints()==null){ actionHistory.setPoints(new
-         * LinkedList<PointHistory>()); }
-         * actionHistory.getPoints().add(pointHistory);
-         */
-
-        /*
-         * SessionContext sessionEvent =
-         * SessionContext.get(actionHistory.getPoints()); Queue<PointHistory>
-         * points = sessionEvent.getAttribute(LinkedList.class,
-         * EventType.HISTORY); if(points==null){ points = new
-         * LinkedList<PointHistory>(); }else{ points.add(pointHistory); }
-         * sessionEvent.setAttribute(EventType.HISTORY, points);
-         */
+    public void saveNewEventHistory(@Observes HumanEventSummary pointHistory) {
+        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+            @Override
+            public void callback(Queue<HumanEventSummary> events) {
+                currentDayTasks = events;
+                allEventsSummaries = pasarAListProvisorio(events);
+            }
+        }).saveNewHumanEvent(pointHistory);
     }
 
     public void refreshEvents(Date date, HumanEventView eventView, HumanEventType eventType) {

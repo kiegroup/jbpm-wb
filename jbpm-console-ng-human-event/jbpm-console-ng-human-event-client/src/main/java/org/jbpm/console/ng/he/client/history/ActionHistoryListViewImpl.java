@@ -267,7 +267,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             }
         };
         taskIdColumn.setSortable(true);
-        myEventListGrid.setColumnWidth(taskIdColumn, "40px");
+        myEventListGrid.setColumnWidth(taskIdColumn, "80px");
 
         myEventListGrid.addColumn(taskIdColumn, new ResizableHeader("Id event"/*constants.Id()*/, myEventListGrid, taskIdColumn));
         sortHandler.setComparator(taskIdColumn, new Comparator<HumanEventSummary>() {
@@ -352,28 +352,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             }
         });
         
-        // Action event.
-        Column<HumanEventSummary, String> actionNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
-            @Override
-            public String getValue(HumanEventSummary object) {
-                return object.getDescriptionEvent();
-            }
-        };
-        taskNameColumn.setSortable(true);
-
-        myEventListGrid.addColumn(typeNameColumn, new ResizableHeader("Type Event"/*
-                                                                                   * constants
-                                                                                   * .
-                                                                                   * Task
-                                                                                   * (
-                                                                                   * )
-                                                                                   */, myEventListGrid, typeNameColumn));
-        sortHandler.setComparator(typeNameColumn, new Comparator<HumanEventSummary>() {
-            @Override
-            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
-                return o1.getTypeEvent().compareTo(o2.getTypeEvent());
-            }
-        });
 
 
     }

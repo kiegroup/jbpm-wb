@@ -122,8 +122,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
 	public Map<Long, List<String>> getPotentialOwnersForTaskIds(
 			List<Long> taskIds) {
-		//return taskService.getPotentialOwnersForTaskIds(taskIds);
-		return null;
+		return taskService.getPotentialOwnersForTaskIds(taskIds);
 	}
 
 	/**

@@ -259,7 +259,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     }
 
     private void initTableColumns(final SelectionModel<HumanEventSummary> selectionModel) {
-        // Id
+        // idEvent
         Column<HumanEventSummary, Number> taskIdColumn = new Column<HumanEventSummary, Number>(new NumberCell()) {
             @Override
             public Number getValue(HumanEventSummary object) {
@@ -267,13 +267,13 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             }
         };
         taskIdColumn.setSortable(true);
-        myEventListGrid.setColumnWidth(taskIdColumn, "40px");
+        myEventListGrid.setColumnWidth(taskIdColumn, "80px");
 
-        myEventListGrid.addColumn(taskIdColumn, new ResizableHeader(constants.Id(), myEventListGrid, taskIdColumn));
+        myEventListGrid.addColumn(taskIdColumn, new ResizableHeader("Id event"/*constants.Id()*/, myEventListGrid, taskIdColumn));
         sortHandler.setComparator(taskIdColumn, new Comparator<HumanEventSummary>() {
             @Override
             public int compare(HumanEventSummary o1, HumanEventSummary o2) {
-                return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
+                return Long.valueOf(o1.getIdEvent()).compareTo(Long.valueOf(o2.getIdEvent()));
             }
         });
 
@@ -351,73 +351,8 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
                 return o1.getEventTime().compareTo(o2.getEventTime());
             }
         });
+        
 
-        List<HasCell<HumanEventSummary, ?>> cells = new LinkedList<HasCell<HumanEventSummary, ?>>();
-        /*
-         * cells.add(new StartActionHasCell("Start", new
-         * ActionCell.Delegate<HumanEventSummary>() {
-         * 
-         * @Override public void execute(HumanEventSummary task) { List<Long>
-         * tasks = new ArrayList<Long>(1); tasks.add(task.getId());
-         * presenter.startTasks(tasks, identity.getName()); } }));
-         */
-
-        /*
-         * cells.add(new CompleteActionHasCell("Complete", new
-         * ActionCell.Delegate<HumanEventSummary>() {
-         * 
-         * @Override public void execute(HumanEventSummary task) { List<Long>
-         * tasks = new ArrayList<Long>(1); tasks.add(task.getId());
-         * presenter.completeTasks(tasks, identity.getName()); } }));
-         */
-
-        /*
-         * cells.add(new ClaimActionHasCell("Claim", new
-         * ActionCell.Delegate<HumanEventSummary>() {
-         * 
-         * @Override public void execute(HumanEventSummary task) { List<Long>
-         * tasks = new ArrayList<Long>(1); tasks.add(task.getId());
-         * presenter.claimTasks(tasks, identity.getName()); } }));
-         */
-
-        /*
-         * cells.add(new ReleaseActionHasCell("Release", new
-         * ActionCell.Delegate<HumanEventSummary>() {
-         * 
-         * @Override public void execute(HumanEventSummary task) { List<Long>
-         * tasks = new ArrayList<Long>(1); tasks.add(task.getId());
-         * presenter.releaseTasks(tasks, identity.getName()); } }));
-         */
-
-        /*
-         * cells.add(new DetailsHasCell("Edit", new
-         * ActionCell.Delegate<HumanEventSummary>() {
-         * 
-         * @Override public void execute(HumanEventSummary task) { PlaceRequest
-         * placeRequestImpl = new DefaultPlaceRequest("Task Details Popup");
-         * placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
-         * placeManager.goTo(placeRequestImpl); } }));
-         */
-
-        /*
-         * cells.add(new PopupActionHasCell("Work Popup", new
-         * ActionCell.Delegate<HumanEventSummary>() {
-         * 
-         * @Override public void execute(HumanEventSummary task) { PlaceRequest
-         * placeRequestImpl = new DefaultPlaceRequest("Form Display");
-         * placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
-         * 
-         * placeManager.goTo(placeRequestImpl); } }));
-         */
-
-        CompositeCell<HumanEventSummary> cell = new CompositeCell<HumanEventSummary>(cells);
-        Column<HumanEventSummary, HumanEventSummary> actionsColumn = new Column<HumanEventSummary, HumanEventSummary>(cell) {
-            @Override
-            public HumanEventSummary getValue(HumanEventSummary object) {
-                return object;
-            }
-        };
-        myEventListGrid.addColumn(actionsColumn, constants.Actions());
 
     }
 

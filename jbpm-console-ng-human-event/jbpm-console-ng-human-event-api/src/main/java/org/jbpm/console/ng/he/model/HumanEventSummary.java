@@ -43,10 +43,11 @@ public class HumanEventSummary implements Serializable {
 		this.eventTime = new Date();
 	}
 
-	public HumanEventSummary(String itemHistory, long idEvent) {
+	public HumanEventSummary(String itemHistory, long idEvent, String typeEvent) {
 		super();
 		this.descriptionEvent = itemHistory;
 		this.idEvent = idEvent;
+		this.typeEvent = typeEvent;
 		this.eventTime = new Date();
 	}
 
