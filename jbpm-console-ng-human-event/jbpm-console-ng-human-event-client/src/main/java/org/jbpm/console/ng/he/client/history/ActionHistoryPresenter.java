@@ -18,10 +18,7 @@ package org.jbpm.console.ng.he.client.history;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 
 import javax.enterprise.context.Dependent;
@@ -33,18 +30,17 @@ import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.he.service.EventServiceEntryPoint;
-import org.jbpm.console.ng.ht.model.Day;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.security.Identity;
 
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
-import com.github.gwtbootstrap.client.ui.TextBox;
 
 @Dependent
 @WorkbenchScreen(identifier = "Actions Histories")
@@ -52,18 +48,12 @@ public class ActionHistoryPresenter {
 
     private List<HumanEventSummary> allEventsSummaries;
 
-    private Queue<HumanEventSummary> currentDayTasks;
-
     private ListDataProvider<HumanEventSummary> dataProvider = new ListDataProvider<HumanEventSummary>();
 
     public enum HumanEventType {
         PERSONAL, ACTIVE, GROUP, ALL
     }
 
-    public enum HumanEventView {
-        DAY, WEEK, MONTH, GRID
-    }
-    
     public enum EventType {
         HISTORY
     }
@@ -103,76 +93,54 @@ public class ActionHistoryPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.Tasks_List();
+        return constants.List_Human_Event();
     }
 
     public void saveNewEventHistory(@Observes HumanEventSummary pointHistory) {
         humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
             @Override
             public void callback(Queue<HumanEventSummary> events) {
-                currentDayTasks = events;
                 allEventsSummaries = pasarAListProvisorio(events);
             }
         }).saveNewHumanEvent(pointHistory);
     }
 
-    public void refreshEvents(Date date, HumanEventView eventView, HumanEventType eventType) {
+    public void refreshEvents(Date date, HumanEventType eventType) {
         switch (eventType) {
         case ACTIVE:
-            refreshHumanEvent(date, eventView);
+            refreshHumanEvent(date);
             break;
         case PERSONAL:
-            refreshHumanEvent(date, eventView);
+            refreshHumanEvent(date);
             break;
         case GROUP:
-            refreshHumanEvent(date, eventView);
+            refreshHumanEvent(date);
             break;
         case ALL:
-            refreshHumanEvent(date, eventView);
+            refreshHumanEvent(date);
             break;
         default:
             throw new IllegalStateException("Unrecognized event type '" + eventType + "'!");
         }
     }
 
-    public void refreshHumanEvent(Date date, HumanEventView taskView) {
-        // List<String> statuses = new ArrayList<String>(4);
-        // statuses.add("Ready");
-        // statuses.add("InProgress");
-        // statuses.add("Created");
-        // statuses.add("Reserved");
-
+    public void refreshHumanEvent(Date date) {
         humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
             @Override
             public void callback(Queue<HumanEventSummary> events) {
-                currentDayTasks = events;
                 allEventsSummaries = pasarAListProvisorio(events);
                 filterTasks(view.getSearchBox().getText());
             }
         }).getAllHumanEvent();
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    private List<HumanEventSummary> pasarAListProvisorio(Queue<HumanEventSummary> events){
+
+    private List<HumanEventSummary> pasarAListProvisorio(Queue<HumanEventSummary> events) {
         List<HumanEventSummary> eventsList = new ArrayList<HumanEventSummary>();
-        for(HumanEventSummary ev : events){
+        for (HumanEventSummary ev : events) {
             eventsList.add(ev);
         }
         return eventsList;
     }
-    
-    
-    
-    
-    
-    
-    
 
     public void filterTasks(String text) {
         if (text.equals("")) {
@@ -181,15 +149,6 @@ public class ActionHistoryPresenter {
                 dataProvider.setList(new ArrayList<HumanEventSummary>(allEventsSummaries));
                 dataProvider.refresh();
 
-            }
-            if (currentDayTasks != null) {
-                // view.getTaskListMultiDayBox().clear();
-                /*
-                 * for (Day day : currentDayTasks.keySet()) {
-                 * view.getTaskListMultiDayBox() .addTasksByDay( day, new
-                 * ArrayList<HumanEventSummary>(currentDayTasks .get(day))); }
-                 */
-                // view.getTaskListMultiDayBox().refresh();
             }
         } else {
             if (allEventsSummaries != null) {
@@ -204,70 +163,7 @@ public class ActionHistoryPresenter {
                 dataProvider.setList(filteredTasksSimple);
                 dataProvider.refresh();
             }
-            if (currentDayTasks != null) {
-                Queue<HumanEventSummary> tasksCalendar = new LinkedList<HumanEventSummary>(currentDayTasks);
-                Map<Day, List<HumanEventSummary>> filteredTasksCalendar = new HashMap<Day, List<HumanEventSummary>>();
-                // view.getTaskListMultiDayBox().clear();
-                /*
-                 * for (Day d : tasksCalendar.keySet()) { if
-                 * (filteredTasksCalendar.get(d) == null) {
-                 * filteredTasksCalendar.put(d, new
-                 * ArrayList<HumanEventSummary>()); } for (HumanEventSummary ts
-                 * : tasksCalendar.get(d)) { if
-                 * (ts.getDescriptionEvent().toLowerCase()
-                 * .contains(text.toLowerCase())) {
-                 * filteredTasksCalendar.get(d).add(ts); } } }
-                 */
-                /*
-                 * for (Day day : filteredTasksCalendar.keySet()) {
-                 * view.getTaskListMultiDayBox().addTasksByDay( day, new
-                 * ArrayList<HumanEventSummary>(filteredTasksCalendar
-                 * .get(day))); }
-                 */
-                // view.getTaskListMultiDayBox().refresh();
-            }
         }
-
-    }
-
-    public void claimTasks(List<Long> selectedTasks, final String userId) {
-        /*
-         * humanEventServices.call(new RemoteCallback<List<TaskSummary>>() {
-         * 
-         * @Override public void callback(List<TaskSummary> tasks) {
-         * view.displayNotification("Task(s) Claimed");
-         * view.refreshHumanEvents();
-         * 
-         * } }).claimBatch(selectedTasks, userId);
-         */
-
-        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
-            @Override
-            public void callback(Queue<HumanEventSummary> events) {
-                view.displayNotification("Task(s) Claimed");
-                view.refreshHumanEvents();
-
-            }
-        }).getAllHumanEvent();
-
-    }
-
-    public void releaseTasks(List<Long> selectedTasks, final String userId) {
-        /*
-         * humanEventServices.call(new RemoteCallback<List<TaskSummary>>() {
-         * 
-         * @Override public void callback(List<TaskSummary> tasks) {
-         * view.displayNotification("Task(s) Released");
-         * view.refreshHumanEvents(); } }).releaseBatch(selectedTasks, userId);
-         */
-
-        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
-            @Override
-            public void callback(Queue<HumanEventSummary> events) {
-                view.displayNotification("Task(s) Released");
-                view.refreshHumanEvents();
-            }
-        }).getAllHumanEvent();
 
     }
 
