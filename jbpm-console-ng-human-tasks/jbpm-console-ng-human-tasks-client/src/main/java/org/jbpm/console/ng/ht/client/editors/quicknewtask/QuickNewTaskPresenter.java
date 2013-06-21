@@ -29,6 +29,8 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.he.model.ActionHistoryEnum;
+import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
@@ -73,6 +75,9 @@ public class QuickNewTaskPresenter {
 
     @Inject
     private PlaceManager placeManager;
+    
+    @Inject
+    private Event<HumanEventSummary> pointHistoryEvent;
 
     @OnStart
     public void onStart( final PlaceRequest place ) {
@@ -125,6 +130,7 @@ public class QuickNewTaskPresenter {
             taskServices.call( new RemoteCallback<Long>() {
                 @Override
                 public void callback( Long taskId ) {
+                	//pointHistoryEvent.fire(new HumanEventSummary(ActionHistoryEnum.TASK_CREATED.getDescription(), taskId));
                     view.displayNotification( "Task Created (id = " + taskId + ")" );
                     close();
 

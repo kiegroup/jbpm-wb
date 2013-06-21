@@ -32,7 +32,7 @@ import org.jbpm.console.ng.he.client.history.ActionHistoryPresenter.HumanEventTy
 import org.jbpm.console.ng.he.client.history.ActionHistoryPresenter.HumanEventView;
 import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.jbpm.console.ng.he.client.util.ResizableHeader;
-import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.uberfire.workbench.events.NotificationEvent;
 
@@ -41,8 +41,8 @@ import com.github.gwtbootstrap.client.ui.Heading;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
-import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
@@ -50,7 +50,8 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
@@ -63,387 +64,332 @@ import com.google.gwt.view.client.SelectionModel;
 
 @Dependent
 @Templated(value = "ActionHistoryListViewImpl.html")
-public class ActionHistoryListViewImpl extends Composite implements
-		ActionHistoryPresenter.ActionHistoryView {
-	private Constants constants = GWT.create(Constants.class);
+public class ActionHistoryListViewImpl extends Composite implements ActionHistoryPresenter.ActionHistoryView {
+    private Constants constants = GWT.create(Constants.class);
 
-	@Inject
-	@DataField
-	public NavLink showAllTasksNavLink;
+    @Inject
+    @DataField
+    public NavLink showAllTasksNavLink;
 
-	@Inject
-	@DataField
-	public NavLink showPersonalTasksNavLink;
+    @Inject
+    @DataField
+    public NavLink showPersonalTasksNavLink;
+    
+    @Inject
+    @DataField
+    public TextBox searchBox;
 
-	@Inject
-	@DataField
-	public NavLink showGroupTasksNavLink;
+    @Inject
+    @DataField
+    public NavLink showGroupTasksNavLink;
 
-	@DataField
-	public Heading taskCalendarViewLabel = new Heading(4);
+    @DataField
+    public Heading taskCalendarViewLabel = new Heading(4);
 
-	@Inject
-	@DataField
-	public FlowPanel tasksViewContainer;
+    @Inject
+    @DataField
+    public FlowPanel eventsViewContainer;
 
-	@Inject
-	@DataField
-	public IconAnchor refreshIcon;
+    @Inject
+    @DataField
+    public IconAnchor refreshIcon;
 
-	@Inject
-	private Event<NotificationEvent> notification;
+    @Inject
+    private Event<NotificationEvent> notification;
 
-	private ActionHistoryPresenter presenter;
+    private ActionHistoryPresenter presenter;
 
-	private HumanEventView currentView = HumanEventView.DAY;
+    private HumanEventView currentView = HumanEventView.DAY;
 
-	public DataGrid<TaskSummary> myTaskListGrid;
+    public DataGrid<HumanEventSummary> myEventListGrid;
 
-	public SimplePager pager;
-	private Set<TaskSummary> selectedTasks;
-	private ListHandler<TaskSummary> sortHandler;
-	private MultiSelectionModel<TaskSummary> selectionModel;
-	@Inject
-	private Event<TaskSelectionEvent> taskSelection;
+    public SimplePager pager;
+    private Set<HumanEventSummary> selectedTasks;
+    private ListHandler<HumanEventSummary> sortHandler;
+    private MultiSelectionModel<HumanEventSummary> selectionModel;
+    @Inject
+    private Event<TaskSelectionEvent> taskSelection;
 
-	@Inject
-	private TaskListMultiDayBox taskListMultiDayBox;
+    // @Inject
+    // private TaskListMultiDayBox taskListMultiDayBox;
 
-	private Date currentDate;
-	private HumanEventType currentEventHumanType = HumanEventType.ACTIVE;
+    private Date currentDate;
+    private HumanEventType currentEventHumanType = HumanEventType.ACTIVE;
 
-	@Override
-	public TaskListMultiDayBox getTaskListMultiDayBox() {
-		return taskListMultiDayBox;
-	}
+    // @Override
+    // public TaskListMultiDayBox getTaskListMultiDayBox() {
+    // return taskListMultiDayBox;
+    // }
 
-	@Override
-	public void refreshHumanEvents() {
-		presenter
-				.refreshEvents(currentDate, currentView, currentEventHumanType);
-	}
+    @Override
+    public void refreshHumanEvents() {
+        presenter.refreshEvents(currentDate, currentView, currentEventHumanType);
+    }
 
-	@Override
-	public void init(ActionHistoryPresenter presenter) {
-		this.presenter = presenter;
+    @Override
+    public void init(ActionHistoryPresenter presenter) {
+        this.presenter = presenter;
 
-		refreshIcon.setTitle(constants.Refresh());
-		refreshIcon.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				refreshHumanEvents();
-				displayNotification(constants.Tasks_Refreshed());
-			}
-		});
+        refreshIcon.setTitle(constants.Refresh());
+        refreshIcon.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                refreshHumanEvents();
+                searchBox.setText("");
+                displayNotification(constants.Tasks_Refreshed());
+            }
+        });
 
-		taskListMultiDayBox.init();
-		// taskListMultiDayBox.setPresenter( presenter );
-		currentDate = new Date();
+        // taskListMultiDayBox.init();
+        // taskListMultiDayBox.setPresenter(presenter);
+        currentDate = new Date();
 
-		// By Default we will start in Grid View
-		initializeGridView();
+        // By Default we will start in Grid View
+        initializeGridView();
 
-		// Filters
-		showPersonalTasksNavLink.setText(constants.Personal());
-		showPersonalTasksNavLink.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				showPersonalTasksNavLink.setStyleName("active");
-				showGroupTasksNavLink.setStyleName("");
-				showAllTasksNavLink.setStyleName("");
-				currentEventHumanType = HumanEventType.PERSONAL;
-				refreshHumanEvents();
+        // Filters
+        showPersonalTasksNavLink.setText(constants.Personal());
+        showPersonalTasksNavLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                showPersonalTasksNavLink.setStyleName("active");
+                showGroupTasksNavLink.setStyleName("");
+                showAllTasksNavLink.setStyleName("");
+                currentEventHumanType = HumanEventType.PERSONAL;
+                refreshHumanEvents();
 
-			}
-		});
+            }
+        });
 
-		showGroupTasksNavLink.setText(constants.Group());
-		showGroupTasksNavLink.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				showGroupTasksNavLink.setStyleName("active");
-				showPersonalTasksNavLink.setStyleName("");
-				showAllTasksNavLink.setStyleName("");
-				currentEventHumanType = HumanEventType.GROUP;
-				refreshHumanEvents();
+        showGroupTasksNavLink.setText(constants.Group());
+        showGroupTasksNavLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                showGroupTasksNavLink.setStyleName("active");
+                showPersonalTasksNavLink.setStyleName("");
+                showAllTasksNavLink.setStyleName("");
+                currentEventHumanType = HumanEventType.GROUP;
+                refreshHumanEvents();
 
-			}
-		});
+            }
+        });
 
-		showAllTasksNavLink.setText(constants.All());
-		showAllTasksNavLink.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				showGroupTasksNavLink.setStyleName("");
-				showPersonalTasksNavLink.setStyleName("");
-				showAllTasksNavLink.setStyleName("active");
-				currentEventHumanType = HumanEventType.ALL;
-				refreshHumanEvents();
+        showAllTasksNavLink.setText(constants.All());
+        showAllTasksNavLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                showGroupTasksNavLink.setStyleName("");
+                showPersonalTasksNavLink.setStyleName("");
+                showAllTasksNavLink.setStyleName("active");
+                currentEventHumanType = HumanEventType.ALL;
+                refreshHumanEvents();
 
-			}
-		});
+            }
+        });
 
-		taskCalendarViewLabel
-				.setText("Human Events" /* constants.Tasks_List() */);
-		taskCalendarViewLabel.setStyleName("");
+        taskCalendarViewLabel.setText("Human Events" /* constants.Tasks_List() */);
+        taskCalendarViewLabel.setStyleName("");
+        
+        searchBox.addKeyUpHandler(new KeyUpHandler() {
 
-		refreshHumanEvents();
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32) {
+                    displayNotification("Filter: |" + searchBox.getText() + "|");
+                    filterTasks(searchBox.getText());
+                }
 
-	}
+            }
+        });
 
-	private void initializeGridView() {
-		tasksViewContainer.clear();
-		currentView = HumanEventView.GRID;
-		myTaskListGrid = new DataGrid<TaskSummary>();
-		myTaskListGrid
-				.setStyleName("table table-bordered table-striped table-hover");
-		pager = new SimplePager();
-		pager.setStyleName("pagination pagination-right pull-right");
-		pager.setDisplay(myTaskListGrid);
-		pager.setPageSize(30);
+        refreshHumanEvents();
 
-		tasksViewContainer.add(myTaskListGrid);
-		tasksViewContainer.add(pager);
+    }
+    
+    public void filterTasks(String text) {
+        presenter.filterTasks(text);
+    }
+    
 
-		myTaskListGrid.setHeight("350px");
-		// Set the message to display when the table is empty.
-		myTaskListGrid.setEmptyTableWidget(new Label(constants
-				.No_Pending_Tasks_Enjoy()));
+    private void initializeGridView() {
+        eventsViewContainer.clear();
+        currentView = HumanEventView.GRID;
+        myEventListGrid = new DataGrid<HumanEventSummary>();
+        myEventListGrid.setStyleName("table table-bordered table-striped table-hover");
+        pager = new SimplePager();
+        pager.setStyleName("pagination pagination-right pull-right");
+        pager.setDisplay(myEventListGrid);
+        pager.setPageSize(30);
 
-		// Attach a column sort handler to the ListDataProvider to sort the
-		// list.
-		sortHandler = new ColumnSortEvent.ListHandler<TaskSummary>(
-				presenter.getAllTaskSummaries());
+        eventsViewContainer.add(myEventListGrid);
+        eventsViewContainer.add(pager);
 
-		myTaskListGrid.addColumnSortHandler(sortHandler);
+        myEventListGrid.setHeight("350px");
+        // Set the message to display when the table is empty.
+        myEventListGrid.setEmptyTableWidget(new Label("No event"/*
+                                                                 * constants .
+                                                                 * No_Pending_Tasks_Enjoy
+                                                                 * ()
+                                                                 */));
 
-		// Add a selection model so we can select cells.
-		selectionModel = new MultiSelectionModel<TaskSummary>();
-		selectionModel
-				.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
-					@Override
-					public void onSelectionChange(SelectionChangeEvent event) {
-						selectedTasks = selectionModel.getSelectedSet();
-						for (TaskSummary ts : selectedTasks) {
-							taskSelection.fire(new TaskSelectionEvent(ts
-									.getId()));
-						}
-					}
-				});
+        // Attach a column sort handler to the ListDataProvider to sort the
+        // list.
+        sortHandler = new ColumnSortEvent.ListHandler<HumanEventSummary>(presenter.getAllEventsSummaries());
 
-		myTaskListGrid.setSelectionModel(selectionModel,
-				DefaultSelectionEventManager
-						.<TaskSummary> createCheckboxManager());
+        myEventListGrid.addColumnSortHandler(sortHandler);
 
-		initTableColumns(selectionModel);
-		presenter.addDataDisplay(myTaskListGrid);
+        // Add a selection model so we can select cells.
+        selectionModel = new MultiSelectionModel<HumanEventSummary>();
+        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            @Override
+            public void onSelectionChange(SelectionChangeEvent event) {
+                selectedTasks = selectionModel.getSelectedSet();
+                for (HumanEventSummary ts : selectedTasks) {
+                    taskSelection.fire(new TaskSelectionEvent(ts.getId()));
+                }
+            }
+        });
 
-	}
+        myEventListGrid.setSelectionModel(selectionModel,
+                DefaultSelectionEventManager.<HumanEventSummary> createCheckboxManager());
 
-	private void initTableColumns(
-			final SelectionModel<TaskSummary> selectionModel) {
-		// Checkbox column. This table will uses a checkbox column for
-		// selection.
-		// Alternatively, you can call dataGrid.setSelectionEnabled(true) to
-		// enable
-		// mouse selection.
+        initTableColumns(selectionModel);
+        presenter.addDataDisplay(myEventListGrid);
 
-		Column<TaskSummary, Boolean> checkColumn = new Column<TaskSummary, Boolean>(
-				new CheckboxCell(true, false)) {
-			@Override
-			public Boolean getValue(TaskSummary object) {
-				// Get the value from the selection model.
-				return selectionModel.isSelected(object);
-			}
-		};
-		myTaskListGrid.addColumn(checkColumn,
-				SafeHtmlUtils.fromSafeConstant("<br/>"));
-		myTaskListGrid.setColumnWidth(checkColumn, "40px");
+    }
 
-		// Id
-		Column<TaskSummary, Number> taskIdColumn = new Column<TaskSummary, Number>(
-				new NumberCell()) {
-			@Override
-			public Number getValue(TaskSummary object) {
-				return object.getId();
-			}
-		};
-		taskIdColumn.setSortable(true);
-		myTaskListGrid.setColumnWidth(taskIdColumn, "40px");
+    private void initTableColumns(final SelectionModel<HumanEventSummary> selectionModel) {
+        // idEvent
+        Column<HumanEventSummary, Number> taskIdColumn = new Column<HumanEventSummary, Number>(new NumberCell()) {
+            @Override
+            public Number getValue(HumanEventSummary object) {
+                return object.getId();
+            }
+        };
+        taskIdColumn.setSortable(true);
+        myEventListGrid.setColumnWidth(taskIdColumn, "40px");
 
-		myTaskListGrid.addColumn(taskIdColumn,
-				new ResizableHeader(constants.Id(), myTaskListGrid,
-						taskIdColumn));
-		sortHandler.setComparator(taskIdColumn, new Comparator<TaskSummary>() {
-			@Override
-			public int compare(TaskSummary o1, TaskSummary o2) {
-				return Long.valueOf(o1.getId()).compareTo(
-						Long.valueOf(o2.getId()));
-			}
-		});
+        myEventListGrid.addColumn(taskIdColumn, new ResizableHeader("Id event"/*constants.Id()*/, myEventListGrid, taskIdColumn));
+        sortHandler.setComparator(taskIdColumn, new Comparator<HumanEventSummary>() {
+            @Override
+            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
+                return Long.valueOf(o1.getIdEvent()).compareTo(Long.valueOf(o2.getIdEvent()));
+            }
+        });
 
-		// Human event.
-		Column<TaskSummary, String> taskNameColumn = new Column<TaskSummary, String>(
-				new TextCell()) {
-			@Override
-			public String getValue(TaskSummary object) {
-				return object.getName();
-			}
-		};
-		taskNameColumn.setSortable(true);
+        // Human event.
+        Column<HumanEventSummary, String> taskNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(HumanEventSummary object) {
+                return object.getDescriptionEvent();
+            }
+        };
+        taskNameColumn.setSortable(true);
 
-		myTaskListGrid.addColumn(taskNameColumn, new ResizableHeader(
-				"Human Event"/* constants.Task() */, myTaskListGrid,
-				taskNameColumn));
-		sortHandler.setComparator(taskNameColumn,
-				new Comparator<TaskSummary>() {
-					@Override
-					public int compare(TaskSummary o1, TaskSummary o2) {
-						return o1.getName().compareTo(o2.getName());
-					}
-				});
+        myEventListGrid.addColumn(taskNameColumn, new ResizableHeader("Human Event"/*
+                                                                                    * constants
+                                                                                    * .
+                                                                                    * Task
+                                                                                    * (
+                                                                                    * )
+                                                                                    */, myEventListGrid, taskNameColumn));
+        sortHandler.setComparator(taskNameColumn, new Comparator<HumanEventSummary>() {
+            @Override
+            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
+                return o1.getDescriptionEvent().compareTo(o2.getDescriptionEvent());
+            }
+        });
 
-		// Task priority.
-		/*
-		 * Column<TaskSummary, Number> taskPriorityColumn = new
-		 * Column<TaskSummary, Number>(new NumberCell()) {
-		 * 
-		 * @Override public Number getValue(TaskSummary object) { return
-		 * object.getPriority(); } }; taskPriorityColumn.setSortable(true);
-		 * myTaskListGrid.addColumn(taskPriorityColumn, new
-		 * ResizableHeader(constants.Priority(), myTaskListGrid,
-		 * taskPriorityColumn));
-		 * myTaskListGrid.setColumnWidth(taskPriorityColumn, "100px");
-		 * sortHandler.setComparator(taskPriorityColumn, new
-		 * Comparator<TaskSummary>() {
-		 * 
-		 * @Override public int compare(TaskSummary o1, TaskSummary o2) { return
-		 * Integer.valueOf(o1.getPriority()).compareTo(o2.getPriority()); } });
-		 */
+        // Type event.
+        Column<HumanEventSummary, String> typeNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(HumanEventSummary object) {
+                return object.getDescriptionEvent();
+            }
+        };
+        taskNameColumn.setSortable(true);
 
-		// Status.
-		/*
-		 * Column<TaskSummary, String> statusColumn = new Column<TaskSummary,
-		 * String>(new TextCell()) {
-		 * 
-		 * @Override public String getValue(TaskSummary object) { return
-		 * object.getStatus(); } }; statusColumn.setSortable(true);
-		 * 
-		 * myTaskListGrid.addColumn(statusColumn, new
-		 * ResizableHeader(constants.Status(), myTaskListGrid, statusColumn));
-		 * sortHandler.setComparator(statusColumn, new Comparator<TaskSummary>()
-		 * {
-		 * 
-		 * @Override public int compare(TaskSummary o1, TaskSummary o2) { return
-		 * o1.getStatus().compareTo(o2.getStatus()); } });
-		 * myTaskListGrid.setColumnWidth(statusColumn, "100px");
-		 */
+        myEventListGrid.addColumn(typeNameColumn, new ResizableHeader("Type Event"/*
+                                                                                   * constants
+                                                                                   * .
+                                                                                   * Task
+                                                                                   * (
+                                                                                   * )
+                                                                                   */, myEventListGrid, typeNameColumn));
+        sortHandler.setComparator(typeNameColumn, new Comparator<HumanEventSummary>() {
+            @Override
+            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
+                return o1.getTypeEvent().compareTo(o2.getTypeEvent());
+            }
+        });
 
-		// Due Date.
-		Column<TaskSummary, String> dueDateColumn = new Column<TaskSummary, String>(
-				new TextCell()) {
-			@Override
-			public String getValue(TaskSummary object) {
-				if (object.getExpirationTime() != null) {
-					return object.getExpirationTime().toString();
-				}
-				return "";
-			}
-		};
-		dueDateColumn.setSortable(true);
+        // Due Date.
+        Column<HumanEventSummary, String> dueDateColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(HumanEventSummary object) {
+                if (object.getEventTime() != null) {
+                    return object.getEventTime().toString();
+                }
+                return "";
+            }
+        };
+        dueDateColumn.setSortable(true);
 
-		myTaskListGrid.addColumn(dueDateColumn,
-				new ResizableHeader("Time" /* constants.Due_On() */,
-						myTaskListGrid, dueDateColumn));
-		sortHandler.setComparator(dueDateColumn, new Comparator<TaskSummary>() {
-			@Override
-			public int compare(TaskSummary o1, TaskSummary o2) {
-				if (o1.getExpirationTime() == null
-						|| o2.getExpirationTime() == null) {
-					return 0;
-				}
-				return o1.getExpirationTime().compareTo(o2.getExpirationTime());
-			}
-		});
+        myEventListGrid.addColumn(dueDateColumn, new ResizableHeader("Time" /*
+                                                                             * constants
+                                                                             * .
+                                                                             * Due_On
+                                                                             * (
+                                                                             * )
+                                                                             */, myEventListGrid, dueDateColumn));
+        sortHandler.setComparator(dueDateColumn, new Comparator<HumanEventSummary>() {
+            @Override
+            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
+                if (o1.getEventTime() == null || o2.getEventTime() == null) {
+                    return 0;
+                }
+                return o1.getEventTime().compareTo(o2.getEventTime());
+            }
+        });
+        
+        // Action event.
+        Column<HumanEventSummary, String> actionNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(HumanEventSummary object) {
+                return object.getDescriptionEvent();
+            }
+        };
+        taskNameColumn.setSortable(true);
 
-		List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
-		/*
-		 * cells.add(new StartActionHasCell("Start", new
-		 * ActionCell.Delegate<TaskSummary>() {
-		 * 
-		 * @Override public void execute(TaskSummary task) { List<Long> tasks =
-		 * new ArrayList<Long>(1); tasks.add(task.getId());
-		 * presenter.startTasks(tasks, identity.getName()); } }));
-		 */
+        myEventListGrid.addColumn(typeNameColumn, new ResizableHeader("Type Event"/*
+                                                                                   * constants
+                                                                                   * .
+                                                                                   * Task
+                                                                                   * (
+                                                                                   * )
+                                                                                   */, myEventListGrid, typeNameColumn));
+        sortHandler.setComparator(typeNameColumn, new Comparator<HumanEventSummary>() {
+            @Override
+            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
+                return o1.getTypeEvent().compareTo(o2.getTypeEvent());
+            }
+        });
 
-		/*
-		 * cells.add(new CompleteActionHasCell("Complete", new
-		 * ActionCell.Delegate<TaskSummary>() {
-		 * 
-		 * @Override public void execute(TaskSummary task) { List<Long> tasks =
-		 * new ArrayList<Long>(1); tasks.add(task.getId());
-		 * presenter.completeTasks(tasks, identity.getName()); } }));
-		 */
 
-		/*
-		 * cells.add(new ClaimActionHasCell("Claim", new
-		 * ActionCell.Delegate<TaskSummary>() {
-		 * 
-		 * @Override public void execute(TaskSummary task) { List<Long> tasks =
-		 * new ArrayList<Long>(1); tasks.add(task.getId());
-		 * presenter.claimTasks(tasks, identity.getName()); } }));
-		 */
+    }
 
-		/*
-		 * cells.add(new ReleaseActionHasCell("Release", new
-		 * ActionCell.Delegate<TaskSummary>() {
-		 * 
-		 * @Override public void execute(TaskSummary task) { List<Long> tasks =
-		 * new ArrayList<Long>(1); tasks.add(task.getId());
-		 * presenter.releaseTasks(tasks, identity.getName()); } }));
-		 */
+    @Override
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
+    }
 
-		/*
-		 * cells.add(new DetailsHasCell("Edit", new
-		 * ActionCell.Delegate<TaskSummary>() {
-		 * 
-		 * @Override public void execute(TaskSummary task) { PlaceRequest
-		 * placeRequestImpl = new DefaultPlaceRequest("Task Details Popup");
-		 * placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
-		 * placeManager.goTo(placeRequestImpl); } }));
-		 */
-
-		/*
-		 * cells.add(new PopupActionHasCell("Work Popup", new
-		 * ActionCell.Delegate<TaskSummary>() {
-		 * 
-		 * @Override public void execute(TaskSummary task) { PlaceRequest
-		 * placeRequestImpl = new DefaultPlaceRequest("Form Display");
-		 * placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
-		 * 
-		 * placeManager.goTo(placeRequestImpl); } }));
-		 */
-
-		CompositeCell<TaskSummary> cell = new CompositeCell<TaskSummary>(cells);
-		Column<TaskSummary, TaskSummary> actionsColumn = new Column<TaskSummary, TaskSummary>(
-				cell) {
-			@Override
-			public TaskSummary getValue(TaskSummary object) {
-				return object;
-			}
-		};
-		myTaskListGrid.addColumn(actionsColumn, constants.Actions());
-
-	}
-
-	@Override
-	public void displayNotification(String text) {
-		notification.fire(new NotificationEvent(text));
-	}
-
-	@Override
-	public MultiSelectionModel<TaskSummary> getSelectionModel() {
-		return selectionModel;
-	}
+    @Override
+    public MultiSelectionModel<HumanEventSummary> getSelectionModel() {
+        return selectionModel;
+    }
+    
+    public TextBox getSearchBox() {
+        return searchBox;
+    }
 
 }

@@ -19,8 +19,10 @@ package org.jbpm.console.ng.he.client.history;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
@@ -29,10 +31,9 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.he.client.i8n.Constants;
-import org.jbpm.console.ng.he.model.PointHistory;
+import org.jbpm.console.ng.he.model.HumanEventSummary;
+import org.jbpm.console.ng.he.service.EventServiceEntryPoint;
 import org.jbpm.console.ng.ht.model.Day;
-import org.jbpm.console.ng.ht.model.TaskSummary;
-import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -43,224 +44,247 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
+import com.github.gwtbootstrap.client.ui.TextBox;
 
 @Dependent
 @WorkbenchScreen(identifier = "Actions Histories")
 public class ActionHistoryPresenter {
 
-	@Inject
-	private ActionHistoryView view;
+    private List<HumanEventSummary> allEventsSummaries;
 
-	@Inject
-	private Identity identity;
-	@Inject
-	private Caller<TaskServiceEntryPoint> taskServices;
+    private Queue<HumanEventSummary> currentDayTasks;
 
-	private List<TaskSummary> allTaskSummaries;
+    private ListDataProvider<HumanEventSummary> dataProvider = new ListDataProvider<HumanEventSummary>();
 
-	private Map<Day, List<TaskSummary>> currentDayTasks;
+    public enum HumanEventType {
+        PERSONAL, ACTIVE, GROUP, ALL
+    }
 
-	private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
+    public enum HumanEventView {
+        DAY, WEEK, MONTH, GRID
+    }
 
-	public enum HumanEventType {
-		PERSONAL, ACTIVE, GROUP, ALL
-	}
+    public List<HumanEventSummary> getAllEventsSummaries() {
+        return allEventsSummaries;
+    }
 
-	public enum HumanEventView {
-		DAY, WEEK, MONTH, GRID
-	}
+    public interface ActionHistoryView extends UberView<ActionHistoryPresenter> {
 
-	public List<TaskSummary> getAllTaskSummaries() {
-		return allTaskSummaries;
-	}
+        void displayNotification(String text);
 
-	public interface ActionHistoryView extends UberView<ActionHistoryPresenter> {
+        // TaskListMultiDayBox getTaskListMultiDayBox();
 
-		void displayNotification(String text);
+        MultiSelectionModel<HumanEventSummary> getSelectionModel();
 
-		TaskListMultiDayBox getTaskListMultiDayBox();
+        TextBox getSearchBox();
 
-		MultiSelectionModel<TaskSummary> getSelectionModel();
+        void refreshHumanEvents();
+    }
 
-		// TextBox getSearchBox();
+    @Inject
+    private ActionHistoryView view;
 
-		void refreshHumanEvents();
-	}
+    @Inject
+    private Identity identity;
 
-	@WorkbenchPartView
-	public UberView<ActionHistoryPresenter> getView() {
-		return view;
-	}
+    @Inject
+    private Caller<EventServiceEntryPoint> humanEventServices;
 
-	private Constants constants = GWT.create(Constants.class);
+    @WorkbenchPartView
+    public UberView<ActionHistoryPresenter> getView() {
+        return view;
+    }
 
-	@WorkbenchPartTitle
-	public String getTitle() {
-		return constants.Tasks_List();
-	}
+    private Constants constants = GWT.create(Constants.class);
 
-	public void saveHistory(@Observes @History PointHistory pointHistory) {
-		updateHistory(pointHistory);
-	}
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return constants.Tasks_List();
+    }
 
-	public enum EventType {
-		HISTORY
-	}
+    public void saveHistory(@Observes @History HumanEventSummary pointHistory) {
+        addHumanEvent(pointHistory);
+    }
 
-	private void updateHistory(PointHistory pointHistory) {
-		/*
-		 * if(actionHistory.getPoints()==null){ actionHistory.setPoints(new
-		 * LinkedList<PointHistory>()); }
-		 * actionHistory.getPoints().add(pointHistory);
-		 */
+    public enum EventType {
+        HISTORY
+    }
 
-		/*
-		 * SessionContext sessionEvent =
-		 * SessionContext.get(actionHistory.getPoints()); Queue<PointHistory>
-		 * points = sessionEvent.getAttribute(LinkedList.class,
-		 * EventType.HISTORY); if(points==null){ points = new
-		 * LinkedList<PointHistory>(); }else{ points.add(pointHistory); }
-		 * sessionEvent.setAttribute(EventType.HISTORY, points);
-		 */
-	}
+    private void addHumanEvent(HumanEventSummary pointHistory) {
+        throw new IllegalStateException("***************Entro al OBSERVES***************************");
+        /*
+         * if(actionHistory.getPoints()==null){ actionHistory.setPoints(new
+         * LinkedList<PointHistory>()); }
+         * actionHistory.getPoints().add(pointHistory);
+         */
 
-	public void refreshEvents(Date date, HumanEventView eventView,
-			HumanEventType eventType) {
-		refreshHumanEvent(date, eventView);
-		switch (eventType) {
-		case ACTIVE:
-			refreshHumanEvent(date, eventView);
-			break;
-		/*
-		 * case ACTIVE: refreshActiveTasks(date, taskView); break; case GROUP:
-		 * refreshGroupTasks(date, taskView); break; case ALL:
-		 * refreshAllTasks(date, taskView); break;
-		 */
-		default:
-			throw new IllegalStateException("Unrecognized event type '"
-					+ eventType + "'!");
-		}
-	}
+        /*
+         * SessionContext sessionEvent =
+         * SessionContext.get(actionHistory.getPoints()); Queue<PointHistory>
+         * points = sessionEvent.getAttribute(LinkedList.class,
+         * EventType.HISTORY); if(points==null){ points = new
+         * LinkedList<PointHistory>(); }else{ points.add(pointHistory); }
+         * sessionEvent.setAttribute(EventType.HISTORY, points);
+         */
+    }
 
-	public void refreshHumanEvent(Date date, HumanEventView taskView) {
-		Date fromDate = new Date(); // determineFirstDateForEventViewBasedOnSpecifiedDate(date,
-									// EventView);
-		int daysTotal = 1; // determineNumberOfDaysForEventView(EventView);
+    public void refreshEvents(Date date, HumanEventView eventView, HumanEventType eventType) {
+        switch (eventType) {
+        case ACTIVE:
+            refreshHumanEvent(date, eventView);
+            break;
+        case PERSONAL:
+            refreshHumanEvent(date, eventView);
+            break;
+        case GROUP:
+            refreshHumanEvent(date, eventView);
+            break;
+        case ALL:
+            refreshHumanEvent(date, eventView);
+            break;
+        default:
+            throw new IllegalStateException("Unrecognized event type '" + eventType + "'!");
+        }
+    }
 
-		List<String> statuses = new ArrayList<String>(4);
-		statuses.add("Ready");
-		statuses.add("InProgress");
-		statuses.add("Created");
-		statuses.add("Reserved");
-		/*
-		 * if (EventView.equals(EventView.GRID)) { taskServices.call(new
-		 * RemoteCallback<List<TaskSummary>>() {
-		 * 
-		 * @Override public void callback(List<TaskSummary> tasks) {
-		 * allTaskSummaries = tasks; //
-		 * filterTasks(view.getSearchBox().getText()); }
-		 * }).getTasksOwnedByExpirationDateOptional(identity.getName(),
-		 * statuses, fromDate, "en-UK");
-		 * 
-		 * } else {
-		 */
-		taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
-			@Override
-			public void callback(Map<Day, List<TaskSummary>> tasks) {
-				currentDayTasks = tasks;
-				// filterTasks(view.getSearchBox().getText());
-			}
-		}).getTasksOwnedFromDateToDateByDays(identity.getName(), statuses,
-				fromDate, daysTotal, "en-UK");
-		/* } */
-	}
+    public void refreshHumanEvent(Date date, HumanEventView taskView) {
+        // List<String> statuses = new ArrayList<String>(4);
+        // statuses.add("Ready");
+        // statuses.add("InProgress");
+        // statuses.add("Created");
+        // statuses.add("Reserved");
 
-	public void filterTasks(String text) {
-		if (text.equals("")) {
-			if (allTaskSummaries != null) {
-				dataProvider.getList().clear();
-				dataProvider.setList(new ArrayList<TaskSummary>(
-						allTaskSummaries));
-				dataProvider.refresh();
+        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+            @Override
+            public void callback(Queue<HumanEventSummary> events) {
+                currentDayTasks = events;
+                allEventsSummaries = pasarAListProvisorio(events);
+                filterTasks(view.getSearchBox().getText());
+            }
+        }).getAllHumanEvent();
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    private List<HumanEventSummary> pasarAListProvisorio(Queue<HumanEventSummary> events){
+        List<HumanEventSummary> eventsList = new ArrayList<HumanEventSummary>();
+        for(HumanEventSummary ev : events){
+            eventsList.add(ev);
+        }
+        return eventsList;
+    }
+    
+    
+    
+    
+    
+    
+    
 
-			}
-			if (currentDayTasks != null) {
-				view.getTaskListMultiDayBox().clear();
-				for (Day day : currentDayTasks.keySet()) {
-					view.getTaskListMultiDayBox()
-							.addTasksByDay(
-									day,
-									new ArrayList<TaskSummary>(currentDayTasks
-											.get(day)));
-				}
-				view.getTaskListMultiDayBox().refresh();
-			}
-		} else {
-			if (allTaskSummaries != null) {
-				List<TaskSummary> tasks = new ArrayList<TaskSummary>(
-						allTaskSummaries);
-				List<TaskSummary> filteredTasksSimple = new ArrayList<TaskSummary>();
-				for (TaskSummary ts : tasks) {
-					if (ts.getName().toLowerCase().contains(text.toLowerCase())) {
-						filteredTasksSimple.add(ts);
-					}
-				}
-				dataProvider.getList().clear();
-				dataProvider.setList(filteredTasksSimple);
-				dataProvider.refresh();
-			}
-			if (currentDayTasks != null) {
-				Map<Day, List<TaskSummary>> tasksCalendar = new HashMap<Day, List<TaskSummary>>(
-						currentDayTasks);
-				Map<Day, List<TaskSummary>> filteredTasksCalendar = new HashMap<Day, List<TaskSummary>>();
-				view.getTaskListMultiDayBox().clear();
-				for (Day d : tasksCalendar.keySet()) {
-					if (filteredTasksCalendar.get(d) == null) {
-						filteredTasksCalendar.put(d,
-								new ArrayList<TaskSummary>());
-					}
-					for (TaskSummary ts : tasksCalendar.get(d)) {
-						if (ts.getName().toLowerCase()
-								.contains(text.toLowerCase())) {
-							filteredTasksCalendar.get(d).add(ts);
-						}
-					}
-				}
-				for (Day day : filteredTasksCalendar.keySet()) {
-					view.getTaskListMultiDayBox().addTasksByDay(
-							day,
-							new ArrayList<TaskSummary>(filteredTasksCalendar
-									.get(day)));
-				}
-				view.getTaskListMultiDayBox().refresh();
-			}
-		}
+    public void filterTasks(String text) {
+        if (text.equals("")) {
+            if (allEventsSummaries != null) {
+                dataProvider.getList().clear();
+                dataProvider.setList(new ArrayList<HumanEventSummary>(allEventsSummaries));
+                dataProvider.refresh();
 
-	}
+            }
+            if (currentDayTasks != null) {
+                // view.getTaskListMultiDayBox().clear();
+                /*
+                 * for (Day day : currentDayTasks.keySet()) {
+                 * view.getTaskListMultiDayBox() .addTasksByDay( day, new
+                 * ArrayList<HumanEventSummary>(currentDayTasks .get(day))); }
+                 */
+                // view.getTaskListMultiDayBox().refresh();
+            }
+        } else {
+            if (allEventsSummaries != null) {
+                List<HumanEventSummary> tasks = new ArrayList<HumanEventSummary>(allEventsSummaries);
+                List<HumanEventSummary> filteredTasksSimple = new ArrayList<HumanEventSummary>();
+                for (HumanEventSummary ts : tasks) {
+                    if (ts.getDescriptionEvent().toLowerCase().contains(text.toLowerCase())) {
+                        filteredTasksSimple.add(ts);
+                    }
+                }
+                dataProvider.getList().clear();
+                dataProvider.setList(filteredTasksSimple);
+                dataProvider.refresh();
+            }
+            if (currentDayTasks != null) {
+                Queue<HumanEventSummary> tasksCalendar = new LinkedList<HumanEventSummary>(currentDayTasks);
+                Map<Day, List<HumanEventSummary>> filteredTasksCalendar = new HashMap<Day, List<HumanEventSummary>>();
+                // view.getTaskListMultiDayBox().clear();
+                /*
+                 * for (Day d : tasksCalendar.keySet()) { if
+                 * (filteredTasksCalendar.get(d) == null) {
+                 * filteredTasksCalendar.put(d, new
+                 * ArrayList<HumanEventSummary>()); } for (HumanEventSummary ts
+                 * : tasksCalendar.get(d)) { if
+                 * (ts.getDescriptionEvent().toLowerCase()
+                 * .contains(text.toLowerCase())) {
+                 * filteredTasksCalendar.get(d).add(ts); } } }
+                 */
+                /*
+                 * for (Day day : filteredTasksCalendar.keySet()) {
+                 * view.getTaskListMultiDayBox().addTasksByDay( day, new
+                 * ArrayList<HumanEventSummary>(filteredTasksCalendar
+                 * .get(day))); }
+                 */
+                // view.getTaskListMultiDayBox().refresh();
+            }
+        }
 
-	public void claimTasks(List<Long> selectedTasks, final String userId) {
-		taskServices.call(new RemoteCallback<List<TaskSummary>>() {
-			@Override
-			public void callback(List<TaskSummary> tasks) {
-				view.displayNotification("Task(s) Claimed");
-				view.refreshHumanEvents();
+    }
 
-			}
-		}).claimBatch(selectedTasks, userId);
-	}
+    public void claimTasks(List<Long> selectedTasks, final String userId) {
+        /*
+         * humanEventServices.call(new RemoteCallback<List<TaskSummary>>() {
+         * 
+         * @Override public void callback(List<TaskSummary> tasks) {
+         * view.displayNotification("Task(s) Claimed");
+         * view.refreshHumanEvents();
+         * 
+         * } }).claimBatch(selectedTasks, userId);
+         */
 
-	public void releaseTasks(List<Long> selectedTasks, final String userId) {
-		taskServices.call(new RemoteCallback<List<TaskSummary>>() {
-			@Override
-			public void callback(List<TaskSummary> tasks) {
-				view.displayNotification("Task(s) Released");
-				view.refreshHumanEvents();
-			}
-		}).releaseBatch(selectedTasks, userId);
-	}
+        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+            @Override
+            public void callback(Queue<HumanEventSummary> events) {
+                view.displayNotification("Task(s) Claimed");
+                view.refreshHumanEvents();
 
-	public void addDataDisplay(HasData<TaskSummary> display) {
-		dataProvider.addDataDisplay(display);
-	}
+            }
+        }).getAllHumanEvent();
+
+    }
+
+    public void releaseTasks(List<Long> selectedTasks, final String userId) {
+        /*
+         * humanEventServices.call(new RemoteCallback<List<TaskSummary>>() {
+         * 
+         * @Override public void callback(List<TaskSummary> tasks) {
+         * view.displayNotification("Task(s) Released");
+         * view.refreshHumanEvents(); } }).releaseBatch(selectedTasks, userId);
+         */
+
+        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+            @Override
+            public void callback(Queue<HumanEventSummary> events) {
+                view.displayNotification("Task(s) Released");
+                view.refreshHumanEvents();
+            }
+        }).getAllHumanEvent();
+
+    }
+
+    public void addDataDisplay(HasData<HumanEventSummary> display) {
+        dataProvider.addDataDisplay(display);
+    }
 
 }

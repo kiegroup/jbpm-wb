@@ -18,7 +18,8 @@ package org.jbpm.console.ng.he.model;
 
 public enum ActionHistoryEnum {
 
-    NEW_TASK("New Task - pasarla a constante");
+    NEW_TASK("New Task - pasarla a constante"),
+    TASK_CREATED("Task Created");
     
     private String description;
     

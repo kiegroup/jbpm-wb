@@ -1,5 +1,4 @@
 <classpath>
-  <classpathentry kind="src" path="src/test/java" output="target/test-classes" including="**/*.java"/>
   <classpathentry kind="src" path="src/main/java"/>
   <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
   <classpathentry kind="output" path="target/classes"/>
@@ -42,17 +41,17 @@
   <classpathentry kind="var" path="M2_REPO/org/drools/drools-core/6.0.0-SNAPSHOT/drools-core-6.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/drools/drools-core/6.0.0-SNAPSHOT/drools-core-6.0.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/drools/drools-persistence-jpa/6.0.0-SNAPSHOT/drools-persistence-jpa-6.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/drools/drools-persistence-jpa/6.0.0-SNAPSHOT/drools-persistence-jpa-6.0.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/eclipse/jdt/core/compiler/ecj/3.7.2/ecj-3.7.2.jar" sourcepath="M2_REPO/org/eclipse/jdt/core/compiler/ecj/3.7.2/ecj-3.7.2-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-bus/2.3.2.Final/errai-bus-2.3.2.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-bus/2.3.2.Final/errai-bus-2.3.2.Final-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-cdi-client/2.3.2.Final/errai-cdi-client-2.3.2.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-cdi-client/2.3.2.Final/errai-cdi-client-2.3.2.Final-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-codegen/2.3.2.Final/errai-codegen-2.3.2.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-codegen/2.3.2.Final/errai-codegen-2.3.2.Final-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-codegen-gwt/2.3.2.Final/errai-codegen-gwt-2.3.2.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-codegen-gwt/2.3.2.Final/errai-codegen-gwt-2.3.2.Final-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-common/2.3.2.Final/errai-common-2.3.2.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-common/2.3.2.Final/errai-common-2.3.2.Final-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-config/2.3.2.Final/errai-config-2.3.2.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-config/2.3.2.Final/errai-config-2.3.2.Final-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-data-binding/2.3.2.Final/errai-data-binding-2.3.2.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-data-binding/2.3.2.Final/errai-data-binding-2.3.2.Final-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-ioc/2.3.2.Final/errai-ioc-2.3.2.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-ioc/2.3.2.Final/errai-ioc-2.3.2.Final-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-javax-enterprise/2.3.2.Final/errai-javax-enterprise-2.3.2.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-javax-enterprise/2.3.2.Final/errai-javax-enterprise-2.3.2.Final-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-marshalling/2.3.2.Final/errai-marshalling-2.3.2.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-marshalling/2.3.2.Final/errai-marshalling-2.3.2.Final-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-ui/2.3.2.Final/errai-ui-2.3.2.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-ui/2.3.2.Final/errai-ui-2.3.2.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-bus/2.3.1.Final/errai-bus-2.3.1.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-bus/2.3.1.Final/errai-bus-2.3.1.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-cdi-client/2.3.1.Final/errai-cdi-client-2.3.1.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-cdi-client/2.3.1.Final/errai-cdi-client-2.3.1.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-codegen/2.3.1.Final/errai-codegen-2.3.1.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-codegen/2.3.1.Final/errai-codegen-2.3.1.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-codegen-gwt/2.3.1.Final/errai-codegen-gwt-2.3.1.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-codegen-gwt/2.3.1.Final/errai-codegen-gwt-2.3.1.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-common/2.3.1.Final/errai-common-2.3.1.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-common/2.3.1.Final/errai-common-2.3.1.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-config/2.3.1.Final/errai-config-2.3.1.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-config/2.3.1.Final/errai-config-2.3.1.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-data-binding/2.3.1.Final/errai-data-binding-2.3.1.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-data-binding/2.3.1.Final/errai-data-binding-2.3.1.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-ioc/2.3.1.Final/errai-ioc-2.3.1.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-ioc/2.3.1.Final/errai-ioc-2.3.1.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-javax-enterprise/2.3.1.Final/errai-javax-enterprise-2.3.1.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-javax-enterprise/2.3.1.Final/errai-javax-enterprise-2.3.1.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-marshalling/2.3.1.Final/errai-marshalling-2.3.1.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-marshalling/2.3.1.Final/errai-marshalling-2.3.1.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/errai-ui/2.3.1.Final/errai-ui-2.3.1.Final.jar" sourcepath="M2_REPO/org/jboss/errai/errai-ui/2.3.1.Final/errai-ui-2.3.1.Final-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/freemarker/freemarker/2.3.8/freemarker-2.3.8.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/freemarker/freemarker/2.3.19/freemarker-2.3.19.jar" sourcepath="M2_REPO/org/freemarker/freemarker/2.3.19/freemarker-2.3.19-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/net/sf/josql/gentlyweb-utils/1.5/gentlyweb-utils-1.5.jar"/>
@@ -120,9 +119,9 @@
   <classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-settings/3.0.3/maven-settings-3.0.3.jar" sourcepath="M2_REPO/org/apache/maven/maven-settings/3.0.3/maven-settings-3.0.3-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-settings-builder/3.0.3/maven-settings-builder-3.0.3.jar" sourcepath="M2_REPO/org/apache/maven/maven-settings-builder/3.0.3/maven-settings-builder-3.0.3-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/mockito/mockito-all/1.9.0/mockito-all-1.9.0.jar" sourcepath="M2_REPO/org/mockito/mockito-all/1.9.0/mockito-all-1.9.0-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/mvel/mvel2/2.1.6.Final/mvel2-2.1.6.Final.jar" sourcepath="M2_REPO/org/mvel/mvel2/2.1.6.Final/mvel2-2.1.6.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/mvel/mvel2/2.1.5.Final/mvel2-2.1.5.Final.jar" sourcepath="M2_REPO/org/mvel/mvel2/2.1.5.Final/mvel2-2.1.5.Final-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/errai/io/netty/netty/4.0.0.Alpha1.errai.r1/netty-4.0.0.Alpha1.errai.r1.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/netty/netty/3.2.0.Final/netty-3.2.0.Final.jar" sourcepath="M2_REPO/org/jboss/netty/netty/3.2.0.Final/netty-3.2.0.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/netty/netty/3.2.5.Final/netty-3.2.5.Final.jar" sourcepath="M2_REPO/org/jboss/netty/netty/3.2.5.Final/netty-3.2.5.Final-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/restlet/org.restlet/1.1.10/org.restlet-1.1.10.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/sonatype/plexus/plexus-cipher/1.4/plexus-cipher-1.4.jar" sourcepath="M2_REPO/org/sonatype/plexus/plexus-cipher/1.4/plexus-cipher-1.4-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/codehaus/plexus/plexus-classworlds/2.4/plexus-classworlds-2.4.jar" sourcepath="M2_REPO/org/codehaus/plexus/plexus-classworlds/2.4/plexus-classworlds-2.4-sources.jar"/>
@@ -131,7 +130,7 @@
   <classpathentry kind="var" path="M2_REPO/org/sonatype/plexus/plexus-sec-dispatcher/1.3/plexus-sec-dispatcher-1.3.jar" sourcepath="M2_REPO/org/sonatype/plexus/plexus-sec-dispatcher/1.3/plexus-sec-dispatcher-1.3-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/codehaus/plexus/plexus-utils/3.0.7/plexus-utils-3.0.7.jar" sourcepath="M2_REPO/org/codehaus/plexus/plexus-utils/3.0.7/plexus-utils-3.0.7-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/google/protobuf/protobuf-java/2.5.0/protobuf-java-2.5.0.jar" sourcepath="M2_REPO/com/google/protobuf/protobuf-java/2.5.0/protobuf-java-2.5.0-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/reflections/reflections/2.3.2.Final/reflections-2.3.2.Final.jar" sourcepath="M2_REPO/org/jboss/errai/reflections/reflections/2.3.2.Final/reflections-2.3.2.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/errai/reflections/reflections/2.3.1.Final/reflections-2.3.1.Final.jar" sourcepath="M2_REPO/org/jboss/errai/reflections/reflections/2.3.1.Final/reflections-2.3.1.Final-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/seam/transaction/seam-transaction/3.1.0.Final/seam-transaction-3.1.0.Final.jar" sourcepath="M2_REPO/org/jboss/seam/transaction/seam-transaction/3.1.0.Final/seam-transaction-3.1.0.Final-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/seam/transaction/seam-transaction-api/3.1.0.Final/seam-transaction-api-3.1.0.Final.jar" sourcepath="M2_REPO/org/jboss/seam/transaction/seam-transaction-api/3.1.0.Final/seam-transaction-api-3.1.0.Final-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/sonatype/sisu/sisu-guice/3.0.3/sisu-guice-3.0.3-no_aop.jar"/>
@@ -142,7 +141,7 @@
   <classpathentry kind="var" path="M2_REPO/org/jboss/solder/solder-api/3.2.0.Final/solder-api-3.2.0.Final.jar" sourcepath="M2_REPO/org/jboss/solder/solder-api/3.2.0.Final/solder-api-3.2.0.Final-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/solder/solder-logging/3.2.0.Final/solder-logging-3.2.0.Final.jar" sourcepath="M2_REPO/org/jboss/solder/solder-logging/3.2.0.Final/solder-logging-3.2.0.Final-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/antlr/stringtemplate/3.2.1/stringtemplate-3.2.1.jar" sourcepath="M2_REPO/org/antlr/stringtemplate/3.2.1/stringtemplate-3.2.1-sources.jar"/>
-  <classpathentry kind="lib" path="/usr/lib/jvm/java-6-sun-1.6.0.26/lib/tools.jar"/>
+  <classpathentry kind="lib" path="/usr/local/jdk1.6.0_43/lib/tools.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/uberfire/uberfire-api/0.2.0-SNAPSHOT/uberfire-api-0.2.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/uberfire/uberfire-api/0.2.0-SNAPSHOT/uberfire-api-0.2.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/uberfire/uberfire-backend-api/0.2.0-SNAPSHOT/uberfire-backend-api-0.2.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/uberfire/uberfire-backend-api/0.2.0-SNAPSHOT/uberfire-backend-api-0.2.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/uberfire/uberfire-client-api/0.2.0-SNAPSHOT/uberfire-client-api-0.2.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/uberfire/uberfire-client-api/0.2.0-SNAPSHOT/uberfire-client-api-0.2.0-SNAPSHOT-sources.jar"/>

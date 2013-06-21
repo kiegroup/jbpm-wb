@@ -1,2 +1,3 @@
-org.jbpm.console.ng.he.model.PointHistory
+org.jbpm.console.ng.he.service.EventServiceEntryPoint
 org.jbpm.console.ng.he.model.ActionHistoryEnum
+org.jbpm.console.ng.he.model.HumanEventSummary

@@ -31,7 +31,7 @@ import javax.inject.Inject;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.he.model.ActionHistoryEnum;
-import org.jbpm.console.ng.he.model.PointHistory;
+import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskType;
 import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskView;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
@@ -83,7 +83,6 @@ import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
 
-
 @Dependent
 @Templated(value = "TasksListViewImpl.html")
 public class TasksListViewImpl extends Composite implements TasksListPresenter.TaskListView {
@@ -113,7 +112,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     @Inject
     @DataField
     public NavLink weekViewTasksNavLink;
-    
+
     @Inject
     @DataField
     public TextBox searchBox;
@@ -138,7 +137,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     @DataField
     public NavLink showActiveTasksNavLink;
 
-    
     @DataField
     public Heading taskCalendarViewLabel = new Heading(4);
 
@@ -161,61 +159,57 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     private TaskView currentView = TaskView.DAY;
 
     private TaskType currentTaskType = TaskType.ACTIVE;
-    
+
     @Inject
     private Event<TaskSelectionEvent> taskSelection;
-    
+
     @Inject
-    private Event<PointHistory> pointHistory;
+    private Event<HumanEventSummary> pointHistoryEvent;
 
     @Inject
     @DataField
     public IconAnchor refreshIcon;
-    
+
     private Set<TaskSummary> selectedTasks;
     private ListHandler<TaskSummary> sortHandler;
     private MultiSelectionModel<TaskSummary> selectionModel;
-    
-    
+
     public DataGrid<TaskSummary> myTaskListGrid;
-   
+
     public SimplePager pager;
-    
-    
-    
 
     @Override
-    public void init( final TasksListPresenter presenter ) {
+    public void init(final TasksListPresenter presenter) {
         this.presenter = presenter;
-        
-        refreshIcon.setTitle( constants.Refresh() );
-        refreshIcon.addClickHandler( new ClickHandler() {
+
+        refreshIcon.setTitle(constants.Refresh());
+        refreshIcon.addClickHandler(new ClickHandler() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void onClick(ClickEvent event) {
                 refreshTasks();
                 searchBox.setText("");
-                displayNotification( constants.Tasks_Refreshed() );
+                displayNotification(constants.Tasks_Refreshed());
             }
-        } );
-        
+        });
+
         taskListMultiDayBox.init();
-        taskListMultiDayBox.setPresenter( presenter );
+        taskListMultiDayBox.setPresenter(presenter);
         calendarPicker.init();
         currentDate = new Date();
-        calendarPicker.setViewType( "day" );
-        calendarPicker.addValueChangeHandler( new ValueChangeHandler<Date>() {
+        calendarPicker.setViewType("day");
+        calendarPicker.addValueChangeHandler(new ValueChangeHandler<Date>() {
             @Override
-            public void onValueChange( ValueChangeEvent<Date> event ) {
+            public void onValueChange(ValueChangeEvent<Date> event) {
                 currentDate = event.getValue();
                 refreshTasks();
-                
+
             }
-        } );
+        });
 
         // By Default we will start in Grid View
         initializeGridView();
-        
-        dayViewTasksNavLink.setText( constants.Day() );
+
+        dayViewTasksNavLink.setText(constants.Day());
         dayViewTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -227,13 +221,13 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 monthViewTasksNavLink.setStyleName("");
                 gridViewTasksNavLink.setStyleName("");
                 currentView = TaskView.DAY;
-                calendarPicker.setViewType( "day" );
+                calendarPicker.setViewType("day");
                 refreshTasks();
-                
+
             }
-        } );
-        weekViewTasksNavLink.setText( constants.Week() );
-        weekViewTasksNavLink.addClickHandler( new ClickHandler() {
+        });
+        weekViewTasksNavLink.setText(constants.Week());
+        weekViewTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 tasksViewContainer.clear();
@@ -244,14 +238,14 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 gridViewTasksNavLink.setStyleName("");
                 weekViewTasksNavLink.setStyleName("active");
                 currentView = TaskView.WEEK;
-                calendarPicker.setViewType( "week" );
+                calendarPicker.setViewType("week");
                 refreshTasks();
-                
-            }
-        } );
 
-        monthViewTasksNavLink.setText( constants.Month() );
-        monthViewTasksNavLink.addClickHandler( new ClickHandler() {
+            }
+        });
+
+        monthViewTasksNavLink.setText(constants.Month());
+        monthViewTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 tasksViewContainer.clear();
@@ -262,116 +256,114 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 weekViewTasksNavLink.setStyleName("");
                 monthViewTasksNavLink.setStyleName("active");
                 currentView = TaskView.MONTH;
-                calendarPicker.setViewType( "month" );
+                calendarPicker.setViewType("month");
                 refreshTasks();
-                
-            }
-        } );
 
-        gridViewTasksNavLink.setText( constants.Grid() );
-        gridViewTasksNavLink.addClickHandler( new ClickHandler() {
+            }
+        });
+
+        gridViewTasksNavLink.setText(constants.Grid());
+        gridViewTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                
+
                 initializeGridView();
                 refreshTasks();
-                
-           }
+
+            }
 
         });
 
-        createQuickTaskNavLink.setText( constants.New_Task() );
-        createQuickTaskNavLink.addClickHandler( new ClickHandler() {
+        createQuickTaskNavLink.setText(constants.New_Task());
+        createQuickTaskNavLink.addClickHandler(new ClickHandler() {
             @Override
-            public void onClick( ClickEvent event ) {
-                displayNotification("**ggggggggggggg*invoke fire ***");
-                pointHistory.fire(new PointHistory(ActionHistoryEnum.NEW_TASK.getDescription()));
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Quick New Task" );
-                placeManager.goTo( placeRequestImpl );
+            public void onClick(ClickEvent event) {
+                displayNotification("**zzzz*invoke fire ***");
+                pointHistoryEvent.fire(new HumanEventSummary(ActionHistoryEnum.NEW_TASK.getDescription()));
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Quick New Task");
+                placeManager.goTo(placeRequestImpl);
             }
-        } );
+        });
 
         // Filters
-        showPersonalTasksNavLink.setText( constants.Personal() );
-        showPersonalTasksNavLink.addClickHandler( new ClickHandler() {
+        showPersonalTasksNavLink.setText(constants.Personal());
+        showPersonalTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
-            public void onClick( ClickEvent event ) {
-                showPersonalTasksNavLink.setStyleName( "active" );
-                showGroupTasksNavLink.setStyleName( "" );
-                showActiveTasksNavLink.setStyleName( "" );
-                showAllTasksNavLink.setStyleName( "" );
+            public void onClick(ClickEvent event) {
+                showPersonalTasksNavLink.setStyleName("active");
+                showGroupTasksNavLink.setStyleName("");
+                showActiveTasksNavLink.setStyleName("");
+                showAllTasksNavLink.setStyleName("");
                 currentTaskType = TaskType.PERSONAL;
                 refreshTasks();
-                
-            }
-        } );
 
-        showGroupTasksNavLink.setText( constants.Group() );
-        showGroupTasksNavLink.addClickHandler( new ClickHandler() {
+            }
+        });
+
+        showGroupTasksNavLink.setText(constants.Group());
+        showGroupTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
-            public void onClick( ClickEvent event ) {
-                showGroupTasksNavLink.setStyleName( "active" );
-                showPersonalTasksNavLink.setStyleName( "" );
-                showActiveTasksNavLink.setStyleName( "" );
-                showAllTasksNavLink.setStyleName( "" );
+            public void onClick(ClickEvent event) {
+                showGroupTasksNavLink.setStyleName("active");
+                showPersonalTasksNavLink.setStyleName("");
+                showActiveTasksNavLink.setStyleName("");
+                showAllTasksNavLink.setStyleName("");
                 currentTaskType = TaskType.GROUP;
                 refreshTasks();
-                
-            }
-        } );
 
-        showActiveTasksNavLink.setText( constants.Active() );
-        showActiveTasksNavLink.addClickHandler( new ClickHandler() {
+            }
+        });
+
+        showActiveTasksNavLink.setText(constants.Active());
+        showActiveTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
-            public void onClick( ClickEvent event ) {
-                showGroupTasksNavLink.setStyleName( "" );
-                showPersonalTasksNavLink.setStyleName( "" );
-                showActiveTasksNavLink.setStyleName( "active" );
-                showAllTasksNavLink.setStyleName( "" );
+            public void onClick(ClickEvent event) {
+                showGroupTasksNavLink.setStyleName("");
+                showPersonalTasksNavLink.setStyleName("");
+                showActiveTasksNavLink.setStyleName("active");
+                showAllTasksNavLink.setStyleName("");
                 currentTaskType = TaskType.ACTIVE;
                 refreshTasks();
-                
-            }
-        } );
 
-        showAllTasksNavLink.setText( constants.All() );
-        showAllTasksNavLink.addClickHandler( new ClickHandler() {
+            }
+        });
+
+        showAllTasksNavLink.setText(constants.All());
+        showAllTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
-            public void onClick( ClickEvent event ) {
-                showGroupTasksNavLink.setStyleName( "" );
-                showPersonalTasksNavLink.setStyleName( "" );
-                showActiveTasksNavLink.setStyleName( "" );
-                showAllTasksNavLink.setStyleName( "active" );
+            public void onClick(ClickEvent event) {
+                showGroupTasksNavLink.setStyleName("");
+                showPersonalTasksNavLink.setStyleName("");
+                showActiveTasksNavLink.setStyleName("");
+                showAllTasksNavLink.setStyleName("active");
                 currentTaskType = TaskType.ALL;
                 refreshTasks();
-                
 
             }
-        } );
+        });
 
-        taskCalendarViewLabel.setText( constants.Tasks_List() );
-        taskCalendarViewLabel.setStyleName( "" );
-        
+        taskCalendarViewLabel.setText(constants.Tasks_List());
+        taskCalendarViewLabel.setStyleName("");
+
         searchBox.addKeyUpHandler(new KeyUpHandler() {
 
             @Override
             public void onKeyUp(KeyUpEvent event) {
-                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32){
-                    displayNotification("Filter: |"+searchBox.getText()+"|");
+                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32) {
+                    displayNotification("Filter: |" + searchBox.getText() + "|");
                     filterTasks(searchBox.getText());
                 }
-                
+
             }
         });
 
-        
         refreshTasks();
     }
-    
-    public void filterTasks(String text){
+
+    public void filterTasks(String text) {
         presenter.filterTasks(text);
     }
-    
+
     private void initializeGridView() {
         tasksViewContainer.clear();
         dayViewTasksNavLink.setStyleName("");
@@ -379,7 +371,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         monthViewTasksNavLink.setStyleName("");
         gridViewTasksNavLink.setStyleName("active");
         currentView = TaskView.GRID;
-        calendarPicker.setViewType( "grid" );
+        calendarPicker.setViewType("grid");
         myTaskListGrid = new DataGrid<TaskSummary>();
         myTaskListGrid.setStyleName("table table-bordered table-striped table-hover");
         pager = new SimplePager();
@@ -394,7 +386,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         // Set the message to display when the table is empty.
         myTaskListGrid.setEmptyTableWidget(new Label(constants.No_Pending_Tasks_Enjoy()));
 
-        // Attach a column sort handler to the ListDataProvider to sort the list.
+        // Attach a column sort handler to the ListDataProvider to sort the
+        // list.
         sortHandler = new ColumnSortEvent.ListHandler<TaskSummary>(presenter.getAllTaskSummaries());
 
         myTaskListGrid.addColumnSortHandler(sortHandler);
@@ -418,19 +411,19 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     }
 
-    public void recieveStatusChanged( @Observes UserTaskEvent event ) {
+    public void recieveStatusChanged(@Observes UserTaskEvent event) {
         refreshTasks();
 
     }
 
     @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     @Override
     public void refreshTasks() {
-        presenter.refreshTasks( currentDate, currentView, currentTaskType );
+        presenter.refreshTasks(currentDate, currentView, currentTaskType);
     }
 
     @Override
@@ -446,10 +439,12 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     public TextBox getSearchBox() {
         return searchBox;
     }
-    
-     private void initTableColumns(final SelectionModel<TaskSummary> selectionModel) {
-        // Checkbox column. This table will uses a checkbox column for selection.
-        // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
+
+    private void initTableColumns(final SelectionModel<TaskSummary> selectionModel) {
+        // Checkbox column. This table will uses a checkbox column for
+        // selection.
+        // Alternatively, you can call dataGrid.setSelectionEnabled(true) to
+        // enable
         // mouse selection.
 
         Column<TaskSummary, Boolean> checkColumn = new Column<TaskSummary, Boolean>(new CheckboxCell(true, false)) {
@@ -555,8 +550,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             }
         });
 
-        
-
         List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
         cells.add(new StartActionHasCell("Start", new ActionCell.Delegate<TaskSummary>() {
             @Override
@@ -623,7 +616,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         myTaskListGrid.addColumn(actionsColumn, constants.Actions());
 
     }
-     
+
     private class DetailsHasCell implements HasCell<TaskSummary, TaskSummary> {
 
         private ActionCell<TaskSummary> cell;
@@ -816,7 +809,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
                     if (value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty()
-                            && ( value.getStatus().equals( "Reserved" ) || value.getStatus().equals( "InProgress" ) )) {
+                            && (value.getStatus().equals("Reserved") || value.getStatus().equals("InProgress"))) {
                         AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.claimGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
                         mysb.appendHtmlConstant("<span title='" + constants.Release() + "'>");

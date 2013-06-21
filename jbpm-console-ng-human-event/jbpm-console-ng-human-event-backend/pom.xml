@@ -36,7 +36,7 @@
     <!-- Internal dependencies -->
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
+      <artifactId>jbpm-console-ng-human-event-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

@@ -16,23 +16,17 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.MultiSelectionModel;
-import com.google.gwt.view.client.ProvidesKey;
-
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import java.util.HashMap;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
@@ -48,8 +42,13 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.security.Identity;
 import org.uberfire.security.Role;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
-import org.uberfire.workbench.model.menu.MenuSearchItem;
 
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.MultiSelectionModel;
+import com.google.gwt.view.client.ProvidesKey;
 
 @Dependent
 @WorkbenchScreen(identifier = "Tasks List")
@@ -63,21 +62,19 @@ public class TasksListPresenter {
     private List<TaskSummary> allTaskSummaries;
 
     private Map<Day, List<TaskSummary>> currentDayTasks;
-    
+
     public List<TaskSummary> getAllTaskSummaries() {
         return allTaskSummaries;
     }
-    
-    
 
     public interface TaskListView extends UberView<TasksListPresenter> {
 
-        void displayNotification( String text );
+        void displayNotification(String text);
 
         TaskListMultiDayBox getTaskListMultiDayBox();
 
         MultiSelectionModel<TaskSummary> getSelectionModel();
-        
+
         TextBox getSearchBox();
 
         void refreshTasks();
@@ -106,8 +103,7 @@ public class TasksListPresenter {
         }
     };
 
-
-    private Constants constants = GWT.create( Constants.class );
+    private Constants constants = GWT.create(Constants.class);
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -127,26 +123,26 @@ public class TasksListPresenter {
     }
 
     public void filterTasks(String text) {
-        if(text.equals("")){
-                if(allTaskSummaries != null){
-                    dataProvider.getList().clear();
-                    dataProvider.setList(new ArrayList<TaskSummary>(allTaskSummaries));
-                    dataProvider.refresh();
-                    
+        if (text.equals("")) {
+            if (allTaskSummaries != null) {
+                dataProvider.getList().clear();
+                dataProvider.setList(new ArrayList<TaskSummary>(allTaskSummaries));
+                dataProvider.refresh();
+
+            }
+            if (currentDayTasks != null) {
+                view.getTaskListMultiDayBox().clear();
+                for (Day day : currentDayTasks.keySet()) {
+                    view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(currentDayTasks.get(day)));
                 }
-                if(currentDayTasks != null){
-                    view.getTaskListMultiDayBox().clear();
-                    for (Day day : currentDayTasks.keySet()) {
-                         view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(currentDayTasks.get(day)));
-                    }
-                    view.getTaskListMultiDayBox().refresh();
-                }
-        }else{
-            if(allTaskSummaries != null){    
+                view.getTaskListMultiDayBox().refresh();
+            }
+        } else {
+            if (allTaskSummaries != null) {
                 List<TaskSummary> tasks = new ArrayList<TaskSummary>(allTaskSummaries);
                 List<TaskSummary> filteredTasksSimple = new ArrayList<TaskSummary>();
-                for(TaskSummary ts : tasks){
-                    if(ts.getName().toLowerCase().contains(text.toLowerCase())){
+                for (TaskSummary ts : tasks) {
+                    if (ts.getName().toLowerCase().contains(text.toLowerCase())) {
                         filteredTasksSimple.add(ts);
                     }
                 }
@@ -154,110 +150,107 @@ public class TasksListPresenter {
                 dataProvider.setList(filteredTasksSimple);
                 dataProvider.refresh();
             }
-            if(currentDayTasks != null){
+            if (currentDayTasks != null) {
                 Map<Day, List<TaskSummary>> tasksCalendar = new HashMap<Day, List<TaskSummary>>(currentDayTasks);
                 Map<Day, List<TaskSummary>> filteredTasksCalendar = new HashMap<Day, List<TaskSummary>>();
                 view.getTaskListMultiDayBox().clear();
-                for(Day d : tasksCalendar.keySet()){
-                    if(filteredTasksCalendar.get(d) == null){
-                                filteredTasksCalendar.put(d, new ArrayList<TaskSummary>());
+                for (Day d : tasksCalendar.keySet()) {
+                    if (filteredTasksCalendar.get(d) == null) {
+                        filteredTasksCalendar.put(d, new ArrayList<TaskSummary>());
                     }
-                    for(TaskSummary ts : tasksCalendar.get(d)){
-                        if(ts.getName().toLowerCase().contains(text.toLowerCase())){
+                    for (TaskSummary ts : tasksCalendar.get(d)) {
+                        if (ts.getName().toLowerCase().contains(text.toLowerCase())) {
                             filteredTasksCalendar.get(d).add(ts);
                         }
                     }
                 }
                 for (Day day : filteredTasksCalendar.keySet()) {
-                     view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(filteredTasksCalendar.get(day)));
+                    view.getTaskListMultiDayBox()
+                            .addTasksByDay(day, new ArrayList<TaskSummary>(filteredTasksCalendar.get(day)));
                 }
                 view.getTaskListMultiDayBox().refresh();
             }
-         }
-        
+        }
 
     }
 
-    public void startTasks( final List<Long> selectedTasks,
-                            final String userId ) {
-        taskServices.call( new RemoteCallback<List<TaskSummary>>() {
+    public void startTasks(final List<Long> selectedTasks, final String userId) {
+        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
-            public void callback( List<TaskSummary> tasks ) {
-                view.displayNotification( "Task(s) Started" );
+            public void callback(List<TaskSummary> tasks) {
+                view.displayNotification("Task(s) Started");
                 view.refreshTasks();
             }
-        } ).startBatch( selectedTasks, userId );
+        }).startBatch(selectedTasks, userId);
     }
 
-    public void releaseTasks( List<Long> selectedTasks,
-                              final String userId ) {
-        taskServices.call( new RemoteCallback<List<TaskSummary>>() {
+    public void releaseTasks(List<Long> selectedTasks, final String userId) {
+        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
-            public void callback( List<TaskSummary> tasks ) {
-                view.displayNotification( "Task(s) Released" );
+            public void callback(List<TaskSummary> tasks) {
+                view.displayNotification("Task(s) Released");
                 view.refreshTasks();
             }
-        } ).releaseBatch( selectedTasks, userId );
+        }).releaseBatch(selectedTasks, userId);
     }
 
-    public void completeTasks( List<Long> selectedTasks,
-                               final String userId ) {
-        taskServices.call( new RemoteCallback<List<TaskSummary>>() {
+    public void completeTasks(List<Long> selectedTasks, final String userId) {
+        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
-            public void callback( List<TaskSummary> tasks ) {
-                view.displayNotification( "Task(s) Completed" );
+            public void callback(List<TaskSummary> tasks) {
+                view.displayNotification("Task(s) Completed");
                 view.refreshTasks();
             }
-        } ).completeBatch( selectedTasks, userId, null );
+        }).completeBatch(selectedTasks, userId, null);
     }
 
-    public void claimTasks( List<Long> selectedTasks,
-                            final String userId ) {
-        taskServices.call( new RemoteCallback<List<TaskSummary>>() {
+    public void claimTasks(List<Long> selectedTasks, final String userId) {
+        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
-            public void callback( List<TaskSummary> tasks ) {
-                view.displayNotification( "Task(s) Claimed" );
+            public void callback(List<TaskSummary> tasks) {
+                view.displayNotification("Task(s) Claimed");
                 view.refreshTasks();
 
             }
-        } ).claimBatch( selectedTasks, userId );
+        }).claimBatch(selectedTasks, userId);
     }
 
-    public void formClosed( @Observes BeforeClosePlaceEvent closed ) {
-        if(closed.getPlace().getIdentifier().equals("Form Display") ||
-                closed.getPlace().getIdentifier().equals("Quick New Task")){
+    public void formClosed(@Observes BeforeClosePlaceEvent closed) {
+        if (closed.getPlace().getIdentifier().equals("Form Display")
+                || closed.getPlace().getIdentifier().equals("Quick New Task")) {
             view.refreshTasks();
         }
     }
 
-    private List<String> getGroups( Identity identity ) {
+    private List<String> getGroups(Identity identity) {
         List<Role> roles = identity.getRoles();
-        List<String> groups = new ArrayList<String>( roles.size() );
-        for ( Role r : roles ) {
-            groups.add( r.getName().trim() );
+        List<String> groups = new ArrayList<String>(roles.size());
+        for (Role r : roles) {
+            groups.add(r.getName().trim());
         }
         return groups;
     }
 
     /**
-     * Refresh tasks based on specified date, view (day/week/month) and task type.
+     * Refresh tasks based on specified date, view (day/week/month) and task
+     * type.
      */
     public void refreshTasks(Date date, TaskView taskView, TaskType taskType) {
         switch (taskType) {
-            case PERSONAL:
-                refreshPersonalTasks(date, taskView);
-                break;
-            case ACTIVE:
-                refreshActiveTasks(date, taskView);
-                break;
-            case GROUP:
-                refreshGroupTasks(date, taskView);
-                break;
-            case ALL:
-                refreshAllTasks(date, taskView);
-                break;
-            default:
-                throw new IllegalStateException("Unrecognized task type '" + taskType + "'!");
+        case PERSONAL:
+            refreshPersonalTasks(date, taskView);
+            break;
+        case ACTIVE:
+            refreshActiveTasks(date, taskView);
+            break;
+        case GROUP:
+            refreshGroupTasks(date, taskView);
+            break;
+        case ALL:
+            refreshAllTasks(date, taskView);
+            break;
+        default:
+            throw new IllegalStateException("Unrecognized task type '" + taskType + "'!");
         }
     }
 
@@ -270,7 +263,7 @@ public class TasksListPresenter {
         statuses.add("InProgress");
         statuses.add("Created");
         statuses.add("Reserved");
-        if (taskView.equals(TaskView.GRID)){
+        if (taskView.equals(TaskView.GRID)) {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
@@ -293,20 +286,20 @@ public class TasksListPresenter {
     private int determineNumberOfDaysForTaskView(TaskView taskView) {
         int daysTotal;
         switch (taskView) {
-            case DAY:
-                daysTotal = DAYS_FOR_DAY_VIEW;
-                break;
-            case WEEK:
-                daysTotal = DAYS_FOR_WEEK_VIEW;
-                break;
-            case MONTH:
-                daysTotal = DAYS_FOR_MONTH_VIEW;
-                break;
-            case GRID:
-                daysTotal = DAYS_FOR_GRID_VIEW;
-                break;
-            default:
-                throw new IllegalStateException("Unreconginized view type '" + taskView + "'!");
+        case DAY:
+            daysTotal = DAYS_FOR_DAY_VIEW;
+            break;
+        case WEEK:
+            daysTotal = DAYS_FOR_WEEK_VIEW;
+            break;
+        case MONTH:
+            daysTotal = DAYS_FOR_MONTH_VIEW;
+            break;
+        case GRID:
+            daysTotal = DAYS_FOR_GRID_VIEW;
+            break;
+        default:
+            throw new IllegalStateException("Unreconginized view type '" + taskView + "'!");
         }
         return daysTotal;
     }
@@ -314,23 +307,23 @@ public class TasksListPresenter {
     private Date determineFirstDateForTaskViewBasedOnSpecifiedDate(Date date, TaskView taskView) {
         Date fromDate;
         switch (taskView) {
-            case DAY:
-                fromDate = new Date(date.getTime());
-                break;
-            case WEEK:
-                DateRange weekRange = DateUtils.getWorkWeekDateRange(date);
-                fromDate = weekRange.getStartDate();
-                break;
-            case MONTH:
-                DateRange monthRange = DateUtils.getMonthDateRange(date);
-                DateRange firstWeekRange = DateUtils.getWeekDateRange(monthRange.getStartDate());
-                fromDate = firstWeekRange.getStartDate();
-                break;
-            case GRID:
-                fromDate = new Date(date.getTime());
-                break;
-            default:
-                throw new IllegalStateException("Unreconginized view type '" + taskView + "'!");
+        case DAY:
+            fromDate = new Date(date.getTime());
+            break;
+        case WEEK:
+            DateRange weekRange = DateUtils.getWorkWeekDateRange(date);
+            fromDate = weekRange.getStartDate();
+            break;
+        case MONTH:
+            DateRange monthRange = DateUtils.getMonthDateRange(date);
+            DateRange firstWeekRange = DateUtils.getWeekDateRange(monthRange.getStartDate());
+            fromDate = firstWeekRange.getStartDate();
+            break;
+        case GRID:
+            fromDate = new Date(date.getTime());
+            break;
+        default:
+            throw new IllegalStateException("Unreconginized view type '" + taskView + "'!");
         }
         return fromDate;
     }
@@ -343,7 +336,7 @@ public class TasksListPresenter {
         statuses.add("Ready");
         statuses.add("Reserved");
         statuses.add("InProgress");
-        if(taskView.equals(TaskView.GRID)) {
+        if (taskView.equals(TaskView.GRID)) {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
@@ -375,9 +368,9 @@ public class TasksListPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
-                   allTaskSummaries = tasks;
-                   filterTasks(view.getSearchBox().getText());
-                   view.getSelectionModel().clear();
+                    allTaskSummaries = tasks;
+                    filterTasks(view.getSearchBox().getText());
+                    view.getSelectionModel().clear();
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
         } else {
@@ -412,9 +405,9 @@ public class TasksListPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
-                   allTaskSummaries = tasks;
-                   filterTasks(view.getSearchBox().getText());
-                   view.getSelectionModel().clear();
+                    allTaskSummaries = tasks;
+                    filterTasks(view.getSearchBox().getText());
+                    view.getSelectionModel().clear();
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
         } else {

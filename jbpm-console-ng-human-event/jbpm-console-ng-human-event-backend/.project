@@ -2,7 +2,7 @@
   <name>jbpm-console-ng-human-event-backend</name>
   <comment>jBPM Console NG Modules. NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
   <projects>
-    <project>jbpm-console-ng-human-tasks-api</project>
+    <project>jbpm-console-ng-human-event-api</project>
   </projects>
   <buildSpec>
     <buildCommand>

@@ -18,18 +18,18 @@ package org.jbpm.console.ng.he.client.history;
 
 import java.util.Queue;
 
-import org.jbpm.console.ng.he.model.PointHistory;
+import org.jbpm.console.ng.he.model.HumanEventSummary;
 
 //@SessionScoped
 public class ActionHistory {
     
-    private Queue<PointHistory> points;
+    private Queue<HumanEventSummary> points;
 
-	public Queue<PointHistory> getPoints() {
+	public Queue<HumanEventSummary> getPoints() {
 		return points;
 	}
 
-	public void setPoints(Queue<PointHistory> points) {
+	public void setPoints(Queue<HumanEventSummary> points) {
 		this.points = points;
 	}
     
