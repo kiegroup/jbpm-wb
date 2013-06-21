@@ -58,5 +58,9 @@ public interface Constants extends Messages {
     String Deployments();
 
     String newItem();
+    
+    String Events();
+    
+    String Human_Events();
 
 }

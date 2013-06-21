@@ -18,8 +18,6 @@ package org.jbpm.console.ng.he.client.history;
 
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.Dependent;
@@ -29,7 +27,6 @@ import javax.inject.Inject;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.he.client.history.ActionHistoryPresenter.HumanEventType;
-import org.jbpm.console.ng.he.client.history.ActionHistoryPresenter.HumanEventView;
 import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.jbpm.console.ng.he.client.util.ResizableHeader;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
@@ -43,8 +40,6 @@ import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
-import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
@@ -99,8 +94,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
 
     private ActionHistoryPresenter presenter;
 
-    private HumanEventView currentView = HumanEventView.DAY;
-
     public DataGrid<HumanEventSummary> myEventListGrid;
 
     public SimplePager pager;
@@ -110,20 +103,12 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     @Inject
     private Event<TaskSelectionEvent> taskSelection;
 
-    // @Inject
-    // private TaskListMultiDayBox taskListMultiDayBox;
-
     private Date currentDate;
     private HumanEventType currentEventHumanType = HumanEventType.ACTIVE;
 
-    // @Override
-    // public TaskListMultiDayBox getTaskListMultiDayBox() {
-    // return taskListMultiDayBox;
-    // }
-
     @Override
     public void refreshHumanEvents() {
-        presenter.refreshEvents(currentDate, currentView, currentEventHumanType);
+        presenter.refreshEvents(currentDate, currentEventHumanType);
     }
 
     @Override
@@ -136,12 +121,10 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             public void onClick(ClickEvent event) {
                 refreshHumanEvents();
                 searchBox.setText("");
-                displayNotification(constants.Tasks_Refreshed());
+                displayNotification(constants.Events_Refreshed());
             }
         });
 
-        // taskListMultiDayBox.init();
-        // taskListMultiDayBox.setPresenter(presenter);
         currentDate = new Date();
 
         // By Default we will start in Grid View
@@ -187,7 +170,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             }
         });
 
-        taskCalendarViewLabel.setText("Human Events" /* constants.Tasks_List() */);
+        taskCalendarViewLabel.setText(constants.List_Human_Event());
         taskCalendarViewLabel.setStyleName("");
         
         searchBox.addKeyUpHandler(new KeyUpHandler() {
@@ -213,7 +196,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
 
     private void initializeGridView() {
         eventsViewContainer.clear();
-        currentView = HumanEventView.GRID;
+        //currentView = HumanEventView.GRID;
         myEventListGrid = new DataGrid<HumanEventSummary>();
         myEventListGrid.setStyleName("table table-bordered table-striped table-hover");
         pager = new SimplePager();
@@ -226,11 +209,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
 
         myEventListGrid.setHeight("350px");
         // Set the message to display when the table is empty.
-        myEventListGrid.setEmptyTableWidget(new Label("No event"/*
-                                                                 * constants .
-                                                                 * No_Pending_Tasks_Enjoy
-                                                                 * ()
-                                                                 */));
+        myEventListGrid.setEmptyTableWidget(new Label(constants.No_Human_Events()));
 
         // Attach a column sort handler to the ListDataProvider to sort the
         // list.
@@ -269,7 +248,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         taskIdColumn.setSortable(true);
         myEventListGrid.setColumnWidth(taskIdColumn, "80px");
 
-        myEventListGrid.addColumn(taskIdColumn, new ResizableHeader("Id event"/*constants.Id()*/, myEventListGrid, taskIdColumn));
+        myEventListGrid.addColumn(taskIdColumn, new ResizableHeader(constants.Id_Event(), myEventListGrid, taskIdColumn));
         sortHandler.setComparator(taskIdColumn, new Comparator<HumanEventSummary>() {
             @Override
             public int compare(HumanEventSummary o1, HumanEventSummary o2) {
@@ -286,13 +265,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         };
         taskNameColumn.setSortable(true);
 
-        myEventListGrid.addColumn(taskNameColumn, new ResizableHeader("Human Event"/*
-                                                                                    * constants
-                                                                                    * .
-                                                                                    * Task
-                                                                                    * (
-                                                                                    * )
-                                                                                    */, myEventListGrid, taskNameColumn));
+        myEventListGrid.addColumn(taskNameColumn, new ResizableHeader(constants.Human_Event(), myEventListGrid, taskNameColumn));
         sortHandler.setComparator(taskNameColumn, new Comparator<HumanEventSummary>() {
             @Override
             public int compare(HumanEventSummary o1, HumanEventSummary o2) {
@@ -309,13 +282,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         };
         taskNameColumn.setSortable(true);
 
-        myEventListGrid.addColumn(typeNameColumn, new ResizableHeader("Type Event"/*
-                                                                                   * constants
-                                                                                   * .
-                                                                                   * Task
-                                                                                   * (
-                                                                                   * )
-                                                                                   */, myEventListGrid, typeNameColumn));
+        myEventListGrid.addColumn(typeNameColumn, new ResizableHeader(constants.Type_Event(), myEventListGrid, typeNameColumn));
         sortHandler.setComparator(typeNameColumn, new Comparator<HumanEventSummary>() {
             @Override
             public int compare(HumanEventSummary o1, HumanEventSummary o2) {
@@ -323,7 +290,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             }
         });
 
-        // Due Date.
+        // Time.
         Column<HumanEventSummary, String> dueDateColumn = new Column<HumanEventSummary, String>(new TextCell()) {
             @Override
             public String getValue(HumanEventSummary object) {
@@ -335,13 +302,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         };
         dueDateColumn.setSortable(true);
 
-        myEventListGrid.addColumn(dueDateColumn, new ResizableHeader("Time" /*
-                                                                             * constants
-                                                                             * .
-                                                                             * Due_On
-                                                                             * (
-                                                                             * )
-                                                                             */, myEventListGrid, dueDateColumn));
+        myEventListGrid.addColumn(dueDateColumn, new ResizableHeader(constants.Time(), myEventListGrid, dueDateColumn));
         sortHandler.setComparator(dueDateColumn, new Comparator<HumanEventSummary>() {
             @Override
             public int compare(HumanEventSummary o1, HumanEventSummary o2) {
@@ -369,5 +330,4 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     public TextBox getSearchBox() {
         return searchBox;
     }
-
 }

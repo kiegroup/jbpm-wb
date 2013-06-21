@@ -66,8 +66,6 @@ public class ActionHistoryPresenter {
 
         void displayNotification(String text);
 
-        // TaskListMultiDayBox getTaskListMultiDayBox();
-
         MultiSelectionModel<HumanEventSummary> getSelectionModel();
 
         TextBox getSearchBox();

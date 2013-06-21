@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 JBoss Inc
+ * Copyright 2013 JBoss Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,66 +30,28 @@ import com.google.gwt.i18n.client.Messages;
 public interface Constants extends Messages {
 
     Constants INSTANCE = GWT.create(Constants.class);
-
-    String Tasks_List();
-
-    String Day();
-
-    String Week();
-
-    String Month();
+    
+    String List_Human_Event();
+    
+    String No_Human_Events();
+    
+    String Human_Event();
+    
+    String Id_Event();
 
     String Grid();
-
-    String New_Task();
 
     String Personal();
 
     String Group();
 
-    String Active();
-
-    String All();
-
-    String No_Pending_Tasks_Enjoy();
-
-    String Priority();
-
-    String Task();
-
     String Id();
-
-    String Status();
-
-    String Due_On();
-
-    String Parent();
-
-    String Complete();
-
-    String Release();
-
-    String Claim();
-
-    String Work();
-
-    String Start();
 
     String Details();
 
     String Actions();
 
-    String No_Parent();
-
     String User();
-
-    String Process_Instance_Id();
-
-    String Process_Definition_Id();
-
-    String Process_Instance_Details();
-
-    String No_Comments_For_This_Task();
 
     String Comment();
 
@@ -99,13 +61,9 @@ public interface Constants extends Messages {
 
     String Add_Comment();
 
-    String Task_Must_Have_A_Name();
-
     String Create();
 
     String Task_Name();
-
-    String Quick_Task();
 
     String Description();
 
@@ -121,11 +79,15 @@ public interface Constants extends Messages {
 
     String Today();
 
-    String Advanced();
-
     String Refresh();
     
-    String Tasks_Refreshed();
+    String Events_Refreshed();
+    
+    String Type_Event();
+    
+    String Time();
+    
+    String All();
     
 
 }
