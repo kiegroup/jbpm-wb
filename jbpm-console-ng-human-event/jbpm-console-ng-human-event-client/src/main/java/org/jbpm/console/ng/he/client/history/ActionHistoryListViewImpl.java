@@ -110,16 +110,8 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     @Inject
     private Event<TaskSelectionEvent> taskSelection;
 
-    // @Inject
-    // private TaskListMultiDayBox taskListMultiDayBox;
-
     private Date currentDate;
     private HumanEventType currentEventHumanType = HumanEventType.ACTIVE;
-
-    // @Override
-    // public TaskListMultiDayBox getTaskListMultiDayBox() {
-    // return taskListMultiDayBox;
-    // }
 
     @Override
     public void refreshHumanEvents() {
@@ -140,8 +132,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             }
         });
 
-        // taskListMultiDayBox.init();
-        // taskListMultiDayBox.setPresenter(presenter);
         currentDate = new Date();
 
         // By Default we will start in Grid View
@@ -369,5 +359,4 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     public TextBox getSearchBox() {
         return searchBox;
     }
-
 }
