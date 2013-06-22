@@ -30,6 +30,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.he.client.history.ActionHistoryPresenter.HumanEventType;
 import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.jbpm.console.ng.he.client.util.ResizableHeader;
+import org.jbpm.console.ng.he.model.ActionHistoryEnum;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.uberfire.workbench.events.NotificationEvent;
 
@@ -90,6 +91,10 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
 
     @Inject
     private Event<NotificationEvent> notification;
+    
+    //TODO quitar solo lo puse para probar si desde aca si invoca al fire
+    @Inject
+    private Event<HumanEventSummary> pointHistoryEvent;
 
     private ActionHistoryPresenter presenter;
 
@@ -173,6 +178,8 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             public void onKeyUp(KeyUpEvent event) {
                 if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32) {
                     displayNotification("Filter: |" + searchBox.getText() + "|");
+                    displayNotification("** fire ***" + ActionHistoryEnum.NEW_TASK.getDescription());
+                    pointHistoryEvent.fire(new HumanEventSummary(ActionHistoryEnum.TASK_CREATED.getDescription(), 2222l, "Start"));
                     filterTasks(searchBox.getText());
                 }
 
@@ -315,6 +322,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     }
 
     public void saveNewEventHistory(@Observes HumanEventSummary pointHistory) {
+        displayNotification("** llamo al fire ***" + ActionHistoryEnum.NEW_TASK.getDescription());
         presenter.saveNewEvent(pointHistory);
     }
 

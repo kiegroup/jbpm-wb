@@ -1,2 +1,2 @@
-org.jbpm.console.ng.he.backend.server.EventServiceEntryPointImpl
 org.jbpm.console.ng.he.backend.server.SessionManager
+org.jbpm.console.ng.he.backend.server.EventServiceEntryPointImpl

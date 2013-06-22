@@ -17,22 +17,20 @@
 package org.jbpm.console.ng.he.client.history;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Queue;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.he.client.history.ActionHistoryPresenter.HumanEventType;
 import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.jbpm.console.ng.he.client.util.ResizableHeader;
+import org.jbpm.console.ng.he.model.ActionHistoryEnum;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.uberfire.workbench.events.NotificationEvent;
 
@@ -71,7 +69,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     @Inject
     @DataField
     public NavLink showPersonalTasksNavLink;
-    
+
     @Inject
     @DataField
     public TextBox searchBox;
@@ -94,18 +92,22 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     @Inject
     private Event<NotificationEvent> notification;
     
+    //TODO quitar solo lo puse para probar si desde aca si invoca al fire
+    @Inject
+    private Event<HumanEventSummary> pointHistoryEvent;
+
     private ActionHistoryPresenter presenter;
 
     public DataGrid<HumanEventSummary> myEventListGrid;
 
     public SimplePager pager;
-    
+
     private ListHandler<HumanEventSummary> sortHandler;
-    
+
     private MultiSelectionModel<HumanEventSummary> selectionModel;
-    
+
     private Date currentDate;
-    
+
     private HumanEventType currentEventHumanType = HumanEventType.ACTIVE;
 
     @Override
@@ -169,13 +171,15 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
 
         taskCalendarViewLabel.setText(constants.List_Human_Event());
         taskCalendarViewLabel.setStyleName("");
-        
+
         searchBox.addKeyUpHandler(new KeyUpHandler() {
 
             @Override
             public void onKeyUp(KeyUpEvent event) {
                 if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32) {
                     displayNotification("Filter: |" + searchBox.getText() + "|");
+                    displayNotification("** fire ***" + ActionHistoryEnum.NEW_TASK.getDescription());
+                    pointHistoryEvent.fire(new HumanEventSummary(ActionHistoryEnum.TASK_CREATED.getDescription(), 2222l, "Start"));
                     filterTasks(searchBox.getText());
                 }
 
@@ -185,20 +189,18 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         refreshHumanEvents();
 
     }
-    
+
     public void filterTasks(String text) {
         presenter.filterTasks(text);
     }
-    
+
     @Override
     public void refreshHumanEvents() {
         presenter.refreshEvents(currentDate, currentEventHumanType);
     }
-    
 
     private void initializeGridView() {
         eventsViewContainer.clear();
-        //currentView = HumanEventView.GRID;
         myEventListGrid = new DataGrid<HumanEventSummary>();
         myEventListGrid.setStyleName("table table-bordered table-striped table-hover");
         pager = new SimplePager();
@@ -218,19 +220,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         sortHandler = new ColumnSortEvent.ListHandler<HumanEventSummary>(presenter.getAllEventsSummaries());
 
         myEventListGrid.addColumnSortHandler(sortHandler);
-
-        // Add a selection model so we can select cells.
-        /*selectionModel = new MultiSelectionModel<HumanEventSummary>();
-        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
-            @Override
-            public void onSelectionChange(SelectionChangeEvent event) {
-                selectedTasks = selectionModel.getSelectedSet();
-                for (HumanEventSummary ts : selectedTasks) {
-                    taskSelection.fire(new TaskSelectionEvent(ts.getId()));
-                }
-            }
-        });
-        */
 
         myEventListGrid.setSelectionModel(selectionModel,
                 DefaultSelectionEventManager.<HumanEventSummary> createCheckboxManager());
@@ -268,7 +257,8 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         };
         eventNameColumn.setSortable(true);
 
-        myEventListGrid.addColumn(eventNameColumn, new ResizableHeader(constants.Human_Event(), myEventListGrid, eventNameColumn));
+        myEventListGrid.addColumn(eventNameColumn, new ResizableHeader(constants.Human_Event(), myEventListGrid,
+                eventNameColumn));
         sortHandler.setComparator(eventNameColumn, new Comparator<HumanEventSummary>() {
             @Override
             public int compare(HumanEventSummary o1, HumanEventSummary o2) {
@@ -290,7 +280,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             @Override
             public int compare(HumanEventSummary o1, HumanEventSummary o2) {
                 return o1.getTypeEvent().compareTo(o2.getTypeEvent());
-            }   
+            }
         });
 
         // Timestamp.
@@ -326,14 +316,14 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     public MultiSelectionModel<HumanEventSummary> getSelectionModel() {
         return selectionModel;
     }
-    
+
     public TextBox getSearchBox() {
         return searchBox;
     }
-    
+
     public void saveNewEventHistory(@Observes HumanEventSummary pointHistory) {
+        displayNotification("** llamo al fire wueyyyyy ***" + ActionHistoryEnum.NEW_TASK.getDescription());
         presenter.saveNewEvent(pointHistory);
     }
-    
-    
+
 }

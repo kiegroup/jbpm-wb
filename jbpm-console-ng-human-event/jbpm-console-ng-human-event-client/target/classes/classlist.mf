@@ -2,6 +2,6 @@ org.jbpm.console.ng.he.client.history.ActionHistoryPresenter
 org.jbpm.console.ng.he.client.util.ResizableHeader
 org.jbpm.console.ng.he.client.history.ActionHistoryListViewImpl
 org.jbpm.console.ng.he.client.i8n.Constants
-org.jbpm.console.ng.he.client.history.ActionHistoryPresenterActivity
 org.jbpm.console.ng.he.client.perspectives.ActionHistoryPerspectiveActivity
+org.jbpm.console.ng.he.client.history.ActionHistoryPresenterActivity
 org.jbpm.console.ng.he.client.perspectives.ActionHistoryPerspective

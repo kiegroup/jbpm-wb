@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Queue;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
@@ -45,7 +44,7 @@ import com.google.gwt.view.client.MultiSelectionModel;
 @Dependent
 @WorkbenchScreen(identifier = "Actions Histories")
 public class ActionHistoryPresenter {
-    
+
     private Constants constants = GWT.create(Constants.class);
 
     @Inject
@@ -61,12 +60,12 @@ public class ActionHistoryPresenter {
     public UberView<ActionHistoryPresenter> getView() {
         return view;
     }
-    
+
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.List_Human_Event();
     }
-    
+
     public enum HumanEventType {
         PERSONAL, ACTIVE, GROUP, ALL
     }
@@ -90,23 +89,24 @@ public class ActionHistoryPresenter {
         return allEventsSummaries;
     }
 
-//    public void saveNewEventHistory(@Observes HumanEventSummary pointHistory) {
-//        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
-//            @Override
-//            public void callback(Queue<HumanEventSummary> events) {
-//                allEventsSummaries = new ArrayList<HumanEventSummary>(events);
-//            }
-//        }).saveNewHumanEvent(pointHistory);
-//    }
-    
+    // public void saveNewEventHistory(@Observes HumanEventSummary pointHistory)
+    // {
+    // humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+    // @Override
+    // public void callback(Queue<HumanEventSummary> events) {
+    // allEventsSummaries = new ArrayList<HumanEventSummary>(events);
+    // }
+    // }).saveNewHumanEvent(pointHistory);
+    // }
+
     public void saveNewEvent(HumanEventSummary pointHistory) {
-      humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
-          @Override
-          public void callback(Queue<HumanEventSummary> events) {
-              allEventsSummaries = new ArrayList<HumanEventSummary>(events);
-          }
-      }).saveNewHumanEvent(pointHistory);
-  }
+        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+            @Override
+            public void callback(Queue<HumanEventSummary> events) {
+                allEventsSummaries = new ArrayList<HumanEventSummary>(events);
+            }
+        }).saveNewHumanEvent(pointHistory);
+    }
 
     public void refreshEvents(Date date, HumanEventType eventType) {
         switch (eventType) {
