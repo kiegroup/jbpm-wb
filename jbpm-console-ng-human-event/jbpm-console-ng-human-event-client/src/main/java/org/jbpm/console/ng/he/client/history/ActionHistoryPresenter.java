@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Queue;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
@@ -46,32 +45,7 @@ import com.google.gwt.view.client.MultiSelectionModel;
 @WorkbenchScreen(identifier = "Actions Histories")
 public class ActionHistoryPresenter {
 
-    private List<HumanEventSummary> allEventsSummaries;
-
-    private ListDataProvider<HumanEventSummary> dataProvider = new ListDataProvider<HumanEventSummary>();
-
-    public enum HumanEventType {
-        PERSONAL, ACTIVE, GROUP, ALL
-    }
-
-    public enum EventType {
-        HISTORY
-    }
-
-    public List<HumanEventSummary> getAllEventsSummaries() {
-        return allEventsSummaries;
-    }
-
-    public interface ActionHistoryView extends UberView<ActionHistoryPresenter> {
-
-        void displayNotification(String text);
-
-        MultiSelectionModel<HumanEventSummary> getSelectionModel();
-
-        TextBox getSearchBox();
-
-        void refreshHumanEvents();
-    }
+    private Constants constants = GWT.create(Constants.class);
 
     @Inject
     private ActionHistoryView view;
@@ -87,18 +61,49 @@ public class ActionHistoryPresenter {
         return view;
     }
 
-    private Constants constants = GWT.create(Constants.class);
-
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.List_Human_Event();
     }
 
-    public void saveNewEventHistory(@Observes HumanEventSummary pointHistory) {
+    public enum HumanEventType {
+        PERSONAL, ACTIVE, GROUP, ALL
+    }
+
+    private List<HumanEventSummary> allEventsSummaries;
+
+    private ListDataProvider<HumanEventSummary> dataProvider = new ListDataProvider<HumanEventSummary>();
+
+    public interface ActionHistoryView extends UberView<ActionHistoryPresenter> {
+
+        void displayNotification(String text);
+
+        MultiSelectionModel<HumanEventSummary> getSelectionModel();
+
+        TextBox getSearchBox();
+
+        void refreshHumanEvents();
+    }
+
+    public List<HumanEventSummary> getAllEventsSummaries() {
+        return allEventsSummaries;
+    }
+
+    // public void saveNewEventHistory(@Observes HumanEventSummary pointHistory)
+    // {
+    // humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+    // @Override
+    // public void callback(Queue<HumanEventSummary> events) {
+    // allEventsSummaries = new ArrayList<HumanEventSummary>(events);
+    // }
+    // }).saveNewHumanEvent(pointHistory);
+    // }
+
+    public void saveNewEvent(HumanEventSummary pointHistory) {
         humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
             @Override
             public void callback(Queue<HumanEventSummary> events) {
-                allEventsSummaries = pasarAListProvisorio(events);
+                allEventsSummaries = new ArrayList<HumanEventSummary>(events);
             }
         }).saveNewHumanEvent(pointHistory);
     }
@@ -106,38 +111,33 @@ public class ActionHistoryPresenter {
     public void refreshEvents(Date date, HumanEventType eventType) {
         switch (eventType) {
         case ACTIVE:
-            refreshHumanEvent(date);
+            refreshHumanEvent();
             break;
         case PERSONAL:
-            refreshHumanEvent(date);
+            // TODO undefine
+            refreshHumanEvent();
             break;
         case GROUP:
-            refreshHumanEvent(date);
+            // TODO undefine
+            refreshHumanEvent();
             break;
         case ALL:
-            refreshHumanEvent(date);
+            // TODO undefine
+            refreshHumanEvent();
             break;
         default:
             throw new IllegalStateException("Unrecognized event type '" + eventType + "'!");
         }
     }
 
-    public void refreshHumanEvent(Date date) {
+    public void refreshHumanEvent() {
         humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
             @Override
             public void callback(Queue<HumanEventSummary> events) {
-                allEventsSummaries = pasarAListProvisorio(events);
+                allEventsSummaries = new ArrayList<HumanEventSummary>(events);
                 filterTasks(view.getSearchBox().getText());
             }
         }).getAllHumanEvent();
-    }
-
-    private List<HumanEventSummary> pasarAListProvisorio(Queue<HumanEventSummary> events) {
-        List<HumanEventSummary> eventsList = new ArrayList<HumanEventSummary>();
-        for (HumanEventSummary ev : events) {
-            eventsList.add(ev);
-        }
-        return eventsList;
     }
 
     public void filterTasks(String text) {

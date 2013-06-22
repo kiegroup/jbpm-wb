@@ -25,11 +25,9 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 public class HumanEventSummary implements Serializable {
 	private static final long serialVersionUID = 8560376197262109541L;
 	
-	private long id;
+    private long idEvent;
 	private String descriptionEvent;
 	private Date eventTime;
-	// Is the ID of the event(task, proccess)
-	private long idEvent;
 	//TODO ver si hay algun drama de que esto sea un enum
 	private String typeEvent;
 
@@ -75,14 +73,6 @@ public class HumanEventSummary implements Serializable {
 		this.eventTime = eventTime;
 	}
 
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
     public long getIdEvent() {
         return idEvent;
     }
@@ -97,7 +87,6 @@ public class HumanEventSummary implements Serializable {
         int result = 1;
         result = prime * result + ((descriptionEvent == null) ? 0 : descriptionEvent.hashCode());
         result = prime * result + ((eventTime == null) ? 0 : eventTime.hashCode());
-        result = prime * result + (int) (id ^ (id >>> 32));
         result = prime * result + (int) (idEvent ^ (idEvent >>> 32));
         result = prime * result + ((typeEvent == null) ? 0 : typeEvent.hashCode());
         return result;
@@ -122,8 +111,6 @@ public class HumanEventSummary implements Serializable {
                 return false;
         } else if (!eventTime.equals(other.eventTime))
             return false;
-        if (id != other.id)
-            return false;
         if (idEvent != other.idEvent)
             return false;
         if (typeEvent == null) {
@@ -136,10 +123,8 @@ public class HumanEventSummary implements Serializable {
 
     @Override
     public String toString() {
-        return "HumanEventSummary [id=" + id + ", descriptionEvent=" + descriptionEvent + ", eventTime=" + eventTime
-                + ", idEvent=" + idEvent + ", typeEvent=" + typeEvent + "]";
+        return "HumanEventSummary [descriptionEvent=" + descriptionEvent + ", eventTime=" + eventTime + ", idEvent=" + idEvent
+                + ", typeEvent=" + typeEvent + "]";
     }
-
-
 
 }
