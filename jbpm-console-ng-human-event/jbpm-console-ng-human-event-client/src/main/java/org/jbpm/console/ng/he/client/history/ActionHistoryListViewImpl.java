@@ -91,8 +91,8 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
 
     @Inject
     private Event<NotificationEvent> notification;
-    
-    //TODO quitar solo lo puse para probar si desde aca si invoca al fire
+
+    // TODO quitar solo lo puse para probar si desde aca si invoca al fire
     @Inject
     private Event<HumanEventSummary> pointHistoryEvent;
 
@@ -177,9 +177,8 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             @Override
             public void onKeyUp(KeyUpEvent event) {
                 if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32) {
-                    displayNotification("Filter: |" + searchBox.getText() + "|");
-                    displayNotification("** fire ***" + ActionHistoryEnum.NEW_TASK.getDescription());
-                    pointHistoryEvent.fire(new HumanEventSummary(ActionHistoryEnum.TASK_CREATED.getDescription(), 2222l, "Start"));
+                    displayNotification("Filter Event: |" + searchBox.getText() + "|");
+                    pointHistoryEvent.fire(new HumanEventSummary(ActionHistoryEnum.FILTER_EVENT, 2222l));
                     filterTasks(searchBox.getText());
                 }
 
@@ -319,11 +318,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
 
     public TextBox getSearchBox() {
         return searchBox;
-    }
-
-    public void saveNewEventHistory(@Observes HumanEventSummary pointHistory) {
-        displayNotification("** llamo al fire ***" + ActionHistoryEnum.NEW_TASK.getDescription());
-        presenter.saveNewEvent(pointHistory);
     }
 
 }

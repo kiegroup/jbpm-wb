@@ -48,6 +48,16 @@ public class HumanEventSummary implements Serializable {
 		this.typeEvent = typeEvent;
 		this.eventTime = new Date();
 	}
+	
+	public HumanEventSummary(ActionHistoryEnum event, long idEvent) {
+        super();
+        this.descriptionEvent = event.getDescription();
+        this.typeEvent = event.getType();
+        this.idEvent = idEvent;
+        this.eventTime = new Date();
+    }
+	
+	
 
 	public String getDescriptionEvent() {
 		return descriptionEvent;

@@ -36,6 +36,8 @@ import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.he.model.ActionHistoryEnum;
+import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
 import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
 import org.uberfire.client.mvp.PlaceManager;
@@ -103,6 +105,9 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
 
     @Inject
     private Event<UserTaskEvent> userTaskChanges;
+    
+    @Inject
+    private Event<HumanEventSummary> pointHistoryEvent;
 
     private HandlerRegistration textKeyPressHandler;
 
@@ -152,6 +157,7 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
 
     @EventHandler("addTaskButton")
     public void addTaskButton( ClickEvent e ) {
+        pointHistoryEvent.fire(new HumanEventSummary(ActionHistoryEnum.TASK_CREATED, 2222l));
         addTask();
     }
 

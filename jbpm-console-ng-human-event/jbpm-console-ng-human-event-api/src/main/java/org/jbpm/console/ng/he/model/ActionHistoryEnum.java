@@ -18,13 +18,16 @@ package org.jbpm.console.ng.he.model;
 
 public enum ActionHistoryEnum {
 
-    NEW_TASK("New Task - pasarla a constante"),
-    TASK_CREATED("Task Created");
+    NEW_TASK("New Task", "Create"),
+    TASK_CREATED("Task Created", "Create"),
+    FILTER_EVENT("Filter Event", "Search");
     
     private String description;
+    private String type;
     
-    ActionHistoryEnum(String description){
+    ActionHistoryEnum(String description, String type){
         this.description = description;
+        this.type = type;
     }
     
 
@@ -34,6 +37,16 @@ public enum ActionHistoryEnum {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+
+    public String getType() {
+        return type;
+    }
+
+
+    public void setType(String type) {
+        this.type = type;
     }
     
 }

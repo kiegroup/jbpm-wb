@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Queue;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
@@ -89,17 +90,8 @@ public class ActionHistoryPresenter {
         return allEventsSummaries;
     }
 
-    // public void saveNewEventHistory(@Observes HumanEventSummary pointHistory)
-    // {
-    // humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
-    // @Override
-    // public void callback(Queue<HumanEventSummary> events) {
-    // allEventsSummaries = new ArrayList<HumanEventSummary>(events);
-    // }
-    // }).saveNewHumanEvent(pointHistory);
-    // }
-
-    public void saveNewEvent(HumanEventSummary pointHistory) {
+    
+    public void saveNewEventHistory(@Observes HumanEventSummary pointHistory) {
         humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
             @Override
             public void callback(Queue<HumanEventSummary> events) {
@@ -107,6 +99,7 @@ public class ActionHistoryPresenter {
             }
         }).saveNewHumanEvent(pointHistory);
     }
+    
 
     public void refreshEvents(Date date, HumanEventType eventType) {
         switch (eventType) {
