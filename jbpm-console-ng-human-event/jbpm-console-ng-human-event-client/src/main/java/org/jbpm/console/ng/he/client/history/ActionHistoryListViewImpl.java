@@ -92,10 +92,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     @Inject
     private Event<NotificationEvent> notification;
 
-    // TODO quitar solo lo puse para probar si desde aca si invoca al fire
-    @Inject
-    private Event<HumanEventSummary> pointHistoryEvent;
-
     private ActionHistoryPresenter presenter;
 
     public DataGrid<HumanEventSummary> myEventListGrid;
@@ -178,7 +174,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             public void onKeyUp(KeyUpEvent event) {
                 if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32) {
                     displayNotification("Filter Event: |" + searchBox.getText() + "|");
-                    pointHistoryEvent.fire(new HumanEventSummary(ActionHistoryEnum.FILTER_EVENT, 2222l));
                     filterTasks(searchBox.getText());
                 }
 
@@ -304,6 +299,24 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
                 return o1.getEventTime().compareTo(o2.getEventTime());
             }
         });
+        
+     // User.
+        Column<HumanEventSummary, String> userNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(HumanEventSummary object) {
+                return object.getDescriptionEvent();
+            }
+        };
+        userNameColumn.setSortable(true);
+
+        myEventListGrid.addColumn(userNameColumn, new ResizableHeader(constants.User(), myEventListGrid, userNameColumn));
+        sortHandler.setComparator(userNameColumn, new Comparator<HumanEventSummary>() {
+            @Override
+            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
+                return o1.getUser().compareTo(o2.getUser());
+            }
+        });
+        
     }
 
     @Override

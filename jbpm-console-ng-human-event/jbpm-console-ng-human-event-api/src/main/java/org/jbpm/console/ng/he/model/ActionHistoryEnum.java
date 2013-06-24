@@ -18,8 +18,10 @@ package org.jbpm.console.ng.he.model;
 
 public enum ActionHistoryEnum {
 
+	TEST("test", "Test"),
     NEW_TASK("New Task", "Create"),
     TASK_CREATED("Task Created", "Create"),
+    TASK_CREATED_STARTED("Task Created and Started", "Create"),
     FILTER_EVENT("Filter Event", "Search");
     
     private String description;

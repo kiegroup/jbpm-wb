@@ -165,9 +165,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     private Event<TaskSelectionEvent> taskSelection;
     
     @Inject
-    private Event<HumanEventSummary> pointHistoryEvent;
-    
-    @Inject
     @DataField
     public IconAnchor refreshIcon;
     
@@ -283,8 +280,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         createQuickTaskNavLink.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
-                //pointHistoryEvent.fire(new HumanEventSummary(ActionHistoryEnum.NEW_TASK.getDescription(), 2222l, "Start"));
-                pointHistoryEvent.fire(new HumanEventSummary(ActionHistoryEnum.NEW_TASK, 2222l));
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Quick New Task" );
                 placeManager.goTo( placeRequestImpl );
             }

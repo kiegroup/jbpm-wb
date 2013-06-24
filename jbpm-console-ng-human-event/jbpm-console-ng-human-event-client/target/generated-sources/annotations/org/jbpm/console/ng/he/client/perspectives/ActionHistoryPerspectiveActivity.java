@@ -32,7 +32,7 @@ import org.uberfire.mvp.PlaceRequest;
 
 @Dependent
 @Generated("org.uberfire.annotations.processors.WorkbenchPerspectiveProcessor")
-@Identifier("Histories")
+@Identifier("Events")
 /*
  * WARNING! This class is generated. Do not modify.
  */
@@ -53,7 +53,7 @@ public class ActionHistoryPerspectiveActivity extends AbstractWorkbenchPerspecti
 
     @Override
     public String getIdentifier() {
-        return "Histories";
+        return "Events";
     }
 
     @Override

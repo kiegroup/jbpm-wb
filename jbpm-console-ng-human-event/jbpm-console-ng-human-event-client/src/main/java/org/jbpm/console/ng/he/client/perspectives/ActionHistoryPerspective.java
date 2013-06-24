@@ -28,14 +28,14 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Histories", isDefault = false)
+@WorkbenchPerspective(identifier = "Events", isDefault = false)
 public class ActionHistoryPerspective {
     
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
         p.setName( "Histories" );
-        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Actions Histories" ) ) );
+        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Human Events" ) ) );
         p.setTransient( true );
         return p;
     }

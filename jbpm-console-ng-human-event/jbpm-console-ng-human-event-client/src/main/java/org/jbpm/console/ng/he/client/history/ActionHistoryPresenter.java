@@ -22,12 +22,14 @@ import java.util.List;
 import java.util.Queue;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.he.client.i8n.Constants;
+import org.jbpm.console.ng.he.model.ActionHistoryEnum;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.he.service.EventServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -43,7 +45,7 @@ import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
 
 @Dependent
-@WorkbenchScreen(identifier = "Actions Histories")
+@WorkbenchScreen(identifier = "Human Events")
 public class ActionHistoryPresenter {
 
     private Constants constants = GWT.create(Constants.class);
@@ -66,6 +68,10 @@ public class ActionHistoryPresenter {
     public String getTitle() {
         return constants.List_Human_Event();
     }
+    
+    // TODO quitar solo lo puse para probar si desde aca si invoca al fire
+    @Inject
+    private Event<HumanEventSummary> pointHistoryEvent;
 
     public enum HumanEventType {
         PERSONAL, ACTIVE, GROUP, ALL
@@ -153,6 +159,7 @@ public class ActionHistoryPresenter {
                 dataProvider.getList().clear();
                 dataProvider.setList(filteredTasksSimple);
                 dataProvider.refresh();
+                pointHistoryEvent.fire(new HumanEventSummary(ActionHistoryEnum.FILTER_EVENT, 2222l, identity.getName()));
             }
         }
 

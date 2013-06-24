@@ -37,7 +37,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 
 @Dependent
 @Generated("org.uberfire.annotations.processors.WorkbenchScreenProcessor")
-@Identifier("Actions Histories")
+@Identifier("Human Events")
 /*
  * WARNING! This class is generated. Do not modify.
  */
