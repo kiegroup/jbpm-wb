@@ -27,7 +27,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-
+import com.google.gwt.user.client.ui.ListBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -100,6 +100,14 @@ public class NewDeploymentViewImpl extends Composite implements NewDeploymentPre
     public Label kieSessionNameLabel;
 
     @Inject
+    @DataField
+    public ListBox strategyListBox;
+
+    @Inject
+    @DataField
+    public Label strategyLabel;
+
+    @Inject
     private Event<NotificationEvent> notification;
 
 
@@ -116,12 +124,18 @@ public class NewDeploymentViewImpl extends Composite implements NewDeploymentPre
         kbaseNameLabel.setText( constants.KieBaseName() );
         kieSessionNameLabel.setText( constants.KieSessionName() );
         advancedLabel.setText(constants.KIE_Configurations());
+
+        strategyLabel.setText(constants.Strategy());
+        strategyListBox.addItem( "Singleton", "SINGLETON" );
+        strategyListBox.addItem( "Request", "PER_REQUEST" );
+        strategyListBox.addItem( "Process instance", "PER_PROCESS_INSTANCE" );
     }
 
     @EventHandler("deployUnitButton")
     public void deployUnitButton( ClickEvent e ) {
+        String strategy = strategyListBox.getValue(strategyListBox.getSelectedIndex());
         presenter.deployUnit(groupText.getText(), artifactText.getText(), versionText.getText(),
-                              kbaseNameText.getText(), kieSessionNameText.getText() );
+                              kbaseNameText.getText(), kieSessionNameText.getText(), strategy );
     }
 
     @Override

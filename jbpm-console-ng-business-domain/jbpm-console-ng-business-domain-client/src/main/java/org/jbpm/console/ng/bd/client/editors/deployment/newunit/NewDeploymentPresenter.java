@@ -103,7 +103,7 @@ public class NewDeploymentPresenter {
     public void init() {
     }
 
-    public void deployUnit(final String group, final String artifact, final String version, final String kbaseName, final String kieSessionName) {
+    public void deployUnit(final String group, final String artifact, final String version, final String kbaseName, final String kieSessionName, String strategy) {
         view.showBusyIndicator(constants.Please_Wait());
         deploymentManager.call(new RemoteCallback<Void>() {
             @Override
@@ -123,7 +123,7 @@ public class NewDeploymentPresenter {
                view.displayNotification("Error: Deploy failed " + throwable.getMessage());
                return true;
            }
-       }).deploy(new KModuleDeploymentUnitSummary("", group, artifact, version, kbaseName, kieSessionName));
+       }).deploy(new KModuleDeploymentUnitSummary("", group, artifact, version, kbaseName, kieSessionName, strategy));
     }
 
     @OnReveal

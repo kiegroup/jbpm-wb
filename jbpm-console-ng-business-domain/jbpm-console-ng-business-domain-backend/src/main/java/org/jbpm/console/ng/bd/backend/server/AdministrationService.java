@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Any;
@@ -54,7 +55,7 @@ import org.uberfire.backend.server.config.ConfigurationService;
 public class AdministrationService {
 
     private static final String DEPLOYMENT_SERVICE_TYPE_CONFIG = "deployment.service";
-
+    private static final Logger logger = Logger.getLogger(AdministrationService.class.getName());
     @Inject
     @Named("ioStrategy")
     private IOService ioService;
@@ -89,34 +90,44 @@ public class AdministrationService {
                                      String userName,
                                      String password ) {
 
-        Repository repository = repositoryService.getRepository( repoAlias );
-        if ( repository == null ) {
-
-            final Map<String, Object> env = new HashMap<String, Object>( 3 );
-            env.put( "origin", repoUrl );
-            env.put( "username", userName );
-            env.put( "crypt:password", password );
-
-            repositoryService.createRepository( "git", repoAlias, env );
+        Repository repository = null;
+        try {
             repository = repositoryService.getRepository( repoAlias );
+            if ( repository == null ) {
+
+                final Map<String, Object> env = new HashMap<String, Object>( 3 );
+                env.put( "origin", repoUrl );
+                env.put( "username", userName );
+                env.put( "crypt:password", password );
+
+                repositoryService.createRepository( "git", repoAlias, env );
+                repository = repositoryService.getRepository( repoAlias );
+
+            }
+        } catch (Exception e) {
+            // don't fail on creation of repository, just log the cause
+            logger.warning("Unable to create repository with alias " + repoAlias + " due to " + e.getMessage());
         }
         
         Group demoGroup = groupService.getGroup("demo");
         if ( demoGroup == null ) {
             List<Repository> repositories = new ArrayList<Repository>();
-            repositories.add( repository );
+            if (repository != null) {
+                repositories.add(repository);
+            }
             groupService.createGroup( "demo", "demo@jbpm.org", repositories );
         
-        }else{
-            groupService.addRepository(demoGroup, repository);
         }
-        
-        try {
-            ioService.newFileSystem( URI.create( repository.getUri() ), repository.getEnvironment() );
 
-        } catch ( FileSystemAlreadyExistsException e ) {
-            ioService.getFileSystem( URI.create( repository.getUri() ) );
+        if (repository != null) {
 
+            try {
+                ioService.newFileSystem( URI.create( repository.getUri() ), repository.getEnvironment() );
+
+            } catch ( FileSystemAlreadyExistsException e ) {
+                ioService.getFileSystem( URI.create( repository.getUri() ) );
+
+            }
         }
     }
 
