@@ -342,7 +342,7 @@ public class TasksListPresenter {
                     currentDayTasks = tasks;
                     filterTasks(view.getSearchBox().getText());
                 }
-            }).getTasksAssignedAsPotentialOwnerFromDateToDateByDays(identity.getName(), fromDate, daysTotal, "en-UK");
+            }).getTasksAssignedAsPotentialOwnerFromDateToDateByDays(identity.getName(), statuses, fromDate, daysTotal, "en-UK");
         }
     }
 
@@ -369,7 +369,7 @@ public class TasksListPresenter {
                     currentDayTasks = tasks;
                     filterTasks(view.getSearchBox().getText());
                 }
-            }).getTasksAssignedFromDateToDateByGroupsByDays(identity.getName(), statuses, fromDate, daysTotal, "en-UK");
+            }).getTasksAssignedAsPotentialOwnerFromDateToDateByDays(identity.getName(), statuses, fromDate, daysTotal, "en-UK");
         }
     }
 
