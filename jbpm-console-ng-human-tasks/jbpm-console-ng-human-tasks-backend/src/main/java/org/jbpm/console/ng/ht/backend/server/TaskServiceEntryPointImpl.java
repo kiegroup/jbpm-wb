@@ -131,11 +131,6 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     /**
      * Day adaptors
      */
-    public Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByDays(String userId, Date from, Date to,
-            String language) {
-        return getTasksOwnedFromDateToDateByDays(userId, from, to, language);
-    }
-
     public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, List<String> strStatuses,
             Date dateFrom, Date dateTo, String language) {
         LocalDate dayFrom = new LocalDate(dateFrom);
@@ -213,35 +208,20 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
 
     public Map<Day, List<TaskSummary>> getTasksAssignedAsPotentialOwnerFromDateToDateByDays(String userId,
-            List<String> strStatuses, Date javaUtilDateFrom, Date javaUtilDateTo, String language) {
-        LocalDate from = new LocalDate(javaUtilDateFrom);
-        LocalDate to = new LocalDate(javaUtilDateTo);
+            List<String> strStatuses, Date dateFrom, Date dateTo, String language) {
+        LocalDate dayFrom = new LocalDate(dateFrom);
+        LocalDate dayTo = new LocalDate(dateTo);
 
         LocalDate today = new LocalDate();
-        Days daysBetween = Days.daysBetween(from, to);
-        int nrOfDaysTotal = daysBetween.getDays() + 1;
-        Map<LocalDate, List<TaskSummary>> tasksByDay = new LinkedHashMap<LocalDate, List<TaskSummary>>();
-        for (int i = 0; i < nrOfDaysTotal; i++) {
-            tasksByDay.put(from.plusDays(i), new ArrayList<TaskSummary>());
-        }
+
+        int nrOfDaysTotal = getNumberOfDaysWithinDateRange(dayFrom, dayTo);
+        Map<LocalDate, List<TaskSummary>> tasksByDay = createDaysMapAndInitWithEmptyListForEachDay(dayFrom, nrOfDaysTotal);
 
         List<TaskSummary> taskSummaries = adaptTaskSummaryCollection(
                 taskService.getTasksAssignedAsPotentialOwnerByStatus(userId, convertStatuses(strStatuses), language));
 
         setPotentionalOwners(taskSummaries);
-
-        for (TaskSummary taskSummary : taskSummaries) {
-            LocalDate expDate;
-            if (taskSummary.getExpirationTime() == null) {
-                expDate = today;
-            } else {
-                expDate = new LocalDate(taskSummary.getExpirationTime());
-            }
-            if (tasksByDay.get(expDate) != null) {
-                tasksByDay.get(expDate).add(taskSummary);
-            }
-        }
-
+        fillDaysMapWithTasksBasedOnExpirationDate(tasksByDay, taskSummaries, today);
         return transformLocalDatesToDays(tasksByDay);
     }
 
