@@ -48,125 +48,154 @@ import com.google.gwt.view.client.MultiSelectionModel;
 @WorkbenchScreen(identifier = "Human Events")
 public class ActionHistoryPresenter {
 
-    private Constants constants = GWT.create(Constants.class);
+	private Constants constants = GWT.create(Constants.class);
 
-    @Inject
-    private ActionHistoryView view;
+	@Inject
+	private ActionHistoryView view;
 
-    @Inject
-    private Identity identity;
+	@Inject
+	private Identity identity;
 
-    @Inject
-    private Caller<EventServiceEntryPoint> humanEventServices;
+	@Inject
+	private Caller<EventServiceEntryPoint> humanEventServices;
 
-    @WorkbenchPartView
-    public UberView<ActionHistoryPresenter> getView() {
-        return view;
-    }
+	@WorkbenchPartView
+	public UberView<ActionHistoryPresenter> getView() {
+		return view;
+	}
 
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.List_Human_Event();
-    }
-    
-    // TODO quitar solo lo puse para probar si desde aca si invoca al fire
-    @Inject
-    private Event<HumanEventSummary> pointHistoryEvent;
+	@WorkbenchPartTitle
+	public String getTitle() {
+		return constants.List_Human_Event();
+	}
 
-    public enum HumanEventType {
-        PERSONAL, ACTIVE, GROUP, ALL
-    }
+	// TODO quitar solo lo puse para probar si desde aca si invoca al fire
+	@Inject
+	private Event<HumanEventSummary> pointHistoryEvent;
 
-    private List<HumanEventSummary> allEventsSummaries;
+	public enum HumanEventType {
+		PERSONAL, ACTIVE, GROUP, ALL, EXPORT
+	}
 
-    private ListDataProvider<HumanEventSummary> dataProvider = new ListDataProvider<HumanEventSummary>();
+	private List<HumanEventSummary> allEventsSummaries;
 
-    public interface ActionHistoryView extends UberView<ActionHistoryPresenter> {
+	private ListDataProvider<HumanEventSummary> dataProvider = new ListDataProvider<HumanEventSummary>();
 
-        void displayNotification(String text);
+	public interface ActionHistoryView extends UberView<ActionHistoryPresenter> {
 
-        MultiSelectionModel<HumanEventSummary> getSelectionModel();
+		void displayNotification(String text);
 
-        TextBox getSearchBox();
+		MultiSelectionModel<HumanEventSummary> getSelectionModel();
 
-        void refreshHumanEvents();
-    }
+		TextBox getSearchBox();
 
-    public List<HumanEventSummary> getAllEventsSummaries() {
-        return allEventsSummaries;
-    }
+		void refreshHumanEvents();
+	}
 
-    
-    public void saveNewEventHistory(@Observes HumanEventSummary pointHistory) {
-        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
-            @Override
-            public void callback(Queue<HumanEventSummary> events) {
-                allEventsSummaries = new ArrayList<HumanEventSummary>(events);
-            }
-        }).saveNewHumanEvent(pointHistory);
-    }
-    
+	public List<HumanEventSummary> getAllEventsSummaries() {
+		return allEventsSummaries;
+	}
 
-    public void refreshEvents(Date date, HumanEventType eventType) {
-        switch (eventType) {
-        case ACTIVE:
-            refreshHumanEvent();
-            break;
-        case PERSONAL:
-            // TODO undefine
-            refreshHumanEvent();
-            break;
-        case GROUP:
-            // TODO undefine
-            refreshHumanEvent();
-            break;
-        case ALL:
-            // TODO undefine
-            refreshHumanEvent();
-            break;
-        default:
-            throw new IllegalStateException("Unrecognized event type '" + eventType + "'!");
-        }
-    }
+	public void saveNewEventHistory(@Observes HumanEventSummary pointHistory) {
+		humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+			@Override
+			public void callback(Queue<HumanEventSummary> events) {
+				allEventsSummaries = new ArrayList<HumanEventSummary>(events);
+			}
+		}).saveNewHumanEvent(pointHistory);
+	}
 
-    public void refreshHumanEvent() {
-        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
-            @Override
-            public void callback(Queue<HumanEventSummary> events) {
-                allEventsSummaries = new ArrayList<HumanEventSummary>(events);
-                filterTasks(view.getSearchBox().getText());
-            }
-        }).getAllHumanEvent();
-    }
+	public void refreshEvents(Date date, HumanEventType eventType) {
+		switch (eventType) {
+		case ACTIVE:
+			refreshHumanEvent();
+			break;
+		case PERSONAL:
+			// TODO undefine
+			refreshHumanEvent();
+			break;
+		case GROUP:
+			// TODO undefine
+			refreshHumanEvent();
+			break;
+		case ALL:
+			// TODO undefine
+			refreshHumanEvent();
+			break;
+		default:
+			throw new IllegalStateException("Unrecognized event type '"
+					+ eventType + "'!");
+		}
+	}
 
-    public void filterTasks(String text) {
-        if (text.equals("")) {
-            if (allEventsSummaries != null) {
-                dataProvider.getList().clear();
-                dataProvider.setList(new ArrayList<HumanEventSummary>(allEventsSummaries));
-                dataProvider.refresh();
+	public void refreshHumanEvent() {
+		humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+			@Override
+			public void callback(Queue<HumanEventSummary> events) {
+				allEventsSummaries = new ArrayList<HumanEventSummary>(events);
+				filterTasks(view.getSearchBox().getText());
+			}
+		}).getAllHumanEvent();
+	}
 
-            }
-        } else {
-            if (allEventsSummaries != null) {
-                List<HumanEventSummary> tasks = new ArrayList<HumanEventSummary>(allEventsSummaries);
-                List<HumanEventSummary> filteredTasksSimple = new ArrayList<HumanEventSummary>();
-                for (HumanEventSummary ts : tasks) {
-                    if (ts.getDescriptionEvent().toLowerCase().contains(text.toLowerCase())) {
-                        filteredTasksSimple.add(ts);
-                    }
-                }
-                dataProvider.getList().clear();
-                dataProvider.setList(filteredTasksSimple);
-                dataProvider.refresh();
-                pointHistoryEvent.fire(new HumanEventSummary(ActionHistoryEnum.FILTER_EVENT, 2222l, identity.getName()));
-            }
-        }
+	public void filterTasks(String text) {
+		if (text.equals("")) {
+			if (allEventsSummaries != null) {
+				dataProvider.getList().clear();
+				dataProvider.setList(new ArrayList<HumanEventSummary>(
+						allEventsSummaries));
+				dataProvider.refresh();
 
-    }
+			}
+		} else {
+			if (allEventsSummaries != null) {
+				List<HumanEventSummary> tasks = new ArrayList<HumanEventSummary>(
+						allEventsSummaries);
+				List<HumanEventSummary> filteredTasksSimple = new ArrayList<HumanEventSummary>();
+				for (HumanEventSummary ts : tasks) {
+					if (ts.getDescriptionEvent().toLowerCase()
+							.contains(text.toLowerCase())) {
+						filteredTasksSimple.add(ts);
+					}
+				}
+				dataProvider.getList().clear();
+				dataProvider.setList(filteredTasksSimple);
+				dataProvider.refresh();
+				pointHistoryEvent.fire(new HumanEventSummary(
+						ActionHistoryEnum.FILTER_EVENT, 2222l, identity
+								.getName()));
+			}
+		}
 
-    public void addDataDisplay(HasData<HumanEventSummary> display) {
-        dataProvider.addDataDisplay(display);
-    }
+	}
+
+	public void addDataDisplay(HasData<HumanEventSummary> display) {
+		dataProvider.addDataDisplay(display);
+	}
+
+	public void exportToTxt() {
+		/*
+		 * File f;
+		 * 
+		 * //TODO sacar a un metodo SimpleDateFormat formato = new
+		 * SimpleDateFormat("dd.MM.yyyy"); String fechaAc = formato.format(new
+		 * Date()); f = new
+		 * File("/tmp/archivo_"+fechaAc+"-"+identity.getName()+".txt");
+		 * 
+		 * 
+		 * 
+		 * try { FileWriter w = new FileWriter(f); BufferedWriter bw = new
+		 * BufferedWriter(w); PrintWriter wr = new PrintWriter(bw);
+		 * wr.write("Human Events user:" + identity.getName()); for
+		 * (HumanEventSummary human : allEventsSummaries) {
+		 * 
+		 * wr.append(human.getDescriptionEvent() + " - " +
+		 * human.getTypeEvent()); wr.append("/n"); } wr.close(); bw.close(); }
+		 * catch (IOException e) {
+		 * 
+		 * }
+		 */
+
+	}
 
 }

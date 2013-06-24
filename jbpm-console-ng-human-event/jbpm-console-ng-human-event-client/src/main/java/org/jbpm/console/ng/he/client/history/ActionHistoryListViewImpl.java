@@ -22,7 +22,6 @@ import java.util.Date;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -30,8 +29,8 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.he.client.history.ActionHistoryPresenter.HumanEventType;
 import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.jbpm.console.ng.he.client.util.ResizableHeader;
-import org.jbpm.console.ng.he.model.ActionHistoryEnum;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
+import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
@@ -69,6 +68,10 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     @Inject
     @DataField
     public NavLink showPersonalTasksNavLink;
+    
+    @Inject
+    @DataField
+    public NavLink exportEventsNavLink;
 
     @Inject
     @DataField
@@ -91,6 +94,9 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
 
     @Inject
     private Event<NotificationEvent> notification;
+    
+    @Inject
+    private Identity identity;
 
     private ActionHistoryPresenter presenter;
 
@@ -133,6 +139,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
                 showPersonalTasksNavLink.setStyleName("active");
                 showGroupTasksNavLink.setStyleName("");
                 showAllTasksNavLink.setStyleName("");
+                exportEventsNavLink.setStyleName("");
                 currentEventHumanType = HumanEventType.PERSONAL;
                 refreshHumanEvents();
 
@@ -146,6 +153,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
                 showGroupTasksNavLink.setStyleName("active");
                 showPersonalTasksNavLink.setStyleName("");
                 showAllTasksNavLink.setStyleName("");
+                exportEventsNavLink.setStyleName("");
                 currentEventHumanType = HumanEventType.GROUP;
                 refreshHumanEvents();
 
@@ -159,11 +167,27 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
                 showGroupTasksNavLink.setStyleName("");
                 showPersonalTasksNavLink.setStyleName("");
                 showAllTasksNavLink.setStyleName("active");
+                exportEventsNavLink.setStyleName("");
                 currentEventHumanType = HumanEventType.ALL;
                 refreshHumanEvents();
 
             }
         });
+        
+        exportEventsNavLink.setText(constants.Export_Txt());
+        exportEventsNavLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                showGroupTasksNavLink.setStyleName("");
+                showPersonalTasksNavLink.setStyleName("");
+                showAllTasksNavLink.setStyleName("");
+                exportEventsNavLink.setStyleName("active");
+                currentEventHumanType = HumanEventType.EXPORT;
+                exportTxtEvents();
+            }
+        });
+        
+        
 
         taskCalendarViewLabel.setText(constants.List_Human_Event());
         taskCalendarViewLabel.setStyleName("");
@@ -192,7 +216,11 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     public void refreshHumanEvents() {
         presenter.refreshEvents(currentDate, currentEventHumanType);
     }
-
+    
+    public void exportTxtEvents() {
+        presenter.exportToTxt();
+    }
+    
     private void initializeGridView() {
         eventsViewContainer.clear();
         myEventListGrid = new DataGrid<HumanEventSummary>();
@@ -318,7 +346,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         });
         
     }
-
+    
     @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));

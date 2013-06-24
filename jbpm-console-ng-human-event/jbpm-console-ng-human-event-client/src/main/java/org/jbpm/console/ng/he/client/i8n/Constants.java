@@ -89,5 +89,7 @@ public interface Constants extends Messages {
     String Time();
 
     String All();
+    
+    String Export_Txt();
 
 }
