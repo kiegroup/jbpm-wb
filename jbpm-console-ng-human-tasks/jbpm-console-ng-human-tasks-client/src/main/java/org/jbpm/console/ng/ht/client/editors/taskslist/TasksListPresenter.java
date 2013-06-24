@@ -350,7 +350,6 @@ public class TasksListPresenter {
         Date fromDate = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
         int daysTotal = taskView.getNrOfDaysToShow();
 
-        List<String> groups = getGroups(identity);
         List<String> statuses = new ArrayList<String>(4);
         statuses.add("Ready");
 
@@ -370,7 +369,7 @@ public class TasksListPresenter {
                     currentDayTasks = tasks;
                     filterTasks(view.getSearchBox().getText());
                 }
-            }).getTasksAssignedFromDateToDateByGroupsByDays(identity.getName(), groups, fromDate, daysTotal, "en-UK");
+            }).getTasksAssignedFromDateToDateByGroupsByDays(identity.getName(), statuses, fromDate, daysTotal, "en-UK");
         }
     }
 

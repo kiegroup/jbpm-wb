@@ -284,59 +284,44 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
 
     @Override
-    public Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDays(String userId, List<String> groupIds,
+    public Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDays(String userId, List<String> strStatuses,
             Date from, int nrOfDaysTotal, String language) {
         long plusDays = (nrOfDaysTotal - 1) * (long) DateTimeConstants.MILLIS_PER_DAY;
-        return getTasksAssignedFromDateToDateByGroupsByDays(userId, groupIds, from, new Date(from.getTime() + plusDays),
+        return getTasksAssignedFromDateToDateByGroupsByDays(userId, strStatuses, from, new Date(from.getTime() + plusDays),
                 language);
     }
 
-    public Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDays(String userId, List<String> groupIds,
-            Date from, Date to, String language) {
+    public Map<Day, List<TaskSummary>> getTasksAssignedFromDateToDateByGroupsByDays(String userId, List<String> strStatuses,
+            Date javaUtilDateFrom, Date javaUtilDateTo, String language) {
+        LocalDate from = new LocalDate(javaUtilDateFrom);
+        LocalDate to = new LocalDate(javaUtilDateTo);
 
-        Map<Day, List<TaskSummary>> tasksByDay = new LinkedHashMap<Day, List<TaskSummary>>();
-
-        List<Status> statuses = new ArrayList<Status>();
-        statuses.add(Status.Ready);
-        List<TaskSummary> firstDayTasks = TaskSummaryHelper.adaptCollection(taskService
-                .getTasksAssignedAsPotentialOwnerByExpirationDateOptional(userId, statuses, from));
-        //This is a hack we need to find a way to get the PotentialOwners in a performant way
-        List<Long> taskIds = new ArrayList<Long>(firstDayTasks.size());
-        for (TaskSummary ts : firstDayTasks) {
-            taskIds.add(ts.getId());
+        LocalDate today = new LocalDate();
+        Days daysBetween = Days.daysBetween(from, to);
+        int nrOfDaysTotal = daysBetween.getDays() + 1;
+        Map<LocalDate, List<TaskSummary>> tasksByDay = new LinkedHashMap<LocalDate, List<TaskSummary>>();
+        for (int i = 0; i < nrOfDaysTotal; i++) {
+            tasksByDay.put(from.plusDays(i), new ArrayList<TaskSummary>());
         }
-        Map<Long, List<String>> potentialOwnersForTaskIds = null;
-        if (taskIds.size() > 0) {
-            potentialOwnersForTaskIds = getPotentialOwnersForTaskIds(taskIds);
-            for (TaskSummary ts : firstDayTasks) {
-                ts.setPotentialOwners(potentialOwnersForTaskIds.get(ts.getId()));
+
+        List<TaskSummary> taskSummaries = adaptTaskSummaryCollection(
+                taskService.getTasksAssignedAsPotentialOwnerByStatus(userId, convertStatuses(strStatuses), language));
+
+        setPotentionalOwners(taskSummaries);
+
+        for (TaskSummary taskSummary : taskSummaries) {
+            LocalDate expDate;
+            if (taskSummary.getExpirationTime() == null) {
+                expDate = today;
+            } else {
+                expDate = new LocalDate(taskSummary.getExpirationTime());
+            }
+            if (tasksByDay.get(expDate) != null) {
+                tasksByDay.get(expDate).add(taskSummary);
             }
         }
 
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE dd");
-        tasksByDay.put(new Day(from, dayFormat.format(from)), firstDayTasks);
-        int nrOfDays = Days.daysBetween(new LocalDate(from), new LocalDate(to)).getDays();
-        for (int i = 1; i <= nrOfDays; i++) {
-            long plusDays = i * (long) DateTimeConstants.MILLIS_PER_DAY;
-            Date currentDay = new Date(from.getTime() + plusDays);
-            List<TaskSummary> currentDayGroupTasks = TaskSummaryHelper.adaptCollection(taskService
-                    .getTasksAssignedAsPotentialOwnerByExpirationDate(userId, statuses, currentDay));
-            //This is a hack we need to find a way to get the PotentialOwners in a performant way
-            taskIds = new ArrayList<Long>(currentDayGroupTasks.size());
-            for (TaskSummary ts : currentDayGroupTasks) {
-                taskIds.add(ts.getId());
-            }
-            if (taskIds.size() > 0) {
-                potentialOwnersForTaskIds = getPotentialOwnersForTaskIds(taskIds);
-                for (TaskSummary ts : currentDayGroupTasks) {
-                    ts.setPotentialOwners(potentialOwnersForTaskIds.get(ts.getId()));
-                }
-            }
-            tasksByDay.put(new Day(currentDay, dayFormat.format(currentDay)), currentDayGroupTasks);
-
-        }
-        return tasksByDay;
-
+        return transformLocalDatesToDays(tasksByDay);
     }
 
     @Override
