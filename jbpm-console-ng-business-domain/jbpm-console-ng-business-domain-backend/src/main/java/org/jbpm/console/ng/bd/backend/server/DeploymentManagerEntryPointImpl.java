@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -37,6 +39,8 @@ import org.uberfire.backend.server.deployment.DeploymentConfigChangedEvent;
 @ApplicationScoped
 public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPoint, Initializable<DeploymentUnit> {
 
+    private static final Logger logger = Logger.getLogger(DeploymentManagerEntryPointImpl.class.getName());
+
     @Inject
     private DeploymentService deploymentService;
 
@@ -59,8 +63,12 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
     public void initDeployments(Set<DeploymentUnit> deploymentUnits) {
         for (DeploymentUnit unit : deploymentUnits) {
             if (deploymentService.getDeployedUnit(unit.getIdentifier()) == null) {
-                cleanup(unit.getIdentifier());
-                deploymentService.deploy(unit);
+                try {
+                    cleanup(unit.getIdentifier());
+                    deploymentService.deploy(unit);
+                } catch (Exception e) {
+                     logger.log(Level.WARNING, "Error when deploying unit " + unit, e);
+                }
             }
         }
     }
@@ -73,7 +81,8 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
                     ((KModuleDeploymentUnitSummary) unitSummary).getArtifactId(),
                     ((KModuleDeploymentUnitSummary) unitSummary).getVersion(),
                     ((KModuleDeploymentUnitSummary) unitSummary).getKbaseName(),
-                    ((KModuleDeploymentUnitSummary) unitSummary).getKsessionName());
+                    ((KModuleDeploymentUnitSummary) unitSummary).getKsessionName(),
+                    ((KModuleDeploymentUnitSummary) unitSummary).getStrategy());
         }// add for vfs
         deploy(unit);
     }
@@ -146,7 +155,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         for (DeployedUnit du : deployedUnits) {
             KModuleDeploymentUnit kdu =  (KModuleDeploymentUnit)du.getDeploymentUnit();
             KModuleDeploymentUnitSummary duSummary = new KModuleDeploymentUnitSummary(kdu.getIdentifier(), kdu.getGroupId(),
-                    kdu.getArtifactId(), kdu.getVersion(), kdu.getKbaseName(), kdu.getKsessionName());
+                    kdu.getArtifactId(), kdu.getVersion(), kdu.getKbaseName(), kdu.getKsessionName(), kdu.getStrategy().toString());
             unitsIds.add(duSummary);
 
         }
@@ -183,7 +192,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
             KModuleDeploymentUnitSummary unit = new KModuleDeploymentUnitSummary("",
                     result.getGroupId(),
                     result.getArtifactId(),
-                    result.getVersion(), "", "");
+                    result.getVersion(), "", "", DeploymentUnit.RuntimeStrategy.SINGLETON.toString());
 
             undeploy(unit);
             deploy(unit);

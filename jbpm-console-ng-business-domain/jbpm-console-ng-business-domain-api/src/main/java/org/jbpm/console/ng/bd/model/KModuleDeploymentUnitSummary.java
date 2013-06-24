@@ -26,6 +26,7 @@ public class KModuleDeploymentUnitSummary extends DeploymentUnitSummary {
     private String version;
     private String kbaseName;
     private String ksessionName;
+    private String strategy;
 
     public KModuleDeploymentUnitSummary() {
     }
@@ -35,13 +36,14 @@ public class KModuleDeploymentUnitSummary extends DeploymentUnitSummary {
     }
 
     public KModuleDeploymentUnitSummary(String id, String groupId, String artifactId, String version, String kbaseName,
-            String ksessionName) {
+            String ksessionName, String strategy) {
         super(id, "kjar");
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
         this.kbaseName = kbaseName;
         this.ksessionName = ksessionName;
+        this.strategy = strategy;
     }
 
     public String getGroupId() {
@@ -82,6 +84,14 @@ public class KModuleDeploymentUnitSummary extends DeploymentUnitSummary {
 
     public void setKsessionName(String ksessionName) {
         this.ksessionName = ksessionName;
+    }
+
+    public String getStrategy() {
+        return strategy;
+    }
+
+    public void setStrategy(String strategy) {
+        this.strategy = strategy;
     }
 
 }

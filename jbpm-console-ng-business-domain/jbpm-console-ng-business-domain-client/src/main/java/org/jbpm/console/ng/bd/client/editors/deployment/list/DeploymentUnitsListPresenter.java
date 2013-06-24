@@ -104,7 +104,7 @@ public class DeploymentUnitsListPresenter {
                view.displayNotification("Error: Undeploy failed " + throwable.getMessage());
                return true;
            }
-       }).undeploy(new KModuleDeploymentUnitSummary(id, group, artifact, version, kbaseName, kieSessionName));
+       }).undeploy(new KModuleDeploymentUnitSummary(id, group, artifact, version, kbaseName, kieSessionName, null));
     }
     
     public void filterDeployedUnits(String filter){
