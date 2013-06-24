@@ -196,6 +196,7 @@ public class ProcessInstanceListPresenter {
     public void onReveal() {
 
         this.currentProcessDefinition = place.getParameter( "processDefId", "" );
+        view.getSearchBox().setText(currentProcessDefinition);
         refreshActiveProcessList();
     }
 

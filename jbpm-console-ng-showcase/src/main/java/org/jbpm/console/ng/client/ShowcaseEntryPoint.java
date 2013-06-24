@@ -155,7 +155,7 @@ public class ShowcaseEntryPoint {
 
     private List<? extends MenuItem> getDeploymentViews() {
         final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
-
+        
         result.add( MenuFactory.newSimpleItem( constants.Deployments() ).respondsWith( new Command() {
             @Override
             public void execute() {

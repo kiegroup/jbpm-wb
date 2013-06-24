@@ -1,30 +1,69 @@
 <div class="row-fluid">
-  <div class="span12">
-    <label data-field="taskNameLabel"></label>
-    <input type="text" class="span12" data-field="taskNameText" />
-    <input type="checkbox" style="display: inline" id="quickTaskCheck" data-field="quickTaskCheck" />
-
-    <div class="accordion">
-      <!-- GROUP -->
-      <div class="accordion-group">
-        <div class="accordion-heading">
-          <a class="accordion-toggle"> <label data-field="advancedLabel"></label>
-          </a>
+    <div class="span11">
+        <div class="form-horizontal">
+                <div class="control-group">
+                  <label class="control-label" for="taskNameText" data-field="taskNameLabel"></label>
+                  <div class="controls">
+                    <input type="text" class="span8" data-field="taskNameText" id="taskNameText" placeholder="Task Name" />
+                    
+                  </div>
+                </div>
+            
+                <div class="control-group">
+                  <label class="control-label" for="quickTaskCheck" data-field="quickTaskCheckLabel"></label>
+                  <div class="controls">
+                    <input type="checkbox" id="quickTaskCheck" data-field="quickTaskCheck" />
+                    
+                  </div>
+                </div>
+            
         </div>
-        <div id="desc_collapse" class="accordion-body collapse in" style="position: relative;">
-          <div class="accordion-inner">
-            <label data-field="dueDateLabel"></label>
-            <input type="text" data-field="dueDate" id="dueDate" />
-            <label data-field="userLabel"></label>
-            <input type="text" data-field="userText" id="userText" />
-            <label data-field="taskPriorityLabel"></label>
-            <select data-field="taskPriorityListBox" id="taskPriorityListBox"></select>
+    </div>  
+    <div class="span11">
+
+
+      <div class="accordion">
+        <!-- GROUP -->
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <a class="accordion-toggle"> <label data-field="advancedLabel"></label>
+            </a>
+          </div>
+          <div id="desc_collapse" class="accordion-body collapse in" style="position: relative;">
+            <div class="accordion-inner">
+              <div class="form-horizontal">
+
+                <div class="control-group">
+                  <label class="control-label" for="dueDate" data-field="dueDateLabel"></label>
+                  <div class="controls">
+                    <input type="text" data-field="dueDate" id="dueDate" placeholder="" />
+                  </div>
+                </div>
+                  
+                <div class="control-group">
+                    <label class="control-label" for="taskPriorityListBox" data-field="taskPriorityLabel"></label>
+                    <div class="controls">
+                      <select data-field="taskPriorityListBox" id="usersGroupsListBox"></select>
+                    </div>
+                </div>  
+        
+                <div class="control-group">
+                  <label class="control-label" for="userText" data-field="userLabel"></label>
+                  <div class="controls">   
+                    <button class="btn" data-field="addUserButton" id="addUserButton"></button>
+                    <button class="btn" data-field="addGroupButton" id="addGroupButton"></button>
+                  </div>
+                </div>
+                
+                <div data-field="usersGroupsControlsPanel"></div>  
+                
+              </div>
+            </div>
           </div>
         </div>
       </div>
+      <div class="modal-footer span11">
+        <button class="btn" data-field="addTaskButton" id="addTaskButton"></button>
+      </div>
     </div>
-    <div class="modal-footer span12">
-      <button class="btn" data-field="addTaskButton" id="addTaskButton"></button>
-    </div>
-  </div>
 </div>

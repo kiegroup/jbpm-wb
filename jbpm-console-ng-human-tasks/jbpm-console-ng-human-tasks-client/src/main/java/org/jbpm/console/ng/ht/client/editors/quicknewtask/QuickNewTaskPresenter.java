@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextBox;
+import java.util.List;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
@@ -96,7 +97,7 @@ public class QuickNewTaskPresenter {
     public void init() {
     }
 
-    public void addTask( final String userId,
+    public void addTask( final List<String> users, List<String> groups,
                          String taskName,
                          int priority,
                          boolean isQuickTask,
@@ -108,9 +109,22 @@ public class QuickNewTaskPresenter {
         String str = "(with (new Task()) { priority = " + priority
                 + ", taskData = (with( new TaskData()) { expirationTime = due } ), ";
         str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
-        if ( userId != null && !userId.equals( "" ) ) {
-            str += " [new User('" + userId + "')  ], }),";
+        str += " [";
+        if ( users != null && !users.isEmpty() ) {
+            
+            for(String user : users){
+                str += "new User('" + user + "'), ";
+            } 
+            
         }
+        if ( groups != null && !groups.isEmpty() ) {
+            
+            for(String group : groups){
+                str += "new Group('" + group + "'), ";
+            } 
+            
+        }
+        str+="], }),"; 
         str += "names = [ new I18NText( 'en-UK', '" + taskName + "')]})";
         if ( isQuickTask ) {
             taskServices.call( new RemoteCallback<Long>() {

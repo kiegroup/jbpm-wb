@@ -163,9 +163,22 @@ public class FormDisplayPopupPresenter {
                 placeManager.goTo( placeRequestImpl );
             }
         } );
+        
+        NavLink assignmentsLink = new NavLink( constants.Assignments());
+        assignmentsLink.addClickHandler( new ClickHandler() {
+
+            @Override
+            public void onClick( ClickEvent event ) {
+                close();
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Task Assignments Popup" );
+                placeRequestImpl.addParameter( "taskId", String.valueOf( taskId ) );
+                placeManager.goTo( placeRequestImpl );
+            }
+        } );
 
         view.getNavBarUL().add( workLink );
         view.getNavBarUL().add( detailsLink );
+        view.getNavBarUL().add( assignmentsLink );
         view.getNavBarUL().add( commentsLink );
 
         formServices.call( new RemoteCallback<String>() {

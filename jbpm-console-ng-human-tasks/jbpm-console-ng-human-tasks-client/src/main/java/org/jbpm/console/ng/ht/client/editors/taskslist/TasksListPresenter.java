@@ -277,7 +277,7 @@ public class TasksListPresenter {
                     allTaskSummaries = tasks;
                     filterTasks(view.getSearchBox().getText());
                 }
-            }).getTasksOwnedByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
+            }).getTasksOwnedByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
 
         } else {
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
@@ -351,7 +351,7 @@ public class TasksListPresenter {
                     filterTasks(view.getSearchBox().getText());
                     view.getSelectionModel().clear();
                 }
-            }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
+            }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
         } else {
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
@@ -379,7 +379,7 @@ public class TasksListPresenter {
                    filterTasks(view.getSearchBox().getText());
                    view.getSelectionModel().clear();
                 }
-            }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
+            }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
         } else {
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
@@ -416,7 +416,7 @@ public class TasksListPresenter {
                    filterTasks(view.getSearchBox().getText());
                    view.getSelectionModel().clear();
                 }
-            }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, fromDate, "en-UK");
+            }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
         } else {
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override

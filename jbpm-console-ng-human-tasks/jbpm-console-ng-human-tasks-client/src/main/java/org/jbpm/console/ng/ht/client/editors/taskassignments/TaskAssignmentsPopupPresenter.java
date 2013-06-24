@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 JBoss by Red Hat.
+ * Copyright 2012 JBoss Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,32 +14,38 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ht.client.editors.taskcomments;
+package org.jbpm.console.ng.ht.client.editors.taskassignments;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
+import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.user.client.ui.TextBox;
+import java.util.Map;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
-import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -53,76 +59,101 @@ import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
-@WorkbenchPopup(identifier = "Task Comments Popup")
-public class TaskCommentsPopupPresenter {
+@WorkbenchPopup(identifier = "Task Assignments Popup")
+public class TaskAssignmentsPopupPresenter {
 
-    public interface TaskCommentsPopupView extends UberView<TaskCommentsPopupPresenter> {
+    private Constants constants = GWT.create( Constants.class );
+
+    public interface TaskAssignmentsPopupView extends UberView<TaskAssignmentsPopupPresenter> {
+
+        void displayNotification( String text );
 
         Label getTaskIdText();
 
         Label getTaskNameText();
-
+        
+        FlowPanel getUsersGroupsControlsPanel();
+        
         UnorderedList getNavBarUL();
-
-        TextArea getNewTaskCommentTextArea();
-
-        Button addCommentButton();
-
-        DataGrid<CommentSummary> getDataGrid();
-
-        SimplePager getPager();
     }
 
     @Inject
     private PlaceManager placeManager;
 
     @Inject
-    TaskCommentsPopupView view;
+    private TaskAssignmentsPopupView view;
 
     @Inject
-    Identity identity;
+    private Identity identity;
 
     @Inject
     Caller<TaskServiceEntryPoint> taskServices;
 
-    private Constants constants = GWT.create( Constants.class );
+    @Inject
+    private Caller<DataServiceEntryPoint> dataServices;
 
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
 
     private PlaceRequest place;
 
-    private ListDataProvider<CommentSummary> dataProvider = new ListDataProvider<CommentSummary>();
-
-    public ListDataProvider<CommentSummary> getDataProvider() {
-        return dataProvider;
-    }
-
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.Comments();
-    }
-
-    @WorkbenchPartView
-    public UberView<TaskCommentsPopupPresenter> getView() {
-        return view;
-    }
-
     @OnStart
     public void onStart( final PlaceRequest place ) {
         this.place = place;
     }
 
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return constants.Assignments();
+    }
+
+    @WorkbenchPartView
+    public UberView<TaskAssignmentsPopupPresenter> getView() {
+        return view;
+    }
+
+   
+
+    
+
+    public void refreshTaskPotentialOwners( final long taskId ) {
+        List<Long> taskIds = new ArrayList<Long>(1);
+        taskIds.add(taskId);
+        view.displayNotification("task ID before: "+taskId);
+        taskServices.call( new RemoteCallback<Map<Long, List<String>>>() {
+            @Override
+            public void callback( Map<Long, List<String>> ids ) {
+                view.displayNotification("task IDs after: "+ids);
+                if(ids.isEmpty()){
+                    view.getUsersGroupsControlsPanel().add(new HTMLPanel("no potential owners"));
+                }else{
+                    view.getUsersGroupsControlsPanel().add(new HTMLPanel(""+ids.get(taskId).toString()));
+                }
+            }
+        } ).getPotentialOwnersForTaskIds(taskIds);
+
+    }
+
+   
+
     @OnReveal
     public void onReveal() {
         final long taskId = Long.parseLong( place.getParameter( "taskId", "0" ).toString() );
+        taskServices.call( new RemoteCallback<TaskSummary>() {
+
+            @Override
+            public void callback( TaskSummary details ) {
+                view.getTaskIdText().setText( String.valueOf( details.getId() ) );
+                view.getTaskNameText().setText( details.getName() );
+            }
+        } ).getTaskDetails( taskId );
+        
         view.getTaskIdText().setText( String.valueOf( taskId ) );
         view.getNavBarUL().clear();
-        NavLink commentsLink = new NavLink( constants.Comments() );
-        commentsLink.setStyleName( "active" );
+        NavLink assignmentsLink = new NavLink( constants.Assignments());
+        assignmentsLink.setStyleName( "active" );
 
         NavLink workLink = new NavLink( constants.Work() );
-
         workLink.addClickHandler( new ClickHandler() {
 
             @Override
@@ -133,6 +164,7 @@ public class TaskCommentsPopupPresenter {
                 placeManager.goTo( placeRequestImpl );
             }
         } );
+        
         NavLink detailsLink = new NavLink( constants.Details() );
         detailsLink.addClickHandler( new ClickHandler() {
 
@@ -144,13 +176,14 @@ public class TaskCommentsPopupPresenter {
                 placeManager.goTo( placeRequestImpl );
             }
         } );
-        NavLink assignmentsLink = new NavLink( constants.Assignments());
-        assignmentsLink.addClickHandler( new ClickHandler() {
+        
+        NavLink commentsLink = new NavLink( constants.Comments() );
+        commentsLink.addClickHandler( new ClickHandler() {
 
             @Override
             public void onClick( ClickEvent event ) {
                 close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Task Assignments Popup" );
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Task Comments Popup" );
                 placeRequestImpl.addParameter( "taskId", String.valueOf( taskId ) );
                 placeManager.goTo( placeRequestImpl );
             }
@@ -160,50 +193,7 @@ public class TaskCommentsPopupPresenter {
         view.getNavBarUL().add( detailsLink );
         view.getNavBarUL().add( assignmentsLink );
         view.getNavBarUL().add( commentsLink );
-        refreshComments( taskId );
-        view.getDataGrid().redraw();
-    }
-
-    public void refreshComments( long taskId ) {
-        taskServices.call( new RemoteCallback<TaskSummary>() {
-
-            @Override
-            public void callback( TaskSummary details ) {
-                view.getTaskIdText().setText( String.valueOf( details.getId() ) );
-                view.getTaskNameText().setText( details.getName() );
-            }
-        } ).getTaskDetails( taskId );
-        taskServices.call( new RemoteCallback<List<CommentSummary>>() {
-
-            @Override
-            public void callback( List<CommentSummary> comments ) {
-                dataProvider.getList().clear();
-                dataProvider.getList().addAll( comments );
-                if ( comments.size() > 0 ) {
-                    view.getDataGrid().setHeight( "350px" );
-                    view.getPager().setVisible( true );
-                }
-                dataProvider.refresh();
-                view.getDataGrid().redraw();
-            }
-        } ).getAllCommentsByTaskId( taskId );
-
-    }
-
-    public void addTaskComment( final long taskId,
-                                String text,
-                                Date addedOn ) {
-        taskServices.call( new RemoteCallback<Long>() {
-
-            @Override
-            public void callback( Long response ) {
-                refreshComments( taskId );
-            }
-        } ).addComment( taskId, text, identity.getName(), addedOn );
-    }
-
-    public void addDataDisplay( HasData<CommentSummary> display ) {
-        dataProvider.addDataDisplay( display );
+        refreshTaskPotentialOwners( Long.parseLong( view.getTaskIdText().getText() ) );
     }
 
     public void close() {

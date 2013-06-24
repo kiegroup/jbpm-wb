@@ -100,12 +100,17 @@ public class AdministrationService {
             repositoryService.createRepository( "git", repoAlias, env );
             repository = repositoryService.getRepository( repoAlias );
         }
-        Collection<Group> groups = groupService.getGroups();
-        if ( groups == null || groups.isEmpty() ) {
+        
+        Group demoGroup = groupService.getGroup("demo");
+        if ( demoGroup == null ) {
             List<Repository> repositories = new ArrayList<Repository>();
             repositories.add( repository );
             groupService.createGroup( "demo", "demo@jbpm.org", repositories );
+        
+        }else{
+            groupService.addRepository(demoGroup, repository);
         }
+        
         try {
             ioService.newFileSystem( URI.create( repository.getUri() ), repository.getEnvironment() );
 

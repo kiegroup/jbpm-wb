@@ -31,20 +31,33 @@
   <description>jBPM Console NG - Showcase</description>
 
   <dependencies>
+<<<<<<< HEAD
       
+=======
+    
+>>>>>>> 66b13c70c6c5ee3b6bbd0eae6eb38648d1936ca9
     <!--Logs-->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 66b13c70c6c5ee3b6bbd0eae6eb38648d1936ca9
     <!-- This is a war file, so logback is not in scope test, but in scope compile -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
     </dependency>
+<<<<<<< HEAD
     
       
+=======
+
+    
+>>>>>>> 66b13c70c6c5ee3b6bbd0eae6eb38648d1936ca9
     <!-- Hack: ANT bundled with kie-ci needs to be excluded when running on Jetty -->
     <!-- It is added back for other Application Servers in their respective assemblies -->
     <dependency>
@@ -57,10 +70,17 @@
         </exclusion>
       </exclusions>
     </dependency>
+<<<<<<< HEAD
     
     
     <!-- Hack: XStream needs a XML Pul Parser. The dependencies in this project are -->
     <!-- removing an implementation somewhere. This hack adds one in for now....... -->
+=======
+   
+
+    <!-- Hack: XStream needs a XML Pul Parser. The dependencies in this project are  -->
+    <!-- removing an implementation somewhere. This hack adds one in for now.......  -->
+>>>>>>> 66b13c70c6c5ee3b6bbd0eae6eb38648d1936ca9
     <dependency>
       <groupId>xpp3</groupId>
       <artifactId>xpp3_min</artifactId>
