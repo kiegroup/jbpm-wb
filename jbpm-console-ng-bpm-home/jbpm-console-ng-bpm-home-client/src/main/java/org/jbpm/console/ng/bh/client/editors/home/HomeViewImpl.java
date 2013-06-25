@@ -270,7 +270,7 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
         monitorBAMAnchor.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
-                Window.open( "http://localhost:8080/dashbuilder/workspace/jbpm-dashboard", "_blank", "" );
+                Window.open( "/dashbuilder/workspace/jbpm-dashboard", "_blank", "" );
             }
         } );
 

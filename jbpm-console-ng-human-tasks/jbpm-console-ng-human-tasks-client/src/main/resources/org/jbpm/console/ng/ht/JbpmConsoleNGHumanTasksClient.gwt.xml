@@ -32,6 +32,8 @@
 
   <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksAPI" />
   <inherits name="org.jbpm.console.ng.he.JbpmConsoleNGHumanEventsClient"/>
+  <!-- inherits name="org.jbpm.console.ng.he.JbpmConsoleNGHumanEventsAPI"/-->
+  
 
   <inherits name="com.github.gwtbootstrap.datetimepicker.Datetimepicker" />
   <inherits name="com.github.gwtbootstrap.datepicker.Datepicker" />

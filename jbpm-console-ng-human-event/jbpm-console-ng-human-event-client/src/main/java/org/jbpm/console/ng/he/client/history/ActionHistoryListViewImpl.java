@@ -189,12 +189,11 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         taskCalendarViewLabel.setStyleName("");
 
         searchBox.addKeyUpHandler(new KeyUpHandler() {
-
             @Override
             public void onKeyUp(KeyUpEvent event) {
                 if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32) {
                     displayNotification("Filter Event: |" + searchBox.getText() + "|");
-                    filterTasks(searchBox.getText());
+                    filterEvents(searchBox.getText());
                 }
 
             }
@@ -204,8 +203,8 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
 
     }
 
-    public void filterTasks(String text) {
-        presenter.filterTasks(text);
+    public void filterEvents(String text) {
+        presenter.filterEvents(text);
     }
 
     @Override

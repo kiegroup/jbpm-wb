@@ -28,6 +28,8 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jboss.errai.ioc.client.api.TestMock;
+import org.jbpm.console.ng.he.client.history.ActionHistoryPresenter;
 import org.jbpm.console.ng.he.model.ActionHistoryEnum;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
@@ -81,6 +83,15 @@ public class QuickNewTaskPresenter {
     
     @Inject
     private Event<HumanEventSummary> pointHistoryEvent;
+    
+    //TODO BORRAR
+    @Inject
+    private Event<TestMock> testMockEvent;
+    
+  //TODO BORRAR
+    @Inject
+    private ActionHistoryPresenter actionHistoryPresenter;
+    
 
     @OnStart
     public void onStart( final PlaceRequest place ) {

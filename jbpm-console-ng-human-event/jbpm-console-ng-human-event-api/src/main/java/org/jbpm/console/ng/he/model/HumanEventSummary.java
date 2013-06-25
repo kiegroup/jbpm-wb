@@ -29,7 +29,6 @@ public class HumanEventSummary implements Serializable {
     private long idEvent;
     private String descriptionEvent;
     private Date eventTime;
-    // TODO ver si hay algun drama de que esto sea un enum
     private String typeEvent;
     private String user;
 

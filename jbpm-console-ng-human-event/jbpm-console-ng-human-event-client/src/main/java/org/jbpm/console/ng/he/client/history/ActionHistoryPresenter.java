@@ -58,6 +58,7 @@ public class ActionHistoryPresenter {
 
 	@Inject
 	private Caller<EventServiceEntryPoint> humanEventServices;
+	
 
 	@WorkbenchPartView
 	public UberView<ActionHistoryPresenter> getView() {
@@ -92,10 +93,6 @@ public class ActionHistoryPresenter {
 		void refreshHumanEvents();
 	}
 
-	public List<HumanEventSummary> getAllEventsSummaries() {
-		return allEventsSummaries;
-	}
-
 	public void saveNewEventHistory(@Observes HumanEventSummary pointHistory) {
 		humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
 			@Override
@@ -103,6 +100,20 @@ public class ActionHistoryPresenter {
 				allEventsSummaries = new ArrayList<HumanEventSummary>(events);
 			}
 		}).saveNewHumanEvent(pointHistory);
+	}
+	
+	public void saveNewEventHistory() {
+		HumanEventSummary pointHistory = new HumanEventSummary(ActionHistoryEnum.TEST, "invocacion directa");
+		humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+			@Override
+			public void callback(Queue<HumanEventSummary> events) {
+				allEventsSummaries = new ArrayList<HumanEventSummary>(events);
+			}
+		}).saveNewHumanEvent(pointHistory);
+	}
+	
+	public List<HumanEventSummary> getAllEventsSummaries() {
+		return allEventsSummaries;
 	}
 
 	public void refreshEvents(Date date, HumanEventType eventType) {
@@ -132,13 +143,15 @@ public class ActionHistoryPresenter {
 		humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
 			@Override
 			public void callback(Queue<HumanEventSummary> events) {
-				allEventsSummaries = new ArrayList<HumanEventSummary>(events);
-				filterTasks(view.getSearchBox().getText());
+				if(events!=null){
+					allEventsSummaries = new ArrayList<HumanEventSummary>(events);
+				}
+				filterEvents(view.getSearchBox().getText());
 			}
 		}).getAllHumanEvent();
 	}
 
-	public void filterTasks(String text) {
+	public void filterEvents(String text) {
 		if (text.equals("")) {
 			if (allEventsSummaries != null) {
 				dataProvider.getList().clear();
@@ -197,5 +210,7 @@ public class ActionHistoryPresenter {
 		 */
 
 	}
+	
+	
 
 }
