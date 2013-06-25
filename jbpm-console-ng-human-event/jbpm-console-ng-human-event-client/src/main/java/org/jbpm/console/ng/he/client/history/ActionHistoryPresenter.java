@@ -102,16 +102,6 @@ public class ActionHistoryPresenter {
 		}).saveNewHumanEvent(pointHistory);
 	}
 	
-	public void saveNewEventHistory() {
-		HumanEventSummary pointHistory = new HumanEventSummary(ActionHistoryEnum.TEST, "invocacion directa");
-		humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
-			@Override
-			public void callback(Queue<HumanEventSummary> events) {
-				allEventsSummaries = new ArrayList<HumanEventSummary>(events);
-			}
-		}).saveNewHumanEvent(pointHistory);
-	}
-	
 	public List<HumanEventSummary> getAllEventsSummaries() {
 		return allEventsSummaries;
 	}

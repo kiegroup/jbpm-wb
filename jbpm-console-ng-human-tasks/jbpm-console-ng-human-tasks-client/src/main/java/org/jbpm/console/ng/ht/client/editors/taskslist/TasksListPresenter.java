@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
@@ -35,6 +36,8 @@ import com.google.gwt.core.client.GWT;
 import java.util.HashMap;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.he.model.ActionHistoryEnum;
+import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
 import org.jbpm.console.ng.ht.client.util.DateRange;
 import org.jbpm.console.ng.ht.client.util.DateUtils;
@@ -57,6 +60,9 @@ public class TasksListPresenter {
     private List<TaskSummary> allTaskSummaries;
 
     private Map<Day, List<TaskSummary>> currentDayTasks;
+    
+    @Inject
+    private Event<HumanEventSummary> pointHistoryEvent;
     
     public List<TaskSummary> getAllTaskSummaries() {
         return allTaskSummaries;
@@ -187,7 +193,8 @@ public class TasksListPresenter {
         taskServices.call( new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback( List<TaskSummary> tasks ) {
-                view.displayNotification( "Task(s) Started" );
+                view.displayNotification( "Task(s) Started" + tasks.size() + " " +  userId);
+                saveNewHumanEvent(tasks, ActionHistoryEnum.TASK_STARTED, userId);
                 view.refreshTasks();
             }
         } ).startBatch( selectedTasks, userId );
@@ -199,6 +206,7 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Released" );
+                saveNewHumanEvent(tasks, ActionHistoryEnum.TASK_RELEASED, userId);
                 view.refreshTasks();
             }
         } ).releaseBatch( selectedTasks, userId );
@@ -210,6 +218,7 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Completed" );
+                saveNewHumanEvent(tasks, ActionHistoryEnum.TASK_COMPLETED, userId);
                 view.refreshTasks();
             }
         } ).completeBatch( selectedTasks, userId, null );
@@ -221,6 +230,7 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Claimed" );
+                saveNewHumanEvent(tasks, ActionHistoryEnum.TASK_CLAIMED, userId);
                 view.refreshTasks();
 
             }
@@ -417,5 +427,11 @@ public class TasksListPresenter {
     public ListDataProvider<TaskSummary> getDataProvider() {
         return dataProvider;
     }
+    
+    public void saveNewHumanEvent(List<TaskSummary> tasks, ActionHistoryEnum actionHistory, String idUser){
+    	for(TaskSummary task : tasks){
+    		pointHistoryEvent.fire(new HumanEventSummary(actionHistory, task.getId(), idUser));
+    	}
+    } 
 
 }
