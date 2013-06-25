@@ -37,7 +37,6 @@ public class HumanEventSummary implements Serializable {
     }
 
     public HumanEventSummary(ActionHistoryEnum event, String user) {
-        super();
         this.descriptionEvent = event.getDescription();
         this.typeEvent = event.getType();
         this.user = user;

@@ -174,9 +174,6 @@ public class ActionHistoryPresenter {
 				dataProvider.getList().clear();
 				dataProvider.setList(filteredTasksSimple);
 				dataProvider.refresh();
-				pointHistoryEvent.fire(new HumanEventSummary(
-						ActionHistoryEnum.FILTER_EVENT, 2222l, identity
-								.getName()));
 			}
 		}
 
