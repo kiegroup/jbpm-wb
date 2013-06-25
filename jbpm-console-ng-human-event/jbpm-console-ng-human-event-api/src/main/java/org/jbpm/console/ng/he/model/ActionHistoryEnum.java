@@ -16,6 +16,7 @@
 
 package org.jbpm.console.ng.he.model;
 
+
 public enum ActionHistoryEnum {
 
 	TEST("test", "Test"),

@@ -30,7 +30,6 @@ import org.jbpm.console.ng.he.client.history.ActionHistoryPresenter.HumanEventTy
 import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.jbpm.console.ng.he.client.util.ResizableHeader;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
-import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
@@ -95,9 +94,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     @Inject
     private Event<NotificationEvent> notification;
     
-    @Inject
-    private Identity identity;
-
     private ActionHistoryPresenter presenter;
 
     public DataGrid<HumanEventSummary> myEventListGrid;
@@ -292,7 +288,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         Column<HumanEventSummary, String> typeNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
             @Override
             public String getValue(HumanEventSummary object) {
-                return object.getDescriptionEvent();
+                return object.getTypeEvent();
             }
         };
         typeNameColumn.setSortable(true);
@@ -332,7 +328,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         Column<HumanEventSummary, String> userNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
             @Override
             public String getValue(HumanEventSummary object) {
-                return object.getDescriptionEvent();
+                return object.getUser();
             }
         };
         userNameColumn.setSortable(true);

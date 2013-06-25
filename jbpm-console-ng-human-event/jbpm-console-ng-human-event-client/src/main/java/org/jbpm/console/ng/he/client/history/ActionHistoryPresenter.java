@@ -47,7 +47,7 @@ import com.google.gwt.view.client.MultiSelectionModel;
 @Dependent
 @WorkbenchScreen(identifier = "Human Events")
 public class ActionHistoryPresenter {
-
+    
 	private Constants constants = GWT.create(Constants.class);
 
 	@Inject
