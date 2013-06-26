@@ -41,14 +41,14 @@ public class FormModelerProcessStarterEntryPointImpl implements FormModelerProce
     private TaskServiceEntryPoint taskServiceEntryPoint;
 
     public Long startProcessFromRenderContext(String ctxUID, String domainId, String processId) {
-        Map params = formRenderContextManager.getFormRenderContext(ctxUID).getPersistedData();
+        Map params = formRenderContextManager.getFormRenderContext(ctxUID).getOutputData();
         formRenderContextManager.removeContext(ctxUID);
         return kieSessionEntryPoint.startProcess(domainId, processId, params);
     }
 
     @Override
     public Long saveTaskStateFromRenderContext(String ctxUID, Long taskId, boolean clearStatus) {
-        Map params = formRenderContextManager.getFormRenderContext(ctxUID).getPersistedData();
+        Map params = formRenderContextManager.getFormRenderContext(ctxUID).getOutputData();
         if (clearStatus) formRenderContextManager.removeContext(ctxUID);
         return taskServiceEntryPoint.saveContent(taskId, params);
     }
@@ -60,7 +60,7 @@ public class FormModelerProcessStarterEntryPointImpl implements FormModelerProce
 
     @Override
     public void completeTaskFromContext(String ctxUID, Long taskId, String identityName) {
-        Map params = formRenderContextManager.getFormRenderContext(ctxUID).getPersistedData();
+        Map params = formRenderContextManager.getFormRenderContext(ctxUID).getOutputData();
         formRenderContextManager.removeContext(ctxUID);
         taskServiceEntryPoint.complete(taskId,  identityName, params);
     }
