@@ -27,14 +27,15 @@ import org.jbpm.console.ng.he.service.EventServiceEntryPoint;
 
 @Service
 @ApplicationScoped
+@SuppressWarnings("unchecked")
 public class EventServiceEntryPointImpl extends SessionManager implements EventServiceEntryPoint {
 
     private final String KEY_SESSION = "humanEvent";
-
+    
     @Override
     public Queue<HumanEventSummary> getAllHumanEvent() {
-        return (super.getSession().getAttribute(KEY_SESSION) != null) ? (Queue<HumanEventSummary>) super.getSession()
-                .getAttribute(KEY_SESSION) : null;
+         return (super.getSession().getAttribute(KEY_SESSION) != null) ?
+          (Queue<HumanEventSummary>) super.getSession().getAttribute(KEY_SESSION) : null;
     }
 
     @Override
