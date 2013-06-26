@@ -33,25 +33,8 @@ public class EventServiceEntryPointImpl extends SessionManager implements EventS
 
     @Override
     public Queue<HumanEventSummary> getAllHumanEvent() {
-//        Queue<HumanEventSummary> colaProvisoria = null;
-//        HumanEventSummary testEvent = null;
-//        if (super.getSession().getAttribute(KEY_SESSION) == null) {
-//            // TODO deberia obtenerlo de session
-//            colaProvisoria = new LinkedList<HumanEventSummary>();
-//            testEvent = new HumanEventSummary(ActionHistoryEnum.TEST, 11l, "use test");
-//        } else {
-//            colaProvisoria = (Queue<HumanEventSummary>) super.getSession().getAttribute(KEY_SESSION);
-//            testEvent = new HumanEventSummary(ActionHistoryEnum.TEST, 12l, "use test");
-//        }
-//        colaProvisoria.add(testEvent);
-//        super.getSession().setAttribute(KEY_SESSION, colaProvisoria);
-//        return colaProvisoria;
-
-
-         return (super.getSession().getAttribute(KEY_SESSION) != null) ?
-          (Queue<HumanEventSummary>) super.getSession().getAttribute(KEY_SESSION) : null;
-         
-
+        return (super.getSession().getAttribute(KEY_SESSION) != null) ? (Queue<HumanEventSummary>) super.getSession()
+                .getAttribute(KEY_SESSION) : null;
     }
 
     @Override
