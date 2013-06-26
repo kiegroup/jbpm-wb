@@ -319,7 +319,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             @Override
             public String getValue(HumanEventSummary object) {
                 if (object.getEventTime() != null) {
-                    return UtilEvent.getDateTime(object.getEventTime());
+                    return UtilEvent.getDateTime(object.getEventTime(), UtilEvent.patternDateTime);
                 }
                 return "";
             }

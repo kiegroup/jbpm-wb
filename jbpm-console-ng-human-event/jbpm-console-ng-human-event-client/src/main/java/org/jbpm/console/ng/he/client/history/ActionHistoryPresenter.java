@@ -164,7 +164,8 @@ public class ActionHistoryPresenter {
     }
 
     public void exportToTxt() {
-        UtilEvent.exportToTxt();
+        //TODO completar desarrollo
+        //UtilEvent.exportToTxt();
     }
 
 }
