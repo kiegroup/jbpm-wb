@@ -51,6 +51,8 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.security.Identity;
 import org.uberfire.security.Role;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
+import org.jbpm.console.ng.he.client.history.ActionHistoryPresenter;
+
 
 
 @Dependent
@@ -63,6 +65,9 @@ public class TasksListPresenter {
     
     @Inject
     private Event<HumanEventSummary> pointHistoryEvent;
+    
+    @Inject
+    private ActionHistoryPresenter actionHistoryPresenter;
     
     public List<TaskSummary> getAllTaskSummaries() {
         return allTaskSummaries;
@@ -193,44 +198,44 @@ public class TasksListPresenter {
         taskServices.call( new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback( List<TaskSummary> tasks ) {
-                view.displayNotification( "Task(s) Started" + tasks.size() + " " +  userId);
-                saveNewHumanEvent(tasks, ActionHistoryEnum.TASK_STARTED, userId);
+                view.displayNotification( "Task(s) Started");
+                saveNewHumanEvent(selectedTasks, ActionHistoryEnum.TASK_STARTED, userId);
                 view.refreshTasks();
             }
         } ).startBatch( selectedTasks, userId );
     }
 
-    public void releaseTasks( List<Long> selectedTasks,
+    public void releaseTasks( final List<Long> selectedTasks,
                               final String userId ) {
         taskServices.call( new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Released" );
-                saveNewHumanEvent(tasks, ActionHistoryEnum.TASK_RELEASED, userId);
+                saveNewHumanEvent(selectedTasks, ActionHistoryEnum.TASK_RELEASED, userId);
                 view.refreshTasks();
             }
         } ).releaseBatch( selectedTasks, userId );
     }
 
-    public void completeTasks( List<Long> selectedTasks,
+    public void completeTasks( final List<Long> selectedTasks,
                                final String userId ) {
         taskServices.call( new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Completed" );
-                saveNewHumanEvent(tasks, ActionHistoryEnum.TASK_COMPLETED, userId);
+                saveNewHumanEvent(selectedTasks, ActionHistoryEnum.TASK_COMPLETED, userId);
                 view.refreshTasks();
             }
         } ).completeBatch( selectedTasks, userId, null );
     }
 
-    public void claimTasks( List<Long> selectedTasks,
+    public void claimTasks( final List<Long> selectedTasks,
                             final String userId ) {
         taskServices.call( new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Claimed" );
-                saveNewHumanEvent(tasks, ActionHistoryEnum.TASK_CLAIMED, userId);
+                saveNewHumanEvent(selectedTasks, ActionHistoryEnum.TASK_CLAIMED, userId);
                 view.refreshTasks();
 
             }
@@ -428,9 +433,9 @@ public class TasksListPresenter {
         return dataProvider;
     }
     
-    public void saveNewHumanEvent(List<TaskSummary> tasks, ActionHistoryEnum actionHistory, String idUser){
-    	for(TaskSummary task : tasks){
-    		pointHistoryEvent.fire(new HumanEventSummary(actionHistory, task.getId(), idUser));
+    public void saveNewHumanEvent(final List<Long> selectedTasks, final ActionHistoryEnum actionHistory, final String idUser){
+    	for(Long taskId : selectedTasks){
+    		pointHistoryEvent.fire(new HumanEventSummary(actionHistory, taskId, idUser));
     	}
     } 
 

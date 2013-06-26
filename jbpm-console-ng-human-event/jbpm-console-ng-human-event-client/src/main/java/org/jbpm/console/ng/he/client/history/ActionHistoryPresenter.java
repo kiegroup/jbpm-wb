@@ -22,14 +22,12 @@ import java.util.List;
 import java.util.Queue;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.he.client.i8n.Constants;
-import org.jbpm.console.ng.he.model.ActionHistoryEnum;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.he.service.EventServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -70,10 +68,6 @@ public class ActionHistoryPresenter {
 		return constants.List_Human_Event();
 	}
 
-	// TODO quitar solo lo puse para probar si desde aca si invoca al fire
-	@Inject
-	private Event<HumanEventSummary> pointHistoryEvent;
-
 	public enum HumanEventType {
 		PERSONAL, ACTIVE, GROUP, ALL, EXPORT
 	}
@@ -93,7 +87,7 @@ public class ActionHistoryPresenter {
 		void refreshHumanEvents();
 	}
 
-	public void saveNewEventHistory(@Observes HumanEventSummary pointHistory) {
+    public void saveNewEventHistory(@Observes HumanEventSummary pointHistory) {
 		humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
 			@Override
 			public void callback(Queue<HumanEventSummary> events) {

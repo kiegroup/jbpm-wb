@@ -28,7 +28,6 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jboss.errai.ioc.client.api.TestMock;
 import org.jbpm.console.ng.he.client.history.ActionHistoryPresenter;
 import org.jbpm.console.ng.he.model.ActionHistoryEnum;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
@@ -53,11 +52,11 @@ import com.google.gwt.user.client.ui.TextBox;
 @WorkbenchPopup(identifier = "Quick New Task")
 public class QuickNewTaskPresenter {
 
-    private Constants constants = GWT.create( Constants.class );
+    private Constants constants = GWT.create(Constants.class);
 
     public interface QuickNewTaskView extends UberView<QuickNewTaskPresenter> {
 
-        void displayNotification( String text );
+        void displayNotification(String text);
 
         TextBox getTaskNameText();
 
@@ -80,21 +79,12 @@ public class QuickNewTaskPresenter {
 
     @Inject
     private PlaceManager placeManager;
-    
+
     @Inject
     private Event<HumanEventSummary> pointHistoryEvent;
-    
-    //TODO BORRAR
-    @Inject
-    private Event<TestMock> testMockEvent;
-    
-  //TODO BORRAR
-    @Inject
-    private ActionHistoryPresenter actionHistoryPresenter;
-    
 
     @OnStart
-    public void onStart( final PlaceRequest place ) {
+    public void onStart(final PlaceRequest place) {
         this.place = place;
     }
 
@@ -115,64 +105,62 @@ public class QuickNewTaskPresenter {
     public void init() {
     }
 
-    public void addTask( final List<String> users, List<String> groups,
-                         String taskName,
-                         int priority,
-                         boolean isQuickTask,
-                         Date due ) {
+    public void addTask(final List<String> users, List<String> groups, String taskName, int priority, boolean isQuickTask,
+            Date due) {
 
         Map<String, Object> templateVars = new HashMap<String, Object>();
-        templateVars.put( "due", due );
+        templateVars.put("due", due);
 
         String str = "(with (new Task()) { priority = " + priority
                 + ", taskData = (with( new TaskData()) { expirationTime = due } ), ";
         str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
         str += " [";
-        if ( users != null && !users.isEmpty() ) {
-            
-            for(String user : users){
+        if (users != null && !users.isEmpty()) {
+
+            for (String user : users) {
                 str += "new User('" + user + "'), ";
-            } 
-            
+            }
+
         }
-        if ( groups != null && !groups.isEmpty() ) {
-            
-            for(String group : groups){
+        if (groups != null && !groups.isEmpty()) {
+
+            for (String group : groups) {
                 str += "new Group('" + group + "'), ";
-            } 
-            
+            }
+
         }
-        str+="], }),"; 
+        str += "], }),";
         str += "names = [ new I18NText( 'en-UK', '" + taskName + "')]})";
-        if ( isQuickTask ) {
-            taskServices.call( new RemoteCallback<Long>() {
+        if (isQuickTask) {
+            taskServices.call(new RemoteCallback<Long>() {
                 @Override
-                public void callback( Long taskId ) {
-                    view.displayNotification( "Task Created and Started (id = " + taskId + ")" );
-                    pointHistoryEvent.fire(new HumanEventSummary(ActionHistoryEnum.TASK_CREATED_STARTED, taskId, identity.getName()));
+                public void callback(Long taskId) {
+                    view.displayNotification("Task Created and Started (id = " + taskId + ")");
+                    pointHistoryEvent.fire(new HumanEventSummary(ActionHistoryEnum.TASK_CREATED_STARTED, taskId, identity
+                            .getName()));
                     close();
                 }
-            } ).addTaskAndStart( str, null, identity.getName(), templateVars );
+            }).addTaskAndStart(str, null, identity.getName(), templateVars);
         } else {
-            taskServices.call( new RemoteCallback<Long>() {
+            taskServices.call(new RemoteCallback<Long>() {
                 @Override
-                public void callback( Long taskId ) {
-                    view.displayNotification( "Task Created (id = " + taskId + ")" );
+                public void callback(Long taskId) {
+                    view.displayNotification("Task Created (id = " + taskId + ")");
                     pointHistoryEvent.fire(new HumanEventSummary(ActionHistoryEnum.TASK_CREATED, taskId, identity.getName()));
                     close();
                 }
-            } ).addTask( str, null, templateVars );
+            }).addTask(str, null, templateVars);
         }
 
     }
 
     @OnReveal
     public void onReveal() {
-        view.getTaskNameText().setFocus( true );
+        view.getTaskNameText().setFocus(true);
 
     }
 
     public void close() {
-        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
+        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
 }
