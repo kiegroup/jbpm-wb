@@ -24,6 +24,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.apache.tools.ant.util.DateUtils;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.he.client.history.ActionHistoryPresenter.HumanEventType;
@@ -305,6 +306,8 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             @Override
             public String getValue(HumanEventSummary object) {
                 if (object.getEventTime() != null) {
+                    //Hacer un metodo que recib la fecha y el patern, y pasarle este "yyyy-MM-dd HH:mm:ss"
+                    //DateUtils.createDate("");
                     return new Timestamp(object.getEventTime().getTime()).toString();
                 }
                 return "";
