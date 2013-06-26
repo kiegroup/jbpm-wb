@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.he.client.i8n.Constants;
+import org.jbpm.console.ng.he.client.util.UtilEvent;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.he.service.EventServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -52,11 +53,10 @@ public class ActionHistoryPresenter {
 	private ActionHistoryView view;
 
 	@Inject
-	private Identity identity;
-
-	@Inject
 	private Caller<EventServiceEntryPoint> humanEventServices;
 	
+	@Inject
+	private Identity identity;
 
 	@WorkbenchPartView
 	public UberView<ActionHistoryPresenter> getView() {
@@ -166,32 +166,9 @@ public class ActionHistoryPresenter {
 	public void addDataDisplay(HasData<HumanEventSummary> display) {
 		dataProvider.addDataDisplay(display);
 	}
-
-	public void exportToTxt() {
-		/*
-		 * File f;
-		 * 
-		 * //TODO sacar a un metodo SimpleDateFormat formato = new
-		 * SimpleDateFormat("dd.MM.yyyy"); String fechaAc = formato.format(new
-		 * Date()); f = new
-		 * File("/tmp/archivo_"+fechaAc+"-"+identity.getName()+".txt");
-		 * 
-		 * 
-		 * 
-		 * try { FileWriter w = new FileWriter(f); BufferedWriter bw = new
-		 * BufferedWriter(w); PrintWriter wr = new PrintWriter(bw);
-		 * wr.write("Human Events user:" + identity.getName()); for
-		 * (HumanEventSummary human : allEventsSummaries) {
-		 * 
-		 * wr.append(human.getDescriptionEvent() + " - " +
-		 * human.getTypeEvent()); wr.append("/n"); } wr.close(); bw.close(); }
-		 * catch (IOException e) {
-		 * 
-		 * }
-		 */
-
+	
+	public void exportToTxt(){
+	    UtilEvent.exportToTxt();
 	}
-	
-	
 
 }

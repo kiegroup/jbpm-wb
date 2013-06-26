@@ -36,8 +36,6 @@ public interface Constants extends Messages {
 
     String No_Human_Events();
 
-    String Human_Event();
-
     String Id_Event();
 
     String Grid();
@@ -84,12 +82,14 @@ public interface Constants extends Messages {
 
     String Events_Refreshed();
 
-    String Type_Event();
-
     String Time();
 
     String All();
     
     String Export_Txt();
+    
+    String Status();
+    
+    String Work();
 
 }

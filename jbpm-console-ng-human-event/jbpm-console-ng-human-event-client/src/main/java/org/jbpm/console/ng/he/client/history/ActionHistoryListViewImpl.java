@@ -30,6 +30,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.he.client.history.ActionHistoryPresenter.HumanEventType;
 import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.jbpm.console.ng.he.client.util.ResizableHeader;
+import org.jbpm.console.ng.he.client.util.UtilEvent;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.uberfire.workbench.events.NotificationEvent;
 
@@ -266,38 +267,54 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             }
         });
 
-        // Human event.
-        Column<HumanEventSummary, String> eventNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+        // Work.
+        Column<HumanEventSummary, String> workNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
             @Override
             public String getValue(HumanEventSummary object) {
                 return object.getDescriptionEvent();
             }
         };
-        eventNameColumn.setSortable(true);
+        workNameColumn.setSortable(true);
 
-        myEventListGrid.addColumn(eventNameColumn, new ResizableHeader(constants.Human_Event(), myEventListGrid,
-                eventNameColumn));
-        sortHandler.setComparator(eventNameColumn, new Comparator<HumanEventSummary>() {
+        myEventListGrid.addColumn(workNameColumn, new ResizableHeader(constants.Work(), myEventListGrid,
+                workNameColumn));
+        sortHandler.setComparator(workNameColumn, new Comparator<HumanEventSummary>() {
             @Override
             public int compare(HumanEventSummary o1, HumanEventSummary o2) {
                 return o1.getDescriptionEvent().compareTo(o2.getDescriptionEvent());
             }
         });
 
-        // Type event.
-        Column<HumanEventSummary, String> typeNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+        // Action.
+        Column<HumanEventSummary, String> actionNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
             @Override
             public String getValue(HumanEventSummary object) {
-                return object.getTypeEvent();
+                return object.getAction();
             }
         };
-        typeNameColumn.setSortable(true);
+        actionNameColumn.setSortable(true);
 
-        myEventListGrid.addColumn(typeNameColumn, new ResizableHeader(constants.Type_Event(), myEventListGrid, typeNameColumn));
-        sortHandler.setComparator(typeNameColumn, new Comparator<HumanEventSummary>() {
+        myEventListGrid.addColumn(actionNameColumn, new ResizableHeader(constants.Actions(), myEventListGrid, actionNameColumn));
+        sortHandler.setComparator(actionNameColumn, new Comparator<HumanEventSummary>() {
             @Override
             public int compare(HumanEventSummary o1, HumanEventSummary o2) {
-                return o1.getTypeEvent().compareTo(o2.getTypeEvent());
+                return o1.getAction().compareTo(o2.getAction());
+            }
+        });
+     // Status.
+        Column<HumanEventSummary, String> statusNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(HumanEventSummary object) {
+                return object.getStatus();
+            }
+        };
+        statusNameColumn.setSortable(true);
+
+        myEventListGrid.addColumn(statusNameColumn, new ResizableHeader(constants.Status(), myEventListGrid, statusNameColumn));
+        sortHandler.setComparator(statusNameColumn, new Comparator<HumanEventSummary>() {
+            @Override
+            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
+                return o1.getStatus().compareTo(o2.getStatus());
             }
         });
 
@@ -306,9 +323,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             @Override
             public String getValue(HumanEventSummary object) {
                 if (object.getEventTime() != null) {
-                    //Hacer un metodo que recib la fecha y el patern, y pasarle este "yyyy-MM-dd HH:mm:ss"
-                    //DateUtils.createDate("");
-                    return new Timestamp(object.getEventTime().getTime()).toString();
+                    return UtilEvent.getDateTime(object.getEventTime());
                 }
                 return "";
             }

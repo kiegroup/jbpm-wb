@@ -16,26 +16,23 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.MultiSelectionModel;
-import com.google.gwt.view.client.ProvidesKey;
-
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import java.util.HashMap;
+import org.jboss.errai.bus.client.api.ErrorCallback;
+import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.he.client.history.ActionHistoryPresenter;
 import org.jbpm.console.ng.he.model.ActionHistoryEnum;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
@@ -51,8 +48,13 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.security.Identity;
 import org.uberfire.security.Role;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
-import org.jbpm.console.ng.he.client.history.ActionHistoryPresenter;
 
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.MultiSelectionModel;
+import com.google.gwt.view.client.ProvidesKey;
 
 
 @Dependent
@@ -112,6 +114,8 @@ public class TasksListPresenter {
     private Identity identity;
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
+    private static final String ERROR = "ERROR";
+    private static final String SUCCESS = "SUCCESS";
 
     private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
     public static final ProvidesKey<TaskSummary> KEY_PROVIDER = new ProvidesKey<TaskSummary>() {
@@ -199,9 +203,17 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Started");
-                saveNewHumanEvent(selectedTasks, ActionHistoryEnum.TASK_STARTED, userId);
+                saveNewHumanEvent(selectedTasks, ActionHistoryEnum.TASK_STARTED, userId, SUCCESS);
                 view.refreshTasks();
             }
+        },
+        new ErrorCallback() {
+			@Override
+			public boolean error(Message message, Throwable throwable) {
+				view.displayNotification( "Task(s) Started - ERROR");
+				saveNewHumanEvent(selectedTasks, ActionHistoryEnum.TASK_STARTED, userId, ERROR);
+				return false;
+			}
         } ).startBatch( selectedTasks, userId );
     }
 
@@ -211,9 +223,17 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Released" );
-                saveNewHumanEvent(selectedTasks, ActionHistoryEnum.TASK_RELEASED, userId);
+                saveNewHumanEvent(selectedTasks, ActionHistoryEnum.TASK_RELEASED, userId, SUCCESS);
                 view.refreshTasks();
             }
+        },
+        new ErrorCallback() {
+			@Override
+			public boolean error(Message message, Throwable throwable) {
+				view.displayNotification( "Task(s) Released - ERROR" );
+				saveNewHumanEvent(selectedTasks, ActionHistoryEnum.TASK_RELEASED, userId, ERROR);
+				return false;
+			}
         } ).releaseBatch( selectedTasks, userId );
     }
 
@@ -223,9 +243,17 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Completed" );
-                saveNewHumanEvent(selectedTasks, ActionHistoryEnum.TASK_COMPLETED, userId);
+                saveNewHumanEvent(selectedTasks, ActionHistoryEnum.TASK_COMPLETED, userId, SUCCESS);
                 view.refreshTasks();
             }
+        },
+        new ErrorCallback() {
+			@Override
+			public boolean error(Message message, Throwable throwable) {
+				view.displayNotification( "Task(s) Completed - ERROR" );
+				saveNewHumanEvent(selectedTasks, ActionHistoryEnum.TASK_COMPLETED, userId, ERROR);
+				return false;
+			}
         } ).completeBatch( selectedTasks, userId, null );
     }
 
@@ -235,10 +263,18 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Claimed" );
-                saveNewHumanEvent(selectedTasks, ActionHistoryEnum.TASK_CLAIMED, userId);
+                saveNewHumanEvent(selectedTasks, ActionHistoryEnum.TASK_CLAIMED, userId, SUCCESS);
                 view.refreshTasks();
 
             }
+        },
+        new ErrorCallback() {
+			@Override
+			public boolean error(Message message, Throwable throwable) {
+				view.displayNotification( "Task(s) Claimed - ERROR" );
+				saveNewHumanEvent(selectedTasks, ActionHistoryEnum.TASK_CLAIMED, userId, ERROR);
+				return false;
+			}
         } ).claimBatch( selectedTasks, userId );
     }
 
@@ -433,9 +469,9 @@ public class TasksListPresenter {
         return dataProvider;
     }
     
-    public void saveNewHumanEvent(final List<Long> selectedTasks, final ActionHistoryEnum actionHistory, final String idUser){
+    public void saveNewHumanEvent(final List<Long> selectedTasks, final ActionHistoryEnum actionHistory, final String idUser, final String status){
     	for(Long taskId : selectedTasks){
-    		pointHistoryEvent.fire(new HumanEventSummary(actionHistory, taskId, idUser));
+    		pointHistoryEvent.fire(new HumanEventSummary(actionHistory, taskId, idUser,status));
     	}
     } 
 

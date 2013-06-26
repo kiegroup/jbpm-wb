@@ -29,8 +29,9 @@ public class HumanEventSummary implements Serializable {
     private long idEvent;
     private String descriptionEvent;
     private Date eventTime;
-    private String typeEvent;
+    private String action;
     private String user;
+    private String status;
 
     public HumanEventSummary() {
 
@@ -38,17 +39,28 @@ public class HumanEventSummary implements Serializable {
 
     public HumanEventSummary(ActionHistoryEnum event, String user) {
         this.descriptionEvent = event.getDescription();
-        this.typeEvent = event.getType();
+        this.action = event.getAction();
         this.user = user;
         this.eventTime = new Date();
+        this.status = "SUCCESS";
     }
 
     public HumanEventSummary(ActionHistoryEnum event, long idEvent, String user) {
         this.descriptionEvent = event.getDescription();
-        this.typeEvent = event.getType();
+        this.action = event.getAction();
         this.idEvent = idEvent;
         this.user = user;
         this.eventTime = new Date();
+        this.status = "SUCCESS";
+    }
+    
+    public HumanEventSummary(ActionHistoryEnum event, long idEvent, String user, String status) {
+        this.descriptionEvent = event.getDescription();
+        this.action = event.getAction();
+        this.idEvent = idEvent;
+        this.user = user;
+        this.eventTime = new Date();
+        this.status = status;
     }
 
     public String getDescriptionEvent() {
@@ -57,14 +69,6 @@ public class HumanEventSummary implements Serializable {
 
     public void setDescriptionEvent(String descriptionEvent) {
         this.descriptionEvent = descriptionEvent;
-    }
-
-    public String getTypeEvent() {
-        return typeEvent;
-    }
-
-    public void setTypeEvent(String typeEvent) {
-        this.typeEvent = typeEvent;
     }
 
     public Date getEventTime() {
@@ -91,55 +95,85 @@ public class HumanEventSummary implements Serializable {
         this.user = user;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((descriptionEvent == null) ? 0 : descriptionEvent.hashCode());
-        result = prime * result + ((eventTime == null) ? 0 : eventTime.hashCode());
-        result = prime * result + (int) (idEvent ^ (idEvent >>> 32));
-        result = prime * result + ((typeEvent == null) ? 0 : typeEvent.hashCode());
-        result = prime * result + ((user == null) ? 0 : user.hashCode());
-        return result;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        HumanEventSummary other = (HumanEventSummary) obj;
-        if (descriptionEvent == null) {
-            if (other.descriptionEvent != null)
-                return false;
-        } else if (!descriptionEvent.equals(other.descriptionEvent))
-            return false;
-        if (eventTime == null) {
-            if (other.eventTime != null)
-                return false;
-        } else if (!eventTime.equals(other.eventTime))
-            return false;
-        if (idEvent != other.idEvent)
-            return false;
-        if (typeEvent == null) {
-            if (other.typeEvent != null)
-                return false;
-        } else if (!typeEvent.equals(other.typeEvent))
-            return false;
-        if (user == null) {
-            if (other.user != null)
-                return false;
-        } else if (!user.equals(other.user))
-            return false;
-        return true;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    @Override
-    public String toString() {
-        return "HumanEventSummary [idEvent=" + idEvent + ", descriptionEvent=" + descriptionEvent + ", eventTime=" + eventTime
-                + ", typeEvent=" + typeEvent + ", user=" + user + "]";
-    }
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((action == null) ? 0 : action.hashCode());
+		result = prime
+				* result
+				+ ((descriptionEvent == null) ? 0 : descriptionEvent.hashCode());
+		result = prime * result
+				+ ((eventTime == null) ? 0 : eventTime.hashCode());
+		result = prime * result + (int) (idEvent ^ (idEvent >>> 32));
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		HumanEventSummary other = (HumanEventSummary) obj;
+		if (action == null) {
+			if (other.action != null)
+				return false;
+		} else if (!action.equals(other.action))
+			return false;
+		if (descriptionEvent == null) {
+			if (other.descriptionEvent != null)
+				return false;
+		} else if (!descriptionEvent.equals(other.descriptionEvent))
+			return false;
+		if (eventTime == null) {
+			if (other.eventTime != null)
+				return false;
+		} else if (!eventTime.equals(other.eventTime))
+			return false;
+		if (idEvent != other.idEvent)
+			return false;
+		if (status == null) {
+			if (other.status != null)
+				return false;
+		} else if (!status.equals(other.status))
+			return false;
+		if (user == null) {
+			if (other.user != null)
+				return false;
+		} else if (!user.equals(other.user))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "HumanEventSummary [idEvent=" + idEvent + ", descriptionEvent="
+				+ descriptionEvent + ", eventTime=" + eventTime + ", action="
+				+ action + ", user=" + user + ", status=" + status + "]";
+	}
+
+	
+
+   
 }

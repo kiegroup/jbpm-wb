@@ -19,22 +19,22 @@ package org.jbpm.console.ng.he.model;
 
 public enum ActionHistoryEnum {
 
-    TASK_CREATED("Task Created", "CREATE"),
-    TASK_CREATED_STARTED("Task Created and Started", "CREATE - START"),
-    TASK_STARTED("Task Started", "START"),
-    TASK_RELEASED("Task Released", "RELEASED"),
-    TASK_COMPLETED("Task Completed", "COMPLETED"),
-    TASK_CLAIMED("Task Claimed", "CLAIMED");
+    TASK_CREATED("TASK", "CREATE"),
+    TASK_CREATED_STARTED("TASK", "CREATE - START"),
+    TASK_STARTED("TASK", "START"),
+    TASK_RELEASED("TASK", "RELEASED"),
+    TASK_COMPLETED("TASK", "COMPLETED"),
+    TASK_CLAIMED("TASK", "CLAIMED");
     
     
     
     
     private String description;
-    private String type;
+    private String action;
     
     ActionHistoryEnum(String description, String type){
         this.description = description;
-        this.type = type;
+        this.action = type;
     }
     
 
@@ -47,13 +47,16 @@ public enum ActionHistoryEnum {
     }
 
 
-    public String getType() {
-        return type;
-    }
+	public String getAction() {
+		return action;
+	}
 
 
-    public void setType(String type) {
-        this.type = type;
-    }
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+
+    
     
 }
