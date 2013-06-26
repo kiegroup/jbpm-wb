@@ -469,7 +469,7 @@ public class TasksListPresenter {
         return dataProvider;
     }
     
-    public void saveNewHumanEvent(final List<Long> selectedTasks, final ActionHistoryEnum actionHistory, final String idUser, final String status){
+    public void saveNewHumanEvent(List<Long> selectedTasks, ActionHistoryEnum actionHistory, String idUser, String status){
     	for(Long taskId : selectedTasks){
     		pointHistoryEvent.fire(new HumanEventSummary(actionHistory, taskId, idUser,status));
     	}

@@ -16,7 +16,6 @@
 
 package org.jbpm.console.ng.he.client.history;
 
-import java.sql.Timestamp;
 import java.util.Comparator;
 import java.util.Date;
 
@@ -24,7 +23,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.apache.tools.ant.util.DateUtils;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.he.client.history.ActionHistoryPresenter.HumanEventType;
@@ -69,7 +67,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     @Inject
     @DataField
     public NavLink showPersonalTasksNavLink;
-    
+
     @Inject
     @DataField
     public NavLink exportEventsNavLink;
@@ -95,7 +93,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
 
     @Inject
     private Event<NotificationEvent> notification;
-    
+
     private ActionHistoryPresenter presenter;
 
     public DataGrid<HumanEventSummary> myEventListGrid;
@@ -171,7 +169,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
 
             }
         });
-        
+
         exportEventsNavLink.setText(constants.Export_Txt());
         exportEventsNavLink.addClickHandler(new ClickHandler() {
             @Override
@@ -184,8 +182,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
                 exportTxtEvents();
             }
         });
-        
-        
 
         taskCalendarViewLabel.setText(constants.List_Human_Event());
         taskCalendarViewLabel.setStyleName("");
@@ -213,11 +209,11 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     public void refreshHumanEvents() {
         presenter.refreshEvents(currentDate, currentEventHumanType);
     }
-    
+
     public void exportTxtEvents() {
         presenter.exportToTxt();
     }
-    
+
     private void initializeGridView() {
         eventsViewContainer.clear();
         myEventListGrid = new DataGrid<HumanEventSummary>();
@@ -276,8 +272,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         };
         workNameColumn.setSortable(true);
 
-        myEventListGrid.addColumn(workNameColumn, new ResizableHeader(constants.Work(), myEventListGrid,
-                workNameColumn));
+        myEventListGrid.addColumn(workNameColumn, new ResizableHeader(constants.Work(), myEventListGrid, workNameColumn));
         sortHandler.setComparator(workNameColumn, new Comparator<HumanEventSummary>() {
             @Override
             public int compare(HumanEventSummary o1, HumanEventSummary o2) {
@@ -294,14 +289,15 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         };
         actionNameColumn.setSortable(true);
 
-        myEventListGrid.addColumn(actionNameColumn, new ResizableHeader(constants.Actions(), myEventListGrid, actionNameColumn));
+        myEventListGrid
+                .addColumn(actionNameColumn, new ResizableHeader(constants.Actions(), myEventListGrid, actionNameColumn));
         sortHandler.setComparator(actionNameColumn, new Comparator<HumanEventSummary>() {
             @Override
             public int compare(HumanEventSummary o1, HumanEventSummary o2) {
                 return o1.getAction().compareTo(o2.getAction());
             }
         });
-     // Status.
+        // Status.
         Column<HumanEventSummary, String> statusNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
             @Override
             public String getValue(HumanEventSummary object) {
@@ -340,8 +336,8 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
                 return o1.getEventTime().compareTo(o2.getEventTime());
             }
         });
-        
-     // User.
+
+        // User.
         Column<HumanEventSummary, String> userNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
             @Override
             public String getValue(HumanEventSummary object) {
@@ -357,9 +353,9 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
                 return o1.getUser().compareTo(o2.getUser());
             }
         });
-        
+
     }
-    
+
     @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));

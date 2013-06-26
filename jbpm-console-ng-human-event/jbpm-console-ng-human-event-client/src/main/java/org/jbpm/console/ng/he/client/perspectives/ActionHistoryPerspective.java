@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 JBoss Inc
+ * Copyright 2013 JBoss Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,13 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 @ApplicationScoped
 @WorkbenchPerspective(identifier = "Events", isDefault = false)
 public class ActionHistoryPerspective {
-    
+
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
-        p.setName( "Histories" );
-        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Human Events" ) ) );
-        p.setTransient( true );
+        p.setName("Histories");
+        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Human Events")));
+        p.setTransient(true);
         return p;
     }
 

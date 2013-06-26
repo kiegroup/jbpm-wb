@@ -137,7 +137,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     @DataField
     public NavLink showActiveTasksNavLink;
 
-    
     @DataField
     public Heading taskCalendarViewLabel = new Heading(4);
 
@@ -169,15 +168,14 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     public IconAnchor refreshIcon;
     
     private Set<TaskSummary> selectedTasks;
-    private ListHandler<TaskSummary> sortHandler;
-    private MultiSelectionModel<TaskSummary> selectionModel;
     
+    private ListHandler<TaskSummary> sortHandler;
+    
+    private MultiSelectionModel<TaskSummary> selectionModel;
     
     public DataGrid<TaskSummary> myTaskListGrid;
    
     public SimplePager pager;
-    
-    
     
 
     @Override

@@ -46,129 +46,125 @@ import com.google.gwt.view.client.MultiSelectionModel;
 @Dependent
 @WorkbenchScreen(identifier = "Human Events")
 public class ActionHistoryPresenter {
-    
-	private Constants constants = GWT.create(Constants.class);
 
-	@Inject
-	private ActionHistoryView view;
+    private Constants constants = GWT.create(Constants.class);
 
-	@Inject
-	private Caller<EventServiceEntryPoint> humanEventServices;
-	
-	@Inject
-	private Identity identity;
+    @Inject
+    private ActionHistoryView view;
 
-	@WorkbenchPartView
-	public UberView<ActionHistoryPresenter> getView() {
-		return view;
-	}
+    @Inject
+    private Caller<EventServiceEntryPoint> humanEventServices;
 
-	@WorkbenchPartTitle
-	public String getTitle() {
-		return constants.List_Human_Event();
-	}
+    @Inject
+    private Identity identity;
 
-	public enum HumanEventType {
-		PERSONAL, ACTIVE, GROUP, ALL, EXPORT
-	}
+    @WorkbenchPartView
+    public UberView<ActionHistoryPresenter> getView() {
+        return view;
+    }
 
-	private List<HumanEventSummary> allEventsSummaries;
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return constants.List_Human_Event();
+    }
 
-	private ListDataProvider<HumanEventSummary> dataProvider = new ListDataProvider<HumanEventSummary>();
+    public enum HumanEventType {
+        PERSONAL, ACTIVE, GROUP, ALL, EXPORT
+    }
 
-	public interface ActionHistoryView extends UberView<ActionHistoryPresenter> {
+    private List<HumanEventSummary> allEventsSummaries;
 
-		void displayNotification(String text);
+    private ListDataProvider<HumanEventSummary> dataProvider = new ListDataProvider<HumanEventSummary>();
 
-		MultiSelectionModel<HumanEventSummary> getSelectionModel();
+    public interface ActionHistoryView extends UberView<ActionHistoryPresenter> {
 
-		TextBox getSearchBox();
+        void displayNotification(String text);
 
-		void refreshHumanEvents();
-	}
+        MultiSelectionModel<HumanEventSummary> getSelectionModel();
+
+        TextBox getSearchBox();
+
+        void refreshHumanEvents();
+    }
 
     public void saveNewEventHistory(@Observes HumanEventSummary pointHistory) {
-		humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
-			@Override
-			public void callback(Queue<HumanEventSummary> events) {
-				allEventsSummaries = new ArrayList<HumanEventSummary>(events);
-			}
-		}).saveNewHumanEvent(pointHistory);
-	}
-	
-	public List<HumanEventSummary> getAllEventsSummaries() {
-		return allEventsSummaries;
-	}
+        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+            @Override
+            public void callback(Queue<HumanEventSummary> events) {
+                allEventsSummaries = new ArrayList<HumanEventSummary>(events);
+            }
+        }).saveNewHumanEvent(pointHistory);
+    }
 
-	public void refreshEvents(Date date, HumanEventType eventType) {
-		switch (eventType) {
-		case ACTIVE:
-			refreshHumanEvent();
-			break;
-		case PERSONAL:
-			// TODO undefine
-			refreshHumanEvent();
-			break;
-		case GROUP:
-			// TODO undefine
-			refreshHumanEvent();
-			break;
-		case ALL:
-			// TODO undefine
-			refreshHumanEvent();
-			break;
-		default:
-			throw new IllegalStateException("Unrecognized event type '"
-					+ eventType + "'!");
-		}
-	}
+    public List<HumanEventSummary> getAllEventsSummaries() {
+        return allEventsSummaries;
+    }
 
-	public void refreshHumanEvent() {
-		humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
-			@Override
-			public void callback(Queue<HumanEventSummary> events) {
-				if(events!=null){
-					allEventsSummaries = new ArrayList<HumanEventSummary>(events);
-				}
-				filterEvents(view.getSearchBox().getText());
-			}
-		}).getAllHumanEvent();
-	}
+    public void refreshEvents(Date date, HumanEventType eventType) {
+        switch (eventType) {
+        case ACTIVE:
+            refreshHumanEvent();
+            break;
+        case PERSONAL:
+            // TODO undefine
+            refreshHumanEvent();
+            break;
+        case GROUP:
+            // TODO undefine
+            refreshHumanEvent();
+            break;
+        case ALL:
+            // TODO undefine
+            refreshHumanEvent();
+            break;
+        default:
+            throw new IllegalStateException("Unrecognized event type '" + eventType + "'!");
+        }
+    }
 
-	public void filterEvents(String text) {
-		if (text.equals("")) {
-			if (allEventsSummaries != null) {
-				dataProvider.getList().clear();
-				dataProvider.setList(new ArrayList<HumanEventSummary>(
-						allEventsSummaries));
-				dataProvider.refresh();
+    public void refreshHumanEvent() {
+        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+            @Override
+            public void callback(Queue<HumanEventSummary> events) {
+                if (events != null) {
+                    allEventsSummaries = new ArrayList<HumanEventSummary>(events);
+                }
+                filterEvents(view.getSearchBox().getText());
+            }
+        }).getAllHumanEvent();
+    }
 
-			}
-		} else {
-			if (allEventsSummaries != null) {
-				List<HumanEventSummary> tasks = new ArrayList<HumanEventSummary>(
-						allEventsSummaries);
-				List<HumanEventSummary> filteredTasksSimple = new ArrayList<HumanEventSummary>();
-				for (HumanEventSummary ts : tasks) {
-					if (ts.getDescriptionEvent().toLowerCase()
-							.contains(text.toLowerCase())) {
-						filteredTasksSimple.add(ts);
-					}
-				}
-				dataProvider.getList().clear();
-				dataProvider.setList(filteredTasksSimple);
-				dataProvider.refresh();
-			}
-		}
+    public void filterEvents(String text) {
+        if (text.equals("")) {
+            if (allEventsSummaries != null) {
+                dataProvider.getList().clear();
+                dataProvider.setList(new ArrayList<HumanEventSummary>(allEventsSummaries));
+                dataProvider.refresh();
 
-	}
+            }
+        } else {
+            if (allEventsSummaries != null) {
+                List<HumanEventSummary> tasks = new ArrayList<HumanEventSummary>(allEventsSummaries);
+                List<HumanEventSummary> filteredTasksSimple = new ArrayList<HumanEventSummary>();
+                for (HumanEventSummary ts : tasks) {
+                    if (ts.getDescriptionEvent().toLowerCase().contains(text.toLowerCase())) {
+                        filteredTasksSimple.add(ts);
+                    }
+                }
+                dataProvider.getList().clear();
+                dataProvider.setList(filteredTasksSimple);
+                dataProvider.refresh();
+            }
+        }
 
-	public void addDataDisplay(HasData<HumanEventSummary> display) {
-		dataProvider.addDataDisplay(display);
-	}
-	
-	public void exportToTxt(){
-	    UtilEvent.exportToTxt();
-	}
+    }
+
+    public void addDataDisplay(HasData<HumanEventSummary> display) {
+        dataProvider.addDataDisplay(display);
+    }
+
+    public void exportToTxt() {
+        UtilEvent.exportToTxt();
+    }
 
 }
