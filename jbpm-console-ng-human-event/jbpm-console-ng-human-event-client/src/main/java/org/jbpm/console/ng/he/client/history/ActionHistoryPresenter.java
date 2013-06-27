@@ -17,7 +17,6 @@
 package org.jbpm.console.ng.he.client.history;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 
@@ -28,7 +27,6 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.he.client.i8n.Constants;
-import org.jbpm.console.ng.he.client.util.UtilEvent;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.he.service.EventServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -38,6 +36,7 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.security.Identity;
 
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
@@ -69,7 +68,7 @@ public class ActionHistoryPresenter {
     }
 
     public enum HumanEventType {
-        PERSONAL, ACTIVE, GROUP, ALL, EXPORT
+        ACTIVE, GROUP, ALL, EXPORT
     }
 
     private List<HumanEventSummary> allEventsSummaries;
@@ -100,28 +99,6 @@ public class ActionHistoryPresenter {
         return allEventsSummaries;
     }
 
-    public void refreshEvents(Date date, HumanEventType eventType) {
-        switch (eventType) {
-        case ACTIVE:
-            refreshHumanEvent();
-            break;
-        case PERSONAL:
-            // TODO undefine
-            refreshHumanEvent();
-            break;
-        case GROUP:
-            // TODO undefine
-            refreshHumanEvent();
-            break;
-        case ALL:
-            // TODO undefine
-            refreshHumanEvent();
-            break;
-        default:
-            throw new IllegalStateException("Unrecognized event type '" + eventType + "'!");
-        }
-    }
-
     public void refreshHumanEvent() {
         humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
             @Override
@@ -132,6 +109,17 @@ public class ActionHistoryPresenter {
                 filterEvents(view.getSearchBox().getText());
             }
         }).getAllHumanEvent();
+    }
+    
+    public void clearHumanEvents(){
+        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+            @Override
+            public void callback(Queue<HumanEventSummary> events) {
+                //TODO ver de sacar el retorno ya que mi servicio es void
+                allEventsSummaries = Lists.newArrayList();
+                filterEvents(view.getSearchBox().getText());
+            }
+        }).clearHumanEvent();
     }
 
     public void filterEvents(String text) {
