@@ -16,14 +16,11 @@
 
 package org.jbpm.console.ng.he.client.util;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import org.jbpm.console.ng.he.model.HumanEventSummary;
-import org.kie.commons.java.nio.IOException;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 
@@ -37,34 +34,18 @@ public class UtilEvent {
         return fmt.format(date);
     }
 
-    public static void exportToTxt(String userName) {
-        /*File f;
-        f = new File("/tmp/archivo_" + getDateTime(new Date(), patternNameFile) + ".txt");
-        try {
-            FileWriter w = new FileWriter(f);
-            BufferedWriter bw = new
-
-            BufferedWriter(w);
-            PrintWriter wr = new PrintWriter(bw);
-
-            wr.write("Human Events user:" + userName);
-            for
-
-            (HumanEventSummary human : allEventsSummaries) {
-
-                wr.append(human.getDescriptionEvent() + " - " +
-
-                human.getTypeEvent());
-                wr.append("/n");
-            }
-            wr.close();
-            bw.close();
+    public static void exportEventsToTxt(String userName, List<HumanEventSummary> allEventsSummaries) throws IOException {
+        //TODO problema con java.io
+        
+        /*File f = new File(userName + getDateTime(new Date(), patternNameFile) + ".txt");
+        BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+        PrintWriter wr = new PrintWriter(bw);
+        wr.write("Human Events user:" + userName);
+        for (HumanEventSummary human : allEventsSummaries) {
+            wr.append(human.getDescriptionEvent() + " - " + human.getAction() + "\n");
         }
-
-        catch (IOException e) {
-
-        }*/
-
+        wr.close();
+        bw.close();*/
     }
 
 }

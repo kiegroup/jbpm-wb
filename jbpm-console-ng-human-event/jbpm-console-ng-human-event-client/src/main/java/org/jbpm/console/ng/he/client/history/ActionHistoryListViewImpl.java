@@ -369,5 +369,4 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     public TextBox getSearchBox() {
         return searchBox;
     }
-
 }

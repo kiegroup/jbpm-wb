@@ -16,7 +16,7 @@
 
 package org.jbpm.console.ng.he.client.history;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Queue;
@@ -38,6 +38,7 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.security.Identity;
 
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
@@ -91,7 +92,8 @@ public class ActionHistoryPresenter {
         humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
             @Override
             public void callback(Queue<HumanEventSummary> events) {
-                allEventsSummaries = new ArrayList<HumanEventSummary>(events);
+                //allEventsSummaries = new ArrayList<HumanEventSummary>(events);
+                allEventsSummaries = Lists.newArrayList(events);
             }
         }).saveNewHumanEvent(pointHistory);
     }
@@ -114,7 +116,6 @@ public class ActionHistoryPresenter {
             refreshHumanEvent();
             break;
         case ALL:
-            // TODO undefine
             refreshHumanEvent();
             break;
         default:
@@ -127,7 +128,8 @@ public class ActionHistoryPresenter {
             @Override
             public void callback(Queue<HumanEventSummary> events) {
                 if (events != null) {
-                    allEventsSummaries = new ArrayList<HumanEventSummary>(events);
+                    //allEventsSummaries = new ArrayList<HumanEventSummary>(events);
+                    allEventsSummaries = Lists.newArrayList(events);
                 }
                 filterEvents(view.getSearchBox().getText());
             }
@@ -138,14 +140,16 @@ public class ActionHistoryPresenter {
         if (text.equals("")) {
             if (allEventsSummaries != null) {
                 dataProvider.getList().clear();
-                dataProvider.setList(new ArrayList<HumanEventSummary>(allEventsSummaries));
+                //dataProvider.setList(new ArrayList<HumanEventSummary>(allEventsSummaries));
+                dataProvider.setList(Lists.newArrayList(allEventsSummaries));
                 dataProvider.refresh();
-
             }
         } else {
             if (allEventsSummaries != null) {
-                List<HumanEventSummary> tasks = new ArrayList<HumanEventSummary>(allEventsSummaries);
-                List<HumanEventSummary> filteredTasksSimple = new ArrayList<HumanEventSummary>();
+                //List<HumanEventSummary> tasks = new ArrayList<HumanEventSummary>(allEventsSummaries);
+                List<HumanEventSummary> tasks = Lists.newArrayList(allEventsSummaries);
+                //List<HumanEventSummary> filteredTasksSimple = new ArrayList<HumanEventSummary>();
+                List<HumanEventSummary> filteredTasksSimple = Lists.newArrayList();
                 for (HumanEventSummary ts : tasks) {
                     if (ts.getDescriptionEvent().toLowerCase().contains(text.toLowerCase())) {
                         filteredTasksSimple.add(ts);
@@ -163,9 +167,19 @@ public class ActionHistoryPresenter {
         dataProvider.addDataDisplay(display);
     }
 
+    /**
+     * Export all human events to .txt
+     */
     public void exportToTxt() {
-        //TODO completar desarrollo
-        //UtilEvent.exportToTxt();
+        if (allEventsSummaries == null || allEventsSummaries.isEmpty()) {
+            view.displayNotification(constants.No_Human_Events());
+        } else {
+            try {
+                UtilEvent.exportEventsToTxt(identity.getName(), allEventsSummaries);
+            } catch (IOException e) {
+                view.displayNotification(constants.Error_Export_File());
+            }
+        }
     }
 
 }
