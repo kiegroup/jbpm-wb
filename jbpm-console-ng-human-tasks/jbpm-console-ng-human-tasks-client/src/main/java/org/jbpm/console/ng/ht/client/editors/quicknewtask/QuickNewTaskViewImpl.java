@@ -177,7 +177,7 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
         addGroupButton.setText(constants.Add_Group());
         
 
-        advancedLabel.add( new HTMLPanel( constants.Advanced() ) );
+        advancedLabel.add( new HTMLPanel( constants.Grid() ) );
         taskNameLabel.add( new HTMLPanel( constants.Task_Name() ) );
         
         

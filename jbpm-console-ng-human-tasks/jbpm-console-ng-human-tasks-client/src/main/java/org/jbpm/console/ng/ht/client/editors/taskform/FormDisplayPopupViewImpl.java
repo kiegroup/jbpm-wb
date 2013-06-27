@@ -16,17 +16,22 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskform;
 
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.base.UnorderedList;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.formModeler.renderer.client.FormRendererWidget;
+
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
 
@@ -42,6 +47,10 @@ public class FormDisplayPopupViewImpl extends Composite implements FormDisplayPo
     @Inject
     @DataField
     public VerticalPanel formView;
+
+    @Inject
+    @DataField
+    public FormRendererWidget formRenderer;
 
     @Inject
     @DataField
@@ -62,6 +71,8 @@ public class FormDisplayPopupViewImpl extends Composite implements FormDisplayPo
     private long taskId;
     private String domainId;
     private String processId;
+    private String action;
+    private boolean formModeler;
 
     @Inject
     private PlaceManager placeManager;
@@ -70,14 +81,13 @@ public class FormDisplayPopupViewImpl extends Composite implements FormDisplayPo
     private Event<NotificationEvent> notification;
 
     @Override
-    public void init( FormDisplayPopupPresenter presenter ) {
+    public void init(FormDisplayPopupPresenter presenter) {
         this.presenter = presenter;
-
     }
 
     @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     @Override
@@ -86,7 +96,7 @@ public class FormDisplayPopupViewImpl extends Composite implements FormDisplayPo
     }
 
     @Override
-    public void setTaskId( long taskId ) {
+    public void setTaskId(long taskId) {
         this.taskId = taskId;
     }
 
@@ -96,13 +106,8 @@ public class FormDisplayPopupViewImpl extends Composite implements FormDisplayPo
     }
 
     @Override
-    public void setProcessId( String processId ) {
+    public void setProcessId(String processId) {
         this.processId = processId;
-    }
-
-    @Override
-    public VerticalPanel getFormView() {
-        return formView;
     }
 
     @Override
@@ -131,8 +136,74 @@ public class FormDisplayPopupViewImpl extends Composite implements FormDisplayPo
     }
 
     @Override
-    public void setDomainId( String domainId ) {
+    public void setDomainId(String domainId) {
         this.domainId = domainId;
     }
 
+    @Override
+    public void loadContext(String ctxUID) {
+        if (ctxUID != null) {
+            formRenderer.loadContext(ctxUID);
+        }
+    }
+
+    @Override
+    public void submitStartProcessForm() {
+        submitForm(FormDisplayPopupPresenter.ACTION_START_PROCESS);
+    }
+
+    @Override
+    public void submitChangeTab(String tab) {
+        submitForm(tab);
+    }
+
+    @Override
+    public void submitSaveTaskStateForm() {
+        submitForm(FormDisplayPopupPresenter.ACTION_SAVE_TASK);
+    }
+
+    @Override
+    public void submitCompleteTaskForm() {
+        submitForm(FormDisplayPopupPresenter.ACTION_COMPLETE_TASK);
+    }
+
+    @Override
+    public void submitForm() {
+        formRenderer.submitForm();
+    }
+
+    protected void submitForm(String action) {
+        this.action = action;
+        formRenderer.submitFormAndPersist();
+    }
+
+    @Override
+    public String getAction() {
+        return action;
+    }
+
+    @Override
+    public VerticalPanel getFormView() {
+        return formView;
+    }
+
+    @Override
+    public void loadForm(String form) {
+        formModeler = formRenderer.isValidContextUID(form);
+        if (formModeler) {
+            loadContext(form);
+            formView.setVisible(false);
+            formRenderer.setVisible(true);
+        } else {
+            formView.clear();
+            formView.add(new HTMLPanel(form));
+            formView.setVisible(true);
+            formRenderer.setVisible(false);
+        }
+    }
+
+    @Override
+    public boolean isFormModeler() {
+        return formModeler;
+    }
 }

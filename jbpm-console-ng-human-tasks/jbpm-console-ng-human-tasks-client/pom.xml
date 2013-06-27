@@ -50,6 +50,24 @@
     
     <dependency>
       <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-renderer-api</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+    </dependency>
+      
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-renderer-client</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+    </dependency>
+      
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-renderer-backend</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-human-event-client</artifactId>
       <version>${project.version}</version>
     </dependency>

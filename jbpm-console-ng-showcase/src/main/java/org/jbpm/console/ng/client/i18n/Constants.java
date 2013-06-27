@@ -63,4 +63,6 @@ public interface Constants extends Messages {
     
     String Human_Events();
 
+    String Dashboard();
+
 }

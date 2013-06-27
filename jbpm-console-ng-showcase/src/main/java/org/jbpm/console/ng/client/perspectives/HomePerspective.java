@@ -34,9 +34,9 @@ public class HomePerspective {
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
-        p.setName( "Home Perspective" );
-        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Home Screen" ) ) );
-        p.setTransient( true );
+        p.setName("Home Perspective");
+        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Home Screen")));
+        p.setTransient(true);
         return p;
     }
 
