@@ -46,4 +46,9 @@ public class EventServiceEntryPointImpl extends SessionManager implements EventS
         super.getSession().setAttribute(KEY_SESSION, points);
         return points;
     }
+
+    @Override
+    public void clearHumanEvent() {
+        super.getSession().removeAttribute(KEY_SESSION);
+    }
 }

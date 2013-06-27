@@ -35,5 +35,9 @@ public abstract class SessionManager {
     public void killSession() {
         this.session.invalidate();
     }
+    
+    public void removeSession(String key) {
+        this.session.removeAttribute(key);
+    }
 
 }

@@ -174,5 +174,15 @@
       <artifactId>arquillian-container-test-api</artifactId>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-form-modeler-api</artifactId>
+          <version>6.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-business-domain-api</artifactId>
+          <version>${project.version}</version>
+      </dependency>
   </dependencies>
 </project>

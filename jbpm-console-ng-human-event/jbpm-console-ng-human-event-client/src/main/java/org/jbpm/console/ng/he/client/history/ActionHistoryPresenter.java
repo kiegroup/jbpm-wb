@@ -17,7 +17,6 @@
 package org.jbpm.console.ng.he.client.history;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 
@@ -70,7 +69,7 @@ public class ActionHistoryPresenter {
     }
 
     public enum HumanEventType {
-        PERSONAL, ACTIVE, GROUP, ALL, EXPORT
+        ACTIVE, GROUP, ALL, EXPORT
     }
 
     private List<HumanEventSummary> allEventsSummaries;
@@ -102,27 +101,6 @@ public class ActionHistoryPresenter {
         return allEventsSummaries;
     }
 
-    public void refreshEvents(Date date, HumanEventType eventType) {
-        switch (eventType) {
-        case ACTIVE:
-            refreshHumanEvent();
-            break;
-        case PERSONAL:
-            // TODO undefine
-            refreshHumanEvent();
-            break;
-        case GROUP:
-            // TODO undefine
-            refreshHumanEvent();
-            break;
-        case ALL:
-            refreshHumanEvent();
-            break;
-        default:
-            throw new IllegalStateException("Unrecognized event type '" + eventType + "'!");
-        }
-    }
-
     public void refreshHumanEvent() {
         humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
             @Override
@@ -134,6 +112,17 @@ public class ActionHistoryPresenter {
                 filterEvents(view.getSearchBox().getText());
             }
         }).getAllHumanEvent();
+    }
+    
+    public void clearHumanEvents(){
+        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+            @Override
+            public void callback(Queue<HumanEventSummary> events) {
+                //TODO ver de sacar el retorno ya que mi servicio es void
+                allEventsSummaries = Lists.newArrayList();
+                filterEvents(view.getSearchBox().getText());
+            }
+        }).clearHumanEvent();
     }
 
     public void filterEvents(String text) {

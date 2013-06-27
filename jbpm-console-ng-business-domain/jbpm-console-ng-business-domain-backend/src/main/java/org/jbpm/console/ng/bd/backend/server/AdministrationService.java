@@ -108,7 +108,7 @@ public class AdministrationService {
             // don't fail on creation of repository, just log the cause
             logger.warning("Unable to create repository with alias " + repoAlias + " due to " + e.getMessage());
         }
-        
+
         Group demoGroup = groupService.getGroup("demo");
         if ( demoGroup == null ) {
             List<Repository> repositories = new ArrayList<Repository>();
@@ -116,7 +116,7 @@ public class AdministrationService {
                 repositories.add(repository);
             }
             groupService.createGroup( "demo", "demo@jbpm.org", repositories );
-        
+
         }
 
         if (repository != null) {
@@ -144,7 +144,7 @@ public class AdministrationService {
         }
         if ( deploymentServiceTypeConfig == null ) {
             deploymentServiceTypeConfig = configurationFactory.newConfigGroup( ConfigType.GLOBAL,
-                                                                               DEPLOYMENT_SERVICE_TYPE_CONFIG, "" );
+                    DEPLOYMENT_SERVICE_TYPE_CONFIG, "" );
             deploymentServiceTypeConfig.addConfigItem( configurationFactory.newConfigItem( "type", "kjar" ) );
 
             configurationService.addConfiguration( deploymentServiceTypeConfig );

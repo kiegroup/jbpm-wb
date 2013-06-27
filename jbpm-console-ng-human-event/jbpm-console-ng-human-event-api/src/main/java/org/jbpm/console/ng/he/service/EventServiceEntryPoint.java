@@ -27,5 +27,7 @@ public interface EventServiceEntryPoint {
 	Queue<HumanEventSummary> getAllHumanEvent();
 	
 	Queue<HumanEventSummary> saveNewHumanEvent(HumanEventSummary pointHistory);
+	
+	void clearHumanEvent();
 
 }

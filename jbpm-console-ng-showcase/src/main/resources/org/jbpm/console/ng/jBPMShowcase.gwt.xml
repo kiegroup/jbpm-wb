@@ -21,12 +21,12 @@
   <inherits name="org.kie.workbench.common.screens.explorer.KieWorkbenchProjectExplorerClient"/>
   <inherits name="org.kie.workbench.common.screens.projecteditor.KieWorkbenchCommonProjectEditorClient"/>
   <inherits name="org.kie.workbench.common.screens.projectimportsscreen.KieWorkbenchCommonProjectImportsScreenClient"/>
-
+  <inherits name="org.kie.workbench.common.screens.datamodeller.KieWorkbenchDatamodellerClient"/>
+  
   <!-- Common Services -->
   <inherits name="org.kie.workbench.common.widgets.KieWorkbenchWidgetsCommon"/>
   <inherits name='org.kie.workbench.common.services.security.KieWorkbenchCommonSecurity'/>
   <inherits name='org.kie.workbench.common.services.KieWorkbenchCommonServicesAPI'/>
-  <inherits name="org.kie.workbench.common.services.data.KieWorkbenchCommonData"/>
   <inherits name="org.kie.workbench.common.services.workingset.KieWorkbenchWorkingsetClient"/>
   <inherits name='org.kie.workbench.common.services.datamodel.KieWorkbenchCommonDataModelAPI'/>
 
@@ -42,6 +42,14 @@
   <!-- designer -->
   <inherits name="org.jbpm.designer.jBPMDesignerAPI"/>
   <inherits name="org.jbpm.designer.jBPMDesignerClient"/>
+
+  <!-- Form-Modelere -->
+  <inherits name="org.jbpm.formModeler.editor.FormModelerEditorClient"/>
+  <inherits name="org.jbpm.formModeler.renderer.FormRendererClient"/>
+
+  <!-- Dashbuilder -->
+   <inherits name="org.jbpm.dashboard.renderer.DashboardRendererApi"/>
+   <inherits name="org.jbpm.dashboard.renderer.client.DashboardRendererClient"/>
 
   <!-- Specify the application specific style sheet. -->
   <stylesheet src='css/uberfire-showcase.css' />
