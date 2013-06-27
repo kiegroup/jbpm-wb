@@ -151,8 +151,8 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
     }
 
     @Override
-    public String getFormDisplayProcess(String processId) {
-        return displayService.getFormDisplayProcess(processId);
+    public String getFormDisplayProcess(String domainId, String processId) {
+        return displayService.getFormDisplayProcess(domainId, processId);
     }
 
 }

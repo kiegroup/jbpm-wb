@@ -292,7 +292,7 @@ public class FormDisplayPopupPresenter {
         } ).getTaskDetails(view.getTaskId());
     }
 
-    public void renderProcessForm(final String idProcess) {
+    public void renderProcessForm(final String domainId, final String idProcess) {
         view.getNavBarUL().clear();
         formServices.call( new RemoteCallback<String>() {
             @Override
@@ -335,7 +335,7 @@ public class FormDisplayPopupPresenter {
                     }
                 } ).getProcessDesc(idProcess);
             }
-        }).getFormDisplayProcess(idProcess);
+        }).getFormDisplayProcess(domainId, idProcess);
 
     }
 
@@ -567,7 +567,7 @@ public class FormDisplayPopupPresenter {
         } else if (!processId.equals("none")) {
             view.setProcessId(processId);
             view.setDomainId(domainId);
-            renderProcessForm(processId);
+            renderProcessForm(domainId, processId);
         }
     }
 
