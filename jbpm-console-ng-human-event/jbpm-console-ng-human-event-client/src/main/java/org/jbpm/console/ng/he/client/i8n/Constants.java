@@ -40,8 +40,6 @@ public interface Constants extends Messages {
 
     String Grid();
 
-    String Group();
-
     String Id();
 
     String Details();
@@ -95,6 +93,8 @@ public interface Constants extends Messages {
     String Clear_Events();
     
     String Clear_Msj();
+    
+    String Info();
 
 
 }

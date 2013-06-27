@@ -28,6 +28,7 @@ import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.jbpm.console.ng.he.client.util.UtilEvent;
+import org.jbpm.console.ng.he.model.ActionHistoryEnum;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.he.service.EventServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -121,8 +122,16 @@ public class ActionHistoryPresenter {
                 //TODO ver de sacar el retorno ya que mi servicio es void
                 allEventsSummaries = Lists.newArrayList();
                 filterEvents(view.getSearchBox().getText());
+                view.displayNotification(constants.Clear_Msj());
             }
         }).clearHumanEvent();
+    }
+    
+    public void showInfoEvents(){
+        for(ActionHistoryEnum activity : ActionHistoryEnum.values()){
+            //TODO this info show in the popup
+            //activity.getDescription();
+        }
     }
 
     public void filterEvents(String text) {
@@ -157,7 +166,7 @@ public class ActionHistoryPresenter {
     }
 
     /**
-     * Export all human events to .txt
+     * TODO Export all human events to .txt
      */
     public void exportToTxt() {
         if (allEventsSummaries == null || allEventsSummaries.isEmpty()) {

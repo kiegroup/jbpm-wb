@@ -77,7 +77,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
 
     @Inject
     @DataField
-    public NavLink showGroupTasksNavLink;
+    public NavLink showInfoEventsNavLink;
 
     @DataField
     public Heading taskCalendarViewLabel = new Heading(4);
@@ -130,24 +130,22 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             @Override
             public void onClick(ClickEvent event) {
                 clearEventsNavLink.setStyleName("active");
-                showGroupTasksNavLink.setStyleName("");
+                showInfoEventsNavLink.setStyleName("");
                 showAllTasksNavLink.setStyleName("");
                 exportEventsNavLink.setStyleName("");
                 clearHumanEvents();
             }
         });
 
-        showGroupTasksNavLink.setText(constants.Group());
-        showGroupTasksNavLink.addClickHandler(new ClickHandler() {
+        showInfoEventsNavLink.setText(constants.Info());
+        showInfoEventsNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                showGroupTasksNavLink.setStyleName("active");
+                showInfoEventsNavLink.setStyleName("active");
                 clearEventsNavLink.setStyleName("");
                 showAllTasksNavLink.setStyleName("");
                 exportEventsNavLink.setStyleName("");
-                // currentEventHumanType = HumanEventType.GROUP;
-                refreshHumanEvents();
-
+                showInfoEvents();
             }
         });
 
@@ -155,13 +153,11 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         showAllTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                showGroupTasksNavLink.setStyleName("");
+                showInfoEventsNavLink.setStyleName("");
                 clearEventsNavLink.setStyleName("");
                 showAllTasksNavLink.setStyleName("active");
                 exportEventsNavLink.setStyleName("");
-                // currentEventHumanType = HumanEventType.ALL;
                 refreshHumanEvents();
-
             }
         });
 
@@ -169,11 +165,10 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         exportEventsNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                showGroupTasksNavLink.setStyleName("");
+                showInfoEventsNavLink.setStyleName("");
                 clearEventsNavLink.setStyleName("");
                 showAllTasksNavLink.setStyleName("");
                 exportEventsNavLink.setStyleName("active");
-                // currentEventHumanType = HumanEventType.EXPORT;
                 exportTxtEvents();
             }
         });
@@ -207,7 +202,10 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
 
     public void clearHumanEvents() {
         presenter.clearHumanEvents();
-        displayNotification(constants.Clear_Msj());
+    }
+    
+    public void showInfoEvents(){
+        presenter.showInfoEvents();
     }
 
     public void exportTxtEvents() {
