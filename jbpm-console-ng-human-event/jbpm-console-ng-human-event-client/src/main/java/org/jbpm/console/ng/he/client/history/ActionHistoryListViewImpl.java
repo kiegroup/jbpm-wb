@@ -195,23 +195,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
         presenter.filterEvents(text);
     }
 
-    @Override
-    public void refreshHumanEvents() {
-        presenter.refreshHumanEvent();
-    }
-
-    public void clearHumanEvents() {
-        presenter.clearHumanEvents();
-    }
-    
-    public void showInfoEvents(){
-        presenter.showInfoEvents();
-    }
-
-    public void exportTxtEvents() {
-        presenter.exportToTxt();
-    }
-
     private void initializeGridView() {
         eventsViewContainer.clear();
         myEventListGrid = new DataGrid<HumanEventSummary>();
@@ -354,6 +337,26 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             }
         });
 
+    }
+    
+    @Override
+    public void refreshHumanEvents() {
+        presenter.refreshHumanEvent();
+    }
+    
+    @Override
+    public void clearHumanEvents() {
+        presenter.clearHumanEvents();
+    }
+    
+    @Override
+    public void showInfoEvents(){
+        presenter.showInfoEvents();
+    }
+
+    @Override
+    public void exportTxtEvents() {
+        presenter.exportToTxt();
     }
 
     @Override

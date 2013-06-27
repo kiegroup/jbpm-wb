@@ -86,13 +86,20 @@ public class ActionHistoryPresenter {
         TextBox getSearchBox();
 
         void refreshHumanEvents();
+
+        void clearHumanEvents();
+
+        void showInfoEvents();
+
+        void exportTxtEvents();
     }
 
     public void saveNewEventHistory(@Observes HumanEventSummary pointHistory) {
         humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
             @Override
             public void callback(Queue<HumanEventSummary> events) {
-                //allEventsSummaries = new ArrayList<HumanEventSummary>(events);
+                // allEventsSummaries = new
+                // ArrayList<HumanEventSummary>(events);
                 allEventsSummaries = Lists.newArrayList(events);
             }
         }).saveNewHumanEvent(pointHistory);
@@ -107,30 +114,31 @@ public class ActionHistoryPresenter {
             @Override
             public void callback(Queue<HumanEventSummary> events) {
                 if (events != null) {
-                    //allEventsSummaries = new ArrayList<HumanEventSummary>(events);
+                    // allEventsSummaries = new
+                    // ArrayList<HumanEventSummary>(events);
                     allEventsSummaries = Lists.newArrayList(events);
                 }
                 filterEvents(view.getSearchBox().getText());
             }
         }).getAllHumanEvent();
     }
-    
-    public void clearHumanEvents(){
+
+    public void clearHumanEvents() {
         humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
             @Override
             public void callback(Queue<HumanEventSummary> events) {
-                //TODO ver de sacar el retorno ya que mi servicio es void
+                // TODO ver de sacar el retorno ya que mi servicio es void
                 allEventsSummaries = Lists.newArrayList();
                 filterEvents(view.getSearchBox().getText());
                 view.displayNotification(constants.Clear_Msj());
             }
         }).clearHumanEvent();
     }
-    
-    public void showInfoEvents(){
-        for(ActionHistoryEnum activity : ActionHistoryEnum.values()){
-            //TODO this info show in the popup
-            //activity.getDescription();
+
+    public void showInfoEvents() {
+        for (ActionHistoryEnum activity : ActionHistoryEnum.values()) {
+            // TODO this info show in the popup
+            // activity.getDescription();
         }
     }
 
@@ -138,15 +146,18 @@ public class ActionHistoryPresenter {
         if (text.equals("")) {
             if (allEventsSummaries != null) {
                 dataProvider.getList().clear();
-                //dataProvider.setList(new ArrayList<HumanEventSummary>(allEventsSummaries));
+                // dataProvider.setList(new
+                // ArrayList<HumanEventSummary>(allEventsSummaries));
                 dataProvider.setList(Lists.newArrayList(allEventsSummaries));
                 dataProvider.refresh();
             }
         } else {
             if (allEventsSummaries != null) {
-                //List<HumanEventSummary> tasks = new ArrayList<HumanEventSummary>(allEventsSummaries);
+                // List<HumanEventSummary> tasks = new
+                // ArrayList<HumanEventSummary>(allEventsSummaries);
                 List<HumanEventSummary> tasks = Lists.newArrayList(allEventsSummaries);
-                //List<HumanEventSummary> filteredTasksSimple = new ArrayList<HumanEventSummary>();
+                // List<HumanEventSummary> filteredTasksSimple = new
+                // ArrayList<HumanEventSummary>();
                 List<HumanEventSummary> filteredTasksSimple = Lists.newArrayList();
                 for (HumanEventSummary ts : tasks) {
                     if (ts.getDescriptionEvent().toLowerCase().contains(text.toLowerCase())) {
