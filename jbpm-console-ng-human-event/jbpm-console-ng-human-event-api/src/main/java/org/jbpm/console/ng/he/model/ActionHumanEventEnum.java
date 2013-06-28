@@ -17,22 +17,19 @@
 package org.jbpm.console.ng.he.model;
 
 
-public enum ActionHistoryEnum {
+public enum ActionHumanEventEnum {
 
     TASK_CREATED("TASK", "CREATE"),
-    TASK_CREATED_STARTED("TASK", "CREATE - START"),
+    TASK_CREATED_STARTED("TASK", "CREATE-START"),
     TASK_STARTED("TASK", "START"),
     TASK_RELEASED("TASK", "RELEASED"),
     TASK_COMPLETED("TASK", "COMPLETED"),
     TASK_CLAIMED("TASK", "CLAIMED");
     
-    
-    
-    
     private String description;
     private String action;
     
-    ActionHistoryEnum(String description, String type){
+    ActionHumanEventEnum(String description, String type){
         this.description = description;
         this.action = type;
     }

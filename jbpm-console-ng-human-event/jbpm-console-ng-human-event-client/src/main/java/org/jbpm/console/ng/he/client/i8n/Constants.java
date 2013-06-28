@@ -95,6 +95,8 @@ public interface Constants extends Messages {
     String Clear_Msj();
     
     String Info();
+    
+    String Level();
 
 
 }

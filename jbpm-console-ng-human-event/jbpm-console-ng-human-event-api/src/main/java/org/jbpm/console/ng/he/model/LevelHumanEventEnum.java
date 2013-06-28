@@ -14,26 +14,8 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.he.backend.server;
+package org.jbpm.console.ng.he.model;
 
-import javax.servlet.http.HttpSession;
-
-import org.jboss.errai.bus.server.api.RpcContext;
-
-public abstract class SessionManager {
-
-    private HttpSession session = RpcContext.getHttpSession();
-
-    public HttpSession getSession() {
-        return session;
-    }
-
-    public void setSession(HttpSession session) {
-        this.session = session;
-    }
-
-    public void killSession() {
-        this.session.invalidate();
-    }
-    
+public enum LevelHumanEventEnum {
+    INFO, ERROR;
 }

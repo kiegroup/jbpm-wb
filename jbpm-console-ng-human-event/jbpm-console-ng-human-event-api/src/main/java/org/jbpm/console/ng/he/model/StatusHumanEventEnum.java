@@ -14,26 +14,10 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.he.backend.server;
+package org.jbpm.console.ng.he.model;
 
-import javax.servlet.http.HttpSession;
+public enum StatusHumanEventEnum {
 
-import org.jboss.errai.bus.server.api.RpcContext;
+    SUCCESS, ERROR, NONE;
 
-public abstract class SessionManager {
-
-    private HttpSession session = RpcContext.getHttpSession();
-
-    public HttpSession getSession() {
-        return session;
-    }
-
-    public void setSession(HttpSession session) {
-        this.session = session;
-    }
-
-    public void killSession() {
-        this.session.invalidate();
-    }
-    
 }

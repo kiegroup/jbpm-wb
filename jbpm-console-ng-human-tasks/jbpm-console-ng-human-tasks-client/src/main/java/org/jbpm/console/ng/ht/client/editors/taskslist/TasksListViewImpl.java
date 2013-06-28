@@ -30,7 +30,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.he.model.ActionHistoryEnum;
+import org.jbpm.console.ng.he.model.ActionHumanEventEnum;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskType;
 import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskView;

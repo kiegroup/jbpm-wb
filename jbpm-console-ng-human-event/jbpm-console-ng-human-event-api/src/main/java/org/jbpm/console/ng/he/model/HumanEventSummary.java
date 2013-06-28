@@ -32,35 +32,40 @@ public class HumanEventSummary implements Serializable {
     private String action;
     private String user;
     private String status;
+    private String level;
 
     public HumanEventSummary() {
-
+        
     }
 
-    public HumanEventSummary(ActionHistoryEnum event, String user) {
+    public HumanEventSummary(ActionHumanEventEnum event, String user) {
         this.descriptionEvent = event.getDescription();
         this.action = event.getAction();
         this.user = user;
+        this.status = StatusHumanEventEnum.NONE.toString();
+        this.level = LevelHumanEventEnum.INFO.toString();
         this.eventTime = new Date();
-        this.status = "SUCCESS";
     }
 
-    public HumanEventSummary(ActionHistoryEnum event, long idEvent, String user) {
-        this.descriptionEvent = event.getDescription();
-        this.action = event.getAction();
-        this.idEvent = idEvent;
-        this.user = user;
-        this.eventTime = new Date();
-        this.status = "SUCCESS";
-    }
-    
-    public HumanEventSummary(ActionHistoryEnum event, long idEvent, String user, String status) {
+    public HumanEventSummary(ActionHumanEventEnum event, long idEvent, String user) {
         this.descriptionEvent = event.getDescription();
         this.action = event.getAction();
         this.idEvent = idEvent;
         this.user = user;
+        this.status = StatusHumanEventEnum.NONE.toString();
+        this.level = LevelHumanEventEnum.INFO.toString();
         this.eventTime = new Date();
-        this.status = status;
+    }
+
+    public HumanEventSummary(ActionHumanEventEnum event, long idEvent, String user, StatusHumanEventEnum status,
+            LevelHumanEventEnum level) {
+        this.descriptionEvent = event.getDescription();
+        this.action = event.getAction();
+        this.idEvent = idEvent;
+        this.user = user;
+        this.status = status.toString();
+        this.level = level.toString();
+        this.eventTime = new Date();
     }
 
     public String getDescriptionEvent() {
@@ -95,85 +100,92 @@ public class HumanEventSummary implements Serializable {
         this.user = user;
     }
 
-	public String getStatus() {
-		return status;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public String getAction() {
-		return action;
-	}
+    public String getAction() {
+        return action;
+    }
 
-	public void setAction(String action) {
-		this.action = action;
-	}
+    public void setAction(String action) {
+        this.action = action;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((action == null) ? 0 : action.hashCode());
-		result = prime
-				* result
-				+ ((descriptionEvent == null) ? 0 : descriptionEvent.hashCode());
-		result = prime * result
-				+ ((eventTime == null) ? 0 : eventTime.hashCode());
-		result = prime * result + (int) (idEvent ^ (idEvent >>> 32));
-		result = prime * result + ((status == null) ? 0 : status.hashCode());
-		result = prime * result + ((user == null) ? 0 : user.hashCode());
-		return result;
-	}
+    public String getLevel() {
+        return level;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		HumanEventSummary other = (HumanEventSummary) obj;
-		if (action == null) {
-			if (other.action != null)
-				return false;
-		} else if (!action.equals(other.action))
-			return false;
-		if (descriptionEvent == null) {
-			if (other.descriptionEvent != null)
-				return false;
-		} else if (!descriptionEvent.equals(other.descriptionEvent))
-			return false;
-		if (eventTime == null) {
-			if (other.eventTime != null)
-				return false;
-		} else if (!eventTime.equals(other.eventTime))
-			return false;
-		if (idEvent != other.idEvent)
-			return false;
-		if (status == null) {
-			if (other.status != null)
-				return false;
-		} else if (!status.equals(other.status))
-			return false;
-		if (user == null) {
-			if (other.user != null)
-				return false;
-		} else if (!user.equals(other.user))
-			return false;
-		return true;
-	}
+    public void setLevel(String level) {
+        this.level = level;
+    }
 
-	@Override
-	public String toString() {
-		return "HumanEventSummary [idEvent=" + idEvent + ", descriptionEvent="
-				+ descriptionEvent + ", eventTime=" + eventTime + ", action="
-				+ action + ", user=" + user + ", status=" + status + "]";
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((action == null) ? 0 : action.hashCode());
+        result = prime * result + ((descriptionEvent == null) ? 0 : descriptionEvent.hashCode());
+        result = prime * result + ((eventTime == null) ? 0 : eventTime.hashCode());
+        result = prime * result + (int) (idEvent ^ (idEvent >>> 32));
+        result = prime * result + ((level == null) ? 0 : level.hashCode());
+        result = prime * result + ((status == null) ? 0 : status.hashCode());
+        result = prime * result + ((user == null) ? 0 : user.hashCode());
+        return result;
+    }
 
-	
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        HumanEventSummary other = (HumanEventSummary) obj;
+        if (action == null) {
+            if (other.action != null)
+                return false;
+        } else if (!action.equals(other.action))
+            return false;
+        if (descriptionEvent == null) {
+            if (other.descriptionEvent != null)
+                return false;
+        } else if (!descriptionEvent.equals(other.descriptionEvent))
+            return false;
+        if (eventTime == null) {
+            if (other.eventTime != null)
+                return false;
+        } else if (!eventTime.equals(other.eventTime))
+            return false;
+        if (idEvent != other.idEvent)
+            return false;
+        if (level == null) {
+            if (other.level != null)
+                return false;
+        } else if (!level.equals(other.level))
+            return false;
+        if (status == null) {
+            if (other.status != null)
+                return false;
+        } else if (!status.equals(other.status))
+            return false;
+        if (user == null) {
+            if (other.user != null)
+                return false;
+        } else if (!user.equals(other.user))
+            return false;
+        return true;
+    }
 
-   
+    @Override
+    public String toString() {
+        return "HumanEventSummary [idEvent=" + idEvent + ", descriptionEvent=" + descriptionEvent + ", eventTime=" + eventTime
+                + ", action=" + action + ", user=" + user + ", status=" + status + ", level=" + level + "]";
+    }
+
 }

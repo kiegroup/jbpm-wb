@@ -55,13 +55,9 @@ import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionModel;
 
 @Dependent
-@Templated(value = "ActionHistoryListViewImpl.html")
-public class ActionHistoryListViewImpl extends Composite implements ActionHistoryPresenter.ActionHistoryView {
+@Templated(value = "HumanEventListViewImpl.html")
+public class HumanEventListViewImpl extends Composite implements HumanEventPresenter.ActionHistoryView {
     private Constants constants = GWT.create(Constants.class);
-
-    @Inject
-    @DataField
-    public NavLink showAllTasksNavLink;
 
     @Inject
     @DataField
@@ -93,7 +89,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
     @Inject
     private Event<NotificationEvent> notification;
 
-    private ActionHistoryPresenter presenter;
+    private HumanEventPresenter presenter;
 
     public DataGrid<HumanEventSummary> myEventListGrid;
 
@@ -103,10 +99,8 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
 
     private MultiSelectionModel<HumanEventSummary> selectionModel;
 
-    private Date currentDate;
-
     @Override
-    public void init(ActionHistoryPresenter presenter) {
+    public void init(HumanEventPresenter presenter) {
         this.presenter = presenter;
 
         refreshIcon.setTitle(constants.Refresh());
@@ -119,8 +113,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             }
         });
 
-        currentDate = new Date();
-
         // By Default we will start in Grid View
         initializeGridView();
 
@@ -131,7 +123,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             public void onClick(ClickEvent event) {
                 clearEventsNavLink.setStyleName("active");
                 showInfoEventsNavLink.setStyleName("");
-                showAllTasksNavLink.setStyleName("");
                 exportEventsNavLink.setStyleName("");
                 clearHumanEvents();
             }
@@ -143,21 +134,8 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             public void onClick(ClickEvent event) {
                 showInfoEventsNavLink.setStyleName("active");
                 clearEventsNavLink.setStyleName("");
-                showAllTasksNavLink.setStyleName("");
                 exportEventsNavLink.setStyleName("");
                 showInfoEvents();
-            }
-        });
-
-        showAllTasksNavLink.setText(constants.All());
-        showAllTasksNavLink.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                showInfoEventsNavLink.setStyleName("");
-                clearEventsNavLink.setStyleName("");
-                showAllTasksNavLink.setStyleName("active");
-                exportEventsNavLink.setStyleName("");
-                refreshHumanEvents();
             }
         });
 
@@ -167,7 +145,6 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
             public void onClick(ClickEvent event) {
                 showInfoEventsNavLink.setStyleName("");
                 clearEventsNavLink.setStyleName("");
-                showAllTasksNavLink.setStyleName("");
                 exportEventsNavLink.setStyleName("active");
                 exportTxtEvents();
             }
@@ -319,6 +296,23 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
                 return Long.valueOf(o1.getIdEvent()).compareTo(Long.valueOf(o2.getIdEvent()));
             }
         });
+        
+     // Level.
+        Column<HumanEventSummary, String> levelNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(HumanEventSummary object) {
+                return object.getLevel();
+            }
+        };
+        levelNameColumn.setSortable(true);
+
+        myEventListGrid.addColumn(levelNameColumn, new ResizableHeader(constants.Level(), myEventListGrid, levelNameColumn));
+        sortHandler.setComparator(levelNameColumn, new Comparator<HumanEventSummary>() {
+            @Override
+            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
+                return o1.getLevel().compareTo(o2.getLevel());
+            }
+        });
 
         // Status.
         Column<HumanEventSummary, String> statusNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
@@ -336,7 +330,7 @@ public class ActionHistoryListViewImpl extends Composite implements ActionHistor
                 return o1.getStatus().compareTo(o2.getStatus());
             }
         });
-
+        
     }
     
     @Override

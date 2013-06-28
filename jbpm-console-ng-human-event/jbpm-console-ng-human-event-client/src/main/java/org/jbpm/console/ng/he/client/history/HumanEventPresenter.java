@@ -28,7 +28,7 @@ import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.jbpm.console.ng.he.client.util.UtilEvent;
-import org.jbpm.console.ng.he.model.ActionHistoryEnum;
+import org.jbpm.console.ng.he.model.ActionHumanEventEnum;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.he.service.EventServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -46,7 +46,7 @@ import com.google.gwt.view.client.MultiSelectionModel;
 
 @Dependent
 @WorkbenchScreen(identifier = "Human Events")
-public class ActionHistoryPresenter {
+public class HumanEventPresenter {
 
     private Constants constants = GWT.create(Constants.class);
 
@@ -60,7 +60,7 @@ public class ActionHistoryPresenter {
     private Identity identity;
 
     @WorkbenchPartView
-    public UberView<ActionHistoryPresenter> getView() {
+    public UberView<HumanEventPresenter> getView() {
         return view;
     }
 
@@ -77,7 +77,7 @@ public class ActionHistoryPresenter {
 
     private ListDataProvider<HumanEventSummary> dataProvider = new ListDataProvider<HumanEventSummary>();
 
-    public interface ActionHistoryView extends UberView<ActionHistoryPresenter> {
+    public interface ActionHistoryView extends UberView<HumanEventPresenter> {
 
         void displayNotification(String text);
 
@@ -136,7 +136,7 @@ public class ActionHistoryPresenter {
     }
 
     public void showInfoEvents() {
-        for (ActionHistoryEnum activity : ActionHistoryEnum.values()) {
+        for (ActionHumanEventEnum activity : ActionHumanEventEnum.values()) {
             // TODO this info show in the popup
             // activity.getDescription();
         }
