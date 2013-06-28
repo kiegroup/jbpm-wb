@@ -32,7 +32,7 @@ import org.jboss.errai.bus.client.api.ErrorCallback;
 import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.he.client.history.HumanEventPresenter;
+import org.jbpm.console.ng.he.client.events.HumanEventPresenter;
 import org.jbpm.console.ng.he.model.ActionsHumanEvent;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.he.model.LevelsHumanEvent;

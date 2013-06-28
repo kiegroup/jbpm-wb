@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.he.client.history;
+package org.jbpm.console.ng.he.client.events;
 
 import java.util.Comparator;
 import java.util.Date;

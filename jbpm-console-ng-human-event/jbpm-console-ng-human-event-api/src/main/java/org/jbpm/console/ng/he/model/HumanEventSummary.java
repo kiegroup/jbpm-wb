@@ -35,10 +35,12 @@ public class HumanEventSummary implements Serializable {
     private String level;
 
     public HumanEventSummary() {
-        
+        this.status = StatusHumanEvent.NONE.toString();
+        this.level = LevelsHumanEvent.INFO.toString();
+        this.eventTime = new Date();
     }
 
-    public HumanEventSummary(ActionsHumanEvent event, String user) {
+    public HumanEventSummary(String user, ActionsHumanEvent event) {
         this.descriptionEvent = event.getDescription();
         this.action = event.getAction();
         this.user = user;
