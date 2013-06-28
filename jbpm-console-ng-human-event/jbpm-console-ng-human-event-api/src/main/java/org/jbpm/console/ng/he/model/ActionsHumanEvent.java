@@ -33,7 +33,6 @@ public enum ActionsHumanEvent {
         this.description = description;
         this.action = type;
     }
-    
 
     public String getDescription() {
         return description;
@@ -43,11 +42,9 @@ public enum ActionsHumanEvent {
         this.description = description;
     }
 
-
 	public String getAction() {
 		return action;
 	}
-
 
 	public void setAction(String action) {
 		this.action = action;
