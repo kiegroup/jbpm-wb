@@ -26,6 +26,9 @@
     <inherits name="org.jboss.errai.enterprise.CDI"/>
 
 
-    <source path="service"/>
+    <source path="service">
+        <!-- Exclude service implementations (dashboard-backend defines some) -->
+        <exclude name="**/impl/**" />
+    </source>
 
 </module>

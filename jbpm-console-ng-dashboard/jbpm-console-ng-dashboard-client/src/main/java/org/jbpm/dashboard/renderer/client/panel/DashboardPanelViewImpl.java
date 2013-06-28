@@ -16,7 +16,13 @@
 package org.jbpm.dashboard.renderer.client.panel;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.*;
+import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
@@ -24,48 +30,39 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.Composite;
-
-import com.google.gwt.user.client.ui.Frame;
-import com.google.gwt.user.client.ui.HTML;
-
 import org.jbpm.dashboard.renderer.service.ConnectionStatus;
 import org.jbpm.dashboard.renderer.client.panel.i18n.Constants;
 
-@Dependent
-@Templated(value = "DashboardPanelView.html")
 public class DashboardPanelViewImpl extends Composite implements DashboardPanelPresenter.DashboardView {
 
     private Constants constants = GWT.create(Constants.class);
 
-    @Inject
-    @DataField
+    interface DashboardViewBinder
+            extends
+            UiBinder<VerticalPanel, DashboardPanelViewImpl> {
+
+    }
+
+    private static DashboardViewBinder uiBinder = GWT.create(DashboardViewBinder.class);
+
+    @UiField
+    public VerticalPanel panel;
+
+    @UiField
     public Frame frame;
 
-    @Inject
-    @DataField
+    @UiField
     public HTML message;
 
-    private DashboardPanelPresenter presenter;
-
-    final private String dashboardURL = Window.Location.getProtocol()+"//" + Window.Location.getHost()+"/dashbuilder/workspace/jbpm-dashboard?embedded=true";
-
-    private long id;
-
     @PostConstruct
-    protected void init() {
+    public void init() {
+        initWidget(uiBinder.createAndBindUi(this));
+        frame.getElement().setId(DOM.createUniqueId());
     }
 
-    @Override
-    public void init(DashboardPanelPresenter presenter) {
-        this.presenter = presenter;
-        System.out.println("Dashboard URL: "+dashboardURL);
-        presenter.isAppOnline(dashboardURL);
-    }
-
-    public void initContext(ConnectionStatus connectionStatus){
-        if (connectionStatus.getStatus()==200){
-            frame.setUrl(dashboardURL);
+    public void initContext(ConnectionStatus status, String url){
+        if (status.getStatus()==200){
+            frame.setUrl(url);
             message.setVisible(false);
         }else{
             frame.setVisible(false);

@@ -591,6 +591,11 @@
             <compileSourcesArtifact>org.jbpm:jbpm-designer-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-designer-client</compileSourcesArtifact>
 
+            <!-- jBPM Dashboard integration-->
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-dashboard-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-dashboard-client</compileSourcesArtifact>
+
+
             <compileSourcesArtifact>org.jbpm:jbpm-form-modeler-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-form-modeler-editor-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-form-modeler-renderer-api</compileSourcesArtifact>
