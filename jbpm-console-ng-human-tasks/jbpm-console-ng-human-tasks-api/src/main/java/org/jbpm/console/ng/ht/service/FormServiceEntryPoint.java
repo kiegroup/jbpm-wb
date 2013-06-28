@@ -23,6 +23,6 @@ public interface FormServiceEntryPoint {
 
     public String getFormDisplayTask(long taskId);
 
-    public String getFormDisplayProcess(String processId);
+    public String getFormDisplayProcess(String domainId, String processId);
 
 }
