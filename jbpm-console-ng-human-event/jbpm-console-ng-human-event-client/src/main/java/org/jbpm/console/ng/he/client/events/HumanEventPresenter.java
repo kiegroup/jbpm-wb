@@ -34,12 +34,17 @@ import org.jbpm.console.ng.he.service.EventServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
 
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -58,6 +63,9 @@ public class HumanEventPresenter {
 
     @Inject
     private Identity identity;
+    
+    @Inject
+    private PlaceManager placeManager;
 
     @WorkbenchPartView
     public UberView<HumanEventPresenter> getView() {
@@ -132,6 +140,8 @@ public class HumanEventPresenter {
     }
 
     public void showInfoEvents() {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Quick New Task" );
+        placeManager.goTo( placeRequestImpl );
         for (ActionsHumanEvent activity : ActionsHumanEvent.values()) {
             // TODO this info show in the popup
             // activity.getDescription();

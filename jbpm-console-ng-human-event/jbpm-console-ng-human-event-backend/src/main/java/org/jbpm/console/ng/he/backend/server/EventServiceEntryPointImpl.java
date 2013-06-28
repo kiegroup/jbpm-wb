@@ -30,25 +30,25 @@ import org.jbpm.console.ng.he.service.EventServiceEntryPoint;
 @SuppressWarnings("unchecked")
 public class EventServiceEntryPointImpl extends SessionManager implements EventServiceEntryPoint {
 
-    private final String KEY_SESSION = "humanEvent";
+    private static final String KEY_EVENTS = "humanEvent";
     
     @Override
     public Queue<HumanEventSummary> getAllHumanEvent() {
-         return (super.getSession().getAttribute(KEY_SESSION) != null) ?
-          (Queue<HumanEventSummary>) super.getSession().getAttribute(KEY_SESSION) : null;
+         return (super.getSession().getAttribute(KEY_EVENTS) != null) ?
+          (Queue<HumanEventSummary>) super.getSession().getAttribute(KEY_EVENTS) : null;
     }
 
     @Override
     public Queue<HumanEventSummary> saveNewHumanEvent(HumanEventSummary pointHistory) {
-        Queue<HumanEventSummary> points = (super.getSession().getAttribute(KEY_SESSION) == null) ? new LinkedList<HumanEventSummary>()
-                : (Queue<HumanEventSummary>) super.getSession().getAttribute(KEY_SESSION);
+        Queue<HumanEventSummary> points = (super.getSession().getAttribute(KEY_EVENTS) == null) ? new LinkedList<HumanEventSummary>()
+                : (Queue<HumanEventSummary>) super.getSession().getAttribute(KEY_EVENTS);
         points.add(pointHistory);
-        super.getSession().setAttribute(KEY_SESSION, points);
+        super.getSession().setAttribute(KEY_EVENTS, points);
         return points;
     }
 
     @Override
     public void clearHumanEvent() {
-        super.getSession().removeAttribute(KEY_SESSION);
+        super.getSession().removeAttribute(KEY_EVENTS);
     }
 }

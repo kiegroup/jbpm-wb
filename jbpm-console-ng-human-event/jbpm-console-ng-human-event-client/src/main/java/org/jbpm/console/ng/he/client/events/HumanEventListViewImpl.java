@@ -17,7 +17,6 @@
 package org.jbpm.console.ng.he.client.events;
 
 import java.util.Comparator;
-import java.util.Date;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
