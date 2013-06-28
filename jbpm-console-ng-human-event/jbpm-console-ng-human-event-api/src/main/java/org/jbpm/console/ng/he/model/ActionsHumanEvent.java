@@ -52,8 +52,5 @@ public enum ActionsHumanEvent {
 	public void setAction(String action) {
 		this.action = action;
 	}
-
-
-    
     
 }

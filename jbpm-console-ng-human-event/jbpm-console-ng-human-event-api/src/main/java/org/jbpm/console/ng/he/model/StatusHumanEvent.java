@@ -17,7 +17,5 @@
 package org.jbpm.console.ng.he.model;
 
 public enum StatusHumanEvent {
-
     SUCCESS, ERROR, NONE;
-
 }
