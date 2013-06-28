@@ -28,7 +28,7 @@ import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.jbpm.console.ng.he.client.util.UtilEvent;
-import org.jbpm.console.ng.he.model.ActionHumanEventEnum;
+import org.jbpm.console.ng.he.model.ActionsHumanEvent;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.he.service.EventServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -98,8 +98,6 @@ public class HumanEventPresenter {
         humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
             @Override
             public void callback(Queue<HumanEventSummary> events) {
-                // allEventsSummaries = new
-                // ArrayList<HumanEventSummary>(events);
                 allEventsSummaries = Lists.newArrayList(events);
             }
         }).saveNewHumanEvent(pointHistory);
@@ -114,8 +112,6 @@ public class HumanEventPresenter {
             @Override
             public void callback(Queue<HumanEventSummary> events) {
                 if (events != null) {
-                    // allEventsSummaries = new
-                    // ArrayList<HumanEventSummary>(events);
                     allEventsSummaries = Lists.newArrayList(events);
                 }
                 filterEvents(view.getSearchBox().getText());
@@ -136,7 +132,7 @@ public class HumanEventPresenter {
     }
 
     public void showInfoEvents() {
-        for (ActionHumanEventEnum activity : ActionHumanEventEnum.values()) {
+        for (ActionsHumanEvent activity : ActionsHumanEvent.values()) {
             // TODO this info show in the popup
             // activity.getDescription();
         }
@@ -146,18 +142,12 @@ public class HumanEventPresenter {
         if (text.equals("")) {
             if (allEventsSummaries != null) {
                 dataProvider.getList().clear();
-                // dataProvider.setList(new
-                // ArrayList<HumanEventSummary>(allEventsSummaries));
                 dataProvider.setList(Lists.newArrayList(allEventsSummaries));
                 dataProvider.refresh();
             }
         } else {
             if (allEventsSummaries != null) {
-                // List<HumanEventSummary> tasks = new
-                // ArrayList<HumanEventSummary>(allEventsSummaries);
                 List<HumanEventSummary> tasks = Lists.newArrayList(allEventsSummaries);
-                // List<HumanEventSummary> filteredTasksSimple = new
-                // ArrayList<HumanEventSummary>();
                 List<HumanEventSummary> filteredTasksSimple = Lists.newArrayList();
                 for (HumanEventSummary ts : tasks) {
                     if (ts.getDescriptionEvent().toLowerCase().contains(text.toLowerCase())) {

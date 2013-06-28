@@ -296,8 +296,8 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
                 return Long.valueOf(o1.getIdEvent()).compareTo(Long.valueOf(o2.getIdEvent()));
             }
         });
-        
-     // Level.
+
+        // Level.
         Column<HumanEventSummary, String> levelNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
             @Override
             public String getValue(HumanEventSummary object) {
@@ -313,6 +313,7 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
                 return o1.getLevel().compareTo(o2.getLevel());
             }
         });
+        myEventListGrid.setColumnWidth(levelNameColumn, "140px");
 
         // Status.
         Column<HumanEventSummary, String> statusNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
@@ -330,21 +331,22 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
                 return o1.getStatus().compareTo(o2.getStatus());
             }
         });
-        
+        myEventListGrid.setColumnWidth(statusNameColumn, "140px");
+
     }
-    
+
     @Override
     public void refreshHumanEvents() {
         presenter.refreshHumanEvent();
     }
-    
+
     @Override
     public void clearHumanEvents() {
         presenter.clearHumanEvents();
     }
-    
+
     @Override
-    public void showInfoEvents(){
+    public void showInfoEvents() {
         presenter.showInfoEvents();
     }
 

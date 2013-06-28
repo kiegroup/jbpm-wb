@@ -17,7 +17,7 @@
 package org.jbpm.console.ng.he.model;
 
 
-public enum ActionHumanEventEnum {
+public enum ActionsHumanEvent {
 
     TASK_CREATED("TASK", "CREATE"),
     TASK_CREATED_STARTED("TASK", "CREATE-START"),
@@ -29,7 +29,7 @@ public enum ActionHumanEventEnum {
     private String description;
     private String action;
     
-    ActionHumanEventEnum(String description, String type){
+    ActionsHumanEvent(String description, String type){
         this.description = description;
         this.action = type;
     }

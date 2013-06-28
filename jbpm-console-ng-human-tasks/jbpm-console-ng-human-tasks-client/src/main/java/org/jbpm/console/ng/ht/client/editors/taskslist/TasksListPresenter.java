@@ -33,10 +33,10 @@ import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.he.client.history.HumanEventPresenter;
-import org.jbpm.console.ng.he.model.ActionHumanEventEnum;
+import org.jbpm.console.ng.he.model.ActionsHumanEvent;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
-import org.jbpm.console.ng.he.model.LevelHumanEventEnum;
-import org.jbpm.console.ng.he.model.StatusHumanEventEnum;
+import org.jbpm.console.ng.he.model.LevelsHumanEvent;
+import org.jbpm.console.ng.he.model.StatusHumanEvent;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
 import org.jbpm.console.ng.ht.client.util.DateRange;
 import org.jbpm.console.ng.ht.client.util.DateUtils;
@@ -200,16 +200,16 @@ public class TasksListPresenter {
             @Override
             public void callback(List<TaskSummary> tasks) {
                 view.displayNotification("Task(s) Started");
-                saveNewHumanEvent(selectedTasks, ActionHumanEventEnum.TASK_STARTED, userId, StatusHumanEventEnum.SUCCESS,
-                        LevelHumanEventEnum.INFO);
+                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.TASK_STARTED, StatusHumanEvent.SUCCESS,
+                        LevelsHumanEvent.INFO);
                 view.refreshTasks();
             }
         }, new ErrorCallback() {
             @Override
             public boolean error(Message message, Throwable throwable) {
                 view.displayNotification("Task(s) Started - ERROR");
-                saveNewHumanEvent(selectedTasks, ActionHumanEventEnum.TASK_STARTED, userId, StatusHumanEventEnum.ERROR,
-                        LevelHumanEventEnum.ERROR);
+                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.TASK_STARTED, StatusHumanEvent.ERROR,
+                        LevelsHumanEvent.ERROR);
                 return false;
             }
         }).startBatch(selectedTasks, userId);
@@ -220,16 +220,16 @@ public class TasksListPresenter {
             @Override
             public void callback(List<TaskSummary> tasks) {
                 view.displayNotification("Task(s) Released");
-                saveNewHumanEvent(selectedTasks, ActionHumanEventEnum.TASK_RELEASED, userId, StatusHumanEventEnum.SUCCESS,
-                        LevelHumanEventEnum.INFO);
+                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.TASK_RELEASED, StatusHumanEvent.SUCCESS,
+                        LevelsHumanEvent.INFO);
                 view.refreshTasks();
             }
         }, new ErrorCallback() {
             @Override
             public boolean error(Message message, Throwable throwable) {
                 view.displayNotification("Task(s) Released - ERROR");
-                saveNewHumanEvent(selectedTasks, ActionHumanEventEnum.TASK_RELEASED, userId, StatusHumanEventEnum.ERROR,
-                        LevelHumanEventEnum.ERROR);
+                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.TASK_RELEASED, StatusHumanEvent.ERROR,
+                        LevelsHumanEvent.ERROR);
                 return false;
             }
         }).releaseBatch(selectedTasks, userId);
@@ -240,16 +240,16 @@ public class TasksListPresenter {
             @Override
             public void callback(List<TaskSummary> tasks) {
                 view.displayNotification("Task(s) Completed");
-                saveNewHumanEvent(selectedTasks, ActionHumanEventEnum.TASK_COMPLETED, userId, StatusHumanEventEnum.SUCCESS,
-                        LevelHumanEventEnum.INFO);
+                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.TASK_COMPLETED, StatusHumanEvent.SUCCESS,
+                        LevelsHumanEvent.INFO);
                 view.refreshTasks();
             }
         }, new ErrorCallback() {
             @Override
             public boolean error(Message message, Throwable throwable) {
                 view.displayNotification("Task(s) Completed - ERROR");
-                saveNewHumanEvent(selectedTasks, ActionHumanEventEnum.TASK_COMPLETED, userId, StatusHumanEventEnum.ERROR,
-                        LevelHumanEventEnum.ERROR);
+                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.TASK_COMPLETED, StatusHumanEvent.ERROR,
+                        LevelsHumanEvent.ERROR);
                 return false;
             }
         }).completeBatch(selectedTasks, userId, null);
@@ -260,8 +260,8 @@ public class TasksListPresenter {
             @Override
             public void callback(List<TaskSummary> tasks) {
                 view.displayNotification("Task(s) Claimed");
-                saveNewHumanEvent(selectedTasks, ActionHumanEventEnum.TASK_CLAIMED, userId, StatusHumanEventEnum.SUCCESS,
-                        LevelHumanEventEnum.INFO);
+                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.TASK_CLAIMED, StatusHumanEvent.SUCCESS,
+                        LevelsHumanEvent.INFO);
                 view.refreshTasks();
 
             }
@@ -269,8 +269,8 @@ public class TasksListPresenter {
             @Override
             public boolean error(Message message, Throwable throwable) {
                 view.displayNotification("Task(s) Claimed - ERROR");
-                saveNewHumanEvent(selectedTasks, ActionHumanEventEnum.TASK_CLAIMED, userId, StatusHumanEventEnum.ERROR,
-                        LevelHumanEventEnum.ERROR);
+                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.TASK_CLAIMED, StatusHumanEvent.ERROR,
+                        LevelsHumanEvent.ERROR);
                 return false;
             }
         }).claimBatch(selectedTasks, userId);
@@ -468,10 +468,10 @@ public class TasksListPresenter {
         return dataProvider;
     }
 
-    public void saveNewHumanEvent(List<Long> selectedTasks, ActionHumanEventEnum actionHistory, String idUser,
-            StatusHumanEventEnum status, LevelHumanEventEnum level) {
+    public void saveNewHumanEvent(List<Long> selectedTasks, String idUser, ActionsHumanEvent actionHistory,
+            StatusHumanEvent status, LevelsHumanEvent level) {
         for (Long taskId : selectedTasks) {
-            pointHistoryEvent.fire(new HumanEventSummary(actionHistory, taskId, idUser, status, level));
+            pointHistoryEvent.fire(new HumanEventSummary(taskId, idUser, actionHistory, status, level));
         }
     }
 

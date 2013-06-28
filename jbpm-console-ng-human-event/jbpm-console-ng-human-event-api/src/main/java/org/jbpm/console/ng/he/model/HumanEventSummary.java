@@ -38,27 +38,27 @@ public class HumanEventSummary implements Serializable {
         
     }
 
-    public HumanEventSummary(ActionHumanEventEnum event, String user) {
+    public HumanEventSummary(ActionsHumanEvent event, String user) {
         this.descriptionEvent = event.getDescription();
         this.action = event.getAction();
         this.user = user;
-        this.status = StatusHumanEventEnum.NONE.toString();
-        this.level = LevelHumanEventEnum.INFO.toString();
+        this.status = StatusHumanEvent.NONE.toString();
+        this.level = LevelsHumanEvent.INFO.toString();
         this.eventTime = new Date();
     }
 
-    public HumanEventSummary(ActionHumanEventEnum event, long idEvent, String user) {
+    public HumanEventSummary(long idEvent, String user, ActionsHumanEvent event) {
         this.descriptionEvent = event.getDescription();
         this.action = event.getAction();
         this.idEvent = idEvent;
         this.user = user;
-        this.status = StatusHumanEventEnum.NONE.toString();
-        this.level = LevelHumanEventEnum.INFO.toString();
+        this.status = StatusHumanEvent.NONE.toString();
+        this.level = LevelsHumanEvent.INFO.toString();
         this.eventTime = new Date();
     }
 
-    public HumanEventSummary(ActionHumanEventEnum event, long idEvent, String user, StatusHumanEventEnum status,
-            LevelHumanEventEnum level) {
+    public HumanEventSummary(long idEvent, String user, ActionsHumanEvent event, StatusHumanEvent status,
+            LevelsHumanEvent level) {
         this.descriptionEvent = event.getDescription();
         this.action = event.getAction();
         this.idEvent = idEvent;

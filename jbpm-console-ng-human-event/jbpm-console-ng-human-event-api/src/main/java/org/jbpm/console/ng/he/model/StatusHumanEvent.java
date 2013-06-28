@@ -16,6 +16,8 @@
 
 package org.jbpm.console.ng.he.model;
 
-public enum LevelHumanEventEnum {
-    INFO, ERROR;
+public enum StatusHumanEvent {
+
+    SUCCESS, ERROR, NONE;
+
 }
