@@ -97,6 +97,8 @@ public interface Constants extends Messages {
     String Info();
     
     String Level();
+    
+    String Info_Events();
 
 
 }

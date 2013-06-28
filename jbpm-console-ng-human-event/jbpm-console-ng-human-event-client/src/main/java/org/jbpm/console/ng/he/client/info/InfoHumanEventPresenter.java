@@ -16,10 +16,13 @@
 
 package org.jbpm.console.ng.he.client.info;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jbpm.console.ng.he.client.i8n.Constants;
+import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.security.Identity;
@@ -29,6 +32,9 @@ import com.google.gwt.core.client.GWT;
 @Dependent
 @WorkbenchPopup(identifier = "Info Human Events")
 public class InfoHumanEventPresenter {
+    
+    public InfoHumanEventPresenter() {
+    }
 
     private Constants constants = GWT.create(Constants.class);
 
@@ -43,5 +49,19 @@ public class InfoHumanEventPresenter {
 
     @Inject
     Identity identity;
+    
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return constants.Info_Events();
+    }
+
+    @WorkbenchPartView
+    public UberView<InfoHumanEventPresenter> getView() {
+        return view;
+    }
+
+    @PostConstruct
+    public void init() {
+    }
 
 }
