@@ -140,7 +140,7 @@ public class HumanEventPresenter {
     }
 
     public void showInfoEvents() {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Quick New Task" );
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Info Human Events" );
         placeManager.goTo( placeRequestImpl );
         for (ActionsHumanEvent activity : ActionsHumanEvent.values()) {
             // TODO this info show in the popup
