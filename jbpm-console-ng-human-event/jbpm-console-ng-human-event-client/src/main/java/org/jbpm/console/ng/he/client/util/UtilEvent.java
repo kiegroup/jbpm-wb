@@ -36,16 +36,6 @@ public class UtilEvent {
 
     public static void exportEventsToTxt(String userName, List<HumanEventSummary> allEventsSummaries) throws IOException {
         //TODO problema con java.io
-        
-        /*File f = new File(userName + getDateTime(new Date(), patternNameFile) + ".txt");
-        BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-        PrintWriter wr = new PrintWriter(bw);
-        wr.write("Human Events user:" + userName);
-        for (HumanEventSummary human : allEventsSummaries) {
-            wr.append(human.getDescriptionEvent() + " - " + human.getAction() + "\n");
-        }
-        wr.close();
-        bw.close();*/
     }
 
 }

@@ -153,7 +153,7 @@ public class HumanEventPresenter {
                 List<HumanEventSummary> tasks = Lists.newArrayList(allEventsSummaries);
                 List<HumanEventSummary> filteredTasksSimple = Lists.newArrayList();
                 for (HumanEventSummary ts : tasks) {
-                    if (ts.getComponentEvent().toLowerCase().contains(text.toLowerCase())) {
+                    if (ts.getComponent().toLowerCase().contains(text.toLowerCase())) {
                         filteredTasksSimple.add(ts);
                     }
                 }

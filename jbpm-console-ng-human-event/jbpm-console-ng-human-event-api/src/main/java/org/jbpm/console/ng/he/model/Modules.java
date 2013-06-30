@@ -18,6 +18,7 @@ package org.jbpm.console.ng.he.model;
 
 public enum Modules {
     
+    SHOWCASE("jbpm-console-ng-showcase"),
     HUMAN_TASKS("jbpm-console-ng-human-tasks"),
     HUMAN_EVENTS("jbpm-console-ng-human-event");
     

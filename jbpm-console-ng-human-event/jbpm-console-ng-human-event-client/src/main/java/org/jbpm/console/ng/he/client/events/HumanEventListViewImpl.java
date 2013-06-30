@@ -115,7 +115,6 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
         // By Default we will start in Grid View
         initializeGridView();
 
-        // Filters
         clearEventsNavLink.setText(constants.Clear_Events());
         clearEventsNavLink.addClickHandler(new ClickHandler() {
             @Override
@@ -206,8 +205,8 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
         Column<HumanEventSummary, String> timeColumn = new Column<HumanEventSummary, String>(new TextCell()) {
             @Override
             public String getValue(HumanEventSummary object) {
-                if (object.getEventTime() != null) {
-                    return UtilEvent.getDateTime(object.getEventTime(), UtilEvent.patternDateTime);
+                if (object.getTimestamp() != null) {
+                    return UtilEvent.getDateTime(object.getTimestamp(), UtilEvent.patternDateTime);
                 }
                 return "";
             }
@@ -218,10 +217,10 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
         sortHandler.setComparator(timeColumn, new Comparator<HumanEventSummary>() {
             @Override
             public int compare(HumanEventSummary o1, HumanEventSummary o2) {
-                if (o1.getEventTime() == null || o2.getEventTime() == null) {
+                if (o1.getTimestamp() == null || o2.getTimestamp() == null) {
                     return 0;
                 }
-                return o1.getEventTime().compareTo(o2.getEventTime());
+                return o1.getTimestamp().compareTo(o2.getTimestamp());
             }
         });
 
@@ -241,8 +240,8 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
                 return o1.getModule().compareTo(o2.getModule());
             }
         });
-        
-     // User.
+
+        // User.
         Column<HumanEventSummary, String> userNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
             @Override
             public String getValue(HumanEventSummary object) {
@@ -263,7 +262,7 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
         Column<HumanEventSummary, String> componentNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
             @Override
             public String getValue(HumanEventSummary object) {
-                return object.getComponentEvent();
+                return object.getComponent();
             }
         };
         componentNameColumn.setSortable(true);
@@ -273,7 +272,7 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
         sortHandler.setComparator(componentNameColumn, new Comparator<HumanEventSummary>() {
             @Override
             public int compare(HumanEventSummary o1, HumanEventSummary o2) {
-                return o1.getComponentEvent().compareTo(o2.getComponentEvent());
+                return o1.getComponent().compareTo(o2.getComponent());
             }
         });
 
@@ -295,11 +294,11 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
             }
         });
 
-        // idEvent
+        // key
         Column<HumanEventSummary, String> taskIdColumn = new Column<HumanEventSummary, String>(new TextCell()) {
             @Override
             public String getValue(HumanEventSummary object) {
-                return object.getIdEvent();
+                return object.getKey();
             }
         };
         taskIdColumn.setSortable(true);
@@ -309,7 +308,7 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
         sortHandler.setComparator(taskIdColumn, new Comparator<HumanEventSummary>() {
             @Override
             public int compare(HumanEventSummary o1, HumanEventSummary o2) {
-                return o1.getIdEvent().compareTo(o2.getIdEvent());
+                return o1.getKey().compareTo(o2.getKey());
             }
         });
 
