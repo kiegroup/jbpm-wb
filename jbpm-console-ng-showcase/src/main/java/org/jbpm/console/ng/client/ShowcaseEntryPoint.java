@@ -99,8 +99,6 @@ public class ShowcaseEntryPoint {
                 .newTopLevelMenu( constants.Deploy() ).withItems( getDeploymentViews() ).endMenu()
                 .newTopLevelMenu( constants.Process_Management() ).withItems( getProcessMGMTViews() ).endMenu()
                 .newTopLevelMenu( constants.Events() ).withItems( getHistoryViews() ).endMenu()
-                //.newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu().newTopLevelMenu( constants.BAM() )
-                //.withItems( getBAMViews() ).endMenu().newTopLevelMenu( constants.LogOut() ).respondsWith( new Command() {
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu().newTopLevelMenu( constants.Dashboards() )
                 .withItems( getDashboardsViews() ).endMenu().newTopLevelMenu( constants.LogOut() ).respondsWith( new Command() {
                     @Override
