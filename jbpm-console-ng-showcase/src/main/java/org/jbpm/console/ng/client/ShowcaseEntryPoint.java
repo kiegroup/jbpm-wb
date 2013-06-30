@@ -98,14 +98,11 @@ public class ShowcaseEntryPoint {
         } ).endMenu().newTopLevelMenu( constants.Authoring() ).withItems( getAuthoringViews() ).endMenu()
                 .newTopLevelMenu( constants.Deploy() ).withItems( getDeploymentViews() ).endMenu()
                 .newTopLevelMenu( constants.Process_Management() ).withItems( getProcessMGMTViews() ).endMenu()
-<<<<<<< HEAD
                 .newTopLevelMenu( constants.Events() ).withItems( getHistoryViews() ).endMenu()
-                .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu().newTopLevelMenu( constants.BAM() )
-                .withItems( getBAMViews() ).endMenu().newTopLevelMenu( constants.LogOut() ).respondsWith( new Command() {
-=======
+                //.newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu().newTopLevelMenu( constants.BAM() )
+                //.withItems( getBAMViews() ).endMenu().newTopLevelMenu( constants.LogOut() ).respondsWith( new Command() {
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu().newTopLevelMenu( constants.Dashboards() )
                 .withItems( getDashboardsViews() ).endMenu().newTopLevelMenu( constants.LogOut() ).respondsWith( new Command() {
->>>>>>> af6ab745f565e318a4e40b6a3541118067606ac4
                     @Override
                     public void execute() {
                         redirect( GWT.getModuleBaseURL() + "uf_logout" );
