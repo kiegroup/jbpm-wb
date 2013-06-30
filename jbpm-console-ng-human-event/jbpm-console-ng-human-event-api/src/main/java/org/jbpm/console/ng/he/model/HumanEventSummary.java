@@ -27,43 +27,22 @@ public class HumanEventSummary implements Serializable {
     private static final long serialVersionUID = 1003998546166596096L;
 
     private String key;
+
     private String component;
+
     private Date timestamp;
+
     private String action;
+
     private String user;
+
     private String status;
+
     private String level;
+
     private String module;
 
-    public HumanEventSummary() {
-        this.status = StatusHumanEvent.NONE.toString();
-        this.level = LevelsHumanEvent.INFO.toString();
-        this.timestamp = new Date();
-    }
-
-    public HumanEventSummary(String user, ActionsHumanEvent event) {
-        this.component = event.getComponent();
-        this.action = event.getAction();
-        this.user = user;
-        this.status = StatusHumanEvent.NONE.toString();
-        this.level = LevelsHumanEvent.INFO.toString();
-        this.module = event.getModule();
-        this.timestamp = new Date();
-    }
-
-    public HumanEventSummary(String key, String user, ActionsHumanEvent event) {
-        this.component = event.getComponent();
-        this.action = event.getAction();
-        this.key = key;
-        this.user = user;
-        this.status = StatusHumanEvent.NONE.toString();
-        this.level = LevelsHumanEvent.INFO.toString();
-        this.module = event.getModule();
-        this.timestamp = new Date();
-    }
-
-    public HumanEventSummary(String key, String user, ActionsHumanEvent event, StatusHumanEvent status,
-            LevelsHumanEvent level) {
+    public HumanEventSummary(String key, String user, ActionHumanEvent event, StatusHumanEvent status, LevelHumanEvent level) {
         this.component = event.getComponent();
         this.action = event.getAction();
         this.key = key;
@@ -71,6 +50,10 @@ public class HumanEventSummary implements Serializable {
         this.status = status.toString();
         this.level = level.toString();
         this.module = event.getModule();
+        this.timestamp = new Date();
+    }
+
+    public HumanEventSummary() {
         this.timestamp = new Date();
     }
 

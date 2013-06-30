@@ -17,7 +17,7 @@
 package org.jbpm.console.ng.he.model;
 
 
-public enum ActionsHumanEvent {
+public enum ActionHumanEvent {
     
     // jbpm-console-ng-human-tasks
     HUMAN_TASKS_CREATED("TASK", "CREATE",  Modules.HUMAN_TASKS),
@@ -31,7 +31,7 @@ public enum ActionsHumanEvent {
     private String action;
     private String module;
     
-    ActionsHumanEvent(String component, String type, Modules module){
+    ActionHumanEvent(String component, String type, Modules module){
         this.component = component;
         this.action = type;
         this.module = module.getNameModule();

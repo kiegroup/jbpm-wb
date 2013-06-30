@@ -29,8 +29,10 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.he.client.events.HumanEventPresenter;
-import org.jbpm.console.ng.he.model.ActionsHumanEvent;
+import org.jbpm.console.ng.he.model.ActionHumanEvent;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
+import org.jbpm.console.ng.he.model.LevelHumanEvent;
+import org.jbpm.console.ng.he.model.StatusHumanEvent;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
@@ -136,7 +138,8 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback(Long taskId) {
                     view.displayNotification("Task Created and Started (id = " + taskId + ")");
-                    pointHistoryEvent.fire(new HumanEventSummary(taskId.toString(), identity.getName(), ActionsHumanEvent.HUMAN_TASKS_CREATED_STARTED));
+                    pointHistoryEvent.fire(new HumanEventSummary(taskId.toString(), identity.getName(),
+                            ActionHumanEvent.HUMAN_TASKS_CREATED_STARTED, StatusHumanEvent.SUCCESS, LevelHumanEvent.INFO));
                     close();
                 }
             }).addTaskAndStart(str, null, identity.getName(), templateVars);
@@ -145,7 +148,8 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback(Long taskId) {
                     view.displayNotification("Task Created (id = " + taskId + ")");
-                    pointHistoryEvent.fire(new HumanEventSummary(taskId.toString(), identity.getName(), ActionsHumanEvent.HUMAN_TASKS_CREATED));
+                    pointHistoryEvent.fire(new HumanEventSummary(taskId.toString(), identity.getName(),
+                            ActionHumanEvent.HUMAN_TASKS_CREATED, StatusHumanEvent.SUCCESS, LevelHumanEvent.INFO));
                     close();
                 }
             }).addTask(str, null, templateVars);
