@@ -43,9 +43,11 @@ public interface Constants extends Messages {
 
     String Process_Instances();
 
-    String Monitor();
+    String Dashboards();
 
-    String Business_Activity_Monitoring();
+    String Process_Dashboard();
+
+    String Business_Dashboard();
 
     String The_jBPM_Cycle();
 
@@ -63,7 +65,7 @@ public interface Constants extends Messages {
 
     String Work_Text();
 
-    String BAM_Text();
+    String Dashboards_Text();
 
     String Improve();
 

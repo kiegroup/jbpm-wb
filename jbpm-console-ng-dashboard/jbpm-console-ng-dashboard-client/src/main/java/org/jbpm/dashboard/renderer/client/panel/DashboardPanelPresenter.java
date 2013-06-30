@@ -15,6 +15,7 @@
  */
 package org.jbpm.dashboard.renderer.client.panel;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.bus.client.api.RemoteCallback;
@@ -61,6 +62,7 @@ public class DashboardPanelPresenter {
 
     @OnStart
     public void isAppOnline() {
+        GWT.log("URL for jBPM dashboard: " + DASHBOARD_URL);
         rendererService.call(new RemoteCallback<ConnectionStatus>() {
             @Override
             public void callback(ConnectionStatus  connectionStatus) {
