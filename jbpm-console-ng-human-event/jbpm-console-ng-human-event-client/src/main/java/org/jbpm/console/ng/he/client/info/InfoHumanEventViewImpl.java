@@ -20,25 +20,36 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.uberfire.workbench.events.NotificationEvent;
 
+import com.github.gwtbootstrap.client.ui.ControlLabel;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
 
 @Dependent
 @Templated(value = "InfoHumanEventViewImpl.html")
 public class InfoHumanEventViewImpl extends Composite implements InfoHumanEventPresenter.InfoHumanEventView {
+    private Constants constants = GWT.create(Constants.class);
     
     @Inject
     private Event<NotificationEvent> notification;
     
     @Inject 
     private InfoHumanEventPresenter presenter;
+    
+    @Inject
+    @DataField
+    public ControlLabel infoTitleText;
 
     @Override
     public void init(InfoHumanEventPresenter presenter) {
         this.presenter = presenter;
-        
+        infoTitleText.add( new HTMLPanel( constants.Info_Events() ) );
+        //Voy a poner en un principio Components audited : TASK
     }
 
     @Override

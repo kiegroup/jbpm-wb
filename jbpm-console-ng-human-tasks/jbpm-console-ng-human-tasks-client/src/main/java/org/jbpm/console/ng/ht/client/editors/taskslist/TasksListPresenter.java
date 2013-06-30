@@ -200,7 +200,7 @@ public class TasksListPresenter {
             @Override
             public void callback(List<TaskSummary> tasks) {
                 view.displayNotification("Task(s) Started");
-                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.TASK_STARTED, StatusHumanEvent.SUCCESS,
+                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.HUMAN_TASKS_STARTED, StatusHumanEvent.SUCCESS,
                         LevelsHumanEvent.INFO);
                 view.refreshTasks();
             }
@@ -208,7 +208,7 @@ public class TasksListPresenter {
             @Override
             public boolean error(Message message, Throwable throwable) {
                 view.displayNotification("Task(s) Started - ERROR");
-                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.TASK_STARTED, StatusHumanEvent.ERROR,
+                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.HUMAN_TASKS_STARTED, StatusHumanEvent.ERROR,
                         LevelsHumanEvent.ERROR);
                 return false;
             }
@@ -220,7 +220,7 @@ public class TasksListPresenter {
             @Override
             public void callback(List<TaskSummary> tasks) {
                 view.displayNotification("Task(s) Released");
-                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.TASK_RELEASED, StatusHumanEvent.SUCCESS,
+                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.HUMAN_TASKS_RELEASED, StatusHumanEvent.SUCCESS,
                         LevelsHumanEvent.INFO);
                 view.refreshTasks();
             }
@@ -228,7 +228,7 @@ public class TasksListPresenter {
             @Override
             public boolean error(Message message, Throwable throwable) {
                 view.displayNotification("Task(s) Released - ERROR");
-                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.TASK_RELEASED, StatusHumanEvent.ERROR,
+                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.HUMAN_TASKS_RELEASED, StatusHumanEvent.ERROR,
                         LevelsHumanEvent.ERROR);
                 return false;
             }
@@ -240,7 +240,7 @@ public class TasksListPresenter {
             @Override
             public void callback(List<TaskSummary> tasks) {
                 view.displayNotification("Task(s) Completed");
-                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.TASK_COMPLETED, StatusHumanEvent.SUCCESS,
+                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.HUMAN_TASKS_COMPLETED, StatusHumanEvent.SUCCESS,
                         LevelsHumanEvent.INFO);
                 view.refreshTasks();
             }
@@ -248,7 +248,7 @@ public class TasksListPresenter {
             @Override
             public boolean error(Message message, Throwable throwable) {
                 view.displayNotification("Task(s) Completed - ERROR");
-                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.TASK_COMPLETED, StatusHumanEvent.ERROR,
+                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.HUMAN_TASKS_COMPLETED, StatusHumanEvent.ERROR,
                         LevelsHumanEvent.ERROR);
                 return false;
             }
@@ -260,7 +260,7 @@ public class TasksListPresenter {
             @Override
             public void callback(List<TaskSummary> tasks) {
                 view.displayNotification("Task(s) Claimed");
-                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.TASK_CLAIMED, StatusHumanEvent.SUCCESS,
+                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.HUMAN_TASKS_CLAIMED, StatusHumanEvent.SUCCESS,
                         LevelsHumanEvent.INFO);
                 view.refreshTasks();
 
@@ -269,7 +269,7 @@ public class TasksListPresenter {
             @Override
             public boolean error(Message message, Throwable throwable) {
                 view.displayNotification("Task(s) Claimed - ERROR");
-                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.TASK_CLAIMED, StatusHumanEvent.ERROR,
+                saveNewHumanEvent(selectedTasks, userId, ActionsHumanEvent.HUMAN_TASKS_CLAIMED, StatusHumanEvent.ERROR,
                         LevelsHumanEvent.ERROR);
                 return false;
             }
@@ -471,7 +471,7 @@ public class TasksListPresenter {
     public void saveNewHumanEvent(List<Long> selectedTasks, String idUser, ActionsHumanEvent actionHistory,
             StatusHumanEvent status, LevelsHumanEvent level) {
         for (Long taskId : selectedTasks) {
-            pointHistoryEvent.fire(new HumanEventSummary(taskId, idUser, actionHistory, status, level));
+            pointHistoryEvent.fire(new HumanEventSummary(taskId.toString(), idUser, actionHistory, status, level));
         }
     }
 

@@ -18,6 +18,7 @@ package org.jbpm.console.ng.he.client.info;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.jbpm.console.ng.he.client.i8n.Constants;
@@ -25,7 +26,9 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
+import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 
 import com.google.gwt.core.client.GWT;
 
@@ -50,6 +53,11 @@ public class InfoHumanEventPresenter {
     @Inject
     Identity identity;
     
+    @Inject
+    private Event<BeforeClosePlaceEvent> closePlaceEvent;
+    
+    private PlaceRequest place;
+    
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.Info_Events();
@@ -62,6 +70,10 @@ public class InfoHumanEventPresenter {
 
     @PostConstruct
     public void init() {
+    }
+    
+    public void close() {
+        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
 
 }

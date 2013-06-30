@@ -26,13 +26,14 @@ public class HumanEventSummary implements Serializable {
 
     private static final long serialVersionUID = 1003998546166596096L;
 
-    private long idEvent;
-    private String descriptionEvent;
+    private String idEvent;
+    private String componentEvent;
     private Date eventTime;
     private String action;
     private String user;
     private String status;
     private String level;
+    private String module;
 
     public HumanEventSummary() {
         this.status = StatusHumanEvent.NONE.toString();
@@ -41,41 +42,36 @@ public class HumanEventSummary implements Serializable {
     }
 
     public HumanEventSummary(String user, ActionsHumanEvent event) {
-        this.descriptionEvent = event.getDescription();
+        this.componentEvent = event.getComponent();
         this.action = event.getAction();
         this.user = user;
         this.status = StatusHumanEvent.NONE.toString();
         this.level = LevelsHumanEvent.INFO.toString();
+        this.module = event.getModule();
         this.eventTime = new Date();
     }
 
-    public HumanEventSummary(long idEvent, String user, ActionsHumanEvent event) {
-        this.descriptionEvent = event.getDescription();
+    public HumanEventSummary(String idEvent, String user, ActionsHumanEvent event) {
+        this.componentEvent = event.getComponent();
         this.action = event.getAction();
         this.idEvent = idEvent;
         this.user = user;
         this.status = StatusHumanEvent.NONE.toString();
         this.level = LevelsHumanEvent.INFO.toString();
+        this.module = event.getModule();
         this.eventTime = new Date();
     }
 
-    public HumanEventSummary(long idEvent, String user, ActionsHumanEvent event, StatusHumanEvent status,
+    public HumanEventSummary(String idEvent, String user, ActionsHumanEvent event, StatusHumanEvent status,
             LevelsHumanEvent level) {
-        this.descriptionEvent = event.getDescription();
+        this.componentEvent = event.getComponent();
         this.action = event.getAction();
         this.idEvent = idEvent;
         this.user = user;
         this.status = status.toString();
         this.level = level.toString();
+        this.module = event.getModule();
         this.eventTime = new Date();
-    }
-
-    public String getDescriptionEvent() {
-        return descriptionEvent;
-    }
-
-    public void setDescriptionEvent(String descriptionEvent) {
-        this.descriptionEvent = descriptionEvent;
     }
 
     public Date getEventTime() {
@@ -84,14 +80,6 @@ public class HumanEventSummary implements Serializable {
 
     public void setEventTime(Date eventTime) {
         this.eventTime = eventTime;
-    }
-
-    public long getIdEvent() {
-        return idEvent;
-    }
-
-    public void setIdEvent(long idEvent) {
-        this.idEvent = idEvent;
     }
 
     public String getUser() {
@@ -126,15 +114,40 @@ public class HumanEventSummary implements Serializable {
         this.level = level;
     }
 
+    public String getModule() {
+        return module;
+    }
+
+    public void setModule(String module) {
+        this.module = module;
+    }
+
+    public String getIdEvent() {
+        return idEvent;
+    }
+
+    public void setIdEvent(String idEvent) {
+        this.idEvent = idEvent;
+    }
+
+    public String getComponentEvent() {
+        return componentEvent;
+    }
+
+    public void setComponentEvent(String componentEvent) {
+        this.componentEvent = componentEvent;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((action == null) ? 0 : action.hashCode());
-        result = prime * result + ((descriptionEvent == null) ? 0 : descriptionEvent.hashCode());
+        result = prime * result + ((componentEvent == null) ? 0 : componentEvent.hashCode());
         result = prime * result + ((eventTime == null) ? 0 : eventTime.hashCode());
-        result = prime * result + (int) (idEvent ^ (idEvent >>> 32));
+        result = prime * result + ((idEvent == null) ? 0 : idEvent.hashCode());
         result = prime * result + ((level == null) ? 0 : level.hashCode());
+        result = prime * result + ((module == null) ? 0 : module.hashCode());
         result = prime * result + ((status == null) ? 0 : status.hashCode());
         result = prime * result + ((user == null) ? 0 : user.hashCode());
         return result;
@@ -154,22 +167,30 @@ public class HumanEventSummary implements Serializable {
                 return false;
         } else if (!action.equals(other.action))
             return false;
-        if (descriptionEvent == null) {
-            if (other.descriptionEvent != null)
+        if (componentEvent == null) {
+            if (other.componentEvent != null)
                 return false;
-        } else if (!descriptionEvent.equals(other.descriptionEvent))
+        } else if (!componentEvent.equals(other.componentEvent))
             return false;
         if (eventTime == null) {
             if (other.eventTime != null)
                 return false;
         } else if (!eventTime.equals(other.eventTime))
             return false;
-        if (idEvent != other.idEvent)
+        if (idEvent == null) {
+            if (other.idEvent != null)
+                return false;
+        } else if (!idEvent.equals(other.idEvent))
             return false;
         if (level == null) {
             if (other.level != null)
                 return false;
         } else if (!level.equals(other.level))
+            return false;
+        if (module == null) {
+            if (other.module != null)
+                return false;
+        } else if (!module.equals(other.module))
             return false;
         if (status == null) {
             if (other.status != null)
@@ -186,8 +207,10 @@ public class HumanEventSummary implements Serializable {
 
     @Override
     public String toString() {
-        return "HumanEventSummary [idEvent=" + idEvent + ", descriptionEvent=" + descriptionEvent + ", eventTime=" + eventTime
-                + ", action=" + action + ", user=" + user + ", status=" + status + ", level=" + level + "]";
+        return "HumanEventSummary [idEvent=" + idEvent + ", componentEvent=" + componentEvent + ", eventTime=" + eventTime
+                + ", action=" + action + ", user=" + user + ", status=" + status + ", level=" + level + ", module=" + module
+                + "]";
     }
 
+    
 }

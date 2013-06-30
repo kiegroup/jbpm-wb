@@ -28,7 +28,6 @@ import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.jbpm.console.ng.he.client.util.UtilEvent;
-import org.jbpm.console.ng.he.model.ActionsHumanEvent;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
 import org.jbpm.console.ng.he.service.EventServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -43,8 +42,6 @@ import org.uberfire.security.Identity;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -142,10 +139,6 @@ public class HumanEventPresenter {
     public void showInfoEvents() {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Info Human Events" );
         placeManager.goTo( placeRequestImpl );
-        for (ActionsHumanEvent activity : ActionsHumanEvent.values()) {
-            // TODO this info show in the popup
-            // activity.getDescription();
-        }
     }
 
     public void filterEvents(String text) {
@@ -160,7 +153,7 @@ public class HumanEventPresenter {
                 List<HumanEventSummary> tasks = Lists.newArrayList(allEventsSummaries);
                 List<HumanEventSummary> filteredTasksSimple = Lists.newArrayList();
                 for (HumanEventSummary ts : tasks) {
-                    if (ts.getDescriptionEvent().toLowerCase().contains(text.toLowerCase())) {
+                    if (ts.getComponentEvent().toLowerCase().contains(text.toLowerCase())) {
                         filteredTasksSimple.add(ts);
                     }
                 }

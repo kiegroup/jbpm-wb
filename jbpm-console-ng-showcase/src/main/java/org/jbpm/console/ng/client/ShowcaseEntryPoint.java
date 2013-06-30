@@ -98,9 +98,14 @@ public class ShowcaseEntryPoint {
         } ).endMenu().newTopLevelMenu( constants.Authoring() ).withItems( getAuthoringViews() ).endMenu()
                 .newTopLevelMenu( constants.Deploy() ).withItems( getDeploymentViews() ).endMenu()
                 .newTopLevelMenu( constants.Process_Management() ).withItems( getProcessMGMTViews() ).endMenu()
+<<<<<<< HEAD
                 .newTopLevelMenu( constants.Events() ).withItems( getHistoryViews() ).endMenu()
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu().newTopLevelMenu( constants.BAM() )
                 .withItems( getBAMViews() ).endMenu().newTopLevelMenu( constants.LogOut() ).respondsWith( new Command() {
+=======
+                .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu().newTopLevelMenu( constants.Dashboards() )
+                .withItems( getDashboardsViews() ).endMenu().newTopLevelMenu( constants.LogOut() ).respondsWith( new Command() {
+>>>>>>> af6ab745f565e318a4e40b6a3541118067606ac4
                     @Override
                     public void execute() {
                         redirect( GWT.getModuleBaseURL() + "uf_logout" );
@@ -194,14 +199,23 @@ public class ShowcaseEntryPoint {
         return result;
     }
 
-    private List<? extends MenuItem> getBAMViews() {
+    private List<? extends MenuItem> getDashboardsViews() {
         final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
         result.add( MenuFactory.newSimpleItem( constants.Process_Dashboard() ).respondsWith( new Command() {
+
             @Override
             public void execute() {
-                Window.open( "/dashbuilder/workspace/jbpm-dashboard", "_blank", "" );
+                placeManager.goTo( new DefaultPlaceRequest("DashboardPerspective") );
             }
         } ).endMenu().build().getItems().get( 0 ) );
+
+        result.add( MenuFactory.newSimpleItem( constants.Business_Dashboard() ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                Window.open( "/dashbuilder", "_blank", "" );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+
 
         return result;
     }

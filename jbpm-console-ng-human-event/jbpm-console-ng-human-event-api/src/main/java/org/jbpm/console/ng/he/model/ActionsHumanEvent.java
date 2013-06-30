@@ -18,28 +18,23 @@ package org.jbpm.console.ng.he.model;
 
 
 public enum ActionsHumanEvent {
-
-    TASK_CREATED("TASK", "CREATE"),
-    TASK_CREATED_STARTED("TASK", "CREATE-START"),
-    TASK_STARTED("TASK", "START"),
-    TASK_RELEASED("TASK", "RELEASED"),
-    TASK_COMPLETED("TASK", "COMPLETED"),
-    TASK_CLAIMED("TASK", "CLAIMED");
     
-    private String description;
+    // jbpm-console-ng-human-tasks
+    HUMAN_TASKS_CREATED("TASK", "CREATE",  Modules.HUMAN_TASKS),
+    HUMAN_TASKS_CREATED_STARTED("TASK", "CREATE-START", Modules.HUMAN_TASKS),
+    HUMAN_TASKS_STARTED("TASK", "START", Modules.HUMAN_TASKS),
+    HUMAN_TASKS_RELEASED("TASK", "RELEASED", Modules.HUMAN_TASKS),
+    HUMAN_TASKS_COMPLETED("TASK", "COMPLETED", Modules.HUMAN_TASKS),
+    HUMAN_TASKS_CLAIMED("TASK", "CLAIMED", Modules.HUMAN_TASKS);
+    
+    private String component;
     private String action;
+    private String module;
     
-    ActionsHumanEvent(String description, String type){
-        this.description = description;
+    ActionsHumanEvent(String component, String type, Modules module){
+        this.component = component;
         this.action = type;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+        this.module = module.getNameModule();
     }
 
 	public String getAction() {
@@ -49,5 +44,21 @@ public enum ActionsHumanEvent {
 	public void setAction(String action) {
 		this.action = action;
 	}
+
+    public String getComponent() {
+        return component;
+    }
+
+    public void setComponent(String component) {
+        this.component = component;
+    }
+
+    public String getModule() {
+        return module;
+    }
+
+    public void setModule(String module) {
+        this.module = module;
+    }
     
 }

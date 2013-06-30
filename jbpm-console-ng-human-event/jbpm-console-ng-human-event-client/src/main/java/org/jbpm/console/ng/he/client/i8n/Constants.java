@@ -58,11 +58,7 @@ public interface Constants extends Messages {
 
     String Create();
 
-    String Task_Name();
-
     String Description();
-
-    String Comments();
 
     String Filters();
 
@@ -99,6 +95,8 @@ public interface Constants extends Messages {
     String Level();
     
     String Info_Events();
+    
+    String Module();
 
 
 }

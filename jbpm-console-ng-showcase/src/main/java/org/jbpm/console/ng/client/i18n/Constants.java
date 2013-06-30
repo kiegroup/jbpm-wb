@@ -33,7 +33,11 @@ public interface Constants extends Messages {
 
     String Tasks_List();
 
+    String Dashboards();
+
     String Process_Dashboard();
+
+    String Business_Dashboard();
 
     String Process_Authoring();
 
@@ -42,8 +46,6 @@ public interface Constants extends Messages {
     String Process_Management();
 
     String Work();
-
-    String BAM();
 
     String LogOut();
 
@@ -63,6 +65,5 @@ public interface Constants extends Messages {
     
     String Human_Events();
 
-    String Dashboard();
 
 }

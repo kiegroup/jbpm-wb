@@ -136,7 +136,7 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback(Long taskId) {
                     view.displayNotification("Task Created and Started (id = " + taskId + ")");
-                    pointHistoryEvent.fire(new HumanEventSummary(taskId, identity.getName(), ActionsHumanEvent.TASK_CREATED_STARTED));
+                    pointHistoryEvent.fire(new HumanEventSummary(taskId.toString(), identity.getName(), ActionsHumanEvent.HUMAN_TASKS_CREATED_STARTED));
                     close();
                 }
             }).addTaskAndStart(str, null, identity.getName(), templateVars);
@@ -145,7 +145,7 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback(Long taskId) {
                     view.displayNotification("Task Created (id = " + taskId + ")");
-                    pointHistoryEvent.fire(new HumanEventSummary(taskId, identity.getName(), ActionsHumanEvent.TASK_CREATED));
+                    pointHistoryEvent.fire(new HumanEventSummary(taskId.toString(), identity.getName(), ActionsHumanEvent.HUMAN_TASKS_CREATED));
                     close();
                 }
             }).addTask(str, null, templateVars);

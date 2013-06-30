@@ -86,7 +86,7 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
 
     @Inject
     @DataField
-    public IconAnchor monitorLabel;
+    public IconAnchor dashboardsLabel;
     // @Inject
     // @DataField
     // public IconAnchor improveLabel;
@@ -111,7 +111,11 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
     // public IconAnchor deployIdentityAnchor;
     @Inject
     @DataField
-    public IconAnchor monitorBAMAnchor;
+    public IconAnchor processDashboardsAnchor;
+
+    @Inject
+    @DataField
+    public IconAnchor businessDashboardsAnchor;
 
     @Inject
     @DataField
@@ -151,11 +155,11 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
 
     @Inject
     @DataField
-    public Label bamLabel;
+    public Label dashboardsCarrouselLabel;
 
     @Inject
     @DataField
-    public Label bamTextLabel;
+    public Label dashboardsCarrouselTextLabel;
 
     @Inject
     @DataField
@@ -205,8 +209,9 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
         workTaskListAnchor.setText( constants.Tasks_List() );
         workProcessDefinitionsAnchor.setText( constants.Process_Definitions() );
         workProcessInstancesAnchor.setText( constants.Process_Instances() );
-        monitorLabel.setText( constants.Monitor() );
-        monitorBAMAnchor.setText( constants.Business_Activity_Monitoring() );
+        dashboardsLabel.setText( constants.Dashboards() );
+        processDashboardsAnchor.setText(constants.Process_Dashboard());
+        businessDashboardsAnchor.setText(constants.Business_Dashboard());
         thejBPMCycle.setText( constants.The_jBPM_Cycle() );
         thejBPMCycle.setStyleName( "" );
 
@@ -226,10 +231,10 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
         workTasksLabel.setStyleName( "" );
         workTasksTextLabel.setText( constants.Work_Text() );
         workTasksTextLabel.setStyleName( "" );
-        bamLabel.setText( constants.Business_Activity_Monitoring() );
-        bamLabel.setStyleName( "" );
-        bamTextLabel.setText( constants.BAM_Text() );
-        bamTextLabel.setStyleName( "" );
+        dashboardsCarrouselLabel.setText( constants.Dashboards() );
+        dashboardsCarrouselLabel.setStyleName( "" );
+        dashboardsCarrouselTextLabel.setText( constants.Dashboards_Text() );
+        dashboardsCarrouselTextLabel.setStyleName( "" );
         improveLabel.setText( constants.Improve() );
         improveLabel.setStyleName( "" );
         improveTextLabel.setText( constants.Improve_Text() );
@@ -267,12 +272,20 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
             }
         } );
 
-        monitorBAMAnchor.addClickHandler( new ClickHandler() {
+        processDashboardsAnchor.addClickHandler(new ClickHandler() {
             @Override
-            public void onClick( ClickEvent event ) {
-                Window.open( "/dashbuilder/workspace/jbpm-dashboard", "_blank", "" );
+            public void onClick(ClickEvent event) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "DashboardPerspective" );
+                placeManager.goTo( placeRequestImpl );
             }
-        } );
+        });
+
+        businessDashboardsAnchor.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Window.open( "/dashbuilder", "_blank", "" );
+            }
+        });
 
     }
 

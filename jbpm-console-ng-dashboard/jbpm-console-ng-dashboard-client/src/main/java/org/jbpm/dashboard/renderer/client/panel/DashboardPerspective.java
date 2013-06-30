@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 JBoss Inc
+ * Copyright 2013 JBoss Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,11 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jbpm.console.ng.client.perspectives;
+package org.jbpm.dashboard.renderer.client.panel;
 
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
+import org.uberfire.workbench.model.PartDefinition;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
@@ -31,24 +32,15 @@ import javax.enterprise.context.ApplicationScoped;
  * A Perspective to show Dashboard
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "DashboardPerspective")
+@WorkbenchPerspective(identifier = "DashboardPerspective", isDefault = false)
 public class DashboardPerspective {
-
 
     @Perspective
     public PerspectiveDefinition buildPerspective() {
-        /*
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
         p.setName("Dashboard builder");
-
-        final PanelDefinition aPanel = new PanelDefinitionImpl();
-        aPanel.addPart(new PartDefinitionImpl(new DefaultPlaceRequest("DashboardPanel")));
-        p.getRoot().insertChild(Position.NORTH, aPanel);
-        p.setTransient(true);
-        return p;   */
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
-        p.setName("Dashboard builder");
-        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("DashboardPanel")));
+        PartDefinition pDef = new PartDefinitionImpl(new DefaultPlaceRequest("DashboardPanel"));
+        p.getRoot().addPart(pDef);
         p.setTransient(true);
         return p;
     }
