@@ -102,7 +102,7 @@ public class HumanEventPresenter {
             public void callback(Queue<HumanEventSummary> events) {
                 allEventsSummaries = Lists.newArrayList(events);
             }
-        }).saveNewHumanEvent(buidHumanEventSummary(humaEvent));
+        }).saveNewHumanEvent(buildHumanEventSummary(humaEvent));
     }
 
     public List<HumanEventSummary> getAllEventsSummaries() {
@@ -181,7 +181,7 @@ public class HumanEventPresenter {
         }
     }
 
-    private HumanEventSummary buidHumanEventSummary(HumanEvent humaEvent) {
+    private HumanEventSummary buildHumanEventSummary(HumanEvent humaEvent) {
         return new HumanEventSummary(humaEvent.getKey(), humaEvent.getEvent().getComponent(), humaEvent.getEvent().getAction(),
                 humaEvent.getUser(), humaEvent.getStatus().toString(), humaEvent.getLevel().toString(), humaEvent.getEvent()
                         .getModule());
