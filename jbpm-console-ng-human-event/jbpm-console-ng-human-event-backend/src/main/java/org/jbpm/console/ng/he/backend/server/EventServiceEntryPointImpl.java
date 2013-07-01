@@ -27,18 +27,19 @@ import org.jbpm.console.ng.he.service.EventServiceEntryPoint;
 
 @Service
 @ApplicationScoped
-@SuppressWarnings("unchecked")
 public class EventServiceEntryPointImpl extends SessionManager implements EventServiceEntryPoint {
 
     private static final String KEY_EVENTS = "humanEvent";
     
     @Override
+    @SuppressWarnings("unchecked")
     public Queue<HumanEventSummary> getAllHumanEvent() {
          return (super.getSession().getAttribute(KEY_EVENTS) != null) ?
           (Queue<HumanEventSummary>) super.getSession().getAttribute(KEY_EVENTS) : null;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Queue<HumanEventSummary> saveNewHumanEvent(HumanEventSummary pointHistory) {
         Queue<HumanEventSummary> points = (super.getSession().getAttribute(KEY_EVENTS) == null) ? new LinkedList<HumanEventSummary>()
                 : (Queue<HumanEventSummary>) super.getSession().getAttribute(KEY_EVENTS);

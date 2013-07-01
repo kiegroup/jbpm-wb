@@ -74,10 +74,6 @@ public class HumanEventPresenter {
         return constants.List_Human_Event();
     }
 
-    public enum HumanEventType {
-        ACTIVE, GROUP, ALL, EXPORT
-    }
-
     private List<HumanEventSummary> allEventsSummaries;
 
     private ListDataProvider<HumanEventSummary> dataProvider = new ListDataProvider<HumanEventSummary>();
@@ -99,7 +95,7 @@ public class HumanEventPresenter {
         void exportTxtEvents();
     }
 
-    public void saveNewEventHistory(@Observes HumanEventSummary pointHistory) {
+    public void saveNewHumanEvent(@Observes HumanEventSummary pointHistory) {
         humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
             @Override
             public void callback(Queue<HumanEventSummary> events) {
