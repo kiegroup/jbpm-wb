@@ -21,7 +21,6 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class HumanEvent implements Serializable {
-
     private static final long serialVersionUID = 6364112766319847857L;
     
     String key;
