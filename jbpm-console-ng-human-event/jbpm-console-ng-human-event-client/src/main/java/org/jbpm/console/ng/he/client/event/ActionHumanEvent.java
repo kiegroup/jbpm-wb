@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.he.model;
+package org.jbpm.console.ng.he.client.event;
 
 
 public enum ActionHumanEvent {

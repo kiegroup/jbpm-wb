@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.he.client.events;
+package org.jbpm.console.ng.he.client.listevents;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,6 +26,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.he.client.event.HumanEvent;
 import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.jbpm.console.ng.he.client.util.UtilEvent;
 import org.jbpm.console.ng.he.model.HumanEventSummary;
@@ -60,7 +61,7 @@ public class HumanEventPresenter {
 
     @Inject
     private Identity identity;
-    
+
     @Inject
     private PlaceManager placeManager;
 
@@ -95,13 +96,13 @@ public class HumanEventPresenter {
         void exportTxtEvents();
     }
 
-    public void saveNewHumanEvent(@Observes HumanEventSummary pointHistory) {
+    public void saveNewHumanEvent(@Observes HumanEvent humaEvent) {
         humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
             @Override
             public void callback(Queue<HumanEventSummary> events) {
                 allEventsSummaries = Lists.newArrayList(events);
             }
-        }).saveNewHumanEvent(pointHistory);
+        }).saveNewHumanEvent(buidHumanEventSummary(humaEvent));
     }
 
     public List<HumanEventSummary> getAllEventsSummaries() {
@@ -133,8 +134,8 @@ public class HumanEventPresenter {
     }
 
     public void showInfoEvents() {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Info Human Events" );
-        placeManager.goTo( placeRequestImpl );
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Info Human Events");
+        placeManager.goTo(placeRequestImpl);
     }
 
     public void filterEvents(String text) {
@@ -180,4 +181,10 @@ public class HumanEventPresenter {
         }
     }
 
+    private HumanEventSummary buidHumanEventSummary(HumanEvent humaEvent) {
+        return new HumanEventSummary(humaEvent.getKey(), humaEvent.getEvent().getComponent(), humaEvent.getEvent().getAction(),
+                humaEvent.getUser(), humaEvent.getStatus().toString(), humaEvent.getLevel().toString(), humaEvent.getEvent()
+                        .getModule());
+    }
+    
 }

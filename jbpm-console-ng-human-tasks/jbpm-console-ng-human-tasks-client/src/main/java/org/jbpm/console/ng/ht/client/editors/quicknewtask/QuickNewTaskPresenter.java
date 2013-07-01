@@ -28,11 +28,10 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.he.client.events.HumanEventPresenter;
-import org.jbpm.console.ng.he.model.ActionHumanEvent;
-import org.jbpm.console.ng.he.model.HumanEventSummary;
-import org.jbpm.console.ng.he.model.LevelHumanEvent;
-import org.jbpm.console.ng.he.model.StatusHumanEvent;
+import org.jbpm.console.ng.he.client.event.ActionHumanEvent;
+import org.jbpm.console.ng.he.client.event.HumanEvent;
+import org.jbpm.console.ng.he.client.event.LevelHumanEvent;
+import org.jbpm.console.ng.he.client.event.StatusHumanEvent;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.client.annotations.OnReveal;
@@ -83,7 +82,7 @@ public class QuickNewTaskPresenter {
     private PlaceManager placeManager;
 
     @Inject
-    private Event<HumanEventSummary> pointHistoryEvent;
+    private Event<HumanEvent> pointHistoryEvent;
 
     @OnStart
     public void onStart(final PlaceRequest place) {
@@ -138,7 +137,7 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback(Long taskId) {
                     view.displayNotification("Task Created and Started (id = " + taskId + ")");
-                    pointHistoryEvent.fire(new HumanEventSummary(taskId.toString(), identity.getName(),
+                    pointHistoryEvent.fire(new HumanEvent(taskId.toString(), identity.getName(),
                             ActionHumanEvent.HUMAN_TASKS_CREATED_STARTED, StatusHumanEvent.SUCCESS, LevelHumanEvent.INFO));
                     close();
                 }
@@ -148,7 +147,7 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback(Long taskId) {
                     view.displayNotification("Task Created (id = " + taskId + ")");
-                    pointHistoryEvent.fire(new HumanEventSummary(taskId.toString(), identity.getName(),
+                    pointHistoryEvent.fire(new HumanEvent(taskId.toString(), identity.getName(),
                             ActionHumanEvent.HUMAN_TASKS_CREATED, StatusHumanEvent.SUCCESS, LevelHumanEvent.INFO));
                     close();
                 }

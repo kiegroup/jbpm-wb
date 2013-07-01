@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.he.client.events;
+package org.jbpm.console.ng.he.client.listevents;
 
 import java.util.Comparator;
 

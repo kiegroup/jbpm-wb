@@ -14,10 +14,26 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.he.model;
+package org.jbpm.console.ng.he.client.event;
 
-public enum LevelHumanEvent {
+public enum Modules {
     
-    INFO, ERROR;
+    SHOWCASE("jbpm-console-ng-showcase"),
+    HUMAN_TASKS("jbpm-console-ng-human-tasks"),
+    HUMAN_EVENTS("jbpm-console-ng-human-event");
     
+    private String nameModule;
+    
+    Modules(String module){
+        nameModule = module; 
+    }
+
+    public String getNameModule() {
+        return nameModule;
+    }
+
+    public void setNameModule(String nameModule) {
+        this.nameModule = nameModule;
+    }
+
 }

@@ -27,33 +27,35 @@ public class HumanEventSummary implements Serializable {
     private static final long serialVersionUID = 1003998546166596096L;
 
     private String key;
+    
+    private Date timestamp;
+    
+    private String module;
 
     private String component;
-
-    private Date timestamp;
 
     private String action;
 
     private String user;
+    
+    private String level;
 
     private String status;
 
-    private String level;
-
-    private String module;
-
-    public HumanEventSummary(String key, String user, ActionHumanEvent event, StatusHumanEvent status, LevelHumanEvent level) {
-        this.component = event.getComponent();
-        this.action = event.getAction();
-        this.key = key;
-        this.user = user;
-        this.status = status.toString();
-        this.level = level.toString();
-        this.module = event.getModule();
+    
+    public HumanEventSummary() {
         this.timestamp = new Date();
     }
 
-    public HumanEventSummary() {
+    public HumanEventSummary(String key, String component, String action, String user, String status, String level,
+            String module) {
+        this.key = key;
+        this.component = component;
+        this.action = action;
+        this.user = user;
+        this.status = status;
+        this.level = level.toString();
+        this.module = level;
         this.timestamp = new Date();
     }
 

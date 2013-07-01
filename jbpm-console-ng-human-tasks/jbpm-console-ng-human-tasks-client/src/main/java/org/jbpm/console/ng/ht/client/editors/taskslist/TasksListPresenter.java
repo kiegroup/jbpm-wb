@@ -32,11 +32,11 @@ import org.jboss.errai.bus.client.api.ErrorCallback;
 import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.he.client.events.HumanEventPresenter;
-import org.jbpm.console.ng.he.model.ActionHumanEvent;
-import org.jbpm.console.ng.he.model.HumanEventSummary;
-import org.jbpm.console.ng.he.model.LevelHumanEvent;
-import org.jbpm.console.ng.he.model.StatusHumanEvent;
+import org.jbpm.console.ng.he.client.event.ActionHumanEvent;
+import org.jbpm.console.ng.he.client.event.HumanEvent;
+import org.jbpm.console.ng.he.client.event.LevelHumanEvent;
+import org.jbpm.console.ng.he.client.event.StatusHumanEvent;
+import org.jbpm.console.ng.he.client.listevents.HumanEventPresenter;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
 import org.jbpm.console.ng.ht.client.util.DateRange;
 import org.jbpm.console.ng.ht.client.util.DateUtils;
@@ -67,7 +67,7 @@ public class TasksListPresenter {
     private Map<Day, List<TaskSummary>> currentDayTasks;
 
     @Inject
-    private Event<HumanEventSummary> pointHistoryEvent;
+    private Event<HumanEvent> pointHistoryEvent;
 
     @Inject
     private HumanEventPresenter actionHistoryPresenter;
@@ -469,7 +469,7 @@ public class TasksListPresenter {
     public void saveNewHumanEvent(List<Long> selectedTasks, String idUser, ActionHumanEvent actionHistory,
             StatusHumanEvent status, LevelHumanEvent level) {
         for (Long taskId : selectedTasks) {
-            pointHistoryEvent.fire(new HumanEventSummary(taskId.toString(), idUser, actionHistory, status, level));
+            pointHistoryEvent.fire(new HumanEvent(taskId.toString(), idUser, actionHistory, status, level));
         }
     }
 
