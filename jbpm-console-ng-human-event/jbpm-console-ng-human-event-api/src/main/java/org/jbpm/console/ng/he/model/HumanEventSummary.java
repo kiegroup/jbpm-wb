@@ -54,7 +54,7 @@ public class HumanEventSummary implements Serializable {
         this.user = user;
         this.status = status;
         this.level = level;
-        this.module = level;
+        this.module = module;
         this.timestamp = new Date();
     }
 

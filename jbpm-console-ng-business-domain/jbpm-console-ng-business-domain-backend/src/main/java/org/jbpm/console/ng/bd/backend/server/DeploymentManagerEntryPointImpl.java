@@ -13,6 +13,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import org.guvnor.common.services.project.builder.model.DeployResult;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.bd.exception.DeploymentException;
@@ -30,7 +31,7 @@ import org.jbpm.kie.services.impl.event.Undeploy;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.uberfire.backend.deployment.DeploymentConfigService;
 
-import org.kie.workbench.common.services.shared.builder.model.DeployResult;
+
 import org.uberfire.backend.server.config.Added;
 import org.uberfire.backend.server.config.Removed;
 import org.uberfire.backend.server.deployment.DeploymentConfigChangedEvent;
