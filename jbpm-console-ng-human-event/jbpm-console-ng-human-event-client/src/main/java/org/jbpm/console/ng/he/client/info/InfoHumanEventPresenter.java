@@ -74,8 +74,9 @@ public class InfoHumanEventPresenter {
     public void init() {
     }
 
+    @SuppressWarnings("unchecked")
     public void showComponentAudited() {
-        //TODO 
+        // modulo con una lista de componentes
     }
 
     public void close() {
