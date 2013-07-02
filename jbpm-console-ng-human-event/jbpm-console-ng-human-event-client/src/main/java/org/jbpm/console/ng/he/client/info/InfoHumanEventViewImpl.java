@@ -49,7 +49,12 @@ public class InfoHumanEventViewImpl extends Composite implements InfoHumanEventP
     public void init(InfoHumanEventPresenter presenter) {
         this.presenter = presenter;
         infoTitleText.add( new HTMLPanel( constants.Info_Events() ) );
-        //Voy a poner en un principio Components audited : TASK
+        showComponentAudited();
+    }
+    
+    @Override
+    public void showComponentAudited(){
+        presenter.showComponentAudited();
     }
 
     @Override
