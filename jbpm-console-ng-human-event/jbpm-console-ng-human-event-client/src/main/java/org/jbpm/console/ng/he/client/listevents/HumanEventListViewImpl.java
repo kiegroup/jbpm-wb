@@ -27,7 +27,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.jbpm.console.ng.he.client.util.ResizableHeader;
 import org.jbpm.console.ng.he.client.util.UtilEvent;
-import org.jbpm.console.ng.he.model.HumanEventSummary;
+import org.jbpm.console.ng.he.model.UserInteractionSummary;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
@@ -89,13 +89,13 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
 
     private HumanEventPresenter presenter;
 
-    public DataGrid<HumanEventSummary> myEventListGrid;
+    public DataGrid<UserInteractionSummary> myEventListGrid;
 
     public SimplePager pager;
 
-    private ListHandler<HumanEventSummary> sortHandler;
+    private ListHandler<UserInteractionSummary> sortHandler;
 
-    private MultiSelectionModel<HumanEventSummary> selectionModel;
+    private MultiSelectionModel<UserInteractionSummary> selectionModel;
 
     @Override
     public void init(HumanEventPresenter presenter) {
@@ -171,7 +171,7 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
 
     private void initializeGridView() {
         eventsViewContainer.clear();
-        myEventListGrid = new DataGrid<HumanEventSummary>();
+        myEventListGrid = new DataGrid<UserInteractionSummary>();
         myEventListGrid.setStyleName("table table-bordered table-striped table-hover");
         pager = new SimplePager();
         pager.setStyleName("pagination pagination-right pull-right");
@@ -187,23 +187,23 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
 
         // Attach a column sort handler to the ListDataProvider to sort the
         // list.
-        sortHandler = new ColumnSortEvent.ListHandler<HumanEventSummary>(presenter.getAllEventsSummaries());
+        sortHandler = new ColumnSortEvent.ListHandler<UserInteractionSummary>(presenter.getAllEventsSummaries());
 
         myEventListGrid.addColumnSortHandler(sortHandler);
 
         myEventListGrid.setSelectionModel(selectionModel,
-                DefaultSelectionEventManager.<HumanEventSummary> createCheckboxManager());
+                DefaultSelectionEventManager.<UserInteractionSummary> createCheckboxManager());
 
         initTableColumns(selectionModel);
         presenter.addDataDisplay(myEventListGrid);
 
     }
 
-    private void initTableColumns(final SelectionModel<HumanEventSummary> selectionModel) {
+    private void initTableColumns(final SelectionModel<UserInteractionSummary> selectionModel) {
         // Timestamp.
-        Column<HumanEventSummary, String> timeColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+        Column<UserInteractionSummary, String> timeColumn = new Column<UserInteractionSummary, String>(new TextCell()) {
             @Override
-            public String getValue(HumanEventSummary object) {
+            public String getValue(UserInteractionSummary object) {
                 if (object.getTimestamp() != null) {
                     return UtilEvent.getDateTime(object.getTimestamp(), UtilEvent.patternDateTime);
                 }
@@ -213,9 +213,9 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
         timeColumn.setSortable(true);
 
         myEventListGrid.addColumn(timeColumn, new ResizableHeader(constants.Time(), myEventListGrid, timeColumn));
-        sortHandler.setComparator(timeColumn, new Comparator<HumanEventSummary>() {
+        sortHandler.setComparator(timeColumn, new Comparator<UserInteractionSummary>() {
             @Override
-            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
+            public int compare(UserInteractionSummary o1, UserInteractionSummary o2) {
                 if (o1.getTimestamp() == null || o2.getTimestamp() == null) {
                     return 0;
                 }
@@ -224,43 +224,43 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
         });
 
         // Module.
-        Column<HumanEventSummary, String> moduleNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+        Column<UserInteractionSummary, String> moduleNameColumn = new Column<UserInteractionSummary, String>(new TextCell()) {
             @Override
-            public String getValue(HumanEventSummary object) {
+            public String getValue(UserInteractionSummary object) {
                 return object.getModule();
             }
         };
         moduleNameColumn.setSortable(true);
 
         myEventListGrid.addColumn(moduleNameColumn, new ResizableHeader(constants.Module(), myEventListGrid, moduleNameColumn));
-        sortHandler.setComparator(moduleNameColumn, new Comparator<HumanEventSummary>() {
+        sortHandler.setComparator(moduleNameColumn, new Comparator<UserInteractionSummary>() {
             @Override
-            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
+            public int compare(UserInteractionSummary o1, UserInteractionSummary o2) {
                 return o1.getModule().compareTo(o2.getModule());
             }
         });
 
         // User.
-        Column<HumanEventSummary, String> userNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+        Column<UserInteractionSummary, String> userNameColumn = new Column<UserInteractionSummary, String>(new TextCell()) {
             @Override
-            public String getValue(HumanEventSummary object) {
+            public String getValue(UserInteractionSummary object) {
                 return object.getUser();
             }
         };
         userNameColumn.setSortable(true);
 
         myEventListGrid.addColumn(userNameColumn, new ResizableHeader(constants.User(), myEventListGrid, userNameColumn));
-        sortHandler.setComparator(userNameColumn, new Comparator<HumanEventSummary>() {
+        sortHandler.setComparator(userNameColumn, new Comparator<UserInteractionSummary>() {
             @Override
-            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
+            public int compare(UserInteractionSummary o1, UserInteractionSummary o2) {
                 return o1.getUser().compareTo(o2.getUser());
             }
         });
 
         // Component.
-        Column<HumanEventSummary, String> componentNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+        Column<UserInteractionSummary, String> componentNameColumn = new Column<UserInteractionSummary, String>(new TextCell()) {
             @Override
-            public String getValue(HumanEventSummary object) {
+            public String getValue(UserInteractionSummary object) {
                 return object.getComponent();
             }
         };
@@ -268,17 +268,17 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
 
         myEventListGrid.addColumn(componentNameColumn, new ResizableHeader(constants.Component(), myEventListGrid,
                 componentNameColumn));
-        sortHandler.setComparator(componentNameColumn, new Comparator<HumanEventSummary>() {
+        sortHandler.setComparator(componentNameColumn, new Comparator<UserInteractionSummary>() {
             @Override
-            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
+            public int compare(UserInteractionSummary o1, UserInteractionSummary o2) {
                 return o1.getComponent().compareTo(o2.getComponent());
             }
         });
 
         // Action.
-        Column<HumanEventSummary, String> actionNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+        Column<UserInteractionSummary, String> actionNameColumn = new Column<UserInteractionSummary, String>(new TextCell()) {
             @Override
-            public String getValue(HumanEventSummary object) {
+            public String getValue(UserInteractionSummary object) {
                 return object.getAction();
             }
         };
@@ -286,17 +286,17 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
 
         myEventListGrid
                 .addColumn(actionNameColumn, new ResizableHeader(constants.Actions(), myEventListGrid, actionNameColumn));
-        sortHandler.setComparator(actionNameColumn, new Comparator<HumanEventSummary>() {
+        sortHandler.setComparator(actionNameColumn, new Comparator<UserInteractionSummary>() {
             @Override
-            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
+            public int compare(UserInteractionSummary o1, UserInteractionSummary o2) {
                 return o1.getAction().compareTo(o2.getAction());
             }
         });
 
         // key
-        Column<HumanEventSummary, String> taskIdColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+        Column<UserInteractionSummary, String> taskIdColumn = new Column<UserInteractionSummary, String>(new TextCell()) {
             @Override
-            public String getValue(HumanEventSummary object) {
+            public String getValue(UserInteractionSummary object) {
                 return object.getKey();
             }
         };
@@ -304,44 +304,44 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
         myEventListGrid.setColumnWidth(taskIdColumn, "80px");
 
         myEventListGrid.addColumn(taskIdColumn, new ResizableHeader(constants.Id_Event(), myEventListGrid, taskIdColumn));
-        sortHandler.setComparator(taskIdColumn, new Comparator<HumanEventSummary>() {
+        sortHandler.setComparator(taskIdColumn, new Comparator<UserInteractionSummary>() {
             @Override
-            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
+            public int compare(UserInteractionSummary o1, UserInteractionSummary o2) {
                 return o1.getKey().compareTo(o2.getKey());
             }
         });
 
         // Level.
-        Column<HumanEventSummary, String> levelNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+        Column<UserInteractionSummary, String> levelNameColumn = new Column<UserInteractionSummary, String>(new TextCell()) {
             @Override
-            public String getValue(HumanEventSummary object) {
+            public String getValue(UserInteractionSummary object) {
                 return object.getLevel();
             }
         };
         levelNameColumn.setSortable(true);
 
         myEventListGrid.addColumn(levelNameColumn, new ResizableHeader(constants.Level(), myEventListGrid, levelNameColumn));
-        sortHandler.setComparator(levelNameColumn, new Comparator<HumanEventSummary>() {
+        sortHandler.setComparator(levelNameColumn, new Comparator<UserInteractionSummary>() {
             @Override
-            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
+            public int compare(UserInteractionSummary o1, UserInteractionSummary o2) {
                 return o1.getLevel().compareTo(o2.getLevel());
             }
         });
         myEventListGrid.setColumnWidth(levelNameColumn, "140px");
 
         // Status.
-        Column<HumanEventSummary, String> statusNameColumn = new Column<HumanEventSummary, String>(new TextCell()) {
+        Column<UserInteractionSummary, String> statusNameColumn = new Column<UserInteractionSummary, String>(new TextCell()) {
             @Override
-            public String getValue(HumanEventSummary object) {
+            public String getValue(UserInteractionSummary object) {
                 return object.getStatus();
             }
         };
         statusNameColumn.setSortable(true);
 
         myEventListGrid.addColumn(statusNameColumn, new ResizableHeader(constants.Status(), myEventListGrid, statusNameColumn));
-        sortHandler.setComparator(statusNameColumn, new Comparator<HumanEventSummary>() {
+        sortHandler.setComparator(statusNameColumn, new Comparator<UserInteractionSummary>() {
             @Override
-            public int compare(HumanEventSummary o1, HumanEventSummary o2) {
+            public int compare(UserInteractionSummary o1, UserInteractionSummary o2) {
                 return o1.getStatus().compareTo(o2.getStatus());
             }
         });
@@ -375,7 +375,7 @@ public class HumanEventListViewImpl extends Composite implements HumanEventPrese
     }
 
     @Override
-    public MultiSelectionModel<HumanEventSummary> getSelectionModel() {
+    public MultiSelectionModel<UserInteractionSummary> getSelectionModel() {
         return selectionModel;
     }
 

@@ -26,10 +26,10 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.he.client.event.HumanEvent;
+import org.jbpm.console.ng.he.client.event.UserInteractionEvent;
 import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.jbpm.console.ng.he.client.util.UtilEvent;
-import org.jbpm.console.ng.he.model.HumanEventSummary;
+import org.jbpm.console.ng.he.model.UserInteractionSummary;
 import org.jbpm.console.ng.he.service.EventServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -75,15 +75,15 @@ public class HumanEventPresenter {
         return constants.List_Human_Event();
     }
 
-    private List<HumanEventSummary> allEventsSummaries;
+    private List<UserInteractionSummary> allEventsSummaries;
 
-    private ListDataProvider<HumanEventSummary> dataProvider = new ListDataProvider<HumanEventSummary>();
+    private ListDataProvider<UserInteractionSummary> dataProvider = new ListDataProvider<UserInteractionSummary>();
 
     public interface ActionHistoryView extends UberView<HumanEventPresenter> {
 
         void displayNotification(String text);
 
-        MultiSelectionModel<HumanEventSummary> getSelectionModel();
+        MultiSelectionModel<UserInteractionSummary> getSelectionModel();
 
         TextBox getSearchBox();
 
@@ -96,23 +96,23 @@ public class HumanEventPresenter {
         void exportTxtEvents();
     }
 
-    public void saveNewHumanEvent(@Observes HumanEvent humaEvent) {
-        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+    public void saveNewHumanEvent(@Observes UserInteractionEvent humaEvent) {
+        humanEventServices.call(new RemoteCallback<Queue<UserInteractionSummary>>() {
             @Override
-            public void callback(Queue<HumanEventSummary> events) {
+            public void callback(Queue<UserInteractionSummary> events) {
                 allEventsSummaries = Lists.newArrayList(events);
             }
         }).saveNewHumanEvent(buildHumanEventSummary(humaEvent));
     }
 
-    public List<HumanEventSummary> getAllEventsSummaries() {
+    public List<UserInteractionSummary> getAllEventsSummaries() {
         return allEventsSummaries;
     }
 
     public void refreshHumanEvent() {
-        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+        humanEventServices.call(new RemoteCallback<Queue<UserInteractionSummary>>() {
             @Override
-            public void callback(Queue<HumanEventSummary> events) {
+            public void callback(Queue<UserInteractionSummary> events) {
                 if (events != null) {
                     allEventsSummaries = Lists.newArrayList(events);
                 }
@@ -122,9 +122,9 @@ public class HumanEventPresenter {
     }
 
     public void clearHumanEvents() {
-        humanEventServices.call(new RemoteCallback<Queue<HumanEventSummary>>() {
+        humanEventServices.call(new RemoteCallback<Queue<UserInteractionSummary>>() {
             @Override
-            public void callback(Queue<HumanEventSummary> events) {
+            public void callback(Queue<UserInteractionSummary> events) {
                 // TODO ver de sacar el retorno ya que mi servicio es void
                 allEventsSummaries = Lists.newArrayList();
                 filterEvents(view.getSearchBox().getText());
@@ -147,9 +147,9 @@ public class HumanEventPresenter {
             }
         } else {
             if (allEventsSummaries != null) {
-                List<HumanEventSummary> tasks = Lists.newArrayList(allEventsSummaries);
-                List<HumanEventSummary> filteredTasksSimple = Lists.newArrayList();
-                for (HumanEventSummary ts : tasks) {
+                List<UserInteractionSummary> tasks = Lists.newArrayList(allEventsSummaries);
+                List<UserInteractionSummary> filteredTasksSimple = Lists.newArrayList();
+                for (UserInteractionSummary ts : tasks) {
                     if (ts.getComponent().toLowerCase().contains(text.toLowerCase())) {
                         filteredTasksSimple.add(ts);
                     }
@@ -162,7 +162,7 @@ public class HumanEventPresenter {
 
     }
 
-    public void addDataDisplay(HasData<HumanEventSummary> display) {
+    public void addDataDisplay(HasData<UserInteractionSummary> display) {
         dataProvider.addDataDisplay(display);
     }
 
@@ -181,8 +181,8 @@ public class HumanEventPresenter {
         }
     }
 
-    private HumanEventSummary buildHumanEventSummary(HumanEvent humaEvent) {
-        return new HumanEventSummary(humaEvent.getKey(), humaEvent.getEvent().getComponent(), humaEvent.getEvent().getAction(),
+    private UserInteractionSummary buildHumanEventSummary(UserInteractionEvent humaEvent) {
+        return new UserInteractionSummary(humaEvent.getKey(), humaEvent.getEvent().getComponent(), humaEvent.getEvent().getAction(),
                 humaEvent.getUser(), humaEvent.getStatus().toString(), humaEvent.getLevel().toString(), humaEvent.getEvent()
                         .getModule());
     }

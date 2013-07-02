@@ -22,7 +22,7 @@ import java.util.Date;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class HumanEventSummary implements Serializable {
+public class UserInteractionSummary implements Serializable {
 
     private static final long serialVersionUID = 1003998546166596096L;
 
@@ -42,11 +42,11 @@ public class HumanEventSummary implements Serializable {
 
     private String status;
 
-    public HumanEventSummary() {
+    public UserInteractionSummary() {
         this.timestamp = new Date();
     }
 
-    public HumanEventSummary(String key, String component, String action, String user, String status, String level,
+    public UserInteractionSummary(String key, String component, String action, String user, String status, String level,
             String module) {
         this.key = key;
         this.component = component;
@@ -145,7 +145,7 @@ public class HumanEventSummary implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        HumanEventSummary other = (HumanEventSummary) obj;
+        UserInteractionSummary other = (UserInteractionSummary) obj;
         if (action == null) {
             if (other.action != null)
                 return false;

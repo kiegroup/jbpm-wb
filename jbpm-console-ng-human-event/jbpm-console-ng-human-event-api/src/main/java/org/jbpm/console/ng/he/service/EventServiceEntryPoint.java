@@ -19,14 +19,14 @@ package org.jbpm.console.ng.he.service;
 import java.util.Queue;
 
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.jbpm.console.ng.he.model.HumanEventSummary;
+import org.jbpm.console.ng.he.model.UserInteractionSummary;
 
 @Remote
 public interface EventServiceEntryPoint {
 	
-	Queue<HumanEventSummary> getAllHumanEvent();
+	Queue<UserInteractionSummary> getAllHumanEvent();
 	
-	Queue<HumanEventSummary> saveNewHumanEvent(HumanEventSummary pointHistory);
+	Queue<UserInteractionSummary> saveNewHumanEvent(UserInteractionSummary pointHistory);
 	
 	void clearHumanEvent();
 

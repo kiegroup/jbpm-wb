@@ -20,7 +20,7 @@ import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class HumanEvent implements Serializable {
+public class UserInteractionEvent implements Serializable {
     private static final long serialVersionUID = 6364112766319847857L;
     
     String key;
@@ -34,11 +34,11 @@ public class HumanEvent implements Serializable {
     LevelHumanEvent level;
     
     
-    public HumanEvent(){
+    public UserInteractionEvent(){
         
     }
 
-    public HumanEvent(String key, String user, ActionHumanEvent event, StatusHumanEvent status, LevelHumanEvent level) {
+    public UserInteractionEvent(String key, String user, ActionHumanEvent event, StatusHumanEvent status, LevelHumanEvent level) {
         this.key = key;
         this.user = user;
         this.event = event;
@@ -106,7 +106,7 @@ public class HumanEvent implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        HumanEvent other = (HumanEvent) obj;
+        UserInteractionEvent other = (UserInteractionEvent) obj;
         if (event != other.event)
             return false;
         if (key == null) {

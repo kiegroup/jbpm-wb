@@ -29,7 +29,7 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.he.client.event.ActionHumanEvent;
-import org.jbpm.console.ng.he.client.event.HumanEvent;
+import org.jbpm.console.ng.he.client.event.UserInteractionEvent;
 import org.jbpm.console.ng.he.client.event.LevelHumanEvent;
 import org.jbpm.console.ng.he.client.event.StatusHumanEvent;
 import org.jbpm.console.ng.ht.client.i8n.Constants;
@@ -82,7 +82,7 @@ public class QuickNewTaskPresenter {
     private PlaceManager placeManager;
 
     @Inject
-    private Event<HumanEvent> pointHistoryEvent;
+    private Event<UserInteractionEvent> pointHistoryEvent;
 
     @OnStart
     public void onStart(final PlaceRequest place) {
@@ -137,7 +137,7 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback(Long taskId) {
                     view.displayNotification("Task Created and Started (id = " + taskId + ")");
-                    pointHistoryEvent.fire(new HumanEvent(taskId.toString(), identity.getName(),
+                    pointHistoryEvent.fire(new UserInteractionEvent(taskId.toString(), identity.getName(),
                             ActionHumanEvent.HUMAN_TASKS_CREATED_STARTED, StatusHumanEvent.SUCCESS, LevelHumanEvent.INFO));
                     close();
                 }
@@ -147,7 +147,7 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback(Long taskId) {
                     view.displayNotification("Task Created (id = " + taskId + ")");
-                    pointHistoryEvent.fire(new HumanEvent(taskId.toString(), identity.getName(),
+                    pointHistoryEvent.fire(new UserInteractionEvent(taskId.toString(), identity.getName(),
                             ActionHumanEvent.HUMAN_TASKS_CREATED, StatusHumanEvent.SUCCESS, LevelHumanEvent.INFO));
                     close();
                 }

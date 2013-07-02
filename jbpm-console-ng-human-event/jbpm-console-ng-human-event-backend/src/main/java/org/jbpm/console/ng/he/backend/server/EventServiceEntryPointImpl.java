@@ -22,7 +22,7 @@ import java.util.Queue;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.he.model.HumanEventSummary;
+import org.jbpm.console.ng.he.model.UserInteractionSummary;
 import org.jbpm.console.ng.he.service.EventServiceEntryPoint;
 
 @Service
@@ -33,16 +33,16 @@ public class EventServiceEntryPointImpl extends SessionManager implements EventS
     
     @Override
     @SuppressWarnings("unchecked")
-    public Queue<HumanEventSummary> getAllHumanEvent() {
+    public Queue<UserInteractionSummary> getAllHumanEvent() {
          return (super.getSession().getAttribute(KEY_EVENTS) != null) ?
-          (Queue<HumanEventSummary>) super.getSession().getAttribute(KEY_EVENTS) : null;
+          (Queue<UserInteractionSummary>) super.getSession().getAttribute(KEY_EVENTS) : null;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Queue<HumanEventSummary> saveNewHumanEvent(HumanEventSummary pointHistory) {
-        Queue<HumanEventSummary> points = (super.getSession().getAttribute(KEY_EVENTS) == null) ? new LinkedList<HumanEventSummary>()
-                : (Queue<HumanEventSummary>) super.getSession().getAttribute(KEY_EVENTS);
+    public Queue<UserInteractionSummary> saveNewHumanEvent(UserInteractionSummary pointHistory) {
+        Queue<UserInteractionSummary> points = (super.getSession().getAttribute(KEY_EVENTS) == null) ? new LinkedList<UserInteractionSummary>()
+                : (Queue<UserInteractionSummary>) super.getSession().getAttribute(KEY_EVENTS);
         points.add(pointHistory);
         super.getSession().setAttribute(KEY_EVENTS, points);
         return points;

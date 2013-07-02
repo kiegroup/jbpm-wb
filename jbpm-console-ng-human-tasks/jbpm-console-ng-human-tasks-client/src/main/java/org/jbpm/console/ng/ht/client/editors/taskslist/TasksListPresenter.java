@@ -33,7 +33,7 @@ import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.he.client.event.ActionHumanEvent;
-import org.jbpm.console.ng.he.client.event.HumanEvent;
+import org.jbpm.console.ng.he.client.event.UserInteractionEvent;
 import org.jbpm.console.ng.he.client.event.LevelHumanEvent;
 import org.jbpm.console.ng.he.client.event.StatusHumanEvent;
 import org.jbpm.console.ng.he.client.listevents.HumanEventPresenter;
@@ -67,7 +67,7 @@ public class TasksListPresenter {
     private Map<Day, List<TaskSummary>> currentDayTasks;
 
     @Inject
-    private Event<HumanEvent> pointHistoryEvent;
+    private Event<UserInteractionEvent> pointHistoryEvent;
 
     @Inject
     private HumanEventPresenter actionHistoryPresenter;
@@ -469,7 +469,7 @@ public class TasksListPresenter {
     public void saveNewHumanEvent(List<Long> selectedTasks, String idUser, ActionHumanEvent actionHistory,
             StatusHumanEvent status, LevelHumanEvent level) {
         for (Long taskId : selectedTasks) {
-            pointHistoryEvent.fire(new HumanEvent(taskId.toString(), idUser, actionHistory, status, level));
+            pointHistoryEvent.fire(new UserInteractionEvent(taskId.toString(), idUser, actionHistory, status, level));
         }
     }
 

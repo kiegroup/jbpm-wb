@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import org.jbpm.console.ng.he.model.HumanEventSummary;
+import org.jbpm.console.ng.he.model.UserInteractionSummary;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 
@@ -34,7 +34,7 @@ public class UtilEvent {
         return fmt.format(date);
     }
 
-    public static void exportEventsToTxt(String userName, List<HumanEventSummary> allEventsSummaries) throws IOException {
+    public static void exportEventsToTxt(String userName, List<UserInteractionSummary> allEventsSummaries) throws IOException {
         //TODO problema con java.io
     }
 

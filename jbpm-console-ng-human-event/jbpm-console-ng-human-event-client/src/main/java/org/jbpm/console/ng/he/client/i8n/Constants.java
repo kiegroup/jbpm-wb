@@ -38,37 +38,9 @@ public interface Constants extends Messages {
 
     String Id_Event();
 
-    String Grid();
-
-    String Id();
-
-    String Details();
-
     String Actions();
 
     String User();
-
-    String Comment();
-
-    String At();
-
-    String Added_By();
-
-    String Add_Comment();
-
-    String Create();
-
-    String Description();
-
-    String Filters();
-
-    String Process_Context();
-
-    String Update();
-
-    String Form();
-
-    String Today();
 
     String Refresh();
 
@@ -76,8 +48,6 @@ public interface Constants extends Messages {
 
     String Time();
 
-    String All();
-    
     String Export_Txt();
     
     String Status();
@@ -97,6 +67,5 @@ public interface Constants extends Messages {
     String Info_Events();
     
     String Module();
-
 
 }
