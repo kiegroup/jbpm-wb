@@ -16,15 +16,11 @@
 
 package org.jbpm.console.ng.he.client.info;
 
-import java.util.Map;
-import java.util.Set;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.jbpm.console.ng.he.client.event.ActionHumanEvent;
 import org.jbpm.console.ng.he.client.i8n.Constants;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -34,8 +30,6 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gwt.core.client.GWT;
 
 @Dependent
