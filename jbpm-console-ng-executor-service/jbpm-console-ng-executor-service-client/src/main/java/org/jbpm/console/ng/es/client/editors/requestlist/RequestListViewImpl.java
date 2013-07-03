@@ -155,7 +155,7 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
         // Create a Pager to control the table.
 
         pager.setDisplay( myRequestListGrid );
-        pager.setPageSize( 6 );
+        pager.setPageSize( 10 );
 
         // Add a selection model so we can select cells.
         final MultiSelectionModel<RequestSummary> selectionModel = new MultiSelectionModel<RequestSummary>();

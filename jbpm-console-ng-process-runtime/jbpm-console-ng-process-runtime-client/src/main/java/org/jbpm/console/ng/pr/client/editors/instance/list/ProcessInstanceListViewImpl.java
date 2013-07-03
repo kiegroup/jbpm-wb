@@ -164,7 +164,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
         pager.setStyleName("pagination pagination-right pull-right");
         pager.setDisplay(processInstanceListGrid);
-        pager.setPageSize(30);
+        pager.setPageSize(10);
         listContainer.add( pager );
 
         processInstanceListGrid.setHeight( "350px" );

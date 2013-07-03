@@ -375,7 +375,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
         pager.setStyleName("pagination pagination-right pull-right");
         pager.setDisplay(myTaskListGrid);
-        pager.setPageSize(30);
+        pager.setPageSize(10);
 
         tasksViewContainer.add(myTaskListGrid);
         tasksViewContainer.add(pager);

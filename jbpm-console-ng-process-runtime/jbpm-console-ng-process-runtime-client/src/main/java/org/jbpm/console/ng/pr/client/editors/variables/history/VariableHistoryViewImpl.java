@@ -77,8 +77,6 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
         listContainer.add( processVarListGrid );
         pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
         pager.setStyleName("pagination pagination-right pull-right");
-        pager.setDisplay(processVarListGrid);
-        pager.setPageSize(30);
         listContainer.add( pager );
 
         processVarListGrid.setHeight( "200px" );

@@ -127,7 +127,7 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
         pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
         pager.setStyleName("pagination pagination-right pull-right");
         pager.setDisplay(deployedUnitsListGrid);
-        pager.setPageSize(30);
+        pager.setPageSize(10);
         listContainerDeployedUnits.add( pager );
 
         deployedUnitsLabel.setText(constants.Deployment_Units());
