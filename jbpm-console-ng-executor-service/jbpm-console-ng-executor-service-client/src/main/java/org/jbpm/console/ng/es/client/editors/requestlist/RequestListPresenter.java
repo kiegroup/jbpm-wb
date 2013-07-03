@@ -16,9 +16,10 @@
 
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
+import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.ui.CheckBox;
+
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ import org.uberfire.client.mvp.UberView;
 @WorkbenchScreen(identifier = "Requests List")
 public class RequestListPresenter {
 
-    public interface InboxView extends UberView<RequestListPresenter> {
+    public interface RequestListView extends UberView<RequestListPresenter> {
 
         void displayNotification(String text);
 
@@ -55,7 +56,7 @@ public class RequestListPresenter {
     }
 
     @Inject
-    private InboxView view;
+    private RequestListView view;
     @Inject
     private Caller<ExecutorServiceEntryPoint> executorServices;
     @Inject

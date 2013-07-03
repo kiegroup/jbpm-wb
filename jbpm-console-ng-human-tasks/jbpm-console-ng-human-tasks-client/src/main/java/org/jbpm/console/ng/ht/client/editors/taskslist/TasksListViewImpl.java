@@ -36,8 +36,6 @@ import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -374,7 +372,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         calendarPicker.setViewType( "grid" );
         myTaskListGrid = new DataGrid<TaskSummary>();
         myTaskListGrid.setStyleName("table table-bordered table-striped table-hover");
-        pager = new SimplePager();
+        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
         pager.setStyleName("pagination pagination-right pull-right");
         pager.setDisplay(myTaskListGrid);
         pager.setPageSize(30);

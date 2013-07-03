@@ -149,8 +149,6 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     @DataField
     public DataGrid<VariableSummary> processDataGrid;
 
-    @Inject
-    @DataField
     public SimplePager pager;
 
     @Inject
@@ -172,6 +170,8 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     private List<NodeInstanceSummary> activeNodes;
     private List<NodeInstanceSummary> completedNodes;
 
+  
+    
     @Override
     public void init( final ProcessInstanceDetailsPresenter presenter ) {
         this.presenter = presenter;
@@ -186,6 +186,11 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
         viewProcessDiagramButton.setText( constants.View_Process_Model() );
         listContainer.add( processDataGrid );
+        
+        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+        pager.setStyleName("pagination pagination-right pull-right");
+        pager.setDisplay(processDataGrid);
+        pager.setPageSize(30);
         listContainer.add( pager );
         processDataGrid.setHeight( "200px" );
 
