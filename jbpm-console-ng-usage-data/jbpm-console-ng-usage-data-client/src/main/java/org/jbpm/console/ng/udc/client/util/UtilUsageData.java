@@ -35,7 +35,7 @@ public class UtilUsageData {
     }
 
     public static void exportEventsToTxt(String userName, List<UsageEventSummary> allEventsSummaries) throws IOException {
-        //TODO problema con java.io
+        //TODO 
     }
 
 }
