@@ -114,13 +114,13 @@
     
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-human-event-client</artifactId>
+      <artifactId>jbpm-console-ng-usage-data-client</artifactId>
       <version>${project.version}</version>
     </dependency>
     
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-human-event-backend</artifactId>
+      <artifactId>jbpm-console-ng-usage-data-backend</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -621,8 +621,8 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-client</compileSourcesArtifact>
 
-            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-event-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-event-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-usage-data-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-usage-data-client</compileSourcesArtifact>
             
             
             <compileSourcesArtifact>org.jbpm:jbpm-designer-api</compileSourcesArtifact>

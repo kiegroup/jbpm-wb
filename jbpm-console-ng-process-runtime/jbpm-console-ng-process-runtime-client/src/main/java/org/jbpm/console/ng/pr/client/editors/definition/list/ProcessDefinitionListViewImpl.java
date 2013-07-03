@@ -97,8 +97,6 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
     @DataField
     public FlowPanel listContainer;
 
-    @Inject
-    @DataField
     public SimplePager pager;
 
     @Inject
@@ -114,6 +112,8 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
     private Event<ProcessDefSelectionEvent> processSelection;
     private ListHandler<ProcessSummary> sortHandler;
 
+    
+    
     @Override
     public void init( final ProcessDefinitionListPresenter presenter ) {
         this.presenter = presenter;
@@ -130,6 +130,11 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
         } );
 
         listContainer.add( processdefListGrid );
+        
+        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+        pager.setStyleName("pagination pagination-right pull-right");
+        pager.setDisplay(processdefListGrid);
+        pager.setPageSize(10);
         listContainer.add( pager );
 
         processdefListGrid.setHeight( "350px" );

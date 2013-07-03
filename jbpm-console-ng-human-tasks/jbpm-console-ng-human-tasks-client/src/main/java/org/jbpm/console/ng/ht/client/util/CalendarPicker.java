@@ -18,7 +18,7 @@ package org.jbpm.console.ng.ht.client.util;
 
 import java.util.Date;
 
-import org.jbpm.console.ng.ht.client.i8n.Constants;
+import org.jbpm.console.ng.ht.client.i18n.Constants;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.Heading;

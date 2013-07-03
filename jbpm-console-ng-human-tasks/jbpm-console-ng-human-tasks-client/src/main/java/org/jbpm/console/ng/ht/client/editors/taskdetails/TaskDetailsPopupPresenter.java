@@ -38,9 +38,10 @@ import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
-import org.jbpm.console.ng.ht.client.i8n.Constants;
+import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
+import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.uberfire.client.annotations.OnReveal;
@@ -112,6 +113,9 @@ public class TaskDetailsPopupPresenter {
 
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
+    
+    @Inject
+    private Event<UserTaskEvent> userTaskChanges;
 
     private PlaceRequest place;
 
@@ -163,7 +167,7 @@ public class TaskDetailsPopupPresenter {
                 @Override
                 public void callback( Void nothing ) {
                     view.displayNotification( "Task Details Updated for Task id = " + taskId + ")" );
-
+                    userTaskChanges.fire( new UserTaskEvent( identity.getName() ) );
                 }
             } ).updateSimpleTaskDetails( taskId, names, Integer.valueOf( priority ), descriptions,
                                          // subTaskStrategy,

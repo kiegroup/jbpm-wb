@@ -129,10 +129,10 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
 
     /**
-    * Day adaptors
-    */
+* Day adaptors
+*/
     public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, List<String> strStatuses,
-                Date dateFrom, Date dateTo, String language) {
+            Date dateFrom, Date dateTo, String language) {
         LocalDate dayFrom = new LocalDate(dateFrom);
         LocalDate dayTo = new LocalDate(dateTo);
 
@@ -538,4 +538,5 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
             taskService.release(taskId, user);
         }
     }
+
 }

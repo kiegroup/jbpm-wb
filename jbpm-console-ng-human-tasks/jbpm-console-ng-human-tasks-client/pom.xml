@@ -68,7 +68,7 @@
     
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-human-event-client</artifactId>
+      <artifactId>jbpm-console-ng-usage-data-client</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -76,7 +76,6 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-client-api</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-backend-api</artifactId>

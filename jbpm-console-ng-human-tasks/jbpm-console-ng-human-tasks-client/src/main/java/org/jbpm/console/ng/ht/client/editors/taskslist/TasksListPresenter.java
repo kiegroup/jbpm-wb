@@ -1,18 +1,18 @@
 /*
- * Copyright 2012 JBoss Inc
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright 2012 JBoss Inc
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
@@ -32,17 +32,17 @@ import org.jboss.errai.bus.client.api.ErrorCallback;
 import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.he.client.event.ActionHumanEvent;
-import org.jbpm.console.ng.he.client.event.UserInteractionEvent;
-import org.jbpm.console.ng.he.client.event.LevelHumanEvent;
-import org.jbpm.console.ng.he.client.event.StatusHumanEvent;
-import org.jbpm.console.ng.he.client.listevents.HumanEventPresenter;
-import org.jbpm.console.ng.ht.client.i8n.Constants;
+import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.util.DateRange;
 import org.jbpm.console.ng.ht.client.util.DateUtils;
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.jbpm.console.ng.udc.client.event.ActionsUsageData;
+import org.jbpm.console.ng.udc.client.event.LevelsUsageData;
+import org.jbpm.console.ng.udc.client.event.StatusHumanEvent;
+import org.jbpm.console.ng.udc.client.event.UsageEvent;
+import org.jbpm.console.ng.udc.client.usagelist.UsageDataPresenter;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -58,6 +58,7 @@ import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.ProvidesKey;
 
+
 @Dependent
 @WorkbenchScreen(identifier = "Tasks List")
 public class TasksListPresenter {
@@ -65,25 +66,28 @@ public class TasksListPresenter {
     private List<TaskSummary> allTaskSummaries;
 
     private Map<Day, List<TaskSummary>> currentDayTasks;
-
+    
     @Inject
-    private Event<UserInteractionEvent> pointHistoryEvent;
+    private Event<UsageEvent> usageEvent;
 
+    @SuppressWarnings("unused")
     @Inject
-    private HumanEventPresenter actionHistoryPresenter;
-
+    private UsageDataPresenter usageDataPresenter;
+    
     public List<TaskSummary> getAllTaskSummaries() {
         return allTaskSummaries;
     }
+    
+    
 
     public interface TaskListView extends UberView<TasksListPresenter> {
 
-        void displayNotification(String text);
+        void displayNotification( String text );
 
         TaskListMultiDayBox getTaskListMultiDayBox();
 
         MultiSelectionModel<TaskSummary> getSelectionModel();
-
+        
         TextBox getSearchBox();
 
         void refreshTasks();
@@ -122,7 +126,8 @@ public class TasksListPresenter {
         }
     };
 
-    private Constants constants = GWT.create(Constants.class);
+
+    private Constants constants = GWT.create( Constants.class );
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -142,26 +147,26 @@ public class TasksListPresenter {
     }
 
     public void filterTasks(String text) {
-        if (text.equals("")) {
-            if (allTaskSummaries != null) {
-                dataProvider.getList().clear();
-                dataProvider.setList(new ArrayList<TaskSummary>(allTaskSummaries));
-                dataProvider.refresh();
-
-            }
-            if (currentDayTasks != null) {
-                view.getTaskListMultiDayBox().clear();
-                for (Day day : currentDayTasks.keySet()) {
-                    view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(currentDayTasks.get(day)));
+        if(text.equals("")){
+                if(allTaskSummaries != null){
+                    dataProvider.getList().clear();
+                    dataProvider.setList(new ArrayList<TaskSummary>(allTaskSummaries));
+                    dataProvider.refresh();
+                    
                 }
-                view.getTaskListMultiDayBox().refresh();
-            }
-        } else {
-            if (allTaskSummaries != null) {
+                if(currentDayTasks != null){
+                    view.getTaskListMultiDayBox().clear();
+                    for (Day day : currentDayTasks.keySet()) {
+                         view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(currentDayTasks.get(day)));
+                    }
+                    view.getTaskListMultiDayBox().refresh();
+                }
+        }else{
+            if(allTaskSummaries != null){
                 List<TaskSummary> tasks = new ArrayList<TaskSummary>(allTaskSummaries);
                 List<TaskSummary> filteredTasksSimple = new ArrayList<TaskSummary>();
-                for (TaskSummary ts : tasks) {
-                    if (ts.getName().toLowerCase().contains(text.toLowerCase())) {
+                for(TaskSummary ts : tasks){
+                    if(ts.getName().toLowerCase().contains(text.toLowerCase())){
                         filteredTasksSimple.add(ts);
                     }
                 }
@@ -169,97 +174,101 @@ public class TasksListPresenter {
                 dataProvider.setList(filteredTasksSimple);
                 dataProvider.refresh();
             }
-            if (currentDayTasks != null) {
+            if(currentDayTasks != null){
                 Map<Day, List<TaskSummary>> tasksCalendar = new HashMap<Day, List<TaskSummary>>(currentDayTasks);
                 Map<Day, List<TaskSummary>> filteredTasksCalendar = new HashMap<Day, List<TaskSummary>>();
                 view.getTaskListMultiDayBox().clear();
-                for (Day d : tasksCalendar.keySet()) {
-                    if (filteredTasksCalendar.get(d) == null) {
-                        filteredTasksCalendar.put(d, new ArrayList<TaskSummary>());
+                for(Day d : tasksCalendar.keySet()){
+                    if(filteredTasksCalendar.get(d) == null){
+                                filteredTasksCalendar.put(d, new ArrayList<TaskSummary>());
                     }
-                    for (TaskSummary ts : tasksCalendar.get(d)) {
-                        if (ts.getName().toLowerCase().contains(text.toLowerCase())) {
+                    for(TaskSummary ts : tasksCalendar.get(d)){
+                        if(ts.getName().toLowerCase().contains(text.toLowerCase())){
                             filteredTasksCalendar.get(d).add(ts);
                         }
                     }
                 }
                 for (Day day : filteredTasksCalendar.keySet()) {
-                    view.getTaskListMultiDayBox()
-                            .addTasksByDay(day, new ArrayList<TaskSummary>(filteredTasksCalendar.get(day)));
+                     view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(filteredTasksCalendar.get(day)));
                 }
                 view.getTaskListMultiDayBox().refresh();
             }
-        }
+         }
+        
 
     }
 
-    public void startTasks(final List<Long> selectedTasks, final String userId) {
-        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
+    public void startTasks( final List<Long> selectedTasks,
+                            final String userId ) {
+        taskServices.call( new RemoteCallback<List<TaskSummary>>() {
             @Override
-            public void callback(List<TaskSummary> tasks) {
-                view.displayNotification("Task(s) Started");
-                saveNewHumanEvent(selectedTasks, userId, ActionHumanEvent.HUMAN_TASKS_STARTED, StatusHumanEvent.SUCCESS,
-                        LevelHumanEvent.INFO);
+            public void callback( List<TaskSummary> tasks ) {
+                view.displayNotification( "Task(s) Started" );
+                saveNewHumanEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_STARTED, StatusHumanEvent.SUCCESS,
+                        LevelsUsageData.INFO);
                 view.refreshTasks();
             }
         }, new ErrorCallback() {
             @Override
-            public boolean error(Message message, Throwable throwable) {
-                view.displayNotification("Task(s) Started - ERROR");
-                saveNewHumanEvent(selectedTasks, userId, ActionHumanEvent.HUMAN_TASKS_STARTED, StatusHumanEvent.ERROR,
-                        LevelHumanEvent.ERROR);
+            public boolean error( Message message, Throwable throwable ) {
+                view.displayNotification( "Task(s) Started - ERROR" );
+                saveNewHumanEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_STARTED, StatusHumanEvent.ERROR,
+                        LevelsUsageData.ERROR);
                 return false;
             }
-        }).startBatch(selectedTasks, userId);
+        } ).startBatch( selectedTasks, userId );
     }
 
-    public void releaseTasks(final List<Long> selectedTasks, final String userId) {
-        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
+    public void releaseTasks( final List<Long> selectedTasks,
+                              final String userId ) {
+        taskServices.call( new RemoteCallback<List<TaskSummary>>() {
             @Override
-            public void callback(List<TaskSummary> tasks) {
-                view.displayNotification("Task(s) Released");
-                saveNewHumanEvent(selectedTasks, userId, ActionHumanEvent.HUMAN_TASKS_RELEASED, StatusHumanEvent.SUCCESS,
-                        LevelHumanEvent.INFO);
+            public void callback( List<TaskSummary> tasks ) {
+                view.displayNotification( "Task(s) Released" );
+                saveNewHumanEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_RELEASED, StatusHumanEvent.SUCCESS,
+                        LevelsUsageData.INFO);
                 view.refreshTasks();
             }
         }, new ErrorCallback() {
             @Override
-            public boolean error(Message message, Throwable throwable) {
-                view.displayNotification("Task(s) Released - ERROR");
-                saveNewHumanEvent(selectedTasks, userId, ActionHumanEvent.HUMAN_TASKS_RELEASED, StatusHumanEvent.ERROR,
-                        LevelHumanEvent.ERROR);
+            public boolean error( Message message, Throwable throwable ) {
+                view.displayNotification( "Task(s) Released - ERROR" );
+                saveNewHumanEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_RELEASED, StatusHumanEvent.ERROR,
+                        LevelsUsageData.ERROR);
                 return false;
             }
-        }).releaseBatch(selectedTasks, userId);
+        } ).releaseBatch( selectedTasks, userId );
     }
 
-    public void completeTasks(final List<Long> selectedTasks, final String userId) {
-        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
+    public void completeTasks( final List<Long> selectedTasks,
+                               final String userId ) {
+        taskServices.call( new RemoteCallback<List<TaskSummary>>() {
             @Override
-            public void callback(List<TaskSummary> tasks) {
-                view.displayNotification("Task(s) Completed");
-                saveNewHumanEvent(selectedTasks, userId, ActionHumanEvent.HUMAN_TASKS_COMPLETED, StatusHumanEvent.SUCCESS,
-                        LevelHumanEvent.INFO);
+            public void callback( List<TaskSummary> tasks ) {
+                view.displayNotification( "Task(s) Completed" );
+                saveNewHumanEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_COMPLETED, StatusHumanEvent.SUCCESS,
+                        LevelsUsageData.INFO);
                 view.refreshTasks();
             }
         }, new ErrorCallback() {
             @Override
-            public boolean error(Message message, Throwable throwable) {
-                view.displayNotification("Task(s) Completed - ERROR");
-                saveNewHumanEvent(selectedTasks, userId, ActionHumanEvent.HUMAN_TASKS_COMPLETED, StatusHumanEvent.ERROR,
-                        LevelHumanEvent.ERROR);
+            public boolean error( Message message, Throwable throwable ) {
+                view.displayNotification( "Task(s) Completed - ERROR" );
+                saveNewHumanEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_COMPLETED, StatusHumanEvent.ERROR,
+                        LevelsUsageData.ERROR);
                 return false;
             }
-        }).completeBatch(selectedTasks, userId, null);
+        } ).completeBatch( selectedTasks, userId, null );
     }
 
-    public void claimTasks(final List<Long> selectedTasks, final String userId) {
-        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
+    public void claimTasks( final List<Long> selectedTasks,
+                            final String userId ) {
+        taskServices.call( new RemoteCallback<List<TaskSummary>>() {
             @Override
-            public void callback(List<TaskSummary> tasks) {
-                view.displayNotification("Task(s) Claimed");
-                saveNewHumanEvent(selectedTasks, userId, ActionHumanEvent.HUMAN_TASKS_CLAIMED, StatusHumanEvent.SUCCESS,
-                        LevelHumanEvent.INFO);
+            public void callback( List<TaskSummary> tasks ) {
+                view.displayNotification( "Task(s) Claimed" );
+                saveNewHumanEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_CLAIMED, StatusHumanEvent.SUCCESS,
+                        LevelsUsageData.INFO);
                 view.refreshTasks();
 
             }
@@ -267,49 +276,48 @@ public class TasksListPresenter {
             @Override
             public boolean error(Message message, Throwable throwable) {
                 view.displayNotification("Task(s) Claimed - ERROR");
-                saveNewHumanEvent(selectedTasks, userId, ActionHumanEvent.HUMAN_TASKS_CLAIMED, StatusHumanEvent.ERROR,
-                        LevelHumanEvent.ERROR);
+                saveNewHumanEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_CLAIMED, StatusHumanEvent.ERROR,
+                        LevelsUsageData.ERROR);
                 return false;
             }
-        }).claimBatch(selectedTasks, userId);
+        } ).claimBatch( selectedTasks, userId );
     }
 
-    public void formClosed(@Observes BeforeClosePlaceEvent closed) {
-        if (closed.getPlace().getIdentifier().equals("Form Display")
-                || closed.getPlace().getIdentifier().equals("Quick New Task")) {
+    public void formClosed( @Observes BeforeClosePlaceEvent closed ) {
+        if(closed.getPlace().getIdentifier().equals("Form Display") ||
+                closed.getPlace().getIdentifier().equals("Quick New Task")){
             view.refreshTasks();
         }
     }
 
-    private List<String> getGroups(Identity identity) {
+    private List<String> getGroups( Identity identity ) {
         List<Role> roles = identity.getRoles();
-        List<String> groups = new ArrayList<String>(roles.size());
-        for (Role r : roles) {
-            groups.add(r.getName().trim());
+        List<String> groups = new ArrayList<String>( roles.size() );
+        for ( Role r : roles ) {
+            groups.add( r.getName().trim() );
         }
         return groups;
     }
 
     /**
-     * Refresh tasks based on specified date, view (day/week/month) and task
-     * type.
-     */
+* Refresh tasks based on specified date, view (day/week/month) and task type.
+*/
     public void refreshTasks(Date date, TaskView taskView, TaskType taskType) {
         switch (taskType) {
-        case PERSONAL:
-            refreshPersonalTasks(date, taskView);
-            break;
-        case ACTIVE:
-            refreshActiveTasks(date, taskView);
-            break;
-        case GROUP:
-            refreshGroupTasks(date, taskView);
-            break;
-        case ALL:
-            refreshAllTasks(date, taskView);
-            break;
-        default:
-            throw new IllegalStateException("Unrecognized task type '" + taskType + "'!");
+            case PERSONAL:
+                refreshPersonalTasks(date, taskView);
+                break;
+            case ACTIVE:
+                refreshActiveTasks(date, taskView);
+                break;
+            case GROUP:
+                refreshGroupTasks(date, taskView);
+                break;
+            case ALL:
+                refreshAllTasks(date, taskView);
+                break;
+            default:
+                throw new IllegalStateException("Unrecognized task type '" + taskType + "'!");
         }
     }
 
@@ -322,7 +330,7 @@ public class TasksListPresenter {
         statuses.add("InProgress");
         statuses.add("Created");
         statuses.add("Reserved");
-        if (taskView.equals(TaskView.GRID)) {
+        if (taskView.equals(TaskView.GRID)){
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
@@ -345,23 +353,23 @@ public class TasksListPresenter {
     private Date determineFirstDateForTaskViewBasedOnSpecifiedDate(Date date, TaskView taskView) {
         Date fromDate;
         switch (taskView) {
-        case DAY:
-            fromDate = new Date(date.getTime());
-            break;
-        case WEEK:
-            DateRange weekRange = DateUtils.getWorkWeekDateRange(date);
-            fromDate = weekRange.getStartDate();
-            break;
-        case MONTH:
-            DateRange monthRange = DateUtils.getMonthDateRange(date);
-            DateRange firstWeekRange = DateUtils.getWeekDateRange(monthRange.getStartDate());
-            fromDate = firstWeekRange.getStartDate();
-            break;
-        case GRID:
-            fromDate = new Date(date.getTime());
-            break;
-        default:
-            throw new IllegalStateException("Unreconginized view type '" + taskView + "'!");
+            case DAY:
+                fromDate = new Date(date.getTime());
+                break;
+            case WEEK:
+                DateRange weekRange = DateUtils.getWorkWeekDateRange(date);
+                fromDate = weekRange.getStartDate();
+                break;
+            case MONTH:
+                DateRange monthRange = DateUtils.getMonthDateRange(date);
+                DateRange firstWeekRange = DateUtils.getWeekDateRange(monthRange.getStartDate());
+                fromDate = firstWeekRange.getStartDate();
+                break;
+            case GRID:
+                fromDate = new Date(date.getTime());
+                break;
+            default:
+                throw new IllegalStateException("Unreconginized view type '" + taskView + "'!");
         }
         return fromDate;
     }
@@ -374,7 +382,7 @@ public class TasksListPresenter {
         statuses.add("Ready");
         statuses.add("Reserved");
         statuses.add("InProgress");
-        if (taskView.equals(TaskView.GRID)) {
+        if(taskView.equals(TaskView.GRID)) {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
@@ -405,9 +413,9 @@ public class TasksListPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
-                    allTaskSummaries = tasks;
-                    filterTasks(view.getSearchBox().getText());
-                    view.getSelectionModel().clear();
+                   allTaskSummaries = tasks;
+                   filterTasks(view.getSearchBox().getText());
+                   view.getSelectionModel().clear();
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
         } else {
@@ -442,9 +450,9 @@ public class TasksListPresenter {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
-                    allTaskSummaries = tasks;
-                    filterTasks(view.getSearchBox().getText());
-                    view.getSelectionModel().clear();
+                   allTaskSummaries = tasks;
+                   filterTasks(view.getSearchBox().getText());
+                   view.getSelectionModel().clear();
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
         } else {
@@ -465,11 +473,11 @@ public class TasksListPresenter {
     public ListDataProvider<TaskSummary> getDataProvider() {
         return dataProvider;
     }
-
-    public void saveNewHumanEvent(List<Long> selectedTasks, String idUser, ActionHumanEvent actionHistory,
-            StatusHumanEvent status, LevelHumanEvent level) {
+    
+    public void saveNewHumanEvent(List<Long> selectedTasks, String idUser, ActionsUsageData actionHistory,
+            StatusHumanEvent status, LevelsUsageData level) {
         for (Long taskId : selectedTasks) {
-            pointHistoryEvent.fire(new UserInteractionEvent(taskId.toString(), idUser, actionHistory, status, level));
+            usageEvent.fire(new UsageEvent(taskId.toString(), idUser, actionHistory, status, level));
         }
     }
 

@@ -63,18 +63,20 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
     @DataField
     public DataGrid<VariableSummary> processVarListGrid;
 
-    @Inject
-    @DataField
+    
+    
     public SimplePager pager;
 
     @Inject
     private Event<NotificationEvent> notification;
-
+  
     @Override
     public void init( VariableHistoryPresenter presenter ) {
         this.presenter = presenter;
 
         listContainer.add( processVarListGrid );
+        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+        pager.setStyleName("pagination pagination-right pull-right");
         listContainer.add( pager );
 
         processVarListGrid.setHeight( "200px" );

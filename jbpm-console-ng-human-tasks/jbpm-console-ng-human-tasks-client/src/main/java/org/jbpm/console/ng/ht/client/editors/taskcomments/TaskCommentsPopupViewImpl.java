@@ -40,7 +40,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
-import org.jbpm.console.ng.ht.client.i8n.Constants;
+import org.jbpm.console.ng.ht.client.i18n.Constants;
 
 @Dependent
 @Templated(value = "TaskCommentsPopupViewImpl.html")

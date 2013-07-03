@@ -1,18 +1,18 @@
 /*
- * Copyright 2012 JBoss Inc
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright 2012 JBoss Inc
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
@@ -28,12 +28,12 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.he.client.event.ActionHumanEvent;
-import org.jbpm.console.ng.he.client.event.UserInteractionEvent;
-import org.jbpm.console.ng.he.client.event.LevelHumanEvent;
-import org.jbpm.console.ng.he.client.event.StatusHumanEvent;
-import org.jbpm.console.ng.ht.client.i8n.Constants;
+import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.jbpm.console.ng.udc.client.event.ActionsUsageData;
+import org.jbpm.console.ng.udc.client.event.LevelsUsageData;
+import org.jbpm.console.ng.udc.client.event.StatusHumanEvent;
+import org.jbpm.console.ng.udc.client.event.UsageEvent;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -53,11 +53,11 @@ import com.google.gwt.user.client.ui.TextBox;
 @WorkbenchPopup(identifier = "Quick New Task")
 public class QuickNewTaskPresenter {
 
-    private Constants constants = GWT.create(Constants.class);
+    private Constants constants = GWT.create( Constants.class );
 
     public interface QuickNewTaskView extends UberView<QuickNewTaskPresenter> {
 
-        void displayNotification(String text);
+        void displayNotification( String text );
 
         TextBox getTaskNameText();
 
@@ -80,12 +80,12 @@ public class QuickNewTaskPresenter {
 
     @Inject
     private PlaceManager placeManager;
-
+    
     @Inject
-    private Event<UserInteractionEvent> pointHistoryEvent;
+    private Event<UsageEvent> pointHistoryEvent;
 
     @OnStart
-    public void onStart(final PlaceRequest place) {
+    public void onStart( final PlaceRequest place ) {
         this.place = place;
     }
 
@@ -106,63 +106,68 @@ public class QuickNewTaskPresenter {
     public void init() {
     }
 
-    public void addTask(final List<String> users, List<String> groups, String taskName, int priority, boolean isQuickTask,
-            Date due) {
+    public void addTask( final List<String> users, List<String> groups,
+                         String taskName,
+                         int priority,
+                         boolean isQuickTask,
+                         Date due ) {
 
         Map<String, Object> templateVars = new HashMap<String, Object>();
-        templateVars.put("due", due);
+        templateVars.put( "due", due );
 
         String str = "(with (new Task()) { priority = " + priority
                 + ", taskData = (with( new TaskData()) { expirationTime = due } ), ";
         str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
         str += " [";
-        if (users != null && !users.isEmpty()) {
-
-            for (String user : users) {
+        if ( users != null && !users.isEmpty() ) {
+            
+            for(String user : users){
                 str += "new User('" + user + "'), ";
             }
-
+            
         }
-        if (groups != null && !groups.isEmpty()) {
-
-            for (String group : groups) {
+        if ( groups != null && !groups.isEmpty() ) {
+            
+            for(String group : groups){
                 str += "new Group('" + group + "'), ";
             }
-
+            
         }
-        str += "], }),";
+        str+="], }),";
         str += "names = [ new I18NText( 'en-UK', '" + taskName + "')]})";
-        if (isQuickTask) {
-            taskServices.call(new RemoteCallback<Long>() {
+        if ( isQuickTask ) {
+            taskServices.call( new RemoteCallback<Long>() {
                 @Override
-                public void callback(Long taskId) {
-                    view.displayNotification("Task Created and Started (id = " + taskId + ")");
-                    pointHistoryEvent.fire(new UserInteractionEvent(taskId.toString(), identity.getName(),
-                            ActionHumanEvent.HUMAN_TASKS_CREATED_STARTED, StatusHumanEvent.SUCCESS, LevelHumanEvent.INFO));
+                public void callback( Long taskId ) {
+                    view.displayNotification( "Task Created and Started (id = " + taskId + ")" );
+                    pointHistoryEvent.fire( new UsageEvent(taskId.toString(), identity.getName(),
+                            ActionsUsageData.HUMAN_TASKS_CREATED_STARTED, StatusHumanEvent.SUCCESS, LevelsUsageData.INFO) );
                     close();
+
                 }
-            }).addTaskAndStart(str, null, identity.getName(), templateVars);
+            } ).addTaskAndStart( str, null, identity.getName(), templateVars );
         } else {
-            taskServices.call(new RemoteCallback<Long>() {
+            taskServices.call( new RemoteCallback<Long>() {
                 @Override
-                public void callback(Long taskId) {
-                    view.displayNotification("Task Created (id = " + taskId + ")");
-                    pointHistoryEvent.fire(new UserInteractionEvent(taskId.toString(), identity.getName(),
-                            ActionHumanEvent.HUMAN_TASKS_CREATED, StatusHumanEvent.SUCCESS, LevelHumanEvent.INFO));
+                public void callback( Long taskId ) {
+                    view.displayNotification( "Task Created (id = " + taskId + ")" );
+                    pointHistoryEvent.fire( new UsageEvent(taskId.toString(), identity.getName(),
+                            ActionsUsageData.HUMAN_TASKS_CREATED, StatusHumanEvent.SUCCESS, LevelsUsageData.INFO) );
                     close();
+
                 }
-            }).addTask(str, null, templateVars);
+            } ).addTask( str, null, templateVars );
         }
 
     }
 
     @OnReveal
     public void onReveal() {
-        view.getTaskNameText().setFocus(true);
+        view.getTaskNameText().setFocus( true );
 
     }
 
     public void close() {
-        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
+        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }
 }

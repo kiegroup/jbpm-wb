@@ -1,59 +1,24 @@
 /*
- * Copyright 2012 JBoss Inc
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright 2012 JBoss Inc
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.he.client.event.ActionHumanEvent;
-import org.jbpm.console.ng.he.model.UserInteractionSummary;
-import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskType;
-import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskView;
-import org.jbpm.console.ng.ht.client.i8n.Constants;
-import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
-import org.jbpm.console.ng.ht.client.util.CalendarPicker;
-import org.jbpm.console.ng.ht.client.util.ResizableHeader;
-import org.jbpm.console.ng.ht.model.TaskSummary;
-import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.security.Identity;
-import org.uberfire.workbench.events.NotificationEvent;
-
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.Heading;
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CheckboxCell;
@@ -62,6 +27,14 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.NavLink;
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -82,6 +55,29 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import javax.enterprise.event.Observes;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskType;
+import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskView;
+import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
+import org.jbpm.console.ng.ht.client.util.CalendarPicker;
+import org.jbpm.console.ng.ht.client.util.ResizableHeader;
+import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
+import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.security.Identity;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "TasksListViewImpl.html")
@@ -137,6 +133,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     @DataField
     public NavLink showActiveTasksNavLink;
 
+    
     @DataField
     public Heading taskCalendarViewLabel = new Heading(4);
 
@@ -162,20 +159,21 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     
     @Inject
     private Event<TaskSelectionEvent> taskSelection;
-    
+
     @Inject
     @DataField
     public IconAnchor refreshIcon;
     
     private Set<TaskSummary> selectedTasks;
-    
     private ListHandler<TaskSummary> sortHandler;
-    
     private MultiSelectionModel<TaskSummary> selectionModel;
+    
     
     public DataGrid<TaskSummary> myTaskListGrid;
    
     public SimplePager pager;
+    
+    
     
 
     @Override
@@ -374,10 +372,10 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         calendarPicker.setViewType( "grid" );
         myTaskListGrid = new DataGrid<TaskSummary>();
         myTaskListGrid.setStyleName("table table-bordered table-striped table-hover");
-        pager = new SimplePager();
+        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
         pager.setStyleName("pagination pagination-right pull-right");
         pager.setDisplay(myTaskListGrid);
-        pager.setPageSize(30);
+        pager.setPageSize(10);
 
         tasksViewContainer.add(myTaskListGrid);
         tasksViewContainer.add(pager);

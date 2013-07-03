@@ -134,8 +134,6 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
     @DataField
     public DataGrid<ProcessInstanceSummary> processInstanceListGrid;
 
-    @Inject
-    @DataField
     public SimplePager pager;
 
     private Set<ProcessInstanceSummary> selectedProcessInstances;
@@ -163,6 +161,10 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         processInstanceLabel.setText( constants.Process_Instances() );
         processInstanceLabel.setStyleName( "" );
         listContainer.add( processInstanceListGrid );
+        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+        pager.setStyleName("pagination pagination-right pull-right");
+        pager.setDisplay(processInstanceListGrid);
+        pager.setPageSize(10);
         listContainer.add( pager );
 
         processInstanceListGrid.setHeight( "350px" );

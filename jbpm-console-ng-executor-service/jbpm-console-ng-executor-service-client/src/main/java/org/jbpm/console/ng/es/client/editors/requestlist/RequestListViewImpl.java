@@ -16,16 +16,10 @@
 
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.CheckBox;
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
@@ -36,6 +30,15 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -43,13 +46,9 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.SafeHtmlHeader;
-import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -68,7 +67,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "RequestListViewImpl.html")
-public class RequestListViewImpl extends Composite implements RequestListPresenter.InboxView {
+public class RequestListViewImpl extends Composite implements RequestListPresenter.RequestListView {
 
     private Constants constants = GWT.create( Constants.class );
 
@@ -97,8 +96,6 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
     @DataField
     public DataGrid<RequestSummary> myRequestListGrid;
 
-    @Inject
-    @DataField
     public SimplePager pager;
 
     @Inject
@@ -140,6 +137,10 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
         this.presenter = presenter;
 
         listContainer.add( myRequestListGrid );
+        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+        pager.setStyleName("pagination pagination-right pull-right");
+        pager.setDisplay( myRequestListGrid );
+        pager.setPageSize(30);
         listContainer.add( pager );
 
         myRequestListGrid.setHeight( "350px" );
@@ -154,7 +155,7 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
         // Create a Pager to control the table.
 
         pager.setDisplay( myRequestListGrid );
-        pager.setPageSize( 6 );
+        pager.setPageSize( 10 );
 
         // Add a selection model so we can select cells.
         final MultiSelectionModel<RequestSummary> selectionModel = new MultiSelectionModel<RequestSummary>();

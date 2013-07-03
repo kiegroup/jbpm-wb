@@ -61,9 +61,9 @@ public interface Constants extends Messages {
 
     String newItem();
     
-    String Events();
+    String Usage_Data();
     
-    String Human_Events();
+    String Usage_Data_Collector();
 
 
 }

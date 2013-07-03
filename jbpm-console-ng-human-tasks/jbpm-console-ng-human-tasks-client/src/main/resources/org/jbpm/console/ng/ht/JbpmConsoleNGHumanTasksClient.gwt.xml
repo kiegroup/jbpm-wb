@@ -31,8 +31,7 @@
   <inherits name="org.uberfire.UberfireWidgetsCommons" />
 
   <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksAPI" />
-  <inherits name="org.jbpm.console.ng.he.JbpmConsoleNGHumanEventsClient"/>
-  <!-- inherits name="org.jbpm.console.ng.he.JbpmConsoleNGHumanEventsAPI"/-->
+  <inherits name="org.jbpm.console.ng.udc.JbpmConsoleNGUsageDataClient"/>
   
 
   <inherits name="com.github.gwtbootstrap.datetimepicker.Datetimepicker" />

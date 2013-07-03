@@ -88,8 +88,6 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
     @DataField
     public FlowPanel listContainerDeployedUnits;
 
-    @Inject
-    @DataField
     public SimplePager pager;
 
     @Inject
@@ -118,11 +116,18 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
     private Constants constants = GWT.create( Constants.class );
     private BusinessDomainImages images = GWT.create( BusinessDomainImages.class );
 
+    
+
+
     @Override
     public void init( final DeploymentUnitsListPresenter presenter ) {
         this.presenter = presenter;
 
         listContainerDeployedUnits.add( deployedUnitsListGrid );
+        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+        pager.setStyleName("pagination pagination-right pull-right");
+        pager.setDisplay(deployedUnitsListGrid);
+        pager.setPageSize(10);
         listContainerDeployedUnits.add( pager );
 
         deployedUnitsLabel.setText(constants.Deployment_Units());
