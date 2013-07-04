@@ -17,19 +17,16 @@
 package org.jbpm.console.ng.udc.client.export;
 
 import java.util.List;
-import java.util.Queue;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.jboss.errai.bus.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.udc.client.i8n.Constants;
+import org.jbpm.console.ng.udc.client.usagelist.UsageDataPresenter;
 import org.jbpm.console.ng.udc.client.util.UtilUsageData;
 import org.jbpm.console.ng.udc.model.UsageEventSummary;
-import org.jbpm.console.ng.udc.service.UsageServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
@@ -38,7 +35,6 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 
 @Dependent
@@ -64,7 +60,7 @@ public class ExportUsageDataPresenter {
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
 
     @Inject
-    private Caller<UsageServiceEntryPoint> usageDataService;
+    private UsageDataPresenter presenterUsageData;
 
     private List<UsageEventSummary> allUsageEventSummaries;
 
@@ -95,15 +91,7 @@ public class ExportUsageDataPresenter {
     private String getFormatCsv() {
         //TODO valid list session
         StringBuilder formatCsv = new StringBuilder(UtilUsageData.HEADER_TITLE_CSV);
-        //TODO call this method of UsageDataPresenter
-        usageDataService.call(new RemoteCallback<Queue<UsageEventSummary>>() {
-            @Override
-            public void callback(Queue<UsageEventSummary> events) {
-                if (events != null) {
-                    allUsageEventSummaries = Lists.newArrayList(events);
-                }
-            }
-        }).getAllUsageData();
+        allUsageEventSummaries = presenterUsageData.getAllUsageDataCollector();
         if (allUsageEventSummaries != null && !allUsageEventSummaries.isEmpty()) {
             for (UsageEventSummary usage : allUsageEventSummaries) {
                 formatCsv.append(UtilUsageData.getRowFormatted(usage));

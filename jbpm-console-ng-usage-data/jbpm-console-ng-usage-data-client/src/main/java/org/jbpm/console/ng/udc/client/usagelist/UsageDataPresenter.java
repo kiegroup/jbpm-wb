@@ -118,6 +118,18 @@ public class UsageDataPresenter {
             }
         }).getAllUsageData();
     }
+    
+    public List<UsageEventSummary> getAllUsageDataCollector() {
+        usageDataService.call(new RemoteCallback<Queue<UsageEventSummary>>() {
+            @Override
+            public void callback(Queue<UsageEventSummary> events) {
+                if (events != null) {
+                    allUsageEventSummaries = Lists.newArrayList(events);
+                }
+            }
+        }).getAllUsageData();
+        return allUsageEventSummaries;
+    }
 
     public void clearUsageData() {
         usageDataService.call(new RemoteCallback<Queue<UsageEventSummary>>() {
