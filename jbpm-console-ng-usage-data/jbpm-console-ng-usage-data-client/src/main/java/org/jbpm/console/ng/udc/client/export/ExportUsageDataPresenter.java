@@ -104,7 +104,6 @@ public class ExportUsageDataPresenter {
                 }
             }
         }).getAllUsageData();
-        GWT.log("** size usage " + allUsageEventSummaries.size());
         if (allUsageEventSummaries != null && !allUsageEventSummaries.isEmpty()) {
             for (UsageEventSummary usage : allUsageEventSummaries) {
                 formatCsv.append(UtilUsageData.getRowFormatted(usage));
