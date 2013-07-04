@@ -48,7 +48,7 @@ public interface Constants extends Messages {
 
     String Time();
 
-    String Export_Txt();
+    String Export_Csv();
     
     String Status();
     
@@ -67,5 +67,7 @@ public interface Constants extends Messages {
     String Info_Usage_Data();
     
     String Module();
+    
+    String No_Usage_Audited();    
 
 }

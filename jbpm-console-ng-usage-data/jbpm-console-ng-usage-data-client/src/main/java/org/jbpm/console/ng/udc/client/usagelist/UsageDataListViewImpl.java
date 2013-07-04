@@ -136,7 +136,7 @@ public class UsageDataListViewImpl extends Composite implements UsageDataPresent
             }
         });
 
-        exportEventsNavLink.setText(constants.Export_Txt());
+        exportEventsNavLink.setText(constants.Export_Csv());
         exportEventsNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -199,6 +199,7 @@ public class UsageDataListViewImpl extends Composite implements UsageDataPresent
 
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void initTableColumns(final SelectionModel<UsageEventSummary> selectionModel) {
         // Timestamp.
         Column<UsageEventSummary, String> timeColumn = new Column<UsageEventSummary, String>(new TextCell()) {

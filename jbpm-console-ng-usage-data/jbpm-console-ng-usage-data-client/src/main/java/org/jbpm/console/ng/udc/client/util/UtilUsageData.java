@@ -16,26 +16,52 @@
 
 package org.jbpm.console.ng.udc.client.util;
 
-import java.io.IOException;
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.jbpm.console.ng.udc.model.UsageEventSummary;
+import org.jbpm.console.ng.udc.client.event.ActionsUsageData;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gwt.i18n.client.DateTimeFormat;
 
 public class UtilUsageData {
 
     public static final String patternDateTime = "yyyy-MM-dd HH:mm:ss";
-    public static final String patternNameFile = "yyyy-MM-dd-HH:mm:ss";
+    public static final String HEADER_TITLE_CSV = "Timestamp, Module, User, Component, Action, key, Level, Status";
 
     public static String getDateTime(Date date, String pattern) {
         DateTimeFormat fmt = DateTimeFormat.getFormat(patternDateTime);
         return fmt.format(date);
     }
 
-    public static void exportEventsToTxt(String userName, List<UsageEventSummary> allEventsSummaries) throws IOException {
-        //TODO 
+    public static String getComponentFormated(Set<String> setInfo){
+        StringBuilder componentFormated = new StringBuilder();
+        for(String component : setInfo){
+            componentFormated.append(component);
+            componentFormated.append(" ");
+        }
+        return componentFormated.toString();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static Map<String, Set<String>> getAllComponentByModule() {
+        Map<String, Set<String>> auditions = Maps.newHashMap();
+        for (ActionsUsageData actionHuman : ActionsUsageData.values()) {
+            Set<String> setComponent = (Set<String>) (auditions.get(actionHuman.getModule()) == null ? Sets
+                    .newHashSetWithExpectedSize(ActionsUsageData.values().length) : auditions.get(actionHuman.getModule()));
+            setComponent.add(actionHuman.getComponent());
+            auditions.put(actionHuman.getModule(), setComponent);
+        }
+        return auditions;
+    }
+    
+    public static String getFormatCsf(){
+        StringBuilder formatCsv = new StringBuilder(HEADER_TITLE_CSV);
+        formatCsv.append("\n");
+        formatCsv.append("test");
+        return formatCsv.toString();
     }
 
 }

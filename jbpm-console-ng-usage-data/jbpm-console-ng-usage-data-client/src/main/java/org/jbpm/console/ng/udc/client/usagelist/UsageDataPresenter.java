@@ -125,7 +125,6 @@ public class UsageDataPresenter {
         UsageDataService.call(new RemoteCallback<Queue<UsageEventSummary>>() {
             @Override
             public void callback(Queue<UsageEventSummary> events) {
-                // TODO ver de sacar el retorno ya que mi servicio es void
                 allUsageEventSummaries = Lists.newArrayList();
                 filterEvents(view.getSearchBox().getText());
                 view.displayNotification(constants.Clear_Msj());
@@ -170,15 +169,8 @@ public class UsageDataPresenter {
      * TODO Export all human events to .txt
      */
     public void exportToTxt() {
-        if (allUsageEventSummaries == null || allUsageEventSummaries.isEmpty()) {
-            view.displayNotification(constants.No_Usage_Data());
-        } else {
-            try {
-                UtilUsageData.exportEventsToTxt(identity.getName(), allUsageEventSummaries);
-            } catch (IOException e) {
-                view.displayNotification(constants.Error_Export_File());
-            }
-        }
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Export Usage Data");
+        placeManager.goTo(placeRequestImpl);
     }
 
     private UsageEventSummary buildHumanEventSummary(UsageEvent humaEvent) {
