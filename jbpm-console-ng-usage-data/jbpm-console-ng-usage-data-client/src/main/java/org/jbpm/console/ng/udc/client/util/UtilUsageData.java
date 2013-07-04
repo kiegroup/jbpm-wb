@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jbpm.console.ng.udc.client.event.ActionsUsageData;
+import org.jbpm.console.ng.udc.model.UsageEventSummary;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -57,11 +58,19 @@ public class UtilUsageData {
         return auditions;
     }
     
-    public static String getFormatCsf(){
-        StringBuilder formatCsv = new StringBuilder(HEADER_TITLE_CSV);
-        formatCsv.append("\n");
-        formatCsv.append("test");
-        return formatCsv.toString();
+    public static String getRowFormatted(UsageEventSummary usage){
+        StringBuilder rowFormatted = new StringBuilder();
+        rowFormatted.append("\n");
+        rowFormatted.append(usage.getTimestamp() + ",");
+        rowFormatted.append(usage.getModule() + ",");
+        rowFormatted.append(usage.getUser() + ",");
+        rowFormatted.append(usage.getUser() + ",");
+        rowFormatted.append(usage.getComponent() + ",");
+        rowFormatted.append(usage.getAction() + ",");
+        rowFormatted.append(usage.getKey() + ",");
+        rowFormatted.append(usage.getLevel() + ",");
+        rowFormatted.append(usage.getStatus());
+        return rowFormatted.toString();
     }
-
+    
 }

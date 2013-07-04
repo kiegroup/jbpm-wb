@@ -16,7 +16,6 @@
 
 package org.jbpm.console.ng.udc.client.usagelist;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Queue;
 
@@ -28,7 +27,6 @@ import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.udc.client.event.UsageEvent;
 import org.jbpm.console.ng.udc.client.i8n.Constants;
-import org.jbpm.console.ng.udc.client.util.UtilUsageData;
 import org.jbpm.console.ng.udc.model.UsageEventSummary;
 import org.jbpm.console.ng.udc.service.UsageServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -57,7 +55,7 @@ public class UsageDataPresenter {
     private ActionHistoryView view;
 
     @Inject
-    private Caller<UsageServiceEntryPoint> UsageDataService;
+    private Caller<UsageServiceEntryPoint> usageDataService;
 
     @Inject
     private Identity identity;
@@ -97,7 +95,7 @@ public class UsageDataPresenter {
     }
 
     public void saveNewHumanEvent(@Observes UsageEvent humaEvent) {
-        UsageDataService.call(new RemoteCallback<Queue<UsageEventSummary>>() {
+        usageDataService.call(new RemoteCallback<Queue<UsageEventSummary>>() {
             @Override
             public void callback(Queue<UsageEventSummary> events) {
                 allUsageEventSummaries = Lists.newArrayList(events);
@@ -110,7 +108,7 @@ public class UsageDataPresenter {
     }
 
     public void refreshUsageDataCollector() {
-        UsageDataService.call(new RemoteCallback<Queue<UsageEventSummary>>() {
+        usageDataService.call(new RemoteCallback<Queue<UsageEventSummary>>() {
             @Override
             public void callback(Queue<UsageEventSummary> events) {
                 if (events != null) {
@@ -122,7 +120,7 @@ public class UsageDataPresenter {
     }
 
     public void clearUsageData() {
-        UsageDataService.call(new RemoteCallback<Queue<UsageEventSummary>>() {
+        usageDataService.call(new RemoteCallback<Queue<UsageEventSummary>>() {
             @Override
             public void callback(Queue<UsageEventSummary> events) {
                 allUsageEventSummaries = Lists.newArrayList();
