@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.jbpm</groupId>
     <artifactId>jbpm-console-ng-bpm-home</artifactId>
-    <version>6.0.0-SNAPSHOT</version>
+    <version>6.0.0.Beta5</version>
   </parent>
 
   <artifactId>jbpm-console-ng-bpm-home-client</artifactId>
