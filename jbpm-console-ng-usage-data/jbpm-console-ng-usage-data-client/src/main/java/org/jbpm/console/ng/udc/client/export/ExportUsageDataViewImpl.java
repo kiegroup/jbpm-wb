@@ -22,16 +22,23 @@ import javax.inject.Inject;
 
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.udc.client.i8n.Constants;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import com.github.gwtbootstrap.client.ui.ControlLabel;
 import com.github.gwtbootstrap.client.ui.TextArea;
+import com.github.gwtbootstrap.client.ui.base.IconAnchor;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
 @Dependent
 @Templated(value = "ExportUsageDataViewImpl.html")
 public class ExportUsageDataViewImpl extends Composite implements ExportUsageDataPresenter.ExportUsageDataEventView {
+	
+	private Constants constants = GWT.create(Constants.class);
     
     @Inject
     @DataField
@@ -42,6 +49,10 @@ public class ExportUsageDataViewImpl extends Composite implements ExportUsageDat
     public ControlLabel exportCsvNameText;
     
     @Inject
+    @DataField
+    public IconAnchor refreshIcon;
+    
+    @Inject
     private Event<NotificationEvent> notification;
     
     private ExportUsageDataPresenter presenter;
@@ -49,12 +60,25 @@ public class ExportUsageDataViewImpl extends Composite implements ExportUsageDat
     @Override
     public void init(ExportUsageDataPresenter presenter) {
         this.presenter = presenter;
+        
+        refreshIcon.setTitle(constants.Refresh());
+        refreshIcon.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                refreshDataCsv();
+            }
+        });
+        
         exportCsvNameText.add( new HTMLPanel( "Export Usage Data to CSV" ) );
-        setDataCsv();
+        formatInfoCsv();
     }
     
-    private void setDataCsv(){
-        textAreaExportCsv.setText(presenter.getTxtExportCsv());
+    private void formatInfoCsv(){
+    	presenter.formatInfoCsv();
+    }
+    
+    private void refreshDataCsv(){
+        textAreaExportCsv.setText(presenter.getTextFormtCsv());
     }
 
     @Override

@@ -33,8 +33,11 @@ import com.github.gwtbootstrap.client.ui.ControlLabel;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.SimplePager;
+import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
@@ -58,6 +61,10 @@ public class InfoUsageDataViewImpl extends Composite implements InfoUsageDataPre
     @DataField
     public FlowPanel infoViewContainer;
     
+    @Inject
+    @DataField
+    public IconAnchor refreshIcon;
+    
     private InfoUsageDataPresenter presenter;
     
     public DataGrid<InfoUsageDataSummary> infoListGrid;
@@ -72,7 +79,13 @@ public class InfoUsageDataViewImpl extends Composite implements InfoUsageDataPre
     public void init(InfoUsageDataPresenter presenter) {
         this.presenter = presenter;
         initializeGridView();
-        refreshInfoUsageData();
+        refreshIcon.setTitle(constants.Refresh());
+        refreshIcon.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+            	refreshInfoUsageData();
+            }
+        });
     }
 
     private void initializeGridView() {
@@ -111,7 +124,6 @@ public class InfoUsageDataViewImpl extends Composite implements InfoUsageDataPre
         Column<InfoUsageDataSummary, String> moduleNameColumn = new Column<InfoUsageDataSummary, String>(new TextCell()) {
             @Override
             public String getValue(InfoUsageDataSummary object) {
-                GWT.log("**getModule  "+object.getModule());
                 return object.getModule();
             }
         };
@@ -124,13 +136,11 @@ public class InfoUsageDataViewImpl extends Composite implements InfoUsageDataPre
                 return o1.getModule().compareTo(o2.getModule());
             }
         });
-        infoListGrid.setColumnWidth(moduleNameColumn, "180px");
 
         // Components.
         Column<InfoUsageDataSummary, String> componentsNameColumn = new Column<InfoUsageDataSummary, String>(new TextCell()) {
             @Override
             public String getValue(InfoUsageDataSummary object) {
-                GWT.log("**getComponents "+object.getComponents());
                 return object.getComponents();
             }
         };
