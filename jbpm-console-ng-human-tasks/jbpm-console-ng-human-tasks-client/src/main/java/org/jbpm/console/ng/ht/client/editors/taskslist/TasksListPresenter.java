@@ -40,7 +40,7 @@ import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.udc.client.event.ActionsUsageData;
 import org.jbpm.console.ng.udc.client.event.LevelsUsageData;
-import org.jbpm.console.ng.udc.client.event.StatusHumanEvent;
+import org.jbpm.console.ng.udc.client.event.StatusUsageEvent;
 import org.jbpm.console.ng.udc.client.event.UsageEvent;
 import org.jbpm.console.ng.udc.client.usagelist.UsageDataPresenter;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -204,7 +204,7 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Started" );
-                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_STARTED, StatusHumanEvent.SUCCESS,
+                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_STARTED, StatusUsageEvent.SUCCESS,
                         LevelsUsageData.INFO);
                 view.refreshTasks();
             }
@@ -212,7 +212,7 @@ public class TasksListPresenter {
             @Override
             public boolean error( Message message, Throwable throwable ) {
                 view.displayNotification( "Task(s) Started - ERROR" );
-                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_STARTED, StatusHumanEvent.ERROR,
+                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_STARTED, StatusUsageEvent.ERROR,
                         LevelsUsageData.ERROR);
                 return false;
             }
@@ -225,7 +225,7 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Released" );
-                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_RELEASED, StatusHumanEvent.SUCCESS,
+                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_RELEASED, StatusUsageEvent.SUCCESS,
                         LevelsUsageData.INFO);
                 view.refreshTasks();
             }
@@ -233,7 +233,7 @@ public class TasksListPresenter {
             @Override
             public boolean error( Message message, Throwable throwable ) {
                 view.displayNotification( "Task(s) Released - ERROR" );
-                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_RELEASED, StatusHumanEvent.ERROR,
+                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_RELEASED, StatusUsageEvent.ERROR,
                         LevelsUsageData.ERROR);
                 return false;
             }
@@ -246,7 +246,7 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Completed" );
-                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_COMPLETED, StatusHumanEvent.SUCCESS,
+                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_COMPLETED, StatusUsageEvent.SUCCESS,
                         LevelsUsageData.INFO);
                 view.refreshTasks();
             }
@@ -254,7 +254,7 @@ public class TasksListPresenter {
             @Override
             public boolean error( Message message, Throwable throwable ) {
                 view.displayNotification( "Task(s) Completed - ERROR" );
-                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_COMPLETED, StatusHumanEvent.ERROR,
+                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_COMPLETED, StatusUsageEvent.ERROR,
                         LevelsUsageData.ERROR);
                 return false;
             }
@@ -267,7 +267,7 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Claimed" );
-                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_CLAIMED, StatusHumanEvent.SUCCESS,
+                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_CLAIMED, StatusUsageEvent.SUCCESS,
                         LevelsUsageData.INFO);
                 view.refreshTasks();
 
@@ -276,7 +276,7 @@ public class TasksListPresenter {
             @Override
             public boolean error(Message message, Throwable throwable) {
                 view.displayNotification("Task(s) Claimed - ERROR");
-                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_CLAIMED, StatusHumanEvent.ERROR,
+                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_CLAIMED, StatusUsageEvent.ERROR,
                         LevelsUsageData.ERROR);
                 return false;
             }
@@ -475,7 +475,7 @@ public class TasksListPresenter {
     }
     
     public void saveNewUsageDataEvent(List<Long> selectedTasks, String idUser, ActionsUsageData actionHistory,
-            StatusHumanEvent status, LevelsUsageData level) {
+            StatusUsageEvent status, LevelsUsageData level) {
         for (Long taskId : selectedTasks) {
             usageEvent.fire(new UsageEvent(taskId.toString(), idUser, actionHistory, status, level));
         }

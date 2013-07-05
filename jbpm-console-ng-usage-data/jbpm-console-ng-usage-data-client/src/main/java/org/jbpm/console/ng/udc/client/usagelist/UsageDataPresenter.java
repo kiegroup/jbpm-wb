@@ -163,9 +163,6 @@ public class UsageDataPresenter {
         dataProvider.addDataDisplay(display);
     }
 
-    /**
-     * TODO Export all human events to .txt
-     */
     public void exportToTxt() {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Export Usage Data");
         placeManager.goTo(placeRequestImpl);

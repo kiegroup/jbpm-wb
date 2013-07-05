@@ -191,7 +191,8 @@ public class UsageEventSummary implements Serializable {
 
     @Override
     public String toString() {
-        return "HumanEventSummary [key=" + key + ", component=" + component + ", timestamp=" + timestamp + ", action=" + action
-                + ", user=" + user + ", status=" + status + ", level=" + level + ", module=" + module + "]";
+        return "UsageEventSummary [key=" + key + ", timestamp=" + timestamp + ", module=" + module + ", component=" + component
+                + ", action=" + action + ", user=" + user + ", level=" + level + ", status=" + status + "]";
     }
+
 }

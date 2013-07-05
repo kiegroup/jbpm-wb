@@ -21,14 +21,13 @@ import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class InfoUsageDataSummary implements Serializable  {
-    
+public class InfoUsageDataSummary implements Serializable {
+
     private static final long serialVersionUID = 560071525389900074L;
 
     private String module;
-    
+
     private String components;
-    
 
     public String getModule() {
         return module;
@@ -81,7 +80,5 @@ public class InfoUsageDataSummary implements Serializable  {
     public String toString() {
         return "InfoUsageDataSummary [module=" + module + ", components=" + components + "]";
     }
-
-   
 
 }

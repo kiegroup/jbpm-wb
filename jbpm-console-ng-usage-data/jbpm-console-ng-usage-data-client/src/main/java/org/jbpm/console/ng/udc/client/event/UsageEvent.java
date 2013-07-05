@@ -29,7 +29,7 @@ public class UsageEvent implements Serializable {
     
     ActionsUsageData event;
     
-    StatusHumanEvent status;
+    StatusUsageEvent status;
     
     LevelsUsageData level;
     
@@ -38,7 +38,7 @@ public class UsageEvent implements Serializable {
         
     }
 
-    public UsageEvent(String key, String user, ActionsUsageData event, StatusHumanEvent status, LevelsUsageData level) {
+    public UsageEvent(String key, String user, ActionsUsageData event, StatusUsageEvent status, LevelsUsageData level) {
         this.key = key;
         this.user = user;
         this.event = event;
@@ -70,11 +70,11 @@ public class UsageEvent implements Serializable {
         this.event = event;
     }
 
-    public StatusHumanEvent getStatus() {
+    public StatusUsageEvent getStatus() {
         return status;
     }
 
-    public void setStatus(StatusHumanEvent status) {
+    public void setStatus(StatusUsageEvent status) {
         this.status = status;
     }
 
@@ -128,7 +128,7 @@ public class UsageEvent implements Serializable {
 
     @Override
     public String toString() {
-        return "HumanEvent [key=" + key + ", user=" + user + ", event=" + event + ", status=" + status + ", level=" + level
+        return "UsageEvent [key=" + key + ", user=" + user + ", event=" + event + ", status=" + status + ", level=" + level
                 + "]";
     }
 

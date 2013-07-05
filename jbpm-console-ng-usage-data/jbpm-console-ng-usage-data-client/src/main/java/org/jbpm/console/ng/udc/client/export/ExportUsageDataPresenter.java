@@ -44,16 +44,10 @@ import com.google.gwt.core.client.GWT;
 @Dependent
 @WorkbenchPopup(identifier = "Export Usage Data")
 public class ExportUsageDataPresenter {
-
+    
     public ExportUsageDataPresenter() {
     }
-
-    public interface ExportUsageDataEventView extends UberView<ExportUsageDataPresenter> {
-        void displayNotification(String text);
-    }
-
-    private Constants constants = GWT.create(Constants.class);
-
+    
     @Inject
     ExportUsageDataEventView view;
 
@@ -66,12 +60,6 @@ public class ExportUsageDataPresenter {
     @Inject
     private Caller<UsageServiceEntryPoint> usageDataService;
     
-    private String textFormatCsv;
-
-    private List<UsageEventSummary> allUsageEventSummaries;
-
-    private PlaceRequest place;
-
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.Info_Usage_Data();
@@ -81,6 +69,18 @@ public class ExportUsageDataPresenter {
     public UberView<ExportUsageDataPresenter> getView() {
         return view;
     }
+
+    public interface ExportUsageDataEventView extends UberView<ExportUsageDataPresenter> {
+        void displayNotification(String text);
+    }
+
+    private Constants constants = GWT.create(Constants.class);
+
+    private String textFormatCsv;
+
+    private List<UsageEventSummary> allUsageEventSummaries;
+
+    private PlaceRequest place;
 
     @PostConstruct
     public void init() {

@@ -28,7 +28,6 @@ import javax.inject.Inject;
 import org.jbpm.console.ng.udc.client.i8n.Constants;
 import org.jbpm.console.ng.udc.client.util.UtilUsageData;
 import org.jbpm.console.ng.udc.model.InfoUsageDataSummary;
-import org.jbpm.console.ng.udc.model.UsageEventSummary;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
@@ -49,8 +48,27 @@ public class InfoUsageDataPresenter {
 
     public InfoUsageDataPresenter() {
     }
-
+    
     private Constants constants = GWT.create(Constants.class);
+    
+    @Inject
+    InfoUsageDataEventView view;
+
+    @Inject
+    Identity identity;
+
+    @Inject
+    private Event<BeforeClosePlaceEvent> closePlaceEvent;
+    
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return constants.Info_Usage_Data();
+    }
+
+    @WorkbenchPartView
+    public UberView<InfoUsageDataPresenter> getView() {
+        return view;
+    }
 
     public interface InfoUsageDataEventView extends UberView<InfoUsageDataPresenter> {
 
@@ -63,30 +81,11 @@ public class InfoUsageDataPresenter {
 
     }
 
-    @Inject
-    InfoUsageDataEventView view;
-
-    @Inject
-    Identity identity;
-
-    @Inject
-    private Event<BeforeClosePlaceEvent> closePlaceEvent;
-
     private PlaceRequest place;
     
     private ListDataProvider<InfoUsageDataSummary> dataProvider = new ListDataProvider<InfoUsageDataSummary>();
     
     private List<InfoUsageDataSummary> allInfoUsageSummaries;
-
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.Info_Usage_Data();
-    }
-
-    @WorkbenchPartView
-    public UberView<InfoUsageDataPresenter> getView() {
-        return view;
-    }
 
     @PostConstruct
     public void init() {

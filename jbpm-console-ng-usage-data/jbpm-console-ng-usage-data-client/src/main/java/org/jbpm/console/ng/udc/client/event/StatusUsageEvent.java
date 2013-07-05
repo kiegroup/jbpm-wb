@@ -16,6 +16,6 @@
 
 package org.jbpm.console.ng.udc.client.event;
 
-public enum StatusHumanEvent {
+public enum StatusUsageEvent {
     SUCCESS, ERROR;
 }

@@ -32,7 +32,7 @@ import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.udc.client.event.ActionsUsageData;
 import org.jbpm.console.ng.udc.client.event.LevelsUsageData;
-import org.jbpm.console.ng.udc.client.event.StatusHumanEvent;
+import org.jbpm.console.ng.udc.client.event.StatusUsageEvent;
 import org.jbpm.console.ng.udc.client.event.UsageEvent;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
@@ -82,7 +82,7 @@ public class QuickNewTaskPresenter {
     private PlaceManager placeManager;
     
     @Inject
-    private Event<UsageEvent> pointHistoryEvent;
+    private Event<UsageEvent> usageDataEvent;
 
     @OnStart
     public void onStart( final PlaceRequest place ) {
@@ -140,8 +140,8 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback( Long taskId ) {
                     view.displayNotification( "Task Created and Started (id = " + taskId + ")" );
-                    pointHistoryEvent.fire( new UsageEvent(taskId.toString(), identity.getName(),
-                            ActionsUsageData.HUMAN_TASKS_CREATED_STARTED, StatusHumanEvent.SUCCESS, LevelsUsageData.INFO) );
+                    usageDataEvent.fire( new UsageEvent(taskId.toString(), identity.getName(),
+                            ActionsUsageData.HUMAN_TASKS_CREATED_STARTED, StatusUsageEvent.SUCCESS, LevelsUsageData.INFO) );
                     close();
 
                 }
@@ -151,8 +151,8 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback( Long taskId ) {
                     view.displayNotification( "Task Created (id = " + taskId + ")" );
-                    pointHistoryEvent.fire( new UsageEvent(taskId.toString(), identity.getName(),
-                            ActionsUsageData.HUMAN_TASKS_CREATED, StatusHumanEvent.SUCCESS, LevelsUsageData.INFO) );
+                    usageDataEvent.fire( new UsageEvent(taskId.toString(), identity.getName(),
+                            ActionsUsageData.HUMAN_TASKS_CREATED, StatusUsageEvent.SUCCESS, LevelsUsageData.INFO) );
                     close();
 
                 }

@@ -40,10 +40,10 @@ public class UsageServiceEntryPointImpl extends SessionManager implements UsageS
 
     @Override
     @SuppressWarnings("unchecked")
-    public Queue<UsageEventSummary> saveNewUsageDataEvent(UsageEventSummary pointHistory) {
+    public Queue<UsageEventSummary> saveNewUsageDataEvent(UsageEventSummary usageData) {
         Queue<UsageEventSummary> points = (super.getSession().getAttribute(KEY_EVENTS) == null) ? new LinkedList<UsageEventSummary>()
                 : (Queue<UsageEventSummary>) super.getSession().getAttribute(KEY_EVENTS);
-        points.add(pointHistory);
+        points.add(usageData);
         super.getSession().setAttribute(KEY_EVENTS, points);
         return points;
     }
