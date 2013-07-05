@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.udc.client.i8n.Constants;
+import org.jbpm.console.ng.udc.client.util.UtilUsageData;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import com.github.gwtbootstrap.client.ui.ControlLabel;
@@ -37,30 +38,29 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 @Dependent
 @Templated(value = "ExportUsageDataViewImpl.html")
 public class ExportUsageDataViewImpl extends Composite implements ExportUsageDataPresenter.ExportUsageDataEventView {
-	
-	private Constants constants = GWT.create(Constants.class);
-    
+
+    private Constants constants = GWT.create(Constants.class);
+
     @Inject
     @DataField
     private TextArea textAreaExportCsv;
-    
+
     @Inject
     @DataField
     public ControlLabel exportCsvNameText;
-    
+
     @Inject
     @DataField
     public IconAnchor refreshIcon;
-    
+
     @Inject
     private Event<NotificationEvent> notification;
-    
+
     private ExportUsageDataPresenter presenter;
 
     @Override
     public void init(ExportUsageDataPresenter presenter) {
         this.presenter = presenter;
-        
         refreshIcon.setTitle(constants.Refresh());
         refreshIcon.addClickHandler(new ClickHandler() {
             @Override
@@ -68,23 +68,26 @@ public class ExportUsageDataViewImpl extends Composite implements ExportUsageDat
                 refreshDataCsv();
             }
         });
-        
-        exportCsvNameText.add( new HTMLPanel( "Export Usage Data to CSV" ) );
+        exportCsvNameText.add(new HTMLPanel("Export Usage Data to CSV"));
         formatInfoCsv();
     }
-    
-    private void formatInfoCsv(){
-    	presenter.formatInfoCsv();
+
+    private void formatInfoCsv() {
+        presenter.formatInfoCsv();
     }
-    
-    private void refreshDataCsv(){
-        textAreaExportCsv.setText(presenter.getTextFormtCsv());
+
+    private void refreshDataCsv() {
+        textAreaExportCsv.setText(constants.No_Usage_Data());
+        if (!presenter.getTextFormtCsv().equals("")) {
+            StringBuilder formatCsv = new StringBuilder(UtilUsageData.HEADER_TITLE_CSV);
+            formatCsv.append(presenter.getTextFormtCsv());
+            textAreaExportCsv.setText(formatCsv.toString());
+        }
     }
 
     @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
-        
     }
-    
+
 }

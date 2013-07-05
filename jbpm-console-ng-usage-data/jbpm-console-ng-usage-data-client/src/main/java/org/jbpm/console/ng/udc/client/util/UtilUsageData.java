@@ -37,15 +37,15 @@ public class UtilUsageData {
         return fmt.format(date);
     }
 
-    public static String getComponentFormated(Set<String> setInfo){
+    public static String getComponentFormated(Set<String> setInfo) {
         StringBuilder componentFormated = new StringBuilder();
-        for(String component : setInfo){
+        for (String component : setInfo) {
             componentFormated.append(component);
             componentFormated.append(" ");
         }
         return componentFormated.toString();
     }
-    
+
     @SuppressWarnings("unchecked")
     public static Map<String, Set<String>> getAllComponentByModule() {
         Map<String, Set<String>> auditions = Maps.newHashMap();
@@ -57,13 +57,12 @@ public class UtilUsageData {
         }
         return auditions;
     }
-    
-    public static String getRowFormatted(UsageEventSummary usage){
+
+    public static String getRowFormatted(UsageEventSummary usage) {
         StringBuilder rowFormatted = new StringBuilder();
         rowFormatted.append("\n");
-        rowFormatted.append(usage.getTimestamp() + ",");
+        rowFormatted.append(UtilUsageData.getDateTime(usage.getTimestamp(), UtilUsageData.patternDateTime) + ",");
         rowFormatted.append(usage.getModule() + ",");
-        rowFormatted.append(usage.getUser() + ",");
         rowFormatted.append(usage.getUser() + ",");
         rowFormatted.append(usage.getComponent() + ",");
         rowFormatted.append(usage.getAction() + ",");
@@ -72,5 +71,5 @@ public class UtilUsageData {
         rowFormatted.append(usage.getStatus());
         return rowFormatted.toString();
     }
-    
+
 }

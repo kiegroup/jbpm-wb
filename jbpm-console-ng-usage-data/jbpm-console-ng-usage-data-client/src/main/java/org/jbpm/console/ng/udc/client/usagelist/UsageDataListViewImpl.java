@@ -240,6 +240,8 @@ public class UsageDataListViewImpl extends Composite implements UsageDataPresent
                 return o1.getModule().compareTo(o2.getModule());
             }
         });
+        
+        myEventListGrid.setColumnWidth(moduleNameColumn, "200px");
 
         // User.
         Column<UsageEventSummary, String> userNameColumn = new Column<UsageEventSummary, String>(new TextCell()) {

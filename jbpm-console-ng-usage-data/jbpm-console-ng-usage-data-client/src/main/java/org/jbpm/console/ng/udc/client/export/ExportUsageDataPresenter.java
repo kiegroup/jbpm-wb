@@ -91,11 +91,10 @@ public class ExportUsageDataPresenter {
     }
 
     public void formatInfoCsv() {
-        GWT.log("********** formatInfoCsv" );
+        textFormatCsv = "";
         usageDataService.call(new RemoteCallback<Queue<UsageEventSummary>>() {
             @Override
             public void callback(Queue<UsageEventSummary> events) {
-                GWT.log("********** entro callback" );
                 if (events != null) {
                     allUsageEventSummaries = Lists.newArrayList(events);
                     setFormatCsv();
@@ -105,19 +104,15 @@ public class ExportUsageDataPresenter {
     }
 
     private void setFormatCsv(){
-        GWT.log("********** entro setFormatCsv" );
-    	StringBuilder formatCsv = new StringBuilder(UtilUsageData.HEADER_TITLE_CSV);
+    	StringBuilder formatCsv = new StringBuilder();
     	for (UsageEventSummary usage : allUsageEventSummaries) {
             formatCsv.append(UtilUsageData.getRowFormatted(usage));
         }
-    	GWT.log("********** formatCsv.toString() " + formatCsv.toString() );
     	textFormatCsv = formatCsv.toString(); 
     }
 
 	public String getTextFormtCsv() {
 		return textFormatCsv;
 	}
-    
-    
 
 }
