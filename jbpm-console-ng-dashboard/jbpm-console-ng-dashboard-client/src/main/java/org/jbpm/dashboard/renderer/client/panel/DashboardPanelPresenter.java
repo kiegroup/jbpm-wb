@@ -35,7 +35,7 @@ import javax.inject.Inject;
 @WorkbenchScreen(identifier = "DashboardPanel")
 public class DashboardPanelPresenter {
 
-    final private String DASHBOARD_URL = Window.Location.getProtocol()+"//" + Window.Location.getHost()+ "/dashbuilder/workspace/jbpm-dashboard?embedded=true";
+    final private String DASHBOARD_URL = Window.Location.getProtocol()+"//" + Window.Location.getHost()+ "/dashbuilder/workspace/jbpm-dashboard?embedded=true&refresh=true";
 
     public interface DashboardView
             extends
