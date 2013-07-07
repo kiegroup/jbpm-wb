@@ -18,20 +18,22 @@ package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.TextBox;
-import java.util.List;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.jbpm.console.ng.udc.client.event.ActionsUsageData;
+import org.jbpm.console.ng.udc.client.event.LevelsUsageData;
+import org.jbpm.console.ng.udc.client.event.StatusUsageEvent;
+import org.jbpm.console.ng.udc.client.event.UsageEvent;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -42,6 +44,10 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.TextBox;
 
 @Dependent
 @WorkbenchPopup(identifier = "Quick New Task")
@@ -74,6 +80,9 @@ public class QuickNewTaskPresenter {
 
     @Inject
     private PlaceManager placeManager;
+    
+    @Inject
+    private Event<UsageEvent> usageDataEvent;
 
     @OnStart
     public void onStart( final PlaceRequest place ) {
@@ -114,23 +123,25 @@ public class QuickNewTaskPresenter {
             
             for(String user : users){
                 str += "new User('" + user + "'), ";
-            } 
+            }
             
         }
         if ( groups != null && !groups.isEmpty() ) {
             
             for(String group : groups){
                 str += "new Group('" + group + "'), ";
-            } 
+            }
             
         }
-        str+="], }),"; 
+        str+="], }),";
         str += "names = [ new I18NText( 'en-UK', '" + taskName + "')]})";
         if ( isQuickTask ) {
             taskServices.call( new RemoteCallback<Long>() {
                 @Override
                 public void callback( Long taskId ) {
                     view.displayNotification( "Task Created and Started (id = " + taskId + ")" );
+                    usageDataEvent.fire( new UsageEvent(taskId.toString(), identity.getName(),
+                            ActionsUsageData.HUMAN_TASKS_CREATED_STARTED, StatusUsageEvent.SUCCESS, LevelsUsageData.INFO) );
                     close();
 
                 }
@@ -140,6 +151,8 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback( Long taskId ) {
                     view.displayNotification( "Task Created (id = " + taskId + ")" );
+                    usageDataEvent.fire( new UsageEvent(taskId.toString(), identity.getName(),
+                            ActionsUsageData.HUMAN_TASKS_CREATED, StatusUsageEvent.SUCCESS, LevelsUsageData.INFO) );
                     close();
 
                 }

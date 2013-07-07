@@ -60,6 +60,10 @@ public interface Constants extends Messages {
     String Deployments();
 
     String newItem();
+    
+    String Usage_Data();
+    
+    String Usage_Data_Collector();
 
 
 }

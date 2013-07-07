@@ -16,23 +16,20 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.MultiSelectionModel;
-import com.google.gwt.view.client.ProvidesKey;
-
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import java.util.HashMap;
+import org.jboss.errai.bus.client.api.ErrorCallback;
+import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
@@ -41,6 +38,11 @@ import org.jbpm.console.ng.ht.client.util.DateUtils;
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.jbpm.console.ng.udc.client.event.ActionsUsageData;
+import org.jbpm.console.ng.udc.client.event.LevelsUsageData;
+import org.jbpm.console.ng.udc.client.event.StatusUsageEvent;
+import org.jbpm.console.ng.udc.client.event.UsageEvent;
+import org.jbpm.console.ng.udc.client.usagelist.UsageDataPresenter;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -48,6 +50,13 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.security.Identity;
 import org.uberfire.security.Role;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
+
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.MultiSelectionModel;
+import com.google.gwt.view.client.ProvidesKey;
 
 
 @Dependent
@@ -57,6 +66,13 @@ public class TasksListPresenter {
     private List<TaskSummary> allTaskSummaries;
 
     private Map<Day, List<TaskSummary>> currentDayTasks;
+    
+    @Inject
+    private Event<UsageEvent> usageEvent;
+
+    @SuppressWarnings("unused")
+    @Inject
+    private UsageDataPresenter usageDataPresenter;
     
     public List<TaskSummary> getAllTaskSummaries() {
         return allTaskSummaries;
@@ -146,7 +162,7 @@ public class TasksListPresenter {
                     view.getTaskListMultiDayBox().refresh();
                 }
         }else{
-            if(allTaskSummaries != null){    
+            if(allTaskSummaries != null){
                 List<TaskSummary> tasks = new ArrayList<TaskSummary>(allTaskSummaries);
                 List<TaskSummary> filteredTasksSimple = new ArrayList<TaskSummary>();
                 for(TaskSummary ts : tasks){
@@ -188,41 +204,81 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Started" );
+                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_STARTED, StatusUsageEvent.SUCCESS,
+                        LevelsUsageData.INFO);
                 view.refreshTasks();
+            }
+        }, new ErrorCallback() {
+            @Override
+            public boolean error( Message message, Throwable throwable ) {
+                view.displayNotification( "Task(s) Started - ERROR" );
+                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_STARTED, StatusUsageEvent.ERROR,
+                        LevelsUsageData.ERROR);
+                return false;
             }
         } ).startBatch( selectedTasks, userId );
     }
 
-    public void releaseTasks( List<Long> selectedTasks,
+    public void releaseTasks( final List<Long> selectedTasks,
                               final String userId ) {
         taskServices.call( new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Released" );
+                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_RELEASED, StatusUsageEvent.SUCCESS,
+                        LevelsUsageData.INFO);
                 view.refreshTasks();
+            }
+        }, new ErrorCallback() {
+            @Override
+            public boolean error( Message message, Throwable throwable ) {
+                view.displayNotification( "Task(s) Released - ERROR" );
+                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_RELEASED, StatusUsageEvent.ERROR,
+                        LevelsUsageData.ERROR);
+                return false;
             }
         } ).releaseBatch( selectedTasks, userId );
     }
 
-    public void completeTasks( List<Long> selectedTasks,
+    public void completeTasks( final List<Long> selectedTasks,
                                final String userId ) {
         taskServices.call( new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Completed" );
+                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_COMPLETED, StatusUsageEvent.SUCCESS,
+                        LevelsUsageData.INFO);
                 view.refreshTasks();
+            }
+        }, new ErrorCallback() {
+            @Override
+            public boolean error( Message message, Throwable throwable ) {
+                view.displayNotification( "Task(s) Completed - ERROR" );
+                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_COMPLETED, StatusUsageEvent.ERROR,
+                        LevelsUsageData.ERROR);
+                return false;
             }
         } ).completeBatch( selectedTasks, userId, null );
     }
 
-    public void claimTasks( List<Long> selectedTasks,
+    public void claimTasks( final List<Long> selectedTasks,
                             final String userId ) {
         taskServices.call( new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Claimed" );
+                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_CLAIMED, StatusUsageEvent.SUCCESS,
+                        LevelsUsageData.INFO);
                 view.refreshTasks();
 
+            }
+        }, new ErrorCallback() {
+            @Override
+            public boolean error(Message message, Throwable throwable) {
+                view.displayNotification("Task(s) Claimed - ERROR");
+                saveNewUsageDataEvent(selectedTasks, userId, ActionsUsageData.HUMAN_TASKS_CLAIMED, StatusUsageEvent.ERROR,
+                        LevelsUsageData.ERROR);
+                return false;
             }
         } ).claimBatch( selectedTasks, userId );
     }
@@ -244,8 +300,8 @@ public class TasksListPresenter {
     }
 
     /**
-     * Refresh tasks based on specified date, view (day/week/month) and task type.
-     */
+* Refresh tasks based on specified date, view (day/week/month) and task type.
+*/
     public void refreshTasks(Date date, TaskView taskView, TaskType taskType) {
         switch (taskType) {
             case PERSONAL:
@@ -416,6 +472,13 @@ public class TasksListPresenter {
 
     public ListDataProvider<TaskSummary> getDataProvider() {
         return dataProvider;
+    }
+    
+    public void saveNewUsageDataEvent(List<Long> selectedTasks, String idUser, ActionsUsageData actionHistory,
+            StatusUsageEvent status, LevelsUsageData level) {
+        for (Long taskId : selectedTasks) {
+            usageEvent.fire(new UsageEvent(taskId.toString(), idUser, actionHistory, status, level));
+        }
     }
 
 }
