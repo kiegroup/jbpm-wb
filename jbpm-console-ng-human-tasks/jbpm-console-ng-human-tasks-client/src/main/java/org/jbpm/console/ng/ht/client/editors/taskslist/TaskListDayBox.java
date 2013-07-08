@@ -99,7 +99,7 @@ public class TaskListDayBox extends Composite implements RequiresResize {
         taskListBox.clear();
         for (TaskSummary ts : this.taskSummaries) {
             taskListBox.add(new TaskBox(placeManager, presenter, identity, ts.getId(), ts.getName(), ts.getActualOwner(), ts
-                    .getPotentialOwners(), ts.getStatus()));
+                    .getPotentialOwners(), ts.getStatus(), ts.getPriority()));
         }
     }
 

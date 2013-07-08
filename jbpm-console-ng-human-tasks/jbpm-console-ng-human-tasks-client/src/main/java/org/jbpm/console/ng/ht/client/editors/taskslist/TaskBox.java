@@ -47,6 +47,7 @@ public class TaskBox extends Composite {
     private String actualOwner;
     private List<String> potentialOwners;
     private String status;
+    private int priority;
     private TasksListPresenter presenter;
     private Identity identity;
     private PlaceManager placeManager;
@@ -59,7 +60,6 @@ public class TaskBox extends Composite {
         hourPanel.setStyleName( "hour" );
         taskPanel.add( taskPriorityPanel );
         taskPanel.add( hourPanel );
-        taskPriorityPanel.setStyleName( "priority five" );
         taskNamePanel.setStyleName( "task-name" );
         taskPanel.add( taskNamePanel );
         taskOptions.setStyleName( "task-options" );
@@ -78,7 +78,7 @@ public class TaskBox extends Composite {
                     final String taskName,
                     final String actualOwner,
                     final List<String> potentialOwners,
-                    final String status ) {
+                    final String status, final int priority ) {
         this();
         this.taskId = taskId;
         this.taskName = taskName;
@@ -88,7 +88,22 @@ public class TaskBox extends Composite {
         this.status = status;
         this.presenter = presenter;
         this.identity = identity;
-
+        this.priority = priority;
+        
+        if(priority == 0 || priority == 1){
+            taskPriorityPanel.setStyleName( "priority five" );
+        }else if(priority == 2 || priority == 3){ 
+            taskPriorityPanel.setStyleName( "priority four" );
+        }else if(priority == 4 || priority == 5){ 
+            taskPriorityPanel.setStyleName( "priority three" );
+        }else if(priority == 6 || priority == 7){ 
+            taskPriorityPanel.setStyleName( "priority two" );
+        }
+        else if(priority == 8 || priority == 9 || priority == 10){ 
+            taskPriorityPanel.setStyleName( "priority one" );
+        }
+        
+        
         taskContainer.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
