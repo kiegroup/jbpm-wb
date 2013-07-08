@@ -98,6 +98,7 @@ public class ShowcaseEntryPoint {
         } ).endMenu().newTopLevelMenu( constants.Authoring() ).withItems( getAuthoringViews() ).endMenu()
                 .newTopLevelMenu( constants.Deploy() ).withItems( getDeploymentViews() ).endMenu()
                 .newTopLevelMenu( constants.Process_Management() ).withItems( getProcessMGMTViews() ).endMenu()
+                .newTopLevelMenu( constants.Usage_Data() ).withItems( getUsageDataCollectorViews() ).endMenu()
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu().newTopLevelMenu( constants.Dashboards() )
                 .withItems( getDashboardsViews() ).endMenu().newTopLevelMenu( constants.LogOut() ).respondsWith( new Command() {
                     @Override
@@ -172,6 +173,20 @@ public class ShowcaseEntryPoint {
             @Override
             public void execute() {
                 placeManager.goTo( new DefaultPlaceRequest( "Tasks" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+
+
+        return result;
+    }
+    
+    private List<? extends MenuItem> getUsageDataCollectorViews() {
+        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
+
+        result.add( MenuFactory.newSimpleItem( constants.Usage_Data_Collector() ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "Usage Data" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
 

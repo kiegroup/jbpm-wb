@@ -65,6 +65,12 @@
       <artifactId>jbpm-form-modeler-renderer-backend</artifactId>
       <version>6.0.0-SNAPSHOT</version>
     </dependency>
+    
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-usage-data-client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.uberfire</groupId>

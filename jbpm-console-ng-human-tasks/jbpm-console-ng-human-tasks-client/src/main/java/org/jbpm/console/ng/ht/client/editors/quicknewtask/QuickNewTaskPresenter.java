@@ -32,6 +32,10 @@ import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.jbpm.console.ng.udc.client.event.ActionsUsageData;
+import org.jbpm.console.ng.udc.client.event.LevelsUsageData;
+import org.jbpm.console.ng.udc.client.event.StatusUsageEvent;
+import org.jbpm.console.ng.udc.client.event.UsageEvent;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -74,6 +78,9 @@ public class QuickNewTaskPresenter {
 
     @Inject
     private PlaceManager placeManager;
+    
+    @Inject
+    private Event<UsageEvent> usageDataEvent;
 
     @OnStart
     public void onStart( final PlaceRequest place ) {
@@ -131,6 +138,8 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback( Long taskId ) {
                     view.displayNotification( "Task Created and Started (id = " + taskId + ")" );
+                    usageDataEvent.fire( new UsageEvent(taskId.toString(), identity.getName(),
+                            ActionsUsageData.HUMAN_TASKS_CREATED_STARTED, StatusUsageEvent.SUCCESS, LevelsUsageData.INFO) );
                     close();
 
                 }
@@ -140,6 +149,9 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback( Long taskId ) {
                     view.displayNotification( "Task Created (id = " + taskId + ")" );
+                    usageDataEvent.fire( new UsageEvent(taskId.toString(), identity.getName(),
+                            ActionsUsageData.HUMAN_TASKS_CREATED, StatusUsageEvent.SUCCESS, LevelsUsageData.INFO) );
+
                     close();
 
                 }
