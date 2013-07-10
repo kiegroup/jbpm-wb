@@ -31,7 +31,7 @@ public interface Constants extends Messages {
 
     Constants INSTANCE = GWT.create(Constants.class);
 
-    String No_Process_Definitions_Available();
+    String No_Process_Definitions_Found();
 
     String Reload_Repository();
 
@@ -69,7 +69,7 @@ public interface Constants extends Messages {
 
     String Process_Instances_Refreshed();
 
-    String No_Process_Instances_Available();
+    String No_Process_Instances_Found();
 
     String Aborting_Process_Instance_Not_Allowed();
 
@@ -108,12 +108,14 @@ public interface Constants extends Messages {
     String New_Process_Instance();
 
     String View_Process_Model();
+    
+    String Process_Definition_Id();
 
     String Process_Definition_Name();
 
     String Human_Tasks_Count();
 
-    String Domain_Name();
+    String Deployment_Name();
 
     String Human_Tasks();
 

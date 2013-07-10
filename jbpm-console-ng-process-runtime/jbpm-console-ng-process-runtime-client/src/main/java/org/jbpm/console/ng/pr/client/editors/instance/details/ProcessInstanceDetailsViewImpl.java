@@ -83,7 +83,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
     @Inject
     @DataField
-    public TextBox processPackageText;
+    public TextBox processDeploymentText;
 
     @Inject
     @DataField
@@ -123,7 +123,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
     @Inject
     @DataField
-    public Label processPackageLabel;
+    public Label processDeploymentLabel;
 
     @Inject
     @DataField
@@ -178,7 +178,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
         processIdText.setEnabled( false );
         processNameText.setEnabled( false );
-        processPackageText.setEnabled( false );
+        processDeploymentText.setEnabled( false );
         processVersionText.setEnabled( false );
         stateText.setEnabled( false );
         logTextArea.setEnabled( false );
@@ -196,7 +196,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
         processNameLabel.setText( constants.Process_Definition_Name() );
         processIdLabel.setText( constants.Process_Instance_ID() );
-        processPackageLabel.setText( constants.Process_Definition_Package() );
+        processDeploymentLabel.setText( constants.Deployment_Name() );
         processVersionLabel.setText( constants.Process_Definition_Version() );
         stateLabel.setText( constants.Process_Instance_State() );
         currentActivitiesListLabel.setText( constants.Current_Activities() );
@@ -504,8 +504,8 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     }
 
     @Override
-    public TextBox getProcessPackageText() {
-        return processPackageText;
+    public TextBox getProcessDeploymentText() {
+        return processDeploymentText;
     }
 
     @Override

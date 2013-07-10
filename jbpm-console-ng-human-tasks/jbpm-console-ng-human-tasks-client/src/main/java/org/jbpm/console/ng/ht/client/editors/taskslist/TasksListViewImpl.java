@@ -382,7 +382,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
         myTaskListGrid.setHeight("350px");
         // Set the message to display when the table is empty.
-        myTaskListGrid.setEmptyTableWidget(new Label(constants.No_Pending_Tasks_Enjoy()));
+        myTaskListGrid.setEmptyTableWidget(new Label(constants.No_Tasks_Found()));
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler = new ColumnSortEvent.ListHandler<TaskSummary>(presenter.getAllTaskSummaries());

@@ -1,69 +1,70 @@
-<div class="row-fluid">
-    <div class="span11">
-        <div class="form-horizontal">
-                <div class="control-group">
-                  <label class="control-label" for="taskNameText" data-field="taskNameLabel"></label>
-                  <div class="controls">
-                    <input type="text" class="span8" data-field="taskNameText" id="taskNameText" placeholder="Task Name" />
-                    
-                  </div>
-                </div>
-            
-                <div class="control-group">
-                  <label class="control-label" for="quickTaskCheck" data-field="quickTaskCheckLabel"></label>
-                  <div class="controls">
-                    <input type="checkbox" id="quickTaskCheck" data-field="quickTaskCheck" />
-                    
-                  </div>
-                </div>
-            
-        </div>
-    </div>  
-    <div class="span11">
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="form-horizontal">
+                <fieldset>
 
-
-      <div class="accordion">
-        <!-- GROUP -->
-        <div class="accordion-group">
-          <div class="accordion-heading">
-            <a class="accordion-toggle"> <label data-field="advancedLabel"></label>
-            </a>
-          </div>
-          <div id="desc_collapse" class="accordion-body collapse in" style="position: relative;">
-            <div class="accordion-inner">
-              <div class="form-horizontal">
-
-                <div class="control-group">
-                  <label class="control-label" for="dueDate" data-field="dueDateLabel"></label>
-                  <div class="controls">
-                    <input type="text" data-field="dueDate" id="dueDate" placeholder="" />
-                  </div>
-                </div>
-                  
-                <div class="control-group">
-                    <label class="control-label" for="taskPriorityListBox" data-field="taskPriorityLabel"></label>
-                    <div class="controls">
-                      <select data-field="taskPriorityListBox" id="usersGroupsListBox"></select>
+                    <div class="control-group" data-field="taskNameControlGroup" >
                     </div>
-                </div>  
-        
-                <div class="control-group">
-                  <label class="control-label" for="userText" data-field="userLabel"></label>
-                  <div class="controls">   
-                    <button class="btn" data-field="addUserButton" id="addUserButton"></button>
-                    <button class="btn" data-field="addGroupButton" id="addGroupButton"></button>
-                  </div>
-                </div>
-                
-                <div data-field="usersGroupsControlsPanel"></div>  
-                
-              </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="assignToMeTaskCheck" data-field="assignToMeTaskCheckLabel"></label>
+                        <div class="controls">
+                            <input type="checkbox" id="assignToMeTaskCheck" data-field="assignToMeTaskCheck" />
+
+                        </div>
+                    </div>
+
+                </fieldset>
             </div>
-          </div>
+            <div class="accordion" id="accordionAdvanced">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <!-- add to accordion-toggle when the bug gets fixed: data-toggle="collapse" data-parent="#accordionAdvanced" href="#desc_collapse" --> 
+                        <a class="accordion-toggle"> <label data-field="advancedLabel"></label>
+                        </a>
+                    </div>
+                    <div id="desc_collapse" class="accordion-body collapse in" style="position: relative;">
+                        <div class="accordion-inner">
+                            <div class="form-horizontal">
+
+                                <div class="control-group">
+                                    <label class="control-label" for="dueDate" data-field="dueDateLabel"></label>
+                                    <div class="controls">
+                                        <input type="text" data-field="dueDate" id="dueDate" placeholder="" />
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <label class="control-label" for="taskPriorityListBox" data-field="taskPriorityLabel"></label>
+                                    <div class="controls">
+                                        <select data-field="taskPriorityListBox" id="usersGroupsListBox"></select>
+                                    </div>
+                                </div>  
+
+                                <div class="control-group">
+                                    <label class="control-label" for="userText" data-field="userLabel"></label>
+                                    <div class="controls">   
+                                        <button class="btn" data-field="addUserButton" id="addUserButton"></button>
+                                        <button class="btn" data-field="addGroupButton" id="addGroupButton"></button>
+                                    </div>
+                                </div>
+
+                                <div data-field="usersGroupsControlsPanel"></div>  
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-horizontal">
+                <fieldset>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" data-field="addTaskButton" id="addTaskButton"></button>
+                    </div>
+                </fieldset>
+
+            </div>
         </div>
-      </div>
-      <div class="modal-footer span11">
-        <button class="btn" data-field="addTaskButton" id="addTaskButton"></button>
-      </div>
     </div>
 </div>

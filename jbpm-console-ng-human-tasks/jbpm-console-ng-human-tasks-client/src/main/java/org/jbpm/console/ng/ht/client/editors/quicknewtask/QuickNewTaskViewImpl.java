@@ -17,6 +17,8 @@
 package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.CheckBox;
 import java.util.Date;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -25,7 +27,11 @@ import javax.inject.Inject;
 import com.github.gwtbootstrap.client.ui.ControlGroup;
 import com.github.gwtbootstrap.client.ui.ControlLabel;
 import com.github.gwtbootstrap.client.ui.Controls;
-import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.HelpInline;
+import com.github.gwtbootstrap.client.ui.ListBox;
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
+import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -33,13 +39,11 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -76,20 +80,26 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
     public Button addGroupButton;
     
     @Inject
-    @DataField
     public TextBox taskNameText;
+    
+    @Inject
+    @DataField
+    public ControlGroup taskNameControlGroup;
 
     @Inject
     @DataField
     public DateTimeBox dueDate;
+    
+    @Inject
+    public HelpInline taskNameHelpLabel;
 
     @Inject
     @DataField
-    public TextBox taskPriorityListBox;
+    public ListBox taskPriorityListBox;
 
     @Inject
     @DataField
-    public CheckBox quickTaskCheck;
+    public CheckBox assignToMeTaskCheck;
 
     @Inject
     @DataField
@@ -100,7 +110,6 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
     public ControlLabel advancedLabel;
 
     @Inject
-    @DataField
     public ControlLabel taskNameLabel;
 
     @Inject
@@ -113,7 +122,7 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
     
     @Inject
     @DataField
-    public ControlLabel quickTaskCheckLabel;
+    public ControlLabel assignToMeTaskCheckLabel;
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -130,11 +139,26 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
     private final List<ControlGroup> userControlGroups = new ArrayList<ControlGroup>();
     
     private final List<ControlGroup> groupControlGroups = new ArrayList<ControlGroup>();
+    
+    private String[] priorities = { "0 - High", "1", "2", "3", "4", "5 - Medium", "6", "7", "8", "9", "10 - Low" };
 
     @Override
     public void init( QuickNewTaskPresenter presenter ) {
         this.presenter = presenter;
 
+        Controls taskNameControls = new Controls();
+        taskNameControls.add(taskNameText);
+        taskNameControls.add(taskNameHelpLabel);
+        taskNameControlGroup.add(taskNameLabel);
+        taskNameControlGroup.add(taskNameControls);
+        
+        dueDate.setHighlightToday(true);
+        dueDate.setShowTodayButton(true);
+        dueDate.setFormat("dd/mm/yyyy hh:ii");
+        dueDate.setAutoClose(true);
+        long day = new Long(24 * 60 * 60 * 1000);
+        long now = System.currentTimeMillis();
+        dueDate.setValue(new Date( day + now ) );
         initializeUserGroupControls();
         refreshUserGroupControls();
         
@@ -156,16 +180,19 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
                 }
             }
         };
-        checkKeyPressHandler = quickTaskCheck.addKeyPressHandler( keyPressHandlerCheck );
-        quickTaskCheck.setName("quickTaskCheck");
+        checkKeyPressHandler = assignToMeTaskCheck.addKeyPressHandler( keyPressHandlerCheck );
+        assignToMeTaskCheck.setName("quickTaskCheck");
         
-        quickTaskCheckLabel.add(new HTMLPanel(constants.Quick_Task()));
+        assignToMeTaskCheckLabel.add(new HTMLPanel(constants.Auto_Assign_To_Me()));
        
         
         taskNameText.setFocus( true );
 
-        taskPriorityListBox.setText( "5" );
-        dueDate.setValue( new Date() );
+        for ( String priority : priorities ) {
+            taskPriorityListBox.addItem( priority );
+        }
+        
+        
 
         addTaskButton.setText( constants.Create() );
         dueDateLabel.add( new HTMLPanel( constants.Due_On() ) );
@@ -175,7 +202,7 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
         addGroupButton.setText(constants.Add_Group());
         
 
-        advancedLabel.add( new HTMLPanel( constants.Grid() ) );
+        advancedLabel.add( new HTMLPanel( constants.Advanced() ) );
         taskNameLabel.add( new HTMLPanel( constants.Task_Name() ) );
         
         
@@ -186,9 +213,8 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
          // Init control group with the logged user
         final ControlGroup loggedUserControlGroup = new ControlGroup();
         
-        ControlLabel loggedUserControlLabel = new ControlLabel();
+        ControlLabel loggedUserControlLabel = new ControlLabel(constants.User());
         loggedUserControlLabel.setFor("loggedUserTextBox");
-        loggedUserControlLabel.add(new Label(constants.User()));
         
         Controls loggedUserControls = new Controls();
   
@@ -198,6 +224,7 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
         loggedUserControls.add(userTextBox);
         
         Button removeUserButton = new Button();
+        removeUserButton.setIcon(IconType.MINUS_SIGN);
         removeUserButton.addClickHandler(new ClickHandler() {
 
             @Override
@@ -206,7 +233,7 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
                 refreshUserGroupControls();
             }
         });
-        removeUserButton.setText(constants.Remove_User());
+        
         loggedUserControls.add(removeUserButton);
         
         loggedUserControlGroup.add(loggedUserControlLabel);
@@ -234,17 +261,15 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
     
         final ControlGroup userControlGroup = new ControlGroup();
      
-        ControlLabel userControlLabel = new ControlLabel();
+        ControlLabel userControlLabel = new ControlLabel(constants.User());
         userControlLabel.setFor("userTextBox");
-        userControlLabel.add(new Label(constants.User()));
-        
-        Controls loggedUserControls = new Controls();
-  
+        Controls userControls = new Controls();
         TextBox userTextBox = new TextBox();
         userTextBox.setName("userTextBox");
-        loggedUserControls.add(userTextBox);
+        userControls.add(userTextBox);
         
         Button removeUserButton = new Button();
+        removeUserButton.setIcon(IconType.MINUS_SIGN);
         removeUserButton.addClickHandler(new ClickHandler() {
 
             @Override
@@ -253,11 +278,11 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
                 refreshUserGroupControls();
             }
         });
-        removeUserButton.setText(constants.Remove_User());
-        loggedUserControls.add(removeUserButton);
+        
+        userControls.add(removeUserButton);
         
         userControlGroup.add(userControlLabel);
-        userControlGroup.add(loggedUserControls);
+        userControlGroup.add(userControls);
         
         userControlGroups.add(userControlGroup);
         
@@ -269,10 +294,10 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
     
         final ControlGroup groupControlGroup = new ControlGroup();
      
-        ControlLabel groupControlLabel = new ControlLabel();
+        ControlLabel groupControlLabel = new ControlLabel(constants.Group());
         groupControlLabel.setFor("groupTextBox");
-        groupControlLabel.add(new Label(constants.Group()));
         
+
         Controls groupControls = new Controls();
   
         TextBox groupTextBox = new TextBox();
@@ -280,7 +305,7 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
         groupControls.add(groupTextBox);
         
         Button removeGroupButton = new Button();
-        removeGroupButton.setText(constants.Remove_Group());
+        removeGroupButton.setIcon(IconType.MINUS_SIGN);
         removeGroupButton.addClickHandler(new ClickHandler() {
 
             @Override
@@ -376,10 +401,14 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
             }
             
             presenter.addTask( users, groups,
-                                taskNameText.getText(), Integer.parseInt( taskPriorityListBox.getText() ),
-                               quickTaskCheck.getValue(), dueDate.getValue() );
+                                taskNameText.getText(), taskPriorityListBox.getSelectedIndex(),
+                               assignToMeTaskCheck.getValue(), dueDate.getValue() );
         } else {
             displayNotification( constants.Task_Must_Have_A_Name() );
+            taskNameText.setFocus(true);
+            taskNameText.setErrorLabel(taskNameHelpLabel);
+            taskNameControlGroup.setType(ControlGroupType.ERROR);
+            taskNameHelpLabel.setText(constants.Task_Must_Have_A_Name());
         }
     }
 

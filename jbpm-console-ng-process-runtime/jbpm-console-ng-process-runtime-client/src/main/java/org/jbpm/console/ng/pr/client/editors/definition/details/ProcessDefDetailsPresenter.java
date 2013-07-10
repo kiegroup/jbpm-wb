@@ -56,6 +56,8 @@ public class ProcessDefDetailsPresenter {
         TextBox getNroOfHumanTasksText();
 
         TextBox getProcessNameText();
+        
+        TextBox getProcessIdText();
 
         ListBox getHumanTasksListBox();
 
@@ -65,7 +67,7 @@ public class ProcessDefDetailsPresenter {
 
         ListBox getSubprocessListBox();
 
-        TextBox getDomainIdText();
+        TextBox getDeploymentIdText();
 
         void setProcessAssetPath( Path processAssetPath );
 
@@ -147,6 +149,7 @@ public class ProcessDefDetailsPresenter {
             @Override
             public void callback( ProcessSummary process ) {
                 view.setEncodedProcessSource( process.getEncodedProcessSource() );
+                view.getProcessNameText().setText(process.getName());
                 if ( process.getOriginalPath() != null ) {
                     fileServices.call( new RemoteCallback<Path>() {
                         @Override
@@ -164,10 +167,10 @@ public class ProcessDefDetailsPresenter {
     @OnReveal
     public void onReveal() {
         String processId = place.getParameter( "processId", "" );
-        view.getProcessNameText().setText( processId );
+        view.getProcessIdText().setText( processId );
 
-        String domainId = place.getParameter( "domainId", "none" );
-        view.getDomainIdText().setText( domainId );
+        String deploymentId = place.getParameter( "deploymentId", "none" );
+        view.getDeploymentIdText().setText( deploymentId );
 
         refreshProcessDef( processId );
     }

@@ -54,6 +54,10 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
 
     @Inject
     @DataField
+    public TextBox processIdText;
+    
+    @Inject
+    @DataField
     public TextBox processNameText;
 
     @Inject
@@ -78,7 +82,7 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
 
     @Inject
     @DataField
-    public TextBox domainIdText;
+    public TextBox deploymentIdText;
 
     @Inject
     @DataField
@@ -103,6 +107,10 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
     @Inject
     @DataField
     public Label processNameLabel;
+    
+    @Inject
+    @DataField
+    public Label processIdLabel;
 
     @Inject
     @DataField
@@ -110,7 +118,7 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
 
     @Inject
     @DataField
-    public Label domainIdLabel;
+    public Label deploymentIdLabel;
 
     @Inject
     @DataField
@@ -144,8 +152,10 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
         this.usersGroupsListBox.setEnabled( false );
         this.processDataListBox.setVisibleItemCount( 5 );
         this.processDataListBox.setEnabled( false );
+        this.subprocessListBox.setEnabled(false);
+        this.processIdText.setEnabled(false);
         this.processNameText.setEnabled( false );
-        this.domainIdText.setEnabled( false );
+        this.deploymentIdText.setEnabled( false );
         nroOfHumanTasksText.setEnabled( false );
 
         this.subprocessListBox.addDoubleClickHandler( new DoubleClickHandler() {
@@ -162,9 +172,10 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
         processDetailsLabel.setText( constants.Process_Definition_Details() );
         processDetailsLabel.setStyleName( "" );
 
+        processIdLabel.setText( constants.Process_Definition_Id() );
         processNameLabel.setText( constants.Process_Definition_Name() );
         nroOfHumanTasksLabel.setText( constants.Human_Tasks_Count() );
-        domainIdLabel.setText( constants.Domain_Name() );
+        deploymentIdLabel.setText( constants.Deployment_Name() );
         humanTasksListLabel.setText( constants.Human_Tasks() );
         usersGroupsListLabel.setText( constants.User_And_Groups() );
         subprocessListLabel.setText( constants.SubProcesses() );
@@ -187,15 +198,15 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
     @EventHandler("createProcessInstanceButton")
     public void createProcessInstance( ClickEvent e ) {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display" );
-        placeRequestImpl.addParameter( "processId", processNameText.getText() );
-        placeRequestImpl.addParameter( "domainId", domainIdText.getText() );
+        placeRequestImpl.addParameter( "processId", processIdText.getText() );
+        placeRequestImpl.addParameter( "domainId", deploymentIdText.getText() );
         placeManager.goTo( placeRequestImpl );
     }
 
     @EventHandler("viewProcessInstancesButton")
     public void viewProcessInstancesButton( ClickEvent e ) {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instance List" );
-        placeRequestImpl.addParameter( "processDefId", processNameText.getText() );
+        placeRequestImpl.addParameter( "processDefId", processIdText.getText() );
         placeManager.goTo( placeRequestImpl );
 
     }
@@ -243,8 +254,8 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
     }
 
     @Override
-    public TextBox getDomainIdText() {
-        return domainIdText;
+    public TextBox getDeploymentIdText() {
+        return deploymentIdText;
     }
 
     @Override
@@ -260,6 +271,11 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
     @Override
     public void setEncodedProcessSource( String encodedProcessSource ) {
         this.encodedProcessSource = encodedProcessSource;
+    }
+
+    @Override
+    public TextBox getProcessIdText() {
+        return processIdText;
     }
 
 }

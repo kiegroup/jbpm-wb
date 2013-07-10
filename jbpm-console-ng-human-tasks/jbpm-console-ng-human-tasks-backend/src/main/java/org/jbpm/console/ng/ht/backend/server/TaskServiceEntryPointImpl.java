@@ -271,6 +271,15 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         taskService.start(taskId, userId);
         return taskId;
     }
+    
+    @Override
+    public long addTaskAndClaimAndStart(String taskString, Map<String, Object> inputs, String userId,
+            Map<String, Object> templateVars) {
+        long taskId = addTask(taskString, inputs, templateVars);
+        taskService.claim(taskId, userId);
+        taskService.start(taskId, userId);
+        return taskId;
+    }
 
     @Override
     public void start(long taskId, String user) {

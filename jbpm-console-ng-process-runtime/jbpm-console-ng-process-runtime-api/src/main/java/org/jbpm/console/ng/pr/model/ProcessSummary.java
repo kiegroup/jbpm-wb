@@ -27,17 +27,17 @@ public class ProcessSummary {
     private String type;
     private String version;
     private String originalPath;
-    private String domainId;
+    private String deploymentId;
     private String encodedProcessSource;
 
     public ProcessSummary() {
     }
 
-    public ProcessSummary(String id, String name, String domainId, String packageName, String type, String version,
+    public ProcessSummary(String id, String name, String deploymentId, String packageName, String type, String version,
             String originalpath, String processSource) {
         this.id = id;
         this.name = name;
-        this.domainId = domainId;
+        this.deploymentId = deploymentId;
         this.packageName = packageName;
         this.type = type;
         this.version = version;
@@ -85,12 +85,12 @@ public class ProcessSummary {
         this.version = version;
     }
 
-    public String getDomainId() {
-        return domainId;
+    public String getDeploymentId() {
+        return deploymentId;
     }
 
-    public void setDomainId(String domainId) {
-        this.domainId = domainId;
+    public void setDeploymentId(String deploymentId) {
+        this.deploymentId = deploymentId;
     }
 
     public String getOriginalPath() {
