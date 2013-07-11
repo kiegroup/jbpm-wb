@@ -139,7 +139,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
 
         processdefListGrid.setHeight( "350px" );
         // Set the message to display when the table is empty.
-        Label emptyTable = new Label( constants.No_Process_Definitions_Available() );
+        Label emptyTable = new Label( constants.No_Process_Definitions_Found() );
         emptyTable.setStyleName( "" );
         processdefListGrid.setEmptyTableWidget( emptyTable );
 
@@ -236,7 +236,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
             public void execute( ProcessSummary process ) {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display" );
                 placeRequestImpl.addParameter( "processId", process.getId() );
-                placeRequestImpl.addParameter( "domainId", process.getDomainId() );
+                placeRequestImpl.addParameter( "domainId", process.getDeploymentId() );
                 placeManager.goTo( placeRequestImpl );
             }
         } ) );
@@ -247,7 +247,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
 
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Definition Details" );
                 placeRequestImpl.addParameter( "processId", process.getId() );
-                placeRequestImpl.addParameter( "domainId", process.getDomainId() );
+                placeRequestImpl.addParameter( "deploymentId", process.getDeploymentId() );
                 placeManager.goTo( placeRequestImpl );
             }
         } ) );

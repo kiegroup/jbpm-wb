@@ -22,6 +22,8 @@ import java.util.List;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
@@ -48,6 +50,7 @@ public class TaskBox extends Composite {
     private List<String> potentialOwners;
     private String status;
     private int priority;
+    private String hour;
     private TasksListPresenter presenter;
     private Identity identity;
     private PlaceManager placeManager;
@@ -78,7 +81,7 @@ public class TaskBox extends Composite {
                     final String taskName,
                     final String actualOwner,
                     final List<String> potentialOwners,
-                    final String status, final int priority ) {
+                    final String status, final int priority, String hour ) {
         this();
         this.taskId = taskId;
         this.taskName = taskName;
@@ -89,6 +92,9 @@ public class TaskBox extends Composite {
         this.presenter = presenter;
         this.identity = identity;
         this.priority = priority;
+        this.hour = hour;
+        
+        hourPanel.add(new Label(hour));
         
         if(priority == 0 || priority == 1){
             taskPriorityPanel.setStyleName( "priority five" );

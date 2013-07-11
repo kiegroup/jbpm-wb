@@ -16,6 +16,8 @@
 
 package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,8 +27,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.TextBox;
+
 import java.util.List;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
@@ -41,6 +42,7 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
+import org.uberfire.security.Role;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
@@ -82,7 +84,7 @@ public class QuickNewTaskPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.Quick_Task();
+        return constants.New_Task();
     }
 
     @WorkbenchPartView
@@ -100,7 +102,7 @@ public class QuickNewTaskPresenter {
     public void addTask( final List<String> users, List<String> groups,
                          String taskName,
                          int priority,
-                         boolean isQuickTask,
+                         boolean isAssignToMe,
                          Date due ) {
 
         Map<String, Object> templateVars = new HashMap<String, Object>();
@@ -126,7 +128,19 @@ public class QuickNewTaskPresenter {
         }
         str+="], }),"; 
         str += "names = [ new I18NText( 'en-UK', '" + taskName + "')]})";
-        if ( isQuickTask ) {
+        if ( isAssignToMe && users != null && users.isEmpty() && groups != null 
+                && containsGroup(groups, identity.getRoles()) ) {
+            //System.out.println(" FIRST OPTION -> Groups were I'm Included  and I want to be autoassigned add/start/claim!!");
+            taskServices.call( new RemoteCallback<Long>() {
+                @Override
+                public void callback( Long taskId ) {
+                    view.displayNotification( "Task Created and Started (id = " + taskId + ")" );
+                    close();
+                }
+            } ).addTaskAndClaimAndStart( str, null, identity.getName(), templateVars );
+        } else if ( !isAssignToMe && users != null && users.isEmpty() && groups != null 
+                && containsGroup(groups, identity.getRoles()) ) {
+            //System.out.println(" Second OPTION -> Group task but I don't want to be assigned automatically  -> just add!!");
             taskServices.call( new RemoteCallback<Long>() {
                 @Override
                 public void callback( Long taskId ) {
@@ -134,8 +148,9 @@ public class QuickNewTaskPresenter {
                     close();
 
                 }
-            } ).addTaskAndStart( str, null, identity.getName(), templateVars );
-        } else {
+            } ).addTask( str, null, templateVars );
+        }  if (users != null && !users.isEmpty() && users.contains(identity.getName())) {
+            //System.out.println(" THIRD OPTION -> Users that includes me add / start!!");
             taskServices.call( new RemoteCallback<Long>() {
                 @Override
                 public void callback( Long taskId ) {
@@ -143,11 +158,44 @@ public class QuickNewTaskPresenter {
                     close();
 
                 }
-            } ).addTask( str, null, templateVars );
-        }
+            } ).addTaskAndStart(str, null, identity.getName(), templateVars );
+        } else if (users != null && !users.isEmpty() && !users.contains(identity.getName())) {
+            //System.out.println(" FOURTH OPTION -> users that are not me -> just adding!!");
+            taskServices.call( new RemoteCallback<Long>() {
+                @Override
+                public void callback( Long taskId ) {
+                    view.displayNotification( "Task Created (id = " + taskId + ")" );
+                    close();
+
+                }
+            } ).addTask(str, null, templateVars );
+        }else if(groups != null && !groups.isEmpty() && !containsGroup(groups, identity.getRoles())){
+            //System.out.println(" FIFTH OPTION -> groups were I'm not in -> just adding!!");
+            taskServices.call( new RemoteCallback<Long>() {
+                @Override
+                public void callback( Long taskId ) {
+                    view.displayNotification( "Task Created (id = " + taskId + ")" );
+                    close();
+
+                }
+            } ).addTask(str, null, templateVars );
+        } 
 
     }
 
+    private boolean containsGroup(List<String> groups, List<Role> roles){
+        for(String g : groups){
+            for(Role r : roles){
+                //System.out.println(" ->  Role: '"+r.getName()+"' == '"+g+"'");
+                if(r.getName().trim().equals(g.trim())){
+                  //  System.out.println(" YEAH!!!!  Role: '"+r.getName()+"' == '"+g+"'");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     @OnReveal
     public void onReveal() {
         view.getTaskNameText().setFocus( true );

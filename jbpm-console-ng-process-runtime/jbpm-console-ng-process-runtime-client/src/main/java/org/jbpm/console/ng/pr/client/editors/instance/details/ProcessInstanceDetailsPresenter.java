@@ -72,7 +72,7 @@ public class ProcessInstanceDetailsPresenter {
 
         void setProcessInstance( ProcessInstanceSummary processInstance );
 
-        TextBox getProcessPackageText();
+        TextBox getProcessDeploymentText();
 
         TextBox getProcessVersionText();
 
@@ -124,8 +124,12 @@ public class ProcessInstanceDetailsPresenter {
                 view.getLogTextArea().setText( "" );
                 String fullLog = "";
                 for ( NodeInstanceSummary nis : details ) {
-                    fullLog += nis.getTimestamp() + ": " + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType()
-                            + ") \n";
+                    if(!nis.getNodeName().equals("")){
+                        fullLog += nis.getTimestamp() + ": " + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType()
+                                + ") \n";
+                    }else{
+                        fullLog += nis.getTimestamp() + ": " + nis.getId() + " - " + nis.getType() + "\n";
+                    }
                 }
                 view.getLogTextArea().setText( fullLog );
             }
@@ -147,8 +151,9 @@ public class ProcessInstanceDetailsPresenter {
         dataServices.call( new RemoteCallback<ProcessSummary>() {
             @Override
             public void callback( ProcessSummary process ) {
-                view.getProcessNameText().setText( process.getId() );
-                view.getProcessPackageText().setText( process.getPackageName() );
+                view.getProcessIdText().setText( process.getId());
+                view.getProcessNameText().setText( process.getName() );
+                view.getProcessDeploymentText().setText( process.getDeploymentId() );
                 view.getProcessVersionText().setText( process.getVersion() );
             }
         } ).getProcessDesc( processDefId );

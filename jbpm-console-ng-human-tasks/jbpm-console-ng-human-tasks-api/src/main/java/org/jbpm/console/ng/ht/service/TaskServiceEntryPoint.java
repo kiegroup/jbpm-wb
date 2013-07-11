@@ -56,6 +56,9 @@ public interface TaskServiceEntryPoint {
     long addTask(String taskString, Map<String, Object> inputs, Map<String, Object> templateInputs);
 
     long addTaskAndStart(String taskString, Map<String, Object> inputs, String userId, Map<String, Object> templateInputs);
+    
+    long addTaskAndClaimAndStart(String taskString, Map<String, Object> inputs, String userId,
+            Map<String, Object> templateVars);
 
     void start(long taskId, String user);
 

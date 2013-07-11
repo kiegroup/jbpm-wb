@@ -280,7 +280,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
             }
         } );
         // Set the message to display when the table is empty.
-        Label emptyTable = new Label( constants.No_Process_Instances_Available() );
+        Label emptyTable = new Label( constants.No_Process_Instances_Found() );
         emptyTable.setStyleName( "" );
         processInstanceListGrid.setEmptyTableWidget( emptyTable );
 

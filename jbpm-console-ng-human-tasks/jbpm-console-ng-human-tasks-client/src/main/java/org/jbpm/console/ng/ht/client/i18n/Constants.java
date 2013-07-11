@@ -51,7 +51,7 @@ public interface Constants extends Messages {
 
     String All();
 
-    String No_Pending_Tasks_Enjoy();
+    String No_Tasks_Found();
 
     String Priority();
 
@@ -137,5 +137,5 @@ public interface Constants extends Messages {
 
     String Assignments();
     
-
+    String Auto_Assign_To_Me();
 }

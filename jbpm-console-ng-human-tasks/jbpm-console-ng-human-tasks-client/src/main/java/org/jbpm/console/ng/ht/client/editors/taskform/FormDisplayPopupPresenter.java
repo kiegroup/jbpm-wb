@@ -106,6 +106,8 @@ public class FormDisplayPopupPresenter {
     private PlaceRequest place;
 
     private String formCtx;
+    
+    private String currentTitle;
 
 
     @Inject
@@ -204,6 +206,8 @@ public class FormDisplayPopupPresenter {
                 initTaskForm(form);
             }
         } ).getFormDisplayTask(taskId);
+        
+        this.currentTitle = String.valueOf(taskId);
     }
 
     protected void initTaskForm(String form) {
@@ -292,7 +296,7 @@ public class FormDisplayPopupPresenter {
         } ).getTaskDetails(view.getTaskId());
     }
 
-    public void renderProcessForm(final String domainId, final String idProcess) {
+    public void renderProcessForm(final String deploymentId, final String idProcess) {
         view.getNavBarUL().clear();
         formServices.call( new RemoteCallback<String>() {
             @Override
@@ -335,8 +339,8 @@ public class FormDisplayPopupPresenter {
                     }
                 } ).getProcessDesc(idProcess);
             }
-        }).getFormDisplayProcess(domainId, idProcess);
-
+        }).getFormDisplayProcess(deploymentId, idProcess);
+        this.currentTitle = idProcess;
     }
 
     public void onFormSubmitted(@Observes FormSubmittedEvent event) {
@@ -357,7 +361,7 @@ public class FormDisplayPopupPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.Form();
+        return constants.Form() + ":" + currentTitle;
     }
 
     @WorkbenchPartView
