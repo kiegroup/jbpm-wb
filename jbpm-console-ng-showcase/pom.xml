@@ -468,52 +468,44 @@
       <dependency>
           <groupId>org.jbpm</groupId>
           <artifactId>jbpm-form-modeler-app</artifactId>
-          <version>${jbpm.form.modeler.version}</version>
           <type>war</type>
       </dependency>
 
       <dependency>
           <groupId>org.jbpm</groupId>
           <artifactId>jbpm-form-modeler-renderer-api</artifactId>
-          <version>${jbpm.form.modeler.version}</version>
       </dependency>
 
       <dependency>
           <groupId>org.jbpm</groupId>
           <artifactId>jbpm-form-modeler-renderer-client</artifactId>
-          <version>${jbpm.form.modeler.version}</version>
       </dependency>
 
       <dependency>
           <groupId>org.jbpm</groupId>
           <artifactId>jbpm-form-modeler-renderer-backend</artifactId>
-          <version>${jbpm.form.modeler.version}</version>
       </dependency>
 
       <dependency>
           <groupId>org.jbpm</groupId>
           <artifactId>jbpm-form-modeler-editor-api</artifactId>
-          <version>${jbpm.form.modeler.version}</version>
       </dependency>
 
       <dependency>
           <groupId>org.jbpm</groupId>
           <artifactId>jbpm-form-modeler-editor-client</artifactId>
-          <version>${jbpm.form.modeler.version}</version>
       </dependency>
 
       <dependency>
           <groupId>org.jbpm</groupId>
           <artifactId>jbpm-form-modeler-editor-backend</artifactId>
-          <version>${jbpm.form.modeler.version}</version>
       </dependency>
 
       <dependency>
           <groupId>org.jbpm</groupId>
           <artifactId>jbpm-form-modeler-form-provider</artifactId>
-          <version>${jbpm.form.modeler.version}</version>
       </dependency>
-     <!-- Data Modeller --> 
+     <!-- Data Modeller -->
       <dependency>
           <groupId>org.kie.workbench.screens</groupId>
           <artifactId>kie-wb-common-data-modeller-api</artifactId>
@@ -531,7 +523,6 @@
       <dependency>
           <groupId>org.jbpm</groupId>
           <artifactId>jbpm-form-modeler-data-modeler</artifactId>
-          <version>${jbpm.form.modeler.version}</version>
       </dependency>
   </dependencies>
 
