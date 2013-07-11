@@ -144,6 +144,8 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
     @EventHandler("addCommentButton")
     public void addCommentButton(ClickEvent e) {
         presenter.addTaskComment(Long.parseLong(taskIdText.getText()), newTaskCommentTextArea.getText(), new Date());
+        //Fix for BZ 983377
+        newTaskCommentTextArea.setText("");
     }
 
     private void initTableColumns() {
