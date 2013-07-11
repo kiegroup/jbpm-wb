@@ -191,8 +191,6 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
         for ( String priority : priorities ) {
             taskPriorityListBox.addItem( priority );
         }
-        
-        
 
         addTaskButton.setText( constants.Create() );
         dueDateLabel.add( new HTMLPanel( constants.Due_On() ) );

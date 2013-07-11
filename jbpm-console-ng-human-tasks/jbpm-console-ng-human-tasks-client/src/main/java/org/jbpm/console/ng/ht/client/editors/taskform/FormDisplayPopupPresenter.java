@@ -361,7 +361,7 @@ public class FormDisplayPopupPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.Form() + ":" + currentTitle;
+        return constants.Form();// + ":" + currentTitle;
     }
 
     @WorkbenchPartView
