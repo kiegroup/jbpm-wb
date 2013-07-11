@@ -4,7 +4,6 @@
  */
 package org.jbpm.console.ng.server.impl;
 
-import java.util.logging.Logger;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Disposes;

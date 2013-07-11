@@ -54,6 +54,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
+      <scope>runtime</scope>
     </dependency>
 
     <!-- Manstis hackathon -->
@@ -127,6 +128,16 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-designer-client</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>slf4j-jdk14</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>log4j-over-slf4j</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -135,6 +146,16 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-designer-backend</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>log4j-over-slf4j</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>slf4j-jdk14</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- UberFire -->
@@ -328,6 +349,10 @@
     <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.btm</groupId>
+      <artifactId>btm</artifactId>
     </dependency>
 
     <!--Miscellaneous -->

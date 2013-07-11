@@ -1,6 +1,5 @@
 package org.jbpm.console.ng.server.impl;
 
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -85,8 +84,4 @@ public class ApplicationScopedProvider {
         return ioService;
     }
 
-    @Produces
-    public Logger createLogger( InjectionPoint injectionPoint ) {
-        return Logger.getLogger( injectionPoint.getMember().getDeclaringClass().getName() );
-    }
 }

@@ -19,8 +19,6 @@ package org.jbpm.console.ng.ht.backend.server;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -45,11 +43,15 @@ import org.jbpm.form.builder.services.model.forms.FormEncodingFactory;
 import org.jbpm.form.builder.services.model.menu.MenuItemDescription;
 import org.jbpm.form.builder.services.model.menu.MenuOptionDescription;
 import org.jbpm.shared.services.api.FileService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @ApplicationScoped
 @Transactional
 public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
+
+    private static final Logger logger = LoggerFactory.getLogger(FormServiceEntryPointImpl.class);
 
     @Inject
     private MenuService menuService;
@@ -81,8 +83,7 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
             }
             return retval;
         } catch (Exception ex) {
-            ex.printStackTrace();
-            Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("Error while listing options", ex);
         }
         return null;
     }
@@ -97,8 +98,7 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
-            Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("Error while listing menu items", ex);
         }
     }
 
@@ -106,8 +106,7 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
         try {
             return menuService.getFormBuilderProperties();
         } catch (MenuServiceException ex) {
-            ex.printStackTrace();
-            Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("Error while getting form builder properties", ex);
         }
         return null;
     }
@@ -124,9 +123,9 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
                 return formService.saveForm((FormRepresentation) form);
             }
         } catch (FormBuilderServiceException ex) {
-            Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("Error while saving form", ex);
         } catch (FormEncodingException ex) {
-            Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("Error while saving form", ex);
         }
         return null;
     }
@@ -138,9 +137,9 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
                 formService.saveFormItem((FormItemRepresentation) obj, formItemName);
             }
         } catch (FormBuilderServiceException ex) {
-            Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("Error while saving form items", ex);
         } catch (FormEncodingException ex) {
-            Logger.getLogger(FormServiceEntryPointImpl.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("Error while saving form items", ex);
         }
     }
 

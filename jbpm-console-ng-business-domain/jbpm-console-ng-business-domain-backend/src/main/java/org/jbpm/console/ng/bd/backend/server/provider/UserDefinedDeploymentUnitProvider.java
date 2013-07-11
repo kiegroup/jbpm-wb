@@ -20,7 +20,6 @@ import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -29,6 +28,8 @@ import org.jbpm.console.ng.bd.service.DeploymentUnitProvider;
 import org.jbpm.kie.services.api.DeploymentUnit;
 import org.jbpm.kie.services.api.Kjar;
 import org.jbpm.kie.services.impl.KModuleDeploymentUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Allows to define KModuleDeploymentUnits based on either system property
@@ -52,8 +53,7 @@ import org.jbpm.kie.services.impl.KModuleDeploymentUnit;
 @Kjar
 public class UserDefinedDeploymentUnitProvider implements DeploymentUnitProvider<DeploymentUnit> {
 
-    @Inject
-    private Logger logger;
+    private static final Logger logger = LoggerFactory.getLogger(UserDefinedDeploymentUnitProvider.class);
 
     @Override
     public Set<DeploymentUnit> getDeploymentUnits() {
@@ -103,7 +103,7 @@ public class UserDefinedDeploymentUnitProvider implements DeploymentUnitProvider
         } else if (elems.length == 5) {
             return new KModuleDeploymentUnit(elems[0],elems[1],elems[2], elems[3], elems[4]);
         } else {
-            logger.warning("Unknown deployment unit " + gav);
+            logger.warn("Unknown deployment unit {}", gav);
         }
         return null;
     }

@@ -88,12 +88,11 @@
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
-    <!-- Test dependencies; lots of them are dynamic dependencies -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <scope>test</scope>
     </dependency>
+    <!-- Test dependencies; lots of them are dynamic dependencies -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>

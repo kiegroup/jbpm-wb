@@ -4,7 +4,6 @@
  */
 package org.jbpm.console.ng.ht.backend.server;
 
-import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Disposes;
@@ -67,12 +66,6 @@ public class TestProducers {
     @Produces
     public UserGroupCallback produceSelectedUserGroupCalback() {
         return userGroupCallback;
-    }
-
-
-    @Produces
-    public Logger createLogger(InjectionPoint injectionPoint) {
-        return Logger.getLogger(injectionPoint.getMember().getDeclaringClass().getName());
     }
 
     @Produces

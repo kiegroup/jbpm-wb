@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Any;
@@ -42,6 +41,8 @@ import org.jbpm.kie.services.api.Kjar;
 import org.jbpm.kie.services.api.Vfs;
 import org.kie.commons.io.IOService;
 import org.kie.commons.java.nio.file.FileSystemAlreadyExistsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.backend.group.Group;
 import org.uberfire.backend.group.GroupService;
 import org.uberfire.backend.repositories.Repository;
@@ -55,7 +56,7 @@ import org.uberfire.backend.server.config.ConfigurationService;
 public class AdministrationService {
 
     private static final String DEPLOYMENT_SERVICE_TYPE_CONFIG = "deployment.service";
-    private static final Logger logger = Logger.getLogger(AdministrationService.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(AdministrationService.class);
     @Inject
     @Named("ioStrategy")
     private IOService ioService;
@@ -106,7 +107,7 @@ public class AdministrationService {
             }
         } catch (Exception e) {
             // don't fail on creation of repository, just log the cause
-            logger.warning("Unable to create repository with alias " + repoAlias + " due to " + e.getMessage());
+            logger.warn("Unable to create repository with alias {} due to {}", repoAlias, e.getMessage());
         }
 
         Group demoGroup = groupService.getGroup("demo");

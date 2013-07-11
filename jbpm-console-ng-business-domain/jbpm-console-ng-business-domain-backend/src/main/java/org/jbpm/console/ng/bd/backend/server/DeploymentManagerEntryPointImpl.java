@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -29,6 +27,8 @@ import org.jbpm.kie.services.impl.event.Deploy;
 import org.jbpm.kie.services.impl.event.DeploymentEvent;
 import org.jbpm.kie.services.impl.event.Undeploy;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.backend.deployment.DeploymentConfigService;
 
 
@@ -40,7 +40,7 @@ import org.uberfire.backend.server.deployment.DeploymentConfigChangedEvent;
 @ApplicationScoped
 public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPoint, Initializable<DeploymentUnit> {
 
-    private static final Logger logger = Logger.getLogger(DeploymentManagerEntryPointImpl.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(DeploymentManagerEntryPointImpl.class);
 
     @Inject
     private DeploymentService deploymentService;
@@ -68,7 +68,8 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
                     cleanup(unit.getIdentifier());
                     deploymentService.deploy(unit);
                 } catch (Exception e) {
-                     logger.log(Level.WARNING, "Error when deploying unit " + unit, e);
+                    logger.warn("Error when deploying unit {} error message {}", unit, e.getMessage());
+                    logger.debug("Stacktrace:", e);
                 }
             }
         }
