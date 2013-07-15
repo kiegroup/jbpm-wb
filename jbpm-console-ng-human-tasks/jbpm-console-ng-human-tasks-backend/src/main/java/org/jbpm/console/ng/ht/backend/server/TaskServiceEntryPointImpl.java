@@ -101,8 +101,8 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
             statuses.add(Status.valueOf(s));
         }
         List<TaskSummary> taskSummaries = TaskSummaryHelper.adaptCollection(
-                taskService.getTasksOwnedByExpirationDateOptional(
-                        userId, statuses, from));
+                taskService.getTasksOwnedByStatus(
+                        userId, statuses, "en-UK"));
         setPotentionalOwners(taskSummaries);
         return taskSummaries;
     }

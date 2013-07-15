@@ -31,7 +31,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
@@ -44,13 +43,13 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -135,7 +134,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     
     @DataField
-    public Heading taskCalendarViewLabel = new Heading(4);
+    public Heading taskListViewLabel = new Heading(4);
 
     @Inject
     @DataField
@@ -161,7 +160,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     private Event<TaskSelectionEvent> taskSelection;
 
     @Inject
-    @DataField
     public IconAnchor refreshIcon;
     
     private Set<TaskSummary> selectedTasks;
@@ -172,9 +170,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     public DataGrid<TaskSummary> myTaskListGrid;
    
     public SimplePager pager;
-    
-    
-    
 
     @Override
     public void init( final TasksListPresenter presenter ) {
@@ -338,10 +333,13 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
             }
         } );
-
-        taskCalendarViewLabel.setText( constants.Tasks_List() );
-        taskCalendarViewLabel.setStyleName( "" );
-        
+        //taskListViewLabel.setText( constants.Tasks_List() );
+        HTMLPanel span2 = new HTMLPanel(constants.Tasks_List());
+        span2.setStyleName("span2");
+        taskListViewLabel.add(span2);
+        refreshIcon.setCustomIconStyle("icon-jbpm-refresh");
+        taskListViewLabel.add(refreshIcon);
+                
         searchBox.addKeyUpHandler(new KeyUpHandler() {
 
             @Override
@@ -380,14 +378,14 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         tasksViewContainer.add(myTaskListGrid);
         tasksViewContainer.add(pager);
 
-        myTaskListGrid.setHeight("350px");
+        myTaskListGrid.setHeight("400px");
         // Set the message to display when the table is empty.
-        myTaskListGrid.setEmptyTableWidget(new Label(constants.No_Tasks_Found()));
+        myTaskListGrid.setEmptyTableWidget(new HTMLPanel(constants.No_Tasks_Found()));
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
-        sortHandler = new ColumnSortEvent.ListHandler<TaskSummary>(presenter.getAllTaskSummaries());
+        sortHandler = new ColumnSortEvent.ListHandler<TaskSummary>(presenter.getDataProvider().getList());
 
-        myTaskListGrid.addColumnSortHandler(sortHandler);
+        
 
         // Add a selection model so we can select cells.
         selectionModel = new MultiSelectionModel<TaskSummary>();
@@ -404,6 +402,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         myTaskListGrid.setSelectionModel(selectionModel, DefaultSelectionEventManager.<TaskSummary> createCheckboxManager());
 
         initTableColumns(selectionModel);
+        
+        myTaskListGrid.addColumnSortHandler(sortHandler);
         presenter.addDataDisplay(myTaskListGrid);
 
     }
@@ -449,7 +449,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 return selectionModel.isSelected(object);
             }
         };
-        myTaskListGrid.addColumn(checkColumn, SafeHtmlUtils.fromSafeConstant("<br/>"));
+        myTaskListGrid.addColumn(checkColumn, new ResizableHeader("", myTaskListGrid, checkColumn));
         myTaskListGrid.setColumnWidth(checkColumn, "40px");
 
         // Id
@@ -460,7 +460,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             }
         };
         taskIdColumn.setSortable(true);
-        myTaskListGrid.setColumnWidth(taskIdColumn, "40px");
+        myTaskListGrid.setColumnWidth(taskIdColumn, "50px");
 
         myTaskListGrid.addColumn(taskIdColumn, new ResizableHeader(constants.Id(), myTaskListGrid, taskIdColumn));
         sortHandler.setComparator(taskIdColumn, new Comparator<TaskSummary>() {
@@ -548,24 +548,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         
 
         List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
-        cells.add(new StartActionHasCell("Start", new ActionCell.Delegate<TaskSummary>() {
-            @Override
-            public void execute(TaskSummary task) {
-                List<Long> tasks = new ArrayList<Long>(1);
-                tasks.add(task.getId());
-                presenter.startTasks(tasks, identity.getName());
-            }
-        }));
-
-        cells.add(new CompleteActionHasCell("Complete", new ActionCell.Delegate<TaskSummary>() {
-            @Override
-            public void execute(TaskSummary task) {
-                List<Long> tasks = new ArrayList<Long>(1);
-                tasks.add(task.getId());
-                presenter.completeTasks(tasks, identity.getName());
-            }
-        }));
-
         cells.add(new ClaimActionHasCell("Claim", new ActionCell.Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
@@ -584,7 +566,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             }
         }));
 
-        cells.add(new DetailsHasCell("Edit", new ActionCell.Delegate<TaskSummary>() {
+        cells.add(new DetailsHasCell("Details", new ActionCell.Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Popup");
@@ -592,8 +574,17 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 placeManager.goTo(placeRequestImpl);
             }
         }));
-
-        cells.add(new PopupActionHasCell("Work Popup", new ActionCell.Delegate<TaskSummary>() {
+        
+        cells.add(new StartActionHasCell("Start", new ActionCell.Delegate<TaskSummary>() {
+            @Override
+            public void execute(TaskSummary task) {
+                List<Long> tasks = new ArrayList<Long>(1);
+                tasks.add(task.getId());
+                presenter.startTasks(tasks, identity.getName());
+            }
+        }));
+        
+        cells.add(new CompleteActionHasCell("Complete", new ActionCell.Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
@@ -610,7 +601,9 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 return object;
             }
         };
-        myTaskListGrid.addColumn(actionsColumn, constants.Actions());
+        myTaskListGrid.addColumn(actionsColumn, new ResizableHeader(constants.Actions(), myTaskListGrid, actionsColumn));
+        myTaskListGrid.setColumnWidth(actionsColumn, "120px");
+        
 
     }
      
@@ -662,7 +655,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                     if (value.getActualOwner() != null && (value.getStatus().equals("Reserved"))) {
                         AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.startGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.Start() + "'>");
+                        mysb.appendHtmlConstant("<span title='" + constants.Start() + "' style='margin-right:5px;'>");
                         mysb.append(imageProto.getSafeHtml());
                         mysb.appendHtmlConstant("</span>");
                         sb.append(mysb.toSafeHtml());
@@ -698,7 +691,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                     if (value.getActualOwner() != null && value.getStatus().equals("InProgress")) {
                         AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.completeGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.Complete() + "'>");
+                        mysb.appendHtmlConstant("<span title='" + constants.Complete() + "' style='margin-right:5px;'>");
                         mysb.append(imageProto.getSafeHtml());
                         mysb.appendHtmlConstant("</span>");
                         sb.append(mysb.toSafeHtml());
@@ -723,42 +716,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         }
     }
 
-    private class PopupActionHasCell implements HasCell<TaskSummary, TaskSummary> {
-
-        private ActionCell<TaskSummary> cell;
-
-        public PopupActionHasCell(String text, ActionCell.Delegate<TaskSummary> delegate) {
-            cell = new ActionCell<TaskSummary>(text, delegate) {
-                @Override
-                public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
-                    if (value.getActualOwner() != null
-                            && (value.getStatus().equals("Reserved") || value.getStatus().equals("InProgress"))) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.popupIcon());
-                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.Work() + "'>");
-                        mysb.append(imageProto.getSafeHtml());
-                        mysb.appendHtmlConstant("</span>");
-                        sb.append(mysb.toSafeHtml());
-                    }
-                }
-            };
-        }
-
-        @Override
-        public Cell<TaskSummary> getCell() {
-            return cell;
-        }
-
-        @Override
-        public FieldUpdater<TaskSummary, TaskSummary> getFieldUpdater() {
-            return null;
-        }
-
-        @Override
-        public TaskSummary getValue(TaskSummary object) {
-            return object;
-        }
-    }
+    
 
     private class ClaimActionHasCell implements HasCell<TaskSummary, TaskSummary> {
 
@@ -772,7 +730,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                             && value.getStatus().equals("Ready")) {
                         AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.releaseGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.Claim() + "'>");
+                        mysb.appendHtmlConstant("<span title='" + constants.Claim() + "' style='margin-right:5px;'>");
                         mysb.append(imageProto.getSafeHtml());
                         mysb.appendHtmlConstant("</span>");
                         sb.append(mysb.toSafeHtml());
@@ -809,7 +767,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                             && ( value.getStatus().equals( "Reserved" ) || value.getStatus().equals( "InProgress" ) )) {
                         AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.claimGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.Release() + "'>");
+                        mysb.appendHtmlConstant("<span title='" + constants.Release() + "' style='margin-right:5px;'>");
                         mysb.append(imageProto.getSafeHtml());
                         mysb.appendHtmlConstant("</span>");
                         sb.append(mysb.toSafeHtml());

@@ -134,7 +134,7 @@ public class TasksListPresenter {
         if(text.equals("")){
                 if(allTaskSummaries != null){
                     dataProvider.getList().clear();
-                    dataProvider.setList(new ArrayList<TaskSummary>(allTaskSummaries));
+                    dataProvider.getList().addAll(new ArrayList<TaskSummary>(allTaskSummaries));
                     dataProvider.refresh();
                     
                 }
@@ -155,7 +155,7 @@ public class TasksListPresenter {
                     }
                 }
                 dataProvider.getList().clear();
-                dataProvider.setList(filteredTasksSimple);
+                dataProvider.getList().addAll(filteredTasksSimple);
                 dataProvider.refresh();
             }
             if(currentDayTasks != null){
