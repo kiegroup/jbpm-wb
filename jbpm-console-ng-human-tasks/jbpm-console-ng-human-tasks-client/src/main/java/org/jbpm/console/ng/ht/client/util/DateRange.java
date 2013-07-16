@@ -24,11 +24,13 @@ import java.util.Date;
 public class DateRange {
     private final Date startDate;
     private final Date endDate;
+    private final int  daysInBetween;
 
-    public DateRange(Date startDate, Date endDate) {
+    public DateRange(Date startDate, Date endDate, int daysInBetween) {
         super();
         this.startDate = startDate;
         this.endDate = endDate;
+        this.daysInBetween = daysInBetween;
     }
 
     public Date getStartDate() {
@@ -39,36 +41,41 @@ public class DateRange {
         return new Date(endDate.getTime());
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        DateRange other = (DateRange) obj;
-        if (endDate == null) {
-            if (other.endDate != null)
-                return false;
-        } else if (!endDate.equals(other.endDate))
-            return false;
-        if (startDate == null) {
-            if (other.startDate != null)
-                return false;
-        } else if (!startDate.equals(other.startDate))
-            return false;
-        return true;
+    public int getDaysInBetween() {
+        return daysInBetween;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
-        result = prime * result + ((startDate == null) ? 0 : startDate.hashCode());
-        return result;
+        int hash = 7;
+        hash = 23 * hash + (this.startDate != null ? this.startDate.hashCode() : 0);
+        hash = 23 * hash + (this.endDate != null ? this.endDate.hashCode() : 0);
+        hash = 23 * hash + this.daysInBetween;
+        return hash;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DateRange other = (DateRange) obj;
+        if (this.startDate != other.startDate && (this.startDate == null || !this.startDate.equals(other.startDate))) {
+            return false;
+        }
+        if (this.endDate != other.endDate && (this.endDate == null || !this.endDate.equals(other.endDate))) {
+            return false;
+        }
+        if (this.daysInBetween != other.daysInBetween) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 
     @Override
     public String toString() {
@@ -77,6 +84,8 @@ public class DateRange {
         builder.append(startDate);
         builder.append(", endDate=");
         builder.append(endDate);
+        builder.append(", daysInBetween=");
+        builder.append(daysInBetween);
         builder.append("]");
         return builder.toString();
     }

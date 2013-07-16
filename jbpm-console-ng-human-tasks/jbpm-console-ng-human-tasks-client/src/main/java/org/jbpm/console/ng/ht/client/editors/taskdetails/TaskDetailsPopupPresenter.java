@@ -188,7 +188,6 @@ public class TaskDetailsPopupPresenter {
                     view.getDueDate().setEnabled( false );
                     view.getUserText().setEnabled( false );
                     view.getTaskStatusText().setEnabled( false );
-
                     view.getProcessInstanceIdText().setEnabled( false );
                 }
 
@@ -200,6 +199,7 @@ public class TaskDetailsPopupPresenter {
                 view.getUserText().setEnabled( false );
                 view.getTaskStatusText().setText( details.getStatus() );
                 view.getTaskStatusText().setEnabled( false );
+                view.getProcessIdText().setEnabled(false);
                 if ( details.getProcessInstanceId() == -1 ) {
                     view.getProcessInstanceIdText().setText( "None" );
                     view.getProcessIdText().setText( "None" );

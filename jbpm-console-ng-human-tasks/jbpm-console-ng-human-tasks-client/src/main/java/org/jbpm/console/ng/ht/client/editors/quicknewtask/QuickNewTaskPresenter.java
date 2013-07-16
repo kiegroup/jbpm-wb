@@ -107,9 +107,10 @@ public class QuickNewTaskPresenter {
 
         Map<String, Object> templateVars = new HashMap<String, Object>();
         templateVars.put( "due", due );
+        templateVars.put( "now", new Date() );
 
         String str = "(with (new Task()) { priority = " + priority
-                + ", taskData = (with( new TaskData()) { expirationTime = due } ), ";
+                + ", taskData = (with( new TaskData()) { createdOn = now, expirationTime = due } ), ";
         str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
         str += " [";
         if ( users != null && !users.isEmpty() ) {

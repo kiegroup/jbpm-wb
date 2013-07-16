@@ -131,7 +131,7 @@ public class TaskDetailsPopupViewImpl extends Composite implements TaskDetailsPo
 
     @Inject
     @DataField
-    public ControlLabel descriptionAccordionLabel;
+    public ControlLabel detailsAccordionLabel;
 
     @Inject
     private PlaceManager placeManager;
@@ -173,11 +173,12 @@ public class TaskDetailsPopupViewImpl extends Composite implements TaskDetailsPo
         processIdLabel.add( new HTMLPanel( constants.Process_Definition_Id() ) );
         pIDetailsLabel.add( new HTMLPanel( constants.Process_Instance_Details() ) );
         taskDescriptionLabel.add( new HTMLPanel( constants.Description() ) );
-        descriptionAccordionLabel.add( new HTMLPanel( constants.Description() ) );
+        detailsAccordionLabel.add( new HTMLPanel( constants.Details()) );
         processContextLabel.setText( constants.Process_Context() );
         processContextLabel.setStyleName( "" );
         pIDetailsButton.setText( constants.Process_Instance_Details() );
         updateTaskButton.setText( constants.Update() );
+        processIdText.setReadOnly(true);
     }
 
     @EventHandler("updateTaskButton")

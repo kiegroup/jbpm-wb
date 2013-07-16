@@ -57,6 +57,7 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
+import org.uberfire.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
@@ -108,8 +109,7 @@ public class FormDisplayPopupPresenter {
     private String formCtx;
     
     private String currentTitle;
-
-
+    
     @Inject
     private Event<NotificationEvent> notification;
 
@@ -169,6 +169,8 @@ public class FormDisplayPopupPresenter {
     public void onStart(final PlaceRequest place) {
         this.place = place;
     }
+    
+    
 
     public void renderTaskForm(final long taskId) {
         view.getNavBarUL().clear();
@@ -221,7 +223,7 @@ public class FormDisplayPopupPresenter {
             }
         } ).getFormDisplayTask(taskId);
         
-        this.currentTitle = String.valueOf(taskId);
+        
     }
 
     protected void initTaskForm(String form) {
@@ -304,7 +306,6 @@ public class FormDisplayPopupPresenter {
                     completeTaskFlowPanel.addClickHandler(complete);
                     wrapperFlowPanel.add( completeTaskFlowPanel );
                     view.getOptionsDiv().add( wrapperFlowPanel );
-
                 }
             }
         } ).getTaskDetails(view.getTaskId());
@@ -348,8 +349,6 @@ public class FormDisplayPopupPresenter {
                         startFlowPanel.addClickHandler(start);
                         wrapperFlowPanel.add( startFlowPanel );
                         view.getOptionsDiv().add( wrapperFlowPanel );
-
-
                     }
                 } ).getProcessDesc(idProcess);
             }
@@ -375,7 +374,7 @@ public class FormDisplayPopupPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.Form();// + ":" + currentTitle;
+        return constants.Form();
     }
 
     @WorkbenchPartView

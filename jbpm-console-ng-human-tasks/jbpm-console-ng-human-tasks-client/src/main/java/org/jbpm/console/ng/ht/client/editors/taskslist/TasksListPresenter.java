@@ -32,6 +32,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 import java.util.HashMap;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
@@ -82,7 +83,7 @@ public class TasksListPresenter {
     }
 
     public enum TaskView {
-        DAY(1), WEEK(7), MONTH(35), GRID(365);
+        DAY(1), WEEK(7), MONTH(42), GRID(365);
 
         private int nrOfDaysToShow;
 
@@ -266,8 +267,9 @@ public class TasksListPresenter {
     }
 
     public void refreshPersonalTasks(Date date, TaskView taskView) {
-        Date fromDate = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
-        int daysTotal = taskView.getNrOfDaysToShow();
+        DateRange dateRangeToShow = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
+        Date fromDate = dateRangeToShow.getStartDate();
+        int daysTotal = dateRangeToShow.getDaysInBetween() + 1;
 
         List<String> statuses = new ArrayList<String>(4);
         statuses.add("Ready");
@@ -294,34 +296,36 @@ public class TasksListPresenter {
         }
     }
 
-    private Date determineFirstDateForTaskViewBasedOnSpecifiedDate(Date date, TaskView taskView) {
-        Date fromDate;
+    private DateRange determineFirstDateForTaskViewBasedOnSpecifiedDate(Date date, TaskView taskView) {
+        DateRange dateRange;
         switch (taskView) {
             case DAY:
-                fromDate = new Date(date.getTime());
+                dateRange = new DateRange(new Date(date.getTime()), new Date(date.getTime()), 0);
                 break;
             case WEEK:
-                DateRange weekRange = DateUtils.getWorkWeekDateRange(date);
-                fromDate = weekRange.getStartDate();
+                dateRange = DateUtils.getWeekDateRange(date);
                 break;
             case MONTH:
                 DateRange monthRange = DateUtils.getMonthDateRange(date);
                 DateRange firstWeekRange = DateUtils.getWeekDateRange(monthRange.getStartDate());
-                fromDate = firstWeekRange.getStartDate();
+                DateRange lastWeekRange = DateUtils.getWeekDateRange(monthRange.getEndDate());
+                dateRange = new DateRange(firstWeekRange.getStartDate(),lastWeekRange.getEndDate(), 
+                                            CalendarUtil.getDaysBetween(firstWeekRange.getStartDate(),lastWeekRange.getEndDate()) ); 
                 break;
             case GRID:
-                fromDate = new Date(date.getTime());
+                dateRange = new DateRange(new Date(date.getTime()), new Date(date.getTime()), 0);
                 break;
             default:
                 throw new IllegalStateException("Unreconginized view type '" + taskView + "'!");
         }
-        return fromDate;
+        return dateRange;
     }
 
     public void refreshActiveTasks(Date date, TaskView taskView) {
-        Date fromDate = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
-        int daysTotal = taskView.getNrOfDaysToShow();
-
+        DateRange dateRangeToShow = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
+        Date fromDate = dateRangeToShow.getStartDate();
+        int daysTotal = dateRangeToShow.getDaysInBetween() + 1;
+        
         List<String> statuses = new ArrayList<String>(4);
         statuses.add("Ready");
         statuses.add("Reserved");
@@ -347,9 +351,10 @@ public class TasksListPresenter {
     }
 
     public void refreshGroupTasks(Date date, TaskView taskView) {
-        Date fromDate = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
-        int daysTotal = taskView.getNrOfDaysToShow();
-
+        DateRange dateRangeToShow = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
+        Date fromDate = dateRangeToShow.getStartDate();
+        int daysTotal = dateRangeToShow.getDaysInBetween() + 1;
+        
         List<String> statuses = new ArrayList<String>(4);
         statuses.add("Ready");
 
@@ -374,9 +379,10 @@ public class TasksListPresenter {
     }
 
     public void refreshAllTasks(Date date, TaskView taskView) {
-        Date fromDate = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
-        int daysTotal = taskView.getNrOfDaysToShow();
-
+        DateRange dateRangeToShow = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
+        Date fromDate = dateRangeToShow.getStartDate();
+        int daysTotal = dateRangeToShow.getDaysInBetween() + 1;
+        
         List<String> statuses = new ArrayList<String>(4);
         statuses.add("Created");
         statuses.add("Ready");

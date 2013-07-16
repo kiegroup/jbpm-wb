@@ -77,14 +77,14 @@ public class DateUtils {
         CalendarUtil.addDaysToDate(startDate, -daysAfterMonday);
         Date endDate = new Date(startDate.getTime());
         CalendarUtil.addDaysToDate(endDate, nrOfDaysTotal - 1);
-        return new DateRange(startDate, endDate);
+        return new DateRange(startDate, endDate, CalendarUtil.getDaysBetween(startDate, endDate));
     }
 
     /**
      * Returns a {@link DateRange} starting on first day of month in which the specified date is and ending on last day of that
      * month.
      *
-     * @param date date from which to get the mont date range
+     * @param date date from which to get the month date range
      * @return {@link DateRange} representing the month in which the specified date is
      */
     @SuppressWarnings("deprecation")
@@ -99,7 +99,8 @@ public class DateUtils {
         CalendarUtil.addMonthsToDate(endDate, 1);
         CalendarUtil.addDaysToDate(endDate, -1);
         endDate.setHours(0);
-        return new DateRange(startDate, endDate);
+        
+        return new DateRange(startDate, endDate, CalendarUtil.getDaysBetween(startDate, endDate));
     }
 
     /**

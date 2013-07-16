@@ -35,9 +35,7 @@ import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
 
-/**
- * Main view.
- */
+
 @Dependent
 @Templated(value = "FormDisplayPopupViewImpl.html")
 public class FormDisplayPopupViewImpl extends Composite implements FormDisplayPopupPresenter.FormDisplayView {

@@ -167,7 +167,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
             }
             case WEEK: {
                 mainPanel.setVisible(true);
-                DateTimeFormat fmt = DateTimeFormat.getFormat("dd MMMM");
+                DateTimeFormat fmt = DateTimeFormat.getFormat("dd MMM");
                 DateRange weekRange = DateUtils.getWeekDateRange(currentDate);
                 String text = fmt.format(weekRange.getStartDate());
                 text = text + " - " + fmt.format(weekRange.getEndDate());
@@ -176,7 +176,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
             }
             case MONTH: {
                 mainPanel.setVisible(true);
-                DateTimeFormat fmt = DateTimeFormat.getFormat("MMMM");
+                DateTimeFormat fmt = DateTimeFormat.getFormat("MMMM yy");
                 calendarLabel.setText(fmt.format(currentDate));
                 break;
             }

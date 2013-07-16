@@ -503,3 +503,50 @@
 .month .day-tasks-container:hover .top {
      z-index: -1;
 }
+
+/** Today Styles **/
+.day-tasks-container .top a {
+    color: #666;
+    text-decoration: none;
+}
+
+.day-tasks-container .top a:hover {
+    color: #222;
+}
+
+.day-tasks-container.today .tasks-list{
+    background-color: #FFF8EB !important;
+}
+
+.day-tasks-container.today .top{
+    background-color: #FFE2B3 !important;
+    color: #423A2F !important;
+}
+
+.day-tasks-container.today .top a{
+    color: #423A2F !important;
+}
+
+.day-tasks-container.today .top a:hover{
+    color: #222;
+}
+
+.month .day-tasks-container.today .top{
+    border: 1px solid #FFE2B3 !important;
+  
+}
+
+
+/*HOLYDAYS */
+.day-tasks-container.holyday .tasks-list  {
+    background-color: #F2EFED !important;
+      
+}
+
+.day-tasks-container.holyday .tasks-list .task {
+      opacity: .5;
+}
+
+.day-tasks-container.holyday .tasks-list:hover .task {
+    opacity: 1;
+}

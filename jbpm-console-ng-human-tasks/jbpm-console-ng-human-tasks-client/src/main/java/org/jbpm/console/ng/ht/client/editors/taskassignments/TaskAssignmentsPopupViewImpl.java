@@ -54,13 +54,10 @@ public class TaskAssignmentsPopupViewImpl extends Composite implements TaskAssig
     @DataField
     public FlowPanel usersGroupsControlsPanel;
 
+   
     @Inject
     @DataField
-    public Button updateTaskButton;
-
-    @Inject
-    @DataField
-    public ControlLabel descriptionAccordionLabel;
+    public ControlLabel detailsAccordionLabel;
 
     @Inject
     private PlaceManager placeManager;
@@ -78,15 +75,11 @@ public class TaskAssignmentsPopupViewImpl extends Composite implements TaskAssig
     public void init( TaskAssignmentsPopupPresenter presenter ) {
         this.presenter = presenter;
 
-        descriptionAccordionLabel.add( new HTMLPanel( constants.Description() ) );
-        
-        updateTaskButton.setText( constants.Update() );
+        detailsAccordionLabel.add( new HTMLPanel( constants.Details()) );
+
     }
 
-    @EventHandler("updateTaskButton")
-    public void updateTaskButton( ClickEvent e ) {
-        
-    }
+    
 
     @Override
     public FlowPanel getUsersGroupsControlsPanel() {

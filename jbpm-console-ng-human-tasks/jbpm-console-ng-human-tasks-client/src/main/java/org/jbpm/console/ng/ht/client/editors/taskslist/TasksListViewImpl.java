@@ -41,6 +41,7 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
@@ -522,12 +523,42 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         });
         myTaskListGrid.setColumnWidth(statusColumn, "100px");
 
+        
+        // Created on Date.
+        Column<TaskSummary, String> createdOnDateColumn = new Column<TaskSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(TaskSummary object) {
+                if (object.getCreatedOn() != null) {
+                    Date createdOn = object.getCreatedOn();
+                    DateTimeFormat format = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm");
+                    return format.format(createdOn);
+                }
+                return "";
+            }
+        };
+        createdOnDateColumn.setSortable(true);
+
+        myTaskListGrid.addColumn(createdOnDateColumn, new ResizableHeader(constants.Created_On(), myTaskListGrid, createdOnDateColumn));
+        sortHandler.setComparator(createdOnDateColumn, new Comparator<TaskSummary>() {
+            @Override
+            public int compare(TaskSummary o1, TaskSummary o2) {
+                if (o1.getCreatedOn()== null || o2.getCreatedOn() == null) {
+                    return 0;
+                }
+                return o1.getCreatedOn().compareTo(o2.getCreatedOn());
+            }
+        });
+        
+        
+        
         // Due Date.
         Column<TaskSummary, String> dueDateColumn = new Column<TaskSummary, String>(new TextCell()) {
             @Override
             public String getValue(TaskSummary object) {
                 if (object.getExpirationTime() != null) {
-                    return object.getExpirationTime().toString();
+                    Date expirationTime = object.getExpirationTime();
+                    DateTimeFormat format = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm");
+                    return format.format(expirationTime);
                 }
                 return "";
             }

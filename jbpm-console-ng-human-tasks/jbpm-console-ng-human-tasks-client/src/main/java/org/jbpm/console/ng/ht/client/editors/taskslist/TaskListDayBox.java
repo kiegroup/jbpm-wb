@@ -32,6 +32,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
+import java.util.Date;
 
 public class TaskListDayBox extends Composite implements RequiresResize {
     private static IconType ICON_TASKS_COLLAPSED = IconType.DOUBLE_ANGLE_DOWN;
@@ -51,7 +52,8 @@ public class TaskListDayBox extends Composite implements RequiresResize {
     private Collapse collapsible = new Collapse();
 
     private boolean tasksCollapsed = false;
-
+    
+    
     public TaskListDayBox(Day day, List<TaskSummary> taskSummaries, Identity identity, PlaceManager placeManager,
             TasksListPresenter presenter) {
         this.day = day;
@@ -63,15 +65,28 @@ public class TaskListDayBox extends Composite implements RequiresResize {
 
     public void init() {
         fluidRow.setStyleName("row-fluid");
-        span12.setStyleName("span12");
+        span12.setStyleName("span12");  
         fluidRow.add(span12);
 
         taskListBox.setStyleName("tasks-list");
-        dayTaskContainer.setStyleName("day-tasks-container");
+        
+        
+        
         top.setStyleName("top");
-        DateTimeFormat fmt = DateTimeFormat.getFormat("dd/MM/yyyy");
-        String dayAndDate = day.getDayOfWeekName();// + " - " + fmt.format(day.getDate());
-        iconAndDayName.setText(dayAndDate + " (" + taskSummaries.size() + ")");
+        DateTimeFormat fmt = DateTimeFormat.getFormat("EEE d");
+        String dayAndDate = ///day.getDayOfWeekName();// + " - " + fmt.format(day.getDate());
+                fmt.format(day.getDate());
+        
+        String today = fmt.format(new Date());
+        if(today.endsWith(dayAndDate)){
+            dayTaskContainer.setStyleName("day-tasks-container today");
+            iconAndDayName.setText("Today " +dayAndDate+ " (" + taskSummaries.size() + ")");
+        }else{
+            dayTaskContainer.setStyleName("day-tasks-container");
+            iconAndDayName.setText(dayAndDate + " (" + taskSummaries.size() + ")");
+        }
+        
+        
         // show/hide the tasks when the icon is clicked
         iconAndDayName.addClickHandler(new ClickHandler() {
             @Override
