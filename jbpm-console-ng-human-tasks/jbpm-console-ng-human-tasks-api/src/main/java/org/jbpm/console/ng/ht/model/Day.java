@@ -44,6 +44,7 @@ public class Day implements Serializable {
     }
 
     @Override
+    @SuppressWarnings("deprecation") // Date needed by GWT
     public boolean equals(Object other) {
         if (this == other)
             return true;
@@ -51,13 +52,16 @@ public class Day implements Serializable {
             return false;
         if (!(other instanceof Day))
             return false;
-        Day otherDay = (Day) other;
-        return this.dayOfWeekName.equals(otherDay.dayOfWeekName);
+        Date otherDate = ((Day) other).getDate();
+        return date.getDate() == otherDate.getDate() &&
+                date.getMonth() == otherDate.getMonth() &&
+                date.getYear() == otherDate.getYear();
     }
 
     @Override
+    @SuppressWarnings("deprecation") // Date needed by GWT
     public int hashCode() {
-        return dayOfWeekName.hashCode();
+        return 31 + 31 * date.getDate() + 31 * date.getMonth() + 31 * date.getYear();
     }
 
 }

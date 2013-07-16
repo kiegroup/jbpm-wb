@@ -23,6 +23,18 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
     private static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 
     @Test
+    public void testGetTasksForLongPeriod() {
+        Map<Day, List<TaskSummary>> tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
+                getTaskStatuses(), createDate("2014-02-24"), 42, "en-UK");
+        assertEquals(42, tasksByDays.size());
+
+        tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
+                getTaskStatuses(), createDate("2014-02-24"), 3000, "en-UK");
+        assertEquals(3000, tasksByDays.size());
+
+    }
+
+    @Test
     public void testGetTasksOwnedFromDateToDateByDaysNoTasksAtAll() {
         Map<Day, List<TaskSummary>> tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
                 getTaskStatuses(), createDate("2013-04-18"), 3, "en-UK");
