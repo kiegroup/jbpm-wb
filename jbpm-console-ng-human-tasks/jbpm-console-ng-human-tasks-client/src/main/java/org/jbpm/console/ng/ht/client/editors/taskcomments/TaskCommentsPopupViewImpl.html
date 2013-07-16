@@ -16,16 +16,26 @@
     <!-- GROUP -->
     <div class="accordion-group">
       <div class="accordion-inner">
-        <form>
-          <textarea data-field="newTaskCommentTextArea" id="newTaskCommentTextArea"></textarea>
-          <br />
-          <button class="btn" data-field="addCommentButton" id="addCommentButton"></button>
-        </form>
+          <div class="form-horizontal">
+              <fieldset>
+                <div class="control-group">
+                  <label class="control-label" for="newTaskCommentTextArea" data-field="newTaskCommentLabel"></label>
+                  <div class="controls">
+                    <input type="text" data-field="newTaskCommentTextArea" id="newTaskCommentTextArea" placeholder="" />
+                  </div>
+                </div>
+              </fieldset>
+              <div class="form-actions">
+                        <button class="btn btn-primary" data-field="addCommentButton" id="addCommentButton"></button>
+              </div>
+          </div>
+          
+        
       </div>
       <div data-field="listContainer">
         <table id="commentsListGrid" data-field="commentsListGrid" class="table table-bordered table-striped table-hover">
         </table>
-        <div id="pager" class="pagination" data-field="pager"></div>
+        <div id="pager" class="pagination pagination-right pull-right" data-field="pager"></div>
       </div>
     </div>
   </div>

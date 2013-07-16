@@ -16,6 +16,7 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskcomments;
 
+import com.github.gwtbootstrap.client.ui.Button;
 import java.util.Date;
 import java.util.List;
 import javax.enterprise.context.Dependent;
@@ -23,15 +24,14 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
+import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import org.jboss.errai.bus.client.api.RemoteCallback;
@@ -198,6 +198,7 @@ public class TaskCommentsPopupPresenter {
             @Override
             public void callback( Long response ) {
                 refreshComments( taskId );
+                view.getNewTaskCommentTextArea().setText("");
             }
         } ).addComment( taskId, text, identity.getName(), addedOn );
     }

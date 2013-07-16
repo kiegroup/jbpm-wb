@@ -16,6 +16,7 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskcomments;
 
+import com.github.gwtbootstrap.client.ui.Button;
 import java.util.Comparator;
 import java.util.Date;
 
@@ -28,18 +29,19 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.SimplePager;
+import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextArea;
+import java.text.SimpleDateFormat;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 
 @Dependent
@@ -60,6 +62,10 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
     @Inject
     @DataField
     public TextArea newTaskCommentTextArea;
+    
+    @Inject
+    @DataField
+    public Label newTaskCommentLabel;
 
     @Inject
     @DataField
@@ -137,8 +143,9 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
         pager.setVisible(false);
         pager.setDisplay(commentsListGrid);
         pager.setPageSize(6);
-
+        newTaskCommentTextArea.setWidth("300px");
         addCommentButton.setText(constants.Add_Comment());
+        newTaskCommentLabel.setText(constants.Comment());
     }
 
     @EventHandler("addCommentButton")
@@ -165,7 +172,8 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
         Column<CommentSummary, String> addedAtColumn = new Column<CommentSummary, String>(new TextCell()) {
             @Override
             public String getValue(CommentSummary c) {
-                return c.getAddedAt().toString();
+                DateTimeFormat format = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm");
+                return format.format(c.getAddedAt());
             }
         };
         addedAtColumn.setSortable(true);
