@@ -15,6 +15,12 @@
     <name>jBPM Console NG - Dashboard API</name>
 
     <dependencies>
+        <!-- GWT and GWT Extensions -->
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+        </dependency>
+        <!-- Errai bus -->
         <dependency>
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-bus</artifactId>

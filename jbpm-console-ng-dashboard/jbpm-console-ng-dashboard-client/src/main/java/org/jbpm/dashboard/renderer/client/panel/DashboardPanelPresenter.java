@@ -16,12 +16,14 @@
 package org.jbpm.dashboard.renderer.client.panel;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.dashboard.renderer.service.DashboardRendererService;
 import org.jbpm.dashboard.renderer.service.ConnectionStatus;
+import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -30,12 +32,16 @@ import org.uberfire.client.mvp.UberView;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 
 @Dependent
 @WorkbenchScreen(identifier = "DashboardPanel")
 public class DashboardPanelPresenter {
 
-    final private String DASHBOARD_URL = Window.Location.getProtocol()+"//" + Window.Location.getHost()+ "/dashbuilder/workspace/jbpm-dashboard?embedded=true&refresh=true";
+    /** The URL for the jBPM dashbuilder. */
+    final private String DASHBOARD_URL_PREFFIX = Window.Location.getProtocol()+"//" + Window.Location.getHost()+ "/dashbuilder/workspace/";
+    final private String DASHBOARD_URL_SUFFIX = "/jbpm-dashboard?embedded=true&refresh=true";
 
     public interface DashboardView
             extends
@@ -62,13 +68,14 @@ public class DashboardPanelPresenter {
 
     @OnStart
     public void isAppOnline() {
-        GWT.log("URL for jBPM dashboard: " + DASHBOARD_URL);
+        final String dashboardUrl = DashboardURLBuilder.getDashboardURL(DASHBOARD_URL_PREFFIX, DASHBOARD_URL_SUFFIX, LocaleInfo.getCurrentLocale());
+        GWT.log("URL for jBPM dashboard: " + dashboardUrl);
         rendererService.call(new RemoteCallback<ConnectionStatus>() {
             @Override
             public void callback(ConnectionStatus  connectionStatus) {
-                view.initContext(connectionStatus, DASHBOARD_URL);
+                view.initContext(connectionStatus, dashboardUrl);
             }
-        }).getAppStatus(DASHBOARD_URL);
+        }).getAppStatus(dashboardUrl);
     }
 
 }

@@ -81,6 +81,14 @@
       <version>${errai.version}</version>
     </dependency>
 
+    <!-- Dashbuilder API -->
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-dashboard-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+
     <!-- GWT and GWT Extensions -->
     <dependency>
       <groupId>com.google.gwt</groupId>
