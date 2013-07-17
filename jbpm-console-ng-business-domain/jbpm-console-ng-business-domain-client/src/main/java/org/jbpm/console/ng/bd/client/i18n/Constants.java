@@ -69,4 +69,6 @@ public interface Constants extends Messages {
 
     String Strategy();
 
+    String Deployment();
+
 }

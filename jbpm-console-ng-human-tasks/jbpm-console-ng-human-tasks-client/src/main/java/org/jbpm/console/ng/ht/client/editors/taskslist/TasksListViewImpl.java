@@ -334,7 +334,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
             }
         } );
-        //taskListViewLabel.setText( constants.Tasks_List() );
+        
         HTMLPanel span2 = new HTMLPanel(constants.Tasks_List());
         span2.setStyleName("span2");
         taskListViewLabel.add(span2);
@@ -650,7 +650,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                     ImageResource detailsIcon = images.detailsIcon();
                     AbstractImagePrototype imageProto = AbstractImagePrototype.create(detailsIcon);
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='" + constants.Details() + "'>");
+                    mysb.appendHtmlConstant("<span title='" + constants.Details() + "' style='margin-right:5px;'>");
                     mysb.append(imageProto.getSafeHtml());
                     mysb.appendHtmlConstant("</span>");
                     sb.append(mysb.toSafeHtml());

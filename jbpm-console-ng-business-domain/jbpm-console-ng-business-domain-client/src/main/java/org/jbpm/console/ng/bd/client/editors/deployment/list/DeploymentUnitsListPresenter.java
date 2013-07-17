@@ -111,7 +111,7 @@ public class DeploymentUnitsListPresenter {
         if(filter.equals("")){
                 if(currentDeployedUnits != null){
                     dataProvider.getList().clear();
-                    dataProvider.setList(new ArrayList<KModuleDeploymentUnitSummary>(currentDeployedUnits));
+                    dataProvider.getList().addAll(new ArrayList<KModuleDeploymentUnitSummary>(currentDeployedUnits));
                     dataProvider.refresh();
                     
                 }
@@ -126,7 +126,7 @@ public class DeploymentUnitsListPresenter {
                     }
                 }
                 dataProvider.getList().clear();
-                dataProvider.setList(filteredDeployedUnits);
+                dataProvider.getList().addAll(filteredDeployedUnits);
                 dataProvider.refresh();
             }
         }

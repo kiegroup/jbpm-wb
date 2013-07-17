@@ -48,6 +48,7 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -91,7 +92,6 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
     public SimplePager pager;
 
     @Inject
-    @DataField
     public IconAnchor refreshIcon;
     
     @Inject
@@ -130,7 +130,6 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
         pager.setPageSize(10);
         listContainerDeployedUnits.add( pager );
 
-        deployedUnitsLabel.setText(constants.Deployment_Units());
 
         newUnitNavLink.setText( constants.New_Deployment_Unit() );
         newUnitNavLink.addClickHandler( new ClickHandler() {
@@ -163,7 +162,7 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
             }
         } );
 
-        deployedUnitsListGrid.setHeight( "350px" );
+        deployedUnitsListGrid.setHeight( "400px" );
         // Set the message to display when the table is empty.
         Label emptyTable = new Label( constants.No_Deployment_Units_Available() );
         emptyTable.setStyleName( "" );
@@ -192,6 +191,12 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
 
         deployedUnitsListGrid.setSelectionModel( selectionModel, DefaultSelectionEventManager.<KModuleDeploymentUnitSummary>createCheckboxManager() );
 
+        HTMLPanel span2 = new HTMLPanel(constants.Deployment_Units());
+        span2.setStyleName("span2");
+        deployedUnitsLabel.add(span2);
+        refreshIcon.setCustomIconStyle("icon-jbpm-refresh");
+        deployedUnitsLabel.add(refreshIcon);
+        
         initTableColumns( selectionModel );
 
         presenter.addDataDisplay( deployedUnitsListGrid );
@@ -228,7 +233,7 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
                 return o1.getId().compareTo( o2.getId() );
             }
         } );
-        deployedUnitsListGrid.addColumn( unitIdColumn, new ResizableHeader( constants.Unit(), deployedUnitsListGrid, unitIdColumn ) );
+        deployedUnitsListGrid.addColumn( unitIdColumn, new ResizableHeader( constants.Deployment(), deployedUnitsListGrid, unitIdColumn ) );
 
         // Unit Group Id
         Column<KModuleDeploymentUnitSummary, String> groupIdColumn = new Column<KModuleDeploymentUnitSummary, String>( new TextCell() ) {
@@ -328,13 +333,13 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
             }
         } ) );
 
-        cells.add( new DetailsActionHasCell( "Details", new Delegate<KModuleDeploymentUnitSummary>() {
-            @Override
-            public void execute( KModuleDeploymentUnitSummary unit ) {
-
-                displayNotification( "Deployment Unit " + unit.getId() + " go to details here!!" );
-            }
-        } ) );
+//        cells.add( new DetailsActionHasCell( "Details", new Delegate<KModuleDeploymentUnitSummary>() {
+//            @Override
+//            public void execute( KModuleDeploymentUnitSummary unit ) {
+//
+//                displayNotification( "Deployment Unit " + unit.getId() + " go to details here!!" );
+//            }
+//        } ) );
 
         CompositeCell<KModuleDeploymentUnitSummary> cell = new CompositeCell<KModuleDeploymentUnitSummary>( cells );
         Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> actionsColumn
@@ -344,7 +349,7 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
                 return object;
             }
         };
-        deployedUnitsListGrid.addColumn( actionsColumn, constants.Actions() );
+        deployedUnitsListGrid.addColumn( actionsColumn, new ResizableHeader( constants.Actions(), deployedUnitsListGrid, actionsColumn ) );
         deployedUnitsListGrid.setColumnWidth( actionsColumn, "70px" );
     }
 
@@ -385,7 +390,7 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
 
                     AbstractImagePrototype imageProto = AbstractImagePrototype.create( images.undeployGridIcon() );
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant( "<span title='" + constants.Undeploy() + "'>" );
+                    mysb.appendHtmlConstant( "<span title='" + constants.Undeploy() + "' style='margin-right:5px;'>");
                     mysb.append( imageProto.getSafeHtml() );
                     mysb.appendHtmlConstant( "</span>" );
                     sb.append( mysb.toSafeHtml() );
