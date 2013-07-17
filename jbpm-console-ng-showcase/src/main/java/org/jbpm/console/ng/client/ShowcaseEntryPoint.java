@@ -35,7 +35,6 @@ import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.IOCBeanManager;
 import org.jbpm.console.ng.client.i18n.Constants;
-import org.kie.workbench.common.widgets.client.resources.RoundedCornersResource;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
@@ -71,16 +70,11 @@ public class ShowcaseEntryPoint {
 
     @AfterInitialization
     public void startApp() {
-        loadStyles();
+        
         setupMenu();
         hideLoadingPopup();
     }
 
-    private void loadStyles() {
-        // Ensure CSS has been loaded
-        // HumanTasksResources.INSTANCE.css().ensureInjected();
-        RoundedCornersResource.INSTANCE.roundCornersCss().ensureInjected();
-    }
 
     private void setupMenu() {
 
@@ -107,7 +101,7 @@ public class ShowcaseEntryPoint {
                 } ).endMenu().newTopLevelMenu( identity.getName() ).position( MenuPosition.RIGHT ).withItems( getRoles() ).endMenu()
                 .build();
 
-        menubar.aggregateWorkbenchMenus( menus );
+        menubar.addMenus( menus );
     }
 
     private List<? extends MenuItem> getRoles() {
