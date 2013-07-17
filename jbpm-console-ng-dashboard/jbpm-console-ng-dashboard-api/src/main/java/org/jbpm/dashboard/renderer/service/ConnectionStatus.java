@@ -1,8 +1,6 @@
 package org.jbpm.dashboard.renderer.service;
 
-import com.sun.jmx.snmp.SnmpStringFixed;
 import org.jboss.errai.common.client.api.annotations.Portable;
-
 import java.io.Serializable;
 
 @Portable
