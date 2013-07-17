@@ -74,11 +74,11 @@ public class TaskListDayBox extends Composite implements RequiresResize {
         
         top.setStyleName("top");
         DateTimeFormat fmt = DateTimeFormat.getFormat("EEE d");
-        String dayAndDate = ///day.getDayOfWeekName();// + " - " + fmt.format(day.getDate());
-                fmt.format(day.getDate());
-        
-        String today = fmt.format(new Date());
-        if(today.endsWith(dayAndDate)){
+        DateTimeFormat fmt2 = DateTimeFormat.getFormat("yyyy.MM.dd");
+        String dayAndDate = fmt.format(day.getDate());
+        String dayAndDateWithYear = fmt2.format(day.getDate());
+        String today = fmt2.format(new Date());
+        if(today.equals(dayAndDateWithYear)){
             dayTaskContainer.setStyleName("day-tasks-container today");
             iconAndDayName.setText("Today " +dayAndDate+ " (" + taskSummaries.size() + ")");
         }else{

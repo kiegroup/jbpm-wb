@@ -55,9 +55,13 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
     private FlowPanel mainPanel = new FlowPanel();
     private FlowPanel calendarPanel = new FlowPanel();
     private FlowPanel iconPanel = new FlowPanel();
+    
     private FlowPanel rightPanel = new FlowPanel();
+    private FlowPanel controlsPanel = new FlowPanel();
 
     private Heading calendarLabel;
+    private Heading iconLabel;
+    private Heading controlsLabel;
     private IconAnchor calendarIcon;
     private Button previousButton;
     private Button nextButton;
@@ -66,12 +70,15 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
     public CalendarPicker() {
         currentDate = new Date();
         viewType = ViewType.DAY;
-        calendarPanel.setStyleName("span2");
+        calendarPanel.setStyleName("span2 offset1");
         calendarLabel = new Heading(4);
-        iconPanel.setStyleName("span2");
+        iconLabel = new Heading(4);
+        iconLabel.setStyleName("span1");
+        iconPanel.add(iconLabel);
+        controlsLabel = new Heading(4);
+        controlsPanel.add(controlsLabel);
 
         calendarIcon = new IconAnchor();
-
         previousButton = new Button();
         nextButton = new Button();
         todayButton = new Button();
@@ -91,18 +98,17 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
     public void init() {
         initCalendarIcon();
         calendarPanel.add(calendarLabel);
-        //calendarPanel.add(calendarIcon);
         mainPanel.add(calendarPanel);
-        iconPanel.add(calendarIcon);
-        mainPanel.add(iconPanel);
         initPrevNextTodayButtons();
         rightPanel.add(previousButton);
         rightPanel.add(todayButton);
         rightPanel.add(nextButton);
-
+        iconLabel.add(calendarIcon);
+        iconPanel.add(iconLabel);
+        mainPanel.add(iconPanel);
         rightPanel.setStyleName("btn-group pull-right");
-
-        mainPanel.add(rightPanel);
+        controlsLabel.add(rightPanel);
+        mainPanel.add(controlsPanel);
 
         updateCalendarLabelText();
     }
@@ -217,8 +223,8 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
                 calendarPanel.add(dateBox);
                 dateBox.show();
                 dateBox.removeFromParent();
+                
                 calendarPanel.add(calendarLabel);
-                // calendarPanel.add(calendarIcon);
             }
         });
     }
