@@ -267,7 +267,7 @@ public class TasksListPresenter {
     }
 
     public void refreshPersonalTasks(Date date, TaskView taskView) {
-        DateRange dateRangeToShow = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
+        DateRange dateRangeToShow = determineDateRangeForTaskViewBasedOnSpecifiedDate(date, taskView);
         Date fromDate = dateRangeToShow.getStartDate();
         int daysTotal = dateRangeToShow.getDaysInBetween() + 1;
 
@@ -296,7 +296,7 @@ public class TasksListPresenter {
         }
     }
 
-    private DateRange determineFirstDateForTaskViewBasedOnSpecifiedDate(Date date, TaskView taskView) {
+    private DateRange determineDateRangeForTaskViewBasedOnSpecifiedDate(Date date, TaskView taskView) {
         DateRange dateRange;
         switch (taskView) {
             case DAY:
@@ -309,20 +309,21 @@ public class TasksListPresenter {
                 DateRange monthRange = DateUtils.getMonthDateRange(date);
                 DateRange firstWeekRange = DateUtils.getWeekDateRange(monthRange.getStartDate());
                 DateRange lastWeekRange = DateUtils.getWeekDateRange(monthRange.getEndDate());
-                dateRange = new DateRange(firstWeekRange.getStartDate(),lastWeekRange.getEndDate(), 
-                                            CalendarUtil.getDaysBetween(firstWeekRange.getStartDate(),lastWeekRange.getEndDate()) ); 
+                int daysBetween = CalendarUtil.getDaysBetween(firstWeekRange.getStartDate(), lastWeekRange.getEndDate());
+                dateRange = new DateRange(firstWeekRange.getStartDate(),lastWeekRange.getEndDate(),
+                        daysBetween);
                 break;
             case GRID:
                 dateRange = new DateRange(new Date(date.getTime()), new Date(date.getTime()), 0);
                 break;
             default:
-                throw new IllegalStateException("Unreconginized view type '" + taskView + "'!");
+                throw new IllegalStateException("Unrecognized view type '" + taskView + "'!");
         }
         return dateRange;
     }
 
     public void refreshActiveTasks(Date date, TaskView taskView) {
-        DateRange dateRangeToShow = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
+        DateRange dateRangeToShow = determineDateRangeForTaskViewBasedOnSpecifiedDate(date, taskView);
         Date fromDate = dateRangeToShow.getStartDate();
         int daysTotal = dateRangeToShow.getDaysInBetween() + 1;
         
@@ -351,7 +352,7 @@ public class TasksListPresenter {
     }
 
     public void refreshGroupTasks(Date date, TaskView taskView) {
-        DateRange dateRangeToShow = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
+        DateRange dateRangeToShow = determineDateRangeForTaskViewBasedOnSpecifiedDate(date, taskView);
         Date fromDate = dateRangeToShow.getStartDate();
         int daysTotal = dateRangeToShow.getDaysInBetween() + 1;
         
@@ -379,7 +380,7 @@ public class TasksListPresenter {
     }
 
     public void refreshAllTasks(Date date, TaskView taskView) {
-        DateRange dateRangeToShow = determineFirstDateForTaskViewBasedOnSpecifiedDate(date, taskView);
+        DateRange dateRangeToShow = determineDateRangeForTaskViewBasedOnSpecifiedDate(date, taskView);
         Date fromDate = dateRangeToShow.getStartDate();
         int daysTotal = dateRangeToShow.getDaysInBetween() + 1;
         
