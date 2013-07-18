@@ -34,7 +34,7 @@ public class DeploymentListPerspective {
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_TAB);
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_STATIC);
         p.setName( "Deployments" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Deployments List" ) ) );
         p.setTransient( true );

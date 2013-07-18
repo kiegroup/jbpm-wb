@@ -93,10 +93,10 @@ public class ProjectAuthoringPerspective {
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_TAB);
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_LIST);
         p.setName( "Project Authoring Perspective" );
 
-        final PanelDefinition west = new PanelDefinitionImpl(PanelType.ROOT_LIST);
+        final PanelDefinition west = new PanelDefinitionImpl(PanelType.MULTI_LIST);
         west.setWidth( 300 );
         west.setMinWidth( 200 );
         west.addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "org.kie.guvnor.explorer" ) ) );

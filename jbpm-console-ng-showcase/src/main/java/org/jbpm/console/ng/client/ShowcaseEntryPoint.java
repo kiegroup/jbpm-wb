@@ -70,7 +70,6 @@ public class ShowcaseEntryPoint {
 
     @AfterInitialization
     public void startApp() {
-        
         setupMenu();
         hideLoadingPopup();
     }

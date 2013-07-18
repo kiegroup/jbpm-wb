@@ -34,7 +34,7 @@ public class HomePerspective {
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_TAB);
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_STATIC);
         p.setName("Home Perspective");
         p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Home Screen")));
         p.setTransient(true);

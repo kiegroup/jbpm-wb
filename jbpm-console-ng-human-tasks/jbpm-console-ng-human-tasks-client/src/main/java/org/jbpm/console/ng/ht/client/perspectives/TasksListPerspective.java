@@ -34,7 +34,7 @@ public class TasksListPerspective {
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( PanelType.ROOT_TAB );
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( PanelType.ROOT_STATIC );
         p.setName( "Tasks" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Tasks List" ) ) );
         p.setTransient( true );
