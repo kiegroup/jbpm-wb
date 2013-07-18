@@ -38,7 +38,6 @@ import org.jbpm.services.task.impl.model.CommentImpl;
 import org.jbpm.services.task.impl.model.UserImpl;
 import org.jbpm.services.task.utils.ContentMarshallerHelper;
 import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.kie.api.task.model.Content;
@@ -203,9 +202,9 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     @Override
     public Map<Day, List<TaskSummary>> getTasksAssignedAsPotentialOwnerFromDateToDateByDays(String userId,
             List<String> strStatuses, Date from, int nrOfDaysTotal, String language) {
-        long plusDays = (nrOfDaysTotal - 1) * (long) DateTimeConstants.MILLIS_PER_DAY;
+        Date toDate = getEndDateBasedOnStartDateAndNumberOfDaysBetweenThem(from, nrOfDaysTotal);
         return getTasksAssignedAsPotentialOwnerFromDateToDateByDays(userId, strStatuses, from,
-                new Date(from.getTime() + plusDays), language);
+                toDate, language);
     }
 
     public Map<Day, List<TaskSummary>> getTasksAssignedAsPotentialOwnerFromDateToDateByDays(String userId,
@@ -229,9 +228,13 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     @Override
     public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, List<String> strStatuses, Date from,
             int nrOfDaysTotal, String language) {
-        long plusDays = (nrOfDaysTotal - 1) * (long) DateTimeConstants.MILLIS_PER_DAY;
-        return getTasksOwnedFromDateToDateByDays(userId, strStatuses, from, new Date(from.getTime() + plusDays),
+        Date toDate = getEndDateBasedOnStartDateAndNumberOfDaysBetweenThem(from, nrOfDaysTotal);
+        return getTasksOwnedFromDateToDateByDays(userId, strStatuses, from, toDate,
                 language);
+    }
+
+    private Date getEndDateBasedOnStartDateAndNumberOfDaysBetweenThem(Date from, int nrOfDaysTotal) {
+        return new LocalDate(from.getTime()).plusDays(nrOfDaysTotal - 1).toDateMidnight().toDate();
     }
 
 
@@ -272,7 +275,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         taskService.start(taskId, userId);
         return taskId;
     }
-    
+
     @Override
     public long addTaskAndClaimAndStart(String taskString, Map<String, Object> inputs, String userId,
             Map<String, Object> templateVars) {

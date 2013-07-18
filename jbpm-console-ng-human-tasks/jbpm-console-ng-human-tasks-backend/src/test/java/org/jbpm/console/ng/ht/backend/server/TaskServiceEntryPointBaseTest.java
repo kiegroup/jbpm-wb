@@ -32,6 +32,9 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
                 getTaskStatuses(), createDate("2014-02-24"), 3000, "en-UK");
         assertEquals(3000, tasksByDays.size());
 
+        tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
+                getTaskStatuses(), createDate("2013-09-30"), 35, "en-UK");
+        assertEquals(35, tasksByDays.size());
     }
 
     @Test
