@@ -78,26 +78,34 @@ public class ShowcaseEntryPoint {
     private void setupMenu() {
 
         final AbstractWorkbenchPerspectiveActivity defaultPerspective = getDefaultPerspectiveActivity();
-
-        final Menus menus = MenuFactory.newTopLevelMenu( constants.Home() ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                if ( defaultPerspective != null ) {
-                    placeManager.goTo( new DefaultPlaceRequest( defaultPerspective.getIdentifier() ) );
-                } else {
-                    Window.alert( "Default perspective not found." );
-                }
-            }
-        } ).endMenu().newTopLevelMenu( constants.Authoring() ).withItems( getAuthoringViews() ).endMenu()
+        System.out.println("Identity: "+identity.getName() );
+        for(Role role : identity.getRoles()){
+            System.out.println("ROLE: "+role.getName());
+        }
+        final Menus menus = MenuFactory
+                .newTopLevelMenu( constants.Home() ).respondsWith( new Command() {
+                        @Override
+                        public void execute() {
+                            if ( defaultPerspective != null ) {
+                                placeManager.goTo( new DefaultPlaceRequest( defaultPerspective.getIdentifier() ) );
+                            } else {
+                                Window.alert( "Default perspective not found." );
+                            }
+                        }
+                    } ).endMenu()
+                .newTopLevelMenu( constants.Authoring() ).withItems( getAuthoringViews() ).endMenu()
                 .newTopLevelMenu( constants.Deploy() ).withItems( getDeploymentViews() ).endMenu()
                 .newTopLevelMenu( constants.Process_Management() ).withItems( getProcessMGMTViews() ).endMenu()
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu().newTopLevelMenu( constants.Dashboards() )
-                .withItems( getDashboardsViews() ).endMenu().newTopLevelMenu( constants.LogOut() ).respondsWith( new Command() {
+                    .withItems( getDashboardsViews() ).endMenu()
+                .newTopLevelMenu( "User: "+identity.getName() ).position(MenuPosition.RIGHT).withItems( getRoles() ).endMenu()
+                .newTopLevelMenu( constants.LogOut() ).respondsWith( new Command() {
                     @Override
                     public void execute() {
                         redirect( GWT.getModuleBaseURL() + "uf_logout" );
                     }
-                } ).endMenu().newTopLevelMenu( identity.getName() ).position( MenuPosition.RIGHT ).withItems( getRoles() ).endMenu()
+                } ).endMenu()
+                
                 .build();
 
         menubar.addMenus( menus );
@@ -106,7 +114,7 @@ public class ShowcaseEntryPoint {
     private List<? extends MenuItem> getRoles() {
         final List<MenuItem> result = new ArrayList<MenuItem>( identity.getRoles().size() );
         for ( final Role role : identity.getRoles() ) {
-            result.add( MenuFactory.newSimpleItem( role.getName() ).endMenu().build().getItems().get( 0 ) );
+            result.add( MenuFactory.newSimpleItem( "Role: " + role.getName() ).endMenu().build().getItems().get( 0 ) );
         }
 
         return result;
