@@ -36,6 +36,7 @@ import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.IOCBeanManager;
 import org.jbpm.console.ng.client.i18n.Constants;
+import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
