@@ -173,4 +173,6 @@ public interface Constants extends Messages {
 
     String Processes_Refreshed_From_The_Repo();
 
+    String Bulk_Actions();
+
 }

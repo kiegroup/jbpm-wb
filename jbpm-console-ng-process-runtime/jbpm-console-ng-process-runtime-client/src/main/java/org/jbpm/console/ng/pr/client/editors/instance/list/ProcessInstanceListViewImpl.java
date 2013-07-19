@@ -125,8 +125,11 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
 
     @Inject
     @DataField
-    public Label fiterLabel;
+    public NavLink fiterLabel;
 
+     @Inject
+    @DataField
+    public NavLink bulkLabel;
     
     @DataField
     public Heading processInstanceLabel = new Heading(4);
@@ -168,7 +171,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
 
         processInstanceListGrid.setHeight( "350px" );
         fiterLabel.setText( constants.Showing() );
-
+        bulkLabel.setText( constants.Bulk_Actions());
         showAllLink.setText( constants.Active() );
         showAllLink.setStyleName( "active" );
         showAllLink.addClickHandler( new ClickHandler() {

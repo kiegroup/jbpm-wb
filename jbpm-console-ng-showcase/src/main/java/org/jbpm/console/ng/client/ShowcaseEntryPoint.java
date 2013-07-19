@@ -80,10 +80,6 @@ public class ShowcaseEntryPoint {
     private void setupMenu() {
 
         final AbstractWorkbenchPerspectiveActivity defaultPerspective = getDefaultPerspectiveActivity();
-        System.out.println("Identity: "+identity.getName() );
-        for(Role role : identity.getRoles()){
-            System.out.println("ROLE: "+role.getName());
-        }
         final Menus menus = MenuFactory
                 .newTopLevelMenu( constants.Home() ).respondsWith( new Command() {
                         @Override
