@@ -105,7 +105,7 @@ public class ProcessDefinitionListPresenter {
         if(filter.equals("")){
                 if(currentProcesses != null){
                     dataProvider.getList().clear();
-                    dataProvider.setList(new ArrayList<ProcessSummary>(currentProcesses));
+                    dataProvider.getList().addAll(new ArrayList<ProcessSummary>(currentProcesses));
                     dataProvider.refresh();
                     
                 }
@@ -119,7 +119,7 @@ public class ProcessDefinitionListPresenter {
                     }
                 }
                 dataProvider.getList().clear();
-                dataProvider.setList(filteredProcesses);
+                dataProvider.getList().addAll(filteredProcesses);
                 dataProvider.refresh();
             }
         }

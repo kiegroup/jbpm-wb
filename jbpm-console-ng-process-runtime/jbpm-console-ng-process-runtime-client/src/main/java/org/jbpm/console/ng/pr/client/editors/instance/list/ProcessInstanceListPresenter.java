@@ -101,7 +101,7 @@ public class ProcessInstanceListPresenter {
         if(filter.equals("")){
                 if(currentProcessInstances != null){
                     dataProvider.getList().clear();
-                    dataProvider.setList(new ArrayList<ProcessInstanceSummary>(currentProcessInstances));
+                    dataProvider.getList().addAll(new ArrayList<ProcessInstanceSummary>(currentProcessInstances));
                     dataProvider.refresh();
                     
                 }
@@ -116,7 +116,7 @@ public class ProcessInstanceListPresenter {
                     }
                 }
                 dataProvider.getList().clear();
-                dataProvider.setList(filteredProcesses);
+                dataProvider.getList().addAll(filteredProcesses);
                 dataProvider.refresh();
             }
         }

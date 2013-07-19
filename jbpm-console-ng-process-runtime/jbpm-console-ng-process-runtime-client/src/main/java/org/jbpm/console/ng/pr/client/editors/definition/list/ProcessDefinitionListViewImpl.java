@@ -25,6 +25,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.Heading;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
@@ -46,13 +47,13 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
@@ -86,7 +87,6 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
     public TextBox searchBox;
 
     @Inject
-    @DataField
     public IconAnchor refreshIcon;
 
     @Inject
@@ -99,9 +99,9 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
 
     public SimplePager pager;
 
-    @Inject
+    
     @DataField
-    public Label processDefinitionsLabel;
+    public Heading processDefinitionsLabel = new Heading(4);
 
     private Set<ProcessSummary> selectedProcessDef;
 
@@ -117,10 +117,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
     @Override
     public void init( final ProcessDefinitionListPresenter presenter ) {
         this.presenter = presenter;
-
-        processDefinitionsLabel.setText( constants.Process_Definitions() );
-        processDefinitionsLabel.setStyleName( "" );
-        refreshIcon.setTitle( constants.Reload_Repository() );
+        refreshIcon.setTitle( constants.Refresh());
         refreshIcon.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
@@ -130,7 +127,6 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
         } );
 
         listContainer.add( processdefListGrid );
-        
         pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
         pager.setStyleName("pagination pagination-right pull-right");
         pager.setDisplay(processdefListGrid);
@@ -178,6 +174,12 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
                 
             }
         });
+        
+        HTMLPanel span2 = new HTMLPanel(constants.Process_Definitions());
+        span2.setStyleName("span2");
+        processDefinitionsLabel.add(span2);
+        refreshIcon.setCustomIconStyle("icon-jbpm-refresh");
+        processDefinitionsLabel.add(refreshIcon);
 
         initTableColumns( selectionModel );
 
@@ -259,7 +261,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
                 return object;
             }
         };
-        processdefListGrid.addColumn( actionsColumn, constants.Actions() );
+        processdefListGrid.addColumn( actionsColumn, new ResizableHeader( constants.Actions(), processdefListGrid, actionsColumn ) );
         processdefListGrid.setColumnWidth( actionsColumn, "70px" );
     }
 
@@ -305,7 +307,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
 
                     AbstractImagePrototype imageProto = AbstractImagePrototype.create( images.startGridIcon() );
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant( "<span title='" + constants.Start() + "'>" );
+                    mysb.appendHtmlConstant( "<span title='" + constants.Start() + "' style='margin-right:5px;'>");
                     mysb.append( imageProto.getSafeHtml() );
                     mysb.appendHtmlConstant( "</span>" );
                     sb.append( mysb.toSafeHtml() );
@@ -343,7 +345,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
 
                     AbstractImagePrototype imageProto = AbstractImagePrototype.create( images.detailsGridIcon() );
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant( "<span title='" + constants.Details() + "'>" );
+                    mysb.appendHtmlConstant( "<span title='" + constants.Details() + "' style='margin-right:5px;'>");
                     mysb.append( imageProto.getSafeHtml() );
                     mysb.appendHtmlConstant( "</span>" );
                     sb.append( mysb.toSafeHtml() );

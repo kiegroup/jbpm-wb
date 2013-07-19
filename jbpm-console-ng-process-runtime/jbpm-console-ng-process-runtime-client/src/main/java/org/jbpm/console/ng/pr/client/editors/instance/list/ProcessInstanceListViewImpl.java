@@ -26,6 +26,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.Heading;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
@@ -51,6 +52,7 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -119,16 +121,15 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
     public IconAnchor abortIcon;
 
     @Inject
-    @DataField
     public IconAnchor refreshIcon;
 
     @Inject
     @DataField
     public Label fiterLabel;
 
-    @Inject
+    
     @DataField
-    public Label processInstanceLabel;
+    public Heading processInstanceLabel = new Heading(4);
 
     @Inject
     @DataField
@@ -158,8 +159,6 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
     public void init( final ProcessInstanceListPresenter presenter ) {
         this.presenter = presenter;
         
-        processInstanceLabel.setText( constants.Process_Instances() );
-        processInstanceLabel.setStyleName( "" );
         listContainer.add( processInstanceListGrid );
         pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
         pager.setStyleName("pagination pagination-right pull-right");
@@ -279,6 +278,12 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
                 displayNotification( constants.Process_Instances_Refreshed() );
             }
         } );
+        
+        HTMLPanel span2 = new HTMLPanel(constants.Process_Instances());
+        span2.setStyleName("span2");
+        processInstanceLabel.add(span2);
+        refreshIcon.setCustomIconStyle("icon-jbpm-refresh");
+        processInstanceLabel.add(refreshIcon);
         // Set the message to display when the table is empty.
         Label emptyTable = new Label( constants.No_Process_Instances_Found() );
         emptyTable.setStyleName( "" );
@@ -340,7 +345,8 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
                 return selectionModel.isSelected( object );
             }
         };
-        processInstanceListGrid.addColumn( checkColumn, SafeHtmlUtils.fromSafeConstant( "<br/>" ) );
+        processInstanceListGrid.addColumn( checkColumn, new ResizableHeader("", processInstanceListGrid,
+                                                                                   checkColumn ) );
         processInstanceListGrid.setColumnWidth( checkColumn, "40px" );
 
         // Process Name.
@@ -496,7 +502,8 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
                 return object;
             }
         };
-        processInstanceListGrid.addColumn( actionsColumn, constants.Actions() );
+        processInstanceListGrid.addColumn( actionsColumn, new ResizableHeader( constants.Actions(), processInstanceListGrid,
+                                                                                    actionsColumn ) );
         processInstanceListGrid.setColumnWidth( actionsColumn, "100px" );
     }
 
@@ -529,7 +536,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
                                     SafeHtmlBuilder sb ) {
                     AbstractImagePrototype imageProto = AbstractImagePrototype.create( images.detailsGridIcon() );
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant( "<span title='" + constants.Details() + "'>" );
+                    mysb.appendHtmlConstant( "<span title='" + constants.Details() + "' style='margin-right:5px;'>");
                     mysb.append( imageProto.getSafeHtml() );
                     mysb.appendHtmlConstant( "</span>" );
                     sb.append( mysb.toSafeHtml() );
@@ -568,7 +575,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
                     if ( value.getState() == ProcessInstance.STATE_ACTIVE ) {
                         AbstractImagePrototype imageProto = AbstractImagePrototype.create( images.abortGridIcon() );
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( "<span title='" + constants.Abort() + "'>" );
+                        mysb.appendHtmlConstant( "<span title='" + constants.Abort() + "' style='margin-right:5px;'>");
                         mysb.append( imageProto.getSafeHtml() );
                         mysb.appendHtmlConstant( "</span>" );
                         sb.append( mysb.toSafeHtml() );
@@ -607,7 +614,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
                     if ( value.getState() == ProcessInstance.STATE_ACTIVE ) {
                         AbstractImagePrototype imageProto = AbstractImagePrototype.create( images.signalGridIcon() );
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( "<span title='" + constants.Signal() + "'>" );
+                        mysb.appendHtmlConstant( "<span title='" + constants.Signal() + "' style='margin-right:5px;'>");
                         mysb.append( imageProto.getSafeHtml() );
                         mysb.appendHtmlConstant( "</span>" );
                         sb.append( mysb.toSafeHtml() );
