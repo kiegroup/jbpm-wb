@@ -175,4 +175,6 @@ public interface Constants extends Messages {
 
     String Bulk_Actions();
 
+    String Process_Variable_History();
+
 }

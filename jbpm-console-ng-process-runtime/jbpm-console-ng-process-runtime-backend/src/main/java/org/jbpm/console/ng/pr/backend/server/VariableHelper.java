@@ -19,6 +19,7 @@ package org.jbpm.console.ng.pr.backend.server;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,7 +36,7 @@ public class VariableHelper {
         for (VariableStateDesc v : variables) {
 
             variablesSummary.add(new VariableSummary(v.getVariableId(), v.getVariableInstanceId(), v.getProcessInstanceId(), v
-                    .getOldValue(), v.getNewValue(), v.getDataTimeStamp().toString(), ""));
+                    .getOldValue(), v.getNewValue(), v.getDataTimeStamp().getTime(), ""));
 
         }
 
@@ -51,12 +52,12 @@ public class VariableHelper {
             }
             String type = properties.remove(v.getVariableId());
             variablesSummary.add(new VariableSummary(v.getVariableId(), v.getVariableInstanceId(), v.getProcessInstanceId(), v
-                    .getOldValue(), v.getNewValue(), v.getDataTimeStamp().toString(), type));
+                    .getOldValue(), v.getNewValue(), v.getDataTimeStamp().getTime(), type));
 
         }
         if (!properties.isEmpty()) {
             for (Entry<String, String> entry : properties.entrySet()) {
-                variablesSummary.add(new VariableSummary(entry.getKey(), "", processInstanceId, "", "", "", entry.getValue()));
+                variablesSummary.add(new VariableSummary(entry.getKey(), "", processInstanceId, "", "", new Date().getTime(), entry.getValue()));
             }
         }
 
@@ -65,7 +66,7 @@ public class VariableHelper {
 
     public static VariableSummary adapt(VariableStateDesc v) {
         return new VariableSummary(v.getVariableId(), v.getVariableInstanceId(), v.getProcessInstanceId(), v.getOldValue(),
-                v.getNewValue(), v.getDataTimeStamp().toString(), "");
+                v.getNewValue(), v.getDataTimeStamp().getTime(), "");
     }
 
 }

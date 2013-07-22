@@ -50,7 +50,7 @@ public class VariableEditViewImpl extends Composite implements VariableEditPrese
 
     @Inject
     @DataField
-    public Label variableIdLabel;
+    public TextBox variableIdLabel;
 
     @Inject
     @DataField
@@ -76,6 +76,7 @@ public class VariableEditViewImpl extends Composite implements VariableEditPrese
         this.presenter = presenter;
         clearButton.setText( constants.Clear() );
         saveButton.setText( constants.Save() );
+        variableIdLabel.setReadOnly(true);
         variableIdUILabel.setText( constants.Variables_Name() );
         variableTextLabel.setText( constants.Variable_Value() );
     }

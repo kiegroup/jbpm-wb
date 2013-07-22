@@ -25,6 +25,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.Heading;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.NavLink;
@@ -42,12 +43,15 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import java.util.Date;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -75,7 +79,16 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
     @Inject
     @DataField
-    public TextBox processIdText;
+    public TextBox processDefinitionIdText;
+    
+    
+    @Inject
+    @DataField
+    public Label processInstanceIdLabel;
+    
+    @Inject
+    @DataField
+    public TextBox processInstanceIdText;
 
     @Inject
     @DataField
@@ -106,16 +119,14 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     public TextArea logTextArea;
 
     @Inject
-    @DataField
     public IconAnchor refreshIcon;
 
-    @Inject
     @DataField
-    public Label processInstanceDetailsLabel;
+    public Heading processInstanceDetailsLabel = new Heading(4);
 
     @Inject
     @DataField
-    public Label processIdLabel;
+    public Label processDefinitionIdLabel;
 
     @Inject
     @DataField
@@ -176,7 +187,8 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     public void init( final ProcessInstanceDetailsPresenter presenter ) {
         this.presenter = presenter;
 
-        processIdText.setEnabled( false );
+        processDefinitionIdText.setEnabled( false );
+        processInstanceIdText.setEnabled(false);
         processNameText.setEnabled( false );
         processDeploymentText.setEnabled( false );
         processVersionText.setEnabled( false );
@@ -195,19 +207,18 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
         processDataGrid.setHeight( "200px" );
 
         processNameLabel.setText( constants.Process_Definition_Name() );
-        processIdLabel.setText( constants.Process_Instance_ID() );
+        processDefinitionIdLabel.setText( constants.Process_Definition_Id() );
+        processInstanceIdLabel.setText(constants.Process_Instance_ID());
         processDeploymentLabel.setText( constants.Deployment_Name() );
         processVersionLabel.setText( constants.Process_Definition_Version() );
         stateLabel.setText( constants.Process_Instance_State() );
         currentActivitiesListLabel.setText( constants.Current_Activities() );
         logTextLabel.setText( constants.Process_Instance_Log() );
 
-        processInstanceDetailsLabel.setText( constants.Process_Instance_Details() );
-        processInstanceDetailsLabel.setStyleName( "" );
+
         // Set the message to display when the table is empty.
-        Label emptyTable = new Label( constants.No_Variables_Available() );
-        emptyTable.setStyleName( "" );
-        processDataGrid.setEmptyTableWidget( emptyTable );
+        
+        processDataGrid.setEmptyTableWidget( new HTMLPanel(constants.No_Variables_Available()) );
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler = new ColumnSortEvent.ListHandler<VariableSummary>( presenter.getDataProvider().getList() );
@@ -223,11 +234,17 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
         refreshIcon.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
-                presenter.refreshProcessInstanceData( processIdText.getText(), processNameText.getText() );
+                presenter.refreshProcessInstanceData( processInstanceIdText.getText(), processNameText.getText() );
                 displayNotification( constants.Process_Instances_Details_Refreshed() );
             }
         } );
 
+        HTMLPanel span2 = new HTMLPanel(constants.Process_Instance_Details());
+        span2.setStyleName("span3");
+        processInstanceDetailsLabel.add(span2);
+        refreshIcon.setCustomIconStyle("icon-jbpm-refresh");
+        processInstanceDetailsLabel.add(refreshIcon);
+        
         initTableColumns();
 
         presenter.addDataDisplay( processDataGrid );
@@ -269,8 +286,8 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     }
 
     @Override
-    public TextBox getProcessIdText() {
-        return processIdText;
+    public TextBox getProcessDefinitionIdText() {
+        return processDefinitionIdText;
     }
 
     @Override
@@ -353,24 +370,24 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
         } );
 
         // Last Time Changed Date.
-        Column<VariableSummary, String> dueDateColumn = new Column<VariableSummary, String>( new TextCell() ) {
+        Column<VariableSummary, String> lastModificationColumn = new Column<VariableSummary, String>( new TextCell() ) {
             @Override
             public String getValue( VariableSummary object ) {
-
-                return object.getTimestamp();
-
+                Date lastMofidication = new Date(object.getTimestamp());
+                DateTimeFormat format = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm");
+                return format.format(lastMofidication);
             }
         };
-        dueDateColumn.setSortable( true );
+        lastModificationColumn.setSortable( true );
 
-        processDataGrid.addColumn( dueDateColumn, new ResizableHeader( constants.Last_Modification(), processDataGrid,
-                                                                       dueDateColumn ) );
-        sortHandler.setComparator( dueDateColumn, new Comparator<VariableSummary>() {
+        processDataGrid.addColumn( lastModificationColumn, new ResizableHeader( constants.Last_Modification(), processDataGrid,
+                                                                       lastModificationColumn ) );
+        sortHandler.setComparator( lastModificationColumn, new Comparator<VariableSummary>() {
             @Override
             public int compare( VariableSummary o1,
                                 VariableSummary o2 ) {
 
-                return o1.getTimestamp().compareTo( o2.getTimestamp() );
+                return new Long(o1.getTimestamp()).compareTo( new Long(o2.getTimestamp()) );
             }
         } );
 
@@ -400,12 +417,19 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
         } ) );
 
         CompositeCell<VariableSummary> cell = new CompositeCell<VariableSummary>( cells );
-        processDataGrid.addColumn( new Column<VariableSummary, VariableSummary>( cell ) {
-            @Override
-            public VariableSummary getValue( VariableSummary object ) {
-                return object;
-            }
-        }, constants.Actions() );
+        Column<VariableSummary, VariableSummary> actionsColumn = new Column<VariableSummary, VariableSummary>( cell ) {
+                                                              @Override
+                                                              public VariableSummary getValue( VariableSummary object ) {
+                                                                  return object;
+                                                              }
+                                                          };
+        processDataGrid.addColumn(actionsColumn , new ResizableHeader( constants.Actions(), processDataGrid,
+                                                                       actionsColumn ) );
+    }
+
+    @Override
+    public TextBox getProcessInstanceIdText() {
+        return this.processInstanceIdText;
     }
 
     private class EditVariableActionHasCell implements HasCell<VariableSummary, VariableSummary> {
@@ -489,7 +513,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
     public void formClosed( @Observes BeforeClosePlaceEvent closed ) {
         if ( "Edit Variable Popup".equals( closed.getPlace().getIdentifier() ) ) {
-            presenter.loadVariables( processIdText.getText(), processNameText.getText() );
+            presenter.loadVariables( processInstanceIdText.getText(), processDefinitionIdText.getText() );
         }
     }
 

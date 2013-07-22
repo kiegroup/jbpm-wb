@@ -27,11 +27,11 @@ public class VariableSummary implements Serializable {
     private long processInstanceId;
     private String oldValue;
     private String newValue;
-    private String timestamp;
+    private long timestamp;
     private String type;
 
     public VariableSummary(String variableId, String variableInstanceId, long processInstanceId, String oldValue,
-            String newValue, String timestamp, String type) {
+            String newValue, long timestamp, String type) {
 
         this.variableId = variableId;
         this.variableInstanceId = variableInstanceId;
@@ -85,11 +85,11 @@ public class VariableSummary implements Serializable {
         this.newValue = newValue;
     }
 
-    public String getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 

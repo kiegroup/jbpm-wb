@@ -41,6 +41,7 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import java.text.SimpleDateFormat;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 
@@ -132,8 +133,8 @@ public class TaskCommentsPopupViewImpl extends Composite implements TaskComments
         listContainer.add(commentsListGrid);
         listContainer.add(pager);
         commentsListGrid.setHeight("100px");
-        Label emtpyTable = new Label(constants.No_Comments_For_This_Task());
-        commentsListGrid.setEmptyTableWidget(emtpyTable);
+        
+        commentsListGrid.setEmptyTableWidget(new HTMLPanel(constants.No_Comments_For_This_Task()));
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler = new ListHandler<CommentSummary>(presenter.getDataProvider().getList());
         commentsListGrid.addColumnSortHandler(sortHandler);

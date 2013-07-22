@@ -23,11 +23,15 @@ import javax.inject.Inject;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.SimplePager;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import java.util.Date;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
@@ -53,8 +57,8 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
 
     @Inject
     @DataField
-    public Label variableNameText;
-
+    public TextBox variableNameText;
+    
     @Inject
     @DataField
     public FlowPanel listContainer;
@@ -73,7 +77,6 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
     @Override
     public void init( VariableHistoryPresenter presenter ) {
         this.presenter = presenter;
-
         listContainer.add( processVarListGrid );
         pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
         pager.setStyleName("pagination pagination-right pull-right");
@@ -81,9 +84,8 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
 
         processVarListGrid.setHeight( "200px" );
         // Set the message to display when the table is empty.
-        Label emptyTable = new Label( constants.No_History_For_This_Variable() );
-        emptyTable.setStyleName( "" );
-        processVarListGrid.setEmptyTableWidget( emptyTable );
+        
+        processVarListGrid.setEmptyTableWidget( new HTMLPanel(constants.No_History_For_This_Variable()) );
 
         // Create a Pager to control the table.
 
@@ -114,9 +116,10 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
         // Last Time Changed Date.
         Column<VariableSummary, String> dueDateColumn = new Column<VariableSummary, String>( new TextCell() ) {
             @Override
-            public String getValue( VariableSummary object ) {
-
-                return object.getTimestamp();
+            public String getValue( VariableSummary variable ) {
+                Date lastMofidication = new Date(variable.getTimestamp());
+                DateTimeFormat format = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm");
+                return format.format(lastMofidication);
 
             }
         };
@@ -128,7 +131,6 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
         presenter.addDataDisplay( processVarListGrid );
 
         variableHistoryLabel.setText( constants.Variable_History() );
-        variableHistoryLabel.setStyleName( "" );
 
     }
 

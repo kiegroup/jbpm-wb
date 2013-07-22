@@ -64,7 +64,9 @@ public class ProcessInstanceDetailsPresenter {
 
         TextArea getLogTextArea();
 
-        TextBox getProcessIdText();
+        TextBox getProcessInstanceIdText();
+        
+        TextBox getProcessDefinitionIdText();
 
         TextBox getProcessNameText();
 
@@ -134,6 +136,8 @@ public class ProcessInstanceDetailsPresenter {
                 view.getLogTextArea().setText( fullLog );
             }
         } ).getProcessInstanceHistory( Long.parseLong( processId ) );
+        
+        view.getProcessDefinitionIdText().setText(processId);
         dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
             public void callback( List<NodeInstanceSummary> details ) {
@@ -151,7 +155,7 @@ public class ProcessInstanceDetailsPresenter {
         dataServices.call( new RemoteCallback<ProcessSummary>() {
             @Override
             public void callback( ProcessSummary process ) {
-                view.getProcessIdText().setText( process.getId());
+                view.getProcessDefinitionIdText().setText( process.getId());
                 view.getProcessNameText().setText( process.getName() );
                 view.getProcessDeploymentText().setText( process.getDeploymentId() );
                 view.getProcessVersionText().setText( process.getVersion() );
@@ -234,11 +238,11 @@ public class ProcessInstanceDetailsPresenter {
 
     @OnReveal
     public void onReveal() {
-        String processId = place.getParameter( "processInstanceId", "" );
+        String processInstanceId = place.getParameter( "processInstanceId", "" );
         String processDefId = place.getParameter( "processDefId", "" );
-        view.getProcessIdText().setText( processId );
+        view.getProcessInstanceIdText().setText( processInstanceId );
         view.getProcessNameText().setText( processDefId );
-        refreshProcessInstanceData( processId, processDefId );
+        refreshProcessInstanceData( processInstanceId, processDefId );
     }
 
     public void loadVariables( final String processId,

@@ -16,6 +16,7 @@
 
 package org.jbpm.console.ng.pr.client.editors.definition.details;
 
+import com.github.gwtbootstrap.client.ui.Heading;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -31,6 +32,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -85,7 +87,6 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
     public TextBox deploymentIdText;
 
     @Inject
-    @DataField
     public IconAnchor refreshIcon;
 
     @Inject
@@ -100,9 +101,8 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
     @DataField
     public NavLink openProcessDesignerButton;
 
-    @Inject
     @DataField
-    public Label processDetailsLabel;
+    public Heading processDetailsLabel = new Heading(4);
 
     @Inject
     @DataField
@@ -169,9 +169,6 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
             }
         } );
 
-        processDetailsLabel.setText( constants.Process_Definition_Details() );
-        processDetailsLabel.setStyleName( "" );
-
         processIdLabel.setText( constants.Process_Definition_Id() );
         processNameLabel.setText( constants.Process_Definition_Name() );
         nroOfHumanTasksLabel.setText( constants.Human_Tasks_Count() );
@@ -189,6 +186,13 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
                 displayNotification( constants.Process_Definition_Details_Refreshed() );
             }
         } );
+        
+        HTMLPanel span3 = new HTMLPanel(constants.Process_Definition_Details());
+        span3.setStyleName("span3");
+        processDetailsLabel.add(span3);
+        refreshIcon.setCustomIconStyle("icon-jbpm-refresh");
+        processDetailsLabel.add(refreshIcon);
+        
         viewProcessInstancesButton.setText( constants.View_Process_Instances() );
         createProcessInstanceButton.setText( constants.New_Process_Instance() );
         openProcessDesignerButton.setText( constants.View_Process_Model() );
