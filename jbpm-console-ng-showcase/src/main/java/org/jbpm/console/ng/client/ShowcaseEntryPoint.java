@@ -97,13 +97,6 @@ public class ShowcaseEntryPoint {
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu().newTopLevelMenu( constants.Dashboards() )
                     .withItems( getDashboardsViews() ).endMenu()
                 .newTopLevelMenu( "User: "+identity.getName() ).position(MenuPosition.RIGHT).withItems( getRoles() ).endMenu()
-                .newTopLevelMenu( constants.LogOut() ).respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        redirect( GWT.getModuleBaseURL() + "uf_logout" );
-                    }
-                } ).endMenu()
-                
                 .build();
 
         menubar.addMenus( menus );
@@ -114,7 +107,12 @@ public class ShowcaseEntryPoint {
         for ( final Role role : identity.getRoles() ) {
             result.add( MenuFactory.newSimpleItem( "Role: " + role.getName() ).endMenu().build().getItems().get( 0 ) );
         }
-
+        result.add(MenuFactory.newSimpleItem(constants.LogOut()).respondsWith(new Command() {
+                    @Override
+                    public void execute() {
+                        redirect( GWT.getModuleBaseURL() + "uf_logout" );
+                    }
+                }).endMenu().build().getItems().get(0));
         return result;
     }
 

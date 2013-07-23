@@ -210,7 +210,7 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
     @EventHandler("viewProcessInstancesButton")
     public void viewProcessInstancesButton( ClickEvent e ) {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instance List" );
-        placeRequestImpl.addParameter( "processDefId", processIdText.getText() );
+        placeRequestImpl.addParameter( "processName", processNameText.getText() );
         placeManager.goTo( placeRequestImpl );
 
     }

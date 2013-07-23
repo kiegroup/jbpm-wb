@@ -28,9 +28,11 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import java.util.Comparator;
 import java.util.Date;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -67,7 +69,7 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
     @DataField
     public DataGrid<VariableSummary> processVarListGrid;
 
-    
+    private ListHandler<VariableSummary> sortHandler;
     
     public SimplePager pager;
 
@@ -86,7 +88,10 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
         // Set the message to display when the table is empty.
         
         processVarListGrid.setEmptyTableWidget( new HTMLPanel(constants.No_History_For_This_Variable()) );
-
+        
+        sortHandler = new ListHandler<VariableSummary>( presenter.getDataProvider().getList() );
+        processVarListGrid.addColumnSortHandler( sortHandler );
+        
         // Create a Pager to control the table.
 
         pager.setDisplay( processVarListGrid );
@@ -101,20 +106,38 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
         };
 
         processVarListGrid.addColumn( valueColumn, new ResizableHeader( constants.Value(), processVarListGrid, valueColumn ) );
-
-        // Value.
+        valueColumn.setSortable( true );
+        sortHandler.setComparator( valueColumn, new Comparator<VariableSummary>() {
+            @Override
+            public int compare( VariableSummary o1,
+                                VariableSummary o2 ) {
+                return o1.getNewValue().compareTo( o2.getNewValue() );
+            }
+        } );
+            
+        
+        // Old Value.
         Column<VariableSummary, String> oldValueColumn = new Column<VariableSummary, String>( new TextCell() ) {
             @Override
             public String getValue( VariableSummary object ) {
                 return object.getOldValue();
             }
         };
+        oldValueColumn.setSortable( true );
+        
 
         processVarListGrid.addColumn( oldValueColumn, new ResizableHeader( constants.Previous_Value(), processVarListGrid,
                                                                            oldValueColumn ) );
+        sortHandler.setComparator( oldValueColumn, new Comparator<VariableSummary>() {
+            @Override
+            public int compare( VariableSummary o1,
+                                VariableSummary o2 ) {
+                return o1.getOldValue().compareTo( o2.getOldValue());
+            }
+        } );
 
         // Last Time Changed Date.
-        Column<VariableSummary, String> dueDateColumn = new Column<VariableSummary, String>( new TextCell() ) {
+        Column<VariableSummary, String> lastTimeChangedColumn = new Column<VariableSummary, String>( new TextCell() ) {
             @Override
             public String getValue( VariableSummary variable ) {
                 Date lastMofidication = new Date(variable.getTimestamp());
@@ -123,14 +146,23 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
 
             }
         };
-        dueDateColumn.setSortable( true );
+        lastTimeChangedColumn.setSortable( true );
+        sortHandler.setComparator( lastTimeChangedColumn, new Comparator<VariableSummary>() {
+            @Override
+            public int compare( VariableSummary o1,
+                                VariableSummary o2 ) {
+                return new Long(o1.getTimestamp()).compareTo( new Long(o2.getTimestamp()));
+            }
+        } );
 
-        processVarListGrid.addColumn( dueDateColumn, new ResizableHeader( constants.Last_Modification(), processVarListGrid,
-                                                                          dueDateColumn ) );
+        processVarListGrid.addColumn( lastTimeChangedColumn, new ResizableHeader( constants.Last_Modification(), processVarListGrid,
+        
+                lastTimeChangedColumn ) );
 
         presenter.addDataDisplay( processVarListGrid );
 
         variableHistoryLabel.setText( constants.Variable_History() );
+        variableNameText.setReadOnly(true);
 
     }
 

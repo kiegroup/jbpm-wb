@@ -85,8 +85,8 @@ public class ProcessInstanceSignalViewImpl extends Composite implements ProcessI
         this.presenter = presenter;
         clearButton.setText( constants.Clear() );
         signalButton.setText( constants.Signal() );
-        signalRefLabel.setText( constants.Signal_Ref() );
-        eventLabel.setText( constants.Event() );
+        signalRefLabel.setText( constants.Signal_Name() );
+        eventLabel.setText( constants.Signal_Data() );
     }
 
     @Override
@@ -100,7 +100,7 @@ public class ProcessInstanceSignalViewImpl extends Composite implements ProcessI
         for ( Long processInstanceId : this.processInstanceIds ) {
             presenter.signalProcessInstance( processInstanceId );
             displayNotification( constants.Signalling_Process_Instance() + processInstanceId + " " + constants.Signal() + " = "
-                                         + signalRefText.getText() + " - " + constants.Event() + " = " + eventText.getText() );
+                                         + signalRefText.getText() + " - " + constants.Signal_Data() + " = " + eventText.getText() );
         }
     }
 

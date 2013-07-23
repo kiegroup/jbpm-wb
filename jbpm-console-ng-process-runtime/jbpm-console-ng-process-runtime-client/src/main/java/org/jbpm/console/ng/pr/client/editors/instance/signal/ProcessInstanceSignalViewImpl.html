@@ -1,14 +1,32 @@
 <div class="row-fluid">
-  <div class="span12">
-
-    <label data-field="signalRefLabel"></label>
-    <input type="text" class="span12" data-field="signalRefText" />
-    <label data-field="eventLabel"></label>
-    <input type="text" class="span12" data-field="eventText" />
-
-  </div>
-  <div class="modal-footer span12">
-    <button class="btn" data-field="clearButton" id="clearButton"></button>
-    <button class="btn" data-field="signalButton" id="signalButton"></button>
-  </div>
+  <div class="accordion">
+    <!-- GROUP -->
+    <div class="accordion-group">
+      <div class="accordion-inner">
+          <div class="form-horizontal">
+              <fieldset>
+                <div class="control-group">
+                  <label class="control-label" for="signalRefText" data-field="signalRefLabel"></label>
+                  <div class="controls">
+                    <input type="text" data-field="signalRefText" id="signalRefText" placeholder="" />
+                  </div>
+                </div>
+                  <div class="control-group">
+                  <label class="control-label" for="eventText" data-field="eventLabel"></label>
+                  <div class="controls">
+                    <input type="text" data-field="eventText" id="eventText" placeholder="" />
+                  </div>
+                </div>
+              </fieldset>
+              <div class="form-actions">
+                        <button class="btn" data-field="clearButton" id="clearButton"></button>
+                        <button class="btn btn-primary" data-field="signalButton" id="signalButton"></button>
+              </div>
+          </div>
+          
+        
+      </div>
+      
+    </div>
+  </div>  
 </div>

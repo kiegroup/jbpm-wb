@@ -234,7 +234,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
         refreshIcon.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
-                presenter.refreshProcessInstanceData( processInstanceIdText.getText(), processNameText.getText() );
+                presenter.refreshProcessInstanceData( processInstanceIdText.getText(), processDefinitionIdText.getText() );
                 displayNotification( constants.Process_Instances_Details_Refreshed() );
             }
         } );

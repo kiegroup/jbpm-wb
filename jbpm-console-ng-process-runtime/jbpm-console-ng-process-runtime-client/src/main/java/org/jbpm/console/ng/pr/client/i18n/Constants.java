@@ -163,9 +163,9 @@ public interface Constants extends Messages {
 
     String Signalling_Process_Instance();
 
-    String Event();
+    String Signal_Data();
 
-    String Signal_Ref();
+    String Signal_Name();
 
     String Process_Diagram();
 

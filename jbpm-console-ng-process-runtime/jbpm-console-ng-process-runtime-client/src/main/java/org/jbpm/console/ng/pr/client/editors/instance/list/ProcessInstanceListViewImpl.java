@@ -276,6 +276,10 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         refreshIcon.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
+                showAllLink.setStyleName( "active" );
+                showCompletedLink.setStyleName( "" );
+                showAbortedLink.setStyleName( "" );
+                showRelatedToMeLink.setStyleName( "" );
                 presenter.refreshActiveProcessList();
                 searchBox.setText("");
                 displayNotification( constants.Process_Instances_Refreshed() );
