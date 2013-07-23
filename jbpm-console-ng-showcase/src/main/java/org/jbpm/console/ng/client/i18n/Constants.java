@@ -61,5 +61,9 @@ public interface Constants extends Messages {
 
     String newItem();
 
+    String Role();
+
+    String User();
+
 
 }

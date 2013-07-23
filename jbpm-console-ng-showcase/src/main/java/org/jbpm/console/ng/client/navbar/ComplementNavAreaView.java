@@ -27,6 +27,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RequiresResize;
+import org.jbpm.console.ng.client.AppResource;
 import org.uberfire.client.workbench.widgets.menu.PespectiveContextMenusPresenter;
 
 /**
@@ -56,8 +57,8 @@ public class ComplementNavAreaView
 
     @PostConstruct
     public void init() {
-       // logo = new Image( AppResource.INSTANCE.images().logo() );
-        logo = new Image( );
+        logo = new Image( AppResource.INSTANCE.images().logo() );
+
         initWidget( uiBinder.createAndBindUi( this ) );
         contextMenuArea.add( contextMenu.getView() );
     }
