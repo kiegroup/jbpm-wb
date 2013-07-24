@@ -1,0 +1,3 @@
+1374613784000
+(?:[^/]+/)*?[^/]*?
+WEB-INF/lib/drools-compiler[^/]*?\.jar, WEB-INF/lib/drools-core[^/]*?\.jar, WEB-INF/lib/drools-workbench-models-commons-[^/]*?\.jar, WEB-INF/lib/guvnor-m2repo-editor-[^/]*?\.jar, WEB-INF/lib/guvnor-project-[^/]*?\.jar, WEB-INF/lib/jbpm-form-modeler-[^/]*?\.war, WEB-INF/lib/kie-api[^/]*?\.jar, WEB-INF/lib/kie-ci[^/]*?\.jar, WEB-INF/lib/kie-commons-[^/]*?\.jar, WEB-INF/lib/kie-internal[^/]*?\.jar, WEB-INF/lib/kie-nio2-fs[^/]*?\.jar, WEB-INF/lib/kie-wb-common-[^/]*?\.jar, WEB-INF/lib/uberfire-[^/]*?\.jar
