@@ -127,7 +127,7 @@ public class QuickNewTaskPresenter {
             } 
             
         }
-        str+="], }),"; 
+        str+="], businessAdministrators = [ new Group('Administrators') ],}),";
         str += "names = [ new I18NText( 'en-UK', '" + taskName + "')]})";
         if ( isAssignToMe && users != null && users.isEmpty() && groups != null 
                 && containsGroup(groups, identity.getRoles()) ) {
