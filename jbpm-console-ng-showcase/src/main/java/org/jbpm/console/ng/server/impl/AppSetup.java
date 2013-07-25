@@ -17,11 +17,6 @@
 package org.jbpm.console.ng.server.impl;
 
 
-import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import org.jbpm.console.ng.bd.backend.server.AdministrationService;
 import org.kie.commons.services.cdi.Startup;
 import org.uberfire.backend.repositories.Repository;
@@ -29,6 +24,10 @@ import org.uberfire.backend.server.config.ConfigGroup;
 import org.uberfire.backend.server.config.ConfigType;
 import org.uberfire.backend.server.config.ConfigurationFactory;
 import org.uberfire.backend.server.config.ConfigurationService;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 @ApplicationScoped
 @Startup
@@ -39,6 +38,8 @@ public class AppSetup {
     private static final String JBPM_WB_PLAYGROUND_ORIGIN = "https://github.com/guvnorngtestuser1/jbpm-console-ng-playground-kjar.git";
     private static final String JBPM_WB_PLAYGROUND_UID = "guvnorngtestuser1";
     private static final String JBPM_WB_PLAYGROUND_PWD = "test1234";
+
+    private static final String GLOBAL_SETTINGS = "settings";
 
     @Inject
     private AdministrationService administrationService;
@@ -61,7 +62,41 @@ public class AppSetup {
         administrationService.bootstrapConfig();
 
         administrationService.bootstrapDeployments();
+
+        configurationService.addConfiguration( getGlobalConfiguration() );
     }
 
 
+    private ConfigGroup getGlobalConfiguration() {
+        final ConfigGroup group = configurationFactory.newConfigGroup( ConfigType.GLOBAL,
+                GLOBAL_SETTINGS,
+                "" );
+
+        /*
+        group.addConfigItem( configurationFactory.newConfigItem( "drools.dateformat",
+                "dd-MMM-yyyy" ) );
+        group.addConfigItem( configurationFactory.newConfigItem( "drools.datetimeformat",
+                "dd-MMM-yyyy hh:mm:ss" ) );
+        group.addConfigItem( configurationFactory.newConfigItem( "drools.defaultlanguage",
+                "en" ) );
+        group.addConfigItem( configurationFactory.newConfigItem( "drools.defaultcountry",
+                "US" ) );
+        */
+
+        group.addConfigItem( configurationFactory.newConfigItem( "build.enable-incremental",
+                "true" ) );
+
+        /*
+        group.addConfigItem( configurationFactory.newConfigItem( "rule-modeller-onlyShowDSLStatements",
+                "false" ) );
+        group.addConfigItem( configurationFactory.newConfigItem( "designer.url",
+                "http://localhost:8080" ) );
+        group.addConfigItem( configurationFactory.newConfigItem( "designer.context",
+                "designer" ) );
+        group.addConfigItem( configurationFactory.newConfigItem( "designer.profile",
+                "jbpm" ) );
+        */
+
+        return group;
+    }
 }
