@@ -6,6 +6,6 @@ usersGroups = [ new User( "Yoda" ) : [ new Group( "Star Wars" ), new Group( "Jed
                 new User( "Bobba Fet" ) : [ new Group( "Star Wars" ), new Group( "Bounty Hunters" ) ],
                 new User( "Jango Fet" ) : [ new Group( "Star Wars" ), new Group( "Bounty Hunters" ) ],
                 
-                new User('Administrator') : [new Group( "Admnistrators" )],
+                new User('Administrator') : [new Group( "Administrators" )],
               ];       
 return usersGroups;
