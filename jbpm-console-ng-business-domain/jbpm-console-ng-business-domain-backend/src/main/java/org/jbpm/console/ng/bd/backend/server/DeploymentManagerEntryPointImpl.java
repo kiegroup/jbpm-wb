@@ -192,9 +192,9 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
     public void autoDeploy(@Observes DeployResult result) {
         try {
             KModuleDeploymentUnitSummary unit = new KModuleDeploymentUnitSummary("",
-                    result.getGroupId(),
-                    result.getArtifactId(),
-                    result.getVersion(), "", "", DeploymentUnit.RuntimeStrategy.SINGLETON.toString());
+                    result.getGAV().getGroupId(),
+                    result.getGAV().getArtifactId(),
+                    result.getGAV().getVersion(), "", "", DeploymentUnit.RuntimeStrategy.SINGLETON.toString());
 
             undeploy(unit);
             deploy(unit);
