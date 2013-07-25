@@ -262,7 +262,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
     private void createTaskWithSpecifiedDueDateAndUserAndName(String date, String userId, String name) {
         String taskStr = "(with (new Task()) { priority = 55, taskData = (with( new TaskData()) {";
         taskStr += "expirationTime = new java.text.SimpleDateFormat(\"" + DEFAULT_DATE_FORMAT + "\").parse(\"" + date + "\") } ), ";
-        taskStr += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new User('" + userId + "')], }),";
+        taskStr += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new User('" + userId + "')], businessAdministrators = [ new User('Administrator') ], }),";
         taskStr += "names = [ new I18NText( 'en-UK', '" + name + "')] })";
         createAndAddTaskFromString(taskStr);
     }
@@ -274,7 +274,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
     private void createTaskWithSpecifiedDueDateAndGroupAndName(String date, String groupId, String name) {
         String taskStr = "(with (new Task()) { priority = 55, taskData = (with( new TaskData()) {";
         taskStr += "expirationTime = new java.text.SimpleDateFormat(\"" + DEFAULT_DATE_FORMAT + "\").parse(\"" + date + "\") } ), ";
-        taskStr += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new Group('" + groupId + "')], }),";
+        taskStr += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new Group('" + groupId + "')], businessAdministrators = [ new User('Administrator') ], }),";
         taskStr += "names = [ new I18NText( 'en-UK', '" + name + "')] })";
         createAndAddTaskFromString(taskStr);
     }
@@ -286,7 +286,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
     private void createTaskWithNoDueDateAndUserAndName(String user, String name) {
         String taskStr = "(with (new Task()) { priority = 55, taskData = (with( new TaskData()) {";
         taskStr += "expirationTime = null } ), ";
-        taskStr += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new User('" + user + "')], }),";
+        taskStr += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new User('" + user + "')], businessAdministrators = [ new User('Administrator') ], }),";
         taskStr += "names = [ new I18NText( 'en-UK', '" + name + "')] })";
         createAndAddTaskFromString(taskStr);
     }
@@ -308,7 +308,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
     private void createTaskWithNoDueDateAndGroupAndName(String groupId, String name) {
         String taskStr = "(with (new Task()) { priority = 55, taskData = (with( new TaskData()) {";
         taskStr += "expirationTime = null } ), ";
-        taskStr += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new Group('" + groupId + "')], }),";
+        taskStr += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new Group('" + groupId + "')], businessAdministrators = [ new User('Administrator') ], }),";
         taskStr += "names = [ new I18NText( 'en-UK', '" + name + "')] })";
         createAndAddTaskFromString(taskStr);
     }
