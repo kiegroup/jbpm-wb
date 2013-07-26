@@ -52,6 +52,7 @@
       <unpack>true</unpack>
       <unpackOptions>
         <excludes>
+          <exclude>META-INF/context.xml</exclude>
           <exclude>WEB-INF/jetty-env.xml</exclude>
           <exclude>WEB-INF/web.xml</exclude>
           <exclude>WEB-INF/beans.xml</exclude>
@@ -81,6 +82,7 @@
           <exclude>WEB-INF/lib/mail-*.jar</exclude>
           <exclude>WEB-INF/lib/geronimo-spec-jta-*.jar</exclude>
           <exclude>WEB-INF/lib/servlet-api-*.jar</exclude>
+          <exclude>WEB-INF/lib/jsp-api-*.jar</exclude>
 
           <exclude>WEB-INF/lib/jboss-servlet-*.jar</exclude>
           <exclude>WEB-INF/lib/jboss-transaction-*.jar</exclude>
