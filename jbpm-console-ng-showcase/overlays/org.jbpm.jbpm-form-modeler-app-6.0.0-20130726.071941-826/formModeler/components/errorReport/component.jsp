@@ -1,0 +1,1 @@
+<factory:useComponent bean="org.jbpm.formModeler.service.error.ErrorReportHandler"/>
