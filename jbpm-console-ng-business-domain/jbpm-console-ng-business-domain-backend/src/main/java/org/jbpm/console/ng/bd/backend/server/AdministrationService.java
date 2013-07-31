@@ -118,6 +118,19 @@ public class AdministrationService {
             }
             groupService.createGroup( "demo", "demo@jbpm.org", repositories );
 
+        } else {
+            Collection<Repository> repositories = demoGroup.getRepositories();
+            if (repositories != null) {
+                boolean found = false;
+                for (Repository repo : repositories) {
+                    if (repo.getAlias().equals(repository.getAlias())) {
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    groupService.addRepository(demoGroup, repository);
+                }
+            }
         }
 
         if (repository != null) {
