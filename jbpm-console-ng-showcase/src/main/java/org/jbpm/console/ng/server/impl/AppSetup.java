@@ -54,10 +54,10 @@ public class AppSetup {
 
     @PostConstruct
     public void onStartup() {
-        // TODO Setup default repository for jBPM-Workbench
-        administrationService.bootstrapRepository( JBPM_WB_PLAYGROUND_ALIAS, JBPM_WB_PLAYGROUND_ORIGIN,
-                                                   JBPM_WB_PLAYGROUND_UID, JBPM_WB_PLAYGROUND_PWD );
-       
+        if ("true".equalsIgnoreCase(System.getProperty("org.jbpm.console.demo"))) {
+            administrationService.bootstrapRepository( JBPM_WB_PLAYGROUND_ALIAS, JBPM_WB_PLAYGROUND_ORIGIN,
+                                                       JBPM_WB_PLAYGROUND_UID, JBPM_WB_PLAYGROUND_PWD );
+        }
         
         administrationService.bootstrapConfig();
 
