@@ -1,4 +1,4 @@
-<!--
+    <!--
   ~ Copyright 2012 JBoss Inc
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,8 +32,8 @@
     }
 
     .search {
-      float: right;
-      margin-right: 20px;
+      float: left;
+      margin-left: 20px;
       margin-top: 7px;
     }
 
@@ -43,15 +43,16 @@
       margin-top: 7px;
     }
 
-    .searchForm {
-      margin-bottom: 0px !important;
-    }
   </ui:style>
 
   <g:FlowPanel styleName="{style.contextArea} {res.CSS.listbar}">
-      <g:Image ui:field="logo" styleName="{style.logo}"/>
+    <g:Image ui:field="logo" styleName="{style.logo}"/>
     <g:FlowPanel ui:field="contextMenuArea" styleName="{style.contextMenu}">
     </g:FlowPanel>    
+    <g:FlowPanel addStyleNames="{style.search}">
+        <b:TextBox alternateSize="XLARGE" ui:field="searchTextBox" searchQuery="true" placeholder="search..."/>
+        <b:Button icon="SEARCH" ui:field="searchButton" ></b:Button>
+    </g:FlowPanel>  
   </g:FlowPanel>
 
 

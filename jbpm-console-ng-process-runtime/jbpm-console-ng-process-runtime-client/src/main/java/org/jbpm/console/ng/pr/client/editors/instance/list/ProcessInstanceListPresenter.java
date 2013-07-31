@@ -17,7 +17,6 @@
 package org.jbpm.console.ng.pr.client.editors.instance.list;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -25,18 +24,20 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
+import javax.enterprise.event.Event;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
+import org.jbpm.console.ng.pr.client.events.ProcessInstancesSearchEvent;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -56,7 +57,9 @@ public class ProcessInstanceListPresenter {
         
         DataGrid<ProcessInstanceSummary> getDataGrid();
 
-        TextBox getSearchBox();
+        String getCurrentFilter();
+        
+        void setCurrentFilter(String filter);
     }
 
     private String currentProcessDefinition;
@@ -79,6 +82,9 @@ public class ProcessInstanceListPresenter {
     private Constants constants = GWT.create( Constants.class );
     
     private List<ProcessInstanceSummary> currentProcessInstances;
+    
+    @Inject 
+    private Event<ClearSearchEvent> clearSearchEvent;
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -130,7 +136,9 @@ public class ProcessInstanceListPresenter {
             @Override
             public void callback( List<ProcessInstanceSummary> processInstances ) {
                 currentProcessInstances = processInstances;
-                filterProcessList(view.getSearchBox().getText());
+                filterProcessList(view.getCurrentFilter());
+                clearSearchEvent.fire(new ClearSearchEvent());
+                view.setCurrentFilter("");
             }
         } ).getProcessInstances( states, "", null );
     }
@@ -142,7 +150,9 @@ public class ProcessInstanceListPresenter {
             @Override
             public void callback( List<ProcessInstanceSummary> processInstances ) {
                 currentProcessInstances = processInstances;
-                filterProcessList(view.getSearchBox().getText());
+                filterProcessList(view.getCurrentFilter());
+                clearSearchEvent.fire(new ClearSearchEvent());
+                view.setCurrentFilter("");
             }
         } ).getProcessInstances( states, "", identity.getName() );
     }
@@ -154,7 +164,9 @@ public class ProcessInstanceListPresenter {
             @Override
             public void callback( List<ProcessInstanceSummary> processInstances ) {
                 currentProcessInstances = processInstances;
-                filterProcessList(view.getSearchBox().getText());
+                filterProcessList(view.getCurrentFilter());
+                clearSearchEvent.fire(new ClearSearchEvent());
+                view.setCurrentFilter("");
             }
         } ).getProcessInstances( states, "", null );
     }
@@ -166,7 +178,9 @@ public class ProcessInstanceListPresenter {
             @Override
             public void callback( List<ProcessInstanceSummary> processInstances ) {
                 currentProcessInstances = processInstances;
-                filterProcessList(view.getSearchBox().getText());
+                filterProcessList(view.getCurrentFilter());
+                clearSearchEvent.fire(new ClearSearchEvent());
+                view.setCurrentFilter("");
             }
         } ).getProcessInstances( states, "", null );
     }
@@ -196,7 +210,7 @@ public class ProcessInstanceListPresenter {
     public void onReveal() {
 
         this.currentProcessDefinition = place.getParameter( "processName", "" );
-        view.getSearchBox().setText(currentProcessDefinition);
+        view.setCurrentFilter(currentProcessDefinition);
         refreshActiveProcessList();
     }
 
@@ -222,6 +236,17 @@ public class ProcessInstanceListPresenter {
         } ).suspendProcessInstance( processInstanceId );
     }
 
-    
+    public void onSearch(@Observes final ProcessInstancesSearchEvent searchFilter){
+        view.setCurrentFilter(searchFilter.getFilter());
+        List<Integer> states = new ArrayList<Integer>();
+        states.add( ProcessInstance.STATE_ACTIVE );
+        dataServices.call( new RemoteCallback<List<ProcessInstanceSummary>>() {
+            @Override
+            public void callback( List<ProcessInstanceSummary> processInstances ) {
+                currentProcessInstances = processInstances;
+                filterProcessList(view.getCurrentFilter());
+            }
+        } ).getProcessInstances( states, "", null );
+    }
 
 }

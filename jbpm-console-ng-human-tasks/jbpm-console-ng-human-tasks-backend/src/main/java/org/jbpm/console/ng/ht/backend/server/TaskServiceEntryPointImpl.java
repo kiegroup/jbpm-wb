@@ -535,6 +535,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     public void claimBatch(List<Long> taskIds, String user) {
         for (Long taskId : taskIds) {
             taskService.claim(taskId, user);
+            taskService.start(taskId, user);
         }
     }
 

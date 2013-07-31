@@ -87,10 +87,9 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
 
     private ProcessInstanceListPresenter presenter;
 
-    @Inject
-    @DataField
-    public TextBox searchBox;
 
+    private String currentFilter = "";
+    
     @Inject
     @DataField
     public FlowPanel listContainer;
@@ -154,8 +153,12 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         
     }
 
-    public TextBox getSearchBox() {
-        return searchBox;
+    public String getCurrentFilter() {
+        return currentFilter;
+    }
+
+    public void setCurrentFilter(String currentFilter) {
+        this.currentFilter = currentFilter;
     }
     
     @Override
@@ -281,7 +284,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
                 showAbortedLink.setStyleName( "" );
                 showRelatedToMeLink.setStyleName( "" );
                 presenter.refreshActiveProcessList();
-                searchBox.setText("");
+                currentFilter = "";
                 displayNotification( constants.Process_Instances_Refreshed() );
             }
         } );
@@ -320,17 +323,17 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         processInstanceListGrid.setSelectionModel( selectionModel,
                                                    DefaultSelectionEventManager.<ProcessInstanceSummary>createCheckboxManager() );
         
-        searchBox.addKeyUpHandler(new KeyUpHandler() {
-
-            @Override
-            public void onKeyUp(KeyUpEvent event) {
-                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32){
-                    displayNotification("Filter: |"+searchBox.getText()+"|");
-                    presenter.filterProcessList(searchBox.getText());
-                }
-                
-            }
-        });
+//        searchBox.addKeyUpHandler(new KeyUpHandler() {
+//
+//            @Override
+//            public void onKeyUp(KeyUpEvent event) {
+//                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32){
+//                    displayNotification("Filter: |"+searchBox.getText()+"|");
+//                    presenter.filterProcessList(searchBox.getText());
+//                }
+//                
+//            }
+//        });
 
         initTableColumns( selectionModel );
 

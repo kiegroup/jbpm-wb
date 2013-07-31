@@ -16,6 +16,12 @@
 package org.jbpm.console.ng.pr.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import org.jbpm.console.ng.pr.client.events.ProcessDefinitionsSearchEvent;
+import org.kie.workbench.common.widgets.client.search.ContextualSearch;
+import org.kie.workbench.common.widgets.client.search.SearchBehavior;
+import org.uberfire.client.annotations.OnStart;
 
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -30,15 +36,38 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
  */
 @ApplicationScoped
 @WorkbenchPerspective(identifier = "Process Definitions", isDefault = false)
-public class ProcessRuntimePerspective {
+public class ProcessDefinitionsPerspective {
 
+    @Inject
+    private ContextualSearch contextualSearch;
+    
+    @Inject
+    private Event<ProcessDefinitionsSearchEvent> searchEvents;
+    
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_STATIC);
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.SIMPLE);
         p.setName( "Process Definitions" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Process Definition List" ) ) );
         p.setTransient( true );
         return p;
+    }
+    
+    @OnStart
+    public void init() {
+        contextualSearch.setSearchBehavior(new SearchBehavior() {
+            private String searchFilter;
+            @Override
+            public void execute() {
+                searchEvents.fire(new ProcessDefinitionsSearchEvent(this.searchFilter));
+            }
+
+            @Override
+            public void setSearchFilter(String searchFilter) {
+                this.searchFilter = searchFilter;
+            }
+        });
+        
     }
 
 }

@@ -16,6 +16,12 @@
 package org.jbpm.console.ng.bd.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import org.jbpm.console.ng.bd.client.events.DeploymentsSearchEvent;
+import org.kie.workbench.common.widgets.client.search.ContextualSearch;
+import org.kie.workbench.common.widgets.client.search.SearchBehavior;
+import org.uberfire.client.annotations.OnStart;
 
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -31,14 +37,37 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 @ApplicationScoped
 @WorkbenchPerspective(identifier = "Deployments", isDefault = false)
 public class DeploymentListPerspective {
-
+    
+    
+    @Inject
+    private ContextualSearch contextualSearch;
+    
+    @Inject
+    private Event<DeploymentsSearchEvent> searchEvents;
+    
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_STATIC);
-        p.setName( "Deployments" );
-        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Deployments List" ) ) );
-        p.setTransient( true );
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.SIMPLE);
+        p.setName("Deployments");
+        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Deployments List")));
+        p.setTransient(true);
         return p;
     }
+    
+    @OnStart
+    public void init() {
+        contextualSearch.setSearchBehavior(new SearchBehavior() {
+            private String searchFilter;
+            @Override
+            public void execute() {
+                searchEvents.fire(new DeploymentsSearchEvent(this.searchFilter));
+            }
 
+            @Override
+            public void setSearchFilter(String searchFilter) {
+                this.searchFilter = searchFilter;
+            }
+        });
+        
+    }
 }

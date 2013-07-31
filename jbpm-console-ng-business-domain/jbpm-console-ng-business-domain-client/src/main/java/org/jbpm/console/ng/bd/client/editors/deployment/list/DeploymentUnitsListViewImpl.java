@@ -25,11 +25,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.Heading;
-import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
@@ -38,17 +34,12 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -64,8 +55,6 @@ import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 import org.jbpm.console.ng.bd.model.events.DeployedUnitChangedEvent;
 import org.uberfire.client.common.BusyPopup;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.NotificationEvent;
 
@@ -79,7 +68,6 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
     private PlaceManager placeManager;
     private DeploymentUnitsListPresenter presenter;
 
-    
 
     @Inject
     @DataField
@@ -90,21 +78,7 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
     public FlowPanel listContainerDeployedUnits;
 
     public SimplePager pager;
-
-    @Inject
-    public IconAnchor refreshIcon;
-    
-    @Inject
-    @DataField
-    public NavLink newUnitNavLink;
-    
-    
-    @Inject
-    @DataField
-    public TextBox searchBox;
-    
-    @DataField
-    public Heading deployedUnitsLabel = new Heading(4);
+ 
 
     private Set<KModuleDeploymentUnitSummary> selectedKieSession;
     @Inject
@@ -116,7 +90,7 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
     private Constants constants = GWT.create( Constants.class );
     private BusinessDomainImages images = GWT.create( BusinessDomainImages.class );
 
-    
+    private String currentFilter = "";
 
 
     @Override
@@ -130,37 +104,20 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
         pager.setPageSize(10);
         listContainerDeployedUnits.add( pager );
 
-
-        newUnitNavLink.setText( constants.New_Deployment_Unit() );
-        newUnitNavLink.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "New Deployment" );
-                placeManager.goTo( placeRequestImpl );
-            }
-        } );
         
-        searchBox.addKeyUpHandler(new KeyUpHandler() {
-
-            @Override
-            public void onKeyUp(KeyUpEvent event) {
-                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32){
-                    displayNotification("Filter: |"+searchBox.getText()+"|");
-                    presenter.filterDeployedUnits(searchBox.getText());
-                }
-                
-            }
-        });
+//        searchBox.addKeyUpHandler(new KeyUpHandler() {
+//
+//            @Override
+//            public void onKeyUp(KeyUpEvent event) {
+//                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32){
+//                    presenter.filterDeployedUnits(searchBox.getText());
+//                }
+//                
+//            }
+//        });
 
         
-        refreshIcon.setTitle( constants.Refresh() );
-        refreshIcon.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                presenter.refreshDeployedUnits();
-                displayNotification( constants.Deployed_Units_Refreshed() );
-            }
-        } );
+        
 
         deployedUnitsListGrid.setHeight( "400px" );
         // Set the message to display when the table is empty.
@@ -191,11 +148,6 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
 
         deployedUnitsListGrid.setSelectionModel( selectionModel, DefaultSelectionEventManager.<KModuleDeploymentUnitSummary>createCheckboxManager() );
 
-        HTMLPanel span2 = new HTMLPanel(constants.Deployment_Units());
-        span2.setStyleName("span2");
-        deployedUnitsLabel.add(span2);
-        refreshIcon.setCustomIconStyle("icon-jbpm-refresh");
-        deployedUnitsLabel.add(refreshIcon);
         
         initTableColumns( selectionModel );
 
@@ -211,10 +163,6 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
         refreshDeployedUnits();
     }
 
-    @Override
-    public TextBox getSearchBox() {
-        return searchBox;
-    }
 
     private void initTableColumns( final SelectionModel<KModuleDeploymentUnitSummary> selectionModel ) {
 
@@ -376,6 +324,16 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
         return sortHandler;
     }
 
+    @Override
+    public String getCurrentFilter() {
+        return this.currentFilter;
+    }
+
+    @Override
+    public void setCurrentFilter(String filter) {
+        this.currentFilter = filter;
+    }
+
     private class DeleteActionHasCell implements HasCell<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> {
 
         private ActionCell<KModuleDeploymentUnitSummary> cell;
@@ -451,5 +409,5 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
             return object;
         }
     }
-
+    
 }

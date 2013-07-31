@@ -35,6 +35,7 @@ import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -51,6 +52,7 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -442,6 +444,26 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         // Checkbox column. This table will uses a checkbox column for selection.
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
         // mouse selection.
+         
+         myTaskListGrid.addCellPreviewHandler(new CellPreviewEvent.Handler<TaskSummary>() {
+             
+             @Override
+             public void onCellPreview(final CellPreviewEvent<TaskSummary> event) {
+
+                 if (BrowserEvents.CLICK.equalsIgnoreCase(event.getNativeEvent().getType())) {
+                    int column = event.getColumn();
+                    int columnCount = myTaskListGrid.getColumnCount();
+                    if(column != columnCount - 1){
+                        TaskSummary task = event.getValue();
+                        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Popup");
+                        placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
+                        placeManager.goTo(placeRequestImpl);
+                    }
+                 }
+
+             }
+          });
+
 
         Column<TaskSummary, Boolean> checkColumn = new Column<TaskSummary, Boolean>(new CheckboxCell(true, false)) {
             @Override
