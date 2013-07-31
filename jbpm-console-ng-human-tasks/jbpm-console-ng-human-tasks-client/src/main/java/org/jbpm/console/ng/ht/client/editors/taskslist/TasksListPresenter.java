@@ -34,38 +34,39 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import java.util.HashMap;
+import javax.enterprise.event.Event;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
+import org.jbpm.console.ng.ht.client.events.TaskSearchEvent;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.util.DateRange;
 import org.jbpm.console.ng.ht.client.util.DateUtils;
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.security.Role;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.Menus;
 
 
 @Dependent
 @WorkbenchScreen(identifier = "Tasks List")
 public class TasksListPresenter {
 
-    private List<TaskSummary> allTaskSummaries;
-
-    private Map<Day, List<TaskSummary>> currentDayTasks;
-    
-    public List<TaskSummary> getAllTaskSummaries() {
-        return allTaskSummaries;
-    }
-    
-    
-
-    public interface TaskListView extends UberView<TasksListPresenter> {
+     public interface TaskListView extends UberView<TasksListPresenter> {
 
         void displayNotification( String text );
 
@@ -73,9 +74,17 @@ public class TasksListPresenter {
 
         MultiSelectionModel<TaskSummary> getSelectionModel();
         
-        TextBox getSearchBox();
-
         void refreshTasks();
+        
+        Date getCurrentDate();
+
+        TaskView getCurrentView();
+        
+        TaskType getCurrentTaskType();
+        
+        String getCurrentFilter();
+       
+        void setCurrentFilter(String currentFilter);
     }
 
     public enum TaskType {
@@ -95,13 +104,25 @@ public class TasksListPresenter {
             return nrOfDaysToShow;
         }
     }
+    
+    private List<TaskSummary> allTaskSummaries;
 
+    private Map<Day, List<TaskSummary>> currentDayTasks;
+    
+    private Menus menus;
+    
+   
+    @Inject
+    private PlaceManager placeManager;
     @Inject
     private TaskListView view;
     @Inject
     private Identity identity;
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
+    
+    @Inject 
+    private Event<ClearSearchEvent> clearSearchEvent;
 
     private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
     public static final ProvidesKey<TaskSummary> KEY_PROVIDER = new ProvidesKey<TaskSummary>() {
@@ -111,6 +132,11 @@ public class TasksListPresenter {
         }
     };
 
+    
+    public TasksListPresenter() {
+        makeMenuBar();
+    }
+
 
     private Constants constants = GWT.create( Constants.class );
 
@@ -119,16 +145,13 @@ public class TasksListPresenter {
         return constants.Tasks_List();
     }
 
+     public List<TaskSummary> getAllTaskSummaries() {
+        return allTaskSummaries;
+    }
+    
     @WorkbenchPartView
     public UberView<TasksListPresenter> getView() {
         return view;
-    }
-
-    public TasksListPresenter() {
-    }
-
-    @PostConstruct
-    public void init() {
     }
 
     public void filterTasks(String text) {
@@ -281,7 +304,7 @@ public class TasksListPresenter {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                     allTaskSummaries = tasks;
-                    filterTasks(view.getSearchBox().getText());
+                    filterTasks(view.getCurrentFilter());
                 }
             }).getTasksOwnedByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
 
@@ -290,7 +313,7 @@ public class TasksListPresenter {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
                     currentDayTasks = tasks;
-                    filterTasks(view.getSearchBox().getText());
+                    filterTasks(view.getCurrentFilter());
                 }
             }).getTasksOwnedFromDateToDateByDays(identity.getName(), statuses, fromDate, daysTotal, "en-UK");
         }
@@ -336,7 +359,7 @@ public class TasksListPresenter {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                     allTaskSummaries = tasks;
-                    filterTasks(view.getSearchBox().getText());
+                    filterTasks(view.getCurrentFilter());
                     view.getSelectionModel().clear();
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
@@ -345,7 +368,7 @@ public class TasksListPresenter {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
                     currentDayTasks = tasks;
-                    filterTasks(view.getSearchBox().getText());
+                    filterTasks(view.getCurrentFilter());
                 }
             }).getTasksAssignedAsPotentialOwnerFromDateToDateByDays(identity.getName(), statuses, fromDate, daysTotal, "en-UK");
         }
@@ -364,7 +387,7 @@ public class TasksListPresenter {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                    allTaskSummaries = tasks;
-                   filterTasks(view.getSearchBox().getText());
+                   filterTasks(view.getCurrentFilter());
                    view.getSelectionModel().clear();
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
@@ -373,7 +396,7 @@ public class TasksListPresenter {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
                     currentDayTasks = tasks;
-                    filterTasks(view.getSearchBox().getText());
+                    filterTasks(view.getCurrentFilter());
                 }
             }).getTasksAssignedAsPotentialOwnerFromDateToDateByDays(identity.getName(), statuses, fromDate, daysTotal, "en-UK");
         }
@@ -402,7 +425,7 @@ public class TasksListPresenter {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                    allTaskSummaries = tasks;
-                   filterTasks(view.getSearchBox().getText());
+                   filterTasks(view.getCurrentFilter());
                    view.getSelectionModel().clear();
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
@@ -411,7 +434,7 @@ public class TasksListPresenter {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
                     currentDayTasks = tasks;
-                    filterTasks(view.getSearchBox().getText());
+                    filterTasks(view.getCurrentFilter());
                 }
             }).getTasksAssignedAsPotentialOwnerFromDateToDateByDays(identity.getName(), statuses, fromDate, daysTotal, "en-UK");
         }
@@ -423,6 +446,41 @@ public class TasksListPresenter {
 
     public ListDataProvider<TaskSummary> getDataProvider() {
         return dataProvider;
+    }
+    
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return menus;
+    }
+    
+    private void makeMenuBar() {
+        menus = MenuFactory
+                .newTopLevelMenu( constants.New_Task())
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Quick New Task" );
+                        placeManager.goTo( placeRequestImpl );
+                    }
+                } )
+                .endMenu()
+                .newTopLevelMenu( constants.Refresh() )
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        refreshTasks(view.getCurrentDate(), view.getCurrentView(), view.getCurrentTaskType());
+                        view.setCurrentFilter("");
+                        view.displayNotification(constants.Tasks_Refreshed());
+                        clearSearchEvent.fire(new ClearSearchEvent());
+                    }
+                } )
+                .endMenu().build();
+
+    }
+    
+    public void onSearchEvent(@Observes final TaskSearchEvent searchEvent){
+        view.setCurrentFilter(searchEvent.getFilter());
+        refreshTasks(view.getCurrentDate(), view.getCurrentView(), view.getCurrentTaskType());
     }
 
 }

@@ -119,20 +119,15 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
     @DataField
     public IconAnchor abortIcon;
 
-    @Inject
-    public IconAnchor refreshIcon;
 
     @Inject
     @DataField
     public NavLink fiterLabel;
 
-     @Inject
+    @Inject
     @DataField
     public NavLink bulkLabel;
     
-    @DataField
-    public Heading processInstanceLabel = new Heading(4);
-
     @Inject
     @DataField
     public DataGrid<ProcessInstanceSummary> processInstanceListGrid;
@@ -275,25 +270,20 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
             }
         } );
 
-        refreshIcon.setTitle( constants.Refresh() );
-        refreshIcon.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                showAllLink.setStyleName( "active" );
-                showCompletedLink.setStyleName( "" );
-                showAbortedLink.setStyleName( "" );
-                showRelatedToMeLink.setStyleName( "" );
-                presenter.refreshActiveProcessList();
-                currentFilter = "";
-                displayNotification( constants.Process_Instances_Refreshed() );
-            }
-        } );
+//        refreshIcon.setTitle( constants.Refresh() );
+//        refreshIcon.addClickHandler( new ClickHandler() {
+//            @Override
+//            public void onClick( ClickEvent event ) {
+//                showAllLink.setStyleName( "active" );
+//                showCompletedLink.setStyleName( "" );
+//                showAbortedLink.setStyleName( "" );
+//                showRelatedToMeLink.setStyleName( "" );
+//                presenter.refreshActiveProcessList();
+//                currentFilter = "";
+//                displayNotification( constants.Process_Instances_Refreshed() );
+//            }
+//        } );
         
-        HTMLPanel span2 = new HTMLPanel(constants.Process_Instances());
-        span2.setStyleName("span2");
-        processInstanceLabel.add(span2);
-        refreshIcon.setCustomIconStyle("icon-jbpm-refresh");
-        processInstanceLabel.add(refreshIcon);
         // Set the message to display when the table is empty.
         Label emptyTable = new Label( constants.No_Process_Instances_Found() );
         emptyTable.setStyleName( "" );
@@ -654,5 +644,23 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
             presenter.refreshActiveProcessList();
         }
     }
+
+    public NavLink getShowAllLink() {
+        return showAllLink;
+    }
+
+    public NavLink getShowCompletedLink() {
+        return showCompletedLink;
+    }
+
+    public NavLink getShowAbortedLink() {
+        return showAbortedLink;
+    }
+
+    public NavLink getShowRelatedToMeLink() {
+        return showRelatedToMeLink;
+    }
+    
+    
 
 }

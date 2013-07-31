@@ -88,8 +88,7 @@ public class ComplementNavAreaView
     
     @UiHandler("searchButton")
     public void search(ClickEvent e){
-        contextualSearch.getSearchBehavior().setSearchFilter(searchTextBox.getText());
-        contextualSearch.getSearchBehavior().execute();
+        contextualSearch.getSearchBehavior().execute(searchTextBox.getText());
     }
     
     public void onClearSearchBox(@Observes ClearSearchEvent clearSearch){

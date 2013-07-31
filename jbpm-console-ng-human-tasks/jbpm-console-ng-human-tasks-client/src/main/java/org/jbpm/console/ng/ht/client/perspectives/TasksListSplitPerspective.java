@@ -35,8 +35,8 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Tasks", isDefault = false)
-public class TasksListPerspective {
+@WorkbenchPerspective(identifier = "Tasks With Details", isDefault = false)
+public class TasksListSplitPerspective {
 
     @Inject
     private ContextualSearch contextualSearch;
@@ -46,7 +46,7 @@ public class TasksListPerspective {
     
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( PanelType.ROOT_LIST );
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( PanelType.ROOT_STATIC );
         p.setName( "Tasks" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Tasks List" ) ) );
         p.setTransient( true );

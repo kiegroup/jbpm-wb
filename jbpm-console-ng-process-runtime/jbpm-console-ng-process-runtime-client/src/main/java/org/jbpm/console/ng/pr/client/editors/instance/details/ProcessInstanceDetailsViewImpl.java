@@ -119,12 +119,6 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     public TextArea logTextArea;
 
     @Inject
-    public IconAnchor refreshIcon;
-
-    @DataField
-    public Heading processInstanceDetailsLabel = new Heading(4);
-
-    @Inject
     @DataField
     public Label processDefinitionIdLabel;
 
@@ -152,9 +146,6 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     @DataField
     public Label logTextLabel;
 
-    @Inject
-    @DataField
-    public NavLink viewProcessDiagramButton;
 
     @Inject
     @DataField
@@ -196,7 +187,6 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
         logTextArea.setEnabled( false );
         currentActivitiesListBox.setEnabled( false );
 
-        viewProcessDiagramButton.setText( constants.View_Process_Model() );
         listContainer.add( processDataGrid );
         
         pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
@@ -230,60 +220,14 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
         pager.setDisplay( processDataGrid );
         pager.setPageSize( 4 );
 
-        refreshIcon.setTitle( constants.Refresh() );
-        refreshIcon.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                presenter.refreshProcessInstanceData( processInstanceIdText.getText(), processDefinitionIdText.getText() );
-                displayNotification( constants.Process_Instances_Details_Refreshed() );
-            }
-        } );
+     
 
-        HTMLPanel span2 = new HTMLPanel(constants.Process_Instance_Details());
-        span2.setStyleName("span3");
-        processInstanceDetailsLabel.add(span2);
-        refreshIcon.setCustomIconStyle("icon-jbpm-refresh");
-        processInstanceDetailsLabel.add(refreshIcon);
         
         initTableColumns();
 
         presenter.addDataDisplay( processDataGrid );
     }
 
-    @EventHandler("viewProcessDiagramButton")
-    public void viewProcessDiagramButton( ClickEvent e ) {
-        StringBuffer nodeParam = new StringBuffer();
-        for ( NodeInstanceSummary activeNode : activeNodes ) {
-            nodeParam.append( activeNode.getNodeUniqueName() + "," );
-        }
-        if ( nodeParam.length() > 0 ) {
-            nodeParam.deleteCharAt( nodeParam.length() - 1 );
-        }
-
-        StringBuffer completedNodeParam = new StringBuffer();
-        for ( NodeInstanceSummary completedNode : completedNodes ) {
-            if ( completedNode.isCompleted() ) {
-                // insert outgoing sequence flow and node as this is for on entry event
-                completedNodeParam.append( completedNode.getNodeUniqueName() + "," );
-                completedNodeParam.append( completedNode.getConnection() + "," );
-            } else if ( completedNode.getConnection() != null ) {
-                // insert only incoming sequence flow as node id was already inserted
-                completedNodeParam.append( completedNode.getConnection() + "," );
-            }
-
-        }
-        completedNodeParam.deleteCharAt( completedNodeParam.length() - 1 );
-
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Designer" );
-        placeRequestImpl.addParameter( "activeNodes", nodeParam.toString() );
-        placeRequestImpl.addParameter( "completedNodes", completedNodeParam.toString() );
-        placeRequestImpl.addParameter( "readOnly", "true" );
-        if ( encodedProcessSource != null ) {
-            placeRequestImpl.addParameter( "encodedProcessSource", encodedProcessSource );
-        }
-
-        placeManager.goTo( processAssetPath, placeRequestImpl );
-    }
 
     @Override
     public TextBox getProcessDefinitionIdText() {
@@ -558,4 +502,30 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
         this.encodedProcessSource = encodedProcessSource;
     }
 
+    public List<NodeInstanceSummary> getActiveNodes() {
+        return activeNodes;
+    }
+
+    public void setActiveNodes(List<NodeInstanceSummary> activeNodes) {
+        this.activeNodes = activeNodes;
+    }
+
+    public List<NodeInstanceSummary> getCompletedNodes() {
+        return completedNodes;
+    }
+
+    public void setCompletedNodes(List<NodeInstanceSummary> completedNodes) {
+        this.completedNodes = completedNodes;
+    }
+
+    public Path getProcessAssetPath() {
+        return processAssetPath;
+    }
+
+    public String getEncodedProcessSource() {
+        return encodedProcessSource;
+    }
+
+    
+    
 }

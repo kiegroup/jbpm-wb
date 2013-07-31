@@ -207,7 +207,7 @@ public class DeploymentUnitsListPresenter {
                     public void execute() {
                         refreshDeployedUnits();
                         view.setCurrentFilter("");
-                        view.displayNotification("Deployment Units Refreshed");
+                        view.displayNotification(constants.Deployed_Units_Refreshed());
                     }
                 } )
                 .endMenu().build();

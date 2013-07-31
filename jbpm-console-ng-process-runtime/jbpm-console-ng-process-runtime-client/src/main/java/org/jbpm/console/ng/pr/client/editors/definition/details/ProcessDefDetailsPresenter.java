@@ -25,6 +25,8 @@ import javax.inject.Inject;
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
+
+import java.util.ArrayList;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -36,12 +38,18 @@ import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.MenuItem;
+import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Definition Details")
@@ -72,8 +80,14 @@ public class ProcessDefDetailsPresenter {
         void setProcessAssetPath( Path processAssetPath );
 
         void setEncodedProcessSource( String encodedProcessSource );
+        
+        Path getProcessAssetPath();
+        
+        String getEncodedProcessSource();
     }
-
+    
+    private Menus menus;
+    
     @Inject
     private PlaceManager placeManager;
 
@@ -87,6 +101,12 @@ public class ProcessDefDetailsPresenter {
     private Caller<VFSService> fileServices;
 
     private Constants constants = GWT.create( Constants.class );
+
+    public ProcessDefDetailsPresenter() {
+        makeMenuBar();
+    }
+    
+    
 
     @OnStart
     public void onStart( final PlaceRequest place ) {
@@ -173,6 +193,66 @@ public class ProcessDefDetailsPresenter {
         view.getDeploymentIdText().setText( deploymentId );
 
         refreshProcessDef( processId );
+    }
+    
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return menus;
+    }
+    
+    private void makeMenuBar() {
+        menus = MenuFactory
+                .newTopLevelMenu( constants.New_Process_Instance()).respondsWith(new Command() {
+                        @Override
+                        public void execute() {
+                            PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display" );
+                            placeRequestImpl.addParameter( "processId", view.getProcessIdText().getText() );
+                            placeRequestImpl.addParameter( "domainId", view.getDeploymentIdText().getText() );
+                            placeManager.goTo( placeRequestImpl );
+                        }
+                     }).endMenu()
+                .newTopLevelMenu( constants.Options())
+                .withItems(getOptions())
+                .endMenu()
+                .newTopLevelMenu( constants.Refresh() )
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        refreshProcessDef( view.getProcessNameText().getText() );
+                        view.displayNotification( constants.Process_Definition_Details_Refreshed() );
+                    }
+                } )
+                .endMenu().build();
+
+    }
+    private List<MenuItem> getOptions(){
+        List<MenuItem> menuItems = new ArrayList<MenuItem>(2);
+        
+        menuItems.add( MenuFactory.newSimpleItem( constants.View_Process_Model()).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Designer" );
+
+                if ( view.getEncodedProcessSource() != null ) {
+                    placeRequestImpl.addParameter( "readOnly", "true" );
+                    placeRequestImpl.addParameter( "encodedProcessSource", view.getEncodedProcessSource() );
+                }
+                placeManager.goTo( view.getProcessAssetPath(), placeRequestImpl );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+        
+        menuItems.add( MenuFactory.newSimpleItem( constants.View_Process_Instances()).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instance List" );
+                placeRequestImpl.addParameter( "processName", view.getProcessNameText().getText() );
+                placeManager.goTo( placeRequestImpl );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+        
+        
+        return menuItems;
+    
     }
 
 }

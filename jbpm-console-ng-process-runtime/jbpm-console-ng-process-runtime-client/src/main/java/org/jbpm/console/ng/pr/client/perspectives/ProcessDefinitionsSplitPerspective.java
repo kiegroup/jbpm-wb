@@ -18,49 +18,77 @@ package org.jbpm.console.ng.pr.client.perspectives;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import org.jbpm.console.ng.pr.client.events.ProcessInstancesSearchEvent;
+import org.jbpm.console.ng.pr.client.events.ProcessDefinitionsSearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
 import org.uberfire.client.annotations.OnStart;
 
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.PanelType;
 import org.uberfire.workbench.model.PerspectiveDefinition;
+import org.uberfire.workbench.model.Position;
+import org.uberfire.workbench.model.impl.PanelDefinitionImpl;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
+/**
+ * A Perspective to show File Explorer
+ */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Process Instances", isDefault = false)
-public class ProcessInstancesPerspective {
+@WorkbenchPerspective(identifier = "Process Definitions With Details", isDefault = false)
+public class ProcessDefinitionsSplitPerspective {
 
     @Inject
     private ContextualSearch contextualSearch;
     
     @Inject
-    private Event<ProcessInstancesSearchEvent> searchEvents;
+    private Event<ProcessDefinitionsSearchEvent> searchEvents;
+    
+    private String selectedProcessId = "";
+    
+    private String selectedProcessDeploymentId = "";
+    
     
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_LIST);
-        p.setName( "Process Instances" );
-        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Process Instance List" ) ) );
+        p.setName( "Process Definitions" );
+        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Process Definition List" ) ) );
+        
+        final PanelDefinition east = new PanelDefinitionImpl(PanelType.MULTI_LIST);
+        east.setWidth( 500 );
+        east.setMinWidth( 400 );
+        
+        
+        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Process Definition Details" );
+        defaultPlaceRequest.addParameter( "processId", selectedProcessId );
+        defaultPlaceRequest.addParameter( "deploymentId", selectedProcessDeploymentId );
+        east.addPart( new PartDefinitionImpl( defaultPlaceRequest ) );
+        p.getRoot().insertChild( Position.EAST, east );
+        
+        
         p.setTransient( true );
         return p;
     }
     
     @OnStart
-    public void init() {
+    public void onStart(final PlaceRequest place) {
+        this.selectedProcessId = place.getParameter( "processId", "" );
+        this.selectedProcessDeploymentId= place.getParameter( "deploymentId", "none" );
         contextualSearch.setSearchBehavior(new SearchBehavior() {
+
             @Override
             public void execute(String searchFilter) {
-                searchEvents.fire(new ProcessInstancesSearchEvent(searchFilter));
+                searchEvents.fire(new ProcessDefinitionsSearchEvent(searchFilter));
             }
-
-            
+ 
         });
         
     }
+    
 
 }
