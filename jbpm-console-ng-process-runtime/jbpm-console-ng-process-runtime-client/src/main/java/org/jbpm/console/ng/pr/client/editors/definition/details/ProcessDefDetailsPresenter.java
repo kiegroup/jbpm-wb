@@ -95,7 +95,7 @@ public class ProcessDefDetailsPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.Process_Definition_Details();
+        return constants.Definition_Details();
     }
 
     @WorkbenchPartView
@@ -168,11 +168,71 @@ public class ProcessDefDetailsPresenter {
     public void onReveal() {
         String processId = place.getParameter( "processId", "" );
         view.getProcessIdText().setText( processId );
-
+        System.out.println("Presenter Def Details - Process Definition ID: "+processId);
         String deploymentId = place.getParameter( "deploymentId", "none" );
         view.getDeploymentIdText().setText( deploymentId );
 
         refreshProcessDef( processId );
+    }
+    
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return menus;
+    }
+    
+    private void makeMenuBar() {
+        menus = MenuFactory
+                .newTopLevelMenu( constants.New_Instance()).respondsWith(new Command() {
+                        @Override
+                        public void execute() {
+                            PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display" );
+                            placeRequestImpl.addParameter( "processId", view.getProcessIdText().getText() );
+                            placeRequestImpl.addParameter( "domainId", view.getDeploymentIdText().getText() );
+                            placeManager.goTo( placeRequestImpl );
+                        }
+                     }).endMenu()
+                .newTopLevelMenu( constants.Options())
+                .withItems(getOptions())
+                .endMenu()
+                .newTopLevelMenu( constants.Refresh() )
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        refreshProcessDef( view.getProcessNameText().getText() );
+                        view.displayNotification( constants.Process_Definition_Details_Refreshed() );
+                    }
+                } )
+                .endMenu().build();
+
+    }
+    private List<MenuItem> getOptions(){
+        List<MenuItem> menuItems = new ArrayList<MenuItem>(2);
+        
+        menuItems.add( MenuFactory.newSimpleItem( constants.View_Process_Model()).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Designer" );
+
+                if ( view.getEncodedProcessSource() != null ) {
+                    placeRequestImpl.addParameter( "readOnly", "true" );
+                    placeRequestImpl.addParameter( "encodedProcessSource", view.getEncodedProcessSource() );
+                }
+                placeManager.goTo( view.getProcessAssetPath(), placeRequestImpl );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+        
+        menuItems.add( MenuFactory.newSimpleItem( constants.View_Process_Instances()).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instance List" );
+                placeRequestImpl.addParameter( "processName", view.getProcessNameText().getText() );
+                placeManager.goTo( placeRequestImpl );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+        
+        
+        return menuItems;
+    
     }
 
 }

@@ -162,24 +162,6 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
 
         processdefListGrid.setSelectionModel( selectionModel,
                                               DefaultSelectionEventManager.<ProcessSummary>createCheckboxManager() );
-        
-        searchBox.addKeyUpHandler(new KeyUpHandler() {
-
-            @Override
-            public void onKeyUp(KeyUpEvent event) {
-                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32){
-                    displayNotification("Filter: |"+searchBox.getText()+"|");
-                    presenter.filterProcessList(searchBox.getText());
-                }
-                
-            }
-        });
-        
-        HTMLPanel span2 = new HTMLPanel(constants.Process_Definitions());
-        span2.setStyleName("span2");
-        processDefinitionsLabel.add(span2);
-        refreshIcon.setCustomIconStyle("icon-jbpm-refresh");
-        processDefinitionsLabel.add(refreshIcon);
 
         initTableColumns( selectionModel );
 
@@ -189,6 +171,27 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
 
     private void initTableColumns( final SelectionModel<ProcessSummary> selectionModel ) {
 
+        processdefListGrid.addCellPreviewHandler(new CellPreviewEvent.Handler<ProcessSummary>() {
+             
+             @Override
+             public void onCellPreview(final CellPreviewEvent<ProcessSummary> event) {
+
+                 if (BrowserEvents.CLICK.equalsIgnoreCase(event.getNativeEvent().getType())) {
+                    int column = event.getColumn();
+                    int columnCount = processdefListGrid.getColumnCount();
+                    if(column != columnCount - 1){
+                        ProcessSummary process = event.getValue();
+                        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Definitions With Details" );
+                        System.out.println("ProcessDefinitionListViewImpl - Process Definition ID: "+process.getId());
+                        placeRequestImpl.addParameter( "processId", process.getId() );
+                        placeRequestImpl.addParameter( "deploymentId", process.getDeploymentId() );
+                        placeManager.goTo(placeRequestImpl);
+                    }
+                 }
+
+             }
+          });
+        
         // Process Name String.
         Column<ProcessSummary, String> processNameColumn = new Column<ProcessSummary, String>( new TextCell() ) {
             @Override

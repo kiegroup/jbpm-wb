@@ -177,4 +177,12 @@ public interface Constants extends Messages {
 
     String Process_Variable_History();
 
+    String Process_Definitions_Refreshed();
+
+    String Options();
+
+    String Definition_Details();
+
+    String New_Instance();
+
 }
