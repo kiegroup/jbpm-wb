@@ -17,7 +17,6 @@
 package org.jbpm.console.ng.pr.client.editors.definition.list;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 import java.util.List;
 import javax.enterprise.context.Dependent;
@@ -28,6 +27,7 @@ import com.google.gwt.view.client.ListDataProvider;
 import java.util.ArrayList;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 
 import org.jboss.errai.bus.client.api.ErrorCallback;
 import org.jboss.errai.bus.client.api.Message;
@@ -54,7 +54,9 @@ public class ProcessDefinitionListPresenter {
 
         void displayNotification(String text);
 
-        TextBox getSearchBox();
+        String getCurrentFilter();
+        
+        void setCurrentFilter(String filter);
 
         DataGrid<ProcessSummary> getDataGrid();
 
@@ -73,7 +75,11 @@ public class ProcessDefinitionListPresenter {
     private Caller<DeploymentManagerEntryPoint> deploymentManager;
 
     @Inject
-    Event<ProcessInstanceCreated> processInstanceCreatedEvents;
+    private Event<ProcessInstanceCreated> processInstanceCreatedEvents;
+    
+    @Inject 
+    private Event<ClearSearchEvent> clearSearchEvent;
+    
     private ListDataProvider<ProcessSummary> dataProvider = new ListDataProvider<ProcessSummary>();
 
     private Constants constants = GWT.create(Constants.class);
@@ -98,7 +104,8 @@ public class ProcessDefinitionListPresenter {
             @Override
             public void callback(List<ProcessSummary> processes) {
                 currentProcesses = processes;
-                filterProcessList(view.getSearchBox().getText());
+                filterProcessList(view.getCurrentFilter());
+                clearSearchEvent.fire(new ClearSearchEvent());
             }
         }).getProcesses();
     }
@@ -165,6 +172,17 @@ public class ProcessDefinitionListPresenter {
     @OnReveal
     public void onReveal() {
         refreshProcessList();
+    }
+    
+     public void onSearch(@Observes final ProcessDefinitionsSearchEvent searchFilter){
+         view.setCurrentFilter(searchFilter.getFilter());
+         dataServices.call(new RemoteCallback<List<ProcessSummary>>() {
+            @Override
+            public void callback(List<ProcessSummary> processes) {
+                currentProcesses = processes;
+                filterProcessList(view.getCurrentFilter());
+            }
+        }).getProcesses();
     }
 
 }

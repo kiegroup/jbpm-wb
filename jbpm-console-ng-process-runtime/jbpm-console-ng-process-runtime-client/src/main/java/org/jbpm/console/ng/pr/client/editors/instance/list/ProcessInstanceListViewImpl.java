@@ -87,10 +87,9 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
 
     private ProcessInstanceListPresenter presenter;
 
-    @Inject
-    @DataField
-    public TextBox searchBox;
 
+    private String currentFilter = "";
+    
     @Inject
     @DataField
     public FlowPanel listContainer;
@@ -136,8 +135,12 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         
     }
 
-    public TextBox getSearchBox() {
-        return searchBox;
+    public String getCurrentFilter() {
+        return currentFilter;
+    }
+
+    public void setCurrentFilter(String currentFilter) {
+        this.currentFilter = currentFilter;
     }
     
     @Override

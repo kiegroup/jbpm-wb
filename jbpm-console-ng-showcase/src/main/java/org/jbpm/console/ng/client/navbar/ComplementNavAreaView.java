@@ -16,17 +16,22 @@
 
 package org.jbpm.console.ng.client.navbar;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RequiresResize;
+import javax.enterprise.event.Observes;
 import org.jbpm.console.ng.client.AppResource;
 import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
@@ -55,8 +60,17 @@ public class ComplementNavAreaView
     @UiField
     public FlowPanel contextMenuArea;
 
+    @UiField
+    public Button searchButton;
+    
+    @UiField
+    public TextBox searchTextBox;
+    
     @Inject
     private PespectiveContextMenusPresenter contextMenu;
+    
+    @Inject
+    private ContextualSearch contextualSearch;
 
     @PostConstruct
     public void init() {

@@ -37,14 +37,37 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 @ApplicationScoped
 @WorkbenchPerspective(identifier = "Deployments", isDefault = false)
 public class DeploymentListPerspective {
-
+    
+    
+    @Inject
+    private ContextualSearch contextualSearch;
+    
+    @Inject
+    private Event<DeploymentsSearchEvent> searchEvents;
+    
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_STATIC);
-        p.setName( "Deployments" );
-        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Deployments List" ) ) );
-        p.setTransient( true );
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.SIMPLE);
+        p.setName("Deployments");
+        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Deployments List")));
+        p.setTransient(true);
         return p;
     }
+    
+    @OnStart
+    public void init() {
+        contextualSearch.setSearchBehavior(new SearchBehavior() {
+            private String searchFilter;
+            @Override
+            public void execute() {
+                searchEvents.fire(new DeploymentsSearchEvent(this.searchFilter));
+            }
 
+            @Override
+            public void setSearchFilter(String searchFilter) {
+                this.searchFilter = searchFilter;
+            }
+        });
+        
+    }
 }

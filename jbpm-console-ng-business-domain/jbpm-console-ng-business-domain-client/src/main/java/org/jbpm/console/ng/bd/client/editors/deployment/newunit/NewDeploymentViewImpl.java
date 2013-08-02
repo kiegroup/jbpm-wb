@@ -17,12 +17,13 @@
 package org.jbpm.console.ng.bd.client.editors.deployment.newunit;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.ControlLabel;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -89,7 +90,7 @@ public class NewDeploymentViewImpl extends Composite implements NewDeploymentPre
     
     @Inject
     @DataField
-    public Label advancedLabel;
+    public ControlLabel advancedLabel;
 
     @Inject
     @DataField
@@ -123,7 +124,7 @@ public class NewDeploymentViewImpl extends Composite implements NewDeploymentPre
         versionLabel.setText( constants.Version() );
         kbaseNameLabel.setText( constants.KieBaseName() );
         kieSessionNameLabel.setText( constants.KieSessionName() );
-        advancedLabel.setText(constants.KIE_Configurations());
+        advancedLabel.add(new HTMLPanel(constants.KIE_Configurations()));
 
         strategyLabel.setText(constants.Strategy());
         strategyListBox.addItem( "Singleton", "SINGLETON" );

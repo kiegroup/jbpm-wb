@@ -27,7 +27,6 @@ import javax.inject.Inject;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.Heading;
 import com.github.gwtbootstrap.client.ui.SimplePager;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
@@ -39,8 +38,6 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
@@ -82,10 +79,8 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
 
     private ProcessDefinitionListPresenter presenter;
 
-    @Inject
-    @DataField
-    public TextBox searchBox;
-
+    private String currentFilter = "";
+    
     @Inject
     public IconAnchor refreshIcon;
 
@@ -112,6 +107,14 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
     private Event<ProcessDefSelectionEvent> processSelection;
     private ListHandler<ProcessSummary> sortHandler;
 
+    public String getCurrentFilter() {
+        return currentFilter;
+    }
+
+    public void setCurrentFilter(String currentFilter) {
+        this.currentFilter = currentFilter;
+    }
+
     
     
     @Override
@@ -122,7 +125,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
             @Override
             public void onClick( ClickEvent event ) {
                 presenter.refreshProcessList();
-                searchBox.setText("");
+                currentFilter = "";
             }
         } );
 
@@ -281,10 +284,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
         return sortHandler;
     }
 
-    public TextBox getSearchBox() {
-        return searchBox;
-    }
-
+  
     @Override
     public void showBusyIndicator( final String message ) {
         BusyPopup.showMessage( message );

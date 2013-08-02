@@ -16,7 +16,6 @@
 
 package org.jbpm.console.ng.bd.client.editors.deployment.list;
 
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 
 import javax.annotation.PostConstruct;
@@ -27,6 +26,8 @@ import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import java.util.ArrayList;
 import java.util.List;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 
 import org.jboss.errai.bus.client.api.ErrorCallback;
 import org.jboss.errai.bus.client.api.Message;
@@ -36,12 +37,20 @@ import org.jbpm.console.ng.bd.model.events.DeploymentsSearchEvent;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
+import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
 
 import org.uberfire.client.annotations.OnReveal;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
 @WorkbenchScreen(identifier = "Deployments List")
@@ -55,10 +64,16 @@ public class DeploymentUnitsListPresenter {
 
         void hideBusyIndicator();
 
-        TextBox getSearchBox();
-        
-    }
+        String getCurrentFilter();
 
+        void setCurrentFilter(String filter);
+    }
+    
+    @Inject
+    private PlaceManager placeManager;
+    
+    private Menus menus;
+    
     @Inject
     private DeploymentUnitsListView view;
 
@@ -70,7 +85,12 @@ public class DeploymentUnitsListPresenter {
     private ListDataProvider<KModuleDeploymentUnitSummary> dataProvider = new ListDataProvider<KModuleDeploymentUnitSummary>();
 
     private List<KModuleDeploymentUnitSummary> currentDeployedUnits;
+    
+    @Inject 
+    private Event<ClearSearchEvent> clearSearchEvent;
+    
     public DeploymentUnitsListPresenter() {
+        makeMenuBar();
     }
 
     @WorkbenchPartTitle
@@ -136,11 +156,13 @@ public class DeploymentUnitsListPresenter {
     }
 
     public void refreshDeployedUnits() {
+        
         deploymentManager.call(new RemoteCallback<List<KModuleDeploymentUnitSummary>>() {
             @Override
             public void callback(List<KModuleDeploymentUnitSummary> units) {
                 currentDeployedUnits = units;
-                filterDeployedUnits(view.getSearchBox().getText());
+                filterDeployedUnits(view.getCurrentFilter());
+                clearSearchEvent.fire(new ClearSearchEvent());
             }
         }).getDeploymentUnits();
 
@@ -161,6 +183,46 @@ public class DeploymentUnitsListPresenter {
     @OnReveal
     public void onReveal() {
         refreshDeployedUnits();
+    }
+    
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return menus;
+    }
+    
+    private void makeMenuBar() {
+        menus = MenuFactory
+                .newTopLevelMenu( constants.New_Deployment_Unit())
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "New Deployment" );
+                        placeManager.goTo( placeRequestImpl );
+                    }
+                } )
+                .endMenu()
+                .newTopLevelMenu( constants.Refresh() )
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        refreshDeployedUnits();
+                        view.setCurrentFilter("");
+                        view.displayNotification("Deployment Units Refreshed");
+                    }
+                } )
+                .endMenu().build();
+
+    }
+    
+    public void onSearchEvent(@Observes final DeploymentsSearchEvent searchEvent){
+        view.setCurrentFilter(searchEvent.getFilter());
+        deploymentManager.call(new RemoteCallback<List<KModuleDeploymentUnitSummary>>() {
+            @Override
+            public void callback(List<KModuleDeploymentUnitSummary> units) {
+                currentDeployedUnits = units;
+                filterDeployedUnits(view.getCurrentFilter());
+            }
+        }).getDeploymentUnits();
     }
 
 }

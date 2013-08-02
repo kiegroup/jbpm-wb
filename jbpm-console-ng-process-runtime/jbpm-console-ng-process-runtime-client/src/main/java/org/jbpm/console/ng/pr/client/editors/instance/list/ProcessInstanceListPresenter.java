@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.pr.client.editors.instance.list;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -24,7 +23,6 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
@@ -39,6 +37,7 @@ import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -64,14 +63,9 @@ public class ProcessInstanceListPresenter {
         DataGrid<ProcessInstanceSummary> getDataGrid();
 
         String getCurrentFilter();
-
+        
         void setCurrentFilter(String filter);
-
-        NavLink getShowAllLink();
-
-        NavLink getShowCompletedLink();
-
-        NavLink getShowAbortedLink();
+    }
 
         NavLink getShowRelatedToMeLink();
 
@@ -95,7 +89,8 @@ public class ProcessInstanceListPresenter {
     private ListDataProvider<ProcessInstanceSummary> dataProvider = new ListDataProvider<ProcessInstanceSummary>();
     private Constants constants = GWT.create(Constants.class);
     private List<ProcessInstanceSummary> currentProcessInstances;
-    @Inject
+    
+    @Inject 
     private Event<ClearSearchEvent> clearSearchEvent;
 
     @WorkbenchPartTitle
