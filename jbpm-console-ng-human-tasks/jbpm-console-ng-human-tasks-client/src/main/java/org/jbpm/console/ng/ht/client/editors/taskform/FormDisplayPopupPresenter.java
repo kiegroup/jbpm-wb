@@ -46,8 +46,8 @@ import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
-import org.uberfire.client.annotations.OnReveal;
-import org.uberfire.client.annotations.OnStart;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
@@ -57,7 +57,6 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
-import org.uberfire.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
@@ -165,8 +164,8 @@ public class FormDisplayPopupPresenter {
         publishGetFormValues();
     }
 
-    @OnStart
-    public void onStart(final PlaceRequest place) {
+    @OnStartup
+    public void onStartup(final PlaceRequest place) {
         this.place = place;
     }
     
@@ -573,8 +572,8 @@ public class FormDisplayPopupPresenter {
         return params;
     }
 
-    @OnReveal
-    public void onReveal() {
+    @OnOpen
+    public void onOpen() {
         long taskId = Long.parseLong(place.getParameter("taskId", "-1").toString());
         String processId = place.getParameter("processId", "none").toString();
         String domainId = place.getParameter("domainId", "none").toString();

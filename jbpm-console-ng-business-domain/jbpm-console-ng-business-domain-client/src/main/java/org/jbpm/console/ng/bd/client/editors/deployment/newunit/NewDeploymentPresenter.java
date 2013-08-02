@@ -31,8 +31,8 @@ import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 import org.jbpm.console.ng.bd.model.events.DeployedUnitChangedEvent;
 import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
-import org.uberfire.client.annotations.OnReveal;
-import org.uberfire.client.annotations.OnStart;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
@@ -81,8 +81,8 @@ public class NewDeploymentPresenter {
     @Inject
     private PlaceManager placeManager;
 
-    @OnStart
-    public void onStart( final PlaceRequest place ) {
+    @OnStartup
+    public void onStartup( final PlaceRequest place ) {
         this.place = place;
     }
 
@@ -126,8 +126,8 @@ public class NewDeploymentPresenter {
        }).deploy(new KModuleDeploymentUnitSummary("", group, artifact, version, kbaseName, kieSessionName, strategy));
     }
 
-    @OnReveal
-    public void onReveal() {
+    @OnOpen
+    public void onOpen() {
         view.getGroupText().setFocus( true );
 
     }

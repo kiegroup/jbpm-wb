@@ -29,8 +29,8 @@ import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
-import org.uberfire.client.annotations.OnReveal;
-import org.uberfire.client.annotations.OnStart;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
@@ -80,8 +80,8 @@ public class ProcessDiagramPopupPresenter {
 
     private PlaceRequest place;
 
-    @OnStart
-    public void onStart( final PlaceRequest place ) {
+    @OnStartup
+    public void onStartup( final PlaceRequest place ) {
         this.place = place;
     }
 
@@ -113,8 +113,8 @@ public class ProcessDiagramPopupPresenter {
 
     }
 
-    @OnReveal
-    public void onReveal() {
+    @OnOpen
+    public void onOpen() {
         String processDefinitionId = place.getParameter( "processDefId", "" ).toString();
         Long processInstanceId = Long.parseLong( place.getParameter( "processInstanceId", "0" ).toString() );
         String packageName = place.getParameter( "processPackage", "" ).toString();

@@ -67,7 +67,7 @@ public class DomainPresenter {
     }
     
     @OnStart
-    public void onStart(final PlaceRequest place) {
+    public void onStartup(final PlaceRequest place) {
         this.place = place;
     }
 

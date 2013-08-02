@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import org.jbpm.console.ng.pr.model.events.ProcessDefinitionsSearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
-import org.uberfire.client.annotations.OnStart;
+import org.uberfire.lifecycle.OnStartup;
 
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -74,8 +74,8 @@ public class ProcessDefinitionsSplitPerspective {
         return p;
     }
     
-    @OnStart
-    public void onStart(final PlaceRequest place) {
+    @OnStartup
+    public void onStartup(final PlaceRequest place) {
         this.selectedProcessId = place.getParameter( "processId", "" );
         this.selectedProcessDeploymentId= place.getParameter( "deploymentId", "none" );
         contextualSearch.setSearchBehavior(new SearchBehavior() {
