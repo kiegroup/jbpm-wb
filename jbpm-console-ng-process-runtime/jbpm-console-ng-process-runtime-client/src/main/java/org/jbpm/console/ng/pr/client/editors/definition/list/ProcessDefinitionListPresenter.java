@@ -38,7 +38,7 @@ import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
-import org.jbpm.console.ng.pr.client.events.ProcessDefinitionsSearchEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessDefinitionsSearchEvent;
 import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.WorkbenchMenu;

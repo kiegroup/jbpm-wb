@@ -18,7 +18,7 @@ package org.jbpm.console.ng.pr.client.perspectives;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import org.jbpm.console.ng.pr.client.events.ProcessDefinitionsSearchEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessDefinitionsSearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
 import org.uberfire.client.annotations.OnStart;
@@ -62,7 +62,6 @@ public class ProcessDefinitionsSplitPerspective {
         final PanelDefinition east = new PanelDefinitionImpl(PanelType.MULTI_LIST);
         east.setWidth( 500 );
         east.setMinWidth( 400 );
-        
         
         DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Process Definition Details" );
         defaultPlaceRequest.addParameter( "processId", selectedProcessId );

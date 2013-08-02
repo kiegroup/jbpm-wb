@@ -188,7 +188,6 @@ public class ProcessDefDetailsPresenter {
     public void onReveal() {
         String processId = place.getParameter( "processId", "" );
         view.getProcessIdText().setText( processId );
-        System.out.println("Presenter Def Details - Process Definition ID: "+processId);
         String deploymentId = place.getParameter( "deploymentId", "none" );
         view.getDeploymentIdText().setText( deploymentId );
 
@@ -244,7 +243,7 @@ public class ProcessDefDetailsPresenter {
         menuItems.add( MenuFactory.newSimpleItem( constants.View_Process_Instances()).respondsWith( new Command() {
             @Override
             public void execute() {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instance List" );
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instances" );
                 placeRequestImpl.addParameter( "processName", view.getProcessNameText().getText() );
                 placeManager.goTo( placeRequestImpl );
             }

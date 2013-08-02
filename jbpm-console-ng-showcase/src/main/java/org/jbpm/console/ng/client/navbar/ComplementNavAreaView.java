@@ -35,6 +35,7 @@ import javax.enterprise.event.Observes;
 import org.jbpm.console.ng.client.AppResource;
 import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
+import org.kie.workbench.common.widgets.client.search.SetSearchTextEvent;
 import org.uberfire.client.workbench.widgets.menu.PespectiveContextMenusPresenter;
 
 /**
@@ -93,6 +94,10 @@ public class ComplementNavAreaView
     
     public void onClearSearchBox(@Observes ClearSearchEvent clearSearch){
         searchTextBox.setText("");
+    }
+    
+    public void onSetSearchText(@Observes SetSearchTextEvent setSearchText){
+        searchTextBox.setText(setSearchText.getSearchText());
     }
 
 }

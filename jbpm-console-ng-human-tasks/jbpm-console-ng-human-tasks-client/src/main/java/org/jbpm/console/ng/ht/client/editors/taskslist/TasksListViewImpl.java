@@ -312,20 +312,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             }
         } );
         
-      
-//                
-//        searchBox.addKeyUpHandler(new KeyUpHandler() {
-//
-//            @Override
-//            public void onKeyUp(KeyUpEvent event) {
-//                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32){
-//                    displayNotification("Filter: |"+searchBox.getText()+"|");
-//                    filterTasks(searchBox.getText());
-//                }
-//                
-//            }
-//        });
-
         
         refreshTasks();
     }

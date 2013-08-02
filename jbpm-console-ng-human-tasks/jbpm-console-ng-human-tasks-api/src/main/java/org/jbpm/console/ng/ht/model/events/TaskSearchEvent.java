@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.pr.client.events;
+package org.jbpm.console.ng.ht.model.events;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
@@ -22,14 +22,14 @@ import org.jboss.errai.common.client.api.annotations.Portable;
  * @author salaboy
  */
 @Portable
-public class ProcessInstancesSearchEvent {
+public class TaskSearchEvent {
     private String filter;
 
-    public ProcessInstancesSearchEvent() {
+    public TaskSearchEvent(String filter) {
+        this.filter = filter;
     }
 
-    public ProcessInstancesSearchEvent(String filter) {
-        this.filter = filter;
+    public TaskSearchEvent() {
     }
 
     public String getFilter() {

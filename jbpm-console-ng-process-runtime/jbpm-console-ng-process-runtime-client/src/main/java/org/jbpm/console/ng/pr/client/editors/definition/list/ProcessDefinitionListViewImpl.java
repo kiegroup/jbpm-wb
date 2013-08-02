@@ -169,7 +169,6 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
                     if(column != columnCount - 1){
                         ProcessSummary process = event.getValue();
                         PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Definitions With Details" );
-                        System.out.println("ProcessDefinitionListViewImpl - Process Definition ID: "+process.getId());
                         placeRequestImpl.addParameter( "processId", process.getId() );
                         placeRequestImpl.addParameter( "deploymentId", process.getDeploymentId() );
                         placeManager.goTo(placeRequestImpl);

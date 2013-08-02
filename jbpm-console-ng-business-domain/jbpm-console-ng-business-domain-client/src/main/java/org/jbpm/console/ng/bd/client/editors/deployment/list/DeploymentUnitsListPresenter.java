@@ -33,7 +33,7 @@ import org.jboss.errai.bus.client.api.ErrorCallback;
 import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.client.events.DeploymentsSearchEvent;
+import org.jbpm.console.ng.bd.model.events.DeploymentsSearchEvent;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;

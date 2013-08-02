@@ -18,13 +18,15 @@ package org.jbpm.console.ng.pr.client.perspectives;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import org.jbpm.console.ng.pr.client.events.ProcessInstancesSearchEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessInstancesSearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
+import org.kie.workbench.common.widgets.client.search.SetSearchTextEvent;
 import org.uberfire.client.annotations.OnStart;
 
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.PanelType;
 import org.uberfire.workbench.model.PerspectiveDefinition;
@@ -41,6 +43,9 @@ public class ProcessInstancesPerspective {
     @Inject
     private Event<ProcessInstancesSearchEvent> searchEvents;
     
+    @Inject
+    private Event<SetSearchTextEvent> setSearchTextEvents;
+    
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_LIST);
@@ -51,7 +56,8 @@ public class ProcessInstancesPerspective {
     }
     
     @OnStart
-    public void init() {
+    public void onStart(final PlaceRequest place) {
+            
         contextualSearch.setSearchBehavior(new SearchBehavior() {
             @Override
             public void execute(String searchFilter) {
@@ -60,6 +66,8 @@ public class ProcessInstancesPerspective {
 
             
         });
+        String processName = place.getParameter( "processName", "" );
+        setSearchTextEvents.fire(new SetSearchTextEvent(processName));
         
     }
 
