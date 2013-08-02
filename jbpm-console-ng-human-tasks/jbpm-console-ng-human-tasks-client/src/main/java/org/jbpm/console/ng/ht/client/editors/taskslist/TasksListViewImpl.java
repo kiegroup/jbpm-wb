@@ -111,13 +111,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     @DataField
     public NavLink weekViewTasksNavLink;
     
-    @Inject
-    @DataField
-    public TextBox searchBox;
-
-    @Inject
-    @DataField
-    public NavLink createQuickTaskNavLink;
 
     @Inject
     @DataField
@@ -136,8 +129,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     public NavLink showActiveTasksNavLink;
 
     
-    @DataField
-    public Heading taskListViewLabel = new Heading(4);
+   
 
     @Inject
     @DataField
@@ -159,11 +151,11 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     private TaskType currentTaskType = TaskType.ACTIVE;
     
+    private String currentFilter = "";
+    
     @Inject
     private Event<TaskSelectionEvent> taskSelection;
 
-    @Inject
-    public IconAnchor refreshIcon;
     
     private Set<TaskSummary> selectedTasks;
     private ListHandler<TaskSummary> sortHandler;
@@ -177,16 +169,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     @Override
     public void init( final TasksListPresenter presenter ) {
         this.presenter = presenter;
-        
-        refreshIcon.setTitle( constants.Refresh() );
-        refreshIcon.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                refreshTasks();
-                searchBox.setText("");
-                displayNotification( constants.Tasks_Refreshed() );
-            }
-        } );
+
         
         taskListMultiDayBox.init();
         taskListMultiDayBox.setPresenter( presenter );
@@ -270,14 +253,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
         });
 
-        createQuickTaskNavLink.setText( constants.New_Task() );
-        createQuickTaskNavLink.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Quick New Task" );
-                placeManager.goTo( placeRequestImpl );
-            }
-        } );
 
         // Filters
         showPersonalTasksNavLink.setText( constants.Personal() );
@@ -408,6 +383,29 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         presenter.refreshTasks( currentDate, currentView, currentTaskType );
     }
 
+    public Date getCurrentDate() {
+        return currentDate;
+    }
+
+    public TaskView getCurrentView() {
+        return currentView;
+    }
+
+    public TaskType getCurrentTaskType() {
+        return currentTaskType;
+    }
+
+    public String getCurrentFilter() {
+        return currentFilter;
+    }
+
+    public void setCurrentFilter(String currentFilter) {
+        this.currentFilter = currentFilter;
+    }
+
+    
+    
+    
     @Override
     public TaskListMultiDayBox getTaskListMultiDayBox() {
         return taskListMultiDayBox;
@@ -418,9 +416,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         return selectionModel;
     }
 
-    public TextBox getSearchBox() {
-        return searchBox;
-    }
     
      private void initTableColumns(final SelectionModel<TaskSummary> selectionModel) {
         // Checkbox column. This table will uses a checkbox column for selection.

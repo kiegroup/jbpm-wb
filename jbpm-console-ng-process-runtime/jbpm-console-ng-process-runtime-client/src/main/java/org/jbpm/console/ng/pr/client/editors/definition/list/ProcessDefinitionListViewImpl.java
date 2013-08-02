@@ -25,9 +25,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.Heading;
 import com.github.gwtbootstrap.client.ui.SimplePager;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
@@ -36,16 +34,15 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -81,8 +78,6 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
 
     private String currentFilter = "";
     
-    @Inject
-    public IconAnchor refreshIcon;
 
     @Inject
     @DataField
@@ -94,9 +89,6 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
 
     public SimplePager pager;
 
-    
-    @DataField
-    public Heading processDefinitionsLabel = new Heading(4);
 
     private Set<ProcessSummary> selectedProcessDef;
 
@@ -120,14 +112,6 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
     @Override
     public void init( final ProcessDefinitionListPresenter presenter ) {
         this.presenter = presenter;
-        refreshIcon.setTitle( constants.Refresh());
-        refreshIcon.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                presenter.refreshProcessList();
-                currentFilter = "";
-            }
-        } );
 
         listContainer.add( processdefListGrid );
         pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);

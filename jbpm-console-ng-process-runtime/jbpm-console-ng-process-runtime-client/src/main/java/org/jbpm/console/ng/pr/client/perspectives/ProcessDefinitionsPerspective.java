@@ -46,7 +46,7 @@ public class ProcessDefinitionsPerspective {
     
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.SIMPLE);
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_LIST);
         p.setName( "Process Definitions" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Process Definition List" ) ) );
         p.setTransient( true );
@@ -56,16 +56,12 @@ public class ProcessDefinitionsPerspective {
     @OnStart
     public void init() {
         contextualSearch.setSearchBehavior(new SearchBehavior() {
-            private String searchFilter;
-            @Override
-            public void execute() {
-                searchEvents.fire(new ProcessDefinitionsSearchEvent(this.searchFilter));
-            }
 
             @Override
-            public void setSearchFilter(String searchFilter) {
-                this.searchFilter = searchFilter;
+            public void execute(String searchFilter) {
+                searchEvents.fire(new ProcessDefinitionsSearchEvent(searchFilter));
             }
+ 
         });
         
     }

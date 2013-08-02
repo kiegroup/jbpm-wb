@@ -23,6 +23,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.NavLink;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
@@ -40,11 +41,13 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
@@ -65,6 +68,14 @@ public class ProcessInstanceListPresenter {
         String getCurrentFilter();
         
         void setCurrentFilter(String filter);
+        
+        NavLink getShowAllLink();
+        
+        NavLink getShowCompletedLink();
+        
+        NavLink getShowAbortedLink();
+        
+        NavLink getShowRelatedToMeLink();
     }
 
         NavLink getShowRelatedToMeLink();
@@ -104,6 +115,7 @@ public class ProcessInstanceListPresenter {
     }
 
     public ProcessInstanceListPresenter() {
+        makeMenuBar();
     }
 
     @PostConstruct
@@ -272,6 +284,30 @@ public class ProcessInstanceListPresenter {
                 view.displayNotification(constants.Process_Instances_Refreshed());
             }
         })
+                .endMenu().build();
+
+    }
+    
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return menus;
+    }
+    
+    private void makeMenuBar() {
+        menus = MenuFactory
+                .newTopLevelMenu( constants.Refresh() )
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        view.getShowAllLink().setStyleName( "active" );
+                        view.getShowCompletedLink().setStyleName( "" );
+                        view.getShowAbortedLink().setStyleName( "" );
+                        view.getShowRelatedToMeLink().setStyleName( "" );
+                        refreshActiveProcessList();
+                        view.setCurrentFilter("");
+                        view.displayNotification( constants.Process_Instances_Refreshed() );
+                    }
+                } )
                 .endMenu().build();
 
     }

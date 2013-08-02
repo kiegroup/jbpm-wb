@@ -16,7 +16,6 @@
 
 package org.jbpm.console.ng.pr.client.editors.definition.details;
 
-import com.github.gwtbootstrap.client.ui.Heading;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -24,12 +23,11 @@ import javax.inject.Inject;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
@@ -82,23 +80,6 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
     @DataField
     public TextBox deploymentIdText;
 
-    @Inject
-    public IconAnchor refreshIcon;
-
-    @Inject
-    @DataField
-    public NavLink viewProcessInstancesButton;
-
-    @Inject
-    @DataField
-    public NavLink createProcessInstanceButton;
-
-    @Inject
-    @DataField
-    public NavLink openProcessDesignerButton;
-
-    @DataField
-    public Heading processDetailsLabel = new Heading(4);
 
     @Inject
     @DataField
@@ -174,54 +155,9 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
         subprocessListLabel.setText( constants.SubProcesses() );
         processDataListLabel.setText( constants.Process_Variables() );
 
-        refreshIcon.setTitle( constants.Refresh() );
-        refreshIcon.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                presenter.refreshProcessDef( processNameText.getText() );
-                displayNotification( constants.Process_Definition_Details_Refreshed() );
-            }
-        } );
-        
-        HTMLPanel span3 = new HTMLPanel(constants.Process_Definition_Details());
-        span3.setStyleName("span3");
-        processDetailsLabel.add(span3);
-        refreshIcon.setCustomIconStyle("icon-jbpm-refresh");
-        processDetailsLabel.add(refreshIcon);
-        
-        viewProcessInstancesButton.setText( constants.View_Process_Instances() );
-        createProcessInstanceButton.setText( constants.New_Process_Instance() );
-        openProcessDesignerButton.setText( constants.View_Process_Model() );
 
     }
 
-    @EventHandler("createProcessInstanceButton")
-    public void createProcessInstance( ClickEvent e ) {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display" );
-        placeRequestImpl.addParameter( "processId", processIdText.getText() );
-        placeRequestImpl.addParameter( "domainId", deploymentIdText.getText() );
-        placeManager.goTo( placeRequestImpl );
-    }
-
-    @EventHandler("viewProcessInstancesButton")
-    public void viewProcessInstancesButton( ClickEvent e ) {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instance List" );
-        placeRequestImpl.addParameter( "processName", processNameText.getText() );
-        placeManager.goTo( placeRequestImpl );
-
-    }
-
-    @EventHandler("openProcessDesignerButton")
-    public void openProcessDesignerButton( ClickEvent e ) {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Designer" );
-
-        if ( encodedProcessSource != null ) {
-            placeRequestImpl.addParameter( "readOnly", "true" );
-            placeRequestImpl.addParameter( "encodedProcessSource", encodedProcessSource );
-        }
-        placeManager.goTo( processAssetPath, placeRequestImpl );
-
-    }
 
     @Override
     public TextBox getProcessNameText() {
@@ -277,5 +213,17 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
     public TextBox getProcessIdText() {
         return processIdText;
     }
+
+    public Path getProcessAssetPath() {
+        return processAssetPath;
+    }
+
+    public String getEncodedProcessSource() {
+        return encodedProcessSource;
+    }
+    
+    
+    
+    
 
 }

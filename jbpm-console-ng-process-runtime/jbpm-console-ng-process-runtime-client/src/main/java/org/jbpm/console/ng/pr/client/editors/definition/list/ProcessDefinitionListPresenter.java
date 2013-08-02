@@ -41,10 +41,14 @@ import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
 import org.jbpm.console.ng.pr.model.events.ProcessDefinitionsSearchEvent;
 import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
 import org.uberfire.client.annotations.OnReveal;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.mvp.Command;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Definition List")
@@ -64,6 +68,8 @@ public class ProcessDefinitionListPresenter {
 
         void hideBusyIndicator();
     }
+    
+    private Menus menus;
 
     @Inject
     private ProcessDefinitionListView view;
@@ -97,6 +103,7 @@ public class ProcessDefinitionListPresenter {
     }
 
     public ProcessDefinitionListPresenter() {
+        makeMenuBar();
     }
 
     public void refreshProcessList() {
@@ -185,4 +192,41 @@ public class ProcessDefinitionListPresenter {
         }).getProcesses();
     }
 
+     
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return menus;
+    }
+    
+    private void makeMenuBar() {
+        menus = MenuFactory
+//                .newTopLevelMenu( constants.Options())
+//                .withItems( null )
+//                .endMenu()
+                .newTopLevelMenu( constants.Refresh() )
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        refreshProcessList();
+                        view.setCurrentFilter("");
+                        view.displayNotification(constants.Process_Definitions_Refreshed());
+                    }
+                } )
+                .endMenu().
+                build();
+
+    }
+    
+//    private List<MenuItem> getOptions(){
+//        
+//        
+//        MenuFactory.newSimpleItem( description ).respondsWith( new Command() {
+//                    @Override
+//                    public void execute() {
+//                        newResourcePresenter.show( activeHandler );
+//                    }
+//                } 
+//    
+//    }
+     
 }

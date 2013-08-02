@@ -47,7 +47,7 @@ public class DeploymentListPerspective {
     
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.SIMPLE);
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_LIST);
         p.setName("Deployments");
         p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Deployments List")));
         p.setTransient(true);
@@ -57,16 +57,11 @@ public class DeploymentListPerspective {
     @OnStart
     public void init() {
         contextualSearch.setSearchBehavior(new SearchBehavior() {
-            private String searchFilter;
             @Override
-            public void execute() {
-                searchEvents.fire(new DeploymentsSearchEvent(this.searchFilter));
+            public void execute(String searchFilter) {
+                searchEvents.fire(new DeploymentsSearchEvent(searchFilter));
             }
 
-            @Override
-            public void setSearchFilter(String searchFilter) {
-                this.searchFilter = searchFilter;
-            }
         });
         
     }

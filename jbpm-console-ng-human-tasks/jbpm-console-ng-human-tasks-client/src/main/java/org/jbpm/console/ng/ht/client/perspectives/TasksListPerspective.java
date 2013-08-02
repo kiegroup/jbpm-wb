@@ -38,13 +38,31 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 @WorkbenchPerspective(identifier = "Tasks", isDefault = false)
 public class TasksListPerspective {
 
+    @Inject
+    private ContextualSearch contextualSearch;
+    
+    @Inject
+    private Event<TaskSearchEvent> searchEvents;
+    
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( PanelType.ROOT_STATIC );
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( PanelType.ROOT_LIST );
         p.setName( "Tasks" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Tasks List" ) ) );
         p.setTransient( true );
         return p;
+    }
+    
+    @OnStart
+    public void init() {
+        contextualSearch.setSearchBehavior(new SearchBehavior() {
+            @Override
+            public void execute(String searchFilter) {
+                searchEvents.fire(new TaskSearchEvent(searchFilter));
+            }
+           
+        });
+        
     }
 
 }

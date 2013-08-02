@@ -25,6 +25,8 @@ import javax.inject.Inject;
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
+
+import java.util.ArrayList;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -36,12 +38,18 @@ import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.MenuItem;
+import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Definition Details")
@@ -72,8 +80,14 @@ public class ProcessDefDetailsPresenter {
         void setProcessAssetPath( Path processAssetPath );
 
         void setEncodedProcessSource( String encodedProcessSource );
+        
+        Path getProcessAssetPath();
+        
+        String getEncodedProcessSource();
     }
-
+    
+    private Menus menus;
+    
     @Inject
     private PlaceManager placeManager;
 
@@ -87,6 +101,12 @@ public class ProcessDefDetailsPresenter {
     private Caller<VFSService> fileServices;
 
     private Constants constants = GWT.create( Constants.class );
+
+    public ProcessDefDetailsPresenter() {
+        makeMenuBar();
+    }
+    
+    
 
     @OnStart
     public void onStart( final PlaceRequest place ) {
@@ -223,7 +243,7 @@ public class ProcessDefDetailsPresenter {
         menuItems.add( MenuFactory.newSimpleItem( constants.View_Process_Instances()).respondsWith( new Command() {
             @Override
             public void execute() {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instances" );
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instance List" );
                 placeRequestImpl.addParameter( "processName", view.getProcessNameText().getText() );
                 placeManager.goTo( placeRequestImpl );
             }

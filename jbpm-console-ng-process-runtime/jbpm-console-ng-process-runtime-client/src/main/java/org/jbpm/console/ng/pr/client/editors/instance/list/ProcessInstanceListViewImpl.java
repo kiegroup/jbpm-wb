@@ -115,7 +115,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
     @DataField
     public NavLink fiterLabel;
 
-     @Inject
+    @Inject
     @DataField
     public DataGrid<ProcessInstanceSummary> processInstanceListGrid;
 
@@ -560,5 +560,23 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
             presenter.refreshActiveProcessList();
         }
     }
+
+    public NavLink getShowAllLink() {
+        return showAllLink;
+    }
+
+    public NavLink getShowCompletedLink() {
+        return showCompletedLink;
+    }
+
+    public NavLink getShowAbortedLink() {
+        return showAbortedLink;
+    }
+
+    public NavLink getShowRelatedToMeLink() {
+        return showRelatedToMeLink;
+    }
+    
+    
 
 }

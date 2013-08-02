@@ -41,12 +41,17 @@ import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.OnReveal;
 import org.uberfire.client.annotations.OnStart;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance Details")
@@ -85,8 +90,18 @@ public class ProcessInstanceDetailsPresenter {
         void setCurrentCompletedNodes( List<NodeInstanceSummary> completedNodes );
 
         void setEncodedProcessSource( String encodedProcessSource );
+        
+        List<NodeInstanceSummary> getCompletedNodes();
+        
+        Path getProcessAssetPath();
+        
+        String getEncodedProcessSource();
+        
+        List<NodeInstanceSummary> getActiveNodes();
     }
 
+    private Menus menus;
+    
     @Inject
     private PlaceManager placeManager;
 
@@ -100,6 +115,11 @@ public class ProcessInstanceDetailsPresenter {
     private Caller<VFSService> fileServices;
 
     private ListDataProvider<VariableSummary> dataProvider = new ListDataProvider<VariableSummary>();
+
+    public ProcessInstanceDetailsPresenter() {
+        makeMenuBar();
+    }
+
 
     public static final ProvidesKey<VariableSummary> KEY_PROVIDER = new ProvidesKey<VariableSummary>() {
         @Override
@@ -255,6 +275,64 @@ public class ProcessInstanceDetailsPresenter {
                 dataProvider.refresh();
             }
         } ).getVariablesCurrentState( Long.parseLong( processId ), processDefId );
+    }
+    
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return menus;
+    }
+    
+    private void makeMenuBar() {
+        menus = MenuFactory
+                .newTopLevelMenu( constants.View_Process_Model())
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        StringBuffer nodeParam = new StringBuffer();
+                        for ( NodeInstanceSummary activeNode : view.getActiveNodes() ) {
+                            nodeParam.append( activeNode.getNodeUniqueName() + "," );
+                        }
+                        if ( nodeParam.length() > 0 ) {
+                            nodeParam.deleteCharAt( nodeParam.length() - 1 );
+                        }
+
+                        StringBuffer completedNodeParam = new StringBuffer();
+                        for ( NodeInstanceSummary completedNode : view.getCompletedNodes() ) {
+                            if ( completedNode.isCompleted() ) {
+                                // insert outgoing sequence flow and node as this is for on entry event
+                                completedNodeParam.append( completedNode.getNodeUniqueName() + "," );
+                                completedNodeParam.append( completedNode.getConnection() + "," );
+                            } else if ( completedNode.getConnection() != null ) {
+                                // insert only incoming sequence flow as node id was already inserted
+                                completedNodeParam.append( completedNode.getConnection() + "," );
+                            }
+
+                        }
+                        completedNodeParam.deleteCharAt( completedNodeParam.length() - 1 );
+
+                        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Designer" );
+                        placeRequestImpl.addParameter( "activeNodes", nodeParam.toString() );
+                        placeRequestImpl.addParameter( "completedNodes", completedNodeParam.toString() );
+                        placeRequestImpl.addParameter( "readOnly", "true" );
+                        if ( view.getEncodedProcessSource() != null ) {
+                            placeRequestImpl.addParameter( "encodedProcessSource", view.getEncodedProcessSource() );
+                        }
+
+                        placeManager.goTo( view.getProcessAssetPath(), placeRequestImpl );
+                    }
+                } )
+                .endMenu()
+                .newTopLevelMenu( constants.Refresh() )
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        refreshProcessInstanceData( view.getProcessInstanceIdText().getText(), 
+                                view.getProcessDefinitionIdText().getText() );
+                        view.displayNotification( constants.Process_Instances_Details_Refreshed() );
+                    }
+                } )
+                .endMenu().build();
+
     }
 
 }
