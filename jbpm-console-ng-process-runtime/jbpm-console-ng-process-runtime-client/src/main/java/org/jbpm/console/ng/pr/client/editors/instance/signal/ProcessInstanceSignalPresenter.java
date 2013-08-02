@@ -27,8 +27,8 @@ import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.uberfire.client.annotations.OnReveal;
-import org.uberfire.client.annotations.OnStart;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
@@ -80,8 +80,8 @@ public class ProcessInstanceSignalPresenter {
 
     }
 
-    @OnStart
-    public void onStart( final PlaceRequest place ) {
+    @OnStartup
+    public void onStartup( final PlaceRequest place ) {
         this.place = place;
     }
 
@@ -106,8 +106,8 @@ public class ProcessInstanceSignalPresenter {
         } ).signalProcessInstance( processInstanceId, view.getSignalRefText(), view.getEventText() );
     }
 
-    @OnReveal
-    public void onReveal() {
+    @OnOpen
+    public void onOpen() {
         String processInstanceIds = place.getParameter( "processInstanceId", "-1" ).toString();
         String[] ids = processInstanceIds.split( "," );
         for ( String id : ids ) {

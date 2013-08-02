@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import org.jbpm.console.ng.ht.model.events.TaskSearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
-import org.uberfire.client.annotations.OnStart;
+import org.uberfire.lifecycle.OnStartup;
 
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -53,7 +53,7 @@ public class TasksListPerspective {
         return p;
     }
     
-    @OnStart
+    @OnStartup
     public void init() {
         contextualSearch.setSearchBehavior(new SearchBehavior() {
             @Override

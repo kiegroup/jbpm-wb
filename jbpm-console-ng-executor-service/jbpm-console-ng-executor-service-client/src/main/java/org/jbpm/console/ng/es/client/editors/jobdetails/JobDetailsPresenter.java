@@ -28,7 +28,7 @@ import org.jbpm.console.ng.es.model.RequestDetails;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
-import org.uberfire.client.annotations.OnStart;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
@@ -71,8 +71,8 @@ public class JobDetailsPresenter {
     public void init() {
     }
 
-    @OnStart
-    public void onStart( final PlaceRequest place ) {
+    @OnStartup
+    public void onStartup( final PlaceRequest place ) {
         this.requestId = Long.valueOf( place.getParameter( "requestId", "0" ) );
         this.executorServices.call( new RemoteCallback<RequestDetails>() {
             @Override

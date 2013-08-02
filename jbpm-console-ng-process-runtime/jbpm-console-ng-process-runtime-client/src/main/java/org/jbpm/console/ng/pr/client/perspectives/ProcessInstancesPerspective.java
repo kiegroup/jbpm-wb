@@ -22,7 +22,7 @@ import org.jbpm.console.ng.pr.model.events.ProcessInstancesSearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
 import org.kie.workbench.common.widgets.client.search.SetSearchTextEvent;
-import org.uberfire.client.annotations.OnStart;
+import org.uberfire.lifecycle.OnStartup;
 
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -55,8 +55,8 @@ public class ProcessInstancesPerspective {
         return p;
     }
     
-    @OnStart
-    public void onStart(final PlaceRequest place) {
+    @OnStartup
+    public void onStartup(final PlaceRequest place) {
             
         contextualSearch.setSearchBehavior(new SearchBehavior() {
             @Override

@@ -27,7 +27,7 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.ht.model.IdentitySummary;
-import org.uberfire.client.annotations.OnReveal;
+import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -86,8 +86,8 @@ public class IdentityListPresenter {
         dataProvider.refresh();
     }
 
-    @OnReveal
-    public void onReveal() {
+    @OnOpen
+    public void onOpen() {
         refreshIdentityList();
     }
 

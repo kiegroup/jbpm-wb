@@ -39,8 +39,8 @@ import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
-import org.uberfire.client.annotations.OnReveal;
-import org.uberfire.client.annotations.OnStart;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -208,13 +208,13 @@ public class ProcessInstanceListPresenter {
         dataProvider.refresh();
     }
 
-    @OnStart
-    public void onStart(final PlaceRequest place) {
+    @OnStartup
+    public void onStartup(final PlaceRequest place) {
         this.place = place;
     }
 
-    @OnReveal
-    public void onReveal() {
+    @OnOpen
+    public void onOpen() {
 
         this.currentProcessDefinition = place.getParameter("processName", "");
         view.setCurrentFilter(currentProcessDefinition);

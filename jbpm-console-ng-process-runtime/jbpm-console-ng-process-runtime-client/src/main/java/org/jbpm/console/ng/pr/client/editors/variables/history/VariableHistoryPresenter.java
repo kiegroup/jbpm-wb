@@ -30,8 +30,8 @@ import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.VariableSummary;
-import org.uberfire.client.annotations.OnReveal;
-import org.uberfire.client.annotations.OnStart;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
@@ -84,8 +84,8 @@ public class VariableHistoryPresenter {
 
     }
 
-    @OnStart
-    public void onStart( final PlaceRequest place ) {
+    @OnStartup
+    public void onStartup( final PlaceRequest place ) {
         this.place = place;
     }
 
@@ -99,8 +99,8 @@ public class VariableHistoryPresenter {
         return view;
     }
 
-    @OnReveal
-    public void onReveal() {
+    @OnOpen
+    public void onOpen() {
         view.setProcessInstanceId( Long.parseLong( place.getParameter( "processInstanceId", "-1" ).toString() ) );
         view.setVariableId( place.getParameter( "variableId", "-1" ).toString() );
 

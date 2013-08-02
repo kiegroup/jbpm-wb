@@ -24,7 +24,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import org.jbpm.console.ng.bh.client.i18n.Constants;
-import org.uberfire.client.annotations.OnReveal;
+import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -79,8 +79,8 @@ public class HomePresenter {
         placeManager.goTo( placeRequestImpl );
     }
 
-    @OnReveal
-    public void onReveal() {
+    @OnOpen
+    public void onOpen() {
 
     }
 

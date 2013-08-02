@@ -24,16 +24,13 @@ import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.dashboard.renderer.service.DashboardRendererService;
 import org.jbpm.dashboard.renderer.service.ConnectionStatus;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
-import org.uberfire.client.annotations.OnStart;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.UberView;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
 
 @Dependent
 @WorkbenchScreen(identifier = "DashboardPanel")
@@ -66,7 +63,7 @@ public class DashboardPanelPresenter {
         return view;
     }
 
-    @OnStart
+    @OnStartup
     public void isAppOnline() {
         final String dashboardUrl = DashboardURLBuilder.getDashboardURL(DASHBOARD_URL_PREFFIX, DASHBOARD_URL_SUFFIX, LocaleInfo.getCurrentLocale());
         GWT.log("URL for jBPM dashboard: " + dashboardUrl);

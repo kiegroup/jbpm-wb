@@ -40,7 +40,7 @@ import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
 import org.jbpm.console.ng.pr.model.events.ProcessDefinitionsSearchEvent;
 import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
-import org.uberfire.client.annotations.OnReveal;
+import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -176,8 +176,8 @@ public class ProcessDefinitionListPresenter {
         dataProvider.refresh();
     }
 
-    @OnReveal
-    public void onReveal() {
+    @OnOpen
+    public void onOpen() {
         refreshProcessList();
     }
     

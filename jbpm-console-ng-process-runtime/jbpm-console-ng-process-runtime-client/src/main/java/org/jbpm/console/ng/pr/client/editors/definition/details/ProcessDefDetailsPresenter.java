@@ -36,8 +36,8 @@ import org.jbpm.console.ng.pr.model.DummyProcessPath;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
-import org.uberfire.client.annotations.OnReveal;
-import org.uberfire.client.annotations.OnStart;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -108,8 +108,8 @@ public class ProcessDefDetailsPresenter {
     
     
 
-    @OnStart
-    public void onStart( final PlaceRequest place ) {
+    @OnStartup
+    public void onStartup( final PlaceRequest place ) {
         this.place = place;
     }
 
@@ -184,8 +184,8 @@ public class ProcessDefDetailsPresenter {
         } ).getProcessById( processId );
     }
 
-    @OnReveal
-    public void onReveal() {
+    @OnOpen
+    public void onOpen() {
         String processId = place.getParameter( "processId", "" );
         view.getProcessIdText().setText( processId );
         String deploymentId = place.getParameter( "deploymentId", "none" );

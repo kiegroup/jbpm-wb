@@ -39,8 +39,8 @@ import org.jbpm.console.ng.pr.model.VariableSummary;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
-import org.uberfire.client.annotations.OnReveal;
-import org.uberfire.client.annotations.OnStart;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -251,13 +251,13 @@ public class ProcessInstanceDetailsPresenter {
         dataProvider.refresh();
     }
 
-    @OnStart
-    public void onStart( final PlaceRequest place ) {
+    @OnStartup
+    public void onStartup( final PlaceRequest place ) {
         this.place = place;
     }
 
-    @OnReveal
-    public void onReveal() {
+    @OnOpen
+    public void onOpen() {
         String processInstanceId = place.getParameter( "processInstanceId", "" );
         String processDefId = place.getParameter( "processDefId", "" );
         view.getProcessInstanceIdText().setText( processInstanceId );
