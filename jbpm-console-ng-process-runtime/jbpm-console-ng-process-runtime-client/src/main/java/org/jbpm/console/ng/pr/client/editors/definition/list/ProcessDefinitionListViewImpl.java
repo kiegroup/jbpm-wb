@@ -149,18 +149,6 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
 
         processdefListGrid.setSelectionModel( selectionModel,
                                               DefaultSelectionEventManager.<ProcessSummary>createCheckboxManager() );
-        
-//        searchBox.addKeyUpHandler(new KeyUpHandler() {
-//
-//            @Override
-//            public void onKeyUp(KeyUpEvent event) {
-//                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32){
-//                    displayNotification("Filter: |"+searchBox.getText()+"|");
-//                    presenter.filterProcessList(searchBox.getText());
-//                }
-//                
-//            }
-//        });
 
         initTableColumns( selectionModel );
 
@@ -181,6 +169,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
                     if(column != columnCount - 1){
                         ProcessSummary process = event.getValue();
                         PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Definitions With Details" );
+                        System.out.println("ProcessDefinitionListViewImpl - Process Definition ID: "+process.getId());
                         placeRequestImpl.addParameter( "processId", process.getId() );
                         placeRequestImpl.addParameter( "deploymentId", process.getDeploymentId() );
                         placeManager.goTo(placeRequestImpl);

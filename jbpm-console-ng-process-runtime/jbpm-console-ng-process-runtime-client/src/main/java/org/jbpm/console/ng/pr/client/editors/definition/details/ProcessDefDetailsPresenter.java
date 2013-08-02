@@ -115,7 +115,7 @@ public class ProcessDefDetailsPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.Process_Definition_Details();
+        return constants.Definition_Details();
     }
 
     @WorkbenchPartView
@@ -188,7 +188,7 @@ public class ProcessDefDetailsPresenter {
     public void onReveal() {
         String processId = place.getParameter( "processId", "" );
         view.getProcessIdText().setText( processId );
-
+        System.out.println("Presenter Def Details - Process Definition ID: "+processId);
         String deploymentId = place.getParameter( "deploymentId", "none" );
         view.getDeploymentIdText().setText( deploymentId );
 
@@ -202,7 +202,7 @@ public class ProcessDefDetailsPresenter {
     
     private void makeMenuBar() {
         menus = MenuFactory
-                .newTopLevelMenu( constants.New_Process_Instance()).respondsWith(new Command() {
+                .newTopLevelMenu( constants.New_Instance()).respondsWith(new Command() {
                         @Override
                         public void execute() {
                             PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display" );

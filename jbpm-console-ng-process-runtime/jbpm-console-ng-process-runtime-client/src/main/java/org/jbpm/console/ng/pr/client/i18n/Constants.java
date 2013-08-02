@@ -181,4 +181,8 @@ public interface Constants extends Messages {
 
     String Options();
 
+    String Definition_Details();
+
+    String New_Instance();
+
 }
