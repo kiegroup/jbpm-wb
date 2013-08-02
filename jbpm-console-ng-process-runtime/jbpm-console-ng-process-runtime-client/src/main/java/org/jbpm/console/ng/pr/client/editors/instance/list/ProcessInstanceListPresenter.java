@@ -76,10 +76,7 @@ public class ProcessInstanceListPresenter {
         NavLink getShowAbortedLink();
         
         NavLink getShowRelatedToMeLink();
-    }
-
-        NavLink getShowRelatedToMeLink();
-
+    
         DataGrid<ProcessInstanceSummary> getProcessInstanceListGrid();
 
         Set<ProcessInstanceSummary> getSelectedProcessInstances();
@@ -288,29 +285,7 @@ public class ProcessInstanceListPresenter {
 
     }
     
-    @WorkbenchMenu
-    public Menus getMenus() {
-        return menus;
-    }
     
-    private void makeMenuBar() {
-        menus = MenuFactory
-                .newTopLevelMenu( constants.Refresh() )
-                .respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        view.getShowAllLink().setStyleName( "active" );
-                        view.getShowCompletedLink().setStyleName( "" );
-                        view.getShowAbortedLink().setStyleName( "" );
-                        view.getShowRelatedToMeLink().setStyleName( "" );
-                        refreshActiveProcessList();
-                        view.setCurrentFilter("");
-                        view.displayNotification( constants.Process_Instances_Refreshed() );
-                    }
-                } )
-                .endMenu().build();
-
-    }
 
     private List<? extends MenuItem> getBulkActions() {
         List<MenuItem> bulkActions = new ArrayList<MenuItem>(2);
