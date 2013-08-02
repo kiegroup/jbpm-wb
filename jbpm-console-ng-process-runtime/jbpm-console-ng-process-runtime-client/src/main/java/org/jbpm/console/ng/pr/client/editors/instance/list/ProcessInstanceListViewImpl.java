@@ -114,27 +114,9 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
 
     @Inject
     @DataField
-    public IconAnchor signalIcon;
-
-    @Inject
-    @DataField
-    public IconAnchor abortIcon;
-
-    @Inject
-    public IconAnchor refreshIcon;
-
-    @Inject
-    @DataField
     public NavLink fiterLabel;
 
      @Inject
-    @DataField
-    public NavLink bulkLabel;
-    
-    @DataField
-    public Heading processInstanceLabel = new Heading(4);
-
-    @Inject
     @DataField
     public DataGrid<ProcessInstanceSummary> processInstanceListGrid;
 
@@ -171,7 +153,6 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
 
         processInstanceListGrid.setHeight( "350px" );
         fiterLabel.setText( constants.Showing() );
-        bulkLabel.setText( constants.Bulk_Actions());
         showAllLink.setText( constants.Active() );
         showAllLink.setStyleName( "active" );
         showAllLink.addClickHandler( new ClickHandler() {
@@ -218,79 +199,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
                 presenter.refreshRelatedToMeProcessList();
             }
         } );
-
-        signalIcon.setTitle( constants.Bulk_Signal() );
-
-        signalIcon.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                StringBuffer processIdsParam = new StringBuffer();
-                if ( selectedProcessInstances != null ) {
-
-                    for ( ProcessInstanceSummary selected : selectedProcessInstances ) {
-                        if ( selected.getState() != ProcessInstance.STATE_ACTIVE ) {
-                            displayNotification( constants.Signaling_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
-                                                         + ")" );
-                            continue;
-                        }
-                        processIdsParam.append( selected.getId() + "," );
-                        processInstanceListGrid.getSelectionModel().setSelected( selected, false );
-                    }
-                    // remove last ,
-                    if ( processIdsParam.length() > 0 ) {
-                        processIdsParam.deleteCharAt( processIdsParam.length() - 1 );
-                    }
-                } else {
-                    processIdsParam.append( "-1" );
-                }
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Signal Process Popup" );
-                placeRequestImpl.addParameter( "processInstanceId", processIdsParam.toString() );
-
-                placeManager.goTo( placeRequestImpl );
-                displayNotification( constants.Signaling_Process_Instance() );
-            }
-        } );
-
-        abortIcon.setTitle( "Bulk Abort" );
-        abortIcon.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                if ( selectedProcessInstances != null ) {
-
-                    for ( ProcessInstanceSummary selected : selectedProcessInstances ) {
-                        if ( selected.getState() != ProcessInstance.STATE_ACTIVE ) {
-                            displayNotification( constants.Aborting_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
-                                                         + ")" );
-                            continue;
-                        }
-
-                        presenter.abortProcessInstance( selected.getProcessId(), selected.getId() );
-                        processInstanceListGrid.getSelectionModel().setSelected( selected, false );
-                        displayNotification( constants.Aborting_Process_Instance() + "(id=" + selected.getId() + ")" );
-                    }
-                }
-            }
-        } );
-
-        refreshIcon.setTitle( constants.Refresh() );
-        refreshIcon.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                showAllLink.setStyleName( "active" );
-                showCompletedLink.setStyleName( "" );
-                showAbortedLink.setStyleName( "" );
-                showRelatedToMeLink.setStyleName( "" );
-                presenter.refreshActiveProcessList();
-                searchBox.setText("");
-                displayNotification( constants.Process_Instances_Refreshed() );
-            }
-        } );
-        
-        HTMLPanel span2 = new HTMLPanel(constants.Process_Instances());
-        span2.setStyleName("span2");
-        processInstanceLabel.add(span2);
-        refreshIcon.setCustomIconStyle("icon-jbpm-refresh");
-        processInstanceLabel.add(refreshIcon);
+ 
         // Set the message to display when the table is empty.
         Label emptyTable = new Label( constants.No_Process_Instances_Found() );
         emptyTable.setStyleName( "" );
@@ -319,18 +228,6 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
 
         processInstanceListGrid.setSelectionModel( selectionModel,
                                                    DefaultSelectionEventManager.<ProcessInstanceSummary>createCheckboxManager() );
-        
-        searchBox.addKeyUpHandler(new KeyUpHandler() {
-
-            @Override
-            public void onKeyUp(KeyUpEvent event) {
-                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32){
-                    displayNotification("Filter: |"+searchBox.getText()+"|");
-                    presenter.filterProcessList(searchBox.getText());
-                }
-                
-            }
-        });
 
         initTableColumns( selectionModel );
 
@@ -338,6 +235,15 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
 
     }
 
+    public DataGrid<ProcessInstanceSummary> getProcessInstanceListGrid() {
+        return processInstanceListGrid;
+    }
+
+    public Set<ProcessInstanceSummary> getSelectedProcessInstances() {
+        return selectedProcessInstances;
+    }
+
+    
 
     private void initTableColumns( final SelectionModel<ProcessInstanceSummary> selectionModel ) {
         // Checkbox column. This table will uses a checkbox column for selection.

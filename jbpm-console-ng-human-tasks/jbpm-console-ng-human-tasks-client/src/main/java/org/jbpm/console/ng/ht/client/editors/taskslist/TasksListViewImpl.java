@@ -335,24 +335,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             }
         } );
         
-        HTMLPanel span2 = new HTMLPanel(constants.Tasks_List());
-        span2.setStyleName("span2");
-        taskListViewLabel.add(span2);
-        refreshIcon.setCustomIconStyle("icon-jbpm-refresh");
-        taskListViewLabel.add(refreshIcon);
-                
-        searchBox.addKeyUpHandler(new KeyUpHandler() {
-
-            @Override
-            public void onKeyUp(KeyUpEvent event) {
-                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32){
-                    displayNotification("Filter: |"+searchBox.getText()+"|");
-                    filterTasks(searchBox.getText());
-                }
-                
-            }
-        });
-
         
         refreshTasks();
     }

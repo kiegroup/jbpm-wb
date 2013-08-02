@@ -185,4 +185,6 @@ public interface Constants extends Messages {
 
     String New_Instance();
 
+    String Bulk_Abort();
+
 }

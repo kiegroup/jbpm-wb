@@ -200,9 +200,10 @@ public class TaskBox extends Composite {
             focusPanel.addClickHandler( new ClickHandler() {
                 @Override
                 public void onClick( ClickEvent event ) {
-                    List<Long> tasks = new ArrayList<Long>( 1 );
-                    tasks.add( taskId );
-                    presenter.completeTasks( tasks, identity.getName() );
+                    PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
+                    placeRequestImpl.addParameter("taskId", Long.toString(taskId));
+
+                    placeManager.goTo(placeRequestImpl);
                     event.stopPropagation();
                 }
             } );

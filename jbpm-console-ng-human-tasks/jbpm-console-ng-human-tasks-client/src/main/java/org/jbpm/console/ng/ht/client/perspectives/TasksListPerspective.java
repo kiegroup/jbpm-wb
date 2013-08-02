@@ -16,6 +16,12 @@
 package org.jbpm.console.ng.ht.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import org.jbpm.console.ng.ht.model.events.TaskSearchEvent;
+import org.kie.workbench.common.widgets.client.search.ContextualSearch;
+import org.kie.workbench.common.widgets.client.search.SearchBehavior;
+import org.uberfire.client.annotations.OnStart;
 
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;

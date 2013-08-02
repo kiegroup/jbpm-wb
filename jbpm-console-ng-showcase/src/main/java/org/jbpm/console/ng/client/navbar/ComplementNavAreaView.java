@@ -28,6 +28,9 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import org.jbpm.console.ng.client.AppResource;
+import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
+import org.kie.workbench.common.widgets.client.search.ContextualSearch;
+import org.kie.workbench.common.widgets.client.search.SetSearchTextEvent;
 import org.uberfire.client.workbench.widgets.menu.PespectiveContextMenusPresenter;
 
 /**
@@ -68,6 +71,19 @@ public class ComplementNavAreaView
         int height = getParent().getOffsetHeight();
         int width = getParent().getOffsetWidth();
 //        panel.setPixelSize( width, height );
+    }
+    
+    @UiHandler("searchButton")
+    public void search(ClickEvent e){
+        contextualSearch.getSearchBehavior().execute(searchTextBox.getText());
+    }
+    
+    public void onClearSearchBox(@Observes ClearSearchEvent clearSearch){
+        searchTextBox.setText("");
+    }
+    
+    public void onSetSearchText(@Observes SetSearchTextEvent setSearchText){
+        searchTextBox.setText(setSearchText.getSearchText());
     }
 
 }

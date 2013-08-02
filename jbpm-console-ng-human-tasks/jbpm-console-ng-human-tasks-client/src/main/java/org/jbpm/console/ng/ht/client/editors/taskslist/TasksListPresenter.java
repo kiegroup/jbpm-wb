@@ -36,6 +36,8 @@ import com.google.gwt.user.datepicker.client.CalendarUtil;
 import java.util.HashMap;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
+import org.jbpm.console.ng.ht.model.events.TaskSearchEvent;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.util.DateRange;
 import org.jbpm.console.ng.ht.client.util.DateUtils;

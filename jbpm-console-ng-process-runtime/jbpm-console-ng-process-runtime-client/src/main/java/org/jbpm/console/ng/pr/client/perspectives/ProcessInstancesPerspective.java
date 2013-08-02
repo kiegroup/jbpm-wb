@@ -16,9 +16,17 @@
 package org.jbpm.console.ng.pr.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import org.jbpm.console.ng.pr.model.events.ProcessInstancesSearchEvent;
+import org.kie.workbench.common.widgets.client.search.ContextualSearch;
+import org.kie.workbench.common.widgets.client.search.SearchBehavior;
+import org.kie.workbench.common.widgets.client.search.SetSearchTextEvent;
+import org.uberfire.client.annotations.OnStart;
 
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.PanelType;
 import org.uberfire.workbench.model.PerspectiveDefinition;
@@ -29,6 +37,15 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 @WorkbenchPerspective(identifier = "Process Instances", isDefault = false)
 public class ProcessInstancesPerspective {
 
+    @Inject
+    private ContextualSearch contextualSearch;
+    
+    @Inject
+    private Event<ProcessInstancesSearchEvent> searchEvents;
+    
+    @Inject
+    private Event<SetSearchTextEvent> setSearchTextEvents;
+    
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_STATIC);
@@ -36,6 +53,22 @@ public class ProcessInstancesPerspective {
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Process Instance List" ) ) );
         p.setTransient( true );
         return p;
+    }
+    
+    @OnStart
+    public void onStart(final PlaceRequest place) {
+            
+        contextualSearch.setSearchBehavior(new SearchBehavior() {
+            @Override
+            public void execute(String searchFilter) {
+                searchEvents.fire(new ProcessInstancesSearchEvent(searchFilter));
+            }
+
+            
+        });
+        String processName = place.getParameter( "processName", "" );
+        setSearchTextEvents.fire(new SetSearchTextEvent(processName));
+        
     }
 
 }
