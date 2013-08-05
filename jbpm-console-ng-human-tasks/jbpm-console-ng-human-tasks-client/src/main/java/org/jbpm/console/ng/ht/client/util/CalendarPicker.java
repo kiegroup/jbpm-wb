@@ -55,7 +55,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
     private FlowPanel mainPanel = new FlowPanel();
     private FlowPanel calendarPanel = new FlowPanel();
     private FlowPanel iconPanel = new FlowPanel();
-    
+
     private FlowPanel rightPanel = new FlowPanel();
     private FlowPanel controlsPanel = new FlowPanel();
 
@@ -119,30 +119,36 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
      * @param back flag that indicates if the date should be adjusted to future (+) or back (-)
      */
     private void adjustDate(boolean back) {
-        int dayDiff = 0;
         switch (viewType) {
             case DAY:
-                dayDiff = 1;
+                if (back) {
+                    CalendarUtil.addDaysToDate(currentDate, -1);
+                } else {
+                    CalendarUtil.addDaysToDate(currentDate, 1);
+                }
                 break;
 
             case WEEK:
-                dayDiff = 7;
+                if (back) {
+                    CalendarUtil.addDaysToDate(currentDate, -7);
+                } else {
+                    CalendarUtil.addDaysToDate(currentDate, 7);
+                }
+
                 break;
 
             case MONTH:
-                Date nextMonthSameDate = new Date(currentDate.getTime());
-                CalendarUtil.addMonthsToDate(nextMonthSameDate, 1);
-                dayDiff = CalendarUtil.getDaysBetween(currentDate, nextMonthSameDate);
+                if (back) {
+                    currentDate = DateUtils.getSameOrClosestDateInPreviousMonth(currentDate);
+                } else {
+                    currentDate = DateUtils.getSameOrClosestDateInNextMonth(currentDate);
+                }
+
                 break;
             case GRID:
-                dayDiff = 0;
+                // no date change needed
                 break;
 
-        }
-        if (back) {
-            CalendarUtil.addDaysToDate(currentDate, -dayDiff);
-        } else {
-            CalendarUtil.addDaysToDate(currentDate, dayDiff);
         }
         propagateDateChanges();
     }
@@ -155,7 +161,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
 
     /**
      * Updates the label text based on current view type and current date.
-     *
+     * <p/>
      * Examples for day, week and month:
      * <ul>
      * <li>day view: 2013-05-02
@@ -223,7 +229,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
                 calendarPanel.add(dateBox);
                 dateBox.show();
                 dateBox.removeFromParent();
-                
+
                 calendarPanel.add(calendarLabel);
             }
         });
@@ -260,7 +266,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
     /**
      * Determines if 'today' is within the currently displayed date range (e.g. week or month). If it is, the 'Today' button is
      * disabled, otherwise its enabled.
-     *
+     * <p/>
      * Clicking on "Today" button when current day (today) is already displayed is useless, so its better to disable the button.
      */
     private void updateTodayButtonEnabled() {

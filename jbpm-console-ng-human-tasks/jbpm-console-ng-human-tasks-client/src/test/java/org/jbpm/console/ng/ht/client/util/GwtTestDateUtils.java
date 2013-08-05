@@ -26,6 +26,11 @@ import com.google.gwt.junit.client.GWTTestCase;
 
 public class GwtTestDateUtils extends GWTTestCase {
 
+    @Override
+    public String getModuleName() {
+        return "org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksClient";
+    }
+
     @Test
     @SuppressWarnings("deprecation")
     public void testCreateDateWithDefaultFormat() {
@@ -100,17 +105,17 @@ public class GwtTestDateUtils extends GWTTestCase {
     public void testIsDateInRange() {
         // single day in range
         Date date = createDate("2013-05-15");
-        DateRange dateRange = new DateRange(createDate("2013-05-15"), createDate("2013-05-15"),0);
+        DateRange dateRange = new DateRange(createDate("2013-05-15"), createDate("2013-05-15"), 0);
         assertTrue(DateUtils.isDateInRange(date, dateRange));
 
         // start date same as specified
         date = createDate("2013-05-15");
-        dateRange = new DateRange(createDate("2013-05-15"), createDate("2014-05-19"),0);
+        dateRange = new DateRange(createDate("2013-05-15"), createDate("2014-05-19"), 0);
         assertTrue(DateUtils.isDateInRange(date, dateRange));
 
         // end date same as specified
         date = createDate("2013-05-15");
-        dateRange = new DateRange(createDate("2013-05-13"), createDate("2013-05-15"),0);
+        dateRange = new DateRange(createDate("2013-05-13"), createDate("2013-05-15"), 0);
         assertTrue(DateUtils.isDateInRange(date, dateRange));
     }
 
@@ -160,9 +165,45 @@ public class GwtTestDateUtils extends GWTTestCase {
         assertFalse(DateUtils.areDatesEqual(date1, date2));
     }
 
-    @Override
-    public String getModuleName() {
-        return "org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksClient";
+    @Test
+    public void testGetSameOrClosestDateInPreviousMonth() {
+        getAndAssertSameOrClosestDateInPreviousMonth(createDate("2013-02-28"), createDate("2013-01-28"));
+        getAndAssertSameOrClosestDateInPreviousMonth(createDate("2013-06-15"), createDate("2013-05-15"));
+        // corner cases
+        getAndAssertSameOrClosestDateInPreviousMonth(createDate("2013-03-31"), createDate("2013-02-28"));
+        getAndAssertSameOrClosestDateInPreviousMonth(createDate("2013-03-30"), createDate("2013-02-28"));
+        getAndAssertSameOrClosestDateInPreviousMonth(createDate("2013-03-29"), createDate("2013-02-28"));
+        getAndAssertSameOrClosestDateInPreviousMonth(createDate("2013-05-31"), createDate("2013-04-30"));
+        // leap-year
+        getAndAssertSameOrClosestDateInPreviousMonth(createDate("2016-03-31"), createDate("2016-02-29"));
+        getAndAssertSameOrClosestDateInPreviousMonth(createDate("2016-03-30"), createDate("2016-02-29"));
+        getAndAssertSameOrClosestDateInPreviousMonth(createDate("2016-03-29"), createDate("2016-02-29"));
+    }
+
+    @Test
+    public void testGetSameOrClosestDateInNextMonth() {
+        getAndAssertSameOrClosestDateInNextMonth(createDate("2013-01-12"), createDate("2013-02-12"));
+        getAndAssertSameOrClosestDateInNextMonth(createDate("2013-12-01"), createDate("2014-01-01"));
+        getAndAssertSameOrClosestDateInNextMonth(createDate("2013-01-28"), createDate("2013-02-28"));
+        // corner cases
+        getAndAssertSameOrClosestDateInNextMonth(createDate("2013-01-29"), createDate("2013-02-28"));
+        getAndAssertSameOrClosestDateInNextMonth(createDate("2013-01-30"), createDate("2013-02-28"));
+        getAndAssertSameOrClosestDateInNextMonth(createDate("2013-01-31"), createDate("2013-02-28"));
+        getAndAssertSameOrClosestDateInNextMonth(createDate("2013-03-31"), createDate("2013-04-30"));
+        // leap-year
+        getAndAssertSameOrClosestDateInNextMonth(createDate("2016-01-29"), createDate("2016-02-29"));
+        getAndAssertSameOrClosestDateInNextMonth(createDate("2016-01-30"), createDate("2016-02-29"));
+        getAndAssertSameOrClosestDateInNextMonth(createDate("2016-01-31"), createDate("2016-02-29"));
+    }
+
+    private void getAndAssertSameOrClosestDateInNextMonth(Date date, Date expectedDate) {
+        Date resultDate = DateUtils.getSameOrClosestDateInNextMonth(date);
+        assertTrue("Expected " + expectedDate + ", got " + resultDate, DateUtils.areDatesEqual(resultDate, expectedDate));
+    }
+
+    private void getAndAssertSameOrClosestDateInPreviousMonth(Date date, Date expectedDate) {
+        Date resultDate = DateUtils.getSameOrClosestDateInPreviousMonth(date);
+        assertTrue("Expected " + expectedDate + ", got " + resultDate, DateUtils.areDatesEqual(resultDate, expectedDate));
     }
 
 }

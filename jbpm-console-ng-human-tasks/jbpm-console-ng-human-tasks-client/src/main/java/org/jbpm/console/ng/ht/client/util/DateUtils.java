@@ -29,7 +29,6 @@ public class DateUtils {
      * Creates new {@link Date} object using default format - "yyyy-MM-dd" (e.g. 2013-04-25).
      *
      * @param dateString string representation of date
-     *
      * @return new {@link Date} create from string representation
      */
     public static Date createDate(String dateString) {
@@ -99,7 +98,7 @@ public class DateUtils {
         CalendarUtil.addMonthsToDate(endDate, 1);
         CalendarUtil.addDaysToDate(endDate, -1);
         endDate.setHours(0);
-        
+
         return new DateRange(startDate, endDate, CalendarUtil.getDaysBetween(startDate, endDate));
     }
 
@@ -108,7 +107,6 @@ public class DateUtils {
      *
      * @param date the date to test
      * @param dateRange date range to be tested with
-     *
      * @return true if the date is within the range, otherwise false
      */
     public static boolean isDateInRange(Date date, DateRange dateRange) {
@@ -138,11 +136,36 @@ public class DateUtils {
      *
      * @param firstDate first date
      * @param secondDate second date
-     *
      * @return true if the dates have identical year, month and day
      */
     public static boolean areDatesEqual(Date firstDate, Date secondDate) {
         return compareDates(firstDate, secondDate) == 0;
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Date getSameOrClosestDateInPreviousMonth(Date date) {
+        Date desiredDate = new Date(date.getTime());
+        CalendarUtil.addMonthsToDate(desiredDate, -1);
+        if (desiredDate.getMonth() == date.getMonth()) {
+            // did not go one month back
+            // e.g. 31 May -> 1st May, because April does not have 31st and thus the day is set to 1st May
+            CalendarUtil.setToFirstDayOfMonth(desiredDate);
+            CalendarUtil.addDaysToDate(desiredDate, -1);
+        }
+        return desiredDate;
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Date getSameOrClosestDateInNextMonth(Date date) {
+        Date desiredDate = new Date(date.getTime());
+        CalendarUtil.addMonthsToDate(desiredDate, 1);
+        if (desiredDate.getMonth() > date.getMonth() + 1) {
+            // skipped one month, e.g. 30 January -> 2nd (or 1st for leap-year) March, because February does not have 30th
+            // set the date to last day of previous month
+            CalendarUtil.setToFirstDayOfMonth(desiredDate);
+            CalendarUtil.addDaysToDate(desiredDate, -1);
+        }
+        return desiredDate;
     }
 
 }
