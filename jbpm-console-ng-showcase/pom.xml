@@ -255,13 +255,13 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-ui</artifactId>
-      <version>${errai.version}</version>
+      <version>${version.org.jboss.errai}</version>
     </dependency>
 
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-data-binding</artifactId>
-      <version>${errai.version}</version>
+      <version>${version.org.jboss.errai}</version>
     </dependency>
 
     <!-- CDI Development Utils -->
