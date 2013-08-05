@@ -347,9 +347,15 @@
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
     </dependency>
+    <!-- it's needed for hosted mode only and will be filtered out by assembly-->
     <dependency>
       <groupId>org.codehaus.btm</groupId>
       <artifactId>btm</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-shared-services</artifactId>
+      <classifier>btm</classifier>
     </dependency>
 
     <!--Miscellaneous -->
