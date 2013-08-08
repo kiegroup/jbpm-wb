@@ -12,6 +12,7 @@
   <packaging>maven-archetype</packaging>
 
   <name>jBPM Console NG - Module Archetype</name>
+  <description>jBPM Console NG Module Archetype</description>
 
   <build>
     <extensions>
@@ -36,41 +37,4 @@
       </plugins>
     </pluginManagement>
   </build>
-
-  <description>jBPM Console NG Module Archetype</description>
-
-
-  <developers>
-    <developer>
-      <name>All developers are listed on the team website</name>
-      <url>http://www.jboss.org/drools/team</url>
-    </developer>
-  </developers>
-
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-
-  <scm>
-    <connection>scm:git:git@github.com:droolsjbpm/droolsjbpm-build-bootstrap.git/jbpm-console-ng/jbpm-console-ng-human-tasks</connection>
-    <developerConnection>scm:git:git@github.com:droolsjbpm/droolsjbpm-build-bootstrap.git/jbpm-console-ng/jbpm-console-ng-human-tasks</developerConnection>
-    <url>https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/jbpm-console-ng/jbpm-console-ng-human-tasks</url>
-  </scm>
-
-  <distributionManagement>
-    <repository>
-      <id>jboss-releases-repository</id>
-      <name>JBoss Releases Repository</name>
-      <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
-    </repository>
-    <snapshotRepository>
-      <id>jboss-snapshots-repository</id>
-      <name>JBoss Snapshot Repository</name>
-      <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
-    </snapshotRepository>
-  </distributionManagement>
 </project>
