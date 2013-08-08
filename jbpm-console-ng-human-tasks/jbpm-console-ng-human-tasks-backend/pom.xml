@@ -30,7 +30,6 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.kie</groupId>
@@ -47,17 +46,14 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-human-task-core</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-form-services</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-kie-services</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -173,14 +169,13 @@
       <artifactId>arquillian-container-test-api</artifactId>
       <scope>test</scope>
     </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-form-modeler-api</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-business-domain-api</artifactId>
-          <version>${project.version}</version>
-      </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-business-domain-api</artifactId>
+    </dependency>
   </dependencies>
 </project>

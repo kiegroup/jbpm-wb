@@ -83,7 +83,6 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-dashboard-api</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
 
