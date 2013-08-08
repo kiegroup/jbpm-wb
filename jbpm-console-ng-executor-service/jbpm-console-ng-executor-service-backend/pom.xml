@@ -32,13 +32,11 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-executor-service-api</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-executor</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
     <dependency>

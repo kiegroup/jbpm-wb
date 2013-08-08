@@ -33,7 +33,6 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-business-domain-api</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
     <dependency>
@@ -91,8 +90,6 @@
     <dependency>
       <groupId>org.kie.workbench.widgets</groupId>
       <artifactId>kie-wb-common-ui</artifactId>
-      <version>6.1.0-SNAPSHOT</version>
-      <type>jar</type>
     </dependency>
   </dependencies>
 

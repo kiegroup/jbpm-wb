@@ -33,30 +33,25 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-business-domain-api</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-process-runtime-api</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-process-runtime-backend</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-human-tasks-backend</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-kie-services</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
     <dependency>

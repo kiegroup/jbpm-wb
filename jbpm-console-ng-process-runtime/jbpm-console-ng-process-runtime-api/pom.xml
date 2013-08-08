@@ -41,7 +41,6 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-kie-services</artifactId>
-      <version>${project.version}</version>
     </dependency>
   </dependencies>
 
