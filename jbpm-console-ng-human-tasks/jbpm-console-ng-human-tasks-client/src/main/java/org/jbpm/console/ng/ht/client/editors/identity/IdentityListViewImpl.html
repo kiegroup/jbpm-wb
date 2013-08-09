@@ -1,17 +1,29 @@
 <div class="container-fluid">
-  <br />
-  <div class="row-fluid">
-    <form class="form-search">
-      <input type="text" class="search-query" id="filterUserText" data-field="filterUserText" />
-      <button class="btn" id="filterUserButton" data-field="filterUserButton">Filter</button>
-    </form>
-  </div>
-  <div class="row-fluid">
-    <div data-field="listContainer">
+	<br />
+	<div class="row-fluid">
+		<div class="span9">
+			<div class="navbar-form pull-left">
+				<div class="controls">
+					<select data-field="identityTypesList" id="identityTypesList"></select>
+				</div>
+			</div>
+		</div>
+		<div class="span3 pull-right">
+			<form class="form-search">
+				<input type="text" class="search-query" id="filterUserText"
+					data-field="filterUserText" />
+				<button class="btn" id="filterUserButton"
+					data-field="filterUserButton">Filter</button>
+			</form>
+		</div>
+	</div>
+	<div class="row-fluid">
+		<div data-field="listContainer">
 
-      <table id="identityListGrid" data-field="identityListGrid" class="table table-bordered table-striped table-hover"></table>
-      <div id="pager" class="pagination" data-field="pager"></div>
+			<table id="identityListGrid" data-field="identityListGrid"
+				class="table table-bordered table-striped table-hover"></table>
+			<div id="pager" class="pagination" data-field="pager"></div>
 
-    </div>
-  </div>
+		</div>
+	</div>
 </div>

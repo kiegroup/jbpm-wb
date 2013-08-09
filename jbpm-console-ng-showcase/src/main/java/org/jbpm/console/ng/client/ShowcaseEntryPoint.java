@@ -96,6 +96,7 @@ public class ShowcaseEntryPoint {
                 .newTopLevelMenu( constants.Process_Management() ).withItems( getProcessMGMTViews() ).endMenu()
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu().newTopLevelMenu( constants.Dashboards() )
                     .withItems( getDashboardsViews() ).endMenu()
+                .newTopLevelMenu( constants.Settings() ).withItems( getSettingsViews() ).endMenu()
                 .newTopLevelMenu( constants.User()+": "+identity.getName() ).position(MenuPosition.RIGHT).withItems( getRoles() ).endMenu()
                 .build();
 
@@ -207,6 +208,20 @@ public class ShowcaseEntryPoint {
         return result;
     }
 
+    private List<? extends MenuItem> getSettingsViews() {
+        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
+
+        result.add( MenuFactory.newSimpleItem( constants.Users() ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "Identity" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+
+
+        return result;
+    }
+    
     private AbstractWorkbenchPerspectiveActivity getDefaultPerspectiveActivity() {
         AbstractWorkbenchPerspectiveActivity defaultPerspective = null;
         final Collection<IOCBeanDef<AbstractWorkbenchPerspectiveActivity>> perspectives = iocManager

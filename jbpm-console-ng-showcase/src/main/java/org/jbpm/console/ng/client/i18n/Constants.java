@@ -64,6 +64,10 @@ public interface Constants extends Messages {
     String Role();
 
     String User();
+    
+    String Settings();
+    
+    String Users();
 
     String Jobs();
 
