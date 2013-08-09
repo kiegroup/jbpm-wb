@@ -31,9 +31,10 @@ import org.jbpm.console.ng.es.model.RequestDetails;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
-import org.jbpm.executor.api.CommandContext;
-import org.jbpm.executor.entities.RequestInfo;
-import org.jbpm.executor.entities.STATUS;
+import org.kie.internal.executor.api.CommandContext;
+import org.kie.internal.executor.api.ExecutorService;
+import org.kie.internal.executor.api.RequestInfo;
+import org.kie.internal.executor.api.STATUS;
 
 @Service
 @ApplicationScoped
@@ -41,7 +42,7 @@ import org.jbpm.executor.entities.STATUS;
 public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint {
 
     @Inject
-    org.jbpm.executor.ExecutorServiceEntryPoint executor;
+    ExecutorService executor;
 
     @Override
     public List<RequestSummary> getQueuedRequests() {

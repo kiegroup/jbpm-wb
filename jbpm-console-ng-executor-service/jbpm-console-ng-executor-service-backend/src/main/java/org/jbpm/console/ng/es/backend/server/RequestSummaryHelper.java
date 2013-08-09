@@ -25,10 +25,10 @@ import java.util.Map;
 import org.jbpm.console.ng.es.model.ErrorSummary;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.RequestSummary;
-import org.jbpm.executor.api.CommandContext;
-import org.jbpm.executor.entities.ErrorInfo;
-import org.jbpm.executor.entities.RequestInfo;
-import org.jbpm.executor.entities.STATUS;
+import org.kie.internal.executor.api.CommandContext;
+import org.kie.internal.executor.api.ErrorInfo;
+import org.kie.internal.executor.api.RequestInfo;
+import org.kie.internal.executor.api.STATUS;
 
 public class RequestSummaryHelper {
 
@@ -45,11 +45,11 @@ public class RequestSummaryHelper {
                 request.getMessage(), request.getKey());
     }
 
-    public static List<ErrorSummary> adaptErrorList(List<ErrorInfo> errors) {
+    public static List<ErrorSummary> adaptErrorList(List<? extends ErrorInfo> errors) {
         List<ErrorSummary> errorSummaries = new ArrayList<ErrorSummary>(errors.size());
         for (ErrorInfo error : errors) {
             errorSummaries.add(new ErrorSummary(error.getId(), error.getTime(), error.getMessage(), error.getStacktrace(),
-                    error.getRequestInfo().getId()));
+                    ((org.jbpm.executor.entities.ErrorInfo) error).getRequestInfo().getId()));
         }
         return errorSummaries;
     }
