@@ -16,7 +16,6 @@
 
 package org.jbpm.console.ng.ht.client.editors.identity;
 
-import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,19 +26,29 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.ht.model.IdentitySummary;
-import org.uberfire.lifecycle.OnOpen;
+import org.jbpm.console.ng.ht.service.GroupServiceEntryPoint;
+import org.jbpm.console.ng.ht.service.UserServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.security.Identity;
+
+import com.github.gwtbootstrap.client.ui.ListBox;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
-import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 
 @Dependent
 @WorkbenchScreen(identifier = "Users and Groups")
 public class IdentityListPresenter {
+
+    private static final String TITLE = "Users and Groups";
+    
+    @Inject
+    private Identity identity;
 
     public interface IdentityListView extends UberView<IdentityListPresenter> {
 
@@ -48,18 +57,30 @@ public class IdentityListPresenter {
         TextBox getUserText();
 
         DataGrid<IdentitySummary> getDataGrid();
+        
+        ListBox getIdentityTypesList();
 
     }
 
     @Inject
     private IdentityListView view;
+    
     @Inject
-    Caller<TaskServiceEntryPoint> taskServices;
+    Caller<UserServiceEntryPoint> userService;
+    
+    @Inject
+    Caller<GroupServiceEntryPoint> groupService;
+    
+    public enum IdentityType{
+        USERS, GROUPS;
+    }
+    
+    
     private ListDataProvider<IdentitySummary> dataProvider = new ListDataProvider<IdentitySummary>();
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Users and Groups";
+        return TITLE;
     }
 
     @WorkbenchPartView
@@ -92,34 +113,68 @@ public class IdentityListPresenter {
     }
 
     public void refreshIdentityList() {
-        taskServices.call(new RemoteCallback<List<IdentitySummary>>() {
+        if(view.getIdentityTypesList().getValue().equals(IdentityType.USERS.toString())){
+            refreshUsers();
+        }else{
+            refreshGroups();
+        }
+    }
+    
+    public void refreshUsers(){
+        userService.call(new RemoteCallback<List<IdentitySummary>>() {
             @Override
             public void callback(List<IdentitySummary> entities) {
-                dataProvider.getList().clear();
-                if (entities != null) {
-                    dataProvider.getList().addAll(entities);
-                    dataProvider.refresh();
-                }
-
+                refreshList(entities);
             }
-        }).getOrganizationalEntities();
+          }).getAll();
     }
-
-    public void getEntityById(String entityId) {
-        taskServices.call(new RemoteCallback<IdentitySummary>() {
+    
+    public void refreshGroups(){
+        groupService.call(new RemoteCallback<List<IdentitySummary>>() {
+            @Override
+            public void callback(List<IdentitySummary> entities) {
+                refreshList(entities);
+            }
+          }).getAll();
+    }
+    
+    public void getUserById(String entityId) {
+        userService.call(new RemoteCallback<IdentitySummary>() {
             @Override
             public void callback(IdentitySummary identity) {
-                dataProvider.getList().clear();
-                if (identity != null) {
-                    List<IdentitySummary> values = new ArrayList<IdentitySummary>();
-                    values.add(identity);
-
-                    dataProvider.getList().addAll(values);
-                    dataProvider.refresh();
-                }
+                refreshIdentity(identity);
 
             }
-        }).getOrganizationalEntityById(entityId);
+        }).getById(entityId);
+    }
+    
+    public void getGroupById(String entityId){
+        groupService.call(new RemoteCallback<IdentitySummary>() {
+            @Override
+            public void callback(IdentitySummary identity) {
+                refreshIdentity(identity);
+
+            }
+        }).getById(entityId);
+    }
+    
+    private void refreshList(List<IdentitySummary> entities){
+        dataProvider.getList().clear();
+        if (entities != null) {
+            dataProvider.getList().addAll(entities);
+            dataProvider.refresh();
+        }
+    }
+    
+    private void refreshIdentity(IdentitySummary identity){
+        dataProvider.getList().clear();
+        if (identity != null) {
+            List<IdentitySummary> values = new ArrayList<IdentitySummary>();
+            values.add(identity);
+
+            dataProvider.getList().addAll(values);
+            dataProvider.refresh();
+        }
     }
 
 }

@@ -24,13 +24,17 @@ import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.ListBox;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -39,6 +43,7 @@ import org.jbpm.console.ng.ht.model.IdentitySummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.NotificationEvent;
+import org.jbpm.console.ng.ht.client.editors.identity.IdentityListPresenter.IdentityType;
 
 @Dependent
 @Templated(value = "IdentityListViewImpl.html")
@@ -70,15 +75,41 @@ public class IdentityListViewImpl extends Composite implements IdentityListPrese
     @Inject
     @DataField
     public SimplePager pager;
+    
+    @Inject
+    @DataField
+    public ListBox identityTypesList;
 
     @Inject
     private Event<NotificationEvent> notification;
+    
     private ListHandler<IdentitySummary> sortHandler;
-
+    
+    private static final String ENTITY_TYPE = "Entity type";
+    
+    private static final String ENTITY_ID = "Entity id";
+    
     @Override
     public void init( IdentityListPresenter presenter ) {
         this.presenter = presenter;
-
+        initializeList();
+        initializeGridView();
+    }
+    
+    private void initializeList(){
+        for ( IdentityType type : IdentityType.values() ) {
+            identityTypesList.addItem( type.toString(),  type.toString() );
+        }
+        identityTypesList.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                filterUserText.setValue("");
+                presenter.refreshIdentityList();
+            }
+        });
+    }
+    
+    private void initializeGridView(){
         listContainer.add( identityListGrid );
         listContainer.add( pager );
 
@@ -94,14 +125,22 @@ public class IdentityListViewImpl extends Composite implements IdentityListPrese
         pager.setDisplay( identityListGrid );
         pager.setPageSize( 6 );
 
+        initTableColumns();
+        presenter.addDataDisplay( identityListGrid );
+    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private void initTableColumns(){
+        //id
         Column<IdentitySummary, String> identityIdColumn = new Column<IdentitySummary, String>( new TextCell() ) {
             @Override
             public String getValue( IdentitySummary object ) {
                 return object.getId();
             }
         };
-        identityListGrid.addColumn( identityIdColumn, new ResizableHeader( "Entity id", identityListGrid, identityIdColumn ) );
+        identityListGrid.addColumn( identityIdColumn, new ResizableHeader( ENTITY_ID, identityListGrid, identityIdColumn ) );
 
+        //type
         Column<IdentitySummary, String> identityTypeColumn = new Column<IdentitySummary, String>( new TextCell() ) {
             @Override
             public String getValue( IdentitySummary object ) {
@@ -110,19 +149,25 @@ public class IdentityListViewImpl extends Composite implements IdentityListPrese
         };
 
         identityListGrid
-                .addColumn( identityTypeColumn, new ResizableHeader( "Entity type", identityListGrid, identityTypeColumn ) );
-        presenter.addDataDisplay( identityListGrid );
-
+                .addColumn( identityTypeColumn, new ResizableHeader( ENTITY_TYPE, identityListGrid, identityTypeColumn ) );
     }
 
     @EventHandler("filterUserButton")
     public void refreshButton( ClickEvent e ) {
         if ( filterUserText.getText() != null && filterUserText.getText().length() > 0 ) {
-            presenter.getEntityById( filterUserText.getText() );
+            this.searchEntity();
         } else {
             presenter.refreshIdentityList();
         }
 
+    }
+    
+    private void searchEntity(){
+        if(identityTypesList.getValue().equals(IdentityType.USERS.toString())){
+            presenter.getUserById( filterUserText.getText() );
+        }else{
+            presenter.getGroupById( filterUserText.getText() );
+        }
     }
 
     @Override
@@ -139,6 +184,11 @@ public class IdentityListViewImpl extends Composite implements IdentityListPrese
     @Override
     public DataGrid<IdentitySummary> getDataGrid() {
         return this.identityListGrid;
+    }
+
+    @Override
+    public ListBox getIdentityTypesList() {
+        return this.identityTypesList;
     }
 
 }
