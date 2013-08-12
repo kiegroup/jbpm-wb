@@ -33,6 +33,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.jbpm.console.ng.bd.service.AdministrationService;
 import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
 import org.jbpm.console.ng.bd.service.DeploymentUnitProvider;
 import org.jbpm.console.ng.bd.service.Initializable;
