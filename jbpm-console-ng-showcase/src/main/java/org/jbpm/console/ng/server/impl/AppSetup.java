@@ -17,17 +17,17 @@
 package org.jbpm.console.ng.server.impl;
 
 
-import org.jbpm.console.ng.bd.backend.server.AdministrationService;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import org.jbpm.console.ng.bd.service.AdministrationService;
 import org.kie.commons.services.cdi.Startup;
 import org.uberfire.backend.repositories.Repository;
 import org.uberfire.backend.server.config.ConfigGroup;
 import org.uberfire.backend.server.config.ConfigType;
 import org.uberfire.backend.server.config.ConfigurationFactory;
 import org.uberfire.backend.server.config.ConfigurationService;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 @ApplicationScoped
 @Startup
