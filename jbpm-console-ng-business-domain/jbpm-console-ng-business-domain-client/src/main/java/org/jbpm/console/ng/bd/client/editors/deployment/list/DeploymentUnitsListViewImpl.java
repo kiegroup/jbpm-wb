@@ -105,18 +105,6 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
         listContainerDeployedUnits.add( pager );
 
         
-//        searchBox.addKeyUpHandler(new KeyUpHandler() {
-//
-//            @Override
-//            public void onKeyUp(KeyUpEvent event) {
-//                if (event.getNativeKeyCode() == 13 || event.getNativeKeyCode() == 32){
-//                    presenter.filterDeployedUnits(searchBox.getText());
-//                }
-//                
-//            }
-//        });
-
-        
         
 
         deployedUnitsListGrid.setHeight( "400px" );
@@ -238,7 +226,11 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
         Column<KModuleDeploymentUnitSummary, String> kbaseColumn = new Column<KModuleDeploymentUnitSummary, String>( new TextCell() ) {
             @Override
             public String getValue( KModuleDeploymentUnitSummary unit ) {
-                return unit.getKbaseName();
+                String kbaseName = unit.getKbaseName();
+                if(kbaseName.equals("")){
+                    kbaseName = "DEFAULT";
+                }
+                return kbaseName;
             }
         };
         kbaseColumn.setSortable( true );
@@ -255,7 +247,11 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
         Column<KModuleDeploymentUnitSummary, String> ksessionColumn = new Column<KModuleDeploymentUnitSummary, String>( new TextCell() ) {
             @Override
             public String getValue( KModuleDeploymentUnitSummary unit ) {
-                return unit.getKsessionName();
+                String ksessionName = unit.getKsessionName();
+                if(ksessionName.equals("")){
+                    ksessionName = "DEFAULT";
+                }
+                return ksessionName;
             }
         };
         ksessionColumn.setSortable( true );
@@ -267,6 +263,24 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
             }
         } );
         deployedUnitsListGrid.addColumn( ksessionColumn, new ResizableHeader( constants.KieSessionName(), deployedUnitsListGrid, ksessionColumn ) );
+        
+        // Unit KBase
+        Column<KModuleDeploymentUnitSummary, String> strategyColumn = new Column<KModuleDeploymentUnitSummary, String>( new TextCell() ) {
+            @Override
+            public String getValue( KModuleDeploymentUnitSummary unit ) {
+                
+                return unit.getStrategy();
+            }
+        };
+        strategyColumn.setSortable( true );
+        sortHandler.setComparator( strategyColumn, new Comparator<KModuleDeploymentUnitSummary>() {
+            @Override
+            public int compare( KModuleDeploymentUnitSummary o1,
+                                KModuleDeploymentUnitSummary o2 ) {
+                return o1.getStrategy().compareTo( o2.getStrategy() );
+            }
+        } );
+        deployedUnitsListGrid.addColumn( strategyColumn, new ResizableHeader( constants.Strategy(), deployedUnitsListGrid, strategyColumn ) );
 
         // actions (icons)
         List<HasCell<KModuleDeploymentUnitSummary, ?>> cells = new LinkedList<HasCell<KModuleDeploymentUnitSummary, ?>>();

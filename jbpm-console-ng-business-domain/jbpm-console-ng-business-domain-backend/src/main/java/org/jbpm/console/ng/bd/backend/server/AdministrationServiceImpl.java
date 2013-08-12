@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Any;
@@ -32,6 +33,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.jbpm.console.ng.bd.service.AdministrationService;
 import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
 import org.jbpm.console.ng.bd.service.DeploymentUnitProvider;
 import org.jbpm.console.ng.bd.service.Initializable;
@@ -53,10 +55,10 @@ import org.uberfire.backend.server.config.ConfigurationFactory;
 import org.uberfire.backend.server.config.ConfigurationService;
 
 @ApplicationScoped
-public class AdministrationService {
+public class AdministrationServiceImpl implements AdministrationService {
 
     private static final String DEPLOYMENT_SERVICE_TYPE_CONFIG = "deployment.service";
-    private static final Logger logger = LoggerFactory.getLogger(AdministrationService.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdministrationServiceImpl.class);
     @Inject
     @Named("ioStrategy")
     private IOService ioService;
@@ -85,7 +87,17 @@ public class AdministrationService {
     private Instance<DeploymentUnitProvider> deploymentUnitProviders;
 
     private String deploymentServiceType;
+    
+    /**
+     * This flag is necessary to let dependent services know when the deployments have been bootstrapped. 
+     * Because retrieving the status of the deployments will be frequently called, it's more efficient
+     *  to use a boolean to save this status than to have the dependent services call produceDeploymentUnits().
+     */
+    private volatile boolean bootstrapDeploymentsDone = false;
 
+    /* (non-Javadoc)
+     * @see org.jbpm.console.ng.bd.backend.server.AdministrationService#bootstrapRepository(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
     public void bootstrapRepository( String repoAlias,
                                      String repoUrl,
                                      String userName,
@@ -145,6 +157,9 @@ public class AdministrationService {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.jbpm.console.ng.bd.backend.server.AdministrationService#bootstrapConfig()
+     */
     public void bootstrapConfig() {
         ConfigGroup deploymentServiceTypeConfig = null;
         List<ConfigGroup> configGroups = configurationService.getConfiguration( ConfigType.GLOBAL );
@@ -167,12 +182,25 @@ public class AdministrationService {
         deploymentServiceType = deploymentServiceTypeConfig.getConfigItemValue( "type" );
     }
 
+    /* (non-Javadoc)
+     * @see org.jbpm.console.ng.bd.backend.server.AdministrationService#bootstrapDeployments()
+     */
     public void bootstrapDeployments() {
-
         Set<DeploymentUnit> deploymentUnits = produceDeploymentUnits();
         ( (Initializable) deploymentManager ).initDeployments( deploymentUnits );
+        bootstrapDeploymentsDone = true;
     }
 
+    /* (non-Javadoc)
+     * @see org.jbpm.console.ng.bd.backend.server.AdministrationService#areDeploymentsBootstrapped()
+     */
+    public boolean getBootstrapDeploymentsDone() { 
+        return bootstrapDeploymentsDone;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.jbpm.console.ng.bd.backend.server.AdministrationService#produceDeploymentUnits()
+     */
     @Produces
     @RequestScoped
     public Set<DeploymentUnit> produceDeploymentUnits() {
@@ -187,6 +215,9 @@ public class AdministrationService {
         return deploymentUnits;
     }
 
+    /* (non-Javadoc)
+     * @see org.jbpm.console.ng.bd.backend.server.AdministrationService#getDeploymentService()
+     */
     @Produces
     public DeploymentService getDeploymentService() {
         return this.deploymentService.select( getDeploymentType() ).get();
