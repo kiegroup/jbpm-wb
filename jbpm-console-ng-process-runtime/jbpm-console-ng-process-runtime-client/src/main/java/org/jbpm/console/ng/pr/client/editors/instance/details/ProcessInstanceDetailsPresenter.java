@@ -30,6 +30,7 @@ import com.google.gwt.view.client.ProvidesKey;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
+import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.DummyProcessPath;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
@@ -60,6 +61,9 @@ public class ProcessInstanceDetailsPresenter {
     private Constants constants = GWT.create( Constants.class );
 
     private PlaceRequest place;
+    
+    @Inject
+    private Caller<KieSessionEntryPoint> kieSessionServices;
 
     public interface ProcessInstanceDetailsView extends UberView<ProcessInstanceDetailsPresenter> {
 
@@ -115,6 +119,10 @@ public class ProcessInstanceDetailsPresenter {
     private Caller<VFSService> fileServices;
 
     private ListDataProvider<VariableSummary> dataProvider = new ListDataProvider<VariableSummary>();
+    
+    private String processInstanceId = "";
+    
+    private String processDefId = "";
 
     public ProcessInstanceDetailsPresenter() {
         makeMenuBar();
@@ -258,8 +266,8 @@ public class ProcessInstanceDetailsPresenter {
 
     @OnOpen
     public void onOpen() {
-        String processInstanceId = place.getParameter( "processInstanceId", "" );
-        String processDefId = place.getParameter( "processDefId", "" );
+        this.processInstanceId = place.getParameter( "processInstanceId", "" );
+        this.processDefId = place.getParameter( "processDefId", "" );
         view.getProcessInstanceIdText().setText( processInstanceId );
         view.getProcessNameText().setText( processDefId );
         refreshProcessInstanceData( processInstanceId, processDefId );
@@ -284,6 +292,35 @@ public class ProcessInstanceDetailsPresenter {
     
     private void makeMenuBar() {
         menus = MenuFactory
+                .newTopLevelMenu( constants.Signal())
+                .respondsWith(new Command() {
+                        @Override
+                        public void execute() {
+
+                            PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Signal Process Popup");
+                            placeRequestImpl.addParameter("processInstanceId", view.getProcessInstanceIdText().getText());
+                            placeManager.goTo(placeRequestImpl);
+                        }
+                })
+                .endMenu()
+                .newTopLevelMenu( constants.Abort())
+                .respondsWith(new Command() {
+                    @Override
+                    public void execute() {
+                        final long processInstanceId = Long.parseLong(view.getProcessInstanceIdText().getText());
+                        kieSessionServices.call(new RemoteCallback<Void>() {
+                                @Override
+                                public void callback(Void v) {
+                                    refreshProcessInstanceData( view.getProcessInstanceIdText().getText(), 
+                                    view.getProcessDefinitionIdText().getText() );
+                                    view.displayNotification(constants.Aborting_Process_Instance() + "(id=" + processInstanceId + ")");
+                                    
+                                }
+                            }).abortProcessInstance(processInstanceId);
+  
+                    }
+                })
+                .endMenu()
                 .newTopLevelMenu( constants.View_Process_Model())
                 .respondsWith( new Command() {
                     @Override
