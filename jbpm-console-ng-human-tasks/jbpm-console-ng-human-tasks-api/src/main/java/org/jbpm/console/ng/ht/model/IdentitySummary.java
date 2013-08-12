@@ -27,6 +27,7 @@ public class IdentitySummary implements Serializable {
 
     private String id;
     private String type;
+    private String idParent;
 
     public IdentitySummary() {
 
@@ -51,6 +52,14 @@ public class IdentitySummary implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getIdParent() {
+        return idParent;
+    }
+
+    public void setIdParent(String idParent) {
+        this.idParent = idParent;
     }
 
 }
