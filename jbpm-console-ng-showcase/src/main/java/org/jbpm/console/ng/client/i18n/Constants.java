@@ -69,5 +69,7 @@ public interface Constants extends Messages {
     
     String Users();
 
+    String Jobs();
+
 
 }

@@ -161,6 +161,13 @@ public class ShowcaseEntryPoint {
                 placeManager.goTo( new DefaultPlaceRequest( "Deployments" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
+        
+//        result.add( MenuFactory.newSimpleItem( constants.Jobs() ).respondsWith( new Command() {
+//            @Override
+//            public void execute() {
+//                placeManager.goTo( new DefaultPlaceRequest( "Jobs" ) );
+//            }
+//        } ).endMenu().build().getItems().get( 0 ) );
 
         return result;
     }
