@@ -25,30 +25,51 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.IdentitySummary;
 import org.jbpm.console.ng.ht.service.GroupServiceEntryPoint;
 import org.jbpm.console.ng.ht.service.UserServiceEntryPoint;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.security.Identity;
+import org.uberfire.workbench.model.menu.Menus;
 
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest; 
 
 @Dependent
 @WorkbenchScreen(identifier = "Users and Groups")
 public class IdentityListPresenter {
 
+    private Constants constants = GWT.create(Constants.class);
+
     private static final String TITLE = "Users and Groups";
-    
+
     @Inject
     private Identity identity;
+
+    private Menus menus;
+
+    @Inject
+    private PlaceManager placeManager;
+
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return menus;
+    }
 
     public interface IdentityListView extends UberView<IdentityListPresenter> {
 
@@ -57,25 +78,24 @@ public class IdentityListPresenter {
         TextBox getUserText();
 
         DataGrid<IdentitySummary> getDataGrid();
-        
+
         ListBox getIdentityTypesList();
 
     }
 
     @Inject
     private IdentityListView view;
-    
+
     @Inject
     Caller<UserServiceEntryPoint> userService;
-    
+
     @Inject
     Caller<GroupServiceEntryPoint> groupService;
-    
-    public enum IdentityType{
+
+    public enum IdentityType {
         USERS, GROUPS;
     }
-    
-    
+
     private ListDataProvider<IdentitySummary> dataProvider = new ListDataProvider<IdentitySummary>();
 
     @WorkbenchPartTitle
@@ -89,6 +109,7 @@ public class IdentityListPresenter {
     }
 
     public IdentityListPresenter() {
+        makeMenuBar();
     }
 
     @PostConstruct
@@ -113,31 +134,31 @@ public class IdentityListPresenter {
     }
 
     public void refreshIdentityList() {
-        if(view.getIdentityTypesList().getValue().equals(IdentityType.USERS.toString())){
+        if (view.getIdentityTypesList().getValue().equals(IdentityType.USERS.toString())) {
             refreshUsers();
-        }else{
+        } else {
             refreshGroups();
         }
     }
-    
-    public void refreshUsers(){
+
+    public void refreshUsers() {
         userService.call(new RemoteCallback<List<IdentitySummary>>() {
             @Override
             public void callback(List<IdentitySummary> entities) {
                 refreshList(entities);
             }
-          }).getAll();
+        }).getAll();
     }
-    
-    public void refreshGroups(){
+
+    public void refreshGroups() {
         groupService.call(new RemoteCallback<List<IdentitySummary>>() {
             @Override
             public void callback(List<IdentitySummary> entities) {
                 refreshList(entities);
             }
-          }).getAll();
+        }).getAll();
     }
-    
+
     public void getUserById(String entityId) {
         userService.call(new RemoteCallback<IdentitySummary>() {
             @Override
@@ -147,8 +168,8 @@ public class IdentityListPresenter {
             }
         }).getById(entityId);
     }
-    
-    public void getGroupById(String entityId){
+
+    public void getGroupById(String entityId) {
         groupService.call(new RemoteCallback<IdentitySummary>() {
             @Override
             public void callback(IdentitySummary identity) {
@@ -157,16 +178,16 @@ public class IdentityListPresenter {
             }
         }).getById(entityId);
     }
-    
-    private void refreshList(List<IdentitySummary> entities){
+
+    private void refreshList(List<IdentitySummary> entities) {
         dataProvider.getList().clear();
         if (entities != null) {
             dataProvider.getList().addAll(entities);
             dataProvider.refresh();
         }
     }
-    
-    private void refreshIdentity(IdentitySummary identity){
+
+    private void refreshIdentity(IdentitySummary identity) {
         dataProvider.getList().clear();
         if (identity != null) {
             List<IdentitySummary> values = new ArrayList<IdentitySummary>();
@@ -175,6 +196,23 @@ public class IdentityListPresenter {
             dataProvider.getList().addAll(values);
             dataProvider.refresh();
         }
+    }
+
+    private void makeMenuBar() {
+        menus = MenuFactory.newTopLevelMenu(constants.Add_User()).respondsWith(new Command() {
+            @Override
+            public void execute() {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Quick New User");
+                placeManager.goTo(placeRequestImpl);
+            }
+        }).endMenu().newTopLevelMenu(constants.Add_Group()).respondsWith(new Command() {
+            @Override
+            public void execute() {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Quick New Group");
+                placeManager.goTo(placeRequestImpl);
+            }
+        }).endMenu().build();
+
     }
 
 }
