@@ -25,18 +25,28 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.IdentitySummary;
 import org.jbpm.console.ng.ht.service.GroupServiceEntryPoint;
 import org.jbpm.console.ng.ht.service.UserServiceEntryPoint;
+import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.Menus;
 
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
@@ -44,6 +54,8 @@ import com.google.gwt.view.client.ListDataProvider;
 @Dependent
 @WorkbenchScreen(identifier = "Users and Groups")
 public class IdentityListPresenter {
+	
+	private Constants constants = GWT.create( Constants.class );
 
     private static final String TITLE = "Users and Groups";
     
@@ -71,6 +83,11 @@ public class IdentityListPresenter {
     @Inject
     Caller<GroupServiceEntryPoint> groupService;
     
+    private Menus menus;
+    
+    @Inject
+    private PlaceManager placeManager;
+    
     public enum IdentityType{
         USERS, GROUPS;
     }
@@ -87,8 +104,14 @@ public class IdentityListPresenter {
     public UberView<IdentityListPresenter> getView() {
         return view;
     }
+    
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return menus;
+    }
 
     public IdentityListPresenter() {
+    	makeMenuBar();
     }
 
     @PostConstruct
@@ -175,6 +198,29 @@ public class IdentityListPresenter {
             dataProvider.getList().addAll(values);
             dataProvider.refresh();
         }
+    }
+    
+    private void makeMenuBar() {
+        menus = MenuFactory
+                .newTopLevelMenu( constants.Add_User())
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Quick New User" );
+                        placeManager.goTo( placeRequestImpl );
+                    }
+                } )
+                .endMenu()
+                .newTopLevelMenu( constants.Add_Group() )
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                    	PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Quick New Group" );
+                        placeManager.goTo( placeRequestImpl );
+                    }
+                } )
+                .endMenu().build();
+
     }
 
 }
