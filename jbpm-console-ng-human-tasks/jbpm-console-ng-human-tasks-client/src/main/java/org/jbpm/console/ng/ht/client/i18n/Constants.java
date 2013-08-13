@@ -140,4 +140,6 @@ public interface Constants extends Messages {
     String Auto_Assign_To_Me();
 
     String Created_On();
+    
+    String Text_Require();
 }
