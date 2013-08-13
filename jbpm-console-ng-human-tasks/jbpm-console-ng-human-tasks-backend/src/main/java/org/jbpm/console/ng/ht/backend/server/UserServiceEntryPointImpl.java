@@ -29,16 +29,17 @@ import org.jbpm.console.ng.ht.service.UserServiceEntryPoint;
 @ApplicationScoped
 @Transactional
 public class UserServiceEntryPointImpl implements UserServiceEntryPoint {
-    
+
     @Override
     public void save(IdentitySummary identity) {
         // TODO Auto-generated method stub
+
     }
 
     @Override
     public void remove(String id) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
