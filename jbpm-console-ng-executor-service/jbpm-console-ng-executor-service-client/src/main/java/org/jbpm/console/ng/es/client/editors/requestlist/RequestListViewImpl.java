@@ -48,7 +48,8 @@ import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -67,7 +68,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "RequestListViewImpl.html")
-public class RequestListViewImpl extends Composite implements RequestListPresenter.RequestListView {
+public class RequestListViewImpl extends Composite implements RequestListPresenter.RequestListView, RequiresResize {
 
     private Constants constants = GWT.create( Constants.class );
 
@@ -86,7 +87,7 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
 
     @Inject
     @DataField
-    public FlowPanel listContainer;
+    public LayoutPanel listContainer;
 
     @Inject
     @DataField
@@ -96,6 +97,7 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
     @DataField
     public DataGrid<RequestSummary> myRequestListGrid;
 
+    @DataField
     public SimplePager pager;
 
     @Inject
@@ -132,18 +134,28 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
 
     private ListHandler<RequestSummary> sortHandler;
 
+    public RequestListViewImpl() {
+        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+    }
+    
+    @Override
+    public void onResize() {
+        if( (getParent().getOffsetHeight()-120) > 0 ){
+            listContainer.setHeight(getParent().getOffsetHeight()-120+"px");
+        }
+    }
+    
+
     @Override
     public void init( RequestListPresenter presenter ) {
         this.presenter = presenter;
 
         listContainer.add( myRequestListGrid );
-        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+        
         pager.setStyleName("pagination pagination-right pull-right");
         pager.setDisplay( myRequestListGrid );
-        pager.setPageSize(30);
-        listContainer.add( pager );
-
-        myRequestListGrid.setHeight( "350px" );
+        pager.setPageSize(10);
+       
 
         // Set the message to display when the table is empty.
         myRequestListGrid.setEmptyTableWidget( new Label( constants.Hooray_you_don_t_have_any_pending_Task__() ) );
@@ -152,11 +164,7 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
         sortHandler = new ListHandler<RequestSummary>( presenter.getDataProvider().getList() );
         myRequestListGrid.addColumnSortHandler( sortHandler );
 
-        // Create a Pager to control the table.
-
-        pager.setDisplay( myRequestListGrid );
-        pager.setPageSize( 10 );
-
+       
         // Add a selection model so we can select cells.
         final MultiSelectionModel<RequestSummary> selectionModel = new MultiSelectionModel<RequestSummary>();
         selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {

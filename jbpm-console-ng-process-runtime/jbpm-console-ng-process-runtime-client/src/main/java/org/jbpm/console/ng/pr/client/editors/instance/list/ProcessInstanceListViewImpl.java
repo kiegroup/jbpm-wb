@@ -26,12 +26,9 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.Heading;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
@@ -43,16 +40,13 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -74,7 +68,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "ProcessInstanceListViewImpl.html")
-public class ProcessInstanceListViewImpl extends Composite implements ProcessInstanceListPresenter.ProcessInstanceListView {
+public class ProcessInstanceListViewImpl extends Composite implements ProcessInstanceListPresenter.ProcessInstanceListView, RequiresResize {
 
     private Constants constants = GWT.create( Constants.class );
     private ProcessRuntimeImages images = GWT.create( ProcessRuntimeImages.class );
@@ -92,7 +86,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
     
     @Inject
     @DataField
-    public FlowPanel listContainer;
+    public LayoutPanel listContainer;
 
 
     @Inject
@@ -118,7 +112,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
     @Inject
     @DataField
     public DataGrid<ProcessInstanceSummary> processInstanceListGrid;
-
+    @DataField
     public SimplePager pager;
 
     private Set<ProcessInstanceSummary> selectedProcessInstances;
@@ -132,7 +126,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
     private ListHandler<ProcessInstanceSummary> sortHandler;
 
     public ProcessInstanceListViewImpl() {
-        
+        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
     }
 
     public String getCurrentFilter() {
@@ -148,13 +142,11 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         this.presenter = presenter;
         
         listContainer.add( processInstanceListGrid );
-        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+        
         pager.setStyleName("pagination pagination-right pull-right");
         pager.setDisplay(processInstanceListGrid);
         pager.setPageSize(10);
-        listContainer.add( pager );
 
-        processInstanceListGrid.setHeight( "350px" );
         fiterLabel.setText( constants.Showing() );
         showAllLink.setText( constants.Active() );
         showAllLink.setStyleName( "active" );
@@ -435,6 +427,13 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
 
     public ListHandler<ProcessInstanceSummary> getSortHandler() {
         return sortHandler;
+    }
+
+    @Override
+    public void onResize() {
+        if( (getParent().getOffsetHeight()-120) > 0 ){
+            listContainer.setHeight(getParent().getOffsetHeight()-120+"px");
+        }
     }
 
    

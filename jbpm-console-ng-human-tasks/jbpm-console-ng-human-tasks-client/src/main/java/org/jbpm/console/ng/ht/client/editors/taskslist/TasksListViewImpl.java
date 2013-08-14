@@ -645,7 +645,9 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Override
     public void onResize() {
-        tasksViewContainer.setHeight(getParent().getOffsetHeight()-120+"px");
+        if( (getParent().getOffsetHeight()-120) > 0 ){
+            tasksViewContainer.setHeight(getParent().getOffsetHeight()-120+"px");
+        }
     }
      
     private class DetailsHasCell implements HasCell<TaskSummary, TaskSummary> {

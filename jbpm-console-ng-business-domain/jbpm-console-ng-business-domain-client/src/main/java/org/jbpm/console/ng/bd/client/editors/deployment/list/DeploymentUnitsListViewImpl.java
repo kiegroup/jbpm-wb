@@ -39,8 +39,9 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -60,7 +61,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "DeploymentUnitsListViewImpl.html")
-public class DeploymentUnitsListViewImpl extends Composite implements DeploymentUnitsListPresenter.DeploymentUnitsListView {
+public class DeploymentUnitsListViewImpl extends Composite implements DeploymentUnitsListPresenter.DeploymentUnitsListView, RequiresResize {
 
     @Inject
     private Identity identity;
@@ -75,8 +76,9 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
 
     @Inject
     @DataField
-    public FlowPanel listContainerDeployedUnits;
+    public LayoutPanel listContainerDeployedUnits;
 
+    @DataField
     public SimplePager pager;
  
 
@@ -92,22 +94,30 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
 
     private String currentFilter = "";
 
+    public DeploymentUnitsListViewImpl() {
+        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+    }
 
+
+    @Override
+    public void onResize() {
+        if( (getParent().getOffsetHeight()-120) > 0 ){
+            listContainerDeployedUnits.setHeight(getParent().getOffsetHeight()-120+"px");
+        }
+    }
+    
+    
     @Override
     public void init( final DeploymentUnitsListPresenter presenter ) {
         this.presenter = presenter;
 
         listContainerDeployedUnits.add( deployedUnitsListGrid );
-        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+        
         pager.setStyleName("pagination pagination-right pull-right");
         pager.setDisplay(deployedUnitsListGrid);
         pager.setPageSize(10);
-        listContainerDeployedUnits.add( pager );
-
-        
         
 
-        deployedUnitsListGrid.setHeight( "400px" );
         // Set the message to display when the table is empty.
         Label emptyTable = new Label( constants.No_Deployment_Units_Available() );
         emptyTable.setStyleName( "" );
