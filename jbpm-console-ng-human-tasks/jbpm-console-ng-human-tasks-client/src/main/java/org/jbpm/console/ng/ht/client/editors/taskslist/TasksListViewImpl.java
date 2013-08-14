@@ -17,7 +17,6 @@
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.Heading;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
@@ -32,14 +31,10 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -52,6 +47,8 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -83,7 +80,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "TasksListViewImpl.html")
-public class TasksListViewImpl extends Composite implements TasksListPresenter.TaskListView {
+public class TasksListViewImpl extends Composite implements TasksListPresenter.TaskListView, RequiresResize {
     private Constants constants = GWT.create(Constants.class);
     private HumanTasksImages images = GWT.create(HumanTasksImages.class);
 
@@ -128,16 +125,13 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     @DataField
     public NavLink showActiveTasksNavLink;
 
-    
-   
-
     @Inject
     @DataField
     private CalendarPicker calendarPicker;
 
     @Inject
     @DataField
-    public FlowPanel tasksViewContainer;
+    public LayoutPanel tasksViewContainer;
 
     @Inject
     private TaskListMultiDayBox taskListMultiDayBox;
@@ -163,13 +157,22 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     
     
     public DataGrid<TaskSummary> myTaskListGrid;
-   
+    
+    @DataField
     public SimplePager pager;
+
+    public TasksListViewImpl() {
+        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+    }
+    
+    
 
     @Override
     public void init( final TasksListPresenter presenter ) {
         this.presenter = presenter;
 
+        
+        
         
         taskListMultiDayBox.init();
         taskListMultiDayBox.setPresenter( presenter );
@@ -330,15 +333,17 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         calendarPicker.setViewType( "grid" );
         myTaskListGrid = new DataGrid<TaskSummary>();
         myTaskListGrid.setStyleName("table table-bordered table-striped table-hover");
-        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+        
+        
+        
         pager.setStyleName("pagination pagination-right pull-right");
         pager.setDisplay(myTaskListGrid);
         pager.setPageSize(10);
-
+       
         tasksViewContainer.add(myTaskListGrid);
-        tasksViewContainer.add(pager);
-
-        myTaskListGrid.setHeight("400px");
+        tasksViewContainer.setHeight("90px");
+        
+        
         // Set the message to display when the table is empty.
         myTaskListGrid.setEmptyTableWidget(new HTMLPanel(constants.No_Tasks_Found()));
 
@@ -370,7 +375,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     public void recieveStatusChanged( @Observes UserTaskEvent event ) {
         refreshTasks();
-
+        //tasksViewContainer.setHeight(this.getElement().getClientHeight() + 40 +"px");
+       
     }
 
     @Override
@@ -635,6 +641,11 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         myTaskListGrid.setColumnWidth(actionsColumn, "120px");
         
 
+    }
+
+    @Override
+    public void onResize() {
+        tasksViewContainer.setHeight(getParent().getOffsetHeight()-120+"px");
     }
      
     private class DetailsHasCell implements HasCell<TaskSummary, TaskSummary> {
