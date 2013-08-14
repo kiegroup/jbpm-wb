@@ -42,6 +42,8 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -63,7 +65,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "ProcessDefinitionListViewImpl.html")
-public class ProcessDefinitionListViewImpl extends Composite implements ProcessDefinitionListPresenter.ProcessDefinitionListView {
+public class ProcessDefinitionListViewImpl extends Composite implements ProcessDefinitionListPresenter.ProcessDefinitionListView, RequiresResize {
 
     private Constants constants = GWT.create( Constants.class );
     private ProcessRuntimeImages images = GWT.create( ProcessRuntimeImages.class );
@@ -85,8 +87,9 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
 
     @Inject
     @DataField
-    public FlowPanel listContainer;
+    public LayoutPanel listContainer;
 
+    @DataField
     public SimplePager pager;
 
 
@@ -99,6 +102,12 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
     private Event<ProcessDefSelectionEvent> processSelection;
     private ListHandler<ProcessSummary> sortHandler;
 
+    public ProcessDefinitionListViewImpl() {
+        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+    }
+
+   
+    
     public String getCurrentFilter() {
         return currentFilter;
     }
@@ -118,9 +127,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
         pager.setStyleName("pagination pagination-right pull-right");
         pager.setDisplay(processdefListGrid);
         pager.setPageSize(10);
-        listContainer.add( pager );
 
-        processdefListGrid.setHeight( "350px" );
         // Set the message to display when the table is empty.
         Label emptyTable = new Label( constants.No_Process_Definitions_Found() );
         emptyTable.setStyleName( "" );
@@ -254,6 +261,13 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
         processdefListGrid.setColumnWidth( actionsColumn, "70px" );
     }
 
+    @Override
+    public void onResize() {
+        if( (getParent().getOffsetHeight()-120) > 0 ){
+            listContainer.setHeight(getParent().getOffsetHeight()-120+"px");
+        }
+    }
+    
     @Override
     public void displayNotification( String text ) {
         notification.fire( new NotificationEvent( text ) );

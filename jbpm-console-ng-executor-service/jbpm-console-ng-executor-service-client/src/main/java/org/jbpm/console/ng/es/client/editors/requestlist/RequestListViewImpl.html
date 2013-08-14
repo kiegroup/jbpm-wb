@@ -1,24 +1,24 @@
-<div class="container-fluid">
-  <br/>
-  <div class="row-fluid">
-    <form class="form-search">
-      <button class="btn" id="initButton" data-field="serviceSettingsButton">Service Settings</button>
-      <button class="btn" id="refreshRequestsButton" data-field="refreshRequestsButton">Refresh</button>
-      <button class="btn" id="createRequestButton" data-field="createRequestButton">Create New Job</button>
-      <input type="checkbox"  id="showQueuedCheck" data-field="showQueuedCheck"/>Queued
-      <input type="checkbox"  id="showRunningCheck" data-field="showRunningCheck"/>Running
-      <input type="checkbox"  id="showRetryingCheck" data-field="showRetryingCheck"/>Retrying
-      <input type="checkbox"  id="showErrorCheck" data-field="showErrorCheck"/>Error
-      <input type="checkbox"  id="showCompletedCheck" data-field="showCompletedCheck"/>Completed
-      <input type="checkbox"  id="showCancelledCheck" data-field="showCancelledCheck"/>Cancelled
-    </form>
-  </div>
-  <div class="row-fluid">
+<div>
+    <div>
+        <form class="form-search">
+            <button class="btn" id="initButton" data-field="serviceSettingsButton">Service Settings</button>
+            <button class="btn" id="refreshRequestsButton" data-field="refreshRequestsButton">Refresh</button>
+            <button class="btn" id="createRequestButton" data-field="createRequestButton">Create New Job</button>
+            <input type="checkbox"  id="showQueuedCheck" data-field="showQueuedCheck"/>Queued
+            <input type="checkbox"  id="showRunningCheck" data-field="showRunningCheck"/>Running
+            <input type="checkbox"  id="showRetryingCheck" data-field="showRetryingCheck"/>Retrying
+            <input type="checkbox"  id="showErrorCheck" data-field="showErrorCheck"/>Error
+            <input type="checkbox"  id="showCompletedCheck" data-field="showCompletedCheck"/>Completed
+            <input type="checkbox"  id="showCancelledCheck" data-field="showCancelledCheck"/>Cancelled
+        </form>
+    </div>
+
     <div data-field="listContainer" >
 
-      <table id="myRequestListGrid" data-field="myRequestListGrid" class="table table-bordered table-striped table-hover">
-      </table>
+        <table id="myRequestListGrid" data-field="myRequestListGrid" class="table table-bordered table-striped table-hover">
+        </table>
 
     </div>
-  </div>
+    <div id="pager" class="pagination pagination-right pull-right" data-field="pager"></div>
+
 </div>

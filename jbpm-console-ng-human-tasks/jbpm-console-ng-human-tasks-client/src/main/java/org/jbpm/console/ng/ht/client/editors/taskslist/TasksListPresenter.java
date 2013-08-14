@@ -16,7 +16,6 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -26,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -37,7 +35,6 @@ import java.util.HashMap;
 import javax.enterprise.event.Event;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 import org.jbpm.console.ng.ht.model.events.TaskSearchEvent;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.util.DateRange;
@@ -482,5 +479,5 @@ public class TasksListPresenter {
         view.setCurrentFilter(searchEvent.getFilter());
         refreshTasks(view.getCurrentDate(), view.getCurrentView(), view.getCurrentTaskType());
     }
-
+    
 }

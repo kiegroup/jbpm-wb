@@ -32,8 +32,9 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.RequiresResize;
 
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -47,7 +48,7 @@ import org.jbpm.console.ng.ht.client.editors.identity.IdentityListPresenter.Iden
 
 @Dependent
 @Templated(value = "IdentityListViewImpl.html")
-public class IdentityListViewImpl extends Composite implements IdentityListPresenter.IdentityListView {
+public class IdentityListViewImpl extends Composite implements IdentityListPresenter.IdentityListView, RequiresResize {
 
     @Inject
     private Identity identity;
@@ -58,7 +59,7 @@ public class IdentityListViewImpl extends Composite implements IdentityListPrese
 
     @Inject
     @DataField
-    public FlowPanel listContainer;
+    public LayoutPanel listContainer;
 
     @Inject
     @DataField
@@ -72,7 +73,7 @@ public class IdentityListViewImpl extends Composite implements IdentityListPrese
     @DataField
     public DataGrid<IdentitySummary> identityListGrid;
 
-    @Inject
+    
     @DataField
     public SimplePager pager;
     
@@ -88,6 +89,17 @@ public class IdentityListViewImpl extends Composite implements IdentityListPrese
     private static final String ENTITY_TYPE = "Entity type";
     
     private static final String ENTITY_ID = "Entity id";
+
+    public IdentityListViewImpl() {
+        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+    }
+    
+    @Override
+    public void onResize() {
+        if( (getParent().getOffsetHeight()-120) > 0 ){
+            listContainer.setHeight(getParent().getOffsetHeight()-120+"px");
+        }
+    }
     
     @Override
     public void init( IdentityListPresenter presenter ) {
@@ -111,9 +123,6 @@ public class IdentityListViewImpl extends Composite implements IdentityListPrese
     
     private void initializeGridView(){
         listContainer.add( identityListGrid );
-        listContainer.add( pager );
-
-        identityListGrid.setHeight( "350px" );
 
         // Set the message to display when the table is empty.
         identityListGrid.setEmptyTableWidget( new Label( "No User/Groups Available" ) );
@@ -122,8 +131,9 @@ public class IdentityListViewImpl extends Composite implements IdentityListPrese
         sortHandler = new ListHandler<IdentitySummary>( presenter.getDataProvider().getList() );
         identityListGrid.addColumnSortHandler( sortHandler );
 
+        pager.setStyleName("pagination pagination-right pull-right");
         pager.setDisplay( identityListGrid );
-        pager.setPageSize( 6 );
+        pager.setPageSize( 10 );
 
         initTableColumns();
         presenter.addDataDisplay( identityListGrid );
