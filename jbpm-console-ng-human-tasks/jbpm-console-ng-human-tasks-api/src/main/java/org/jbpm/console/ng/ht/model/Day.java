@@ -19,12 +19,9 @@ package org.jbpm.console.ng.ht.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.annotation.concurrent.Immutable;
-
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.marshalling.client.api.annotations.MapsTo;
 
-@Immutable
 @Portable
 public class Day implements Serializable {
     private final Date date;
