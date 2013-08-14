@@ -110,6 +110,14 @@ public class ShowcaseEntryPoint {
                 result.add( MenuFactory.newSimpleItem( constants.Role() +": " + role.getName() ).endMenu().build().getItems().get( 0 ) );
             }
         }
+        
+        result.add( MenuFactory.newSimpleItem( constants.Users() ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "Identity" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+        
         result.add(MenuFactory.newSimpleItem(constants.LogOut()).respondsWith(new Command() {
                     @Override
                     public void execute() {
@@ -162,12 +170,12 @@ public class ShowcaseEntryPoint {
             }
         } ).endMenu().build().getItems().get( 0 ) );
         
-//        result.add( MenuFactory.newSimpleItem( constants.Jobs() ).respondsWith( new Command() {
-//            @Override
-//            public void execute() {
-//                placeManager.goTo( new DefaultPlaceRequest( "Jobs" ) );
-//            }
-//        } ).endMenu().build().getItems().get( 0 ) );
+        result.add( MenuFactory.newSimpleItem( constants.Jobs() ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "Jobs" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
 
         return result;
     }
@@ -208,19 +216,7 @@ public class ShowcaseEntryPoint {
         return result;
     }
 
-    private List<? extends MenuItem> getSettingsViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
-
-        result.add( MenuFactory.newSimpleItem( constants.Users() ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Identity" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
-
-
-        return result;
-    }
+   
     
     private AbstractWorkbenchPerspectiveActivity getDefaultPerspectiveActivity() {
         AbstractWorkbenchPerspectiveActivity defaultPerspective = null;
