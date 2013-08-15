@@ -183,9 +183,9 @@ public class ProcessInstanceDetailsPresenter {
         dataServices.call( new RemoteCallback<ProcessSummary>() {
             @Override
             public void callback( ProcessSummary process ) {
+                
                 view.getProcessDefinitionIdText().setText( process.getId());
                 view.getProcessNameText().setText( process.getName() );
-                view.getProcessDeploymentText().setText( process.getDeploymentId() );
                 view.getProcessVersionText().setText( process.getVersion() );
             }
         } ).getProcessDesc( processDefId );
@@ -193,6 +193,7 @@ public class ProcessInstanceDetailsPresenter {
         dataServices.call( new RemoteCallback<ProcessInstanceSummary>() {
             @Override
             public void callback( ProcessInstanceSummary process ) {
+                view.getProcessDeploymentText().setText( process.getDeploymentId());
                 view.setProcessInstance( process );
 
                 String statusStr = "Unknown";
