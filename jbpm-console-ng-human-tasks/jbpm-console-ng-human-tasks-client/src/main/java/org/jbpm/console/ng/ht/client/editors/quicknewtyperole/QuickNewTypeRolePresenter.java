@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ht.client.editors.quicknewgroup;
-
-import java.util.List;
+package org.jbpm.console.ng.ht.client.editors.quicknewtyperole;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -26,10 +24,8 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.model.Group;
-import org.jbpm.console.ng.ht.model.IdentitySummary;
-import org.jbpm.console.ng.ht.model.User;
-import org.jbpm.console.ng.ht.service.GroupServiceEntryPoint;
+import org.jbpm.console.ng.ht.model.TypeRole;
+import org.jbpm.console.ng.ht.service.TypeRoleServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
@@ -40,35 +36,32 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 
-import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 
 @Dependent
-@WorkbenchPopup(identifier = "Quick New Group")
-public class QuickNewGroupPresenter {
+@WorkbenchPopup(identifier = "Quick New TypeRole")
+public class QuickNewTypeRolePresenter {
 
 	private Constants constants = GWT.create( Constants.class );
     
     @Inject
-    QuickNewGroupView view;
+    QuickNewTypeRoleView view;
 
     @Inject
     Identity identity;
 
     @Inject
-    Caller<GroupServiceEntryPoint> groupService;
+    Caller<TypeRoleServiceEntryPoint> typeRoleService;
 
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
 
-    public interface QuickNewGroupView extends UberView<QuickNewGroupPresenter> {
+    public interface QuickNewTypeRoleView extends UberView<QuickNewTypeRolePresenter> {
 
         void displayNotification( String text );
         
         TextBox getDescriptionText();
-        
-        ListBox getParentGroupList();
 
     }
 
@@ -81,15 +74,15 @@ public class QuickNewGroupPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.Add_Group();
+        return constants.Add_TypeRole();
     }
 
     @WorkbenchPartView
-    public UberView<QuickNewGroupPresenter> getView() {
+    public UberView<QuickNewTypeRolePresenter> getView() {
         return view;
     }
 
-    public QuickNewGroupPresenter() {
+    public QuickNewTypeRolePresenter() {
     }
 
     @PostConstruct
@@ -102,37 +95,15 @@ public class QuickNewGroupPresenter {
         view.getDescriptionText().setFocus( true );
     }
     
-    public void addGroup(  ){
-        Group group = new Group(view.getDescriptionText().getText());
-        if (view.getParentGroupList().getValue() != null && !view.getParentGroupList().getValue().isEmpty()) {
-            group.setParent(new Group(view.getParentGroupList().getValue()));
-        }
-    	groupService.call( new RemoteCallback<Void>() {
+    public void addTypeRole(  ){
+    	typeRoleService.call( new RemoteCallback<Void>() {
             @Override
             public void callback( Void nothing ) {
-                view.displayNotification( "Group Created (id = " + view.getDescriptionText().getText() + ")" );
+                view.displayNotification( "TypeRole Created (id = " + view.getDescriptionText().getText() + ")" );
                 close();
 
             }
-        } ).save(group);
-    }
-    
-    public void loadGroups() {
-        groupService.call(new RemoteCallback<List<Group>>() {
-            @Override
-            public void callback(List<Group> groups) {
-                if (groups != null && !groups.isEmpty()) {
-                    fillListGroups(groups);
-                }
-
-            }
-        }).getAll();
-    }
-    
-    private void fillListGroups(List<Group> groups) {
-        for (Group group : groups) {
-            view.getParentGroupList().addItem(group.getName(), group.getId());
-        }
+        } ).save(new TypeRole(view.getDescriptionText().getText()));
     }
 
     public void close() {

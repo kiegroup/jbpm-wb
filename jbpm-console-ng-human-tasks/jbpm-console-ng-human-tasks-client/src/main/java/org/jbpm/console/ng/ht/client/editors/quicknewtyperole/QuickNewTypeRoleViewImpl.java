@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ht.client.editors.quicknewgroup;
+package org.jbpm.console.ng.ht.client.editors.quicknewtyperole;
 
 
 import javax.enterprise.context.Dependent;
@@ -32,8 +32,6 @@ import com.github.gwtbootstrap.client.ui.ControlGroup;
 import com.github.gwtbootstrap.client.ui.ControlLabel;
 import com.github.gwtbootstrap.client.ui.Controls;
 import com.github.gwtbootstrap.client.ui.HelpInline;
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.google.gwt.core.client.GWT;
@@ -42,19 +40,19 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
 @Dependent
-@Templated(value = "QuickNewGroupViewImpl.html")
-public class QuickNewGroupViewImpl extends Composite implements QuickNewGroupPresenter.QuickNewGroupView {
+@Templated(value = "QuickNewTypeRoleViewImpl.html")
+public class QuickNewTypeRoleViewImpl extends Composite implements QuickNewTypeRolePresenter.QuickNewTypeRoleView {
 
 	private Constants constants = GWT.create( Constants.class );
 
-    private QuickNewGroupPresenter presenter;
+    private QuickNewTypeRolePresenter presenter;
     
     @Inject
     public TextBox descriptionText;
     
     @Inject
     @DataField
-    public Button addGroupButton;
+    public Button addTypeRoleButton;
     
     @Inject
     @DataField
@@ -64,49 +62,34 @@ public class QuickNewGroupViewImpl extends Composite implements QuickNewGroupPre
     public HelpInline descriptionHelpLabel;
     
     @Inject
-    public ControlLabel groupLabel;
-    
-    @Inject
-    @DataField
-    public Label parentGroupLabel;
-    
-    @Inject
-    @DataField
-    public ListBox parentGroupList;
+    public ControlLabel typeRoleLabel;
 
     @Inject
     private Event<NotificationEvent> notification;
 
 
     @Override
-    public void init( QuickNewGroupPresenter presenter ) {
+    public void init( QuickNewTypeRolePresenter presenter ) {
         this.presenter = presenter;
         initializeHtml();
     }
     
     private void initializeHtml(){
-    	groupLabel.add( new HTMLPanel( constants.Group() ) );
-    	parentGroupLabel.setText(constants.Parent_Group());
+    	typeRoleLabel.add( new HTMLPanel( constants.Type_Role() ) );
         
         Controls descriptionControl = new Controls();
         descriptionControl.add(descriptionText);
         descriptionControl.add(descriptionHelpLabel);
-        descriptionControlGroup.add(groupLabel);
+        descriptionControlGroup.add(typeRoleLabel);
         descriptionControlGroup.add(descriptionControl);
         
-        addGroupButton.setText( constants.Create() );
-        
-        initializeListParentGroup();
+        addTypeRoleButton.setText( constants.Create() );
     }
     
-    private void initializeListParentGroup(){
-        presenter.loadGroups();
-    }
-    
-    @EventHandler("addGroupButton")
-    public void addGroupButton( ClickEvent e ) {
+    @EventHandler("addTypeRoleButton")
+    public void addTypeRoleButton( ClickEvent e ) {
     	if(!descriptionText.getText().isEmpty()){
-    		addGroup();
+    		addTypeRole();
     	}else {
             descriptionText.setFocus(true);
             descriptionText.setErrorLabel(descriptionHelpLabel);
@@ -117,8 +100,8 @@ public class QuickNewGroupViewImpl extends Composite implements QuickNewGroupPre
         
     }
     
-    private void addGroup(){
-    	presenter.addGroup();
+    private void addTypeRole(){
+    	presenter.addTypeRole();
     }
     
     @Override
@@ -130,11 +113,6 @@ public class QuickNewGroupViewImpl extends Composite implements QuickNewGroupPre
 	public TextBox getDescriptionText() {
 		return descriptionText;
 	}
-
-    @Override
-    public ListBox getParentGroupList() {
-        return parentGroupList;
-    }
 
 
 }

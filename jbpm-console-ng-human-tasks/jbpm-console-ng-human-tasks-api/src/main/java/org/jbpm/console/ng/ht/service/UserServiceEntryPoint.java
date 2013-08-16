@@ -19,11 +19,13 @@ package org.jbpm.console.ng.ht.service;
 import java.util.List;
 
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.jbpm.console.ng.ht.model.IdentitySummary;
+import org.jbpm.console.ng.ht.model.User;
 
 @Remote
-public interface UserServiceEntryPoint extends IdentityService{
+public interface UserServiceEntryPoint extends IdentityService<User>{
     
-    List<IdentitySummary> getUsersByGroup(String idGroup);
+    List<User> getUsersByGroup(String idGroup);
+    
+    List<User> getUsersByTypeRole(String idTypeRole);
 
 }

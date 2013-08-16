@@ -142,4 +142,11 @@ public interface Constants extends Messages {
     String Created_On();
     
     String Text_Require();
+    
+    String Add_TypeRole();
+    
+    String Type_Role();
+    
+    String Parent_Group();
+    
 }

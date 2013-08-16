@@ -26,8 +26,11 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.model.IdentitySummary;
+import org.jbpm.console.ng.ht.model.Group;
+import org.jbpm.console.ng.ht.model.TypeRole;
+import org.jbpm.console.ng.ht.model.User;
 import org.jbpm.console.ng.ht.service.GroupServiceEntryPoint;
+import org.jbpm.console.ng.ht.service.TypeRoleServiceEntryPoint;
 import org.jbpm.console.ng.ht.service.UserServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -41,13 +44,12 @@ import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 
 @Dependent
 @WorkbenchPopup(identifier = "Quick New User")
 public class QuickNewUserPresenter {
-
-    private static final String USER = "User";
 
     private Constants constants = GWT.create(Constants.class);
 
@@ -62,6 +64,9 @@ public class QuickNewUserPresenter {
 
     @Inject
     Caller<GroupServiceEntryPoint> groupService;
+    
+    @Inject
+    Caller<TypeRoleServiceEntryPoint> typeRoleService;
 
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
@@ -73,6 +78,8 @@ public class QuickNewUserPresenter {
         TextBox getDescriptionText();
 
         ListBox getGroupsList();
+        
+        ListBox getTypeRoleList();
 
     }
 
@@ -106,9 +113,12 @@ public class QuickNewUserPresenter {
     }
 
     public void addUser() {
-        IdentitySummary user = new IdentitySummary(view.getDescriptionText().getText(), USER);
+        User user = new User(view.getDescriptionText().getText());
         if (view.getGroupsList().getValue() != null && !view.getGroupsList().getValue().isEmpty()) {
-            user.setIdParent(view.getGroupsList().getValue());
+                user.setGroups(getSelectedGroups());
+        }
+        if (view.getTypeRoleList().getValue() != null && !view.getTypeRoleList().getValue().isEmpty()) {
+            user.setTypesRole(getSelectedTypesRole());
         }
         userService.call(new RemoteCallback<Void>() {
             @Override
@@ -119,11 +129,31 @@ public class QuickNewUserPresenter {
             }
         }).save(user);
     }
+    
+    public List<Group> getSelectedGroups() {
+        List<Group> selectedGroups = Lists.newArrayListWithExpectedSize(view.getGroupsList().getValue().length());
+        for (int i = 0; i < view.getGroupsList().getItemCount(); i++) {
+            if(view.getGroupsList().isItemSelected(i)){
+                selectedGroups.add(new Group(view.getGroupsList().getValue(i)));
+            }
+        }
+        return selectedGroups;
+    }
+    
+    public List<TypeRole> getSelectedTypesRole() {
+        List<TypeRole> selectedTypesRole = Lists.newArrayListWithExpectedSize(view.getTypeRoleList().getValue().length());
+        for (int i = 0; i < view.getTypeRoleList().getItemCount(); i++) {
+            if(view.getTypeRoleList().isItemSelected(i)){
+                selectedTypesRole.add(new TypeRole(view.getTypeRoleList().getValue(i)));
+            }    
+        }
+        return selectedTypesRole;
+    }
 
-    public void loadGroup() {
-        groupService.call(new RemoteCallback<List<IdentitySummary>>() {
+    public void loadGroups() {
+        groupService.call(new RemoteCallback<List<Group>>() {
             @Override
-            public void callback(List<IdentitySummary> groups) {
+            public void callback(List<Group> groups) {
                 if (groups != null && !groups.isEmpty()) {
                     fillListGroups(groups);
                 }
@@ -131,13 +161,31 @@ public class QuickNewUserPresenter {
             }
         }).getAll();
     }
+    
+    public void loadTypesRole() {
+        typeRoleService.call(new RemoteCallback<List<TypeRole>>() {
+            @Override
+            public void callback(List<TypeRole> types) {
+                if (types != null && !types.isEmpty()) {
+                    fillListTypeRole(types);
+                }
 
-    private void fillListGroups(List<IdentitySummary> groups) {
-        for (IdentitySummary group : groups) {
-            view.getGroupsList().addItem(group.getId(), group.getId());
+            }
+        }).getAll();
+    }
+
+    private void fillListGroups(List<Group> groups) {
+        for (Group group : groups) {
+            view.getGroupsList().addItem(group.getName(), group.getId());
         }
     }
 
+    private void fillListTypeRole(List<TypeRole> types) {
+        for (TypeRole type : types) {
+            view.getTypeRoleList().addItem(type.getName(), type.getId());
+        }
+    }
+    
     public void close() {
         closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
