@@ -14,16 +14,29 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ht.service;
+package org.jbpm.console.ng.ht.model;
 
-import java.util.List;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
-import org.jboss.errai.bus.server.annotations.Remote;
-import org.jbpm.console.ng.ht.model.Group;
+@Portable
+public class TypeRole extends IdentitySummary {
 
-@Remote
-public interface GroupServiceEntryPoint extends IdentityService<Group> {
+    private static final long serialVersionUID = -2191443623658177232L;
     
-    List<Group> getGroupsByParent(String idParent);
+    // TODO only for id, remove it later
+    private static final String PREFIX = "typerole_id";
+    
+    public TypeRole(){
+        
+    }
+    
+    public TypeRole(String description){
+        super(description);
+    }
+    
+    // TODO please remove it when we have id
+    public String getId() {
+        return PREFIX + SEPARATOR + super.getName();
+    }
 
 }

@@ -16,14 +16,10 @@
 
 package org.jbpm.console.ng.ht.service;
 
-import java.util.List;
-
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.jbpm.console.ng.ht.model.Group;
+import org.jbpm.console.ng.ht.model.TypeRole;
 
 @Remote
-public interface GroupServiceEntryPoint extends IdentityService<Group> {
-    
-    List<Group> getGroupsByParent(String idParent);
+public interface TypeRoleServiceEntryPoint extends IdentityService<TypeRole> {
 
 }

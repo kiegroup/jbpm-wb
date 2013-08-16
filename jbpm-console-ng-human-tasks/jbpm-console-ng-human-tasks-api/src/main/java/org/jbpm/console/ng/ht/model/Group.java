@@ -16,46 +16,39 @@
 
 package org.jbpm.console.ng.ht.model;
 
-import java.io.Serializable;
-
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class IdentitySummary implements Serializable {
+public class Group extends IdentitySummary {
 
-    private static final long serialVersionUID = -2770686571222400395L;
+    private static final long serialVersionUID = -8439757821807142776L;
     
-    //TODO only for id, remove it later
-    protected static final String SEPARATOR = "_._._";
-    protected static final String SEPARATOR_REGEX = "_\\._\\._";
-
-    protected String id;
-    private String name;
+    // TODO only for id, remove it later
+    private static final String PREFIX = "group_id";
     
+    private Group parent;
     
-
-    public IdentitySummary() {
-
-    }
-
-    public IdentitySummary(String name) {
-        this.name = name;
+    public Group(){
+        
     }
     
-    public String getName() {
-        return name;
+    public Group(String description){
+        super(description);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public Group getParent() {
+        return parent;
     }
 
+    public void setParent(Group parent) {
+        this.parent = parent;
+    }
+    
+    // TODO please remove it when we have id
     public String getId() {
-        return id;
+        return PREFIX + SEPARATOR + super.getName();
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+    
 
 }

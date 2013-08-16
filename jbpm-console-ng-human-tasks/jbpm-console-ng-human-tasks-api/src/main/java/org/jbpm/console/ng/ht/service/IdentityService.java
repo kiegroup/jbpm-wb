@@ -19,21 +19,20 @@ package org.jbpm.console.ng.ht.service;
 import java.util.List;
 
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.jbpm.console.ng.ht.model.IdentitySummary;
 
 @Remote
-public interface IdentityService {
+public interface IdentityService<T>  {
 
-    void save(IdentitySummary identity);
+    void save(T identity);
     
     void remove(String id);
     
     void removeAll();
     
-    List<IdentitySummary> getAll();
+    List<T> getAll();
     
-    IdentitySummary getById(String id);
+    T getById(String id);
     
-    IdentitySummary getByType(String id);
+    int getCount();
     
 }

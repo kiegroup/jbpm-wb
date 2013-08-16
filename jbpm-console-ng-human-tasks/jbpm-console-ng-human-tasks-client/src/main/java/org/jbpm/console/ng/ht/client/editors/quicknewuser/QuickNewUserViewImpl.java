@@ -69,6 +69,14 @@ public class QuickNewUserViewImpl extends Composite implements QuickNewUserPrese
     public ListBox groupsList;
     
     @Inject
+    @DataField
+    public Label typeRoleListLabel;
+    
+    @Inject
+    @DataField
+    public ListBox typeRoleList;
+    
+    @Inject
     public HelpInline descriptionHelpLabel;
     
     @Inject
@@ -84,8 +92,12 @@ public class QuickNewUserViewImpl extends Composite implements QuickNewUserPrese
         initializeHtml();
     }
     
+    @SuppressWarnings("deprecation")
     private void initializeHtml(){
+        groupsList.setMultipleSelect(true);
+        typeRoleList.setMultipleSelect(true);
     	groupLabel.setText(constants.Group());
+    	typeRoleListLabel.setText(constants.Type_Role());
     	
     	userLabel.add( new HTMLPanel( constants.User() ) );
         
@@ -98,10 +110,15 @@ public class QuickNewUserViewImpl extends Composite implements QuickNewUserPrese
         addUserButton.setText( constants.Create() );
         
         initializeListGroup();
+        initializeListTypesRole();
     }
     
     private void initializeListGroup(){
-    	presenter.loadGroup();
+    	presenter.loadGroups();
+    }
+    
+    private void initializeListTypesRole(){
+        presenter.loadTypesRole();
     }
     
     @EventHandler("addUserButton")
@@ -137,5 +154,9 @@ public class QuickNewUserViewImpl extends Composite implements QuickNewUserPrese
 		return groupsList;
 	}
 
+	@Override
+    public ListBox getTypeRoleList() {
+        return typeRoleList;
+    }
 
 }
