@@ -25,14 +25,11 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.Heading;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.ListBox;
-import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
@@ -41,8 +38,6 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
@@ -50,10 +45,10 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import java.util.Date;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
@@ -79,7 +74,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
     @Inject
     @DataField
-    public TextBox processDefinitionIdText;
+    public HTML processDefinitionIdText;
     
     
     @Inject
@@ -88,15 +83,15 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     
     @Inject
     @DataField
-    public TextBox processInstanceIdText;
+    public HTML processInstanceIdText;
 
     @Inject
     @DataField
-    public TextBox processNameText;
+    public HTML processNameText;
 
     @Inject
     @DataField
-    public TextBox processDeploymentText;
+    public HTML processDeploymentText;
 
     @Inject
     @DataField
@@ -104,19 +99,19 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
     @Inject
     @DataField
-    public TextBox processVersionText;
+    public HTML processVersionText;
 
     @Inject
     @DataField
-    public TextBox stateText;
+    public HTML stateText;
 
     @Inject
     @DataField
-    public ListBox currentActivitiesListBox;
+    public HTML currentActivitiesListBox;
 
     @Inject
     @DataField
-    public TextArea logTextArea;
+    public HTML logTextArea;
 
     @Inject
     @DataField
@@ -178,14 +173,14 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     public void init( final ProcessInstanceDetailsPresenter presenter ) {
         this.presenter = presenter;
 
-        processDefinitionIdText.setEnabled( false );
-        processInstanceIdText.setEnabled(false);
-        processNameText.setEnabled( false );
-        processDeploymentText.setEnabled( false );
-        processVersionText.setEnabled( false );
-        stateText.setEnabled( false );
-        logTextArea.setEnabled( false );
-        currentActivitiesListBox.setEnabled( false );
+        processDefinitionIdText.setStyleName("");
+        processInstanceIdText.setStyleName("");
+        processNameText.setStyleName("");
+        processDeploymentText.setStyleName("");
+        processVersionText.setStyleName("");
+        stateText.setStyleName("");
+        logTextArea.setStyleName("");
+        currentActivitiesListBox.setStyleName("");
 
         listContainer.add( processDataGrid );
         
@@ -230,17 +225,17 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
 
     @Override
-    public TextBox getProcessDefinitionIdText() {
+    public HTML getProcessDefinitionIdText() {
         return processDefinitionIdText;
     }
 
     @Override
-    public ListBox getCurrentActivitiesListBox() {
+    public HTML getCurrentActivitiesListBox() {
         return currentActivitiesListBox;
     }
 
     @Override
-    public TextArea getLogTextArea() {
+    public HTML getLogTextArea() {
         return logTextArea;
     }
 
@@ -250,7 +245,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     }
 
     @Override
-    public TextBox getProcessNameText() {
+    public HTML getProcessNameText() {
         return processNameText;
     }
 
@@ -372,7 +367,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     }
 
     @Override
-    public TextBox getProcessInstanceIdText() {
+    public HTML getProcessInstanceIdText() {
         return this.processInstanceIdText;
     }
 
@@ -467,17 +462,17 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     }
 
     @Override
-    public TextBox getStateText() {
+    public HTML getStateText() {
         return this.stateText;
     }
 
     @Override
-    public TextBox getProcessDeploymentText() {
+    public HTML getProcessDeploymentText() {
         return processDeploymentText;
     }
 
     @Override
-    public TextBox getProcessVersionText() {
+    public HTML getProcessVersionText() {
         return processVersionText;
     }
 

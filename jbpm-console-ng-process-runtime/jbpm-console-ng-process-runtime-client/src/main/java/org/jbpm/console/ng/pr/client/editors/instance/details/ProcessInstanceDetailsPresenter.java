@@ -16,6 +16,7 @@
 
 package org.jbpm.console.ng.pr.client.editors.instance.details;
 
+import com.github.gwtbootstrap.client.ui.Label;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -24,6 +25,9 @@ import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
@@ -69,23 +73,23 @@ public class ProcessInstanceDetailsPresenter {
 
         void displayNotification( String text );
 
-        ListBox getCurrentActivitiesListBox();
+        HTML getCurrentActivitiesListBox();
 
-        TextArea getLogTextArea();
+        HTML getLogTextArea();
 
-        TextBox getProcessInstanceIdText();
+        HTML getProcessInstanceIdText();
         
-        TextBox getProcessDefinitionIdText();
+        HTML getProcessDefinitionIdText();
 
-        TextBox getProcessNameText();
+        HTML getProcessNameText();
 
-        TextBox getStateText();
+        HTML getStateText();
 
         void setProcessInstance( ProcessInstanceSummary processInstance );
 
-        TextBox getProcessDeploymentText();
+        HTML getProcessDeploymentText();
 
-        TextBox getProcessVersionText();
+        HTML getProcessVersionText();
 
         void setProcessAssetPath( Path processAssetPath );
 
@@ -152,16 +156,17 @@ public class ProcessInstanceDetailsPresenter {
             @Override
             public void callback( List<NodeInstanceSummary> details ) {
                 view.getLogTextArea().setText( "" );
-                String fullLog = "";
+                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
                 for ( NodeInstanceSummary nis : details ) {
                     if(!nis.getNodeName().equals("")){
-                        fullLog += nis.getTimestamp() + ": " + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType()
-                                + ") \n";
+                        safeHtmlBuilder.appendEscapedLines(nis.getTimestamp() + ": " + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType()
+                                + ") \n" );
+                        
                     }else{
-                        fullLog += nis.getTimestamp() + ": " + nis.getId() + " - " + nis.getType() + "\n";
+                        safeHtmlBuilder.appendEscapedLines( nis.getTimestamp() + ": " + nis.getId() + " - " + nis.getType() + "\n");
                     }
                 }
-                view.getLogTextArea().setText( fullLog );
+                view.getLogTextArea().setHTML( safeHtmlBuilder.toSafeHtml() );
             }
         } ).getProcessInstanceHistory( Long.parseLong( processId ) );
         
@@ -170,13 +175,13 @@ public class ProcessInstanceDetailsPresenter {
             @Override
             public void callback( List<NodeInstanceSummary> details ) {
                 view.setCurrentActiveNodes( details );
-                view.getCurrentActivitiesListBox().clear();
+                view.getCurrentActivitiesListBox().setText("");
+                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
                 for ( NodeInstanceSummary nis : details ) {
-
-                    view.getCurrentActivitiesListBox().addItem(
-                            nis.getTimestamp() + ":" + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType() + ")",
-                            String.valueOf( nis.getId() ) );
+                    safeHtmlBuilder.appendEscapedLines( nis.getTimestamp() + ":" + 
+                            nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType() + ") \n");
                 }
+                view.getCurrentActivitiesListBox().setHTML(safeHtmlBuilder.toSafeHtml());
             }
         } ).getProcessInstanceActiveNodes( Long.parseLong( processId ) );
 

@@ -13,6 +13,12 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
+.controls.readonly
+{
+  padding-top: 5px;
+}
+
 .icon-jbpm-signal{
    background-image: url(../images/icons/signal-grid-icon.png) !important; 
    display: inline-block;
