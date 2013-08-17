@@ -172,16 +172,6 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     @Override
     public void init( final ProcessInstanceDetailsPresenter presenter ) {
         this.presenter = presenter;
-
-        processDefinitionIdText.setStyleName("");
-        processInstanceIdText.setStyleName("");
-        processNameText.setStyleName("");
-        processDeploymentText.setStyleName("");
-        processVersionText.setStyleName("");
-        stateText.setStyleName("");
-        logTextArea.setStyleName("");
-        currentActivitiesListBox.setStyleName("");
-
         listContainer.add( processDataGrid );
         
         pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
