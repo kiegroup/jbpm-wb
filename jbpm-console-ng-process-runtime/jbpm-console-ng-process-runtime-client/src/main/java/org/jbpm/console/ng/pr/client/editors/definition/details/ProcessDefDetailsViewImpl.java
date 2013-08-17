@@ -28,6 +28,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
@@ -50,35 +51,35 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
 
     @Inject
     @DataField
-    public TextBox processIdText;
+    public HTML processIdText;
     
     @Inject
     @DataField
-    public TextBox processNameText;
+    public HTML processNameText;
 
     @Inject
     @DataField
-    public TextBox nroOfHumanTasksText;
+    public HTML nroOfHumanTasksText;
 
     @Inject
     @DataField
-    public ListBox humanTasksListBox;
+    public HTML humanTasksListBox;
 
     @Inject
     @DataField
-    public ListBox usersGroupsListBox;
+    public HTML usersGroupsListBox;
 
     @Inject
     @DataField
-    public ListBox processDataListBox;
+    public HTML processDataListBox;
 
     @Inject
     @DataField
-    public ListBox subprocessListBox;
+    public HTML subprocessListBox;
 
     @Inject
     @DataField
-    public TextBox deploymentIdText;
+    public HTML deploymentIdText;
 
 
     @Inject
@@ -123,17 +124,7 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
     @Override
     public void init( final ProcessDefDetailsPresenter presenter ) {
         this.presenter = presenter;
-        this.humanTasksListBox.setVisibleItemCount( 5 );
-        this.humanTasksListBox.setEnabled( false );
-        this.usersGroupsListBox.setVisibleItemCount( 5 );
-        this.usersGroupsListBox.setEnabled( false );
-        this.processDataListBox.setVisibleItemCount( 5 );
-        this.processDataListBox.setEnabled( false );
-        this.subprocessListBox.setEnabled(false);
-        this.processIdText.setEnabled(false);
-        this.processNameText.setEnabled( false );
-        this.deploymentIdText.setEnabled( false );
-        nroOfHumanTasksText.setEnabled( false );
+        
 
         this.subprocessListBox.addDoubleClickHandler( new DoubleClickHandler() {
             @Override
@@ -160,37 +151,37 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
 
 
     @Override
-    public TextBox getProcessNameText() {
+    public HTML getProcessNameText() {
         return processNameText;
     }
 
     @Override
-    public TextBox getNroOfHumanTasksText() {
+    public HTML getNroOfHumanTasksText() {
         return nroOfHumanTasksText;
     }
 
     @Override
-    public ListBox getHumanTasksListBox() {
+    public HTML getHumanTasksListBox() {
         return humanTasksListBox;
     }
 
     @Override
-    public ListBox getUsersGroupsListBox() {
+    public HTML getUsersGroupsListBox() {
         return usersGroupsListBox;
     }
 
     @Override
-    public ListBox getProcessDataListBox() {
+    public HTML getProcessDataListBox() {
         return processDataListBox;
     }
 
     @Override
-    public ListBox getSubprocessListBox() {
+    public HTML getSubprocessListBox() {
         return subprocessListBox;
     }
 
     @Override
-    public TextBox getDeploymentIdText() {
+    public HTML getDeploymentIdText() {
         return deploymentIdText;
     }
 
@@ -210,7 +201,7 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
     }
 
     @Override
-    public TextBox getProcessIdText() {
+    public HTML getProcessIdText() {
         return processIdText;
     }
 
@@ -221,9 +212,6 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
     public String getEncodedProcessSource() {
         return encodedProcessSource;
     }
-    
-    
-    
     
 
 }

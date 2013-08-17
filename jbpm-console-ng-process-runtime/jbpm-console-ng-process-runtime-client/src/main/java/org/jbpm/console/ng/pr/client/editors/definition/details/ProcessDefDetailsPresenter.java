@@ -22,9 +22,9 @@ import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.ListBox;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.ui.HTML;
 
 import java.util.ArrayList;
 import org.jboss.errai.bus.client.api.RemoteCallback;
@@ -61,21 +61,21 @@ public class ProcessDefDetailsPresenter {
 
         void displayNotification( String text );
 
-        TextBox getNroOfHumanTasksText();
+        HTML getNroOfHumanTasksText();
 
-        TextBox getProcessNameText();
+        HTML getProcessNameText();
         
-        TextBox getProcessIdText();
+        HTML getProcessIdText();
 
-        ListBox getHumanTasksListBox();
+        HTML getHumanTasksListBox();
 
-        ListBox getUsersGroupsListBox();
+        HTML getUsersGroupsListBox();
 
-        ListBox getProcessDataListBox();
+        HTML getProcessDataListBox();
 
-        ListBox getSubprocessListBox();
+        HTML getSubprocessListBox();
 
-        TextBox getDeploymentIdText();
+        HTML getDeploymentIdText();
 
         void setProcessAssetPath( Path processAssetPath );
 
@@ -128,40 +128,48 @@ public class ProcessDefDetailsPresenter {
             @Override
             public void callback( List<TaskDefSummary> tasks ) {
                 view.getNroOfHumanTasksText().setText( String.valueOf( tasks.size() ) );
-                view.getHumanTasksListBox().clear();
+                view.getHumanTasksListBox().setText("");
+                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
                 for ( TaskDefSummary t : tasks ) {
-                    view.getHumanTasksListBox().addItem( t.getName(), String.valueOf( t.getId() ) );
+                   safeHtmlBuilder.appendEscapedLines(t.getName() +"\n" );
                 }
+                view.getHumanTasksListBox().setHTML(safeHtmlBuilder.toSafeHtml());
             }
         } ).getAllTasksDef( processId );
 
         dataServices.call( new RemoteCallback<Map<String, String>>() {
             @Override
             public void callback( Map<String, String> entities ) {
-                view.getUsersGroupsListBox().clear();
+                view.getUsersGroupsListBox().setText("");
+                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
                 for ( String key : entities.keySet() ) {
-                    view.getUsersGroupsListBox().addItem( entities.get( key ) + "- " + key, key );
+                    safeHtmlBuilder.appendEscapedLines(entities.get( key ) + "- " + key +"\n");
                 }
+                view.getUsersGroupsListBox().setHTML(safeHtmlBuilder.toSafeHtml());
             }
         } ).getAssociatedEntities( processId );
 
         dataServices.call( new RemoteCallback<Map<String, String>>() {
             @Override
             public void callback( Map<String, String> inputs ) {
-                view.getProcessDataListBox().clear();
+                view.getProcessDataListBox().setText("");
+                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
                 for ( String key : inputs.keySet() ) {
-                    view.getProcessDataListBox().addItem( key + "- " + inputs.get( key ), key );
+                    safeHtmlBuilder.appendEscapedLines(key + "- " + inputs.get( key ) +"\n");
                 }
+                view.getProcessDataListBox().setHTML(safeHtmlBuilder.toSafeHtml());
             }
         } ).getRequiredInputData( processId );
 
         dataServices.call( new RemoteCallback<Collection<String>>() {
             @Override
             public void callback( Collection<String> subprocesses ) {
-                view.getSubprocessListBox().clear();
+                view.getSubprocessListBox().setText("");
+                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
                 for ( String key : subprocesses ) {
-                    view.getSubprocessListBox().addItem( key, key );
+                    safeHtmlBuilder.appendEscapedLines(key + "\n");
                 }
+                view.getSubprocessListBox().setHTML(safeHtmlBuilder.toSafeHtml());
             }
         } ).getReusableSubProcesses( processId );
 
