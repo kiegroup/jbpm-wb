@@ -142,4 +142,14 @@ public interface Constants extends Messages {
     String Created_On();
     
     String Text_Require();
+
+    String UserOrGroup();
+
+    String Forward();
+
+    String Delegate();
+
+    String Potential_Owners();
+
+    String No_Potential_Owners();
 }

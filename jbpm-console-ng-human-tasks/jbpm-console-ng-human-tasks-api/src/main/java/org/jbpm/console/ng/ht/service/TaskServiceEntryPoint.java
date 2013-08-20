@@ -77,6 +77,8 @@ public interface TaskServiceEntryPoint {
     void releaseBatch(List<Long> taskIds, String user);
 
     void forward(long taskId, String userId, String targetEntityId);
+    
+    void delegate(long taskId, String userId, String targetEntityId);
 
     void setPriority(long taskId, int priority);
 

@@ -121,7 +121,7 @@ public class TaskBox extends Composite {
 
         List<FocusPanel> options = new ArrayList<FocusPanel>();
         FlowPanel personalOrGroupTask = new FlowPanel();
-
+        //Claim
         if ( "".equals( actualOwner ) && status.equals( "Ready" ) ) {
             if(!potentialOwners.isEmpty() && !(potentialOwners.size() == 1 && potentialOwners.contains("User:"+identity.getName()))){
                 personalOrGroupTask.setStyleName( "group-task" );
@@ -144,8 +144,11 @@ public class TaskBox extends Composite {
             panel.add( new HTML( "Claim" ) );
             panel.setStyleName( "clickable claim" );
             options.add( focusPanel );
-
-        } else if ( !"".equals( actualOwner ) && potentialOwners != null && !potentialOwners.isEmpty()
+            
+        } 
+        //Release
+        else if ( !"".equals( actualOwner ) && actualOwner.equals(identity.getName())
+                && potentialOwners != null && !potentialOwners.isEmpty()
                 && ( status.equals( "Reserved" ) || status.equals( "InProgress" ) ) ) {
    
             if(!potentialOwners.isEmpty() &&
@@ -175,8 +178,8 @@ public class TaskBox extends Composite {
             personalOrGroupTask.setStyleName( "personal-task" );
             personalOrGroupTask.add( new HTML( "Personal Task" ) );
         }
-
-        if ( status.equals( "Reserved" ) ) {
+        //Start
+        if ( status.equals( "Reserved" ) && actualOwner.equals(identity.getName())) {
             FlowPanel panel = new FlowPanel();
             FocusPanel focusPanel = new FocusPanel( panel );
             focusPanel.addClickHandler( new ClickHandler() {
@@ -193,6 +196,7 @@ public class TaskBox extends Composite {
             options.add( focusPanel );
 
         }
+        //Complete
         if ( status.equals( "InProgress" ) ) {
             FlowPanel panel = new FlowPanel();
             taskPanel.setStyleName( "task in-progress" );

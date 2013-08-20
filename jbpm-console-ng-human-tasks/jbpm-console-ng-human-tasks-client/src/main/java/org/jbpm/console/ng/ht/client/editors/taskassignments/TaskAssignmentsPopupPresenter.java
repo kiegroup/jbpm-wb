@@ -32,6 +32,8 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 
 import java.util.Map;
+import org.jboss.errai.bus.client.api.ErrorCallback;
+import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -64,7 +66,7 @@ public class TaskAssignmentsPopupPresenter {
 
         Label getTaskNameText();
         
-        FlowPanel getUsersGroupsControlsPanel();
+        Label getUsersGroupsControlsPanel();
         
         UnorderedList getNavBarUL();
     }
@@ -105,21 +107,36 @@ public class TaskAssignmentsPopupPresenter {
     }
 
    
+    public void delegateTask(final long taskId, String entity){
+        taskServices.call( new RemoteCallback<Void>() {
+            @Override
+            public void callback( Void nothing ) {
+                view.displayNotification("Task was succesfully delegated");
+                refreshTaskPotentialOwners(taskId);
+            }
+            
+            
+        }, new ErrorCallback() {
 
+            @Override
+            public boolean error(Message message, Throwable throwable) {
+                view.displayNotification("Error: "+message);
+                return true;
+            }
+        } ).delegate(taskId, identity.getName(), entity);
+    }
     
 
     public void refreshTaskPotentialOwners( final long taskId ) {
         List<Long> taskIds = new ArrayList<Long>(1);
         taskIds.add(taskId);
-        view.displayNotification("task ID before: "+taskId);
         taskServices.call( new RemoteCallback<Map<Long, List<String>>>() {
             @Override
             public void callback( Map<Long, List<String>> ids ) {
-                view.displayNotification("task IDs after: "+ids);
                 if(ids.isEmpty()){
-                    view.getUsersGroupsControlsPanel().add(new HTMLPanel("no potential owners"));
+                    view.getUsersGroupsControlsPanel().setText(constants.No_Potential_Owners());
                 }else{
-                    view.getUsersGroupsControlsPanel().add(new HTMLPanel(""+ids.get(taskId).toString()));
+                    view.getUsersGroupsControlsPanel().setText((""+ids.get(taskId).toString()));
                 }
             }
         } ).getPotentialOwnersForTaskIds(taskIds);
@@ -191,5 +208,4 @@ public class TaskAssignmentsPopupPresenter {
     public void close() {
         closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }
-
 }
