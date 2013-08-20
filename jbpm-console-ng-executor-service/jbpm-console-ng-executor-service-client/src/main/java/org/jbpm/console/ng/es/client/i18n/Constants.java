@@ -18,6 +18,7 @@ package org.jbpm.console.ng.es.client.i18n;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Messages;
+import org.uberfire.workbench.model.menu.MenuItem;
 
 /**
  * This uses GWT to provide client side compile time resolving of locales. See:
@@ -31,128 +32,60 @@ public interface Constants extends Messages {
 
     Constants INSTANCE = GWT.create(Constants.class);
 
-    String SignOut();
+    String Queued();
 
-    String WelcomeUser();
+    String All();
 
-    String There_is_no_variable_information_to_show();
+    String Running();
 
-    String Variable();
+    String Retrying();
 
-    String Value();
-
-    String Last_Time_Changed();
-
-    String View_History();
-
-    String Variable_History_Perspective();
-
-    String Show_me_my_pending_Tasks();
-
-    String I_want_to_start_a_new_Process();
-
-    String I_want_to_design_a_new_Process_Model();
-
-    String I_want_to_design_a_new_Form();
-
-    String I_want_to_create_a_Task();
-
-    String Show_me_all_the_pending_tasks_in_my_Group();
-
-    String Show_me_my_Inbox();
-
-    String Hooray_you_don_t_have_any_pending_Task__();
-
-    String Id();
-
-    String Task();
-
-    String Status();
-
-    String Due_On();
-
-    String Details();
-
-    String Request_Details_Perspective_Errai();
-
-    String No_KBases_Available();
-
-    String Please_Select_at_least_one_Task_to_Execute_a_Quick_Action();
-
-    String Priority();
-
-    String No_Parent();
-
-    String Parent();
-
-    String Edit();
-
-    String Task_Edit_Perspective();
-
-    String Work();
-
-    String Form_Perspective();
-
-    String No_Process_Definitions_Available();
-
-    String Name();
-
-    String Package();
-
-    String Type();
-
-    String Version();
-
-    String Start_Process();
-
-    String Actions();
-
-    String Process_Definition_Details();
-
-    String No_Process_Instances_Available();
-
-    String Aborting_Process_Instance();
-
-    String Signaling_Process_Instance();
-
-    String Process_Id();
-
-    String Process_Name();
-
-    String Process_Version();
-
-    String State();
-
-    String Process_Instance_Start_Time();
-
-    String Process_Instance_Details();
-
-    String Hooray_you_don_t_have_any_Group_Task_to_Claim__();
-
-    String Task_Id();
-
-    String Task_Name();
-
-    String Actual_Owner();
-
-    String Description();
+    String Error();
 
     String Completed();
 
-    String Pending();
+    String Showing();
 
-    String Personal_Task_Statistics();
+    String Cancelled();
 
-    String Aborting_Process_Instance_Not_Allowed();
+    String Refresh();
 
-    String Signaling_Process_Instance_Not_Allowed();
+    String Settings();
 
-    String Old_Value();
+    String New_Job();
 
-    String No_Parameters_added_yet();
+    String No_Pending_Jobs();
+
+    String Id();
+
+    String Due_On();
+
+    String Actions();
 
     String Started();
 
     String Stopped();
+
+    String No_Parameters_added_yet();
+
+    String Add_Parameter();
+
+    String Create();
+
+    String Name();
+
+    String Type();
+
+    String Retries();
+
+    String Start_StopService();
+
+    String Status();
+
+    String Number_of_Threads();
+
+    String Frequency();
+
+   
 
 }

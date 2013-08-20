@@ -41,13 +41,26 @@ public class JobServiceSettingsViewImpl extends Composite implements JobServiceS
 
     private Constants constants = GWT.create( Constants.class );
 
+    
+    @Inject
+    @DataField
+    public Label startedStatusLabel;
+    
     @Inject
     @DataField
     public IntegerBox numberOfExecutorsText;
+   
+    @Inject
+    @DataField
+    public Label numberOfExecutorsLabel;
 
     @Inject
     @DataField
     public TextBox frequencyText;
+    
+    @Inject
+    @DataField
+    public Label frequencyLabel;
 
     @Inject
     @DataField
@@ -66,6 +79,10 @@ public class JobServiceSettingsViewImpl extends Composite implements JobServiceS
     public void init( JobServiceSettingsPresenter p ) {
         this.presenter = p;
         this.presenter.init();
+        startStopButton.setText(constants.Start_StopService());
+        startedStatusLabel.setText(constants.Status());
+        numberOfExecutorsLabel.setText(constants.Number_of_Threads());
+        frequencyLabel.setText(constants.Frequency());
     }
 
     @EventHandler("startStopButton")

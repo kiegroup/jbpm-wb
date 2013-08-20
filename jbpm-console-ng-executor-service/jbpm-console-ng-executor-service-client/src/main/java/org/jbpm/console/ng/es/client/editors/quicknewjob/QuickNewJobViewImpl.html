@@ -1,30 +1,57 @@
-<div class="form-content two-col">
-  <div class="form-row clearfix">
-    <label>Name:</label>
-    <input type="text" class="span12" data-field="jobNameText" />
-  </div>
-  <div class="form-row clearfix">
-    <label>Due:</label>
-    <input type="text" class="span12" data-field="jobDueDate" />
-  </div>
-  <div class="form-row clearfix">
-    <label>Type:</label>
-    <input type="text" class="span12" data-field="jobTypeText" />
-  </div>
-  <div class="form-row clearfix">
-    <label>Retries:</label>
-    <input type="text" class="span12" data-field="dataTriesNumber" />
-  </div>
-  <div class="row-fluid">
-    <label>Parameters:</label>
-    <button class="btn" id="refreshRequestsButton" data-field="newParametersButton">New Parameters</button>
-  </div>
-  <div class="row-fluid">
-    <table id="myParametersGrid" data-field="myParametersGrid" class="table table-bordered table-striped table-hover">
-
-    </table>
+<div class="container-fluid">
     <div class="row-fluid">
-      <button class="btn" id="createButton" data-field="createButton">Create</button>
+        <div class="span12">
+
+            <div class="form-horizontal">
+                <fieldset>
+
+                    <div class="control-group">
+                        <label class="control-label" for="jobNameText" data-field="jobNameLabel"></label>
+                        <div class="controls">
+                            <input type="text" id="jobNameText" data-field="jobNameText" />
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="jobDueDate" data-field="jobDueLabel"></label>
+                        <div class="controls">
+                            <input type="text" id="jobDueDate" data-field="jobDueDate" />
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="jobTypeText" data-field="jobTypeLabel"></label>
+                        <div class="controls">
+                            <input type="text" id="jobTypeText" data-field="jobTypeText" />
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="dataTriesNumber" data-field="dataTriesLabel"></label>
+                        <div class="controls">
+                            <input type="text" id="dataTriesNumber" data-field="dataTriesNumber" />
+                        </div>
+                    </div>
+
+                </fieldset>
+                <div class="form-actions">
+                    <button class="btn" id="refreshRequestsButton" data-field="newParametersButton"></button>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row-fluid">
+            <table id="myParametersGrid" data-field="myParametersGrid" class="table table-bordered table-striped table-hover">
+
+            </table>
+        </div>
+        <div class="form-horizontal">
+            <fieldset>
+                <div class="form-actions">
+                    <button class="btn" id="createButton" data-field="createButton"></button>
+                </div>
+            </fieldset>
+        </div>
+        
     </div>
-  </div>
-</div>
