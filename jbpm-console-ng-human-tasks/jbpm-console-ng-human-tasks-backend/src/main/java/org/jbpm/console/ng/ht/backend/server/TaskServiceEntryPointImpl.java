@@ -37,7 +37,6 @@ import org.jbpm.services.task.impl.factories.TaskFactory;
 import org.jbpm.services.task.impl.model.CommentImpl;
 import org.jbpm.services.task.impl.model.UserImpl;
 import org.jbpm.services.task.utils.ContentMarshallerHelper;
-import org.joda.time.DateTimeConstants;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.kie.api.task.model.Content;
@@ -300,6 +299,11 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     @Override
     public void forward(long taskId, String userId, String targetEntityId) {
         taskService.forward(taskId, userId, targetEntityId);
+    }
+    
+    @Override
+    public void delegate(long taskId, String userId, String targetEntityId) {
+        taskService.delegate(taskId, userId, targetEntityId);
     }
 
     @Override

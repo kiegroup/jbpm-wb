@@ -45,7 +45,6 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
@@ -171,9 +170,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     public void init( final TasksListPresenter presenter ) {
         this.presenter = presenter;
 
-        
-        
-        
         taskListMultiDayBox.init();
         taskListMultiDayBox.setPresenter( presenter );
         calendarPicker.init();
@@ -695,7 +691,9 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             cell = new ActionCell<TaskSummary>(text, delegate) {
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
-                    if (value.getActualOwner() != null && (value.getStatus().equals("Reserved"))) {
+                    if (value.getActualOwner() != null 
+                            && value.getActualOwner().equals(identity.getName())
+                            && (value.getStatus().equals("Reserved"))) {
                         AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.startGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
                         mysb.appendHtmlConstant("<span title='" + constants.Start() + "' style='margin-right:5px;'>");
@@ -806,7 +804,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             cell = new ActionCell<TaskSummary>(text, delegate) {
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
-                    if (value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty()
+                    if (value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty() 
+                            && value.getActualOwner().equals(identity.getName())
                             && ( value.getStatus().equals( "Reserved" ) || value.getStatus().equals( "InProgress" ) )) {
                         AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.claimGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
