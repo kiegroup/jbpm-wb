@@ -19,6 +19,7 @@ package org.jbpm.console.ng.es.client.editors.requestlist;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
@@ -41,6 +42,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
@@ -77,22 +79,15 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
 
     private RequestListPresenter presenter;
 
-    @Inject
-    @DataField
-    public Button createRequestButton;
+    
 
-    @Inject
-    @DataField
-    public Button refreshRequestsButton;
+   
 
     @Inject
     @DataField
     public LayoutPanel listContainer;
 
-    @Inject
-    @DataField
-    public Button serviceSettingsButton;
-
+   
     @Inject
     @DataField
     public DataGrid<RequestSummary> myRequestListGrid;
@@ -102,27 +97,35 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
 
     @Inject
     @DataField
-    public CheckBox showQueuedCheck;
+    public NavLink showAllLink;
+    
+    @Inject
+    @DataField
+    public NavLink showQueuedLink;
 
     @Inject
     @DataField
-    public CheckBox showRunningCheck;
+    public NavLink showRunningLink;
 
     @Inject
     @DataField
-    public CheckBox showRetryingCheck;
+    public NavLink showRetryingLink;
 
     @Inject
     @DataField
-    public CheckBox showErrorCheck;
+    public NavLink showErrorLink;
 
     @Inject
     @DataField
-    public CheckBox showCompletedCheck;
+    public NavLink showCompletedLink;
 
     @Inject
     @DataField
-    public CheckBox showCancelledCheck;
+    public NavLink showCancelledLink;
+    
+    @Inject
+    @DataField
+    public NavLink fiterLabel;
 
     private Set<RequestSummary> selectedRequests;
 
@@ -147,7 +150,7 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
     
 
     @Override
-    public void init( RequestListPresenter presenter ) {
+    public void init(final RequestListPresenter presenter ) {
         this.presenter = presenter;
 
         listContainer.add( myRequestListGrid );
@@ -156,9 +159,143 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
         pager.setDisplay( myRequestListGrid );
         pager.setPageSize(10);
        
+        fiterLabel.setText( constants.Showing() );
+        
+        showAllLink.setText( constants.All() );
+        showAllLink.setStyleName( "active" );
+        showAllLink.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                showAllLink.setStyleName( "active" );
+                showQueuedLink.setStyleName( "" );
+                showRunningLink.setStyleName( "" );
+                showRetryingLink.setStyleName( "" );
+                showErrorLink.setStyleName( "" );
+                showCompletedLink.setStyleName( "" );
+                showCancelledLink.setStyleName( "" );
+                presenter.refreshRequests( null );
+            }
+        } );
+        
+        
+        showQueuedLink.setText( constants.Queued() );
+        showQueuedLink.setStyleName( "" );
+        showQueuedLink.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                showQueuedLink.setStyleName( "active" );
+                showAllLink.setStyleName( "" );
+                showRunningLink.setStyleName( "" );
+                showRetryingLink.setStyleName( "" );
+                showErrorLink.setStyleName( "" );
+                showCompletedLink.setStyleName( "" );
+                showCancelledLink.setStyleName( "" );
+                
+                List<String> statuses = new ArrayList<String>();
+                statuses.add( "QUEUED" );
+                presenter.refreshRequests( statuses );
+            }
+        } );
+        
+        showRunningLink.setText( constants.Running() );
+        showRunningLink.setStyleName( "" );
+        showRunningLink.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                showRunningLink.setStyleName( "active" );
+                showAllLink.setStyleName( "" );
+                showQueuedLink.setStyleName( "" );
+                showRetryingLink.setStyleName( "" );
+                showErrorLink.setStyleName( "" );
+                showCompletedLink.setStyleName( "" );
+                showCancelledLink.setStyleName( "" );
+                
+                List<String> statuses = new ArrayList<String>();
+                statuses.add( "RUNNING" );
+                presenter.refreshRequests( statuses );
+            }
+        } );
+        
+        
+        showRetryingLink.setText( constants.Retrying() );
+        showRetryingLink.setStyleName( "" );
+        showRetryingLink.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                showRetryingLink.setStyleName( "active" );
+                showAllLink.setStyleName( "" );
+                showQueuedLink.setStyleName( "" );
+                showRunningLink.setStyleName( "" );
+                showErrorLink.setStyleName( "" );
+                showCompletedLink.setStyleName( "" );
+                showCancelledLink.setStyleName( "" );
+                
+                List<String> statuses = new ArrayList<String>();
+                statuses.add( "RETRYING" );
+                presenter.refreshRequests( statuses );
+            }
+        } );
+        
+        showErrorLink.setText( constants.Error() );
+        showErrorLink.setStyleName( "" );
+        showErrorLink.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                showErrorLink.setStyleName( "active" );
+                showAllLink.setStyleName( "" );
+                showQueuedLink.setStyleName( "" );
+                showRunningLink.setStyleName( "" );
+                showRetryingLink.setStyleName( "" );
+                showCompletedLink.setStyleName( "" );
+                showCancelledLink.setStyleName( "" );
+                
+                List<String> statuses = new ArrayList<String>();
+                statuses.add( "ERROR" );
+                presenter.refreshRequests( statuses );
+            }
+        } );
+        
+        showCompletedLink.setText( constants.Completed() );
+        showCompletedLink.setStyleName( "" );
+        showCompletedLink.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                showCompletedLink.setStyleName( "active" );
+                showAllLink.setStyleName( "" );
+                showQueuedLink.setStyleName( "" );
+                showRunningLink.setStyleName( "" );
+                showRetryingLink.setStyleName( "" );
+                showErrorLink.setStyleName( "" );
+                showCancelledLink.setStyleName( "" );
+                
+                List<String> statuses = new ArrayList<String>();
+                statuses.add( "DONE" );
+                presenter.refreshRequests( statuses );
+            }
+        } );
+        
+        showCancelledLink.setText( constants.Cancelled() );
+        showCancelledLink.setStyleName( "" );
+        showCancelledLink.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                showCancelledLink.setStyleName( "active" );
+                showAllLink.setStyleName( "" );
+                showQueuedLink.setStyleName( "" );
+                showRunningLink.setStyleName( "" );
+                showRetryingLink.setStyleName( "" );
+                showErrorLink.setStyleName( "" );
+                showCompletedLink.setStyleName( "" );
+                
+                List<String> statuses = new ArrayList<String>();
+                statuses.add( "CANCELLED" );
+                presenter.refreshRequests( statuses );
+            }
+        } );
+        
 
         // Set the message to display when the table is empty.
-        myRequestListGrid.setEmptyTableWidget( new Label( constants.Hooray_you_don_t_have_any_pending_Task__() ) );
+        myRequestListGrid.setEmptyTableWidget( new Label( constants.No_Pending_Jobs() ) );
 
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler = new ListHandler<RequestSummary>( presenter.getDataProvider().getList() );
@@ -187,48 +324,14 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
     }
 
     public void requestCreated( @Observes RequestChangedEvent event ) {
-        fireRefreshList();
+        presenter.refreshRequests(null);
     }
 
-    @EventHandler("refreshRequestsButton")
-    public void refreshRequestsButton( ClickEvent e ) {
-        fireRefreshList();
-    }
+  
 
-    private void fireRefreshList() {
-        List<String> statuses = new ArrayList<String>();
-        if ( showCompletedCheck.getValue() ) {
-            statuses.add( "DONE" );
-        }
-        if ( showCancelledCheck.getValue() ) {
-            statuses.add( "CANCELLED" );
-        }
-        if ( showErrorCheck.getValue() ) {
-            statuses.add( "ERROR" );
-        }
-        if ( showQueuedCheck.getValue() ) {
-            statuses.add( "QUEUED" );
-        }
-        if ( showRetryingCheck.getValue() ) {
-            statuses.add( "RETRYING" );
-        }
-        if ( showRunningCheck.getValue() ) {
-            statuses.add( "RUNNING" );
-        }
-        presenter.refreshRequests( statuses );
-    }
 
-    @EventHandler("serviceSettingsButton")
-    public void serviceSettingsButton( ClickEvent e ) {
-        placeManager.goTo( new DefaultPlaceRequest( "Job Service Settings" ) );
-        // presenter.init();
-    }
-
-    @EventHandler("createRequestButton")
-    public void createRequestButton( ClickEvent e ) {
-        placeManager.goTo( new DefaultPlaceRequest( "Quick New Job" ) );
-        // presenter.createRequest();
-    }
+   
+    
 
     private void initTableColumns( final SelectionModel<RequestSummary> selectionModel ) {
         // Checkbox column. This table will uses a checkbox column for selection.
@@ -350,30 +453,35 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
         notification.fire( new NotificationEvent( text ) );
     }
 
-    @Override
-    public CheckBox getShowCompletedCheck() {
-        return showCompletedCheck;
+    public NavLink getShowAllLink() {
+        return showAllLink;
     }
 
-    public CheckBox getShowCancelledCheck() {
-        return showCancelledCheck;
+    public NavLink getShowQueuedLink() {
+        return showQueuedLink;
     }
 
-    public CheckBox getShowErrorCheck() {
-        return showErrorCheck;
+    public NavLink getShowRunningLink() {
+        return showRunningLink;
     }
 
-    public CheckBox getShowQueuedCheck() {
-        return showQueuedCheck;
+    public NavLink getShowRetryingLink() {
+        return showRetryingLink;
     }
 
-    public CheckBox getShowRetryingCheck() {
-        return showRetryingCheck;
+    public NavLink getShowErrorLink() {
+        return showErrorLink;
     }
 
-    public CheckBox getShowRunningCheck() {
-        return showRunningCheck;
+    public NavLink getShowCompletedLink() {
+        return showCompletedLink;
     }
+
+    public NavLink getShowCancelledLink() {
+        return showCancelledLink;
+    }
+
+  
 
     @Override
     public DataGrid<RequestSummary> getDataGrid() {

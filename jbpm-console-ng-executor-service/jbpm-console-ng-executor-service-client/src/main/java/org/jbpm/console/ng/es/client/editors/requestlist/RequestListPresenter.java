@@ -17,6 +17,8 @@
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
 import com.github.gwtbootstrap.client.ui.CheckBox;
+import com.github.gwtbootstrap.client.ui.NavLink;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.DataGrid;
 
@@ -31,14 +33,22 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.Caller;
+import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
+import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
+import org.uberfire.client.annotations.WorkbenchMenu;
 
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
 @WorkbenchScreen(identifier = "Requests List")
@@ -48,15 +58,34 @@ public class RequestListPresenter {
 
         void displayNotification(String text);
 
-        CheckBox getShowCompletedCheck();
+        NavLink getShowAllLink();
+
+        NavLink getShowQueuedLink();
+
+        NavLink getShowRunningLink();
+
+        NavLink getShowRetryingLink();
+
+        NavLink getShowErrorLink();
+
+        NavLink getShowCompletedLink();
+
+        NavLink getShowCancelledLink();
 
         DataGrid<RequestSummary> getDataGrid();
 
         ColumnSortEvent.ListHandler<RequestSummary> getSortHandler();
     }
+    private Constants constants = GWT.create( Constants.class );
+    
+    @Inject
+    private PlaceManager placeManager;
 
     @Inject
     private RequestListView view;
+    
+    private Menus menus;
+    
     @Inject
     private Caller<ExecutorServiceEntryPoint> executorServices;
     @Inject
@@ -64,6 +93,12 @@ public class RequestListPresenter {
 
     private ListDataProvider<RequestSummary> dataProvider = new ListDataProvider<RequestSummary>();
 
+    public RequestListPresenter() {
+        makeMenuBar();
+    }
+
+    
+    
     @WorkbenchPartTitle
     public String getTitle() {
         return "Requests List";
@@ -75,7 +110,7 @@ public class RequestListPresenter {
     }
 
     public void refreshRequests(List<String> statuses) {
-        if (statuses.isEmpty()) {
+        if (statuses == null || statuses.isEmpty()) {
             executorServices.call(new RemoteCallback<List<RequestSummary>>() {
                 @Override
                 public void callback(List<RequestSummary> requests) {
@@ -140,4 +175,51 @@ public class RequestListPresenter {
         }).cancelRequest(requestId);
     }
 
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return menus;
+    }
+
+    private void makeMenuBar() {
+        menus = MenuFactory
+                .newTopLevelMenu(constants.Settings())
+                .respondsWith(new Command() {
+                    @Override
+                    public void execute() {
+                        placeManager.goTo( new DefaultPlaceRequest( "Job Service Settings" ) );
+                        
+                    }
+                })
+                .endMenu()
+                .newTopLevelMenu(constants.New_Job())
+                .respondsWith(new Command() {
+                    @Override
+                    public void execute() {
+                        placeManager.goTo( new DefaultPlaceRequest( "Quick New Job" ) );
+                        
+                    }
+                })
+                .endMenu()
+                .newTopLevelMenu(constants.Refresh())
+                .respondsWith(new Command() {
+                    @Override
+                    public void execute() {
+                        view.getShowAllLink().setStyleName("active");
+                        view.getShowCompletedLink().setStyleName("");
+                        view.getShowCancelledLink().setStyleName("");
+                        view.getShowErrorLink().setStyleName("");
+                        view.getShowQueuedLink().setStyleName("");
+                        view.getShowRetryingLink().setStyleName("");
+                        view.getShowRunningLink().setStyleName("");
+                        refreshRequests(null);
+//                        clearSearchEvent.fire(new ClearSearchEvent());
+//                        view.setCurrentFilter("");
+//                        view.displayNotification(constants.Process_Instances_Refreshed());
+                    }
+                })
+                .endMenu().build();
+
+    }
+    
+    
 }

@@ -16,6 +16,10 @@
 
 package org.jbpm.console.ng.es.client.editors.quicknewjob;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.IntegerBox;
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,12 +39,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Focusable;
-import com.google.gwt.user.client.ui.IntegerBox;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
+
 import com.google.gwt.view.client.ListDataProvider;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -59,18 +60,35 @@ public class QuickNewJobViewImpl extends Composite implements QuickNewJobPresent
     @Inject
     @DataField
     public TextBox jobNameText;
+    
+    @Inject
+    @DataField
+    public Label jobNameLabel;
 
     @Inject
     @DataField
     public DateTimeBox jobDueDate;
+    
+    @Inject
+    @DataField
+    public Label jobDueLabel;
 
     @Inject
     @DataField
     public TextBox jobTypeText;
+    
+    @Inject
+    @DataField
+    public Label jobTypeLabel;
 
     @Inject
     @DataField
     public IntegerBox dataTriesNumber;
+    
+    @Inject
+    @DataField
+    public Label dataTriesLabel;
+
 
     @Inject
     @DataField
@@ -94,6 +112,13 @@ public class QuickNewJobViewImpl extends Composite implements QuickNewJobPresent
     public void init( QuickNewJobPresenter p ) {
         this.presenter = p;
 
+        newParametersButton.setText(constants.Add_Parameter());
+        createButton.setText(constants.Create());
+        jobNameLabel.setText(constants.Name());
+        jobDueLabel.setText(constants.Due_On());
+        jobTypeLabel.setText(constants.Type());
+        dataTriesLabel.setText(constants.Retries());
+        
         myParametersGrid.setHeight( "200px" );
 
         // Set the message to display when the table is empty.
