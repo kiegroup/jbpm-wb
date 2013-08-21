@@ -18,21 +18,16 @@ package org.jbpm.console.ng.ht.service;
 
 import java.util.List;
 
-import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.console.ng.ht.model.Group;
+import org.jbpm.console.ng.ht.model.TypeRole;
+import org.jbpm.console.ng.ht.model.User;
 
-@Remote
-public interface IdentityService<T> {
+public interface IdentityServiceMock {
+    
+    List<Group> getAllGroups();
+    
+    List<User> getAllUser();
+    
+    List<TypeRole> getAllTypeRole();
 
-    void save(T identity);
-    
-    void remove(String id);
-    
-    void removeAll();
-    
-    List<T> getAll();
-    
-    T getById(String id);
-    
-    int getCount();
-    
 }

@@ -16,44 +16,27 @@
 
 package org.jbpm.console.ng.ht.model;
 
-import java.io.Serializable;
-
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class IdentitySummary implements Serializable {
+public class TypeRole extends IdentitySummary {
 
-    private static final long serialVersionUID = -2770686571222400395L;
-
+    private static final long serialVersionUID = -2191443623658177232L;
+    
     // TODO only for id, remove it later
-    protected static final String SEPARATOR = "_._._";
-    protected static final String SEPARATOR_REGEX = "_\\._\\._";
-
-    protected String id;
-    private String name;
-
-    public IdentitySummary() {
-
+    private static final String PREFIX = "typerole_id";
+    
+    public TypeRole(){
+        
     }
-
-    public IdentitySummary(String name) {
-        this.name = name;
+    
+    public TypeRole(String description){
+        super(description);
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    
+    // TODO please remove it when we have id
     public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+        return PREFIX + SEPARATOR + super.getName();
     }
 
 }

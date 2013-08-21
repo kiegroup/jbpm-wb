@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ht.client.editors.quicknewuser;
+package org.jbpm.console.ng.ht.client.editors.quicknewtyperole;
+
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -31,8 +32,6 @@ import com.github.gwtbootstrap.client.ui.ControlGroup;
 import com.github.gwtbootstrap.client.ui.ControlLabel;
 import com.github.gwtbootstrap.client.ui.Controls;
 import com.github.gwtbootstrap.client.ui.HelpInline;
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.google.gwt.core.client.GWT;
@@ -41,117 +40,79 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
 @Dependent
-@Templated(value = "QuickNewUserViewImpl.html")
-public class QuickNewUserViewImpl extends Composite implements QuickNewUserPresenter.QuickNewUserView {
+@Templated(value = "QuickNewTypeRoleViewImpl.html")
+public class QuickNewTypeRoleViewImpl extends Composite implements QuickNewTypeRolePresenter.QuickNewTypeRoleView {
 
-    private Constants constants = GWT.create(Constants.class);
+	private Constants constants = GWT.create( Constants.class );
 
-    private QuickNewUserPresenter presenter;
-
+    private QuickNewTypeRolePresenter presenter;
+    
     @Inject
     public TextBox descriptionText;
-
+    
     @Inject
     @DataField
-    public Button addUserButton;
-
+    public Button addTypeRoleButton;
+    
     @Inject
     @DataField
-    public ControlGroup descriptionControlUser;
-
-    @Inject
-    @DataField
-    public Label groupLabel;
-
-    @Inject
-    @DataField
-    public ListBox groupsList;
-
-    @Inject
-    @DataField
-    public Label typeRoleListLabel;
-
-    @Inject
-    @DataField
-    public ListBox typeRoleList;
-
+    public ControlGroup descriptionControlGroup;
+    
     @Inject
     public HelpInline descriptionHelpLabel;
-
+    
     @Inject
-    public ControlLabel userLabel;
+    public ControlLabel typeRoleLabel;
 
     @Inject
     private Event<NotificationEvent> notification;
 
+
     @Override
-    public void init(QuickNewUserPresenter presenter) {
+    public void init( QuickNewTypeRolePresenter presenter ) {
         this.presenter = presenter;
         initializeHtml();
     }
-
-    private void initializeHtml() {
-        groupsList.setMultipleSelect(true);
-        typeRoleList.setMultipleSelect(true);
-        groupLabel.setText(constants.Group());
-        typeRoleListLabel.setText(constants.Type_Role());
-
-        userLabel.add(new HTMLPanel(constants.User()));
-
+    
+    private void initializeHtml(){
+    	typeRoleLabel.add( new HTMLPanel( constants.Type_Role() ) );
+        
         Controls descriptionControl = new Controls();
         descriptionControl.add(descriptionText);
         descriptionControl.add(descriptionHelpLabel);
-        descriptionControlUser.add(userLabel);
-        descriptionControlUser.add(descriptionControl);
-
-        addUserButton.setText(constants.Create());
-
-        initializeListGroup();
-        initializeListTypesRole();
+        descriptionControlGroup.add(typeRoleLabel);
+        descriptionControlGroup.add(descriptionControl);
+        
+        addTypeRoleButton.setText( constants.Create() );
     }
-
-    private void initializeListGroup() {
-        presenter.loadGroups();
-    }
-
-    private void initializeListTypesRole() {
-        presenter.loadTypesRole();
-    }
-
-    @EventHandler("addUserButton")
-    public void addUserButton(ClickEvent e) {
-        if (!descriptionText.getText().isEmpty()) {
-            addUser();
-        } else {
+    
+    @EventHandler("addTypeRoleButton")
+    public void addTypeRoleButton( ClickEvent e ) {
+    	if(!descriptionText.getText().isEmpty()){
+    		addTypeRole();
+    	}else {
             descriptionText.setFocus(true);
             descriptionText.setErrorLabel(descriptionHelpLabel);
-            descriptionControlUser.setType(ControlGroupType.ERROR);
+            descriptionControlGroup.setType(ControlGroupType.ERROR);
             descriptionHelpLabel.setText(constants.Text_Require());
         }
-
+    	
+        
     }
-
-    private void addUser() {
-        presenter.addUser();
+    
+    private void addTypeRole(){
+    	presenter.addTypeRole();
+    }
+    
+    @Override
+    public void displayNotification( String text ) {
+        notification.fire( new NotificationEvent( text ) );
     }
 
     @Override
-    public void displayNotification(String text) {
-        notification.fire(new NotificationEvent(text));
-    }
+	public TextBox getDescriptionText() {
+		return descriptionText;
+	}
 
-    @Override
-    public TextBox getDescriptionText() {
-        return descriptionText;
-    }
-
-    @Override
-    public ListBox getGroupsList() {
-        return groupsList;
-    }
-
-    public ListBox getTypeRoleList() {
-        return typeRoleList;
-    }
 
 }
