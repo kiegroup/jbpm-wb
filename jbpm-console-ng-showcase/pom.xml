@@ -16,7 +16,7 @@
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -151,8 +151,8 @@
 
     <!-- UberFire -->
     <dependency>
-       <groupId>org.uberfire</groupId>
-       <artifactId>uberfire-js</artifactId>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-js</artifactId>
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
@@ -216,7 +216,7 @@
       <groupId>org.kie.commons</groupId>
       <artifactId>kie-commons-data</artifactId>
     </dependency>
-    
+
     <!-- Errai Core -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
@@ -373,7 +373,7 @@
       <artifactId>kie-services-remote</artifactId>
     </dependency>
 
-    <!-- Guvnor --> 
+    <!-- Guvnor -->
     <dependency>
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-services-api</artifactId>
@@ -393,8 +393,8 @@
     <dependency>
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-project-api</artifactId>
-     </dependency>
-     <dependency>
+    </dependency>
+    <dependency>
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-project-backend</artifactId>
     </dependency>
@@ -463,83 +463,89 @@
       <groupId>org.kie.workbench.widgets</groupId>
       <artifactId>kie-wb-config-resource-widget</artifactId>
     </dependency>
-    
-    <!-- Dashboard --> 
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-dashboard-client</artifactId>
-      </dependency>
 
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-dashboard-backend</artifactId>
-      </dependency>
+    <!-- Dashboard -->
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-dashboard-client</artifactId>
+    </dependency>
 
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-dashboard-api</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-dashboard-backend</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-dashboard-api</artifactId>
+    </dependency>
 
     <!-- formModeler dependencies -->
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-form-modeler-app</artifactId>
-          <type>war</type>
-      </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-app</artifactId>
+      <type>war</type>
+    </dependency>
 
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-form-modeler-renderer-api</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-renderer-api</artifactId>
+    </dependency>
 
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-form-modeler-renderer-client</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-renderer-client</artifactId>
+    </dependency>
 
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-form-modeler-renderer-backend</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-renderer-backend</artifactId>
+    </dependency>
 
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-form-modeler-editor-api</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-editor-api</artifactId>
+    </dependency>
 
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-form-modeler-editor-client</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-editor-client</artifactId>
+    </dependency>
 
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-form-modeler-editor-backend</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-editor-backend</artifactId>
+    </dependency>
 
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-form-modeler-form-provider</artifactId>
-      </dependency>
-     <!-- Data Modeller -->
-      <dependency>
-          <groupId>org.kie.workbench.screens</groupId>
-          <artifactId>kie-wb-common-data-modeller-api</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-form-provider</artifactId>
+    </dependency>
+    <!-- Data Modeller -->
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-data-modeller-api</artifactId>
+    </dependency>
 
-      <dependency>
-          <groupId>org.kie.workbench.screens</groupId>
-          <artifactId>kie-wb-common-data-modeller-backend</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-data-modeller-backend</artifactId>
+    </dependency>
 
-      <dependency>
-          <groupId>org.kie.workbench.screens</groupId>
-          <artifactId>kie-wb-common-data-modeller-client</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-form-modeler-data-modeler</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-data-modeller-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-data-modeler</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -586,7 +592,7 @@
             <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-services-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-security</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-datamodel-api</compileSourcesArtifact>
-            
+
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-client</compileSourcesArtifact>
 
