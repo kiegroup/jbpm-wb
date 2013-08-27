@@ -94,7 +94,7 @@ public class TaskAssignmentsPopupViewImpl extends Composite implements TaskAssig
         detailsAccordionLabel.add( new HTMLPanel( constants.Details()) );
         delegateButton.setText(constants.Delegate());
         usersGroupsControlsLabel.setText(constants.Potential_Owners());
-        usersGroupsControlsLabel.setStyleName("");
+        usersGroupsControlsPanel.setStyleName("");
     }
 
   
