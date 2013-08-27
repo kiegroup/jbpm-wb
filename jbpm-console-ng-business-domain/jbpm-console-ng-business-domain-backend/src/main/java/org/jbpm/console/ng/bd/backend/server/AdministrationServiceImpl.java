@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Any;
@@ -45,8 +44,8 @@ import org.kie.commons.io.IOService;
 import org.kie.commons.java.nio.file.FileSystemAlreadyExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uberfire.backend.group.Group;
-import org.uberfire.backend.group.GroupService;
+import org.uberfire.backend.organizationalunit.OrganizationalUnit;
+import org.uberfire.backend.organizationalunit.OrganizationalUnitService;
 import org.uberfire.backend.repositories.Repository;
 import org.uberfire.backend.repositories.RepositoryService;
 import org.uberfire.backend.server.config.ConfigGroup;
@@ -67,7 +66,7 @@ public class AdministrationServiceImpl implements AdministrationService {
     private RepositoryService repositoryService;
 
     @Inject
-    private GroupService groupService;
+    private OrganizationalUnitService organizationalUnitService;
 
     @Inject
     private ConfigurationService configurationService;
@@ -122,16 +121,16 @@ public class AdministrationServiceImpl implements AdministrationService {
             logger.warn("Unable to create repository with alias {} due to {}", repoAlias, e.getMessage());
         }
 
-        Group demoGroup = groupService.getGroup("demo");
-        if ( demoGroup == null ) {
+        OrganizationalUnit demoOrganizationalUnit = organizationalUnitService.getOrganizationalUnit( "demo" );
+        if ( demoOrganizationalUnit == null ) {
             List<Repository> repositories = new ArrayList<Repository>();
             if (repository != null) {
                 repositories.add(repository);
             }
-            groupService.createGroup( "demo", "demo@jbpm.org", repositories );
+            organizationalUnitService.createOrganizationalUnit( "demo", "demo@jbpm.org", repositories );
 
         } else {
-            Collection<Repository> repositories = demoGroup.getRepositories();
+            Collection<Repository> repositories = demoOrganizationalUnit.getRepositories();
             if (repositories != null) {
                 boolean found = false;
                 for (Repository repo : repositories) {
@@ -140,7 +139,7 @@ public class AdministrationServiceImpl implements AdministrationService {
                     }
                 }
                 if (!found) {
-                    groupService.addRepository(demoGroup, repository);
+                    organizationalUnitService.addRepository(demoOrganizationalUnit, repository);
                 }
             }
         }
