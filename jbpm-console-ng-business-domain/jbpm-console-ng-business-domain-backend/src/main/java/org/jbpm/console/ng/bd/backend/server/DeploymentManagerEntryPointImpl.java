@@ -9,10 +9,16 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import org.guvnor.common.services.project.builder.model.DeployResult;
 
+import org.guvnor.common.services.project.builder.model.BuildMessage;
+import org.guvnor.common.services.project.builder.model.BuildResults;
+import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
+import org.guvnor.common.services.project.builder.service.PostBuildHandler;
+import org.guvnor.common.services.project.model.GAV;
+import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.bd.exception.DeploymentException;
 import org.jbpm.console.ng.bd.model.DeploymentUnitSummary;
@@ -26,19 +32,16 @@ import org.jbpm.kie.services.impl.KModuleDeploymentUnit;
 import org.jbpm.kie.services.impl.event.Deploy;
 import org.jbpm.kie.services.impl.event.DeploymentEvent;
 import org.jbpm.kie.services.impl.event.Undeploy;
-import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.deployment.DeploymentConfigService;
-
-
 import org.uberfire.backend.server.config.Added;
 import org.uberfire.backend.server.config.Removed;
 import org.uberfire.backend.server.deployment.DeploymentConfigChangedEvent;
 
 @Service
 @ApplicationScoped
-public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPoint, Initializable<DeploymentUnit> {
+public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPoint, Initializable<DeploymentUnit>, PostBuildHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(DeploymentManagerEntryPointImpl.class);
 
@@ -54,6 +57,12 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
 
     @Inject
     private GuvnorM2Repository guvnorM2Repository;
+
+    @Inject
+    private Event<IncrementalBuildResults> incrementalBuildResultsEvent;
+
+    @Inject
+    private Event<BuildResults> buildResultsEvent;
 
     @PostConstruct
     public void configure() {
@@ -91,7 +100,21 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
 
     protected void deploy(DeploymentUnit unit) {
         if (deploymentService.getDeployedUnit(unit.getIdentifier()) == null) {
-            deploymentService.deploy(unit);
+            String[] gavElemes = unit.getIdentifier().split(":");
+            GAV gav = new GAV(gavElemes[0], gavElemes[1], gavElemes[2]);
+            BuildResults buildResults = new BuildResults(gav);
+
+            try {
+                deploymentService.deploy(unit);
+            } catch (Exception e) {
+                BuildMessage message = new BuildMessage();
+                message.setLevel(BuildMessage.Level.ERROR);
+                message.setText("Deployment of unit " + gav + " failed: " + e.getMessage());
+                buildResults.addBuildMessage(message);
+                throw new DeploymentException(e.getMessage(), e);
+            } finally {
+                buildResultsEvent.fire(buildResults);
+            }
         }
     }
     
@@ -109,13 +132,24 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
     }
 
     protected void undeploy(DeploymentUnit unit) {
+        String[] gavElemes = unit.getIdentifier().split(":");
+        GAV gav = new GAV(gavElemes[0], gavElemes[1], gavElemes[2]);
+        BuildResults buildResults = new BuildResults(gav);
         try {
             if (deploymentService.getDeployedUnit(unit.getIdentifier()) != null) {
                 deploymentService.undeploy(unit);
                 cleanup(unit.getIdentifier());
+
             }
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
+            BuildMessage message = new BuildMessage();
+            message.setLevel(BuildMessage.Level.ERROR);
+            message.setText("Undeployment of unit " + gav + " failed: " + e.getMessage());
+            buildResults.addBuildMessage(message);
             throw new DeploymentException(e.getMessage(), e);
+        } finally {
+
+            buildResultsEvent.fire(buildResults);
         }
     }
 
@@ -186,28 +220,37 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
 
 
     /**
-     * Auto deployed reacts to events fired from authoring environment after successful build and deploy (to maven)
-     * @param result Maven deploy result that holds GAV to construct KModuleDeploymentUnit
+     * Auto deployed is called from authoring environment after successful build and deploy (to maven)
+     * @param buildResults Maven deploy result that holds GAV to construct KModuleDeploymentUnit
      */
-    public void autoDeploy(@Observes DeployResult result) {
+    @Override
+    public void process(BuildResults buildResults) {
+
+        if (!buildResults.getMessages().isEmpty()) {
+            return;
+        }
         try {
+
             KModuleDeploymentUnitSummary unit = new KModuleDeploymentUnitSummary("",
-                    result.getGAV().getGroupId(),
-                    result.getGAV().getArtifactId(),
-                    result.getGAV().getVersion(), "", "", DeploymentUnit.RuntimeStrategy.SINGLETON.toString());
+                    buildResults.getGAV().getGroupId(),
+                    buildResults.getGAV().getArtifactId(),
+                    buildResults.getGAV().getVersion(), "", "", DeploymentUnit.RuntimeStrategy.SINGLETON.toString());
 
             undeploy(unit);
             deploy(unit);
-
         } catch (Exception e) {
+            BuildMessage message = new BuildMessage();
+            message.setLevel(BuildMessage.Level.ERROR);
+            message.setText("Deployment of unit " + buildResults.getGAV() + " failed: " + e.getMessage());
+            buildResults.addBuildMessage(message);
             // always catch exceptions to not break originator of the event
-            e.printStackTrace();
+            logger.error("Deployment of unit {} failed: {}",buildResults.getGAV(), e.getMessage(), e);
         }
     }
 
     /**
      * Reacts on events fired based on changes to system repository - important in cluster environment
-     * where system repo will ny synchronized
+     * where system repo will be synchronized
      * @param event - event that carries the complete DeploymentUnit to be undeployed
      */
     public void undeployOnEvent(@Observes @Removed DeploymentConfigChangedEvent event) {
@@ -216,10 +259,12 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
 
     /**
      * Reacts on events fired based on changes to system repository - important in cluster environment
-     * where system repo will ny synchronized
+     * where system repo will be synchronized
      * @param event - event that carries the complete DeploymentUnit to be deployed
      */
     public void deployOnEvent(@Observes @Added DeploymentConfigChangedEvent event) {
         deploy((DeploymentUnit) event.getDeploymentUnit());
     }
+
+
 }
