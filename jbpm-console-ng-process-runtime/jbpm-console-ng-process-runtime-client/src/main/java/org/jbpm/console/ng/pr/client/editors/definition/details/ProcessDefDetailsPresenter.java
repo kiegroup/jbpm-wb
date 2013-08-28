@@ -27,8 +27,8 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.HTML;
 
 import java.util.ArrayList;
-import org.jboss.errai.bus.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.model.TaskDefSummary;
 import org.jbpm.console.ng.pr.client.i18n.Constants;

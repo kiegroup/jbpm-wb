@@ -93,6 +93,7 @@
 
           <!-- Errai -->
           <exclude>WEB-INF/lib/errai-jaxrs-client-*.jar</exclude>
+          <exclude>WEB-INF/lib/errai-jboss-as-support-*.jar</exclude>
         </excludes>
       </unpackOptions>
       <useStrictFiltering>true</useStrictFiltering>

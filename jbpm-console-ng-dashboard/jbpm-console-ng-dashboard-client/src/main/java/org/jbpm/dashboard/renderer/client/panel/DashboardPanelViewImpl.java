@@ -22,7 +22,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
-import org.jboss.errai.bus.client.api.RemoteCallback;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 

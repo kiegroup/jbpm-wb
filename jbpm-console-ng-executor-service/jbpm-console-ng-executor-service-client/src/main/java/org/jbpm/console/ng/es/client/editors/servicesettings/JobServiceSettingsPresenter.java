@@ -22,8 +22,8 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Focusable;
-import org.jboss.errai.bus.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;

@@ -16,36 +16,33 @@
 
 package org.jbpm.console.ng.bd.client.editors.deployment.list;
 
-import com.google.gwt.core.client.GWT;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-
-import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 
-import org.jboss.errai.bus.client.api.ErrorCallback;
-import org.jboss.errai.bus.client.api.Message;
-import org.jboss.errai.bus.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.Caller;
-import org.jbpm.console.ng.bd.model.events.DeploymentsSearchEvent;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.ListDataProvider;
+import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
+import org.jbpm.console.ng.bd.model.events.DeploymentsSearchEvent;
 import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
 import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
-
-import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -58,37 +55,37 @@ public class DeploymentUnitsListPresenter {
 
     public interface DeploymentUnitsListView extends UberView<DeploymentUnitsListPresenter> {
 
-        void displayNotification(String text);
+        void displayNotification( String text );
 
-        void showBusyIndicator(String message);
+        void showBusyIndicator( String message );
 
         void hideBusyIndicator();
 
         String getCurrentFilter();
 
-        void setCurrentFilter(String filter);
+        void setCurrentFilter( String filter );
     }
-    
+
     @Inject
     private PlaceManager placeManager;
-    
+
     private Menus menus;
-    
+
     @Inject
     private DeploymentUnitsListView view;
 
     @Inject
     private Caller<DeploymentManagerEntryPoint> deploymentManager;
 
-    private Constants constants = GWT.create(Constants.class);
+    private Constants constants = GWT.create( Constants.class );
 
     private ListDataProvider<KModuleDeploymentUnitSummary> dataProvider = new ListDataProvider<KModuleDeploymentUnitSummary>();
 
     private List<KModuleDeploymentUnitSummary> currentDeployedUnits;
-    
-    @Inject 
+
+    @Inject
     private Event<ClearSearchEvent> clearSearchEvent;
-    
+
     public DeploymentUnitsListPresenter() {
         makeMenuBar();
     }
@@ -107,69 +104,73 @@ public class DeploymentUnitsListPresenter {
     public void init() {
     }
 
-    
-    public void undeployUnit(final String id, final String group, final String artifact, final String version, 
-                            final String kbaseName, final String kieSessionName) {
-        view.showBusyIndicator(constants.Please_Wait());
-        deploymentManager.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void nothing) {
-                view.hideBusyIndicator();
-                view.displayNotification(" Kjar Undeployed " + group + ":" + artifact + ":" + version);
-                refreshDeployedUnits();
-            }
-        }, new ErrorCallback() {
-           @Override
-           public boolean error(Message message, Throwable throwable) {
-               view.hideBusyIndicator();
-               view.displayNotification("Error: Undeploy failed " + throwable.getMessage());
-               return true;
-           }
-       }).undeploy(new KModuleDeploymentUnitSummary(id, group, artifact, version, kbaseName, kieSessionName, null));
+    public void undeployUnit( final String id,
+                              final String group,
+                              final String artifact,
+                              final String version,
+                              final String kbaseName,
+                              final String kieSessionName ) {
+        view.showBusyIndicator( constants.Please_Wait() );
+        deploymentManager.call( new RemoteCallback<Void>() {
+                                    @Override
+                                    public void callback( Void nothing ) {
+                                        view.hideBusyIndicator();
+                                        view.displayNotification( " Kjar Undeployed " + group + ":" + artifact + ":" + version );
+                                        refreshDeployedUnits();
+                                    }
+                                }, new ErrorCallback<Message>() {
+                                    @Override
+                                    public boolean error( Message message,
+                                                          Throwable throwable ) {
+                                        view.hideBusyIndicator();
+                                        view.displayNotification( "Error: Undeploy failed " + throwable.getMessage() );
+                                        return true;
+                                    }
+                                }
+                              ).undeploy( new KModuleDeploymentUnitSummary( id, group, artifact, version, kbaseName, kieSessionName, null ) );
     }
-    
-    public void filterDeployedUnits(String filter){
-        if(filter.equals("")){
-                if(currentDeployedUnits != null){
-                    dataProvider.getList().clear();
-                    dataProvider.getList().addAll(new ArrayList<KModuleDeploymentUnitSummary>(currentDeployedUnits));
-                    dataProvider.refresh();
-                    
-                }
-        }else{
-            if(currentDeployedUnits != null){    
-                List<KModuleDeploymentUnitSummary> deployedUnits = new ArrayList<KModuleDeploymentUnitSummary>(currentDeployedUnits);
+
+    public void filterDeployedUnits( String filter ) {
+        if ( filter.equals( "" ) ) {
+            if ( currentDeployedUnits != null ) {
+                dataProvider.getList().clear();
+                dataProvider.getList().addAll( new ArrayList<KModuleDeploymentUnitSummary>( currentDeployedUnits ) );
+                dataProvider.refresh();
+
+            }
+        } else {
+            if ( currentDeployedUnits != null ) {
+                List<KModuleDeploymentUnitSummary> deployedUnits = new ArrayList<KModuleDeploymentUnitSummary>( currentDeployedUnits );
                 List<KModuleDeploymentUnitSummary> filteredDeployedUnits = new ArrayList<KModuleDeploymentUnitSummary>();
-                for(KModuleDeploymentUnitSummary ps : deployedUnits){
-                    if(ps.getArtifactId().toLowerCase().contains(filter.toLowerCase())
-                            || ps.getGroupId().toLowerCase().contains(filter.toLowerCase())){
-                        filteredDeployedUnits.add(ps);
+                for ( KModuleDeploymentUnitSummary ps : deployedUnits ) {
+                    if ( ps.getArtifactId().toLowerCase().contains( filter.toLowerCase() )
+                            || ps.getGroupId().toLowerCase().contains( filter.toLowerCase() ) ) {
+                        filteredDeployedUnits.add( ps );
                     }
                 }
                 dataProvider.getList().clear();
-                dataProvider.getList().addAll(filteredDeployedUnits);
+                dataProvider.getList().addAll( filteredDeployedUnits );
                 dataProvider.refresh();
             }
         }
-    
-    
+
     }
 
     public void refreshDeployedUnits() {
-        
-        deploymentManager.call(new RemoteCallback<List<KModuleDeploymentUnitSummary>>() {
+
+        deploymentManager.call( new RemoteCallback<List<KModuleDeploymentUnitSummary>>() {
             @Override
-            public void callback(List<KModuleDeploymentUnitSummary> units) {
+            public void callback( List<KModuleDeploymentUnitSummary> units ) {
                 currentDeployedUnits = units;
-                filterDeployedUnits(view.getCurrentFilter());
-                clearSearchEvent.fire(new ClearSearchEvent());
+                filterDeployedUnits( view.getCurrentFilter() );
+                clearSearchEvent.fire( new ClearSearchEvent() );
             }
-        }).getDeploymentUnits();
+        } ).getDeploymentUnits();
 
     }
 
-    public void addDataDisplay(HasData<KModuleDeploymentUnitSummary> display) {
-        dataProvider.addDataDisplay(display);
+    public void addDataDisplay( HasData<KModuleDeploymentUnitSummary> display ) {
+        dataProvider.addDataDisplay( display );
     }
 
     public ListDataProvider<KModuleDeploymentUnitSummary> getDataProvider() {
@@ -184,15 +185,15 @@ public class DeploymentUnitsListPresenter {
     public void onOpen() {
         refreshDeployedUnits();
     }
-    
+
     @WorkbenchMenu
     public Menus getMenus() {
         return menus;
     }
-    
+
     private void makeMenuBar() {
         menus = MenuFactory
-                .newTopLevelMenu( constants.New_Deployment_Unit())
+                .newTopLevelMenu( constants.New_Deployment_Unit() )
                 .respondsWith( new Command() {
                     @Override
                     public void execute() {
@@ -206,23 +207,23 @@ public class DeploymentUnitsListPresenter {
                     @Override
                     public void execute() {
                         refreshDeployedUnits();
-                        view.setCurrentFilter("");
-                        view.displayNotification(constants.Deployed_Units_Refreshed());
+                        view.setCurrentFilter( "" );
+                        view.displayNotification( constants.Deployed_Units_Refreshed() );
                     }
                 } )
                 .endMenu().build();
 
     }
-    
-    public void onSearchEvent(@Observes final DeploymentsSearchEvent searchEvent){
-        view.setCurrentFilter(searchEvent.getFilter());
-        deploymentManager.call(new RemoteCallback<List<KModuleDeploymentUnitSummary>>() {
+
+    public void onSearchEvent( @Observes final DeploymentsSearchEvent searchEvent ) {
+        view.setCurrentFilter( searchEvent.getFilter() );
+        deploymentManager.call( new RemoteCallback<List<KModuleDeploymentUnitSummary>>() {
             @Override
-            public void callback(List<KModuleDeploymentUnitSummary> units) {
+            public void callback( List<KModuleDeploymentUnitSummary> units ) {
                 currentDeployedUnits = units;
-                filterDeployedUnits(view.getCurrentFilter());
+                filterDeployedUnits( view.getCurrentFilter() );
             }
-        }).getDeploymentUnits();
+        } ).getDeploymentUnits();
     }
 
 }

@@ -18,6 +18,7 @@ package org.jbpm.console.ng.ht.client.editors.taskassignments;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -27,26 +28,22 @@ import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
-
-import java.util.Map;
-import org.jboss.errai.bus.client.api.ErrorCallback;
-import org.jboss.errai.bus.client.api.Message;
-import org.jboss.errai.bus.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.Caller;
+import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
@@ -65,9 +62,9 @@ public class TaskAssignmentsPopupPresenter {
         Label getTaskIdText();
 
         Label getTaskNameText();
-        
+
         Label getUsersGroupsControlsPanel();
-        
+
         UnorderedList getNavBarUL();
     }
 
@@ -106,44 +103,42 @@ public class TaskAssignmentsPopupPresenter {
         return view;
     }
 
-   
-    public void delegateTask(final long taskId, String entity){
+    public void delegateTask( final long taskId,
+                              String entity ) {
         taskServices.call( new RemoteCallback<Void>() {
-            @Override
-            public void callback( Void nothing ) {
-                view.displayNotification("Task was succesfully delegated");
-                refreshTaskPotentialOwners(taskId);
-            }
-            
-            
-        }, new ErrorCallback() {
+                               @Override
+                               public void callback( Void nothing ) {
+                                   view.displayNotification( "Task was succesfully delegated" );
+                                   refreshTaskPotentialOwners( taskId );
+                               }
 
-            @Override
-            public boolean error(Message message, Throwable throwable) {
-                view.displayNotification("Error: "+message);
-                return true;
-            }
-        } ).delegate(taskId, identity.getName(), entity);
+                           }, new ErrorCallback<Message>() {
+
+                               @Override
+                               public boolean error( Message message,
+                                                     Throwable throwable ) {
+                                   view.displayNotification( "Error: " + message );
+                                   return true;
+                               }
+                           }
+                         ).delegate( taskId, identity.getName(), entity );
     }
-    
 
     public void refreshTaskPotentialOwners( final long taskId ) {
-        List<Long> taskIds = new ArrayList<Long>(1);
-        taskIds.add(taskId);
+        List<Long> taskIds = new ArrayList<Long>( 1 );
+        taskIds.add( taskId );
         taskServices.call( new RemoteCallback<Map<Long, List<String>>>() {
             @Override
             public void callback( Map<Long, List<String>> ids ) {
-                if(ids.isEmpty()){
-                    view.getUsersGroupsControlsPanel().setText(constants.No_Potential_Owners());
-                }else{
-                    view.getUsersGroupsControlsPanel().setText((""+ids.get(taskId).toString()));
+                if ( ids.isEmpty() ) {
+                    view.getUsersGroupsControlsPanel().setText( constants.No_Potential_Owners() );
+                } else {
+                    view.getUsersGroupsControlsPanel().setText( ( "" + ids.get( taskId ).toString() ) );
                 }
             }
-        } ).getPotentialOwnersForTaskIds(taskIds);
+        } ).getPotentialOwnersForTaskIds( taskIds );
 
     }
-
-   
 
     @OnOpen
     public void onOpen() {
@@ -156,10 +151,10 @@ public class TaskAssignmentsPopupPresenter {
                 view.getTaskNameText().setText( details.getName() );
             }
         } ).getTaskDetails( taskId );
-        
+
         view.getTaskIdText().setText( String.valueOf( taskId ) );
         view.getNavBarUL().clear();
-        NavLink assignmentsLink = new NavLink( constants.Assignments());
+        NavLink assignmentsLink = new NavLink( constants.Assignments() );
         assignmentsLink.setStyleName( "active" );
 
         NavLink workLink = new NavLink( constants.Work() );
@@ -173,7 +168,7 @@ public class TaskAssignmentsPopupPresenter {
                 placeManager.goTo( placeRequestImpl );
             }
         } );
-        
+
         NavLink detailsLink = new NavLink( constants.Details() );
         detailsLink.addClickHandler( new ClickHandler() {
 
@@ -185,7 +180,7 @@ public class TaskAssignmentsPopupPresenter {
                 placeManager.goTo( placeRequestImpl );
             }
         } );
-        
+
         NavLink commentsLink = new NavLink( constants.Comments() );
         commentsLink.addClickHandler( new ClickHandler() {
 

@@ -16,28 +16,28 @@
 
 package org.jbpm.console.ng.bd.client.editors.deployment.newunit;
 
-import com.github.gwtbootstrap.client.ui.TextBox;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
-import org.jboss.errai.bus.client.api.ErrorCallback;
-import org.jboss.errai.bus.client.api.Message;
-import org.jboss.errai.bus.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.Caller;
+import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 import org.jbpm.console.ng.bd.model.events.DeployedUnitChangedEvent;
 import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
@@ -51,13 +51,13 @@ public class NewDeploymentPresenter {
     public interface NewDeploymentView extends UberView<NewDeploymentPresenter> {
 
         void displayNotification( String text );
-        
-        void showBusyIndicator(String message);
+
+        void showBusyIndicator( String message );
 
         void hideBusyIndicator();
 
         TextBox getGroupText();
-        
+
         void cleanForm();
     }
 
@@ -72,7 +72,7 @@ public class NewDeploymentPresenter {
 
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
-    
+
     @Inject
     private Event<DeployedUnitChangedEvent> unitChanged;
 
@@ -103,27 +103,34 @@ public class NewDeploymentPresenter {
     public void init() {
     }
 
-    public void deployUnit(final String group, final String artifact, final String version, final String kbaseName, final String kieSessionName, String strategy) {
-        view.showBusyIndicator(constants.Please_Wait());
-        deploymentManager.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void nothing) {
-                view.cleanForm();
-                view.hideBusyIndicator();
-                view.displayNotification(" Kjar Deployed " + group + ":" + artifact + ":" + version);
-                unitChanged.fire(new DeployedUnitChangedEvent());
-                close();
-            }
-        }, new ErrorCallback() {
-           @Override
-           public boolean error(Message message, Throwable throwable) {
-               view.cleanForm();
-               view.hideBusyIndicator();
-               close();
-               view.displayNotification("Error: Deploy failed " + throwable.getMessage());
-               return true;
-           }
-       }).deploy(new KModuleDeploymentUnitSummary("", group, artifact, version, kbaseName, kieSessionName, strategy));
+    public void deployUnit( final String group,
+                            final String artifact,
+                            final String version,
+                            final String kbaseName,
+                            final String kieSessionName,
+                            String strategy ) {
+        view.showBusyIndicator( constants.Please_Wait() );
+        deploymentManager.call( new RemoteCallback<Void>() {
+                                    @Override
+                                    public void callback( Void nothing ) {
+                                        view.cleanForm();
+                                        view.hideBusyIndicator();
+                                        view.displayNotification( " Kjar Deployed " + group + ":" + artifact + ":" + version );
+                                        unitChanged.fire( new DeployedUnitChangedEvent() );
+                                        close();
+                                    }
+                                }, new ErrorCallback<Message>() {
+                                    @Override
+                                    public boolean error( Message message,
+                                                          Throwable throwable ) {
+                                        view.cleanForm();
+                                        view.hideBusyIndicator();
+                                        close();
+                                        view.displayNotification( "Error: Deploy failed " + throwable.getMessage() );
+                                        return true;
+                                    }
+                                }
+                              ).deploy( new KModuleDeploymentUnitSummary( "", group, artifact, version, kbaseName, kieSessionName, strategy ) );
     }
 
     @OnOpen

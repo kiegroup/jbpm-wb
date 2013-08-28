@@ -22,8 +22,8 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import org.jboss.errai.bus.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.uberfire.lifecycle.OnOpen;
