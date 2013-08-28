@@ -34,7 +34,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
-import org.jboss.errai.ioc.client.container.IOCBeanManager;
+import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jbpm.console.ng.client.i18n.Constants;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
@@ -65,7 +65,7 @@ public class ShowcaseEntryPoint {
     private ActivityManager activityManager;
 
     @Inject
-    private IOCBeanManager iocManager;
+    private SyncBeanManager iocManager;
 
     @Inject
     public Identity identity;
@@ -109,14 +109,14 @@ public class ShowcaseEntryPoint {
                 result.add( MenuFactory.newSimpleItem( constants.Role() +": " + role.getName() ).endMenu().build().getItems().get( 0 ) );
             }
         }
-        
+
         result.add( MenuFactory.newSimpleItem( constants.Users() ).respondsWith( new Command() {
             @Override
             public void execute() {
                 placeManager.goTo( new DefaultPlaceRequest( "Identity" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
-        
+
         result.add(MenuFactory.newSimpleItem(constants.LogOut()).respondsWith(new Command() {
                     @Override
                     public void execute() {
@@ -161,14 +161,14 @@ public class ShowcaseEntryPoint {
 
     private List<? extends MenuItem> getDeploymentViews() {
         final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
-        
+
         result.add( MenuFactory.newSimpleItem( constants.Deployments() ).respondsWith( new Command() {
             @Override
             public void execute() {
                 placeManager.goTo( new DefaultPlaceRequest( "Deployments" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
-        
+
         result.add( MenuFactory.newSimpleItem( constants.Jobs() ).respondsWith( new Command() {
             @Override
             public void execute() {
@@ -215,8 +215,8 @@ public class ShowcaseEntryPoint {
         return result;
     }
 
-   
-    
+
+
     private AbstractWorkbenchPerspectiveActivity getDefaultPerspectiveActivity() {
         AbstractWorkbenchPerspectiveActivity defaultPerspective = null;
         final Collection<IOCBeanDef<AbstractWorkbenchPerspectiveActivity>> perspectives = iocManager
