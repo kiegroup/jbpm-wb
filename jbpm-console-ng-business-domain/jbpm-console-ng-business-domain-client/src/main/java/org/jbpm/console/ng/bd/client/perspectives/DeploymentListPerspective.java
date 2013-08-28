@@ -26,8 +26,11 @@ import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.PanelType;
 import org.uberfire.workbench.model.PerspectiveDefinition;
+import org.uberfire.workbench.model.Position;
+import org.uberfire.workbench.model.impl.PanelDefinitionImpl;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
@@ -50,6 +53,13 @@ public class DeploymentListPerspective {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_LIST);
         p.setName("Deployments");
         p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Deployments List")));
+
+        final PanelDefinition problems = new PanelDefinitionImpl( PanelType.MULTI_LIST );
+        problems.setHeight(200);
+        problems.setMinWidth(100);
+        problems.addPart(new PartDefinitionImpl(new DefaultPlaceRequest("org.kie.guvnor.Problems")));
+        p.getRoot().insertChild( Position.SOUTH, problems );
+
         p.setTransient(true);
         return p;
     }
