@@ -407,7 +407,7 @@
 
 .month .day-tasks-container .top {
     position: absolute;
-    z-index: 20;
+    z-index: 9;
     -webkit-box-shadow:  0px 3px 1px 0px rgba(0,0,0,.6); 
     box-shadow:  0px 3px 1px 0px rgba(0,0,0,.6);
     right: 1px;
