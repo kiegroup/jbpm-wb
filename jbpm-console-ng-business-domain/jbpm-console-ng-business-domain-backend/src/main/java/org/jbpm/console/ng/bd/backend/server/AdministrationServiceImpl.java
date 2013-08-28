@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.bd.backend.server;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,7 +40,6 @@ import org.jbpm.kie.services.api.DeploymentUnit;
 import org.jbpm.kie.services.api.Kjar;
 import org.jbpm.kie.services.api.Vfs;
 import org.kie.commons.io.IOService;
-import org.kie.commons.java.nio.file.FileSystemAlreadyExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.organizationalunit.OrganizationalUnit;
@@ -112,9 +110,7 @@ public class AdministrationServiceImpl implements AdministrationService {
                 env.put( "username", userName );
                 env.put( "crypt:password", password );
 
-                repositoryService.createRepository( "git", repoAlias, env );
-                repository = repositoryService.getRepository( repoAlias );
-
+                repository = repositoryService.createRepository( "git", repoAlias, env );
             }
         } catch (Exception e) {
             // don't fail on creation of repository, just log the cause
@@ -141,17 +137,6 @@ public class AdministrationServiceImpl implements AdministrationService {
                 if (!found) {
                     organizationalUnitService.addRepository(demoOrganizationalUnit, repository);
                 }
-            }
-        }
-
-        if (repository != null) {
-
-            try {
-                ioService.newFileSystem( URI.create( repository.getUri() ), repository.getEnvironment() );
-
-            } catch ( FileSystemAlreadyExistsException e ) {
-                ioService.getFileSystem( URI.create( repository.getUri() ) );
-
             }
         }
     }
