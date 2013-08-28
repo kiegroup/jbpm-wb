@@ -16,6 +16,7 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
+import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -30,6 +31,9 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.cellview.client.ColumnSortEvent;
+import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import java.util.HashMap;
 import javax.enterprise.event.Event;
@@ -82,6 +86,8 @@ public class TasksListPresenter {
         String getCurrentFilter();
        
         void setCurrentFilter(String currentFilter);
+        
+        DataGrid<TaskSummary> getTaskListGrid();
     }
 
     public enum TaskType {
@@ -152,12 +158,22 @@ public class TasksListPresenter {
     }
 
     public void filterTasks(String text) {
+        ColumnSortList.ColumnSortInfo sortInfo = null;
+        if(view.getTaskListGrid().getColumnSortList().size() > 0){
+            sortInfo = view.getTaskListGrid().getColumnSortList().get(0);
+        }
         if(text.equals("")){
                 if(allTaskSummaries != null){
                     dataProvider.getList().clear();
                     dataProvider.getList().addAll(new ArrayList<TaskSummary>(allTaskSummaries));
-                    dataProvider.refresh();
-                    
+                    if(sortInfo != null){
+                        if(sortInfo.isAscending()){
+                            view.getTaskListGrid().getColumnSortList().clear();
+                            ColumnSortInfo columnSortInfo = new ColumnSortInfo( sortInfo.getColumn(), sortInfo.isAscending() );
+                            view.getTaskListGrid().getColumnSortList().push(columnSortInfo);
+                            ColumnSortEvent.fire(view.getTaskListGrid(), view.getTaskListGrid().getColumnSortList());
+                        }
+                    }
                 }
                 if(currentDayTasks != null){
                     view.getTaskListMultiDayBox().clear();
@@ -177,7 +193,12 @@ public class TasksListPresenter {
                 }
                 dataProvider.getList().clear();
                 dataProvider.getList().addAll(filteredTasksSimple);
-                dataProvider.refresh();
+                if(sortInfo != null){
+                     if(sortInfo.isAscending()){
+                        view.getTaskListGrid().getColumnSortList().push(sortInfo.getColumn());
+                        ColumnSortEvent.fire(view.getTaskListGrid(), view.getTaskListGrid().getColumnSortList());
+                     }
+                }
             }
             if(currentDayTasks != null){
                 Map<Day, List<TaskSummary>> tasksCalendar = new HashMap<Day, List<TaskSummary>>(currentDayTasks);
@@ -268,6 +289,7 @@ public class TasksListPresenter {
      * Refresh tasks based on specified date, view (day/week/month) and task type.
      */
     public void refreshTasks(Date date, TaskView taskView, TaskType taskType) {
+        
         switch (taskType) {
             case PERSONAL:
                 refreshPersonalTasks(date, taskView);
@@ -351,13 +373,14 @@ public class TasksListPresenter {
         statuses.add("Ready");
         statuses.add("Reserved");
         statuses.add("InProgress");
+        
+        
         if(taskView.equals(TaskView.GRID)) {
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
                     allTaskSummaries = tasks;
                     filterTasks(view.getCurrentFilter());
-                    view.getSelectionModel().clear();
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
         } else {
@@ -385,7 +408,6 @@ public class TasksListPresenter {
                 public void callback(List<TaskSummary> tasks) {
                    allTaskSummaries = tasks;
                    filterTasks(view.getCurrentFilter());
-                   view.getSelectionModel().clear();
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
         } else {
@@ -423,7 +445,6 @@ public class TasksListPresenter {
                 public void callback(List<TaskSummary> tasks) {
                    allTaskSummaries = tasks;
                    filterTasks(view.getCurrentFilter());
-                   view.getSelectionModel().clear();
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
         } else {
