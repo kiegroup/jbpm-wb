@@ -496,16 +496,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             }
         });
 
-        Column<TaskSummary, Boolean> checkColumn = new Column<TaskSummary, Boolean>(new CheckboxCell(true, false)) {
-            @Override
-            public Boolean getValue(TaskSummary object) {
-                // Get the value from the selection model.
-                return selectionModel.isSelected(object);
-            }
-        };
-        myTaskListGrid.addColumn(checkColumn, new ResizableHeader("", myTaskListGrid, checkColumn));
-        myTaskListGrid.setColumnWidth(checkColumn, "40px");
-
         // Id
         taskIdColumn = new Column<TaskSummary, Number>(new NumberCell()) {
             @Override
