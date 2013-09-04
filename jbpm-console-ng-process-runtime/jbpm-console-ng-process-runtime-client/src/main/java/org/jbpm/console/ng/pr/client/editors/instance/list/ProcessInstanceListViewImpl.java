@@ -254,7 +254,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
                  if (BrowserEvents.CLICK.equalsIgnoreCase(event.getNativeEvent().getType())) {
                     int column = event.getColumn();
                     int columnCount = processInstanceListGrid.getColumnCount();
-                    if(column != columnCount - 1){
+                    if(column != 0 && column != columnCount - 1){
                         ProcessInstanceSummary processInstance = event.getValue();
                         PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instances With Details" );
                         placeRequestImpl.addParameter( "processInstanceId", String.valueOf(processInstance.getId()) );
@@ -420,7 +420,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
             @Override
             public void execute( ProcessInstanceSummary processInstance ) {
 
-                presenter.abortProcessInstance( processInstance.getProcessId(), processInstance.getId() );
+                presenter.abortProcessInstance( processInstance.getId() );
             }
         } ) );
 

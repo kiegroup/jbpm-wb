@@ -17,6 +17,7 @@
 package org.jbpm.console.ng.bd.service;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
 
@@ -28,6 +29,8 @@ public interface KieSessionEntryPoint {
     long startProcess(String domainId, String processId, Map<String, String> params);
 
     void abortProcessInstance(long processInstanceId);
+    
+    void abortProcessInstances(List<Long> processInstanceIds);
 
     void suspendProcessInstance(long processInstanceId);
 
