@@ -158,4 +158,6 @@ public interface Constants extends Messages {
     String Type_Role();
        
     String Parent_Group();
+
+    String Save();
 }

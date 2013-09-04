@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ht.client.editors.taskcomments;
+package org.jbpm.console.ng.ht.client.editors.taskcomments.popup;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import java.util.Comparator;

@@ -22,7 +22,6 @@ import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.ControlLabel;
 import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -40,22 +39,14 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
-@Templated(value = "TaskDetailsPopupViewImpl.html")
-public class TaskDetailsPopupViewImpl extends Composite implements TaskDetailsPopupPresenter.TaskDetailsPopupView {
+@Templated(value = "TaskDetailsViewImpl.html")
+public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresenter.TaskDetailsPopupView {
 
-    private TaskDetailsPopupPresenter presenter;
-
-    @Inject
-    @DataField
-    public Label taskIdText;
+    private TaskDetailsPresenter presenter;
 
     @Inject
     @DataField
     public TextBox userText;
-
-    @Inject
-    @DataField
-    public Label taskNameText;
 
     @Inject
     @DataField
@@ -138,9 +129,6 @@ public class TaskDetailsPopupViewImpl extends Composite implements TaskDetailsPo
 
     private String[] priorities = { "0 - High", "1", "2", "3", "4", "5 - Medium", "6", "7", "8", "9", "10 - Low" };
 
-    @Inject
-    @DataField
-    public UnorderedList navBarUL;
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -150,7 +138,7 @@ public class TaskDetailsPopupViewImpl extends Composite implements TaskDetailsPo
     private Constants constants = GWT.create( Constants.class );
 
     @Override
-    public void init( TaskDetailsPopupPresenter presenter ) {
+    public void init( TaskDetailsPresenter presenter ) {
         this.presenter = presenter;
 
         // Commented out until we add the posibility of adding sub tasks
@@ -163,16 +151,10 @@ public class TaskDetailsPopupViewImpl extends Composite implements TaskDetailsPo
             taskPriorityListBox.addItem( priority );
 
         }
-        
-        dueDate.setHighlightToday(true);
-        dueDate.setShowTodayButton(true);
-        dueDate.setFormat("dd/mm/yyyy hh:ii");
-        dueDate.setAutoClose(true);
 
         taskStatusLabel.add( new HTMLPanel( constants.Status() ) );
         userLabel.add( new HTMLPanel( constants.User() ) );
         dueDateLabel.add( new HTMLPanel( constants.Due_On() ) );
-        
         taskPriorityLabel.add( new HTMLPanel( constants.Priority() ) );
 
         processInstanceIdLabel.add( new HTMLPanel( constants.Process_Instance_Id() ) );
@@ -189,7 +171,7 @@ public class TaskDetailsPopupViewImpl extends Composite implements TaskDetailsPo
 
     @EventHandler("updateTaskButton")
     public void updateTaskButton( ClickEvent e ) {
-        presenter.updateTask( Long.parseLong( taskIdText.getText() ), taskNameText.getText(), taskDescriptionTextArea.getText(),
+        presenter.updateTask( taskDescriptionTextArea.getText(),
                               userText.getText(),
                               // subTaskStrategyListBox.getItemText(subTaskStrategyListBox.getSelectedIndex()),
                               dueDate.getValue(), taskPriorityListBox.getSelectedIndex() );
@@ -205,16 +187,6 @@ public class TaskDetailsPopupViewImpl extends Composite implements TaskDetailsPo
     @Override
     public TextBox getUserText() {
         return userText;
-    }
-
-    @Override
-    public Label getTaskIdText() {
-        return taskIdText;
-    }
-
-    @Override
-    public Label getTaskNameText() {
-        return taskNameText;
     }
 
     @Override
@@ -272,9 +244,5 @@ public class TaskDetailsPopupViewImpl extends Composite implements TaskDetailsPo
         return pIDetailsButton;
     }
 
-    @Override
-    public UnorderedList getNavBarUL() {
-        return navBarUL;
-    }
 
 }

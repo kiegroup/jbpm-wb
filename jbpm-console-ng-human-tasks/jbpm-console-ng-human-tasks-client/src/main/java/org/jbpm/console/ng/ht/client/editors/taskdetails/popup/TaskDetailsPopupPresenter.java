@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ht.client.editors.taskdetails;
+package org.jbpm.console.ng.ht.client.editors.taskdetails.popup;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -251,7 +251,7 @@ public class TaskDetailsPopupPresenter {
             @Override
             public void onClick( ClickEvent event ) {
                 close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display Popup");
                 placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
                 placeManager.goTo(placeRequestImpl);
             }

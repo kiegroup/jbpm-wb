@@ -13,12 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jbpm.console.ng.ht.client.perspectives;
+package org.jbpm.console.ng.pr.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import org.jbpm.console.ng.ht.model.events.TaskSearchEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessDefinitionsSearchEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessInstancesSearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
 import org.uberfire.lifecycle.OnStartup;
@@ -36,38 +37,36 @@ import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 /**
- * A Perspective to show File Explorer
+ * A Perspective to show the Process Instances With Details
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Tasks With Details", isDefault = false)
-public class TasksListSplitPerspective {
+@WorkbenchPerspective(identifier = "Process Instances With Details", isDefault = false)
+public class ProcessInstancesSplitPerspective {
 
     @Inject
     private ContextualSearch contextualSearch;
     
     @Inject
-    private Event<TaskSearchEvent> searchEvents;
+    private Event<ProcessInstancesSearchEvent> searchEvents;
     
-    private String selectedTaskId = "";
+    private String selectedProcessInstanceId = "";
     
-    private String selectedTaskName = "";
+    private String selectedProcessDefId = "";
+    
     
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        
-        
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_LIST);
-        p.setName( "Tasks" );
-        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Tasks List" ) ) );
+        p.setName( "Process Instances" );
+        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Process Instance List" ) ) );
         
         final PanelDefinition east = new PanelDefinitionImpl(PanelType.MULTI_LIST);
         east.setWidth( 500 );
         east.setMinWidth( 400 );
         
-        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Task Details Multi" );
-        defaultPlaceRequest.addParameter( "taskId", selectedTaskId );
-        defaultPlaceRequest.addParameter( "taskName", selectedTaskName );
-        
+        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Process Instance Details" );
+        defaultPlaceRequest.addParameter( "processInstanceId", selectedProcessInstanceId );
+        defaultPlaceRequest.addParameter( "processDefId", selectedProcessDefId );
         east.addPart( new PartDefinitionImpl( defaultPlaceRequest ) );
         p.getRoot().insertChild( Position.EAST, east );
         
@@ -78,16 +77,18 @@ public class TasksListSplitPerspective {
     
     @OnStartup
     public void onStartup(final PlaceRequest place) {
-        this.selectedTaskId = place.getParameter( "taskId", "0" );
-        this.selectedTaskName = place.getParameter( "taskName", "" );
+        this.selectedProcessInstanceId = place.getParameter( "processInstanceId", "" );
+        this.selectedProcessDefId= place.getParameter( "processDefId", "" );
         contextualSearch.setSearchBehavior(new SearchBehavior() {
+
             @Override
             public void execute(String searchFilter) {
-                searchEvents.fire(new TaskSearchEvent(searchFilter));
+                searchEvents.fire(new ProcessInstancesSearchEvent(searchFilter));
             }
-           
+ 
         });
         
     }
+    
 
 }

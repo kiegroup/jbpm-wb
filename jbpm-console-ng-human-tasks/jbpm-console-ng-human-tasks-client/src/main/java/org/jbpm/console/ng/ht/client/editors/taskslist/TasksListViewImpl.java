@@ -336,12 +336,10 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         myTaskListGrid = new DataGrid<TaskSummary>();
         myTaskListGrid.setStyleName("table table-bordered table-striped table-hover");
 
-        pager.setStyleName("pagination pagination-right pull-right");
         pager.setDisplay(myTaskListGrid);
         pager.setPageSize(10);
 
         tasksViewContainer.add(myTaskListGrid);
-        tasksViewContainer.setHeight("90px");
 
         // Set the message to display when the table is empty.
         myTaskListGrid.setEmptyTableWidget(new HTMLPanel(constants.No_Tasks_Found()));
@@ -437,8 +435,9 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                     int columnCount = myTaskListGrid.getColumnCount();
                     if (column != columnCount - 1) {
                         TaskSummary task = event.getValue();
-                        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Popup");
+                        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Tasks With Details");
                         placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
+                        placeRequestImpl.addParameter("taskName",task.getName());
                         placeManager.goTo(placeRequestImpl);
                     }
                 }
@@ -597,8 +596,9 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         cells.add(new DetailsHasCell("Details", new ActionCell.Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Task Details Popup");
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Tasks With Details");
                 placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
+                placeRequestImpl.addParameter("taskName",task.getName());
                 placeManager.goTo(placeRequestImpl);
             }
         }));
@@ -615,9 +615,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         cells.add(new CompleteActionHasCell("Complete", new ActionCell.Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display Popup");
                 placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
-
                 placeManager.goTo(placeRequestImpl);
             }
         }));

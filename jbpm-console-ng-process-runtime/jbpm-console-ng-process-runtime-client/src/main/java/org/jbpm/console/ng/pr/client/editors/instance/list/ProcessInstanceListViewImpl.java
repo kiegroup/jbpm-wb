@@ -38,6 +38,7 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -47,6 +48,7 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -57,6 +59,7 @@ import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
 import org.jbpm.console.ng.pr.client.util.ResizableHeader;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessSelectionEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.mvp.PlaceManager;
@@ -126,7 +129,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
     private ListHandler<ProcessInstanceSummary> sortHandler;
 
     public ProcessInstanceListViewImpl() {
-        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+        pager = new SimplePager(SimplePager.TextLocation.LEFT, false, true);
     }
 
     public String getCurrentFilter() {
@@ -143,7 +146,6 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         
         listContainer.add( processInstanceListGrid );
         
-        pager.setStyleName("pagination pagination-right pull-right");
         pager.setDisplay(processInstanceListGrid);
         pager.setPageSize(10);
 
@@ -230,10 +232,12 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
 
     }
 
+    @Override
     public DataGrid<ProcessInstanceSummary> getProcessInstanceListGrid() {
         return processInstanceListGrid;
     }
 
+    @Override
     public Set<ProcessInstanceSummary> getSelectedProcessInstances() {
         return selectedProcessInstances;
     }
@@ -241,6 +245,27 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
     
 
     private void initTableColumns( final SelectionModel<ProcessInstanceSummary> selectionModel ) {
+        
+        processInstanceListGrid.addCellPreviewHandler(new CellPreviewEvent.Handler<ProcessInstanceSummary>() {
+             
+             @Override
+             public void onCellPreview(final CellPreviewEvent<ProcessInstanceSummary> event) {
+
+                 if (BrowserEvents.CLICK.equalsIgnoreCase(event.getNativeEvent().getType())) {
+                    int column = event.getColumn();
+                    int columnCount = processInstanceListGrid.getColumnCount();
+                    if(column != columnCount - 1){
+                        ProcessInstanceSummary processInstance = event.getValue();
+                        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instances With Details" );
+                        placeRequestImpl.addParameter( "processInstanceId", String.valueOf(processInstance.getId()) );
+                        placeRequestImpl.addParameter( "processDefId", processInstance.getProcessId() );
+                        placeManager.goTo(placeRequestImpl);
+                    }
+                 }
+
+             }
+          });    
+
         // Checkbox column. This table will uses a checkbox column for selection.
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
         // mouse selection.
@@ -292,7 +317,6 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         } );
         processInstanceListGrid.addColumn( processInitiatorColumn, new ResizableHeader( constants.Initiator(),
                                                                                         processInstanceListGrid, processInitiatorColumn ) );
-        processInstanceListGrid.setColumnWidth( processInitiatorColumn, "180px" );
         // Process Version.
         Column<ProcessInstanceSummary, String> processVersionColumn = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
             @Override
@@ -368,16 +392,14 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         } );
         processInstanceListGrid.addColumn( startTimeColumn, new ResizableHeader( constants.Start_Date(), processInstanceListGrid,
                                                                                  startTimeColumn ) );
-        processInstanceListGrid.setColumnWidth( startTimeColumn, "210px" );
 
         List<HasCell<ProcessInstanceSummary, ?>> cells = new LinkedList<HasCell<ProcessInstanceSummary, ?>>();
 
         cells.add( new DetailsActionHasCell( "Details", new Delegate<ProcessInstanceSummary>() {
             @Override
             public void execute( ProcessInstanceSummary processInstance ) {
-
-                DefaultPlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instance Details" );
-                placeRequestImpl.addParameter( "processInstanceId", Long.toString( processInstance.getId() ) );
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instances With Details" );
+                placeRequestImpl.addParameter( "processInstanceId", String.valueOf(processInstance.getId()) );
                 placeRequestImpl.addParameter( "processDefId", processInstance.getProcessId() );
                 placeManager.goTo( placeRequestImpl );
             }

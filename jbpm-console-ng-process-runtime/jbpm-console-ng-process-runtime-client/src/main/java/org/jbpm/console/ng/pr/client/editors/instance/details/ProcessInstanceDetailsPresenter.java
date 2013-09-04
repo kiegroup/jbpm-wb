@@ -16,21 +16,17 @@
 
 package org.jbpm.console.ng.pr.client.editors.instance.details;
 
-import com.github.gwtbootstrap.client.ui.Label;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.ListBox;
-import com.github.gwtbootstrap.client.ui.TextArea;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
+import java.util.ArrayList;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -56,6 +52,7 @@ import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
@@ -122,7 +119,6 @@ public class ProcessInstanceDetailsPresenter {
     @Inject
     private Caller<VFSService> fileServices;
 
-    private ListDataProvider<VariableSummary> dataProvider = new ListDataProvider<VariableSummary>();
     
     private String processInstanceId = "";
     
@@ -233,7 +229,6 @@ public class ProcessInstanceDetailsPresenter {
             }
         } ).getProcessInstanceCompletedNodes( Long.parseLong( processId ) );
 
-        loadVariables( processId, processDefId );
 
         dataServices.call( new RemoteCallback<ProcessSummary>() {
             @Override
@@ -253,17 +248,7 @@ public class ProcessInstanceDetailsPresenter {
         } ).getProcessById( processDefId );
     }
 
-    public void addDataDisplay( HasData<VariableSummary> display ) {
-        dataProvider.addDataDisplay( display );
-    }
-
-    public ListDataProvider<VariableSummary> getDataProvider() {
-        return dataProvider;
-    }
-
-    public void refreshData() {
-        dataProvider.refresh();
-    }
+    
 
     @OnStartup
     public void onStartup( final PlaceRequest place ) {
@@ -279,17 +264,6 @@ public class ProcessInstanceDetailsPresenter {
         refreshProcessInstanceData( processInstanceId, processDefId );
     }
 
-    public void loadVariables( final String processId,
-                               final String processDefId ) {
-        dataServices.call( new RemoteCallback<List<VariableSummary>>() {
-            @Override
-            public void callback( List<VariableSummary> variables ) {
-                dataProvider.getList().clear();
-                dataProvider.getList().addAll( variables );
-                dataProvider.refresh();
-            }
-        } ).getVariablesCurrentState( Long.parseLong( processId ), processDefId );
-    }
     
     @WorkbenchMenu
     public Menus getMenus() {
@@ -298,23 +272,44 @@ public class ProcessInstanceDetailsPresenter {
     
     private void makeMenuBar() {
         menus = MenuFactory
-                .newTopLevelMenu( constants.Signal())
-                .respondsWith(new Command() {
-                        @Override
+                .newTopLevelMenu(constants.Actions())
+                .withItems(getActions())
+                .endMenu()
+                .newTopLevelMenu(constants.Views())
+                .withItems(getViews())
+                .endMenu()
+                .newTopLevelMenu( constants.Refresh() )
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        refreshProcessInstanceData( view.getProcessInstanceIdText().getText(), 
+                                view.getProcessDefinitionIdText().getText() );
+                        view.displayNotification( constants.Process_Instances_Details_Refreshed() );
+                    }
+                } )
+                .endMenu()
+                .build();
+
+    }
+    
+    private List<? extends MenuItem> getActions() {
+        List<MenuItem> actions = new ArrayList<MenuItem>(2);
+        actions.add(MenuFactory.newSimpleItem(constants.Signal()).respondsWith(new Command() {
+            @Override
                         public void execute() {
 
                             PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Signal Process Popup");
                             placeRequestImpl.addParameter("processInstanceId", view.getProcessInstanceIdText().getText());
                             placeManager.goTo(placeRequestImpl);
                         }
-                })
-                .endMenu()
-                .newTopLevelMenu( constants.Abort())
-                .respondsWith(new Command() {
-                    @Override
-                    public void execute() {
-                        final long processInstanceId = Long.parseLong(view.getProcessInstanceIdText().getText());
-                        kieSessionServices.call(new RemoteCallback<Void>() {
+        }).endMenu().build().getItems().get(0));
+        
+        actions.add(MenuFactory.newSimpleItem(constants.Abort()).respondsWith(new Command() {
+            @Override
+                        public void execute() {
+
+                            final long processInstanceId = Long.parseLong(view.getProcessInstanceIdText().getText());
+                                kieSessionServices.call(new RemoteCallback<Void>() {
                                 @Override
                                 public void callback(Void v) {
                                     refreshProcessInstanceData( view.getProcessInstanceIdText().getText(), 
@@ -323,11 +318,16 @@ public class ProcessInstanceDetailsPresenter {
                                     
                                 }
                             }).abortProcessInstance(processInstanceId);
-  
-                    }
-                })
-                .endMenu()
-                .newTopLevelMenu( constants.View_Process_Model())
+                        }
+        }).endMenu().build().getItems().get(0));
+        
+        return actions;
+    }
+    
+    
+    private List<? extends MenuItem> getViews() {
+        List<MenuItem> views = new ArrayList<MenuItem>(2);
+        views.add(MenuFactory.newSimpleItem(constants.Process_Model())
                 .respondsWith( new Command() {
                     @Override
                     public void execute() {
@@ -363,19 +363,20 @@ public class ProcessInstanceDetailsPresenter {
 
                         placeManager.goTo( view.getProcessAssetPath(), placeRequestImpl );
                     }
-                } )
-                .endMenu()
-                .newTopLevelMenu( constants.Refresh() )
-                .respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        refreshProcessInstanceData( view.getProcessInstanceIdText().getText(), 
-                                view.getProcessDefinitionIdText().getText() );
-                        view.displayNotification( constants.Process_Instances_Details_Refreshed() );
-                    }
-                } )
-                .endMenu().build();
+                } ).endMenu().build().getItems().get(0));
+        
+       views.add(MenuFactory.newSimpleItem(constants.Process_Variables()).respondsWith(new Command() {
+            @Override
+                        public void execute() {
 
+                            PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Variables List");
+                            placeRequestImpl.addParameter("processInstanceId", view.getProcessInstanceIdText().getText());
+                            placeRequestImpl.addParameter("processDefId", view.getProcessDefinitionIdText().getText());
+                            placeManager.goTo(placeRequestImpl);
+                        }
+        }).endMenu().build().getItems().get(0));
+        
+        return views;
     }
 
 }
