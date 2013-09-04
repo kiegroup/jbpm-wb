@@ -53,6 +53,8 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -88,6 +90,24 @@ public class TasksListPresenter {
         void setCurrentFilter(String currentFilter);
         
         DataGrid<TaskSummary> getTaskListGrid();
+        
+        void setGridView();
+        
+        void setDayView();
+        
+        void setWeekView();
+        
+        void setMonthView();
+        
+        void setAllTasks();
+        
+        void setActiveTasks();
+        
+        void setGroupTasks();
+        
+        void setPersonalTasks();
+        
+        void changeCurrentDate(Date date);
     }
 
     public enum TaskType {
@@ -114,7 +134,8 @@ public class TasksListPresenter {
     
     private Menus menus;
     
-   
+    private PlaceRequest place;
+    
     @Inject
     private PlaceManager placeManager;
     @Inject
@@ -499,6 +520,83 @@ public class TasksListPresenter {
     public void onSearchEvent(@Observes final TaskSearchEvent searchEvent){
         view.setCurrentFilter(searchEvent.getFilter());
         refreshTasks(view.getCurrentDate(), view.getCurrentView(), view.getCurrentTaskType());
+    }
+    
+    @OnStartup
+    public void onStartup(final PlaceRequest place) {
+        this.place = place;
+    }
+    
+    @OnOpen
+    public void onOpen() {
+        String currentView =  place.getParameter("currentView", "");
+        String currentTaskType =  place.getParameter("currentTaskType", "");
+        String currentDateString =  place.getParameter("currentDate", "");
+        view.setCurrentFilter(place.getParameter("currentFilter", ""));
+        Date currentDate = null;
+        if(!currentDateString.equals("")){
+           currentDate =  new Date(Long.valueOf(currentDateString));
+        }else{
+            currentDate = new Date();
+        }
+        view.changeCurrentDate(currentDate);
+        TaskView currentTaskView = TaskView.GRID;
+        TaskType currentTaskTypeEnum = TaskType.ACTIVE;
+        if(!currentView.equals("")){
+            currentTaskView = TaskView.valueOf(currentView);
+        }
+        
+        if(!currentTaskType.equals("")){
+            currentTaskTypeEnum = TaskType.valueOf(currentTaskType);
+        }
+        
+        switch(currentTaskView){
+            case GRID:
+                view.setGridView();
+                break;
+            case DAY:
+                view.setDayView();
+                break;
+            case WEEK:
+                view.setWeekView();
+                break;
+            case MONTH:
+                view.setMonthView();
+                break;
+        }
+        
+        switch(currentTaskTypeEnum){
+            case ACTIVE:
+                view.setActiveTasks();
+                break;
+            case PERSONAL:
+                view.setPersonalTasks();
+                break;
+            case GROUP:
+                view.setGroupTasks();
+                break;
+            case ALL:
+                view.setAllTasks();
+                break;
+        }
+        
+        
+    }
+    
+    public Date getCurrentDate(){
+        return view.getCurrentDate();
+    }
+    
+    public TaskView getCurrentView(){
+        return view.getCurrentView();
+    }
+    
+    public TaskType getCurrentTaskType(){
+        return view.getCurrentTaskType();
+    }
+    
+    public String getCurrentFilter(){
+        return view.getCurrentFilter();
     }
     
 }

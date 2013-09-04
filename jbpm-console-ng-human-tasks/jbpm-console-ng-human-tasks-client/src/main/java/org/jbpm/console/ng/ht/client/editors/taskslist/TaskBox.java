@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
 import java.util.ArrayList;
@@ -22,8 +21,6 @@ import java.util.List;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
@@ -57,35 +54,34 @@ public class TaskBox extends Composite {
 
     public TaskBox() {
 
-        taskPanel.setStyleName( "task" );
-
-        taskNamePanel.add( taskNameLabel );
-        hourPanel.setStyleName( "hour" );
-        taskPanel.add( taskPriorityPanel );
-        taskPanel.add( hourPanel );
-        taskNamePanel.setStyleName( "task-name" );
-        taskPanel.add( taskNamePanel );
-        taskOptions.setStyleName( "task-options" );
-        taskPanel.add( taskOptions );
-        taskContainer.add( taskPanel );
+        taskPanel.setStyleName("task");
+        taskNamePanel.add(taskNameLabel);
+        hourPanel.setStyleName("hour");
+        taskPanel.add(taskPriorityPanel);
+        taskPanel.add(hourPanel);
+        taskNamePanel.setStyleName("task-name");
+        taskPanel.add(taskNamePanel);
+        taskOptions.setStyleName("task-options");
+        taskPanel.add(taskOptions);
+        taskContainer.add(taskPanel);
 
         // All composites must call initWidget() in their constructors.
-        initWidget( taskContainer );
+        initWidget(taskContainer);
 
     }
 
-    public TaskBox( final PlaceManager placeManager,
-                    final TasksListPresenter presenter,
-                    final Identity identity,
-                    final long taskId,
-                    final String taskName,
-                    final String actualOwner,
-                    final List<String> potentialOwners,
-                    final String status, final int priority, String hour ) {
+    public TaskBox(final PlaceManager placeManager,
+            final TasksListPresenter presenter,
+            final Identity identity,
+            final long taskId,
+            final String taskName,
+            final String actualOwner,
+            final List<String> potentialOwners,
+            final String status, final int priority, String hour) {
         this();
         this.taskId = taskId;
         this.taskName = taskName;
-        taskNameLabel.setText( taskName );
+        taskNameLabel.setText(taskName);
         this.actualOwner = actualOwner;
         this.potentialOwners = potentialOwners == null ? Collections.EMPTY_LIST : potentialOwners;
         this.status = status;
@@ -93,139 +89,145 @@ public class TaskBox extends Composite {
         this.identity = identity;
         this.priority = priority;
         this.hour = hour;
-        
+
         hourPanel.add(new Label(hour));
-        
-        if(priority == 0 || priority == 1){
-            taskPriorityPanel.setStyleName( "priority five" );
-        }else if(priority == 2 || priority == 3){ 
-            taskPriorityPanel.setStyleName( "priority four" );
-        }else if(priority == 4 || priority == 5){ 
-            taskPriorityPanel.setStyleName( "priority three" );
-        }else if(priority == 6 || priority == 7){ 
-            taskPriorityPanel.setStyleName( "priority two" );
+
+        if (priority == 0 || priority == 1) {
+            taskPriorityPanel.setStyleName("priority five");
+        } else if (priority == 2 || priority == 3) {
+            taskPriorityPanel.setStyleName("priority four");
+        } else if (priority == 4 || priority == 5) {
+            taskPriorityPanel.setStyleName("priority three");
+        } else if (priority == 6 || priority == 7) {
+            taskPriorityPanel.setStyleName("priority two");
+        } else if (priority == 8 || priority == 9 || priority == 10) {
+            taskPriorityPanel.setStyleName("priority one");
         }
-        else if(priority == 8 || priority == 9 || priority == 10){ 
-            taskPriorityPanel.setStyleName( "priority one" );
-        }
-        
-        
-        taskContainer.addClickHandler( new ClickHandler() {
+
+        taskContainer.addClickHandler(new ClickHandler() {
             @Override
-            public void onClick( ClickEvent event ) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Task Details Popup" );
-                placeRequestImpl.addParameter( "taskId", String.valueOf( taskId ) );
-                placeManager.goTo( placeRequestImpl );
+            public void onClick(ClickEvent event) {
+                String currentView = presenter.getCurrentView().toString();
+                String currentTaskType = presenter.getCurrentTaskType().toString();
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Tasks With Details");
+                placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
+                placeRequestImpl.addParameter("taskName", taskName);
+                placeRequestImpl.addParameter("currentView", currentView);
+                placeRequestImpl.addParameter("currentTaskType", currentTaskType);
+                if(presenter.getCurrentDate() != null){
+                    placeRequestImpl.addParameter("currentDate", String.valueOf(presenter.getCurrentDate().getTime()));
+                }
+                placeRequestImpl.addParameter("currentFilter", presenter.getCurrentFilter());
+                placeManager.goTo(placeRequestImpl);
             }
-        } );
+        });
 
         List<FocusPanel> options = new ArrayList<FocusPanel>();
         FlowPanel personalOrGroupTask = new FlowPanel();
         //Claim
-        if ( "".equals( actualOwner ) && status.equals( "Ready" ) ) {
-            if(!potentialOwners.isEmpty() && !(potentialOwners.size() == 1 && potentialOwners.contains("User:"+identity.getName()))){
-                personalOrGroupTask.setStyleName( "group-task" );
-                personalOrGroupTask.add( new HTML( "Group Task" ) );
-            }else{
-                personalOrGroupTask.setStyleName( "personal-task" );
-                personalOrGroupTask.add( new HTML( "Personal Task" ) );
+        if ("".equals(actualOwner) && status.equals("Ready")) {
+            if (!potentialOwners.isEmpty() && !(potentialOwners.size() == 1 && potentialOwners.contains("User:" + identity.getName()))) {
+                personalOrGroupTask.setStyleName("group-task");
+                personalOrGroupTask.add(new HTML("Group Task"));
+            } else {
+                personalOrGroupTask.setStyleName("personal-task");
+                personalOrGroupTask.add(new HTML("Personal Task"));
             }
             FlowPanel panel = new FlowPanel();
-            FocusPanel focusPanel = new FocusPanel( panel );
-            focusPanel.addClickHandler( new ClickHandler() {
+            FocusPanel focusPanel = new FocusPanel(panel);
+            focusPanel.addClickHandler(new ClickHandler() {
                 @Override
-                public void onClick( ClickEvent event ) {
-                    List<Long> tasks = new ArrayList<Long>( 1 );
-                    tasks.add( taskId );
-                    presenter.claimTasks( tasks, identity.getName() );
+                public void onClick(ClickEvent event) {
+                    List<Long> tasks = new ArrayList<Long>(1);
+                    tasks.add(taskId);
+                    presenter.claimTasks(tasks, identity.getName());
                     event.stopPropagation();
                 }
-            } );
-            panel.add( new HTML( "Claim" ) );
-            panel.setStyleName( "clickable claim" );
-            options.add( focusPanel );
-            
-        } 
-        //Release
-        else if ( !"".equals( actualOwner ) && actualOwner.equals(identity.getName())
+            });
+            panel.add(new HTML("Claim"));
+            panel.setStyleName("clickable claim");
+            options.add(focusPanel);
+
+        } //Release
+        else if (!"".equals(actualOwner) && actualOwner.equals(identity.getName())
                 && potentialOwners != null && !potentialOwners.isEmpty()
-                && ( status.equals( "Reserved" ) || status.equals( "InProgress" ) ) ) {
-   
-            if(!potentialOwners.isEmpty() &&
-                    !(potentialOwners.size() == 1 && potentialOwners.contains("User:"+identity.getName()))){
-                personalOrGroupTask.setStyleName( "group-task" );
-                personalOrGroupTask.add( new HTML( "Group Task" ) );
-            }else{
-                personalOrGroupTask.setStyleName( "personal-task" );
-                personalOrGroupTask.add( new HTML( "Personal Task" ) );
+                && (status.equals("Reserved") || status.equals("InProgress"))) {
+
+            if (!potentialOwners.isEmpty()
+                    && !(potentialOwners.size() == 1 && potentialOwners.contains("User:" + identity.getName()))) {
+                personalOrGroupTask.setStyleName("group-task");
+                personalOrGroupTask.add(new HTML("Group Task"));
+            } else {
+                personalOrGroupTask.setStyleName("personal-task");
+                personalOrGroupTask.add(new HTML("Personal Task"));
             }
             FlowPanel panel = new FlowPanel();
-            FocusPanel focusPanel = new FocusPanel( panel );
-            focusPanel.addClickHandler( new ClickHandler() {
+            FocusPanel focusPanel = new FocusPanel(panel);
+            focusPanel.addClickHandler(new ClickHandler() {
                 @Override
-                public void onClick( ClickEvent event ) {
-                    List<Long> tasks = new ArrayList<Long>( 1 );
-                    tasks.add( taskId );
-                    presenter.releaseTasks( tasks, identity.getName() );
+                public void onClick(ClickEvent event) {
+                    List<Long> tasks = new ArrayList<Long>(1);
+                    tasks.add(taskId);
+                    presenter.releaseTasks(tasks, identity.getName());
                     event.stopPropagation();
                 }
-            } );
-            panel.add( new HTML( "Release" ) );
-            panel.setStyleName( "clickable release" );
-            options.add( focusPanel );
+            });
+            panel.add(new HTML("Release"));
+            panel.setStyleName("clickable release");
+            options.add(focusPanel);
 
         } else {
-            personalOrGroupTask.setStyleName( "personal-task" );
-            personalOrGroupTask.add( new HTML( "Personal Task" ) );
+            personalOrGroupTask.setStyleName("personal-task");
+            personalOrGroupTask.add(new HTML("Personal Task"));
         }
         //Start
-        if ( status.equals( "Reserved" ) && actualOwner.equals(identity.getName())) {
+        if (status.equals("Reserved") && actualOwner.equals(identity.getName())) {
             FlowPanel panel = new FlowPanel();
-            FocusPanel focusPanel = new FocusPanel( panel );
-            focusPanel.addClickHandler( new ClickHandler() {
+            FocusPanel focusPanel = new FocusPanel(panel);
+            focusPanel.addClickHandler(new ClickHandler() {
                 @Override
-                public void onClick( ClickEvent event ) {
-                    List<Long> tasks = new ArrayList<Long>( 1 );
-                    tasks.add( taskId );
-                    presenter.startTasks( tasks, identity.getName() );
+                public void onClick(ClickEvent event) {
+                    List<Long> tasks = new ArrayList<Long>(1);
+                    tasks.add(taskId);
+                    presenter.startTasks(tasks, identity.getName());
                     event.stopPropagation();
                 }
-            } );
-            panel.add( new HTML( "Start" ) );
-            panel.setStyleName( "clickable start" );
-            options.add( focusPanel );
+            });
+            panel.add(new HTML("Start"));
+            panel.setStyleName("clickable start");
+            options.add(focusPanel);
 
         }
         //Complete
-        if ( status.equals( "InProgress" ) ) {
+        if (status.equals("InProgress")) {
             FlowPanel panel = new FlowPanel();
-            taskPanel.setStyleName( "task in-progress" );
-            FocusPanel focusPanel = new FocusPanel( panel );
-            focusPanel.addClickHandler( new ClickHandler() {
+            taskPanel.setStyleName("task in-progress");
+            FocusPanel focusPanel = new FocusPanel(panel);
+            focusPanel.addClickHandler(new ClickHandler() {
                 @Override
-                public void onClick( ClickEvent event ) {
+                public void onClick(ClickEvent event) {
                     PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
                     placeRequestImpl.addParameter("taskId", Long.toString(taskId));
 
                     placeManager.goTo(placeRequestImpl);
                     event.stopPropagation();
                 }
-            } );
-            panel.add( new HTML( "Complete" ) );
-            panel.setStyleName( "clickable complete" );
-            options.add( focusPanel );
+            });
+            panel.add(new HTML("Complete"));
+            panel.setStyleName("clickable complete");
+            options.add(focusPanel);
         }
 
-        for ( FocusPanel p : options ) {
-            taskOptions.add( p );
+        for (FocusPanel p : options) {
+            taskOptions.add(p);
         }
 
-        taskOptions.add( personalOrGroupTask );
+        taskOptions.add(personalOrGroupTask);
     }
 
-    public void setTaskName( String taskName ) {
+    public void setTaskName(String taskName) {
         this.taskName = taskName;
-        taskNameLabel.setText( taskName );
+        taskNameLabel.setText(taskName);
     }
 
 }

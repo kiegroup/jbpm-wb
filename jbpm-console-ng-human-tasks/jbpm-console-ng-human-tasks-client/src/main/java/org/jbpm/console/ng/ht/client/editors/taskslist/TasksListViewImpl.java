@@ -176,9 +176,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         calendarPicker.addValueChangeHandler(new ValueChangeHandler<Date>() {
             @Override
             public void onValueChange(ValueChangeEvent<Date> event) {
-                currentDate = event.getValue();
+                changeCurrentDate(event.getValue());
                 refreshTasks();
-
             }
         });
 
@@ -189,38 +188,16 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         dayViewTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                tasksViewContainer.clear();
-                tasksViewContainer.add(taskListMultiDayBox);
-                tasksViewContainer.setStyleName("day");
-                dayViewTasksNavLink.setStyleName("active");
-                weekViewTasksNavLink.setStyleName("");
-                monthViewTasksNavLink.setStyleName("");
-                gridViewTasksNavLink.setStyleName("");
-                currentView = TaskView.DAY;
-                calendarPicker.setViewType("day");
-                pager.setVisible(false);
-                tasksViewContainer.setHeight(getParent().getOffsetHeight()+ "px");
-                refreshTasks();
-                
+                setDayView();
 
             }
+
         });
         weekViewTasksNavLink.setText(constants.Week());
         weekViewTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                tasksViewContainer.clear();
-                tasksViewContainer.add(taskListMultiDayBox);
-                tasksViewContainer.setStyleName("week");
-                dayViewTasksNavLink.setStyleName("");
-                monthViewTasksNavLink.setStyleName("");
-                gridViewTasksNavLink.setStyleName("");
-                weekViewTasksNavLink.setStyleName("active");
-                currentView = TaskView.WEEK;
-                calendarPicker.setViewType("week");
-                pager.setVisible(false);
-                tasksViewContainer.setHeight(getParent().getOffsetHeight()+ "px");
-                refreshTasks();
+                setWeekView();
 
             }
         });
@@ -229,18 +206,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         monthViewTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                tasksViewContainer.clear();
-                tasksViewContainer.add(taskListMultiDayBox);
-                tasksViewContainer.setStyleName("month");
-                dayViewTasksNavLink.setStyleName("");
-                gridViewTasksNavLink.setStyleName("");
-                weekViewTasksNavLink.setStyleName("");
-                monthViewTasksNavLink.setStyleName("active");
-                currentView = TaskView.MONTH;
-                calendarPicker.setViewType("month");
-                pager.setVisible(false);
-                tasksViewContainer.setHeight(getParent().getOffsetHeight()+ "px");
-                refreshTasks();
+                setMonthView();
 
             }
         });
@@ -249,13 +215,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         gridViewTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-
-                initializeGridView();
-                pager.setVisible(true);
-                if ((getParent().getOffsetHeight() - 120) > 0) {
-                    tasksViewContainer.setHeight(getParent().getOffsetHeight() - 120 + "px");
-                }
-                refreshTasks();
+                setGridView();
 
             }
 
@@ -266,12 +226,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         showPersonalTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                showPersonalTasksNavLink.setStyleName("active");
-                showGroupTasksNavLink.setStyleName("");
-                showActiveTasksNavLink.setStyleName("");
-                showAllTasksNavLink.setStyleName("");
-                currentTaskType = TaskType.PERSONAL;
-                refreshTasks();
+                setPersonalTasks();
 
             }
         });
@@ -280,12 +235,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         showGroupTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                showGroupTasksNavLink.setStyleName("active");
-                showPersonalTasksNavLink.setStyleName("");
-                showActiveTasksNavLink.setStyleName("");
-                showAllTasksNavLink.setStyleName("");
-                currentTaskType = TaskType.GROUP;
-                refreshTasks();
+                setGroupTasks();
 
             }
         });
@@ -294,12 +244,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         showActiveTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                showGroupTasksNavLink.setStyleName("");
-                showPersonalTasksNavLink.setStyleName("");
-                showActiveTasksNavLink.setStyleName("active");
-                showAllTasksNavLink.setStyleName("");
-                currentTaskType = TaskType.ACTIVE;
-                refreshTasks();
+                setActiveTasks();
 
             }
         });
@@ -308,12 +253,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         showAllTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                showGroupTasksNavLink.setStyleName("");
-                showPersonalTasksNavLink.setStyleName("");
-                showActiveTasksNavLink.setStyleName("");
-                showAllTasksNavLink.setStyleName("active");
-                currentTaskType = TaskType.ALL;
-                refreshTasks();
+                setAllTasks();
 
             }
         });
@@ -323,6 +263,109 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     public void filterTasks(String text) {
         presenter.filterTasks(text);
+    }
+    
+    @Override
+    public void changeCurrentDate(Date date) {
+        currentDate = date;
+    }
+
+    @Override
+    public void setAllTasks() {
+        showGroupTasksNavLink.setStyleName("");
+        showPersonalTasksNavLink.setStyleName("");
+        showActiveTasksNavLink.setStyleName("");
+        showAllTasksNavLink.setStyleName("active");
+        currentTaskType = TaskType.ALL;
+        refreshTasks();
+    }
+
+    @Override
+    public void setActiveTasks() {
+        showGroupTasksNavLink.setStyleName("");
+        showPersonalTasksNavLink.setStyleName("");
+        showActiveTasksNavLink.setStyleName("active");
+        showAllTasksNavLink.setStyleName("");
+        currentTaskType = TaskType.ACTIVE;
+        refreshTasks();
+    }
+
+    @Override
+    public void setGroupTasks() {
+        showGroupTasksNavLink.setStyleName("active");
+        showPersonalTasksNavLink.setStyleName("");
+        showActiveTasksNavLink.setStyleName("");
+        showAllTasksNavLink.setStyleName("");
+        currentTaskType = TaskType.GROUP;
+        refreshTasks();
+    }
+
+    @Override
+    public void setPersonalTasks() {
+        showPersonalTasksNavLink.setStyleName("active");
+        showGroupTasksNavLink.setStyleName("");
+        showActiveTasksNavLink.setStyleName("");
+        showAllTasksNavLink.setStyleName("");
+        currentTaskType = TaskType.PERSONAL;
+        refreshTasks();
+    }
+
+    @Override
+    public void setGridView() {
+        initializeGridView();
+        pager.setVisible(true);
+        if ((getParent().getOffsetHeight() - 120) > 0) {
+            tasksViewContainer.setHeight(getParent().getOffsetHeight() - 120 + "px");
+        }
+        refreshTasks();
+    }
+
+    @Override
+    public void setDayView() {
+        tasksViewContainer.clear();
+        tasksViewContainer.add(taskListMultiDayBox);
+        tasksViewContainer.setStyleName("day");
+        dayViewTasksNavLink.setStyleName("active");
+        weekViewTasksNavLink.setStyleName("");
+        monthViewTasksNavLink.setStyleName("");
+        gridViewTasksNavLink.setStyleName("");
+        currentView = TaskView.DAY;
+        calendarPicker.setViewType("day");
+        pager.setVisible(false);
+        tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
+        refreshTasks();
+    }
+
+    @Override
+    public void setWeekView() {
+        tasksViewContainer.clear();
+        tasksViewContainer.add(taskListMultiDayBox);
+        tasksViewContainer.setStyleName("week");
+        dayViewTasksNavLink.setStyleName("");
+        monthViewTasksNavLink.setStyleName("");
+        gridViewTasksNavLink.setStyleName("");
+        weekViewTasksNavLink.setStyleName("active");
+        currentView = TaskView.WEEK;
+        calendarPicker.setViewType("week");
+        pager.setVisible(false);
+        tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
+        refreshTasks();
+    }
+
+    @Override
+    public void setMonthView() {
+        tasksViewContainer.clear();
+        tasksViewContainer.add(taskListMultiDayBox);
+        tasksViewContainer.setStyleName("month");
+        dayViewTasksNavLink.setStyleName("");
+        gridViewTasksNavLink.setStyleName("");
+        weekViewTasksNavLink.setStyleName("");
+        monthViewTasksNavLink.setStyleName("active");
+        currentView = TaskView.MONTH;
+        calendarPicker.setViewType("month");
+        pager.setVisible(false);
+        tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
+        refreshTasks();
     }
 
     private void initializeGridView() {
@@ -381,14 +424,12 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     @Override
     public void refreshTasks() {
         presenter.refreshTasks(currentDate, currentView, currentTaskType);
-        
+
     }
 
     public DataGrid<TaskSummary> getTaskListGrid() {
         return myTaskListGrid;
     }
-    
-    
 
     public Date getCurrentDate() {
         return currentDate;
@@ -402,10 +443,12 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         return currentTaskType;
     }
 
+    @Override
     public String getCurrentFilter() {
         return currentFilter;
     }
 
+    @Override
     public void setCurrentFilter(String currentFilter) {
         this.currentFilter = currentFilter;
     }
@@ -435,9 +478,17 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                     int columnCount = myTaskListGrid.getColumnCount();
                     if (column != columnCount - 1) {
                         TaskSummary task = event.getValue();
+                        String currentView = getCurrentView().toString();
+                        String currentTaskType = getCurrentTaskType().toString();
                         PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Tasks With Details");
                         placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
-                        placeRequestImpl.addParameter("taskName",task.getName());
+                        placeRequestImpl.addParameter("taskName", task.getName());
+                        placeRequestImpl.addParameter("currentView", currentView);
+                        placeRequestImpl.addParameter("currentTaskType", currentTaskType);
+                        if(getCurrentDate() != null){
+                            placeRequestImpl.addParameter("currentDate", String.valueOf(getCurrentDate().getTime()));
+                        }
+                        placeRequestImpl.addParameter("currentFilter", getCurrentFilter());
                         placeManager.goTo(placeRequestImpl);
                     }
                 }
@@ -598,7 +649,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             public void execute(TaskSummary task) {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Tasks With Details");
                 placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
-                placeRequestImpl.addParameter("taskName",task.getName());
+                placeRequestImpl.addParameter("taskName", task.getName());
                 placeManager.goTo(placeRequestImpl);
             }
         }));
@@ -635,12 +686,12 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Override
     public void onResize() {
-        if(currentView.equals(TaskView.GRID)){
+        if (currentView.equals(TaskView.GRID)) {
             if ((getParent().getOffsetHeight() - 120) > 0) {
                 tasksViewContainer.setHeight(getParent().getOffsetHeight() - 120 + "px");
             }
-        }else{
-            tasksViewContainer.setHeight(getParent().getOffsetHeight()+ "px");
+        } else {
+            tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
         }
     }
 
