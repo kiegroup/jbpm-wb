@@ -40,7 +40,7 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
  */
 @ApplicationScoped
 @WorkbenchPerspective(identifier = "Tasks With Details", isDefault = false)
-public class TasksListSplitPerspective {
+public class TasksListWithDetailsPerspective {
 
     @Inject
     private ContextualSearch contextualSearch;
@@ -52,13 +52,26 @@ public class TasksListSplitPerspective {
     
     private String selectedTaskName = "";
     
+    private String currentView = "";
+    
+    private String currentTaskType = "";
+    
+    private String currentDate = "";
+    
+    private String currentFilter = "";
+    
     @Perspective
     public PerspectiveDefinition getPerspective() {
         
         
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_LIST);
         p.setName( "Tasks" );
-        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Tasks List" ) ) );
+        DefaultPlaceRequest taskListPlaceRequest = new DefaultPlaceRequest( "Tasks List" );
+        taskListPlaceRequest.addParameter("currentView", this.currentView);
+        taskListPlaceRequest.addParameter("currentTaskType", this.currentTaskType);
+        taskListPlaceRequest.addParameter("currentDate", this.currentDate);
+        taskListPlaceRequest.addParameter("currentFilter", this.currentFilter);
+        p.getRoot().addPart( new PartDefinitionImpl( taskListPlaceRequest ) );
         
         final PanelDefinition east = new PanelDefinitionImpl(PanelType.MULTI_LIST);
         east.setWidth( 500 );
@@ -80,6 +93,10 @@ public class TasksListSplitPerspective {
     public void onStartup(final PlaceRequest place) {
         this.selectedTaskId = place.getParameter( "taskId", "0" );
         this.selectedTaskName = place.getParameter( "taskName", "" );
+        this.currentView = place.getParameter( "currentView", "" );
+        this.currentTaskType = place.getParameter( "currentTaskType", "" );
+        this.currentDate = place.getParameter( "currentDate", "" );
+        this.currentFilter = place.getParameter( "currentFilter", "" );
         contextualSearch.setSearchBehavior(new SearchBehavior() {
             @Override
             public void execute(String searchFilter) {
