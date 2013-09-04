@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.ht.client.editors.taskassignments;
 
 import java.util.ArrayList;
@@ -25,10 +24,13 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 
 import java.util.Map;
+import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
@@ -47,15 +49,14 @@ import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 @WorkbenchScreen(identifier = "Task Assignments")
 public class TaskAssignmentsPresenter {
 
-    private Constants constants = GWT.create( Constants.class );
+    private Constants constants = GWT.create(Constants.class);
 
     public interface TaskAssignmentsView extends UberView<TaskAssignmentsPresenter> {
 
-        void displayNotification( String text );
+        void displayNotification(String text);
 
-        FlowPanel getUsersGroupsControlsPanel();
-        
-        
+        Label getUsersGroupsControlsPanel();
+
     }
 
     @Inject
@@ -77,13 +78,11 @@ public class TaskAssignmentsPresenter {
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
 
     private PlaceRequest place;
-    
+
     private long currentTaskId = 0;
-    
-    
 
     @OnStartup
-    public void onStartup( final PlaceRequest place ) {
+    public void onStartup(final PlaceRequest place) {
         this.place = place;
     }
 
@@ -97,38 +96,52 @@ public class TaskAssignmentsPresenter {
         return view;
     }
 
-   
-
-    
-
-    public void refreshTaskPotentialOwners( ) {
-        List<Long> taskIds = new ArrayList<Long>(1);
-        taskIds.add(currentTaskId);
-        taskServices.call( new RemoteCallback<Map<Long, List<String>>>() {
+    public void delegateTask(String entity) {
+        taskServices.call(new RemoteCallback<Void>() {
             @Override
-            public void callback( Map<Long, List<String>> ids ) {
-                if(ids.isEmpty()){
-                    view.getUsersGroupsControlsPanel().add(new HTMLPanel("no potential owners"));
-                }else{
-                    view.getUsersGroupsControlsPanel().add(new HTMLPanel(""+ids.get(currentTaskId).toString()));
-                }
+            public void callback(Void nothing) {
+                view.displayNotification("Task was succesfully delegated");
+                refreshTaskPotentialOwners(currentTaskId);
             }
-        } ).getPotentialOwnersForTaskIds(taskIds);
 
+        }, new ErrorCallback<Message>() {
+
+            @Override
+            public boolean error(Message message,
+                    Throwable throwable) {
+                view.displayNotification("Error: " + message);
+                return true;
+            }
+        }
+                ).delegate(currentTaskId, identity.getName(), entity);
     }
 
-   
+    public void refreshTaskPotentialOwners(final long taskId) {
+        List<Long> taskIds = new ArrayList<Long>(1);
+        taskIds.add(taskId);
+        taskServices.call(new RemoteCallback<Map<Long, List<String>>>() {
+            @Override
+            public void callback(Map<Long, List<String>> ids) {
+                if (ids.isEmpty()) {
+                    view.getUsersGroupsControlsPanel().setText(constants.No_Potential_Owners());
+                } else {
+                    view.getUsersGroupsControlsPanel().setText(("" + ids.get(taskId).toString()));
+                }
+            }
+        }).getPotentialOwnersForTaskIds(taskIds);
+
+    }
 
     @OnOpen
     public void onOpen() {
-        
-        this.currentTaskId = Long.parseLong( place.getParameter( "taskId", "0" ).toString() );
-  
-        refreshTaskPotentialOwners(  );
+
+        this.currentTaskId = Long.parseLong(place.getParameter("taskId", "0").toString());
+
+        refreshTaskPotentialOwners(currentTaskId);
     }
 
     public void close() {
-        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
+        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
 
 }

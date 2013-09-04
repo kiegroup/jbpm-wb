@@ -16,18 +16,17 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskassignments;
 
+import com.github.gwtbootstrap.client.ui.Button;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.ControlLabel;
 import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.base.UnorderedList;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -42,11 +41,7 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
 
     private TaskAssignmentsPresenter presenter;
 
-    @Inject
-    @DataField
-    public FlowPanel usersGroupsControlsPanel;
-
-   
+    
     @Inject
     @DataField
     public ControlLabel detailsAccordionLabel;
@@ -54,7 +49,28 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
     @Inject
     private PlaceManager placeManager;
 
- 
+    @Inject
+    @DataField
+    public Label userOrGroupLabel;
+    
+    @Inject
+    @DataField
+    public Label usersGroupsControlsLabel;
+    
+    @Inject
+    @DataField
+    public TextBox userOrGroupText;
+    
+    @Inject
+    @DataField
+    public Button delegateButton;
+
+    @Inject
+    @DataField
+    public Label usersGroupsControlsPanel;
+
+    
+    
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -65,19 +81,23 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
     public void init( TaskAssignmentsPresenter presenter ) {
         this.presenter = presenter;
 
+        userOrGroupLabel.setText(constants.UserOrGroup());
         detailsAccordionLabel.add( new HTMLPanel( constants.Details()) );
+        delegateButton.setText(constants.Delegate());
+        usersGroupsControlsLabel.setText(constants.Potential_Owners());
+        usersGroupsControlsPanel.setStyleName("");
 
     }
 
-    
+    @EventHandler("delegateButton")
+    public void delegateButton( ClickEvent e ) {
+        presenter.delegateTask( userOrGroupText.getText());
+    }
 
     @Override
-    public FlowPanel getUsersGroupsControlsPanel() {
+    public Label getUsersGroupsControlsPanel() {
         return usersGroupsControlsPanel;
     }
-
-
-
 
     @Override
     public void displayNotification( String text ) {
