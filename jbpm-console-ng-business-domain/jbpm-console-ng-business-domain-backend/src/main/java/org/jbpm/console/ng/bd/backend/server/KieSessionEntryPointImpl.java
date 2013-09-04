@@ -19,6 +19,7 @@ package org.jbpm.console.ng.bd.backend.server;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -77,6 +78,18 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
                 .getKieSession();
         ksession.abortProcessInstance(processInstanceId);
 
+    }
+    
+    @Override
+    public void abortProcessInstances(List<Long> processInstanceIds) {
+        for(long processInstanceId : processInstanceIds){
+            ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
+            RuntimeManager runtimesByDomain = deploymentService.getDeployedUnit(piDesc.getDeploymentId()).getRuntimeManager();
+            // I'm considering Singleton
+            KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId))
+                    .getKieSession();
+            ksession.abortProcessInstance(processInstanceId);
+        }
     }
 
     @Override

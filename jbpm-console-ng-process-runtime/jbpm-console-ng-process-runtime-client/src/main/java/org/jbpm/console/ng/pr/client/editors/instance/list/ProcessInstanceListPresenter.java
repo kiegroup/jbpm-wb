@@ -221,8 +221,7 @@ public class ProcessInstanceListPresenter {
         refreshActiveProcessList();
     }
 
-    public void abortProcessInstance(String processDefId,
-            long processInstanceId) {
+    public void abortProcessInstance(long processInstanceId) {
         kieSessionServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void v) {
@@ -231,7 +230,18 @@ public class ProcessInstanceListPresenter {
             }
         }).abortProcessInstance(processInstanceId);
     }
+    
+    public void abortProcessInstance(List<Long> processInstanceIds) {
+        kieSessionServices.call(new RemoteCallback<Void>() {
+            @Override
+            public void callback(Void v) {
+                refreshActiveProcessList();
 
+            }
+        }).abortProcessInstances(processInstanceIds);
+    }
+
+    
     public void suspendProcessInstance(String processDefId,
             long processInstanceId) {
         kieSessionServices.call(new RemoteCallback<Void>() {
@@ -320,18 +330,20 @@ public class ProcessInstanceListPresenter {
             @Override
             public void execute() {
                 if (view.getSelectedProcessInstances() != null) {
-
+                    List<Long> ids = new ArrayList<Long>();
                     for (ProcessInstanceSummary selected : view.getSelectedProcessInstances()) {
                         if (selected.getState() != ProcessInstance.STATE_ACTIVE) {
                             view.displayNotification(constants.Aborting_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
                                     + ")");
                             continue;
                         }
-
-                        abortProcessInstance(selected.getProcessId(), selected.getId());
+                        ids.add(selected.getId());
+                        
                         view.getProcessInstanceListGrid().getSelectionModel().setSelected(selected, false);
                         view.displayNotification(constants.Aborting_Process_Instance() + "(id=" + selected.getId() + ")");
                     }
+                    abortProcessInstance(ids);
+                    
                 }
             }
         }).endMenu().build().getItems().get(0));
