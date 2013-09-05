@@ -174,7 +174,7 @@ public class ProcessInstanceDetailsPresenter {
                 view.getCurrentActivitiesListBox().setText("");
                 SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
                 for ( NodeInstanceSummary nis : details ) {
-                    safeHtmlBuilder.appendEscapedLines( nis.getTimestamp() + ":" + 
+                    safeHtmlBuilder.appendEscapedLines( nis.getTimestamp() + ": " + 
                             nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType() + ") \n");
                 }
                 view.getCurrentActivitiesListBox().setHTML(safeHtmlBuilder.toSafeHtml());
