@@ -135,6 +135,8 @@ public class FormDisplayPopupPresenter {
         FlowPanel getOptionsDiv();
 
         UnorderedList getNavBarUL();
+        
+        FlowPanel getInnerNavPanel();
 
         void loadContext(String ctxUID);
 
@@ -172,6 +174,7 @@ public class FormDisplayPopupPresenter {
     
 
     public void renderTaskForm(final long taskId) {
+        
         view.getNavBarUL().clear();
 
         NavLink workLink = new NavLink(constants.Work());
@@ -312,6 +315,7 @@ public class FormDisplayPopupPresenter {
 
     public void renderProcessForm(final String deploymentId, final String idProcess) {
         view.getNavBarUL().clear();
+        view.getInnerNavPanel().clear();
         formServices.call( new RemoteCallback<String>() {
             @Override
             public void callback( String form ) {
