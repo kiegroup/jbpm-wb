@@ -24,45 +24,33 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextArea;
-import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.CommentSummary;
-import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
-import org.uberfire.client.annotations.WorkbenchPopup;
+import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
-@WorkbenchPopup(identifier = "Task Comments Popup")
-public class TaskCommentsPopupPresenter {
+@WorkbenchScreen(identifier = "Task Comments")
+public class TaskCommentsPresenter {
 
-    public interface TaskCommentsPopupView extends UberView<TaskCommentsPopupPresenter> {
+    public interface TaskCommentsView extends UberView<TaskCommentsPresenter> {
 
-        Label getTaskIdText();
-
-        Label getTaskNameText();
-
-        UnorderedList getNavBarUL();
 
         TextArea getNewTaskCommentTextArea();
 
@@ -77,10 +65,12 @@ public class TaskCommentsPopupPresenter {
     private PlaceManager placeManager;
 
     @Inject
-    TaskCommentsPopupView view;
+    TaskCommentsView view;
 
     @Inject
     Identity identity;
+    
+    private long currentTaskId = 0;
 
     @Inject
     Caller<TaskServiceEntryPoint> taskServices;
@@ -104,7 +94,7 @@ public class TaskCommentsPopupPresenter {
     }
 
     @WorkbenchPartView
-    public UberView<TaskCommentsPopupPresenter> getView() {
+    public UberView<TaskCommentsPresenter> getView() {
         return view;
     }
 
@@ -115,64 +105,12 @@ public class TaskCommentsPopupPresenter {
 
     @OnOpen
     public void onOpen() {
-        final long taskId = Long.parseLong( place.getParameter( "taskId", "0" ).toString() );
-        view.getTaskIdText().setText( String.valueOf( taskId ) );
-        view.getNavBarUL().clear();
-        NavLink commentsLink = new NavLink( constants.Comments() );
-        commentsLink.setStyleName( "active" );
-
-        NavLink workLink = new NavLink( constants.Work() );
-
-        workLink.addClickHandler( new ClickHandler() {
-
-            @Override
-            public void onClick( ClickEvent event ) {
-                close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display" );
-                placeRequestImpl.addParameter( "taskId", String.valueOf( taskId ) );
-                placeManager.goTo( placeRequestImpl );
-            }
-        } );
-        NavLink detailsLink = new NavLink( constants.Details() );
-        detailsLink.addClickHandler( new ClickHandler() {
-
-            @Override
-            public void onClick( ClickEvent event ) {
-                close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Task Details Popup" );
-                placeRequestImpl.addParameter( "taskId", String.valueOf( taskId ) );
-                placeManager.goTo( placeRequestImpl );
-            }
-        } );
-        NavLink assignmentsLink = new NavLink( constants.Assignments());
-        assignmentsLink.addClickHandler( new ClickHandler() {
-
-            @Override
-            public void onClick( ClickEvent event ) {
-                close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Task Assignments Popup" );
-                placeRequestImpl.addParameter( "taskId", String.valueOf( taskId ) );
-                placeManager.goTo( placeRequestImpl );
-            }
-        } );
-
-        view.getNavBarUL().add( workLink );
-        view.getNavBarUL().add( detailsLink );
-        view.getNavBarUL().add( assignmentsLink );
-        view.getNavBarUL().add( commentsLink );
-        refreshComments( taskId );
+        this.currentTaskId = Long.parseLong( place.getParameter( "taskId", "0" ).toString() );
+        refreshComments( );
         view.getDataGrid().redraw();
     }
 
-    public void refreshComments( long taskId ) {
-        taskServices.call( new RemoteCallback<TaskSummary>() {
-
-            @Override
-            public void callback( TaskSummary details ) {
-                view.getTaskIdText().setText( String.valueOf( details.getId() ) );
-                view.getTaskNameText().setText( details.getName() );
-            }
-        } ).getTaskDetails( taskId );
+    public void refreshComments( ) {
         taskServices.call( new RemoteCallback<List<CommentSummary>>() {
 
             @Override
@@ -186,21 +124,20 @@ public class TaskCommentsPopupPresenter {
                 dataProvider.refresh();
                 view.getDataGrid().redraw();
             }
-        } ).getAllCommentsByTaskId( taskId );
+        } ).getAllCommentsByTaskId( currentTaskId );
 
     }
 
-    public void addTaskComment( final long taskId,
-                                String text,
+    public void addTaskComment( String text,
                                 Date addedOn ) {
         taskServices.call( new RemoteCallback<Long>() {
 
             @Override
             public void callback( Long response ) {
-                refreshComments( taskId );
+                refreshComments( );
                 view.getNewTaskCommentTextArea().setText("");
             }
-        } ).addComment( taskId, text, identity.getName(), addedOn );
+        } ).addComment( currentTaskId, text, identity.getName(), addedOn );
     }
 
     public void addDataDisplay( HasData<CommentSummary> display ) {

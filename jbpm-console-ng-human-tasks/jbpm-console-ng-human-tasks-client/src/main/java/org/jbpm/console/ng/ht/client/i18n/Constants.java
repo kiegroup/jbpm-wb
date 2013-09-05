@@ -152,4 +152,12 @@ public interface Constants extends Messages {
     String Potential_Owners();
 
     String No_Potential_Owners();
+    
+    String Add_TypeRole();
+        
+    String Type_Role();
+       
+    String Parent_Group();
+
+    String Save();
 }

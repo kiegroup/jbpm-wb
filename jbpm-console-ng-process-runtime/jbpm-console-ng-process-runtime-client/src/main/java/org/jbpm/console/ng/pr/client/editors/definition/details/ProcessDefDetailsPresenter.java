@@ -212,7 +212,7 @@ public class ProcessDefDetailsPresenter {
                 .newTopLevelMenu( constants.New_Instance()).respondsWith(new Command() {
                         @Override
                         public void execute() {
-                            PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display" );
+                            PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display Popup" );
                             placeRequestImpl.addParameter( "processId", view.getProcessIdText().getText() );
                             placeRequestImpl.addParameter( "domainId", view.getDeploymentIdText().getText() );
                             placeManager.goTo( placeRequestImpl );

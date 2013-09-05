@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ht.client.editors.taskform;
+package org.jbpm.console.ng.ht.client.editors.taskform.popup;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +60,7 @@ import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
-@WorkbenchPopup(identifier = "Form Display")
+@WorkbenchPopup(identifier = "Form Display Popup")
 public class FormDisplayPopupPresenter {
     private Constants constants = GWT.create(Constants.class);
 
@@ -524,19 +524,19 @@ public class FormDisplayPopupPresenter {
     // Set up the JS-callable signature as a global JS function.
     private native void publish( FormDisplayPopupPresenter fdp )/*-{
         $wnd.completeTask = function (from) {
-            fdp.@org.jbpm.console.ng.ht.client.editors.taskform.FormDisplayPopupPresenter::completeTask(Ljava/lang/String;)(from);
+            fdp.@org.jbpm.console.ng.ht.client.editors.taskform.popup.FormDisplayPopupPresenter::completeTask(Ljava/lang/String;)(from);
         }
 
         $wnd.startTask = function (from) {
-            fdp.@org.jbpm.console.ng.ht.client.editors.taskform.FormDisplayPopupPresenter::startTask(Ljava/lang/String;)(from);
+            fdp.@org.jbpm.console.ng.ht.client.editors.taskform.popup.FormDisplayPopupPresenter::startTask(Ljava/lang/String;)(from);
         }
 
         $wnd.saveTaskState = function (from) {
-            fdp.@org.jbpm.console.ng.ht.client.editors.taskform.FormDisplayPopupPresenter::saveTaskState(Ljava/lang/String;)(from);
+            fdp.@org.jbpm.console.ng.ht.client.editors.taskform.popup.FormDisplayPopupPresenter::saveTaskState(Ljava/lang/String;)(from);
         }
 
         $wnd.startProcess = function (from) {
-            fdp.@org.jbpm.console.ng.ht.client.editors.taskform.FormDisplayPopupPresenter::startProcess(Ljava/lang/String;)(from);
+            fdp.@org.jbpm.console.ng.ht.client.editors.taskform.popup.FormDisplayPopupPresenter::startProcess(Ljava/lang/String;)(from);
         }
     }-*/;
 

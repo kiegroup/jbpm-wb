@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ht.client.editors.taskform;
+package org.jbpm.console.ng.ht.client.editors.taskform.popup;
 
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;

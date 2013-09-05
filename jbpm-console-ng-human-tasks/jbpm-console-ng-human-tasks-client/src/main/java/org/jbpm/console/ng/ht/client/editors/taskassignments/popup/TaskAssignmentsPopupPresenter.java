@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ht.client.editors.taskassignments;
+package org.jbpm.console.ng.ht.client.editors.taskassignments.popup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -163,7 +163,7 @@ public class TaskAssignmentsPopupPresenter {
             @Override
             public void onClick( ClickEvent event ) {
                 close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display" );
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display Popup" );
                 placeRequestImpl.addParameter( "taskId", String.valueOf( taskId ) );
                 placeManager.goTo( placeRequestImpl );
             }

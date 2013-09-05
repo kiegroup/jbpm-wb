@@ -40,7 +40,6 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
@@ -103,7 +102,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
     private ListHandler<ProcessSummary> sortHandler;
 
     public ProcessDefinitionListViewImpl() {
-        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+        pager = new SimplePager(SimplePager.TextLocation.LEFT, false, true);
     }
 
    
@@ -123,8 +122,6 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
         this.presenter = presenter;
 
         listContainer.add( processdefListGrid );
-        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
-        pager.setStyleName("pagination pagination-right pull-right");
         pager.setDisplay(processdefListGrid);
         pager.setPageSize(10);
 
@@ -137,10 +134,6 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
         sortHandler = new ListHandler<ProcessSummary>( presenter.getDataProvider().getList() );
         processdefListGrid.addColumnSortHandler( sortHandler );
 
-        // Create a Pager to control the table.
-
-        pager.setDisplay( processdefListGrid );
-        pager.setPageSize( 10 );
 
         // Add a selection model so we can select cells.
         final MultiSelectionModel<ProcessSummary> selectionModel = new MultiSelectionModel<ProcessSummary>();
@@ -232,7 +225,7 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
         cells.add( new StartActionHasCell( "Start process", new Delegate<ProcessSummary>() {
             @Override
             public void execute( ProcessSummary process ) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display" );
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display Popup" );
                 placeRequestImpl.addParameter( "processId", process.getId() );
                 placeRequestImpl.addParameter( "domainId", process.getDeploymentId() );
                 placeManager.goTo( placeRequestImpl );
@@ -243,9 +236,10 @@ public class ProcessDefinitionListViewImpl extends Composite implements ProcessD
             @Override
             public void execute( ProcessSummary process ) {
 
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Definition Details" );
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Definitions With Details" );
                 placeRequestImpl.addParameter( "processId", process.getId() );
                 placeRequestImpl.addParameter( "deploymentId", process.getDeploymentId() );
+                        
                 placeManager.goTo( placeRequestImpl );
             }
         } ) );

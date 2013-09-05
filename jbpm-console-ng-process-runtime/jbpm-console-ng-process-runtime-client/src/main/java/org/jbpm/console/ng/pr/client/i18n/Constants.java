@@ -187,4 +187,10 @@ public interface Constants extends Messages {
 
     String Bulk_Abort();
 
+    String Process_Model();
+    
+    String Views();
+
+    String Process_Variables_Refreshed();
+
 }
