@@ -177,6 +177,7 @@ public class FormDisplayPopupPresenter {
         
         view.getNavBarUL().clear();
 
+        view.getInnerNavPanel().setStyleName("navbar-inner");
         NavLink workLink = new NavLink(constants.Work());
         workLink.setStyleName("active");
 
@@ -316,6 +317,7 @@ public class FormDisplayPopupPresenter {
     public void renderProcessForm(final String deploymentId, final String idProcess) {
         view.getNavBarUL().clear();
         view.getInnerNavPanel().clear();
+        view.getInnerNavPanel().setStyleName("");
         formServices.call( new RemoteCallback<String>() {
             @Override
             public void callback( String form ) {

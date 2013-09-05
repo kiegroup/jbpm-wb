@@ -58,6 +58,10 @@ public class FormDisplayPopupViewImpl extends Composite implements FormDisplayPo
     @DataField
     public Label taskIdText;
 
+    @Inject 
+    @DataField
+    public FlowPanel innerNavPanel;
+    
     @Inject
     @DataField
     public FlowPanel optionsDiv;
@@ -127,6 +131,13 @@ public class FormDisplayPopupViewImpl extends Composite implements FormDisplayPo
     public UnorderedList getNavBarUL() {
         return navBarUL;
     }
+
+    @Override
+    public FlowPanel getInnerNavPanel() {
+        return innerNavPanel;
+    }
+    
+    
 
     @Override
     public String getDomainId() {
