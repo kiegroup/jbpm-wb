@@ -98,10 +98,11 @@ public class ProcessInstanceSignalViewImpl extends Composite implements ProcessI
     public void signalButton( ClickEvent e ) {
 
         for ( Long processInstanceId : this.processInstanceIds ) {
-            presenter.signalProcessInstance( processInstanceId );
+            
             displayNotification( constants.Signalling_Process_Instance() + processInstanceId + " " + constants.Signal() + " = "
                                          + signalRefText.getText() + " - " + constants.Signal_Data() + " = " + eventText.getText() );
         }
+        presenter.signalProcessInstances( this.processInstanceIds );
     }
 
     @EventHandler("clearButton")

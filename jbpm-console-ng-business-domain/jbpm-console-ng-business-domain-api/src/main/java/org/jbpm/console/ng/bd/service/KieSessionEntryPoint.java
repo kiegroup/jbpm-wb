@@ -35,6 +35,8 @@ public interface KieSessionEntryPoint {
     void suspendProcessInstance(long processInstanceId);
 
     void signalProcessInstance(long processInstanceId, String signalName, Object event);
+    
+    void signalProcessInstances(List<Long> processInstanceIds, String signalName, Object event);
 
     void setProcessVariable(long processInstanceId, String variableId, Object value);
 

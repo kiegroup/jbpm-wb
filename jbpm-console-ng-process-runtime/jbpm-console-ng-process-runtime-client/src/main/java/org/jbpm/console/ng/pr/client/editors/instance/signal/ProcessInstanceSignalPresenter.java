@@ -23,6 +23,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
+import java.util.List;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
@@ -95,7 +96,7 @@ public class ProcessInstanceSignalPresenter {
         return view;
     }
 
-    public void signalProcessInstance( long processInstanceId ) {
+    public void signalProcessInstances( List<Long> processInstanceIds ) {
 
         kieSessionServices.call( new RemoteCallback<Void>() {
             @Override
@@ -103,7 +104,7 @@ public class ProcessInstanceSignalPresenter {
                 close();
 
             }
-        } ).signalProcessInstance( processInstanceId, view.getSignalRefText(), view.getEventText() );
+        } ).signalProcessInstances( processInstanceIds, view.getSignalRefText(), view.getEventText() );
     }
 
     @OnOpen
@@ -129,9 +130,6 @@ public class ProcessInstanceSignalPresenter {
         kieSessionServices.call( new RemoteCallback<Collection<String>>() {
             @Override
             public void callback( Collection<String> signals ) {
-                for ( String s : signals ) {
-                    System.out.println( "Signal: " );
-                }
                 view.setAvailableSignals( signals );
 
             }

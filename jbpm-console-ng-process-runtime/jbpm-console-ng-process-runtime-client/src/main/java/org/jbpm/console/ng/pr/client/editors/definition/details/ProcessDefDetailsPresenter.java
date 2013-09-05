@@ -143,7 +143,7 @@ public class ProcessDefDetailsPresenter {
                 view.getUsersGroupsListBox().setText("");
                 SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
                 for ( String key : entities.keySet() ) {
-                    safeHtmlBuilder.appendEscapedLines(entities.get( key ) + "- " + key +"\n");
+                    safeHtmlBuilder.appendEscapedLines(entities.get( key ) + " - " + key +"\n");
                 }
                 view.getUsersGroupsListBox().setHTML(safeHtmlBuilder.toSafeHtml());
             }
@@ -155,7 +155,7 @@ public class ProcessDefDetailsPresenter {
                 view.getProcessDataListBox().setText("");
                 SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
                 for ( String key : inputs.keySet() ) {
-                    safeHtmlBuilder.appendEscapedLines(key + "- " + inputs.get( key ) +"\n");
+                    safeHtmlBuilder.appendEscapedLines(key + " - " + inputs.get( key ) +"\n");
                 }
                 view.getProcessDataListBox().setHTML(safeHtmlBuilder.toSafeHtml());
             }

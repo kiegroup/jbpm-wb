@@ -105,23 +105,26 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
     @Override
     public void signalProcessInstance(long processInstanceId, String signalName, Object event) {
 
-        if (processInstanceId == -1) {
-            // Collection<String> sessionNames = domainService.getSessionsNames();
-            // for (String sessionName : sessionNames) {
-            // Map<Integer, KieSession> sessions = domainService.getSessionsByName(sessionName);
-            // Iterator<KieSession> sessionsIter = sessions.values().iterator();
-            // while (sessionsIter.hasNext()) {
-            // KieSession ksession = (KieSession) sessionsIter.next();
-            // ksession.signalEvent(signalName, event);
-            // }
-            //
-            // }
-        } else {
+        if (processInstanceId != -1) {
             ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
             RuntimeManager runtimesByDomain = deploymentService.getDeployedUnit(piDesc.getDeploymentId()).getRuntimeManager();
             KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId))
                     .getKieSession();
             ksession.signalEvent(signalName, event, processInstanceId);
+        }
+
+    }
+    
+    @Override
+    public void signalProcessInstances(List<Long> processInstanceIds, String signalName, Object event) {
+        for(Long processInstanceId : processInstanceIds){
+            if (processInstanceId != -1) {
+                ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
+                RuntimeManager runtimesByDomain = deploymentService.getDeployedUnit(piDesc.getDeploymentId()).getRuntimeManager();
+                KieSession ksession = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId))
+                        .getKieSession();
+                ksession.signalEvent(signalName, event, processInstanceId);
+            }
         }
 
     }
