@@ -67,22 +67,7 @@ public class TasksListWithDetailsPerspective {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_LIST);
         p.setName( "Tasks" );
         DefaultPlaceRequest taskListPlaceRequest = new DefaultPlaceRequest( "Tasks List" );
-        taskListPlaceRequest.addParameter("currentView", this.currentView);
-        taskListPlaceRequest.addParameter("currentTaskType", this.currentTaskType);
-        taskListPlaceRequest.addParameter("currentDate", this.currentDate);
-        taskListPlaceRequest.addParameter("currentFilter", this.currentFilter);
         p.getRoot().addPart( new PartDefinitionImpl( taskListPlaceRequest ) );
-        
-        final PanelDefinition east = new PanelDefinitionImpl(PanelType.MULTI_LIST);
-        east.setWidth( 500 );
-        east.setMinWidth( 400 );
-        
-        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Task Details Multi" );
-        defaultPlaceRequest.addParameter( "taskId", selectedTaskId );
-        defaultPlaceRequest.addParameter( "taskName", selectedTaskName );
-        
-        east.addPart( new PartDefinitionImpl( defaultPlaceRequest ) );
-        p.getRoot().insertChild( Position.EAST, east );
         
         
         p.setTransient( true );
@@ -91,12 +76,6 @@ public class TasksListWithDetailsPerspective {
     
     @OnStartup
     public void onStartup(final PlaceRequest place) {
-        this.selectedTaskId = place.getParameter( "taskId", "0" );
-        this.selectedTaskName = place.getParameter( "taskName", "" );
-        this.currentView = place.getParameter( "currentView", "" );
-        this.currentTaskType = place.getParameter( "currentTaskType", "" );
-        this.currentDate = place.getParameter( "currentDate", "" );
-        this.currentFilter = place.getParameter( "currentFilter", "" );
         contextualSearch.setSearchBehavior(new SearchBehavior() {
             @Override
             public void execute(String searchFilter) {

@@ -19,7 +19,6 @@ import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
-import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
@@ -42,17 +41,12 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
-import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.CellPreviewEvent;
-import com.google.gwt.view.client.DefaultSelectionEventManager;
-import com.google.gwt.view.client.MultiSelectionModel;
-import com.google.gwt.view.client.SelectionChangeEvent;
-import com.google.gwt.view.client.SelectionModel;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -151,7 +145,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     private Set<TaskSummary> selectedTasks;
     private ListHandler<TaskSummary> sortHandler;
-    private MultiSelectionModel<TaskSummary> selectionModel;
+    
 
     public DataGrid<TaskSummary> myTaskListGrid;
 
@@ -391,20 +385,9 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         sortHandler = new ColumnSortEvent.ListHandler<TaskSummary>(presenter.getDataProvider().getList());
         myTaskListGrid.getColumnSortList().setLimit(1);
         // Add a selection model so we can select cells.
-        selectionModel = new MultiSelectionModel<TaskSummary>();
-        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
-            @Override
-            public void onSelectionChange(SelectionChangeEvent event) {
-                selectedTasks = selectionModel.getSelectedSet();
-                for (TaskSummary ts : selectedTasks) {
-                    taskSelection.fire(new TaskSelectionEvent(ts.getId()));
-                }
-            }
-        });
+        
 
-        myTaskListGrid.setSelectionModel(selectionModel, DefaultSelectionEventManager.<TaskSummary>createCheckboxManager());
-
-        initTableColumns(selectionModel);
+        initTableColumns();
 
         myTaskListGrid.addColumnSortHandler(sortHandler);
         presenter.addDataDisplay(myTaskListGrid);
@@ -458,12 +441,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         return taskListMultiDayBox;
     }
 
-    @Override
-    public MultiSelectionModel<TaskSummary> getSelectionModel() {
-        return selectionModel;
-    }
-
-    private void initTableColumns(final SelectionModel<TaskSummary> selectionModel) {
+    private void initTableColumns() {
         // Checkbox column. This table will uses a checkbox column for selection.
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
         // mouse selection.
@@ -478,18 +456,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                     int columnCount = myTaskListGrid.getColumnCount();
                     if (column != columnCount - 1) {
                         TaskSummary task = event.getValue();
-                        String currentView = getCurrentView().toString();
-                        String currentTaskType = getCurrentTaskType().toString();
-                        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Tasks With Details");
-                        placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
-                        placeRequestImpl.addParameter("taskName", task.getName());
-                        placeRequestImpl.addParameter("currentView", currentView);
-                        placeRequestImpl.addParameter("currentTaskType", currentTaskType);
-                        if(getCurrentDate() != null){
-                            placeRequestImpl.addParameter("currentDate", String.valueOf(getCurrentDate().getTime()));
-                        }
-                        placeRequestImpl.addParameter("currentFilter", getCurrentFilter());
-                        placeManager.goTo(placeRequestImpl);
+                        placeManager.goTo("Task Details Multi");
+                        taskSelection.fire(new TaskSelectionEvent(task.getId(), task.getName()));
                     }
                 }
 

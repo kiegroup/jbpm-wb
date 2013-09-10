@@ -22,11 +22,13 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Label;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import javax.enterprise.event.Observes;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
+import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
@@ -38,11 +40,13 @@ import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.workbench.widgets.split.WorkbenchSplitLayoutPanel;
 import org.uberfire.lifecycle.OnClose;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
+import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -85,6 +89,12 @@ public class TaskDetailsMultiPresenter {
         return view;
     }
 
+    @DefaultPosition
+    public Position getPosition(){
+        return Position.EAST;
+    }
+    
+    
     @OnStartup
     public void onStartup(final PlaceRequest place) {
         this.place = place;
@@ -97,8 +107,15 @@ public class TaskDetailsMultiPresenter {
 
     @OnOpen
     public void onOpen() {
-        selectedTaskId = Long.parseLong(place.getParameter("taskId", "0").toString());
-        selectedTaskName = place.getParameter("taskName", "");
+        WorkbenchSplitLayoutPanel splitPanel = (WorkbenchSplitLayoutPanel)view.asWidget().getParent().getParent().getParent().getParent()
+                                            .getParent().getParent().getParent().getParent().getParent().getParent().getParent();
+        splitPanel.setWidgetMinSize(splitPanel.getWidget(0), 470);
+        
+    }
+    
+    public void onTaskSelectionEvent(@Observes TaskSelectionEvent event){
+        selectedTaskId = event.getTaskId();
+        selectedTaskName = event.getTaskName();
         
         view.getTaskIdAndName().setText(String.valueOf(selectedTaskId) + " - "+selectedTaskName);
         
@@ -121,8 +138,6 @@ public class TaskDetailsMultiPresenter {
         activity.onStartup(defaultPlaceRequest);
         view.getContent().add(widget);
         activity.onOpen();
-
-
     }
 
     @WorkbenchMenu
@@ -254,6 +269,7 @@ public class TaskDetailsMultiPresenter {
                 .build();
 
     }
+    
     @OnClose
     public void onClose(){
         for(String activityId : activitiesMap.keySet()){

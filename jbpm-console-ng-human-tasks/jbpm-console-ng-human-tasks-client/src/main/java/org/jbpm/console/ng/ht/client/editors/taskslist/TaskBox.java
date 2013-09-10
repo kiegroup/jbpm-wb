@@ -26,6 +26,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import javax.enterprise.event.Event;
+import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -51,6 +53,7 @@ public class TaskBox extends Composite {
     private TasksListPresenter presenter;
     private Identity identity;
     private PlaceManager placeManager;
+    private Event<TaskSelectionEvent> taskSelection;
 
     public TaskBox() {
 
@@ -72,6 +75,7 @@ public class TaskBox extends Composite {
 
     public TaskBox(final PlaceManager placeManager,
             final TasksListPresenter presenter,
+            final Event<TaskSelectionEvent> taskSelection,
             final Identity identity,
             final long taskId,
             final String taskName,
@@ -89,6 +93,7 @@ public class TaskBox extends Composite {
         this.identity = identity;
         this.priority = priority;
         this.hour = hour;
+        this.taskSelection = taskSelection;
 
         hourPanel.add(new Label(hour));
 
@@ -107,18 +112,8 @@ public class TaskBox extends Composite {
         taskContainer.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                String currentView = presenter.getCurrentView().toString();
-                String currentTaskType = presenter.getCurrentTaskType().toString();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Tasks With Details");
-                placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
-                placeRequestImpl.addParameter("taskName", taskName);
-                placeRequestImpl.addParameter("currentView", currentView);
-                placeRequestImpl.addParameter("currentTaskType", currentTaskType);
-                if(presenter.getCurrentDate() != null){
-                    placeRequestImpl.addParameter("currentDate", String.valueOf(presenter.getCurrentDate().getTime()));
-                }
-                placeRequestImpl.addParameter("currentFilter", presenter.getCurrentFilter());
-                placeManager.goTo(placeRequestImpl);
+               placeManager.goTo("Task Details Multi");
+               taskSelection.fire(new TaskSelectionEvent(taskId, taskName));
             }
         });
 

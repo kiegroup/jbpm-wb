@@ -74,9 +74,7 @@ public class TasksListPresenter {
         void displayNotification( String text );
 
         TaskListMultiDayBox getTaskListMultiDayBox();
-
-        MultiSelectionModel<TaskSummary> getSelectionModel();
-        
+ 
         void refreshTasks();
         
         Date getCurrentDate();
