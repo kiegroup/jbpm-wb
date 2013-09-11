@@ -394,7 +394,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     }
 
-    public void recieveStatusChanged(@Observes TaskRefreshedEvent event) {
+    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
         refreshTasks();
     }
 

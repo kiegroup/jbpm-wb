@@ -89,7 +89,10 @@ public class FormDisplayPresenter {
 
     @Inject
     private Event<FormRenderedEvent> formRendered;
-
+    
+    @Inject
+    private Event<TaskRefreshedEvent> taskRefreshed;
+    
     @Inject
     Event<ProcessInstanceCreated> processInstanceCreatedEvents;
 
@@ -336,7 +339,7 @@ public class FormDisplayPresenter {
             @Override
             public void callback(Void nothing) {
                 view.displayNotification("Form for Task Id: " + params.get("taskId") + " was completed!");
-                close();
+                dispose();
             }
         }).complete(Long.parseLong(params.get("taskId")), identity.getName(), objParams);
 
@@ -409,7 +412,7 @@ public class FormDisplayPresenter {
         renderContextServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long contentId) {
-                close();
+                dispose();
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest(view.getAction());
                 placeRequestImpl.addParameter("taskId", String.valueOf(currentTaskId));
                 placeManager.goTo(placeRequestImpl);
@@ -418,7 +421,7 @@ public class FormDisplayPresenter {
     }
 
     protected void changeTab(String tabId) {
-        close();
+        dispose();
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest(tabId);
         placeRequestImpl.addParameter("taskId", String.valueOf(currentTaskId));
         placeManager.goTo(placeRequestImpl);
@@ -427,9 +430,10 @@ public class FormDisplayPresenter {
     protected void completeTask() {
         renderContextServices.call(new RemoteCallback<Void>() {
             @Override
-            public void callback(Void nothin) {
+            public void callback(Void nothing) {
                 view.displayNotification("Form for Task Id: " + currentTaskId + " was completed!");
-                close();
+                taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
+                dispose();
             }
         }).completeTaskFromContext(formCtx, currentTaskId, identity.getName());
     }
@@ -534,6 +538,22 @@ public class FormDisplayPresenter {
         }
     }
 
+    public void dispose() {
+        renderContextServices.call(new RemoteCallback<Void>() {
+            @Override
+            public void callback(Void response) {
+                formCtx = null;
+                if (currentTaskId != -1) {
+                    renderTaskForm();
+                    taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
+                } else if (!currentProcessId.equals("none")) {
+                    renderProcessForm();
+                }
+                
+            }
+        }).clearContext(formCtx);
+    }
+    
     public void close() {
         renderContextServices.call(new RemoteCallback<Void>() {
             @Override

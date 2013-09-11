@@ -45,7 +45,6 @@ import org.jbpm.console.ng.ht.client.util.DateUtils;
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
-import org.jbpm.console.ng.ht.model.events.TasksRefreshedEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -535,7 +534,7 @@ public class TasksListPresenter {
         view.setCurrentFilter(searchEvent.getFilter());
         refreshTasks(view.getCurrentDate(), view.getCurrentView(), view.getCurrentTaskType());
     }
-    
+  
     @OnStartup
     public void onStartup(final PlaceRequest place) {
         this.place = place;
