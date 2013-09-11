@@ -223,9 +223,9 @@ public class TasksListPresenter {
                      }
                 }
             }
-            if(currentDayTasks != null){
-                Map<Day, List<TaskSummary>> tasksCalendar = new HashMap<Day, List<TaskSummary>>(currentDayTasks);
-                Map<Day, List<TaskSummary>> filteredTasksCalendar = new HashMap<Day, List<TaskSummary>>();
+            if (currentDayTasks != null) {
+                Map<Day, List<TaskSummary>> tasksCalendar = new LinkedHashMap<Day, List<TaskSummary>>(currentDayTasks);
+                Map<Day, List<TaskSummary>> filteredTasksCalendar = new LinkedHashMap<Day, List<TaskSummary>>();
                 view.getTaskListMultiDayBox().clear();
                 for(Day d : tasksCalendar.keySet()){
                     if(filteredTasksCalendar.get(d) == null){
