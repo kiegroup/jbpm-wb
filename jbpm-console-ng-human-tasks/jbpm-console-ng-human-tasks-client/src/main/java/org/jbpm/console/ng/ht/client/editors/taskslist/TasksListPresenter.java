@@ -17,35 +17,23 @@
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.ProvidesKey;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
-import java.util.HashMap;
-import javax.enterprise.event.Event;
-import org.jboss.errai.common.client.api.RemoteCallback;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.ProvidesKey;
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.console.ng.ht.model.events.TaskSearchEvent;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.util.DateRange;
 import org.jbpm.console.ng.ht.client.util.DateUtils;
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
-import org.jbpm.console.ng.ht.model.events.TasksRefreshedEvent;
+import org.jbpm.console.ng.ht.model.events.TaskSearchEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -65,19 +53,24 @@ import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import java.util.*;
 
 @Dependent
 @WorkbenchScreen(identifier = "Tasks List")
 public class TasksListPresenter {
 
-     public interface TaskListView extends UberView<TasksListPresenter> {
+    public interface TaskListView extends UberView<TasksListPresenter> {
 
-        void displayNotification( String text );
+        void displayNotification(String text);
 
         TaskListMultiDayBox getTaskListMultiDayBox();
- 
+
         void refreshTasks();
-        
+
         Date getCurrentDate();
 
         TaskView getCurrentView();
@@ -158,11 +151,9 @@ public class TasksListPresenter {
         }
     };
 
-    
     public TasksListPresenter() {
         makeMenuBar();
     }
-
 
     private Constants constants = GWT.create( Constants.class );
 
@@ -185,66 +176,64 @@ public class TasksListPresenter {
         if(view.getTaskListGrid().getColumnSortList().size() > 0){
             sortInfo = view.getTaskListGrid().getColumnSortList().get(0);
         }
-        if(text.equals("")){
-                if(allTaskSummaries != null){
-                    dataProvider.getList().clear();
-                    dataProvider.getList().addAll(new ArrayList<TaskSummary>(allTaskSummaries));
-                    if(sortInfo != null){
-                        if(sortInfo.isAscending()){
-                            view.getTaskListGrid().getColumnSortList().clear();
-                            ColumnSortInfo columnSortInfo = new ColumnSortInfo( sortInfo.getColumn(), sortInfo.isAscending() );
-                            view.getTaskListGrid().getColumnSortList().push(columnSortInfo);
-                            ColumnSortEvent.fire(view.getTaskListGrid(), view.getTaskListGrid().getColumnSortList());
-                        }
+        if (text.equals("")) {
+            if (allTaskSummaries != null) {
+                dataProvider.getList().clear();
+                dataProvider.getList().addAll(new ArrayList<TaskSummary>(allTaskSummaries));
+                if (sortInfo != null) {
+                    if (sortInfo.isAscending()) {
+                        view.getTaskListGrid().getColumnSortList().clear();
+                        ColumnSortInfo columnSortInfo = new ColumnSortInfo(sortInfo.getColumn(), sortInfo.isAscending());
+                        view.getTaskListGrid().getColumnSortList().push(columnSortInfo);
+                        ColumnSortEvent.fire(view.getTaskListGrid(), view.getTaskListGrid().getColumnSortList());
                     }
                 }
-                if(currentDayTasks != null){
-                    view.getTaskListMultiDayBox().clear();
-                    for (Day day : currentDayTasks.keySet()) {
-                         view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(currentDayTasks.get(day)));
-                    }
-                    view.getTaskListMultiDayBox().refresh();
+            }
+            if (currentDayTasks != null) {
+                view.getTaskListMultiDayBox().clear();
+                for (Day day : currentDayTasks.keySet()) {
+                    view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(currentDayTasks.get(day)));
                 }
-        }else{
-            if(allTaskSummaries != null){    
+                view.getTaskListMultiDayBox().refresh();
+            }
+        } else {
+            if (allTaskSummaries != null) {
                 List<TaskSummary> tasks = new ArrayList<TaskSummary>(allTaskSummaries);
                 List<TaskSummary> filteredTasksSimple = new ArrayList<TaskSummary>();
-                for(TaskSummary ts : tasks){
-                    if(ts.getName().toLowerCase().contains(text.toLowerCase())){
+                for (TaskSummary ts : tasks) {
+                    if (ts.getName().toLowerCase().contains(text.toLowerCase())) {
                         filteredTasksSimple.add(ts);
                     }
                 }
                 dataProvider.getList().clear();
                 dataProvider.getList().addAll(filteredTasksSimple);
-                if(sortInfo != null){
-                     if(sortInfo.isAscending()){
+                if (sortInfo != null) {
+                    if (sortInfo.isAscending()) {
                         view.getTaskListGrid().getColumnSortList().push(sortInfo.getColumn());
                         ColumnSortEvent.fire(view.getTaskListGrid(), view.getTaskListGrid().getColumnSortList());
-                     }
+                    }
                 }
             }
             if (currentDayTasks != null) {
                 Map<Day, List<TaskSummary>> tasksCalendar = new LinkedHashMap<Day, List<TaskSummary>>(currentDayTasks);
                 Map<Day, List<TaskSummary>> filteredTasksCalendar = new LinkedHashMap<Day, List<TaskSummary>>();
                 view.getTaskListMultiDayBox().clear();
-                for(Day d : tasksCalendar.keySet()){
-                    if(filteredTasksCalendar.get(d) == null){
-                                filteredTasksCalendar.put(d, new ArrayList<TaskSummary>());
+                for (Day day : tasksCalendar.keySet()) {
+                    if (filteredTasksCalendar.get(day) == null) {
+                        filteredTasksCalendar.put(day, new ArrayList<TaskSummary>());
                     }
-                    for(TaskSummary ts : tasksCalendar.get(d)){
-                        if(ts.getName().toLowerCase().contains(text.toLowerCase())){
-                            filteredTasksCalendar.get(d).add(ts);
+                    for (TaskSummary ts : tasksCalendar.get(day)) {
+                        if (ts.getName().toLowerCase().contains(text.toLowerCase())) {
+                            filteredTasksCalendar.get(day).add(ts);
                         }
                     }
                 }
                 for (Day day : filteredTasksCalendar.keySet()) {
-                     view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(filteredTasksCalendar.get(day)));
+                    view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(filteredTasksCalendar.get(day)));
                 }
                 view.getTaskListMultiDayBox().refresh();
             }
          }
-        
-
     }
 
     public void startTasks( final List<Long> selectedTasks,
@@ -528,7 +517,6 @@ public class TasksListPresenter {
                     }
                 } )
                 .endMenu().build();
-
     }
     
     public void onSearchEvent(@Observes final TaskSearchEvent searchEvent){
@@ -593,8 +581,6 @@ public class TasksListPresenter {
                 view.setAllTasks();
                 break;
         }
-        
-        
     }
     
     public Date getCurrentDate(){
