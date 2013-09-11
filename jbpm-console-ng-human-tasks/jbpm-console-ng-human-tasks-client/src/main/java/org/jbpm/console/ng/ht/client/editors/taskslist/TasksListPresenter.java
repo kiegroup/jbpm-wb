@@ -19,7 +19,6 @@ package org.jbpm.console.ng.ht.client.editors.taskslist;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.ProvidesKey;
 
 import java.util.ArrayList;
@@ -45,6 +44,8 @@ import org.jbpm.console.ng.ht.client.util.DateRange;
 import org.jbpm.console.ng.ht.client.util.DateUtils;
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
+import org.jbpm.console.ng.ht.model.events.TasksRefreshedEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -142,6 +143,9 @@ public class TasksListPresenter {
     private Identity identity;
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
+    
+    @Inject
+    private Event<TaskRefreshedEvent> taskRefreshed;
     
     @Inject 
     private Event<ClearSearchEvent> clearSearchEvent;
@@ -249,39 +253,51 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Started" );
+                if(selectedTasks.size() == 1){
+                    taskRefreshed.fire(new TaskRefreshedEvent(selectedTasks.get(0)));
+                }
                 view.refreshTasks();
             }
         } ).startBatch( selectedTasks, userId );
     }
 
-    public void releaseTasks( List<Long> selectedTasks,
+    public void releaseTasks( final List<Long> selectedTasks,
                               final String userId ) {
         taskServices.call( new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Released" );
+                if(selectedTasks.size() == 1){
+                    taskRefreshed.fire(new TaskRefreshedEvent(selectedTasks.get(0)));
+                }
                 view.refreshTasks();
             }
         } ).releaseBatch( selectedTasks, userId );
     }
 
-    public void completeTasks( List<Long> selectedTasks,
+    public void completeTasks( final List<Long> selectedTasks,
                                final String userId ) {
-        taskServices.call( new RemoteCallback<List<TaskSummary>>() {
+        taskServices.call( new RemoteCallback<Void>() {
             @Override
-            public void callback( List<TaskSummary> tasks ) {
+            public void callback( Void nothing ) {
                 view.displayNotification( "Task(s) Completed" );
+                if(selectedTasks.size() == 1){
+                    taskRefreshed.fire(new TaskRefreshedEvent(selectedTasks.get(0)));
+                }
                 view.refreshTasks();
             }
         } ).completeBatch( selectedTasks, userId, null );
     }
 
-    public void claimTasks( List<Long> selectedTasks,
+    public void claimTasks( final List<Long> selectedTasks,
                             final String userId ) {
         taskServices.call( new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Claimed" );
+                if(selectedTasks.size() == 1){
+                    taskRefreshed.fire(new TaskRefreshedEvent(selectedTasks.get(0)));
+                }
                 view.refreshTasks();
 
             }

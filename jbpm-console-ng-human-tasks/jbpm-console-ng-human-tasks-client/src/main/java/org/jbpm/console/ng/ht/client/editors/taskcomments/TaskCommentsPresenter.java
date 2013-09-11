@@ -29,10 +29,12 @@ import com.github.gwtbootstrap.client.ui.TextArea;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
+import javax.enterprise.event.Observes;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.CommentSummary;
+import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
@@ -148,4 +150,10 @@ public class TaskCommentsPresenter {
         closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }
 
+    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event){
+        if(currentTaskId == event.getTaskId()){
+            refreshComments( );
+            view.getDataGrid().redraw();
+        }
+    }
 }

@@ -53,7 +53,7 @@ public class TaskBox extends Composite {
     private TasksListPresenter presenter;
     private Identity identity;
     private PlaceManager placeManager;
-    private Event<TaskSelectionEvent> taskSelection;
+    private Event<TaskSelectionEvent> taskSelected;
 
     public TaskBox() {
 
@@ -75,7 +75,7 @@ public class TaskBox extends Composite {
 
     public TaskBox(final PlaceManager placeManager,
             final TasksListPresenter presenter,
-            final Event<TaskSelectionEvent> taskSelection,
+            final Event<TaskSelectionEvent> taskSelected,
             final Identity identity,
             final long taskId,
             final String taskName,
@@ -93,7 +93,7 @@ public class TaskBox extends Composite {
         this.identity = identity;
         this.priority = priority;
         this.hour = hour;
-        this.taskSelection = taskSelection;
+        this.taskSelected = taskSelected;
 
         hourPanel.add(new Label(hour));
 
@@ -113,7 +113,7 @@ public class TaskBox extends Composite {
             @Override
             public void onClick(ClickEvent event) {
                placeManager.goTo("Task Details Multi");
-               taskSelection.fire(new TaskSelectionEvent(taskId, taskName));
+               taskSelected.fire(new TaskSelectionEvent(taskId, taskName));
             }
         });
 
@@ -201,10 +201,8 @@ public class TaskBox extends Composite {
             focusPanel.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
-                    PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
-                    placeRequestImpl.addParameter("taskId", Long.toString(taskId));
-
-                    placeManager.goTo(placeRequestImpl);
+                    placeManager.goTo("Task Details Multi");
+                    taskSelected.fire(new TaskSelectionEvent(taskId, taskName, "Form Display"));
                     event.stopPropagation();
                 }
             });

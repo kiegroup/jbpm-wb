@@ -36,7 +36,7 @@ import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
+import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.uberfire.lifecycle.OnOpen;
@@ -105,7 +105,7 @@ public class TaskDetailsPresenter {
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
     
     @Inject
-    private Event<UserTaskEvent> userTaskChanges;
+    private Event<TaskRefreshedEvent> taskRefreshed;
 
     private PlaceRequest place;
     
@@ -159,7 +159,7 @@ public class TaskDetailsPresenter {
                 @Override
                 public void callback( Void nothing ) {
                     view.displayNotification( "Task Details Updated for Task id = " + currentTaskId + ")" );
-                    userTaskChanges.fire( new UserTaskEvent( identity.getName() ) );
+                    taskRefreshed.fire( new TaskRefreshedEvent( currentTaskId ) );
                 }
             } ).updateSimpleTaskDetails( currentTaskId, names, Integer.valueOf( priority ), descriptions,
                                          // subTaskStrategy,
@@ -227,6 +227,12 @@ public class TaskDetailsPresenter {
         this.currentTaskId = Long.parseLong( place.getParameter( "taskId", "0" ).toString() );
         this.currentTaskName =  place.getParameter( "taskName", "" ) ;
         refreshTask( );
+    }
+    
+    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event){
+        if(currentTaskId == event.getTaskId()){
+            refreshTask( );
+        }
     }
 
     public void close() {

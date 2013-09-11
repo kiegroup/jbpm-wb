@@ -27,12 +27,14 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 
 import java.util.Map;
+import javax.enterprise.event.Observes;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
@@ -80,6 +82,9 @@ public class TaskAssignmentsPresenter {
     private PlaceRequest place;
 
     private long currentTaskId = 0;
+    
+    @Inject
+    private Event<TaskRefreshedEvent> taskRefreshed;
 
     @OnStartup
     public void onStartup(final PlaceRequest place) {
@@ -101,6 +106,7 @@ public class TaskAssignmentsPresenter {
             @Override
             public void callback(Void nothing) {
                 view.displayNotification("Task was succesfully delegated");
+                taskRefreshed.fire( new TaskRefreshedEvent( currentTaskId ) );
                 refreshTaskPotentialOwners(currentTaskId);
             }
 
@@ -138,6 +144,12 @@ public class TaskAssignmentsPresenter {
         this.currentTaskId = Long.parseLong(place.getParameter("taskId", "0").toString());
 
         refreshTaskPotentialOwners(currentTaskId);
+    }
+    
+    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event){
+        if(currentTaskId == event.getTaskId()){
+            refreshTaskPotentialOwners(currentTaskId);
+        }
     }
 
     public void close() {

@@ -23,6 +23,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 public class TaskSelectionEvent implements Serializable {
     private long taskId;
     private String taskName;
+    private String place;
 
     public TaskSelectionEvent() {
     }
@@ -36,6 +37,20 @@ public class TaskSelectionEvent implements Serializable {
         this.taskName = taskName;
     }
 
+    public TaskSelectionEvent(long taskId, String taskName, String place) {
+        this.taskId = taskId;
+        this.taskName = taskName;
+        this.place = place;
+    }
+    
+    public String getPlace() {
+        return place;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
+    }
+    
     public String getTaskName() {
         return taskName;
     }

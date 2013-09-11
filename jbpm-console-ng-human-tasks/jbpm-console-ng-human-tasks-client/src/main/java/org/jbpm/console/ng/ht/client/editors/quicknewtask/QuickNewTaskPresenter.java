@@ -32,6 +32,7 @@ import java.util.List;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
@@ -77,6 +78,9 @@ public class QuickNewTaskPresenter {
     @Inject
     private PlaceManager placeManager;
 
+    @Inject
+    private Event<TaskRefreshedEvent> taskRefreshed;
+    
     @OnStartup
     public void onStartup( final PlaceRequest place ) {
         this.place = place;
@@ -136,6 +140,7 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback( Long taskId ) {
                     view.displayNotification( "Task Created and Started (id = " + taskId + ")" );
+                    taskRefreshed.fire( new TaskRefreshedEvent( taskId ) );
                     close();
                 }
             } ).addTaskAndClaimAndStart( str, null, identity.getName(), templateVars );
@@ -146,6 +151,7 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback( Long taskId ) {
                     view.displayNotification( "Task Created and Started (id = " + taskId + ")" );
+                    taskRefreshed.fire( new TaskRefreshedEvent( taskId ) );
                     close();
 
                 }
@@ -156,6 +162,7 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback( Long taskId ) {
                     view.displayNotification( "Task Created (id = " + taskId + ")" );
+                    taskRefreshed.fire( new TaskRefreshedEvent( taskId ) );
                     close();
 
                 }
@@ -166,6 +173,7 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback( Long taskId ) {
                     view.displayNotification( "Task Created (id = " + taskId + ")" );
+                    taskRefreshed.fire( new TaskRefreshedEvent( taskId ) );
                     close();
 
                 }
@@ -176,6 +184,7 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback( Long taskId ) {
                     view.displayNotification( "Task Created (id = " + taskId + ")" );
+                    taskRefreshed.fire( new TaskRefreshedEvent( taskId ) );
                     close();
 
                 }

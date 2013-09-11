@@ -64,7 +64,7 @@ import org.jbpm.console.ng.ht.client.util.CalendarPicker;
 import org.jbpm.console.ng.ht.client.util.ResizableHeader;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
+import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -141,8 +141,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     private String currentFilter = "";
 
     @Inject
-    private Event<TaskSelectionEvent> taskSelection;
-
+    private Event<TaskSelectionEvent> taskSelected;
+    
     private Set<TaskSummary> selectedTasks;
     private ListHandler<TaskSummary> sortHandler;
     
@@ -394,9 +394,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     }
 
-    public void recieveStatusChanged(@Observes UserTaskEvent event) {
+    public void recieveStatusChanged(@Observes TaskRefreshedEvent event) {
         refreshTasks();
-
     }
 
     @Override
@@ -457,7 +456,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                     if (column != columnCount - 1) {
                         TaskSummary task = event.getValue();
                         placeManager.goTo("Task Details Multi");
-                        taskSelection.fire(new TaskSelectionEvent(task.getId(), task.getName()));
+                        taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
                     }
                 }
 
@@ -590,6 +589,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 List<Long> tasks = new ArrayList<Long>(1);
                 tasks.add(task.getId());
                 presenter.claimTasks(tasks, identity.getName());
+                
             }
         }));
 
@@ -599,16 +599,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 List<Long> tasks = new ArrayList<Long>(1);
                 tasks.add(task.getId());
                 presenter.releaseTasks(tasks, identity.getName());
-            }
-        }));
-
-        cells.add(new DetailsHasCell("Details", new ActionCell.Delegate<TaskSummary>() {
-            @Override
-            public void execute(TaskSummary task) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Tasks With Details");
-                placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
-                placeRequestImpl.addParameter("taskName", task.getName());
-                placeManager.goTo(placeRequestImpl);
+                
             }
         }));
 
@@ -624,9 +615,16 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         cells.add(new CompleteActionHasCell("Complete", new ActionCell.Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display Popup");
-                placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
-                placeManager.goTo(placeRequestImpl);
+                placeManager.goTo("Task Details Multi");
+                taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName(), "Form Display"));
+            }
+        }));
+        
+        cells.add(new DetailsHasCell("Details", new ActionCell.Delegate<TaskSummary>() {
+            @Override
+            public void execute(TaskSummary task) {
+                placeManager.goTo("Task Details Multi");
+                taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
             }
         }));
 

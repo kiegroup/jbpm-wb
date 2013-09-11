@@ -17,43 +17,42 @@
 package org.jbpm.console.ng.ht.model.events;
 
 import java.io.Serializable;
-import java.util.List;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class UserTaskEvent implements Serializable {
-
-    private String userId;
-    private List<String> groupsId;
-
-    public UserTaskEvent(String userId, List<String> groupsId) {
-
-        this.userId = userId;
-        this.groupsId = groupsId;
+public class TaskRefreshedEvent implements Serializable {
+    private long taskId;
+    private String taskName;
+    public TaskRefreshedEvent(long taskId, String taskName) {
+        this.taskId = taskId;
+        this.taskName = taskName;
+        
     }
 
-    public UserTaskEvent(String userId) {
-
-        this.userId = userId;
+    public TaskRefreshedEvent(long taskId) {
+        this.taskId = taskId;
     }
 
-    public UserTaskEvent() {
+    public TaskRefreshedEvent() {
     }
 
-    public List<String> getGroupsId() {
-        return groupsId;
+
+    public long getTaskId() {
+        return taskId;
     }
 
-    public String getUserId() {
-        return userId;
+    public void setTaskId(long taskId) {
+        this.taskId = taskId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public String getTaskName() {
+        return taskName;
     }
 
-    public void setGroupsId(List<String> groupsId) {
-        this.groupsId = groupsId;
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
     }
+
+    
 
 }

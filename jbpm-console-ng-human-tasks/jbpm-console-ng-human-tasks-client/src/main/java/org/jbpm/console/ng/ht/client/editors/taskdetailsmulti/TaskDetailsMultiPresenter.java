@@ -109,7 +109,7 @@ public class TaskDetailsMultiPresenter {
     public void onOpen() {
         WorkbenchSplitLayoutPanel splitPanel = (WorkbenchSplitLayoutPanel)view.asWidget().getParent().getParent().getParent().getParent()
                                             .getParent().getParent().getParent().getParent().getParent().getParent().getParent();
-        splitPanel.setWidgetMinSize(splitPanel.getWidget(0), 470);
+        splitPanel.setWidgetMinSize(splitPanel.getWidget(0), 500);
         
     }
     
@@ -121,7 +121,14 @@ public class TaskDetailsMultiPresenter {
         
         view.getContent().clear();
         
-        String placeToGo = "Task Details";
+        String placeToGo;
+        if(event.getPlace() != null && !event.getPlace().equals("")){
+            placeToGo = event.getPlace();
+        }else{
+            placeToGo = "Task Details";
+        }
+        
+        
 
         DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
         //Set Parameters here: 

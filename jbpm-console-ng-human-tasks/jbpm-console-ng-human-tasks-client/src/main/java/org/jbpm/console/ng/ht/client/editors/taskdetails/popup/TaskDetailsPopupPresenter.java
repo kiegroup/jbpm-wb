@@ -41,7 +41,7 @@ import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
+import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.uberfire.lifecycle.OnOpen;
@@ -115,7 +115,7 @@ public class TaskDetailsPopupPresenter {
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
     
     @Inject
-    private Event<UserTaskEvent> userTaskChanges;
+    private Event<TaskRefreshedEvent> userTaskChanges;
 
     private PlaceRequest place;
 
@@ -167,7 +167,7 @@ public class TaskDetailsPopupPresenter {
                 @Override
                 public void callback( Void nothing ) {
                     view.displayNotification( "Task Details Updated for Task id = " + taskId + ")" );
-                    userTaskChanges.fire( new UserTaskEvent( identity.getName() ) );
+                    userTaskChanges.fire( new TaskRefreshedEvent( taskId ) );
                 }
             } ).updateSimpleTaskDetails( taskId, names, Integer.valueOf( priority ), descriptions,
                                          // subTaskStrategy,
