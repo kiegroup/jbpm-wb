@@ -66,6 +66,7 @@ import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
@@ -623,8 +624,13 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         cells.add(new DetailsHasCell("Details", new ActionCell.Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
-                placeManager.goTo("Task Details Multi");
-                taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
+                PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
+                if(status == PlaceStatus.CLOSE){
+                    placeManager.goTo("Task Details Multi");
+                    taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
+                }else if( status == PlaceStatus.OPEN){
+                    placeManager.closePlace(new DefaultPlaceRequest("Task Details Multi"));
+                }
             }
         }));
 
