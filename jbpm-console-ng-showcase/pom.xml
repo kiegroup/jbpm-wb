@@ -63,6 +63,17 @@
       <artifactId>drools-wb-scorecard-xls-editor-client</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-workbench-models-datamodel-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-workbench-models-datamodel-api</artifactId>
+    <classifier>sources</classifier>
+    </dependency>
+
     <!-- jBPM Console Panels -->
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -581,6 +592,9 @@
           <module>org.jbpm.console.ng.FastCompiledjBPMShowcase</module>
           <logLevel>INFO</logLevel>
           <compileSourcesArtifacts>
+
+            <!-- Core -->
+            <compileSourcesArtifact>org.drools:drools-workbench-models-datamodel-api</compileSourcesArtifact>
 
             <!-- Guvnor -->
             <compileSourcesArtifact>org.guvnor:guvnor-m2repo-editor-api</compileSourcesArtifact>
