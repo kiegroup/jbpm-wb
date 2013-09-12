@@ -254,6 +254,7 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-cdi-jetty</artifactId>
+      <version>2.3.1.Final</version>
     </dependency>
 
     <dependency>

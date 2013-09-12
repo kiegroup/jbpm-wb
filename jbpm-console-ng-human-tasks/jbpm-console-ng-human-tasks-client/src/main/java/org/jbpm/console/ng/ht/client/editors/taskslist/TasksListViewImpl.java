@@ -24,6 +24,7 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -31,6 +32,7 @@ import javax.inject.Inject;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -47,13 +49,16 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.CellPreviewEvent;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
 import javax.enterprise.event.Observes;
+
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskType;
@@ -65,6 +70,7 @@ import org.jbpm.console.ng.ht.client.util.ResizableHeader;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
+import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mvp.PlaceRequest;
@@ -151,8 +157,11 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     public DataGrid<TaskSummary> myTaskListGrid;
 
     private Column<TaskSummary, Number> taskIdColumn;
+    
+    private Integer rowSelected;
 
-    @DataField
+
+	@DataField
     public SimplePager pager;
 
     public TasksListViewImpl() {
@@ -440,7 +449,9 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     public TaskListMultiDayBox getTaskListMultiDayBox() {
         return taskListMultiDayBox;
     }
-
+    
+    private static final String BG_ROW_SELECTED = "#E5F1FF";
+    
     private void initTableColumns() {
         // Checkbox column. This table will uses a checkbox column for selection.
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
@@ -451,15 +462,28 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             @Override
             public void onCellPreview(final CellPreviewEvent<TaskSummary> event) {
 
+                TaskSummary task = null;
+                
                 if (BrowserEvents.CLICK.equalsIgnoreCase(event.getNativeEvent().getType())) {
                     int column = event.getColumn();
                     int columnCount = myTaskListGrid.getColumnCount();
                     if (column != columnCount - 1) {
-                        TaskSummary task = event.getValue();
+                        task = event.getValue();
+                        rowSelected = null;
                         placeManager.goTo("Task Details Multi");
                         taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
                     }
                 }
+                
+                if (BrowserEvents.MOUSEOVER.equalsIgnoreCase(event.getNativeEvent().getType())) {
+                    task = event.getValue();
+                    Element cellElement = event.getNativeEvent().getEventTarget().cast();
+                    cellElement.getInnerHTML();
+                    if(task.getDescription() != null){
+                        myTaskListGrid.getRowElement(event.getIndex()).getCells().getItem(event.getColumn()).setTitle(task.getDescription());
+                        
+                    }
+                 }
 
             }
         });
@@ -626,6 +650,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             public void execute(TaskSummary task) {
                 PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
                 if(status == PlaceStatus.CLOSE){
+                	rowSelected = null;
                     placeManager.goTo("Task Details Multi");
                     taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
                 }else if( status == PlaceStatus.OPEN){
@@ -842,5 +867,22 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             return object;
         }
     }
-
+    
+    public void changeRowSelected(@Observes TaskStyleEvent taskStyleEvent){
+        
+        if( rowSelected == null ){
+        	rowSelected = myTaskListGrid.getKeyboardSelectedRow();
+        }
+        for( int i = 0 ; i< myTaskListGrid.getRowCount(); i++ ){
+            for( int j = 0; j < myTaskListGrid.getColumnCount(); j++ ){
+                if(i != rowSelected){
+                    myTaskListGrid.getRowElement(i).getCells().getItem(j).getStyle().clearBackgroundColor();
+                }else{
+                    myTaskListGrid.getRowElement(i).getCells().getItem(j).getStyle().setBackgroundColor(BG_ROW_SELECTED);
+                }
+            }
+        }
+        
+    }
+    
 }
