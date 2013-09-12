@@ -37,6 +37,7 @@ import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jbpm.console.ng.client.i18n.Constants;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
+import org.uberfire.client.UberFirePreferences;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
@@ -72,6 +73,7 @@ public class ShowcaseEntryPoint {
 
     @AfterInitialization
     public void startApp() {
+        UberFirePreferences.setProperty( "org.uberfire.client.workbench.widgets.listbar.context.disable", true );
         setupMenu();
         hideLoadingPopup();
     }
