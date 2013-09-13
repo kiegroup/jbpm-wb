@@ -221,15 +221,15 @@ public class TaskDetailsPresenter {
                     i++;
                 }
                 
-                changeStyleRow();
+                changeStyleRow( details.getId() );
 
             }
         } ).getTaskDetails( currentTaskId );
 
     }
     
-    private void changeStyleRow(){
-        taskStyleEvent.fire( new TaskStyleEvent() );
+    private void changeStyleRow( long idTask ){
+        taskStyleEvent.fire( new TaskStyleEvent( idTask ) );
     }
 
     @OnOpen
