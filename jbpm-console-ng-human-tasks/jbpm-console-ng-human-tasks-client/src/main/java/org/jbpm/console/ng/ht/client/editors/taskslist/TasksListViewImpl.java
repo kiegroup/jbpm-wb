@@ -406,15 +406,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     }
     
-    public class MyIntComparable implements Comparator<TaskSummary>{  
-    	  
-        @Override  
-        public int compare(TaskSummary o1, TaskSummary o2) {
-        	return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
-            //return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
-        } 
-    }  
-
     public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
         refreshTasks();
     }
