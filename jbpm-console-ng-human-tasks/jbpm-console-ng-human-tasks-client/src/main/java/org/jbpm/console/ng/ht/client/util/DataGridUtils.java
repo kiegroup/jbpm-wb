@@ -22,7 +22,8 @@ import com.github.gwtbootstrap.client.ui.DataGrid;
 
 public class DataGridUtils {
 
-    private static final String BG_ROW_SELECTED = "#E5F1FF";
+	//it is rgb because datagrid returns this info
+    private static final String BG_ROW_SELECTED = "rgb(229, 241, 255)";
 	
     private static final String BG_ROW_COMPLETED = "#881100";
 	
@@ -39,6 +40,17 @@ public class DataGridUtils {
                 }
             }
         }
+    }
+    
+    public static Long getIdRowSelected(DataGrid<TaskSummary> myTaskListGrid){
+        Long rowSelected = null;
+        for( int i = 0 ; i< myTaskListGrid.getRowCount(); i++ ){
+            if(myTaskListGrid.getRowElement(i).getCells().getItem(0).getStyle().getBackgroundColor().equals(BG_ROW_SELECTED)){
+                rowSelected = Long.valueOf(myTaskListGrid.getRowElement(i).getCells().getItem(0).getInnerText());
+                break;
+            }
+        }
+        return rowSelected;
     }
     
     
