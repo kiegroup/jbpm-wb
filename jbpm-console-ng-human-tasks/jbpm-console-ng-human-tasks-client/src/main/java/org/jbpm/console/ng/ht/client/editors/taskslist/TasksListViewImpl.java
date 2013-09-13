@@ -651,10 +651,11 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             @Override
             public void execute(TaskSummary task) {
                 PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
-                if(status == PlaceStatus.CLOSE){
+                Long idSelected = DataGridUtils.getIdRowSelected(myTaskListGrid);
+                if(status == PlaceStatus.CLOSE || !Long.valueOf(task.getId()).equals(idSelected)){
                     placeManager.goTo("Task Details Multi");
                     taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
-                }else if( status == PlaceStatus.OPEN){
+                }else if( status == PlaceStatus.OPEN || Long.valueOf(task.getId()).equals(idSelected)){
                     placeManager.closePlace(new DefaultPlaceRequest("Task Details Multi"));
                 }
             }
