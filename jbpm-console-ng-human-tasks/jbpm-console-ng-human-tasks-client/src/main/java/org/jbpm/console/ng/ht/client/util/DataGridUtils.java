@@ -22,13 +22,10 @@ import com.github.gwtbootstrap.client.ui.DataGrid;
 
 public class DataGridUtils {
 
-	//it is rgb because datagrid returns this info
+    // it is rgb because datagrid returns this info
     private static final String BG_ROW_SELECTED = "rgb(229, 241, 255)";
-	
-    private static final String BG_ROW_COMPLETED = "#881100";
-	
-    private static final String COMPLETED = "Completed";
 
+    public static Long newTaskId = null;
 
     public static void paintRowSelected(DataGrid<TaskSummary> myTaskListGrid, Long idTask) {
         for (int i = 0; i < myTaskListGrid.getRowCount(); i++) {
@@ -41,17 +38,16 @@ public class DataGridUtils {
             }
         }
     }
-    
-    public static Long getIdRowSelected(DataGrid<TaskSummary> myTaskListGrid){
-        Long rowSelected = null;
-        for( int i = 0 ; i< myTaskListGrid.getRowCount(); i++ ){
-            if(myTaskListGrid.getRowElement(i).getCells().getItem(0).getStyle().getBackgroundColor().equals(BG_ROW_SELECTED)){
-                rowSelected = Long.valueOf(myTaskListGrid.getRowElement(i).getCells().getItem(0).getInnerText());
+
+    public static Long getIdRowSelected(DataGrid<TaskSummary> myTaskListGrid) {
+        Long idTaskSelected = null;
+        for (int i = 0; i < myTaskListGrid.getRowCount(); i++) {
+            if (myTaskListGrid.getRowElement(i).getCells().getItem(0).getStyle().getBackgroundColor().equals(BG_ROW_SELECTED)) {
+                idTaskSelected = Long.valueOf(myTaskListGrid.getRowElement(i).getCells().getItem(0).getInnerText());
                 break;
             }
         }
-        return rowSelected;
+        return idTaskSelected;
     }
-    
-    
+
 }

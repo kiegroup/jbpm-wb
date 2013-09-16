@@ -32,7 +32,6 @@ import javax.inject.Inject;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -51,7 +50,6 @@ import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.CellPreviewEvent;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
@@ -70,6 +68,7 @@ import org.jbpm.console.ng.ht.client.util.CalendarPicker;
 import org.jbpm.console.ng.ht.client.util.DataGridUtils;
 import org.jbpm.console.ng.ht.client.util.ResizableHeader;
 import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
@@ -140,6 +139,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Inject
     private Event<NotificationEvent> notification;
+    
+    private Event<TaskStyleEvent> taskStyleEvent;
 
     private Date currentDate;
 
@@ -155,7 +156,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     private Set<TaskSummary> selectedTasks;
     
     private ListHandler<TaskSummary> sortHandler;
-    
 
     public DataGrid<TaskSummary> myTaskListGrid;
 
@@ -470,6 +470,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                     int column = event.getColumn();
                     int columnCount = myTaskListGrid.getColumnCount();
                     if (column != columnCount - 1) {
+                        DataGridUtils.newTaskId = null;
                         task = event.getValue();
                         placeManager.goTo("Task Details Multi");
                         taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
@@ -480,7 +481,12 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                     task = event.getValue();
                     if(task.getDescription() != null){
                         myTaskListGrid.getRowElement(event.getIndex()).getCells().getItem(event.getColumn()).setTitle(task.getDescription());
-                        
+                    }
+                 }
+                
+                if (BrowserEvents.FOCUS.equalsIgnoreCase(event.getNativeEvent().getType())) {
+                    if(DataGridUtils.newTaskId != null){
+                        changeRowSelected(new TaskStyleEvent(DataGridUtils.newTaskId));
                     }
                  }
 
@@ -641,6 +647,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         cells.add(new CompleteActionHasCell("Complete", new ActionCell.Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
+                DataGridUtils.newTaskId = null;
                 placeManager.goTo("Task Details Multi");
                 taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName(), "Form Display"));
                 changeRowSelected(new TaskStyleEvent(task.getId()));
@@ -874,8 +881,16 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         if( taskStyleEvent.getTaskEventId() != null ){
         	DataGridUtils.paintRowSelected(myTaskListGrid, taskStyleEvent.getTaskEventId());
         }
-        
     }
     
+    public void refreshNewTask(@Observes NewTaskEvent newTask){
+        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
+        if( status == PlaceStatus.OPEN ){
+            placeManager.goTo("Task Details Multi");
+            taskSelected.fire(new TaskSelectionEvent(newTask.getNewTaskId(), newTask.getNewTaskName()));
+            DataGridUtils.newTaskId = newTask.getNewTaskId();
+            myTaskListGrid.setFocus(true);
+        }
+    }
     
 }
