@@ -202,7 +202,7 @@ public class TaskBox extends Composite {
                 @Override
                 public void onClick(ClickEvent event) {
                     placeManager.goTo("Task Details Multi");
-                    taskSelected.fire(new TaskSelectionEvent(taskId, taskName, "Form Display"));
+                    taskSelection.fire(new TaskSelectionEvent(taskId, taskName, "Form Display"));
                     event.stopPropagation();
                 }
             });

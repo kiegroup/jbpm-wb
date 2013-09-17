@@ -321,6 +321,10 @@
       <groupId>org.jboss.solder</groupId>
       <artifactId>solder-impl</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.solder</groupId>
+      <artifactId>solder-logging</artifactId>
+    </dependency>
 
     <!-- GWT and GWT Extensions -->
     <dependency>
