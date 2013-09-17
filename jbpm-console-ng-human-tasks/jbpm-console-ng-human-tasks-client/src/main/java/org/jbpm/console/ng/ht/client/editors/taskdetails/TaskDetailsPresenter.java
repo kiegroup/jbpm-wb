@@ -36,7 +36,8 @@ import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
+import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
+import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.uberfire.lifecycle.OnOpen;
@@ -105,7 +106,10 @@ public class TaskDetailsPresenter {
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
     
     @Inject
-    private Event<UserTaskEvent> userTaskChanges;
+    private Event<TaskRefreshedEvent> taskRefreshed;
+    
+    @Inject
+    private Event<TaskStyleEvent> taskStyleEvent;
 
     private PlaceRequest place;
     
@@ -216,10 +220,16 @@ public class TaskDetailsPresenter {
                     }
                     i++;
                 }
+                
+                changeStyleRow();
 
             }
         } ).getTaskDetails( currentTaskId );
 
+    }
+    
+    private void changeStyleRow(){
+        taskStyleEvent.fire( new TaskStyleEvent() );
     }
 
     public void onTaskSelected( @Observes TaskSelectionEvent taskSelection ) {
