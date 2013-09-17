@@ -318,6 +318,7 @@ public class FormDisplayPopupPresenter {
         view.getNavBarUL().clear();
         view.getInnerNavPanel().clear();
         view.getInnerNavPanel().setStyleName("");
+        view.getOptionsDiv().clear();
         formServices.call( new RemoteCallback<String>() {
             @Override
             public void callback( String form ) {
