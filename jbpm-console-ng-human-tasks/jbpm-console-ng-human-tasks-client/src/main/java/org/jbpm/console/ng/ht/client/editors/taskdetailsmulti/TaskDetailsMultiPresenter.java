@@ -97,14 +97,28 @@ public class TaskDetailsMultiPresenter {
 
     @OnOpen
     public void onOpen() {
-        selectedTaskId = Long.parseLong(place.getParameter("taskId", "0").toString());
-        selectedTaskName = place.getParameter("taskName", "");
+        WorkbenchSplitLayoutPanel splitPanel = (WorkbenchSplitLayoutPanel)view.asWidget().getParent().getParent().getParent().getParent()
+                                            .getParent().getParent().getParent().getParent().getParent().getParent().getParent();
+        splitPanel.setWidgetMinSize(splitPanel.getWidget(0), 500);
+        
+    }
+    
+    public void onTaskSelectionEvent(@Observes TaskSelectionEvent event){
+        selectedTaskId = event.getTaskId();
+        selectedTaskName = event.getTaskName();
         
         view.getTaskIdAndName().setText(String.valueOf(selectedTaskId) + " - "+selectedTaskName);
         
         view.getContent().clear();
         
-        String placeToGo = "Task Details";
+        String placeToGo;
+        if(event.getPlace() != null && !event.getPlace().equals("")){
+            placeToGo = event.getPlace();
+        }else{
+            placeToGo = "Task Details";
+        }
+        
+        
 
         DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
         //Set Parameters here: 

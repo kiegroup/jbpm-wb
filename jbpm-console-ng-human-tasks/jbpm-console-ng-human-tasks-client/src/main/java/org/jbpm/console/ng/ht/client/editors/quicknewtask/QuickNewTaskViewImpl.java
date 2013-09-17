@@ -50,7 +50,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.model.events.UserTaskEvent;
+import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -126,9 +126,6 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
 
     @Inject
     private Event<NotificationEvent> notification;
-
-    @Inject
-    private Event<UserTaskEvent> userTaskChanges;
 
     private HandlerRegistration textKeyPressHandler;
 
@@ -344,7 +341,6 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
     @Override
     public void displayNotification( String text ) {
         notification.fire( new NotificationEvent( text ) );
-        userTaskChanges.fire( new UserTaskEvent( identity.getName() ) );
     }
 
     @Override

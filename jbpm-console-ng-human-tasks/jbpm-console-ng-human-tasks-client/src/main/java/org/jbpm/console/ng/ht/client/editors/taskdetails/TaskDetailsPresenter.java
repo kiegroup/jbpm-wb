@@ -163,7 +163,7 @@ public class TaskDetailsPresenter {
                 @Override
                 public void callback( Void nothing ) {
                     view.displayNotification( "Task Details Updated for Task id = " + currentTaskId + ")" );
-                    userTaskChanges.fire( new UserTaskEvent( identity.getName() ) );
+                    taskRefreshed.fire( new TaskRefreshedEvent( currentTaskId ) );
                 }
             } ).updateSimpleTaskDetails( currentTaskId, names, Integer.valueOf( priority ), descriptions,
                                          // subTaskStrategy,
@@ -242,6 +242,12 @@ public class TaskDetailsPresenter {
         this.currentTaskId = Long.parseLong( place.getParameter( "taskId", "0" ).toString() );
         this.currentTaskName =  place.getParameter( "taskName", "" ) ;
         refreshTask( );
+    }
+    
+    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event){
+        if(currentTaskId == event.getTaskId()){
+            refreshTask( );
+        }
     }
 
     public void close() {

@@ -51,6 +51,7 @@ public class TaskBox extends Composite {
     private TasksListPresenter presenter;
     private Identity identity;
     private PlaceManager placeManager;
+    private Event<TaskSelectionEvent> taskSelected;
 
     public TaskBox() {
 
@@ -72,6 +73,7 @@ public class TaskBox extends Composite {
 
     public TaskBox(final PlaceManager placeManager,
             final TasksListPresenter presenter,
+            final Event<TaskSelectionEvent> taskSelected,
             final Identity identity,
             final long taskId,
             final String taskName,
@@ -89,6 +91,7 @@ public class TaskBox extends Composite {
         this.identity = identity;
         this.priority = priority;
         this.hour = hour;
+        this.taskSelected = taskSelected;
 
         hourPanel.add(new Label(hour));
 
@@ -107,18 +110,8 @@ public class TaskBox extends Composite {
         taskContainer.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                String currentView = presenter.getCurrentView().toString();
-                String currentTaskType = presenter.getCurrentTaskType().toString();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Tasks With Details");
-                placeRequestImpl.addParameter("taskId", String.valueOf(taskId));
-                placeRequestImpl.addParameter("taskName", taskName);
-                placeRequestImpl.addParameter("currentView", currentView);
-                placeRequestImpl.addParameter("currentTaskType", currentTaskType);
-                if(presenter.getCurrentDate() != null){
-                    placeRequestImpl.addParameter("currentDate", String.valueOf(presenter.getCurrentDate().getTime()));
-                }
-                placeRequestImpl.addParameter("currentFilter", presenter.getCurrentFilter());
-                placeManager.goTo(placeRequestImpl);
+               placeManager.goTo("Task Details Multi");
+               taskSelected.fire(new TaskSelectionEvent(taskId, taskName));
             }
         });
 
@@ -206,10 +199,8 @@ public class TaskBox extends Composite {
             focusPanel.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
-                    PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display");
-                    placeRequestImpl.addParameter("taskId", Long.toString(taskId));
-
-                    placeManager.goTo(placeRequestImpl);
+                    placeManager.goTo("Task Details Multi");
+                    taskSelected.fire(new TaskSelectionEvent(taskId, taskName, "Form Display"));
                     event.stopPropagation();
                 }
             });

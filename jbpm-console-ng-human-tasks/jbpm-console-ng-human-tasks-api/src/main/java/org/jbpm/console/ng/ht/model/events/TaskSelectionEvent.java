@@ -22,8 +22,8 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class TaskSelectionEvent implements Serializable {
     private long taskId;
-    // This should be removed from here
-    private String userId;
+    private String taskName;
+    private String place;
 
     public TaskSelectionEvent() {
     }
@@ -37,8 +37,22 @@ public class TaskSelectionEvent implements Serializable {
         this.userId = userId;
     }
 
-    public String getUserId() {
-        return userId;
+    public TaskSelectionEvent(long taskId, String taskName, String place) {
+        this.taskId = taskId;
+        this.taskName = taskName;
+        this.place = place;
+    }
+    
+    public String getPlace() {
+        return place;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
+    }
+    
+    public String getTaskName() {
+        return taskName;
     }
 
     public long getTaskId() {

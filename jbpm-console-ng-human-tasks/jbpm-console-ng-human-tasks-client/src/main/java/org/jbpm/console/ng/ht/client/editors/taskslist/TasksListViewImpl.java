@@ -73,7 +73,6 @@ import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
-import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -152,8 +151,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     private String currentFilter = "";
 
     @Inject
-    private Event<TaskSelectionEvent> taskSelection;
-
+    private Event<TaskSelectionEvent> taskSelected;
+    
     private Set<TaskSummary> selectedTasks;
     
     private ListHandler<TaskSummary> sortHandler;
@@ -416,17 +415,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         presenter.addDataDisplay(myTaskListGrid);
 
     }
-    
-    public class MyIntComparable implements Comparator<TaskSummary>{  
-    	  
-        @Override  
-        public int compare(TaskSummary o1, TaskSummary o2) {
-        	return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
-            //return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
-        } 
-    }  
 
-    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
+    public void recieveStatusChanged(@Observes TaskRefreshedEvent event) {
         refreshTasks();
     }
 
@@ -651,16 +641,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 List<Long> tasks = new ArrayList<Long>(1);
                 tasks.add(task.getId());
                 presenter.releaseTasks(tasks, identity.getName());
-            }
-        }));
-
-        cells.add(new DetailsHasCell("Details", new ActionCell.Delegate<TaskSummary>() {
-            @Override
-            public void execute(TaskSummary task) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Tasks With Details");
-                placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
-                placeRequestImpl.addParameter("taskName", task.getName());
-                placeManager.goTo(placeRequestImpl);
+                
             }
         }));
 
