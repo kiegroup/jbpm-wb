@@ -44,7 +44,7 @@ import org.jbpm.console.ng.ht.service.FormModelerProcessStarterEntryPoint;
 import org.jbpm.console.ng.ht.service.FormServiceEntryPoint;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
-import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
+import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
@@ -92,7 +92,7 @@ public class FormDisplayPopupPresenter {
     private Event<FormRenderedEvent> formRendered;
 
     @Inject
-    Event<ProcessInstanceCreated> processInstanceCreatedEvents;
+    private Event<NewProcessInstanceEvent> newProcessInstanceEvent;
 
     @Inject
     private Identity identity;
@@ -318,6 +318,7 @@ public class FormDisplayPopupPresenter {
         view.getNavBarUL().clear();
         view.getInnerNavPanel().clear();
         view.getInnerNavPanel().setStyleName("");
+        view.getOptionsDiv().clear();
         formServices.call( new RemoteCallback<String>() {
             @Override
             public void callback( String form ) {
@@ -497,13 +498,9 @@ public class FormDisplayPopupPresenter {
             @Override
             public void callback(Long processInstanceId) {
                 view.displayNotification("Process Id: " + processInstanceId + " started!");
-                processInstanceCreatedEvents.fire(new ProcessInstanceCreated());
+                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(processInstanceId, view.getProcessId()));
                 close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance Details");
-                placeRequestImpl.addParameter("processInstanceId", processInstanceId.toString());
-                placeRequestImpl.addParameter("processDefId", view.getProcessId());
-                placeRequestImpl.addParameter("domainId", view.getDomainId());
-                placeManager.goTo(placeRequestImpl);
+               
             }
         }).startProcessFromRenderContext(formCtx, view.getDomainId(), view.getProcessId());
     }
@@ -515,13 +512,9 @@ public class FormDisplayPopupPresenter {
             @Override
             public void callback(Long processInstanceId) {
                 view.displayNotification("Process Id: " + processInstanceId + " started!");
-                processInstanceCreatedEvents.fire(new ProcessInstanceCreated());
+                 newProcessInstanceEvent.fire(new NewProcessInstanceEvent(processInstanceId, view.getProcessId()));
                 close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance Details");
-                placeRequestImpl.addParameter("processInstanceId", processInstanceId.toString());
-                placeRequestImpl.addParameter("processDefId", params.get("processId").toString());
-                placeRequestImpl.addParameter("domainId", view.getDomainId());
-                placeManager.goTo(placeRequestImpl);
+                
             }
         }).startProcess(view.getDomainId(), params.get("processId").toString(), params);
 

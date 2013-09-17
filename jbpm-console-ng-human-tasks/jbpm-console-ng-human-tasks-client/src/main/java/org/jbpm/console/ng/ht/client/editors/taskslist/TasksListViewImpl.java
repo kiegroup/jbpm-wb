@@ -74,7 +74,6 @@ import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
-import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -161,8 +160,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     private Column<TaskSummary, Number> taskIdColumn;
     
-
-	@DataField
+    @DataField
     public SimplePager pager;
 
     public TasksListViewImpl() {

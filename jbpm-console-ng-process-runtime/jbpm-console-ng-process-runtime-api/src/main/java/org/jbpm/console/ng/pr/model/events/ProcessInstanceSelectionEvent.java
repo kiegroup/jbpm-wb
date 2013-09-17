@@ -19,22 +19,39 @@ package org.jbpm.console.ng.pr.model.events;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class ProcessSelectionEvent {
-    private long processId;
+public class ProcessInstanceSelectionEvent {
+    private long processInstanceId;
+    private String processDefId;
+    
 
-    public ProcessSelectionEvent() {
+    public ProcessInstanceSelectionEvent() {
     }
 
-    public ProcessSelectionEvent(long processId) {
-        this.processId = processId;
+    public ProcessInstanceSelectionEvent(long processInstanceId, String processDefId) {
+        this.processInstanceId = processInstanceId;
+        this.processDefId = processDefId;
+    }
+    
+
+    public long getProcessInstanceId() {
+        return processInstanceId;
     }
 
-    public long getProcessId() {
-        return processId;
+    public void setProcessInstanceId(long processInstanceId) {
+        this.processInstanceId = processInstanceId;
     }
 
-    public void setProcessId(long processId) {
-        this.processId = processId;
+    public String getProcessDefId() {
+        return processDefId;
     }
 
+    public void setProcessDefId(String processDefId) {
+        this.processDefId = processDefId;
+    }
+
+    
+
+   
+
+    
 }

@@ -57,12 +57,14 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
+import org.jbpm.console.ng.pr.client.util.DataGridUtils;
 import org.jbpm.console.ng.pr.client.util.ResizableHeader;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
-import org.jbpm.console.ng.pr.model.ProcessSummary;
-import org.jbpm.console.ng.pr.model.events.ProcessSelectionEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessInstanceStyleEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
@@ -124,7 +126,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
     private Event<NotificationEvent> notification;
 
     @Inject
-    private Event<ProcessSelectionEvent> processSelection;
+    private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
 
     private ListHandler<ProcessInstanceSummary> sortHandler;
 
@@ -217,9 +219,6 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
             @Override
             public void onSelectionChange( SelectionChangeEvent event ) {
                 selectedProcessInstances = selectionModel.getSelectedSet();
-                for ( ProcessInstanceSummary ts : selectedProcessInstances ) {
-                    processSelection.fire( new ProcessSelectionEvent( ts.getId() ) );
-                }
             }
         } );
 
@@ -251,17 +250,28 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
              @Override
              public void onCellPreview(final CellPreviewEvent<ProcessInstanceSummary> event) {
 
+                 
+                 ProcessInstanceSummary processInstance = null;
                  if (BrowserEvents.CLICK.equalsIgnoreCase(event.getNativeEvent().getType())) {
                     int column = event.getColumn();
                     int columnCount = processInstanceListGrid.getColumnCount();
-                    if(column != 0 && column != columnCount - 1){
-                        ProcessInstanceSummary processInstance = event.getValue();
-                        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instances With Details" );
-                        placeRequestImpl.addParameter( "processInstanceId", String.valueOf(processInstance.getId()) );
-                        placeRequestImpl.addParameter( "processDefId", processInstance.getProcessId() );
-                        placeManager.goTo(placeRequestImpl);
+                    if(column != columnCount - 1){
+                        
+                        processInstance = event.getValue();
+                        placeManager.goTo("Process Instance Details");
+                        processInstanceSelected.fire(new ProcessInstanceSelectionEvent(processInstance.getId(), processInstance.getProcessId()));
                     }
                  }
+                
+                if (BrowserEvents.FOCUS.equalsIgnoreCase(event.getNativeEvent().getType())) {
+                    if(DataGridUtils.newProcessInstanceId != null){
+                        changeRowSelected(new ProcessInstanceStyleEvent(DataGridUtils.newProcessInstanceId, 
+                                                                        DataGridUtils.newProcessInstanceDefName, 
+                                                                        DataGridUtils.newProcessInstanceDefVersion, 
+                                                                        DataGridUtils.newProcessInstanceStartDate));
+                    }
+                 }
+
 
              }
           });    
@@ -398,10 +408,23 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         cells.add( new DetailsActionHasCell( "Details", new Delegate<ProcessInstanceSummary>() {
             @Override
             public void execute( ProcessInstanceSummary processInstance ) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instances With Details" );
-                placeRequestImpl.addParameter( "processInstanceId", String.valueOf(processInstance.getId()) );
-                placeRequestImpl.addParameter( "processDefId", processInstance.getProcessId() );
-                placeManager.goTo( placeRequestImpl );
+                
+                PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details"));
+                String nameSelected = DataGridUtils.getProcessInstanceNameRowSelected(processInstanceListGrid);
+                String versionSelected = DataGridUtils.getProcessInstanceVersionRowSelected(processInstanceListGrid);
+                String startDateSelected = DataGridUtils.getProcessInstanceStartDateRowSelected(processInstanceListGrid);
+                if(status == PlaceStatus.CLOSE || !(processInstance.getProcessName().equals(nameSelected) 
+                                                       && processInstance.getProcessVersion().equals(versionSelected)
+                                                        && processInstance.getStartTime().equals(startDateSelected))){
+                    placeManager.goTo("Process Instance Details");
+                    processInstanceSelected.fire(new ProcessInstanceSelectionEvent(processInstance.getId(), processInstance.getProcessId()));
+                }else if( status == PlaceStatus.OPEN || (processInstance.getProcessName().equals(nameSelected) 
+                                                       && processInstance.getProcessVersion().equals(versionSelected)
+                                                        && processInstance.getStartTime().equals(startDateSelected))){
+                    placeManager.closePlace(new DefaultPlaceRequest("Process Instance Details"));
+                }
+                
+                
             }
         } ) );
 
@@ -435,6 +458,15 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         processInstanceListGrid.addColumn( actionsColumn, new ResizableHeader( constants.Actions(), processInstanceListGrid,
                                                                                     actionsColumn ) );
         processInstanceListGrid.setColumnWidth( actionsColumn, "100px" );
+    }
+    
+    public void changeRowSelected(@Observes ProcessInstanceStyleEvent processInstanceStyleEvent){
+        if( processInstanceStyleEvent.getProcessInstanceId() != null){
+        	DataGridUtils.paintInstanceRowSelected(processInstanceListGrid, 
+                        processInstanceStyleEvent.getProcessDefName(), 
+                            processInstanceStyleEvent.getProcessDefVersion(), 
+                            processInstanceStyleEvent.getProcessInstanceStartDate());
+        }
     }
 
     @Override

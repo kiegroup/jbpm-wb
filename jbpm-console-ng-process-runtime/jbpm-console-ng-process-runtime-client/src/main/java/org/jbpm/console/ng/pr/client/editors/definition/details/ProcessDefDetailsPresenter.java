@@ -27,6 +27,8 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.HTML;
 
 import java.util.ArrayList;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -34,8 +36,11 @@ import org.jbpm.console.ng.ht.model.TaskDefSummary;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.DummyProcessPath;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
+import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessDefStyleEvent;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
+import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -44,9 +49,11 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.workbench.widgets.split.WorkbenchSplitLayoutPanel;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
@@ -93,6 +100,9 @@ public class ProcessDefDetailsPresenter {
 
     @Inject
     private ProcessDefDetailsView view;
+    
+    @Inject
+    private Event<ProcessDefStyleEvent> processDefStyleEvent;
 
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
@@ -106,6 +116,10 @@ public class ProcessDefDetailsPresenter {
         makeMenuBar();
     }
     
+    @DefaultPosition
+    public Position getPosition(){
+        return Position.EAST;
+    }
     
 
     @OnStartup
@@ -121,6 +135,10 @@ public class ProcessDefDetailsPresenter {
     @WorkbenchPartView
     public UberView<ProcessDefDetailsPresenter> getView() {
         return view;
+    }
+    
+    private void changeStyleRow( String processDefName, String processDefVersion ){
+        processDefStyleEvent.fire( new ProcessDefStyleEvent( processDefName, processDefVersion ) );
     }
 
     public void refreshProcessDef( final String processId ) {
@@ -188,18 +206,25 @@ public class ProcessDefDetailsPresenter {
                 } else {
                     view.setProcessAssetPath( new DummyProcessPath( process.getId() ) );
                 }
+                changeStyleRow(process.getName(), process.getVersion());
             }
         } ).getProcessById( processId );
     }
 
     @OnOpen
     public void onOpen() {
-        String processId = place.getParameter( "processId", "" );
-        view.getProcessIdText().setText( processId );
-        String deploymentId = place.getParameter( "deploymentId", "none" );
-        view.getDeploymentIdText().setText( deploymentId );
+        WorkbenchSplitLayoutPanel splitPanel = (WorkbenchSplitLayoutPanel)view.asWidget().getParent().getParent().getParent().getParent()
+                                            .getParent().getParent().getParent().getParent().getParent().getParent().getParent();
+        splitPanel.setWidgetMinSize(splitPanel.getWidget(0), 500);
+    }
+    
+    public void onProcessDefSelectionEvent(@Observes ProcessDefSelectionEvent event){
+        
+        view.getProcessIdText().setText( event.getProcessId() );
+        
+        view.getDeploymentIdText().setText( event.getDeploymentId() );
 
-        refreshProcessDef( processId );
+        refreshProcessDef( event.getProcessId() );
     }
     
     @WorkbenchMenu
