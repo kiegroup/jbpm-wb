@@ -418,6 +418,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     }
     
+<<<<<<< HEAD
     public class MyIntComparable implements Comparator<TaskSummary>{  
     	  
         @Override  
@@ -427,9 +428,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         } 
     }  
 
-    public void recieveStatusChanged(@Observes UserTaskEvent event) {
+    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
         refreshTasks();
-
     }
 
     @Override
