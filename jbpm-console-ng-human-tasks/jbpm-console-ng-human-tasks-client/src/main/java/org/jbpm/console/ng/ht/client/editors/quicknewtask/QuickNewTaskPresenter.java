@@ -32,6 +32,8 @@ import java.util.List;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
+import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
@@ -77,6 +79,13 @@ public class QuickNewTaskPresenter {
     @Inject
     private PlaceManager placeManager;
 
+    @Inject
+    private Event<TaskRefreshedEvent> taskRefreshed;
+    
+    @Inject
+    private Event<NewTaskEvent> newTaskEvent;
+    
+    
     @OnStartup
     public void onStartup( final PlaceRequest place ) {
         this.place = place;
@@ -100,7 +109,7 @@ public class QuickNewTaskPresenter {
     }
 
     public void addTask( final List<String> users, List<String> groups,
-                         String taskName,
+                         final String taskName,
                          int priority,
                          boolean isAssignToMe,
                          Date due ) {
@@ -136,6 +145,8 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback( Long taskId ) {
                     view.displayNotification( "Task Created and Started (id = " + taskId + ")" );
+                    taskRefreshed.fire( new TaskRefreshedEvent( taskId ) );
+                    refreshNewTask(taskId, taskName);
                     close();
                 }
             } ).addTaskAndClaimAndStart( str, null, identity.getName(), templateVars );
@@ -146,6 +157,8 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback( Long taskId ) {
                     view.displayNotification( "Task Created and Started (id = " + taskId + ")" );
+                    taskRefreshed.fire( new TaskRefreshedEvent( taskId ) );
+                    refreshNewTask(taskId, taskName);
                     close();
 
                 }
@@ -156,6 +169,8 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback( Long taskId ) {
                     view.displayNotification( "Task Created (id = " + taskId + ")" );
+                    taskRefreshed.fire( new TaskRefreshedEvent( taskId ) );
+                    refreshNewTask(taskId, taskName);
                     close();
 
                 }
@@ -166,6 +181,8 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback( Long taskId ) {
                     view.displayNotification( "Task Created (id = " + taskId + ")" );
+                    taskRefreshed.fire( new TaskRefreshedEvent( taskId ) );
+                    refreshNewTask(taskId, taskName);
                     close();
 
                 }
@@ -176,12 +193,18 @@ public class QuickNewTaskPresenter {
                 @Override
                 public void callback( Long taskId ) {
                     view.displayNotification( "Task Created (id = " + taskId + ")" );
+                    taskRefreshed.fire( new TaskRefreshedEvent( taskId ) );
+                    refreshNewTask(taskId, taskName);
                     close();
 
                 }
             } ).addTask(str, null, templateVars );
         } 
 
+    }
+    
+    private void refreshNewTask(Long taskId, String taskname){
+        newTaskEvent.fire( new NewTaskEvent( taskId, taskname ));
     }
 
     private boolean containsGroup(List<String> groups, List<Role> roles){
