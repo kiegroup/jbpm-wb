@@ -21,22 +21,25 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class TaskStyleEvent {
     
-    private Integer taskEventIndex;
+    private Long taskEventId;
     
     public TaskStyleEvent(){
         
     }
     
-    public TaskStyleEvent(Integer taskEventIndex){
-        this.taskEventIndex = taskEventIndex;
+    public TaskStyleEvent(Long taskEventId){
+        this.taskEventId = taskEventId;
     }
 
-    public Integer getTaskEventIndex() {
-        return taskEventIndex;
+    public Long getTaskEventId() {
+        return taskEventId;
     }
 
-    public void setTaskEventIndex(Integer taskEventIndex) {
-        this.taskEventIndex = taskEventIndex;
+    public void setTaskEventId(Long taskEventId) {
+        this.taskEventId = taskEventId;
     }
+
+    
+    
     
 }
