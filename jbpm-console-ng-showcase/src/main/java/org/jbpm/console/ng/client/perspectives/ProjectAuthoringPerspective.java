@@ -24,7 +24,7 @@ import com.google.gwt.core.client.GWT;
 import org.jbpm.console.ng.client.i18n.Constants;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcesMenu;
-import org.kie.workbench.common.widgets.client.menu.ToolsMenu;
+import org.kie.workbench.common.widgets.client.menu.ProjectMenu;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -64,7 +64,7 @@ public class ProjectAuthoringPerspective {
     private NewResourcesMenu newResourcesMenu;
 
     @Inject
-    private ToolsMenu toolsMenu;
+    private ProjectMenu projectMenu;
 
     private ToolBar toolBar;
 
@@ -131,7 +131,7 @@ public class ProjectAuthoringPerspective {
                 .endMenu()
 
                 .newTopLevelMenu( "Tools" )
-                .withItems( toolsMenu.getMenuItems() )
+                .withItems( projectMenu.getMenuItems() )
                 .endMenu()
 
                 .build();
