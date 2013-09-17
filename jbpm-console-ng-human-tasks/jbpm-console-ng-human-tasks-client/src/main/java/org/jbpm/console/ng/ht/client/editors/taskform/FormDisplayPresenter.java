@@ -43,7 +43,7 @@ import org.jbpm.console.ng.ht.service.FormModelerProcessStarterEntryPoint;
 import org.jbpm.console.ng.ht.service.FormServiceEntryPoint;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
-import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
+import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
@@ -94,7 +94,7 @@ public class FormDisplayPresenter {
     private Event<TaskRefreshedEvent> taskRefreshed;
     
     @Inject
-    Event<ProcessInstanceCreated> processInstanceCreatedEvents;
+    private Event<NewProcessInstanceEvent> newProcessInstanceEvent;
 
     @Inject
     private Identity identity;
@@ -443,13 +443,10 @@ public class FormDisplayPresenter {
             @Override
             public void callback(Long processInstanceId) {
                 view.displayNotification("Process Id: " + processInstanceId + " started!");
-                processInstanceCreatedEvents.fire(new ProcessInstanceCreated());
+                System.out.println("Current ProcessId: "+currentProcessId + " - current Process Instnace ID: "+processInstanceId);
+                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(processInstanceId, currentProcessId));
                 close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance Details");
-                placeRequestImpl.addParameter("processInstanceId", processInstanceId.toString());
-                placeRequestImpl.addParameter("processDefId", currentProcessId);
-                placeRequestImpl.addParameter("domainId", currentDomainId);
-                placeManager.goTo(placeRequestImpl);
+ 
             }
         }).startProcessFromRenderContext(formCtx, currentDomainId, currentProcessId);
     }
@@ -461,13 +458,11 @@ public class FormDisplayPresenter {
             @Override
             public void callback(Long processInstanceId) {
                 view.displayNotification("Process Id: " + processInstanceId + " started!");
-                processInstanceCreatedEvents.fire(new ProcessInstanceCreated());
+                System.out.println("Current ProcessId: "+currentProcessId + " - current Process Instnace ID: "+processInstanceId);
+                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(processInstanceId, currentProcessId));
                 close();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance Details");
-                placeRequestImpl.addParameter("processInstanceId", processInstanceId.toString());
-                placeRequestImpl.addParameter("processDefId", params.get("processId").toString());
-                placeRequestImpl.addParameter("domainId", currentDomainId);
-                placeManager.goTo(placeRequestImpl);
+               
+
             }
         }).startProcess(currentDomainId, params.get("processId").toString(), params);
 

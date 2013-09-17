@@ -21,6 +21,8 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class ProcessDefSelectionEvent {
     private String processId;
+    private String deploymentId;
+    
 
     public ProcessDefSelectionEvent() {
     }
@@ -28,6 +30,12 @@ public class ProcessDefSelectionEvent {
     public ProcessDefSelectionEvent(String processId) {
         this.processId = processId;
     }
+
+    public ProcessDefSelectionEvent(String processId, String deploymentId) {
+        this.processId = processId;
+        this.deploymentId = deploymentId;
+    }
+    
 
     public String getProcessId() {
         return processId;
@@ -37,4 +45,13 @@ public class ProcessDefSelectionEvent {
         this.processId = processId;
     }
 
+    public String getDeploymentId() {
+        return deploymentId;
+    }
+
+    public void setDeploymentId(String deploymentId) {
+        this.deploymentId = deploymentId;
+    }
+
+    
 }
