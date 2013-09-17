@@ -215,7 +215,6 @@ public class ProcessInstanceListPresenter {
 
     @OnOpen
     public void onOpen() {
-
         this.currentProcessDefinition = place.getParameter("processName", "");
         view.setCurrentFilter(currentProcessDefinition);
         refreshActiveProcessList();

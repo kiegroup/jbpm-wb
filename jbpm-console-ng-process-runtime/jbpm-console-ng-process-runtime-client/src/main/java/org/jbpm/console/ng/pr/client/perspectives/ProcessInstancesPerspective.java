@@ -46,11 +46,15 @@ public class ProcessInstancesPerspective {
     @Inject
     private Event<SetSearchTextEvent> setSearchTextEvents;
     
+    private String currentProcessDefinition = "";
+    
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_LIST);
         p.setName( "Process Instances" );
-        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Process Instance List" ) ) );
+        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Process Instance List" );
+        defaultPlaceRequest.addParameter("processName", currentProcessDefinition);
+        p.getRoot().addPart( new PartDefinitionImpl( defaultPlaceRequest ) );
         p.setTransient( true );
         return p;
     }
@@ -66,9 +70,8 @@ public class ProcessInstancesPerspective {
 
             
         });
-        String processName = place.getParameter( "processName", "" );
-        setSearchTextEvents.fire(new SetSearchTextEvent(processName));
-        
+        this.currentProcessDefinition = place.getParameter( "processName", "" );
+        setSearchTextEvents.fire(new SetSearchTextEvent(currentProcessDefinition));
     }
 
 }
