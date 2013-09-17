@@ -83,7 +83,7 @@ public class TasksListPresenter {
         void displayNotification(String text);
 
         TaskListMultiDayBox getTaskListMultiDayBox();
-
+ 
         void refreshTasks();
 
         Date getCurrentDate();

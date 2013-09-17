@@ -32,9 +32,9 @@ public class TaskSelectionEvent implements Serializable {
         this.taskId = taskId;
     }
 
-    public TaskSelectionEvent(long taskId, String userId) {
+    public TaskSelectionEvent(long taskId, String taskName) {
         this.taskId = taskId;
-        this.userId = userId;
+        this.taskName = taskName;
     }
 
     public TaskSelectionEvent(long taskId, String taskName, String place) {
@@ -63,8 +63,8 @@ public class TaskSelectionEvent implements Serializable {
         this.taskId = taskId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
     }
 
 }

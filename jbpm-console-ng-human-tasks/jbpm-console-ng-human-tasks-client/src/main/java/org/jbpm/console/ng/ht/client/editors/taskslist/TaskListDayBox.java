@@ -33,6 +33,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import java.util.Date;
+import javax.enterprise.event.Event;
+import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 
 public class TaskListDayBox extends Composite implements RequiresResize {
     private static IconType ICON_TASKS_COLLAPSED = IconType.DOUBLE_ANGLE_DOWN;
@@ -50,17 +52,19 @@ public class TaskListDayBox extends Composite implements RequiresResize {
     private FlowPanel span12 = new FlowPanel();
     private IconAnchor iconAndDayName = new IconAnchor();
     private Collapse collapsible = new Collapse();
+    private Event<TaskSelectionEvent> taskSelection;
 
     private boolean tasksCollapsed = false;
     
     
-    public TaskListDayBox(Day day, List<TaskSummary> taskSummaries, Identity identity, PlaceManager placeManager,
+    public TaskListDayBox(Day day, List<TaskSummary> taskSummaries, Identity identity, PlaceManager placeManager, Event<TaskSelectionEvent> taskSelection,
             TasksListPresenter presenter) {
         this.day = day;
         this.taskSummaries = taskSummaries;
         this.identity = identity;
         this.placeManager = placeManager;
         this.presenter = presenter;
+        this.taskSelection = taskSelection;
     }
 
     public void init() {
@@ -118,7 +122,7 @@ public class TaskListDayBox extends Composite implements RequiresResize {
                 fmt = DateTimeFormat.getFormat("hh:mm a");
                 hour = fmt.format(ts.getExpirationTime());
             }
-            taskListBox.add(new TaskBox(placeManager, presenter, identity, ts.getId(), ts.getName(), ts.getActualOwner(), ts
+            taskListBox.add(new TaskBox(placeManager, presenter, taskSelection, identity, ts.getId(), ts.getName(), ts.getActualOwner(), ts
                     .getPotentialOwners(), ts.getStatus(), ts.getPriority(), hour));
         }
     }

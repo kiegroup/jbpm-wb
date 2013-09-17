@@ -26,6 +26,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import javax.enterprise.event.Event;
+import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -51,7 +53,7 @@ public class TaskBox extends Composite {
     private TasksListPresenter presenter;
     private Identity identity;
     private PlaceManager placeManager;
-    private Event<TaskSelectionEvent> taskSelected;
+    private Event<TaskSelectionEvent> taskSelection;
 
     public TaskBox() {
 
@@ -73,7 +75,7 @@ public class TaskBox extends Composite {
 
     public TaskBox(final PlaceManager placeManager,
             final TasksListPresenter presenter,
-            final Event<TaskSelectionEvent> taskSelected,
+            final Event<TaskSelectionEvent> taskSelection,
             final Identity identity,
             final long taskId,
             final String taskName,
@@ -91,7 +93,7 @@ public class TaskBox extends Composite {
         this.identity = identity;
         this.priority = priority;
         this.hour = hour;
-        this.taskSelected = taskSelected;
+        this.taskSelection = taskSelection;
 
         hourPanel.add(new Label(hour));
 
@@ -111,7 +113,7 @@ public class TaskBox extends Composite {
             @Override
             public void onClick(ClickEvent event) {
                placeManager.goTo("Task Details Multi");
-               taskSelected.fire(new TaskSelectionEvent(taskId, taskName));
+               taskSelection.fire(new TaskSelectionEvent(taskId, taskName));
             }
         });
 

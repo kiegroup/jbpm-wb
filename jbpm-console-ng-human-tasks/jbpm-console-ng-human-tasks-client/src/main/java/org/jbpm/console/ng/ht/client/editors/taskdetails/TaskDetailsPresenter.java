@@ -232,11 +232,6 @@ public class TaskDetailsPresenter {
         taskStyleEvent.fire( new TaskStyleEvent( idTask ) );
     }
 
-    public void onTaskSelected( @Observes TaskSelectionEvent taskSelection ) {
-        this.currentTaskId = taskSelection.getTaskId();
-        refreshTask( );
-    }
-
     @OnOpen
     public void onOpen() {
         this.currentTaskId = Long.parseLong( place.getParameter( "taskId", "0" ).toString() );

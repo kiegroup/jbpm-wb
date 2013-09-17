@@ -31,6 +31,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import java.util.Date;
+import javax.enterprise.event.Event;
+import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 
 public class TaskListMultiDayBox extends Composite implements RequiresResize {
 
@@ -42,6 +44,9 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
     @Inject
     private PlaceManager placeManager;
 
+    @Inject
+    private Event<TaskSelectionEvent> taskSelection;
+    
     private TasksListPresenter presenter;
 
     private Map<Day, List<TaskSummary>> sectionTasks = new LinkedHashMap<Day, List<TaskSummary>>();
@@ -65,7 +70,7 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
     public void refresh() {
 
         for (Day section : sectionTasks.keySet()) {
-            TaskListDayBox taskList = new TaskListDayBox(section, sectionTasks.get(section), identity, placeManager, presenter);
+            TaskListDayBox taskList = new TaskListDayBox(section, sectionTasks.get(section), identity, placeManager, taskSelection, presenter);
             taskList.init();
             tasksContainer.add(taskList);
         }
