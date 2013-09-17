@@ -484,6 +484,9 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                     if(DataGridUtils.newTaskId != null){
                         changeRowSelected(new TaskStyleEvent(DataGridUtils.newTaskId));
                     }
+                    else if(currentTaskType.equals(TaskType.ALL)){
+                        DataGridUtils.paintRowsCompleted(myTaskListGrid);
+                    }
                  }
 
             }
@@ -877,6 +880,9 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         if( taskStyleEvent.getTaskEventId() != null ){
         	DataGridUtils.paintRowSelected(myTaskListGrid, taskStyleEvent.getTaskEventId());
         }
+        if(currentTaskType.equals(TaskType.ALL)){
+            DataGridUtils.paintRowsCompleted(myTaskListGrid);
+        }
     }
     
     public void refreshNewTask(@Observes NewTaskEvent newTask){
@@ -884,9 +890,9 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         if( status == PlaceStatus.OPEN ){
             placeManager.goTo("Task Details Multi");
             taskSelected.fire(new TaskSelectionEvent(newTask.getNewTaskId(), newTask.getNewTaskName()));
-            DataGridUtils.newTaskId = newTask.getNewTaskId();
-            myTaskListGrid.setFocus(true);
         }
+        DataGridUtils.newTaskId = newTask.getNewTaskId();
+        myTaskListGrid.setFocus(true);
     }
     
 }

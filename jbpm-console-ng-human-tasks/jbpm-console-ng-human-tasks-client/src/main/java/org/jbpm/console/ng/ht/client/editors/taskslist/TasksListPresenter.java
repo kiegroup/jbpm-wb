@@ -250,6 +250,9 @@ public class TasksListPresenter {
                 view.getTaskListMultiDayBox().refresh();
             }
          }
+        
+        view.getTaskListGrid().setFocus(true);
+        
     }
 
     public void startTasks( final List<Long> selectedTasks,
@@ -485,6 +488,7 @@ public class TasksListPresenter {
                 public void callback(List<TaskSummary> tasks) {
                    allTaskSummaries = tasks;
                    filterTasks(view.getCurrentFilter());
+                   view.getTaskListGrid().setFocus(true);
                 }
             }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
         } else {
@@ -493,6 +497,7 @@ public class TasksListPresenter {
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
                     currentDayTasks = tasks;
                     filterTasks(view.getCurrentFilter());
+                    view.getTaskListGrid().setFocus(true);
                 }
             }).getTasksAssignedAsPotentialOwnerFromDateToDateByDays(identity.getName(), statuses, fromDate, daysTotal, "en-UK");
         }
