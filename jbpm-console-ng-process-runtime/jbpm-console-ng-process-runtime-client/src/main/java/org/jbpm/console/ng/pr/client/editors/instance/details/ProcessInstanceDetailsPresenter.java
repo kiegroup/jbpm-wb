@@ -27,6 +27,8 @@ import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
 import java.util.ArrayList;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -37,9 +39,12 @@ import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.VariableSummary;
+import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessInstanceStyleEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
+import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -48,9 +53,11 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.workbench.widgets.split.WorkbenchSplitLayoutPanel;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
@@ -115,6 +122,9 @@ public class ProcessInstanceDetailsPresenter {
 
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
+    
+    @Inject
+    private Event<ProcessInstanceStyleEvent> processInstanceStyleEvent;
 
     @Inject
     private Caller<VFSService> fileServices;
@@ -219,6 +229,7 @@ public class ProcessInstanceDetailsPresenter {
                 }
 
                 view.getStateText().setText( statusStr );
+                changeStyleRow(process.getId(), process.getProcessName(), process.getProcessVersion(), process.getStartTime());
             }
         } ).getProcessInstanceById( Long.parseLong( processId ) );
 
@@ -248,7 +259,14 @@ public class ProcessInstanceDetailsPresenter {
         } ).getProcessById( processDefId );
     }
 
+    @DefaultPosition
+    public Position getPosition(){
+        return Position.EAST;
+    }
     
+    private void changeStyleRow(long processInstanceId,  String processDefName, String processDefVersion , String startTime){
+        processInstanceStyleEvent.fire( new ProcessInstanceStyleEvent(processInstanceId,  processDefName, processDefVersion, startTime ) );
+    }
 
     @OnStartup
     public void onStartup( final PlaceRequest place ) {
@@ -257,13 +275,20 @@ public class ProcessInstanceDetailsPresenter {
 
     @OnOpen
     public void onOpen() {
-        this.processInstanceId = place.getParameter( "processInstanceId", "" );
-        this.processDefId = place.getParameter( "processDefId", "" );
-        view.getProcessInstanceIdText().setText( processInstanceId );
-        view.getProcessNameText().setText( processDefId );
-        refreshProcessInstanceData( processInstanceId, processDefId );
+        WorkbenchSplitLayoutPanel splitPanel = (WorkbenchSplitLayoutPanel)view.asWidget().getParent().getParent().getParent().getParent()
+                                            .getParent().getParent().getParent().getParent().getParent().getParent().getParent();
+        splitPanel.setWidgetMinSize(splitPanel.getWidget(0), 500);
     }
 
+    
+    public void onProcessInstanceSelectionEvent(@Observes ProcessInstanceSelectionEvent event){
+        view.getProcessInstanceIdText().setText( String.valueOf(event.getProcessInstanceId()) );
+        
+        view.getProcessNameText().setText( event.getProcessDefId() );
+
+        refreshProcessInstanceData( String.valueOf(event.getProcessInstanceId()), event.getProcessDefId() );
+    }
+    
     
     @WorkbenchMenu
     public Menus getMenus() {

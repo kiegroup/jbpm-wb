@@ -36,7 +36,6 @@ import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessDefinitionsSearchEvent;
-import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
 import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -79,10 +78,8 @@ public class ProcessDefinitionListPresenter {
     private Caller<DeploymentManagerEntryPoint> deploymentManager;
 
     @Inject
-    private Event<ProcessInstanceCreated> processInstanceCreatedEvents;
-
-    @Inject
     private Event<ClearSearchEvent> clearSearchEvent;
+    
 
     private ListDataProvider<ProcessSummary> dataProvider = new ListDataProvider<ProcessSummary>();
 
@@ -103,7 +100,7 @@ public class ProcessDefinitionListPresenter {
     public ProcessDefinitionListPresenter() {
         makeMenuBar();
     }
-
+    
     public void refreshProcessList() {
         dataServices.call( new RemoteCallback<List<ProcessSummary>>() {
             @Override

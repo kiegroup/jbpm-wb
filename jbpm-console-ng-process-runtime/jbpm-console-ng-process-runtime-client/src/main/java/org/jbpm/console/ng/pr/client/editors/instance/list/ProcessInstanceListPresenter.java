@@ -36,7 +36,7 @@ import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesSearchEvent;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
-import org.jbpm.console.ng.pr.model.events.ProcessInstanceCreated;
+import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
 import org.uberfire.lifecycle.OnOpen;
@@ -193,7 +193,7 @@ public class ProcessInstanceListPresenter {
         }).getProcessInstances(states, "", null);
     }
 
-    public void newInstanceCreated(@Observes ProcessInstanceCreated pi) {
+    public void newInstanceCreated(@Observes NewProcessInstanceEvent pi) {
         refreshActiveProcessList();
     }
 
