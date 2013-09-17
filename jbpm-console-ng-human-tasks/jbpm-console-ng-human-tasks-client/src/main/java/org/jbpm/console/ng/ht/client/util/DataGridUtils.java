@@ -24,6 +24,10 @@ public class DataGridUtils {
 
     // it is rgb because datagrid returns this info
     private static final String BG_ROW_SELECTED = "rgb(229, 241, 255)";
+    
+    private static final String BG_ROW_COMPLETED = "#EFBDBD";
+
+    private static final String COMPLETED = "Completed";
 
     public static Long newTaskId = null;
 
@@ -48,6 +52,18 @@ public class DataGridUtils {
             }
         }
         return idTaskSelected;
+    }
+    
+    public static void paintRowsCompleted(DataGrid<TaskSummary> myTaskListGrid) {
+        for (int i = 0; i < myTaskListGrid.getRowCount(); i++) {
+            if (myTaskListGrid.getRowElement(i).getCells().getItem(3).getInnerText().equals(COMPLETED)
+                    && !myTaskListGrid.getRowElement(i).getCells().getItem(0).getStyle().getBackgroundColor()
+                            .equals(BG_ROW_SELECTED)) {
+                for (int j = 0; j < myTaskListGrid.getColumnCount(); j++) {
+                    myTaskListGrid.getRowElement(i).getCells().getItem(j).getStyle().setBackgroundColor(BG_ROW_COMPLETED);
+                }
+            }
+        }
     }
 
 }
