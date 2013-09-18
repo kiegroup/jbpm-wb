@@ -57,6 +57,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnFocus;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
@@ -538,6 +539,12 @@ public class TasksListPresenter {
         view.setCurrentFilter(searchEvent.getFilter());
         refreshTasks(view.getCurrentDate(), view.getCurrentView(), view.getCurrentTaskType());
     }
+    
+    @OnFocus
+    public void onFocus() {
+        refreshTasks(view.getCurrentDate(), view.getCurrentView(), view.getCurrentTaskType());
+    }
+    
   
     @OnStartup
     public void onStartup(final PlaceRequest place) {

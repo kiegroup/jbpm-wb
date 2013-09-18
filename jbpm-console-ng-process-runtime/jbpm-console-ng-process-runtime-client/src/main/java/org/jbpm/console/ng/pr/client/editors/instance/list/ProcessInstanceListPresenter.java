@@ -40,6 +40,7 @@ import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
 import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnFocus;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -211,6 +212,11 @@ public class ProcessInstanceListPresenter {
     @OnStartup
     public void onStartup(final PlaceRequest place) {
         this.place = place;
+    }
+    
+    @OnFocus
+    public void onFocus() {
+        refreshActiveProcessList();
     }
 
     @OnOpen
