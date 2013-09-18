@@ -44,6 +44,11 @@ public class DummyProcessPath implements Path {
     }
 
     @Override
+    public String getFileNameWithoutExtension() {
+        return fileName;
+    }
+
+    @Override
     public String toURI() {
         return "default://master@dummy/" + getFileName();
     }
