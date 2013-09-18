@@ -43,6 +43,7 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnFocus;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
@@ -175,6 +176,11 @@ public class ProcessDefinitionListPresenter {
 
     @OnOpen
     public void onOpen() {
+        refreshProcessList();
+    }
+    
+    @OnFocus
+    public void onFocus() {
         refreshProcessList();
     }
 
