@@ -550,3 +550,11 @@
 .day-tasks-container.holyday .tasks-list:hover .task {
     opacity: 1;
 }
+
+/*background task*/
+.taskCalendarCompleted{
+	background-color: #EFBDBD;
+}
+.taskCalendarCompleted .task-name div, .taskCalendarCompleted .gwt-Label{
+	color: #777777;
+}

@@ -27,9 +27,26 @@ public class DataGridUtils {
     
     private static final String BG_ROW_COMPLETED = "#EFBDBD";
 
-    private static final String COMPLETED = "Completed";
-
     public static Long newTaskId = null;
+    
+    public static enum StatusTaskDataGrid{
+        
+        COMPLETED("Completed"),
+        INPROGRESS("InProgress"),
+        RESERVED("Reserved"),
+        READY("Ready");
+        
+        private String description;
+        
+        StatusTaskDataGrid(String description){
+             this.description = description;
+        }
+        
+        public String getDescription() {
+            return description;
+        }
+        
+    }
 
     public static void paintRowSelected(DataGrid<TaskSummary> myTaskListGrid, Long idTask) {
         for (int i = 0; i < myTaskListGrid.getRowCount(); i++) {
@@ -56,7 +73,7 @@ public class DataGridUtils {
     
     public static void paintRowsCompleted(DataGrid<TaskSummary> myTaskListGrid) {
         for (int i = 0; i < myTaskListGrid.getRowCount(); i++) {
-            if (myTaskListGrid.getRowElement(i).getCells().getItem(3).getInnerText().equals(COMPLETED)
+            if (myTaskListGrid.getRowElement(i).getCells().getItem(3).getInnerText().equals(StatusTaskDataGrid.COMPLETED.getDescription())
                     && !myTaskListGrid.getRowElement(i).getCells().getItem(0).getStyle().getBackgroundColor()
                             .equals(BG_ROW_SELECTED)) {
                 for (int j = 0; j < myTaskListGrid.getColumnCount(); j++) {
@@ -65,5 +82,6 @@ public class DataGridUtils {
             }
         }
     }
+
 
 }
