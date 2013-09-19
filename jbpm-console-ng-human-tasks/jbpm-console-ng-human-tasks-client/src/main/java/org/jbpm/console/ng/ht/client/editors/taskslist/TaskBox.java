@@ -26,7 +26,10 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+
 import javax.enterprise.event.Event;
+
+import org.jbpm.console.ng.ht.client.util.DataGridUtils;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.PlaceRequest;
@@ -81,7 +84,9 @@ public class TaskBox extends Composite {
             final String taskName,
             final String actualOwner,
             final List<String> potentialOwners,
-            final String status, final int priority, String hour) {
+            final String status, 
+            final int priority, 
+            String hour) {
         this();
         this.taskId = taskId;
         this.taskName = taskName;
@@ -108,7 +113,7 @@ public class TaskBox extends Composite {
         } else if (priority == 8 || priority == 9 || priority == 10) {
             taskPriorityPanel.setStyleName("priority one");
         }
-
+        
         taskContainer.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -120,7 +125,7 @@ public class TaskBox extends Composite {
         List<FocusPanel> options = new ArrayList<FocusPanel>();
         FlowPanel personalOrGroupTask = new FlowPanel();
         //Claim
-        if ("".equals(actualOwner) && status.equals("Ready")) {
+        if ("".equals(actualOwner) && status.equals(DataGridUtils.StatusTaskDataGrid.READY.getDescription())) {
             if (!potentialOwners.isEmpty() && !(potentialOwners.size() == 1 && potentialOwners.contains("User:" + identity.getName()))) {
                 personalOrGroupTask.setStyleName("group-task");
                 personalOrGroupTask.add(new HTML("Group Task"));
@@ -146,7 +151,8 @@ public class TaskBox extends Composite {
         } //Release
         else if (!"".equals(actualOwner) && actualOwner.equals(identity.getName())
                 && potentialOwners != null && !potentialOwners.isEmpty()
-                && (status.equals("Reserved") || status.equals("InProgress"))) {
+                && (status.equals(DataGridUtils.StatusTaskDataGrid.RESERVED.getDescription()) 
+                        || status.equals(DataGridUtils.StatusTaskDataGrid.INPROGRESS.getDescription()))) {
 
             if (!potentialOwners.isEmpty()
                     && !(potentialOwners.size() == 1 && potentialOwners.contains("User:" + identity.getName()))) {
@@ -176,7 +182,7 @@ public class TaskBox extends Composite {
             personalOrGroupTask.add(new HTML("Personal Task"));
         }
         //Start
-        if (status.equals("Reserved") && actualOwner.equals(identity.getName())) {
+        if (status.equals(DataGridUtils.StatusTaskDataGrid.RESERVED.getDescription()) && actualOwner.equals(identity.getName())) {
             FlowPanel panel = new FlowPanel();
             FocusPanel focusPanel = new FocusPanel(panel);
             focusPanel.addClickHandler(new ClickHandler() {
@@ -194,7 +200,7 @@ public class TaskBox extends Composite {
 
         }
         //Complete
-        if (status.equals("InProgress")) {
+        if (status.equals(DataGridUtils.StatusTaskDataGrid.INPROGRESS.getDescription())) {
             FlowPanel panel = new FlowPanel();
             taskPanel.setStyleName("task in-progress");
             FocusPanel focusPanel = new FocusPanel(panel);
@@ -209,6 +215,10 @@ public class TaskBox extends Composite {
             panel.add(new HTML("Complete"));
             panel.setStyleName("clickable complete");
             options.add(focusPanel);
+        }
+        
+        if(status.equals(DataGridUtils.StatusTaskDataGrid.COMPLETED.getDescription())){
+            taskPanel.setStyleName("task taskCalendarCompleted");
         }
 
         for (FocusPanel p : options) {

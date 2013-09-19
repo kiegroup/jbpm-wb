@@ -17,8 +17,10 @@
 package org.jbpm.console.ng.ht.client.editors.taskform;
 
 import com.github.gwtbootstrap.client.ui.Button;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -31,6 +33,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -38,6 +41,7 @@ import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
+import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.jbpm.console.ng.ht.model.fb.events.FormRenderedEvent;
 import org.jbpm.console.ng.ht.service.FormModelerProcessStarterEntryPoint;
 import org.jbpm.console.ng.ht.service.FormServiceEntryPoint;
@@ -114,6 +118,9 @@ public class FormDisplayPresenter {
     private String currentProcessId;
     
     private String currentDomainId;
+    
+    @Inject
+    private Event<TaskStyleEvent> taskStyleEvent;
     
     @Inject
     private Event<NotificationEvent> notification;
@@ -257,6 +264,7 @@ public class FormDisplayPresenter {
                     
                     wrapperFlowPanel.add( completeButton );
                     view.getOptionsDiv().add( wrapperFlowPanel );
+                    taskStyleEvent.fire( new TaskStyleEvent( task.getId() ) );
                 }
             }
         } ).getTaskDetails(currentTaskId);

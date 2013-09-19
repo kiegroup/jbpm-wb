@@ -651,7 +651,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 DataGridUtils.newTaskId = null;
                 placeManager.goTo("Task Details Multi");
                 taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName(), "Form Display"));
-                changeRowSelected(new TaskStyleEvent(task.getId()));
             }
         }));
         
