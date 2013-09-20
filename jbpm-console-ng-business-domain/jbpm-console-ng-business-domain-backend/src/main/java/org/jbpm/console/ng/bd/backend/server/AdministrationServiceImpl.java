@@ -31,6 +31,9 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.guvnor.common.services.project.model.GAV;
+import org.guvnor.common.services.project.model.POM;
+import org.guvnor.common.services.project.service.ProjectService;
 import org.jbpm.console.ng.bd.service.AdministrationService;
 import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
 import org.jbpm.console.ng.bd.service.DeploymentUnitProvider;
@@ -76,6 +79,9 @@ public class AdministrationServiceImpl implements AdministrationService {
     private DeploymentManagerEntryPoint deploymentManager;
 
     @Inject
+    private ProjectService projectService;
+
+    @Inject
     @Any
     private Instance<DeploymentService> deploymentService;
 
@@ -95,7 +101,8 @@ public class AdministrationServiceImpl implements AdministrationService {
     /* (non-Javadoc)
      * @see org.jbpm.console.ng.bd.backend.server.AdministrationService#bootstrapRepository(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
      */
-    public void bootstrapRepository( String repoAlias,
+    public void bootstrapRepository( String ou,
+                                     String repoAlias,
                                      String repoUrl,
                                      String userName,
                                      String password ) {
@@ -106,7 +113,9 @@ public class AdministrationServiceImpl implements AdministrationService {
             if ( repository == null ) {
 
                 final Map<String, Object> env = new HashMap<String, Object>( 3 );
-                env.put( "origin", repoUrl );
+                if (repoUrl != null) {
+                    env.put( "origin", repoUrl );
+                }
                 env.put( "username", userName );
                 env.put( "crypt:password", password );
 
@@ -117,13 +126,13 @@ public class AdministrationServiceImpl implements AdministrationService {
             logger.warn("Unable to create repository with alias {} due to {}", repoAlias, e.getMessage());
         }
 
-        OrganizationalUnit demoOrganizationalUnit = organizationalUnitService.getOrganizationalUnit( "demo" );
+        OrganizationalUnit demoOrganizationalUnit = organizationalUnitService.getOrganizationalUnit( ou );
         if ( demoOrganizationalUnit == null ) {
             List<Repository> repositories = new ArrayList<Repository>();
             if (repository != null) {
                 repositories.add(repository);
             }
-            organizationalUnitService.createOrganizationalUnit( "demo", "demo@jbpm.org", repositories );
+            organizationalUnitService.createOrganizationalUnit( ou, ou+"@jbpm.org", repositories );
 
         } else {
             Collection<Repository> repositories = demoOrganizationalUnit.getRepositories();
@@ -205,6 +214,23 @@ public class AdministrationServiceImpl implements AdministrationService {
     @Produces
     public DeploymentService getDeploymentService() {
         return this.deploymentService.select( getDeploymentType() ).get();
+    }
+
+    @Override
+    public void bootstrapProject(String repoAlias, String group, String artifact, String version) {
+        GAV gav = new GAV(group, artifact, version);
+        try {
+            Repository repository = repositoryService.getRepository(repoAlias);
+            if (repository != null) {
+
+
+                projectService.newProject(repository, artifact, new POM(gav), "/");
+            } else {
+                logger.error("Repository " + repoAlias + " was not found, cannot add project");
+            }
+        } catch (Exception e) {
+            logger.error("Unable to bootstrap project {} in repository {}", gav, repoAlias, e);
+        }
     }
 
     protected AnnotationLiteral getDeploymentType() {
