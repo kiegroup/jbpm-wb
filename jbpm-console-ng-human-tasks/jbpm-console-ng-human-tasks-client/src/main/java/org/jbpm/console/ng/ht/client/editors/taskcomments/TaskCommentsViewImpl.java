@@ -33,22 +33,37 @@ import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextArea;
-import com.github.gwtbootstrap.client.ui.base.UnorderedList;
+import com.google.gwt.cell.client.ActionCell;
+import com.google.gwt.cell.client.ActionCell.Delegate;
+import com.google.gwt.cell.client.Cell;
+import com.google.gwt.cell.client.CompositeCell;
+import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import java.util.LinkedList;
+import java.util.List;
+import javax.enterprise.event.Event;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
+import org.jbpm.console.ng.ht.client.util.ResizableHeader;
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "TaskCommentsViewImpl.html")
 public class TaskCommentsViewImpl extends Composite implements TaskCommentsPresenter.TaskCommentsView {
     private Constants constants = GWT.create(Constants.class);
+    private HumanTasksImages images = GWT.create( HumanTasksImages.class );
 
     private TaskCommentsPresenter presenter;
 
@@ -84,6 +99,8 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
 
     private ListHandler<CommentSummary> sortHandler;
 
+    @Inject
+    private Event<NotificationEvent> notification;
 
     @Override
     public TextArea getNewTaskCommentTextArea() {
@@ -131,7 +148,16 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
 
     @EventHandler("addCommentButton")
     public void addCommentButton(ClickEvent e) {
-        presenter.addTaskComment(newTaskCommentTextArea.getText(), new Date());
+        if(!newTaskCommentTextArea.getText().equals("")){
+            presenter.addTaskComment(newTaskCommentTextArea.getText(), new Date());
+        }else{
+            displayNotification("The Comment cannot be empty!");
+        }
+    }
+    
+    @Override
+    public void displayNotification( String text ) {
+        notification.fire( new NotificationEvent( text ) );
     }
 
     private void initTableColumns() {
@@ -176,5 +202,65 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
         };
         addedByColumn.setSortable(false);
         commentsListGrid.addColumn(commentTextColumn, constants.Comment());
+        
+        List<HasCell<CommentSummary, ?>> cells = new LinkedList<HasCell<CommentSummary, ?>>();
+        
+        cells.add( new DeleteCommentActionHasCell( "Delete", new Delegate<CommentSummary>() {
+            @Override
+            public void execute( CommentSummary comment ) {
+
+                presenter.removeTaskComment(comment.getId());
+            }
+        } ) );
+
+        CompositeCell<CommentSummary> cell = new CompositeCell<CommentSummary>( cells );
+        Column<CommentSummary, CommentSummary> actionsColumn = new Column<CommentSummary, CommentSummary>(
+                cell ) {
+            @Override
+            public CommentSummary getValue( CommentSummary object ) {
+                return object;
+            }
+        };
+        commentsListGrid.addColumn( actionsColumn, new ResizableHeader( "", commentsListGrid,
+                                                                                    actionsColumn ) );
+    }
+    
+    private class DeleteCommentActionHasCell implements HasCell<CommentSummary, CommentSummary> {
+
+        private ActionCell<CommentSummary> cell;
+
+        public DeleteCommentActionHasCell( String text,
+                                   Delegate<CommentSummary> delegate ) {
+            cell = new ActionCell<CommentSummary>( text, delegate ) {
+                @Override
+                public void render( Cell.Context context,
+                                    CommentSummary value,
+                                    SafeHtmlBuilder sb ) {
+                    
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create( images.abortGridIcon() );
+                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                        mysb.appendHtmlConstant( "<span title='" + constants.Delete() + "' style='margin-right:5px;'>");
+                        mysb.append( imageProto.getSafeHtml() );
+                        mysb.appendHtmlConstant( "</span>" );
+                        sb.append( mysb.toSafeHtml() );
+                    
+                }
+            };
+        }
+
+        @Override
+        public Cell<CommentSummary> getCell() {
+            return cell;
+        }
+
+        @Override
+        public FieldUpdater<CommentSummary, CommentSummary> getFieldUpdater() {
+            return null;
+        }
+
+        @Override
+        public CommentSummary getValue( CommentSummary object ) {
+            return object;
+        }
     }
 }

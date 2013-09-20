@@ -43,10 +43,6 @@ public class DummyProcessPath implements Path {
         return fileName + ".bpmn2";
     }
 
-    @Override
-    public String getFileNameWithoutExtension() {
-        return fileName;
-    }
 
     @Override
     public String toURI() {

@@ -61,6 +61,8 @@ public class TaskCommentsPresenter {
         DataGrid<CommentSummary> getDataGrid();
 
         SimplePager getPager();
+        
+        void displayNotification( String text );
     }
 
     @Inject
@@ -140,6 +142,17 @@ public class TaskCommentsPresenter {
                 view.getNewTaskCommentTextArea().setText("");
             }
         } ).addComment( currentTaskId, text, identity.getName(), addedOn );
+    }
+    
+    public void removeTaskComment( long commentId ) {
+        taskServices.call( new RemoteCallback<Long>() {
+            @Override
+            public void callback( Long response ) {
+                refreshComments( );
+                view.getNewTaskCommentTextArea().setText("");
+                view.displayNotification("Comment Deleted!");
+            }
+        } ).deleteComment( currentTaskId, commentId );
     }
 
     public void addDataDisplay( HasData<CommentSummary> display ) {

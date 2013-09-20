@@ -160,4 +160,6 @@ public interface Constants extends Messages {
     String Parent_Group();
 
     String Save();
+
+    String Delete();
 }
