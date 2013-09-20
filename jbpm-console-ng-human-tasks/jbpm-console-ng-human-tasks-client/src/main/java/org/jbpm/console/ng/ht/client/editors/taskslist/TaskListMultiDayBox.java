@@ -30,8 +30,12 @@ import org.uberfire.security.Identity;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
+
 import java.util.Date;
+
 import javax.enterprise.event.Event;
+
+import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 
 public class TaskListMultiDayBox extends Composite implements RequiresResize {
@@ -47,9 +51,14 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
     @Inject
     private Event<TaskSelectionEvent> taskSelection;
     
+    @Inject
+    private Event<TaskCalendarEvent> taskCalendarEvent;
+    
     private TasksListPresenter presenter;
 
     private Map<Day, List<TaskSummary>> sectionTasks = new LinkedHashMap<Day, List<TaskSummary>>();
+    
+    private Long idTaskSelected;
 
     public TaskListMultiDayBox() {
     }
@@ -70,12 +79,13 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
     public void refresh() {
 
         for (Day section : sectionTasks.keySet()) {
-            TaskListDayBox taskList = new TaskListDayBox(section, sectionTasks.get(section), identity, placeManager, taskSelection, presenter);
+            TaskListDayBox taskList = new TaskListDayBox(section, sectionTasks.get(section), identity, placeManager, taskSelection, presenter, 
+                    taskCalendarEvent, this.idTaskSelected);
             taskList.init();
             tasksContainer.add(taskList);
         }
     }
-
+    
     public void addTasksByDay(String day, List<TaskSummary> taskSummaries) {
         sectionTasks.put(new Day(new Date(), day), taskSummaries);
     }
@@ -91,6 +101,14 @@ public class TaskListMultiDayBox extends Composite implements RequiresResize {
 
     @Override
     public void onResize() {
+    }
+
+    public Long getIdTaskSelected() {
+        return idTaskSelected;
+    }
+
+    public void setIdTaskSelected(Long idTaskSelected) {
+        this.idTaskSelected = idTaskSelected;
     }
 
 }
