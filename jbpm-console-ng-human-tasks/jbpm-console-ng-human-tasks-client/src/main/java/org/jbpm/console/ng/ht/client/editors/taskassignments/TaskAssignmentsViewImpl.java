@@ -68,9 +68,7 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
     @Inject
     @DataField
     public Label usersGroupsControlsPanel;
-
-    
-    
+  
 
     @Inject
     private Event<NotificationEvent> notification;

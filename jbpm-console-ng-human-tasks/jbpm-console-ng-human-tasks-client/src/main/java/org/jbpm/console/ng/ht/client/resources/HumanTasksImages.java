@@ -24,6 +24,9 @@ public interface HumanTasksImages extends ClientBundle {
 
     HumanTasksImages INSTANCE = GWT.create(HumanTasksImages.class);
 
+    @Source("org/jbpm/console/ng/ht/public/images/icons/abort-grid-icon.png")
+    public ImageResource abortGridIcon();
+    
     @Source("org/jbpm/console/ng/ht/public/images/icons/complete-grid-icon.png")
     public ImageResource completeGridIcon();
 
