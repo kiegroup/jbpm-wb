@@ -320,7 +320,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Override
     public void setGridView() {
-        paintGridFromCalendar();
         initializeGridView();
         pager.setVisible(true);
         if ((getParent().getOffsetHeight() - 120) > 0) {
@@ -381,15 +380,11 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     }
     
     private void paintCalendarFromGrid(){
-        DataGridUtils.idTaskCalendar = DataGridUtils.getIdRowSelected(myTaskListGrid);
-    }
-    
-    private void paintGridFromCalendar(){
-        if(DataGridUtils.idTaskCalendar!=null){
-            DataGridUtils.paintRowSelected(myTaskListGrid, DataGridUtils.idTaskCalendar);
+        if(DataGridUtils.idTaskCalendar == null ){
+        	DataGridUtils.idTaskCalendar = DataGridUtils.getIdRowSelected(myTaskListGrid);
         }
     }
-
+    
     private void initializeGridView() {
         tasksViewContainer.clear();
         dayViewTasksNavLink.setStyleName("");
@@ -502,6 +497,10 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                  }
                 
                 if (BrowserEvents.FOCUS.equalsIgnoreCase(event.getNativeEvent().getType())) {
+                	if(DataGridUtils.idTaskCalendar!=null){
+                		DataGridUtils.newTaskId = DataGridUtils.idTaskCalendar;
+                		DataGridUtils.idTaskCalendar = null;
+                	}
                     if(DataGridUtils.newTaskId != null){
                         changeRowSelected(new TaskStyleEvent(DataGridUtils.newTaskId));
                     }
@@ -914,6 +913,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         }
         if( this.getCurrentView() == TaskView.GRID){
             myTaskListGrid.setFocus(true);
+        }else{
+        	presenter.changeBgTaskCalendar(new TaskCalendarEvent(newTask.getNewTaskId()));
         }
         
     }

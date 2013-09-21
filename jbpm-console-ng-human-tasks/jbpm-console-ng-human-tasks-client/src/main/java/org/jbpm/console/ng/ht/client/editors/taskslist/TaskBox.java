@@ -174,7 +174,6 @@ public class TaskBox extends Composite {
                     List<Long> tasks = new ArrayList<Long>(1);
                     tasks.add(taskId);
                     presenter.releaseTasks(tasks, identity.getName());
-                    taskCalendarEvent.fire(new TaskCalendarEvent(taskId));
                     event.stopPropagation();
                 }
             });

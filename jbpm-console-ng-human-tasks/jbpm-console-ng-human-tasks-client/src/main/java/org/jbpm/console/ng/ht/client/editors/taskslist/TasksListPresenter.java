@@ -609,11 +609,13 @@ public class TasksListPresenter {
     }
     
     public void changeBgTaskCalendar(@Observes TaskCalendarEvent taskCalendarEvent){
-        refreshTasksCalendar(taskCalendarEvent.getTaskEventId());
+    	if (currentDayTasks != null) {
+    		DataGridUtils.idTaskCalendar = taskCalendarEvent.getTaskEventId();
+    		refreshTasksCalendar(taskCalendarEvent.getTaskEventId());
+    	}
     }
     
     public void refreshTasksCalendar(Long idTaskSelected){
-        DataGridUtils.idTaskCalendar = DataGridUtils.getIdRowSelected(view.getTaskListGrid());
         view.getTaskListMultiDayBox().clear();
         for (Day day : currentDayTasks.keySet()) {
             view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(currentDayTasks.get(day)));
