@@ -19,6 +19,7 @@ package org.jbpm.console.ng.ht.client.editors.taskdetails;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -30,11 +31,13 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
@@ -110,6 +113,10 @@ public class TaskDetailsPresenter {
     
     @Inject
     private Event<TaskStyleEvent> taskStyleEvent;
+    
+    @Inject
+    private Event<TaskCalendarEvent> taskCalendarEvent;
+    
 
     private PlaceRequest place;
     
@@ -164,6 +171,7 @@ public class TaskDetailsPresenter {
                 public void callback( Void nothing ) {
                     view.displayNotification( "Task Details Updated for Task id = " + currentTaskId + ")" );
                     taskRefreshed.fire( new TaskRefreshedEvent( currentTaskId ) );
+                    taskCalendarEvent.fire( new TaskCalendarEvent( currentTaskId ) );
                 }
             } ).updateSimpleTaskDetails( currentTaskId, names, Integer.valueOf( priority ), descriptions,
                                          // subTaskStrategy,

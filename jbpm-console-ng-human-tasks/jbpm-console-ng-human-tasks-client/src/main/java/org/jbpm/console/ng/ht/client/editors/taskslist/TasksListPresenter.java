@@ -36,13 +36,14 @@ import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 
-
 import javax.enterprise.event.Event;
 
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSearchEvent;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.client.util.DataGridUtils;
 import org.jbpm.console.ng.ht.client.util.DateRange;
 import org.jbpm.console.ng.ht.client.util.DateUtils;
 import org.jbpm.console.ng.ht.model.Day;
@@ -116,6 +117,7 @@ public class TasksListPresenter {
         void setPersonalTasks();
         
         void changeCurrentDate(Date date);
+        
     }
 
     public enum TaskType {
@@ -206,11 +208,7 @@ public class TasksListPresenter {
                 }
             }
             if (currentDayTasks != null) {
-                view.getTaskListMultiDayBox().clear();
-                for (Day day : currentDayTasks.keySet()) {
-                    view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(currentDayTasks.get(day)));
-                }
-                view.getTaskListMultiDayBox().refresh();
+                refreshTasksCalendar(DataGridUtils.idTaskCalendar);
             }
         } else {
             if (allTaskSummaries != null) {
@@ -608,6 +606,22 @@ public class TasksListPresenter {
                 view.setAllTasks();
                 break;
         }
+    }
+    
+    public void changeBgTaskCalendar(@Observes TaskCalendarEvent taskCalendarEvent){
+    	if (currentDayTasks != null) {
+    		DataGridUtils.idTaskCalendar = taskCalendarEvent.getTaskEventId();
+    		refreshTasksCalendar(taskCalendarEvent.getTaskEventId());
+    	}
+    }
+    
+    public void refreshTasksCalendar(Long idTaskSelected){
+        view.getTaskListMultiDayBox().clear();
+        for (Day day : currentDayTasks.keySet()) {
+            view.getTaskListMultiDayBox().addTasksByDay(day, new ArrayList<TaskSummary>(currentDayTasks.get(day)));
+        }
+        view.getTaskListMultiDayBox().setIdTaskSelected(idTaskSelected);
+        view.getTaskListMultiDayBox().refresh();
     }
     
     public Date getCurrentDate(){
