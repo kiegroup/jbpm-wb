@@ -32,8 +32,12 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
+
 import java.util.Date;
+
 import javax.enterprise.event.Event;
+
+import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 
 public class TaskListDayBox extends Composite implements RequiresResize {
@@ -53,18 +57,22 @@ public class TaskListDayBox extends Composite implements RequiresResize {
     private IconAnchor iconAndDayName = new IconAnchor();
     private Collapse collapsible = new Collapse();
     private Event<TaskSelectionEvent> taskSelection;
+    private Event<TaskCalendarEvent> taskCalendarEvent;
+    private Long idTaskSelected;
 
     private boolean tasksCollapsed = false;
     
     
     public TaskListDayBox(Day day, List<TaskSummary> taskSummaries, Identity identity, PlaceManager placeManager, Event<TaskSelectionEvent> taskSelection,
-            TasksListPresenter presenter) {
+            TasksListPresenter presenter, Event<TaskCalendarEvent> taskCalendarEvent, Long idTaskSelected) {
         this.day = day;
         this.taskSummaries = taskSummaries;
         this.identity = identity;
         this.placeManager = placeManager;
         this.presenter = presenter;
         this.taskSelection = taskSelection;
+        this.taskCalendarEvent = taskCalendarEvent;
+        this.idTaskSelected = idTaskSelected;
     }
 
     public void init() {
@@ -123,7 +131,7 @@ public class TaskListDayBox extends Composite implements RequiresResize {
                 hour = fmt.format(ts.getExpirationTime());
             }
             taskListBox.add(new TaskBox(placeManager, presenter, taskSelection, identity, ts.getId(), ts.getName(), ts.getActualOwner(), ts
-                    .getPotentialOwners(), ts.getStatus(), ts.getPriority(), hour));
+                    .getPotentialOwners(), ts.getStatus(), ts.getPriority(), hour, taskCalendarEvent, idTaskSelected));
         }
     }
 

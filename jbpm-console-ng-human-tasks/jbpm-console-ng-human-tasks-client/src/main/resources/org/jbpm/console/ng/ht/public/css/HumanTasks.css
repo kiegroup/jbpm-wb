@@ -556,5 +556,11 @@
 	background-color: #EFBDBD;
 }
 .taskCalendarCompleted .task-name div, .taskCalendarCompleted .gwt-Label{
-	color: #777777;
+	color: #777; 
 }
+.taskCalendarSelected{
+	background-color: #E5F1FF !important;
+}
+.taskCalendarSelected .task-name div, .taskCalendarSelected .gwt-Label{
+	color: #777;
+} 

@@ -29,6 +29,8 @@ public class DataGridUtils {
 
     public static Long newTaskId = null;
     
+    public static Long idTaskCalendar = null;
+    
     public static enum StatusTaskDataGrid{
         
         COMPLETED("Completed"),
