@@ -189,7 +189,6 @@ public class QuickNewTaskPresenter {
     
     private void refreshNewTask(Long taskId, String taskName, String msj){
         view.displayNotification( msj );
-        //taskRefreshed.fire( new TaskRefreshedEvent( taskId ) );
         newTaskEvent.fire( new NewTaskEvent( taskId, taskName ));
         close();
     }
