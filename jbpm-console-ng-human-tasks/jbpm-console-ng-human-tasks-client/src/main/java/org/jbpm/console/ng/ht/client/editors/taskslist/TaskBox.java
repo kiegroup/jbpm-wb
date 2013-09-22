@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.Label;
 import javax.enterprise.event.Event;
 
 import org.jbpm.console.ng.ht.client.util.DataGridUtils;
+import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.PlaceRequest;
@@ -86,7 +87,9 @@ public class TaskBox extends Composite {
             final List<String> potentialOwners,
             final String status, 
             final int priority, 
-            String hour) {
+            String hour,
+            final Event<TaskCalendarEvent> taskCalendarEvent,
+            Long idTaskSelected) {
         this();
         this.taskId = taskId;
         this.taskName = taskName;
@@ -119,6 +122,7 @@ public class TaskBox extends Composite {
             public void onClick(ClickEvent event) {
                placeManager.goTo("Task Details Multi");
                taskSelected.fire(new TaskSelectionEvent(taskId, taskName));
+               taskCalendarEvent.fire(new TaskCalendarEvent(taskId));
             }
         });
 
@@ -192,6 +196,7 @@ public class TaskBox extends Composite {
                     tasks.add(taskId);
                     presenter.startTasks(tasks, identity.getName());
                     event.stopPropagation();
+                    taskCalendarEvent.fire(new TaskCalendarEvent(taskId)); 
                 }
             });
             panel.add(new HTML("Start"));
@@ -199,7 +204,7 @@ public class TaskBox extends Composite {
             options.add(focusPanel);
 
         }
-        //Complete
+        //InProgress
         if (status.equals(DataGridUtils.StatusTaskDataGrid.INPROGRESS.getDescription())) {
             FlowPanel panel = new FlowPanel();
             taskPanel.setStyleName("task in-progress");
@@ -209,6 +214,7 @@ public class TaskBox extends Composite {
                 public void onClick(ClickEvent event) {
                     placeManager.goTo("Task Details Multi");
                     taskSelected.fire(new TaskSelectionEvent(taskId, taskName, "Form Display"));
+                    taskCalendarEvent.fire(new TaskCalendarEvent(taskId));
                     event.stopPropagation();
                 }
             });
@@ -217,9 +223,14 @@ public class TaskBox extends Composite {
             options.add(focusPanel);
         }
         
+        //Complete
         if(status.equals(DataGridUtils.StatusTaskDataGrid.COMPLETED.getDescription())){
             taskPanel.setStyleName("task taskCalendarCompleted");
         }
+        
+        if(idTaskSelected!=null && Long.valueOf(taskId).equals(idTaskSelected)){
+            taskPanel.setStyleName("task taskCalendarSelected");
+        } 
 
         for (FocusPanel p : options) {
             taskOptions.add(p);
@@ -232,5 +243,9 @@ public class TaskBox extends Composite {
         this.taskName = taskName;
         taskNameLabel.setText(taskName);
     }
+    
+    public long getTaskId() {
+        return taskId;
+    } 
 
 }
