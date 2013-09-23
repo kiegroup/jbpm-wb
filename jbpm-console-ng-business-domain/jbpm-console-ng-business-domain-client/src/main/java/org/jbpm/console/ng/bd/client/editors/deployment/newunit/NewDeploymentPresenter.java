@@ -126,7 +126,7 @@ public class NewDeploymentPresenter {
                                         view.cleanForm();
                                         view.hideBusyIndicator();
                                         close();
-                                        view.displayNotification( "Error: Deploy failed " + throwable.getMessage() );
+                                        view.displayNotification( "Error: Deploy failed, check Problems panel " );
                                         return true;
                                     }
                                 }
