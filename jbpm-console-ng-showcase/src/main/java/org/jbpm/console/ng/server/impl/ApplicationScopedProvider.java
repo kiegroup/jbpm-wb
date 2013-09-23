@@ -1,6 +1,7 @@
 package org.jbpm.console.ng.server.impl;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -44,6 +45,11 @@ public class ApplicationScopedProvider {
         } else {
             ioService = new IOServiceClusterImpl( new IOServiceDotFileImpl(), clusterServiceFactory );
         }
+    }
+
+    @PreDestroy
+    private void cleanup() {
+        ioService.dispose();
     }
 
     @Inject
