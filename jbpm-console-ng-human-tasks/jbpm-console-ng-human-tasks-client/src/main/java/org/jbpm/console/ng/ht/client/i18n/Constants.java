@@ -162,4 +162,6 @@ public interface Constants extends Messages {
     String Save();
 
     String Delete();
+
+    String Calendar();
 }

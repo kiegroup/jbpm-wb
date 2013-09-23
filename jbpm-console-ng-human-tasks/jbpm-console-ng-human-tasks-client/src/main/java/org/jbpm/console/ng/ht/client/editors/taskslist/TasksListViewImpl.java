@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
+import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.google.gwt.cell.client.ActionCell;
@@ -64,9 +65,10 @@ import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskTy
 import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskView;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
-import org.jbpm.console.ng.ht.client.util.CalendarPicker;
 import org.jbpm.console.ng.ht.client.util.DataGridUtils;
+import org.jbpm.console.ng.ht.client.util.LiCalendarPicker;
 import org.jbpm.console.ng.ht.client.util.ResizableHeader;
+import org.jbpm.console.ng.ht.model.CalendarListContainer;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
@@ -81,7 +83,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "TasksListViewImpl.html")
-public class TasksListViewImpl extends Composite implements TasksListPresenter.TaskListView, RequiresResize {
+public class TasksListViewImpl extends Composite implements TasksListPresenter.TaskListView, RequiresResize, CalendarListContainer {
 
     private Constants constants = GWT.create(Constants.class);
     private HumanTasksImages images = GWT.create(HumanTasksImages.class);
@@ -94,41 +96,36 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     private TasksListPresenter presenter;
 
-    @Inject
-    @DataField
-    public NavLink dayViewTasksNavLink;
 
     @Inject
     @DataField
     public NavLink gridViewTasksNavLink;
+    
+    @Inject
+    @DataField
+    public NavLink calendarViewTasksNavLink;
 
     @Inject
     @DataField
-    public NavLink monthViewTasksNavLink;
+    public Button showAllTasksButton;
 
     @Inject
     @DataField
-    public NavLink weekViewTasksNavLink;
+    public Button showPersonalTasksButton;
 
     @Inject
     @DataField
-    public NavLink showAllTasksNavLink;
+    public Button showGroupTasksButton;
 
     @Inject
     @DataField
-    public NavLink showPersonalTasksNavLink;
-
+    public Button showActiveTasksButton;
+    
     @Inject
     @DataField
-    public NavLink showGroupTasksNavLink;
-
-    @Inject
-    @DataField
-    public NavLink showActiveTasksNavLink;
-
-    @Inject
-    @DataField
-    private CalendarPicker calendarPicker;
+    private LiCalendarPicker liCalendarPicker;
+    
+    
 
     @Inject
     @DataField
@@ -177,60 +174,52 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
         taskListMultiDayBox.init();
         taskListMultiDayBox.setPresenter(presenter);
-        calendarPicker.init();
+        
+        
+        
         currentDate = new Date();
-        calendarPicker.setViewType("day");
-        calendarPicker.addValueChangeHandler(new ValueChangeHandler<Date>() {
+       
+        
+        
+        liCalendarPicker.addValueChangeHandler(new ValueChangeHandler<Date>() {
             @Override
             public void onValueChange(ValueChangeEvent<Date> event) {
                 changeCurrentDate(event.getValue());
                 refreshTasks();
             }
         });
+        
 
         // By Default we will start in Grid View
         initializeGridView();
-
-        dayViewTasksNavLink.setText(constants.Day());
-        dayViewTasksNavLink.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                setDayView();
-
-            }
-
-        });
-        weekViewTasksNavLink.setText(constants.Week());
-        weekViewTasksNavLink.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                setWeekView();
-
-            }
-        });
-
-        monthViewTasksNavLink.setText(constants.Month());
-        monthViewTasksNavLink.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                setMonthView();
-
-            }
-        });
 
         gridViewTasksNavLink.setText(constants.Grid());
         gridViewTasksNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                liCalendarPicker.clear();
                 setGridView();
+
+            }
+
+        });
+        final CalendarListContainer container = this;
+        calendarViewTasksNavLink.setText(constants.Calendar());
+        calendarViewTasksNavLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                liCalendarPicker.clear();
+                liCalendarPicker.setListContainer(container);
+                liCalendarPicker.init();
+                setDayView();
 
             }
 
         });
 
         // Filters
-        showPersonalTasksNavLink.setText(constants.Personal());
-        showPersonalTasksNavLink.addClickHandler(new ClickHandler() {
+        showPersonalTasksButton.setText(constants.Personal());
+        showPersonalTasksButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 setPersonalTasks();
@@ -238,8 +227,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             }
         });
 
-        showGroupTasksNavLink.setText(constants.Group());
-        showGroupTasksNavLink.addClickHandler(new ClickHandler() {
+        showGroupTasksButton.setText(constants.Group());
+        showGroupTasksButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 setGroupTasks();
@@ -247,8 +236,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             }
         });
 
-        showActiveTasksNavLink.setText(constants.Active());
-        showActiveTasksNavLink.addClickHandler(new ClickHandler() {
+        showActiveTasksButton.setText(constants.Active());
+        showActiveTasksButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 setActiveTasks();
@@ -256,17 +245,19 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             }
         });
 
-        showAllTasksNavLink.setText(constants.All());
-        showAllTasksNavLink.addClickHandler(new ClickHandler() {
+        showAllTasksButton.setText(constants.All());
+        showAllTasksButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 setAllTasks();
 
             }
         });
-
         refreshTasks();
     }
+    
+    
+   
 
     public void filterTasks(String text) {
         presenter.filterTasks(text);
@@ -279,40 +270,40 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Override
     public void setAllTasks() {
-        showGroupTasksNavLink.setStyleName("");
-        showPersonalTasksNavLink.setStyleName("");
-        showActiveTasksNavLink.setStyleName("");
-        showAllTasksNavLink.setStyleName("active");
+        showGroupTasksButton.setStyleName("btn");
+        showPersonalTasksButton.setStyleName("btn");
+        showActiveTasksButton.setStyleName("btn");
+        showAllTasksButton.setStyleName("btn active");
         currentTaskType = TaskType.ALL;
         refreshTasks();
     }
 
     @Override
     public void setActiveTasks() {
-        showGroupTasksNavLink.setStyleName("");
-        showPersonalTasksNavLink.setStyleName("");
-        showActiveTasksNavLink.setStyleName("active");
-        showAllTasksNavLink.setStyleName("");
+        showGroupTasksButton.setStyleName("btn");
+        showPersonalTasksButton.setStyleName("btn");
+        showActiveTasksButton.setStyleName("btn active");
+        showAllTasksButton.setStyleName("btn");
         currentTaskType = TaskType.ACTIVE;
         refreshTasks();
     }
 
     @Override
     public void setGroupTasks() {
-        showGroupTasksNavLink.setStyleName("active");
-        showPersonalTasksNavLink.setStyleName("");
-        showActiveTasksNavLink.setStyleName("");
-        showAllTasksNavLink.setStyleName("");
+        showGroupTasksButton.setStyleName("btn active");
+        showPersonalTasksButton.setStyleName("btn");
+        showActiveTasksButton.setStyleName("btn");
+        showAllTasksButton.setStyleName("btn");
         currentTaskType = TaskType.GROUP;
         refreshTasks();
     }
 
     @Override
     public void setPersonalTasks() {
-        showPersonalTasksNavLink.setStyleName("active");
-        showGroupTasksNavLink.setStyleName("");
-        showActiveTasksNavLink.setStyleName("");
-        showAllTasksNavLink.setStyleName("");
+        showPersonalTasksButton.setStyleName("btn active");
+        showGroupTasksButton.setStyleName("btn");
+        showActiveTasksButton.setStyleName("btn");
+        showAllTasksButton.setStyleName("btn");
         currentTaskType = TaskType.PERSONAL;
         refreshTasks();
     }
@@ -333,12 +324,10 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         tasksViewContainer.clear();
         tasksViewContainer.add(taskListMultiDayBox);
         tasksViewContainer.setStyleName("day");
-        dayViewTasksNavLink.setStyleName("active");
-        weekViewTasksNavLink.setStyleName("");
-        monthViewTasksNavLink.setStyleName("");
         gridViewTasksNavLink.setStyleName("");
+        calendarViewTasksNavLink.setStyleName("active");
         currentView = TaskView.DAY;
-        calendarPicker.setViewType("day");
+        liCalendarPicker.setDayView();
         pager.setVisible(false);
         tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
         refreshTasks();
@@ -350,12 +339,10 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         tasksViewContainer.clear();
         tasksViewContainer.add(taskListMultiDayBox);
         tasksViewContainer.setStyleName("week");
-        dayViewTasksNavLink.setStyleName("");
-        monthViewTasksNavLink.setStyleName("");
         gridViewTasksNavLink.setStyleName("");
-        weekViewTasksNavLink.setStyleName("active");
+        calendarViewTasksNavLink.setStyleName("active");
         currentView = TaskView.WEEK;
-        calendarPicker.setViewType("week");
+        liCalendarPicker.setWeekView();
         pager.setVisible(false);
         tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
         refreshTasks();
@@ -367,12 +354,10 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         tasksViewContainer.clear();
         tasksViewContainer.add(taskListMultiDayBox);
         tasksViewContainer.setStyleName("month");
-        dayViewTasksNavLink.setStyleName("");
         gridViewTasksNavLink.setStyleName("");
-        weekViewTasksNavLink.setStyleName("");
-        monthViewTasksNavLink.setStyleName("active");
+        calendarViewTasksNavLink.setStyleName("active");
         currentView = TaskView.MONTH;
-        calendarPicker.setViewType("month");
+        liCalendarPicker.setMonthView();
         pager.setVisible(false);
         tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
         refreshTasks();
@@ -386,12 +371,9 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     private void initializeGridView() {
         tasksViewContainer.clear();
-        dayViewTasksNavLink.setStyleName("");
-        weekViewTasksNavLink.setStyleName("");
-        monthViewTasksNavLink.setStyleName("");
+        calendarViewTasksNavLink.setStyleName("");
         gridViewTasksNavLink.setStyleName("active");
         currentView = TaskView.GRID;
-        calendarPicker.setViewType("grid");
         myTaskListGrid = new DataGrid<TaskSummary>();
         myTaskListGrid.setStyleName("table table-bordered table-striped table-hover");
 
