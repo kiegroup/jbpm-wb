@@ -898,9 +898,11 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                         DataGridUtils.newTaskId = null;
                         placeManager.goTo("Task Details Multi");
                         taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
+                        DataGridUtils.currentIdSelected = task.getId();
                     }
                 }                
-                if(!currentAction.equals(DataGridUtils.ActionsDataGrid.CLAIM) && !currentAction.equals(DataGridUtils.ActionsDataGrid.RELEASE)){
+                if(currentAction!=null && !currentAction.equals(DataGridUtils.ActionsDataGrid.CLAIM) 
+                        && !currentAction.equals(DataGridUtils.ActionsDataGrid.RELEASE)){
                     currentAction = null;
                 }
                 

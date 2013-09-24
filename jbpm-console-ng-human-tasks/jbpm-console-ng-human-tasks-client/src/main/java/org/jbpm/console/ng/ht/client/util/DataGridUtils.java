@@ -70,8 +70,6 @@ public class DataGridUtils {
             return description;
         }
         
-        
-        
     }
 
     public static void paintRowSelected(DataGrid<TaskSummary> myTaskListGrid, Long idTask) {
