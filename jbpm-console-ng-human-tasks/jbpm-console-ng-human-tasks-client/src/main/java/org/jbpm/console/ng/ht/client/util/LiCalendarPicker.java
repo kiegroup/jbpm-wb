@@ -26,6 +26,7 @@ import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.github.gwtbootstrap.client.ui.constants.IconSize;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.github.gwtbootstrap.datepicker.client.ui.DateBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -64,9 +65,9 @@ public class LiCalendarPicker extends Composite implements HasValueChangeHandler
     public NavLink weekViewTasksNavLink;
 
     public NavLink monthViewTasksNavLink;
-    
+
     public NavLink buttonGroupLi;
-    
+
     public ButtonGroup buttonGroup;
 
     private UnorderedList ul;
@@ -76,7 +77,7 @@ public class LiCalendarPicker extends Composite implements HasValueChangeHandler
     private Button nextButton;
 
     private Button todayButton;
-    
+
     private CalendarListContainer listContainer;
 
     public LiCalendarPicker() {
@@ -85,27 +86,43 @@ public class LiCalendarPicker extends Composite implements HasValueChangeHandler
         viewType = ViewType.DAY;
         initWidget(ul);
     }
-    
-     public void init() {
-         calendarLink = new NavLink();
-         dayViewTasksNavLink = new NavLink();
-         weekViewTasksNavLink = new NavLink();
-         monthViewTasksNavLink = new NavLink();
-         
-         previousButton = new Button();
-         nextButton = new Button();
-         todayButton = new Button();
-         buttonGroup = new ButtonGroup();
-         buttonGroupLi = new NavLink();
-         
-        ul.add(calendarLink);
 
+    public void init() {
+        calendarLink = new NavLink();
+        dayViewTasksNavLink = new NavLink();
+        weekViewTasksNavLink = new NavLink();
+        monthViewTasksNavLink = new NavLink();
+
+        previousButton = new Button();
+        previousButton.setSize(ButtonSize.SMALL);
+        nextButton = new Button();
+        nextButton.setSize(ButtonSize.SMALL);
+        todayButton = new Button();
+        todayButton.setSize(ButtonSize.SMALL);
+        buttonGroup = new ButtonGroup();
+        buttonGroupLi = new NavLink();
+
+        ul.add(calendarLink);
+        
+        initPrevNextTodayButtons();
+
+        ul.add(buttonGroupLi);
+
+        NavLink dividerNavLink1 = new NavLink();
+        dividerNavLink1.setStyleName("divider-vertical");
+        dividerNavLink1.remove(dividerNavLink1.getAnchor());
+        ul.add(dividerNavLink1);
+        
         ul.add(dayViewTasksNavLink);
 
         ul.add(weekViewTasksNavLink);
-        
+
         ul.add(monthViewTasksNavLink);
-        
+        NavLink dividerNavLink2 = new NavLink();
+        dividerNavLink2.setStyleName("divider-vertical");
+        dividerNavLink2.remove(dividerNavLink1.getAnchor());
+        ul.add(dividerNavLink2);
+
         dayViewTasksNavLink.setStyleName("");
         weekViewTasksNavLink.setStyleName("");
         monthViewTasksNavLink.setStyleName("");
@@ -136,20 +153,16 @@ public class LiCalendarPicker extends Composite implements HasValueChangeHandler
             }
         });
 
-        initPrevNextTodayButtons();
-        
-        
-        ul.add(buttonGroupLi);
-        
-        
+       
+
         calendarIcon = new IconAnchor();
         calendarLink.add(calendarIcon);
-        
+
         initCalendarIcon();
         updateCalendarLabelText();
     }
-    
-    public void clear(){
+
+    public void clear() {
         ul.clear();
     }
 
@@ -160,8 +173,6 @@ public class LiCalendarPicker extends Composite implements HasValueChangeHandler
     public void setListContainer(CalendarListContainer listContainer) {
         this.listContainer = listContainer;
     }
-    
-    
 
     private void initPrevNextTodayButtons() {
         previousButton.setIcon(IconType.CARET_LEFT);
@@ -192,14 +203,13 @@ public class LiCalendarPicker extends Composite implements HasValueChangeHandler
                 updateTodayButtonEnabled();
             }
         });
-        
+
         buttonGroup.add(previousButton);
         buttonGroup.add(todayButton);
         buttonGroup.add(nextButton);
         buttonGroupLi.remove(buttonGroupLi.getAnchor());
         buttonGroupLi.addWidget(buttonGroup);
-        
-        
+
     }
 
     public void setDayView() {
@@ -234,10 +244,9 @@ public class LiCalendarPicker extends Composite implements HasValueChangeHandler
 
     public void setViewType(String viewType) {
         this.viewType = ViewType.valueOf(viewType.toUpperCase());
+        updateTodayButtonEnabled();
         updateCalendarLabelText();
     }
-
-   
 
     public Date getCurrentDate() {
         return currentDate;

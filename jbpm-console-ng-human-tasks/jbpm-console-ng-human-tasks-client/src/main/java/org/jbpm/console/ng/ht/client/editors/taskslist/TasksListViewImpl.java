@@ -31,6 +31,8 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.NavLink;
+import com.github.gwtbootstrap.client.ui.Navbar;
+import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -163,6 +165,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     
     @DataField
     public SimplePager pager;
+  
 
     public TasksListViewImpl() {
         pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
@@ -218,6 +221,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         });
 
         // Filters
+        showPersonalTasksButton.setSize(ButtonSize.SMALL);
         showPersonalTasksButton.setText(constants.Personal());
         showPersonalTasksButton.addClickHandler(new ClickHandler() {
             @Override
@@ -226,7 +230,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
             }
         });
-
+        showGroupTasksButton.setSize(ButtonSize.SMALL);
         showGroupTasksButton.setText(constants.Group());
         showGroupTasksButton.addClickHandler(new ClickHandler() {
             @Override
@@ -235,7 +239,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
             }
         });
-
+        showActiveTasksButton.setSize(ButtonSize.SMALL);
         showActiveTasksButton.setText(constants.Active());
         showActiveTasksButton.addClickHandler(new ClickHandler() {
             @Override
@@ -244,7 +248,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
             }
         });
-
+        showAllTasksButton.setSize(ButtonSize.SMALL);
         showAllTasksButton.setText(constants.All());
         showAllTasksButton.addClickHandler(new ClickHandler() {
             @Override
@@ -270,40 +274,40 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Override
     public void setAllTasks() {
-        showGroupTasksButton.setStyleName("btn");
-        showPersonalTasksButton.setStyleName("btn");
-        showActiveTasksButton.setStyleName("btn");
-        showAllTasksButton.setStyleName("btn active");
+        showGroupTasksButton.setStyleName("btn btn-small");
+        showPersonalTasksButton.setStyleName("btn btn-small");
+        showActiveTasksButton.setStyleName("btn btn-small");
+        showAllTasksButton.setStyleName("btn btn-small active");
         currentTaskType = TaskType.ALL;
         refreshTasks();
     }
 
     @Override
     public void setActiveTasks() {
-        showGroupTasksButton.setStyleName("btn");
-        showPersonalTasksButton.setStyleName("btn");
-        showActiveTasksButton.setStyleName("btn active");
-        showAllTasksButton.setStyleName("btn");
+        showGroupTasksButton.setStyleName("btn btn-small");
+        showPersonalTasksButton.setStyleName("btn btn-small");
+        showActiveTasksButton.setStyleName("btn btn-small active");
+        showAllTasksButton.setStyleName("btn btn-small");
         currentTaskType = TaskType.ACTIVE;
         refreshTasks();
     }
 
     @Override
     public void setGroupTasks() {
-        showGroupTasksButton.setStyleName("btn active");
-        showPersonalTasksButton.setStyleName("btn");
-        showActiveTasksButton.setStyleName("btn");
-        showAllTasksButton.setStyleName("btn");
+        showGroupTasksButton.setStyleName("btn btn-small active");
+        showPersonalTasksButton.setStyleName("btn btn-small");
+        showActiveTasksButton.setStyleName("btn btn-small");
+        showAllTasksButton.setStyleName("btn btn-small");
         currentTaskType = TaskType.GROUP;
         refreshTasks();
     }
 
     @Override
     public void setPersonalTasks() {
-        showPersonalTasksButton.setStyleName("btn active");
-        showGroupTasksButton.setStyleName("btn");
-        showActiveTasksButton.setStyleName("btn");
-        showAllTasksButton.setStyleName("btn");
+        showPersonalTasksButton.setStyleName("btn btn-small active");
+        showGroupTasksButton.setStyleName("btn btn-small");
+        showActiveTasksButton.setStyleName("btn btn-small");
+        showAllTasksButton.setStyleName("btn btn-small");
         currentTaskType = TaskType.PERSONAL;
         refreshTasks();
     }
@@ -683,9 +687,11 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         if (currentView.equals(TaskView.GRID)) {
             if ((getParent().getOffsetHeight() - 120) > 0) {
                 tasksViewContainer.setHeight(getParent().getOffsetHeight() - 120 + "px");
+                tasksViewContainer.setWidth(getParent().getOffsetWidth()+ "px");
             }
         } else {
             tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
+            tasksViewContainer.setWidth(getParent().getOffsetWidth()+ "px");
         }
     }
 
