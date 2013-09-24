@@ -31,6 +31,8 @@ public class DataGridUtils {
     
     public static Long idTaskCalendar = null;
     
+    public static Long currentIdSelected = null;
+    
     public static enum StatusTaskDataGrid{
         
         COMPLETED("Completed"),
@@ -42,6 +44,26 @@ public class DataGridUtils {
         
         StatusTaskDataGrid(String description){
              this.description = description;
+        }
+        
+        public String getDescription() {
+            return description;
+        }
+        
+    }
+    
+    public static enum ActionsDataGrid{
+        
+        CLAIM("Claim"),
+        RELEASE("Release"),
+        START("Start"),
+        COMPLETE("Complete"),
+        DETAILS("Details");
+        
+        private String description;
+        
+        ActionsDataGrid(String description){
+            this.description = description;
         }
         
         public String getDescription() {
