@@ -49,6 +49,8 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.CellPreviewEvent;
+import com.google.gwt.view.client.SingleSelectionModel;
+import com.google.gwt.view.client.SelectionChangeEvent;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -66,6 +68,7 @@ import org.jbpm.console.ng.ht.client.editors.taskslist.TasksListPresenter.TaskVi
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
 import org.jbpm.console.ng.ht.client.util.DataGridUtils;
+import org.jbpm.console.ng.ht.client.util.DataGridUtils.ActionsDataGrid;
 import org.jbpm.console.ng.ht.client.util.LiCalendarPicker;
 import org.jbpm.console.ng.ht.client.util.ResizableHeader;
 import org.jbpm.console.ng.ht.model.CalendarListContainer;
@@ -137,8 +140,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     @Inject
     private Event<NotificationEvent> notification;
     
-    private Event<TaskStyleEvent> taskStyleEvent;
-
     private Date currentDate;
 
     private TaskView currentView = TaskView.DAY;
@@ -150,9 +151,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     @Inject
     private Event<TaskSelectionEvent> taskSelected;
     
-    @Inject
-    private Event<TaskCalendarEvent> taskCalendarEvent; 
-    
     private Set<TaskSummary> selectedTasks;
     
     private ListHandler<TaskSummary> sortHandler;
@@ -160,6 +158,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     public DataGrid<TaskSummary> myTaskListGrid;
 
     private Column<TaskSummary, Number> taskIdColumn;
+    
+    private ActionsDataGrid currentAction = null;
     
     @DataField
     public SimplePager pager;
@@ -389,7 +389,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         sortHandler = new ColumnSortEvent.ListHandler<TaskSummary>(presenter.getDataProvider().getList());
         
         myTaskListGrid.getColumnSortList().setLimit(1);
-        // Add a selection model so we can select cells.
+        
+        this.setSelectionModel();
         
 
         initTableColumns();
@@ -457,38 +458,13 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             @Override
             public void onCellPreview(final CellPreviewEvent<TaskSummary> event) {
 
-                TaskSummary task = null;
-                
-                if (BrowserEvents.CLICK.equalsIgnoreCase(event.getNativeEvent().getType())) {
-                    int column = event.getColumn();
-                    int columnCount = myTaskListGrid.getColumnCount();
-                    if (column != columnCount - 1) {
-                        DataGridUtils.newTaskId = null;
-                        task = event.getValue();
-                        placeManager.goTo("Task Details Multi");
-                        taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
-                    }
-                }
-                
-                if (BrowserEvents.MOUSEOVER.equalsIgnoreCase(event.getNativeEvent().getType())) {
-                    task = event.getValue();
-                    if(task.getDescription() != null){
-                        myTaskListGrid.getRowElement(event.getIndex()).getCells().getItem(event.getColumn()).setTitle(task.getDescription());
-                    }
+            	if (BrowserEvents.MOUSEOVER.equalsIgnoreCase(event.getNativeEvent().getType())) {
+                    onMouseOverGrid(event);
                  }
                 
                 if (BrowserEvents.FOCUS.equalsIgnoreCase(event.getNativeEvent().getType())) {
-                    if(DataGridUtils.idTaskCalendar!=null){
-                        DataGridUtils.newTaskId = DataGridUtils.idTaskCalendar;
-                        DataGridUtils.idTaskCalendar = null;
-                    }
-                    if(DataGridUtils.newTaskId != null){
-                        changeRowSelected(new TaskStyleEvent(DataGridUtils.newTaskId));
-                    }
-                    else if(currentTaskType.equals(TaskType.ALL)){
-                        DataGridUtils.paintRowsCompleted(myTaskListGrid);
-                    }
-                 }
+                    onFocusGrid();
+                }
 
             }
         });
@@ -615,19 +591,20 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         });
 
         List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
-        cells.add(new ClaimActionHasCell("Claim", new ActionCell.Delegate<TaskSummary>() {
+        cells.add(new ClaimActionHasCell(ActionsDataGrid.CLAIM.getDescription(), new ActionCell.Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
+                currentAction = ActionsDataGrid.CLAIM;
                 List<Long> tasks = new ArrayList<Long>(1);
                 tasks.add(task.getId());
                 presenter.claimTasks(tasks, identity.getName());
-                changeRowSelected(new TaskStyleEvent());
             }
         }));
 
-        cells.add(new ReleaseActionHasCell("Release", new ActionCell.Delegate<TaskSummary>() {
+        cells.add(new ReleaseActionHasCell(ActionsDataGrid.RELEASE.getDescription(), new ActionCell.Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
+            	currentAction = ActionsDataGrid.RELEASE;
                 List<Long> tasks = new ArrayList<Long>(1);
                 tasks.add(task.getId());
                 presenter.releaseTasks(tasks, identity.getName());
@@ -635,27 +612,30 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             }
         }));
 
-        cells.add(new StartActionHasCell("Start", new ActionCell.Delegate<TaskSummary>() {
+        cells.add(new StartActionHasCell(ActionsDataGrid.START.getDescription(), new ActionCell.Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
+            	currentAction = ActionsDataGrid.START;
                 List<Long> tasks = new ArrayList<Long>(1);
                 tasks.add(task.getId());
                 presenter.startTasks(tasks, identity.getName());
             }
         }));
 
-        cells.add(new CompleteActionHasCell("Complete", new ActionCell.Delegate<TaskSummary>() {
+        cells.add(new CompleteActionHasCell(ActionsDataGrid.COMPLETE.getDescription(), new ActionCell.Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
+            	currentAction = ActionsDataGrid.COMPLETE;
                 DataGridUtils.newTaskId = null;
                 placeManager.goTo("Task Details Multi");
                 taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName(), "Form Display"));
             }
         }));
         
-        cells.add(new DetailsHasCell("Details", new ActionCell.Delegate<TaskSummary>() {
+        cells.add(new DetailsHasCell(ActionsDataGrid.DETAILS.getDescription(), new ActionCell.Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
+            	currentAction = ActionsDataGrid.DETAILS;
                 PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
                 Long idSelected = DataGridUtils.getIdRowSelected(myTaskListGrid);
                 if(status == PlaceStatus.CLOSE || !Long.valueOf(task.getId()).equals(idSelected)){
@@ -879,6 +859,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     public void changeRowSelected(@Observes TaskStyleEvent taskStyleEvent){
         if( taskStyleEvent.getTaskEventId() != null && this.getCurrentView() == TaskView.GRID){
             DataGridUtils.paintRowSelected(myTaskListGrid, taskStyleEvent.getTaskEventId());
+            DataGridUtils.currentIdSelected = taskStyleEvent.getTaskEventId();
         } 
         if(currentTaskType.equals(TaskType.ALL)){
             DataGridUtils.paintRowsCompleted(myTaskListGrid);
@@ -899,6 +880,52 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         } 
     }
     
+
+    private void setSelectionModel(){
+        final SingleSelectionModel<TaskSummary> selectionModel = new SingleSelectionModel<TaskSummary>();
+        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            @Override
+            public void onSelectionChange(SelectionChangeEvent event) {
+                if(currentAction == null){
+                    TaskSummary task = selectionModel.getSelectedObject();
+                    if (task != null) {
+                        DataGridUtils.newTaskId = null;
+                        placeManager.goTo("Task Details Multi");
+                        taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
+                    }
+                }                
+                if(!currentAction.equals(DataGridUtils.ActionsDataGrid.CLAIM) && !currentAction.equals(DataGridUtils.ActionsDataGrid.RELEASE)){
+                    currentAction = null;
+                }
+                
+            }
+        });
+        myTaskListGrid.setSelectionModel(selectionModel);
+    }
     
+    private void onFocusGrid(){
+        if(currentAction != null && (currentAction.equals(DataGridUtils.ActionsDataGrid.CLAIM) 
+                || currentAction.equals(DataGridUtils.ActionsDataGrid.RELEASE))){
+            changeRowSelected(new TaskStyleEvent(DataGridUtils.currentIdSelected));
+            currentAction = null;
+        }else{
+            if(DataGridUtils.idTaskCalendar != null){
+                DataGridUtils.newTaskId = DataGridUtils.idTaskCalendar;
+                DataGridUtils.idTaskCalendar = null;
+            }
+            if(DataGridUtils.newTaskId != null){
+                changeRowSelected(new TaskStyleEvent(DataGridUtils.newTaskId));
+            }else if(currentTaskType.equals(TaskType.ALL)){
+                DataGridUtils.paintRowsCompleted(myTaskListGrid);
+            }
+        }
+    }
     
+    private void onMouseOverGrid(final CellPreviewEvent<TaskSummary> event){
+        TaskSummary task = event.getValue();
+        if(task.getDescription() != null){
+            myTaskListGrid.getRowElement(event.getIndex()).getCells().getItem(event.getColumn()).setTitle(task.getDescription());
+        }
+    }
+
 }
