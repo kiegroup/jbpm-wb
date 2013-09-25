@@ -272,11 +272,11 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Released" );
-                if(selectedTasks.size() == 1){
-                	DataGridUtils.newTaskId = DataGridUtils.getIdRowSelected(view.getTaskListGrid());
-                	//TODO this line is unnecesary
+                DataGridUtils.currentIdSelected = DataGridUtils.getIdRowSelected(view.getTaskListGrid());
+                //TODO this line is unnecesary
+                /*if(selectedTasks.size() == 1){
                     //taskRefreshed.fire(new TaskRefreshedEvent(selectedTasks.get(0)));
-                }
+                }*/
                 view.refreshTasks();
             }
         } ).releaseBatch( selectedTasks, userId );
@@ -303,6 +303,7 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Claimed" );
+                DataGridUtils.currentIdSelected = DataGridUtils.getIdRowSelected(view.getTaskListGrid());
                 //TODO this call is unnecesary
                 /*if(selectedTasks.size() == 1){
                 	taskRefreshed.fire(new TaskRefreshedEvent(selectedTasks.get(0)));

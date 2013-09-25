@@ -27,8 +27,6 @@ public class DataGridUtils {
     
     private static final String BG_ROW_COMPLETED = "#EFBDBD";
 
-    public static Long newTaskId = null;
-    
     public static Long idTaskCalendar = null;
     
     public static Long currentIdSelected = null;

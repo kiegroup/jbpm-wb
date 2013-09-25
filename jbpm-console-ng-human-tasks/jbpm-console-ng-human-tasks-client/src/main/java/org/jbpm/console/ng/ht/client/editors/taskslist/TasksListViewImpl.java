@@ -314,6 +314,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Override
     public void setGridView() {
+    	PaintGridFromCalendar();
         initializeGridView();
         pager.setVisible(true);
         if ((getParent().getOffsetHeight() - 120) > 0) {
@@ -372,6 +373,12 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             DataGridUtils.idTaskCalendar = DataGridUtils.getIdRowSelected(myTaskListGrid);
         }
     } 
+    
+    private void PaintGridFromCalendar(){
+    	if(DataGridUtils.idTaskCalendar != null){
+    		DataGridUtils.currentIdSelected = DataGridUtils.idTaskCalendar; 
+    	}
+    }
 
     private void initializeGridView() {
         tasksViewContainer.clear();
@@ -620,6 +627,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             @Override
             public void execute(TaskSummary task) {
             	currentAction = ActionsDataGrid.START;
+            	DataGridUtils.currentIdSelected = task.getId();
                 List<Long> tasks = new ArrayList<Long>(1);
                 tasks.add(task.getId());
                 presenter.startTasks(tasks, identity.getName());
@@ -630,7 +638,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             @Override
             public void execute(TaskSummary task) {
             	currentAction = ActionsDataGrid.COMPLETE;
-                DataGridUtils.newTaskId = null;
+                DataGridUtils.currentIdSelected = task.getId();
                 placeManager.goTo("Task Details Multi");
                 taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName(), "Form Display"));
             }
@@ -642,6 +650,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             	currentAction = ActionsDataGrid.DETAILS;
                 PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
                 Long idSelected = DataGridUtils.getIdRowSelected(myTaskListGrid);
+                DataGridUtils.currentIdSelected = task.getId(); 
                 if(status == PlaceStatus.CLOSE || !Long.valueOf(task.getId()).equals(idSelected)){
                     placeManager.goTo("Task Details Multi");
                     taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
@@ -865,7 +874,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     public void changeRowSelected(@Observes TaskStyleEvent taskStyleEvent){
         if( taskStyleEvent.getTaskEventId() != null && this.getCurrentView() == TaskView.GRID){
             DataGridUtils.paintRowSelected(myTaskListGrid, taskStyleEvent.getTaskEventId());
-            DataGridUtils.currentIdSelected = taskStyleEvent.getTaskEventId();
         } 
         if(currentTaskType.equals(TaskType.ALL)){
             DataGridUtils.paintRowsCompleted(myTaskListGrid);
@@ -874,7 +882,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     
     public void refreshNewTask(@Observes NewTaskEvent newTask){
         PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
-        DataGridUtils.newTaskId = newTask.getNewTaskId();
+        DataGridUtils.currentIdSelected = newTask.getNewTaskId();
         if( status == PlaceStatus.OPEN ){
             placeManager.goTo("Task Details Multi");
             taskSelected.fire(new TaskSelectionEvent(newTask.getNewTaskId(), newTask.getNewTaskName()));
@@ -895,16 +903,12 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 if(currentAction == null){
                     TaskSummary task = selectionModel.getSelectedObject();
                     if (task != null) {
-                        DataGridUtils.newTaskId = null;
                         placeManager.goTo("Task Details Multi");
                         taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
                         DataGridUtils.currentIdSelected = task.getId();
                     }
                 }                
-                if(currentAction!=null && !currentAction.equals(DataGridUtils.ActionsDataGrid.CLAIM) 
-                        && !currentAction.equals(DataGridUtils.ActionsDataGrid.RELEASE)){
-                    currentAction = null;
-                }
+                currentAction = null;
                 
             }
         });
@@ -912,20 +916,14 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     }
     
     private void onFocusGrid(){
-        if(currentAction != null && (currentAction.equals(DataGridUtils.ActionsDataGrid.CLAIM) 
-                || currentAction.equals(DataGridUtils.ActionsDataGrid.RELEASE))){
+        if(DataGridUtils.idTaskCalendar != null){
+        	DataGridUtils.currentIdSelected = DataGridUtils.idTaskCalendar;
+            DataGridUtils.idTaskCalendar = null;
+        }
+        if(DataGridUtils.currentIdSelected != null){
             changeRowSelected(new TaskStyleEvent(DataGridUtils.currentIdSelected));
-            currentAction = null;
-        }else{
-            if(DataGridUtils.idTaskCalendar != null){
-                DataGridUtils.newTaskId = DataGridUtils.idTaskCalendar;
-                DataGridUtils.idTaskCalendar = null;
-            }
-            if(DataGridUtils.newTaskId != null){
-                changeRowSelected(new TaskStyleEvent(DataGridUtils.newTaskId));
-            }else if(currentTaskType.equals(TaskType.ALL)){
-                DataGridUtils.paintRowsCompleted(myTaskListGrid);
-            }
+        }else if(currentTaskType.equals(TaskType.ALL)){
+            DataGridUtils.paintRowsCompleted(myTaskListGrid);
         }
     }
     
