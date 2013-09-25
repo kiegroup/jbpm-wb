@@ -1,0 +1,120 @@
+<div class="row-fluid">
+  <h4 id="myModalLabel">
+    <div class="row-fluid">
+      <label data-field="taskIdText" class="inline span1"></label>
+      <label data-field="taskNameText" class="inline span9"></label>
+    </div>
+  </h4>
+  <!-- MODAL NAV -->
+  <div class="navbar">
+    <div class="navbar-inner">
+      <ul class="nav" data-field="navBarUL">
+      </ul>
+    </div>
+  </div>
+  <div class="accordion">
+    <!-- GROUP -->
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle"> <label data-field="detailsAccordionLabel"></label>
+        </a>
+      </div>
+      <div id="desc_collapse" class="accordion-body collapse in" style="position: relative;">
+        <div class="accordion-inner">
+          <div class="form-horizontal">
+
+                <div class="control-group">
+                  <label class="control-label" for="taskDescriptionTextArea" data-field="taskDescriptionLabel"></label>
+                  <div class="controls">
+                    <input type="text" data-field="taskDescriptionTextArea" id="taskDescriptionTextArea" placeholder="" />
+                  </div>
+                </div>
+              
+                <div class="control-group">
+                  <label class="control-label" for="taskStatusText" data-field="taskStatusLabel"></label>
+                  <div class="controls">
+                    <input type="text" data-field="taskStatusText" id="taskStatusText" placeholder="" />
+                  </div>
+                </div>
+              
+          
+                <div class="control-group">
+                  <label class="control-label" for="dueDate" data-field="dueDateLabel"></label>
+                  <div class="controls">
+                    <input type="text" data-field="dueDate" id="dueDate" placeholder="" />
+                  </div>
+                </div>
+              
+                <div class="control-group">
+                  <label class="control-label" for="taskPriorityListBox" data-field="taskPriorityLabel"></label>
+                  <div class="controls">
+                    <select data-field="taskPriorityListBox" id="taskPriorityListBox"></select>
+                  </div>
+                </div>
+              
+               <div class="control-group">
+                  <label class="control-label" for="userText" data-field="userLabel"></label>
+                  <div class="controls">
+                    <select data-field="userText" id="userText"></select>
+                  </div>
+               </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle"> <label data-field="processContextLabel"></label>
+        </a>
+      </div>
+      <div id="context_collapse" class="accordion-body collapse in" style="position: relative;">
+        <div class="accordion-inner">
+          <div class="form-horizontal">
+
+                <div class="control-group">
+                  <label class="control-label" for="processInstanceIdText" data-field="processInstanceIdLabel"></label>
+                  <div class="controls">
+                    <input type="text" data-field="processInstanceIdText" id="processInstanceIdText" placeholder="" />
+                  </div>
+                </div>  
+              
+                <div class="control-group">
+                  <label class="control-label" for="processIdText" data-field="processIdLabel"></label>
+                  <div class="controls">
+                    <input type="text" data-field="processIdText" id="processIdText" placeholder="" />
+                  </div>
+                </div> 
+              
+                <div class="control-group">
+                  <label class="control-label" for="processIdText" data-field="pIDetailsLabel"></label>
+                  <div class="controls">
+                    <button class="button main" data-field="pIDetailsButton" id="pIDetailsButton"></button>
+                  </div>
+                </div> 
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle" >
+          Sub Task Strategy
+        </a>
+      </div>
+      <div id="sub_task_collapse" class="accordion-body collapse in" style="position: relative;">
+        <div class="accordion-inner">
+         
+              <label>Sub Strategy</label>
+              <select data-field="subTaskStrategyListBox" id="subTaskStrategyListBox">
+              </select>
+          
+        </div>
+      </div>
+    </div-->
+
+  </div>
+  <div class="modal-footer span12">
+    <button class="btn" data-field="updateTaskButton" id="updateTaskButton"></button>
+  </div>
+</div>
