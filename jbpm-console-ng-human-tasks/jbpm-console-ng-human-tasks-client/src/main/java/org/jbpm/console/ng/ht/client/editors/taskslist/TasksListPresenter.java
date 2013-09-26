@@ -604,6 +604,7 @@ public class TasksListPresenter {
                 view.setAllTasks();
                 break;
         }
+        view.refreshTasks();
     }
     
     public void changeBgTaskCalendar(@Observes TaskCalendarEvent taskCalendarEvent) {

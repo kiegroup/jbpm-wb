@@ -164,4 +164,8 @@ public interface Constants extends Messages {
     String Delete();
 
     String Calendar();
+
+    String Logs();
+
+    String Task_Log();
 }

@@ -38,6 +38,7 @@ public class TaskServiceEntryPointLocalTest extends TaskServiceEntryPointBaseTes
                 .addPackage("org.jbpm.services.task.query")
                 .addPackage("org.jbpm.services.task.util")
                 .addPackage("org.jbpm.services.task.deadlines")
+                .addPackage("org.jbpm.services.task.audit")
                 // deadlines
                 .addPackage("org.jbpm.services.task.deadlines.notifications.impl")
                 .addPackage("org.jbpm.services.task.subtask")

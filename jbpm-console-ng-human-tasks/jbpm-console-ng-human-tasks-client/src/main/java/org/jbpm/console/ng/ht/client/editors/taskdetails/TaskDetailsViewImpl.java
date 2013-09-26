@@ -27,6 +27,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
@@ -40,7 +41,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "TaskDetailsViewImpl.html")
-public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresenter.TaskDetailsPopupView {
+public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresenter.TaskDetailsView {
 
     private TaskDetailsPresenter presenter;
 
@@ -75,6 +76,18 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @Inject
     @DataField
     public Label processContextLabel;
+    
+    @Inject
+    @DataField
+    public Label logTextLabel;
+     
+    @Inject
+    @DataField
+    public Label taskLogsLabel;
+    
+    @Inject
+    @DataField
+    public HTML logTextArea;
 
     @Inject
     @DataField
@@ -84,6 +97,7 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @DataField
     public Button updateTaskButton;
 
+    
     @Inject
     @DataField
     public Button pIDetailsButton;
@@ -123,10 +137,10 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @Inject
     @DataField
     public ControlLabel detailsAccordionLabel;
-
+    
     @Inject
     private PlaceManager placeManager;
-
+    
     private String[] priorities = { "0 - High", "1", "2", "3", "4", "5 - Medium", "6", "7", "8", "9", "10 - Low" };
 
 
@@ -140,7 +154,8 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @Override
     public void init( TaskDetailsPresenter presenter ) {
         this.presenter = presenter;
-
+        
+        logTextLabel.setText( constants.Task_Log() );
         // Commented out until we add the posibility of adding sub tasks
         // for (String strategy : subTaskStrategies) {
         // subTaskStrategyListBox.addItem(strategy);
@@ -164,8 +179,12 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
         detailsAccordionLabel.add( new HTMLPanel( constants.Details()) );
         processContextLabel.setText( constants.Process_Context() );
         processContextLabel.setStyleName( "" );
+        taskLogsLabel.setText( constants.Logs() );
+        taskLogsLabel.setStyleName( "" );
+        
         pIDetailsButton.setText( constants.Process_Instance_Details() );
         updateTaskButton.setText( constants.Update() );
+        
         processIdText.setReadOnly(true);
     }
 
@@ -177,6 +196,7 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
                               dueDate.getValue(), taskPriorityListBox.getSelectedIndex() );
 
     }
+    
 
     @EventHandler("pIDetailsButton")
     public void pIDetailsButton( ClickEvent e ) {
@@ -243,6 +263,11 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     public Button getpIDetailsButton() {
         return pIDetailsButton;
     }
+    
+    @Override
+    public HTML getLogTextArea() {
+        return logTextArea;
+    }
 
-
+    
 }
