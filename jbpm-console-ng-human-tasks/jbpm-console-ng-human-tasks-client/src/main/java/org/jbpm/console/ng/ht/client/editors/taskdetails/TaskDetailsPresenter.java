@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.ht.client.editors.taskdetails;
 
 import java.util.ArrayList;
@@ -27,7 +26,10 @@ import javax.inject.Inject;
 
 import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -36,9 +38,9 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
-import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
@@ -59,11 +61,11 @@ import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 @WorkbenchScreen(identifier = "Task Details")
 public class TaskDetailsPresenter {
 
-    private Constants constants = GWT.create( Constants.class );
+    private Constants constants = GWT.create(Constants.class);
 
-    public interface TaskDetailsPopupView extends UberView<TaskDetailsPresenter> {
+    public interface TaskDetailsView extends UberView<TaskDetailsPresenter> {
 
-        void displayNotification( String text );
+        void displayNotification(String text);
 
         TextArea getTaskDescriptionTextArea();
 
@@ -77,11 +79,12 @@ public class TaskDetailsPresenter {
 
         TextBox getProcessIdText();
 
+        HTML getLogTextArea();
+
         // Commented out until we add the posibility of adding sub tasks
         // ListBox getSubTaskStrategyListBox();
         // Commented out until we add the posibility of adding sub tasks
         // public String[] getSubTaskStrategies();
-
         public String[] getPriorities();
 
         TextBox getTaskStatusText();
@@ -94,7 +97,7 @@ public class TaskDetailsPresenter {
     private PlaceManager placeManager;
 
     @Inject
-    TaskDetailsPopupView view;
+    TaskDetailsView view;
 
     @Inject
     Identity identity;
@@ -107,24 +110,24 @@ public class TaskDetailsPresenter {
 
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
-    
+
     @Inject
     private Event<TaskRefreshedEvent> taskRefreshed;
-    
+
     @Inject
     private Event<TaskStyleEvent> taskStyleEvent;
-    
+
     @Inject
-    private Event<TaskCalendarEvent> taskCalendarEvent; 
+    private Event<TaskCalendarEvent> taskCalendarEvent;
 
     private PlaceRequest place;
-    
+
     private long currentTaskId = 0;
-    
+
     private String currentTaskName = "";
 
     @OnStartup
-    public void onStartup( final PlaceRequest place ) {
+    public void onStartup(final PlaceRequest place) {
         this.place = place;
     }
 
@@ -140,77 +143,77 @@ public class TaskDetailsPresenter {
 
     public void goToProcessInstanceDetails() {
 
-        dataServices.call( new RemoteCallback<ProcessInstanceSummary>() {
+        dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
             @Override
-            public void callback( ProcessInstanceSummary processInstance ) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instance Details" );
-                placeRequestImpl.addParameter( "processInstanceId", view.getProcessInstanceIdText().getText() );
-                placeRequestImpl.addParameter( "processDefId", processInstance.getProcessId() );
-                placeManager.goTo( placeRequestImpl );
+            public void callback(ProcessInstanceSummary processInstance) {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance Details");
+                placeRequestImpl.addParameter("processInstanceId", view.getProcessInstanceIdText().getText());
+                placeRequestImpl.addParameter("processDefId", processInstance.getProcessId());
+                placeManager.goTo(placeRequestImpl);
             }
-        } ).getProcessInstanceById( Long.parseLong( view.getProcessInstanceIdText().getText() ) );
+        }).getProcessInstanceById(Long.parseLong(view.getProcessInstanceIdText().getText()));
 
     }
 
-    public void updateTask( final String taskDescription,
-                            final String userId,
-                            // final String subTaskStrategy,
-                            final Date dueDate,
-                            final int priority ) {
+    public void updateTask(final String taskDescription,
+            final String userId,
+            // final String subTaskStrategy,
+            final Date dueDate,
+            final int priority) {
 
-        if ( currentTaskId > 0 ) {
+        if (currentTaskId > 0) {
             List<String> descriptions = new ArrayList<String>();
-            descriptions.add( taskDescription );
+            descriptions.add(taskDescription);
 
             List<String> names = new ArrayList<String>();
-            names.add( currentTaskName );
+            names.add(currentTaskName);
 
-            taskServices.call( new RemoteCallback<Void>() {
+            taskServices.call(new RemoteCallback<Void>() {
                 @Override
-                public void callback( Void nothing ) {
-                    view.displayNotification( "Task Details Updated for Task id = " + currentTaskId + ")" );
-                    taskRefreshed.fire( new TaskRefreshedEvent( currentTaskId ) );
-                    taskCalendarEvent.fire( new TaskCalendarEvent( currentTaskId ) );
+                public void callback(Void nothing) {
+                    view.displayNotification("Task Details Updated for Task id = " + currentTaskId + ")");
+                    taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
+                    taskCalendarEvent.fire(new TaskCalendarEvent(currentTaskId));
                 }
-            } ).updateSimpleTaskDetails( currentTaskId, names, Integer.valueOf( priority ), descriptions,
-                                         // subTaskStrategy,
-                                         dueDate );
+            }).updateSimpleTaskDetails(currentTaskId, names, Integer.valueOf(priority), descriptions,
+                    // subTaskStrategy,
+                    dueDate);
 
         }
 
     }
 
-    public void refreshTask( ) {
+    public void refreshTask() {
 
-        taskServices.call( new RemoteCallback<TaskSummary>() {
+        taskServices.call(new RemoteCallback<TaskSummary>() {
             @Override
-            public void callback( TaskSummary details ) {
-                if ( details.getStatus().equals( "Completed" ) ) {
+            public void callback(TaskSummary details) {
+                if (details.getStatus().equals("Completed")) {
 
-                    view.getTaskDescriptionTextArea().setEnabled( false );
-                    view.getDueDate().setEnabled( false );
-                    view.getUserText().setEnabled( false );
-                    view.getTaskStatusText().setEnabled( false );
-                    view.getProcessInstanceIdText().setEnabled( false );
+                    view.getTaskDescriptionTextArea().setEnabled(false);
+                    view.getDueDate().setEnabled(false);
+                    view.getUserText().setEnabled(false);
+                    view.getTaskStatusText().setEnabled(false);
+                    view.getProcessInstanceIdText().setEnabled(false);
                 }
 
-                view.getTaskDescriptionTextArea().setText( details.getDescription() );
-                view.getDueDate().setValue( details.getExpirationTime() );
-                view.getUserText().setText( details.getActualOwner() );
-                view.getUserText().setEnabled( false );
-                view.getTaskStatusText().setText( details.getStatus() );
-                view.getTaskStatusText().setEnabled( false );
+                view.getTaskDescriptionTextArea().setText(details.getDescription());
+                view.getDueDate().setValue(details.getExpirationTime());
+                view.getUserText().setText(details.getActualOwner());
+                view.getUserText().setEnabled(false);
+                view.getTaskStatusText().setText(details.getStatus());
+                view.getTaskStatusText().setEnabled(false);
                 view.getProcessIdText().setEnabled(false);
-                if ( details.getProcessInstanceId() == -1 ) {
-                    view.getProcessInstanceIdText().setText( "None" );
-                    view.getProcessIdText().setText( "None" );
-                    view.getpIDetailsButton().setEnabled( false );
+                if (details.getProcessInstanceId() == -1) {
+                    view.getProcessInstanceIdText().setText("None");
+                    view.getProcessIdText().setText("None");
+                    view.getpIDetailsButton().setEnabled(false);
                 } else {
-                    view.getProcessInstanceIdText().setText( String.valueOf( details.getProcessInstanceId() ) );
-                    view.getProcessIdText().setText( details.getProcessId() );
+                    view.getProcessInstanceIdText().setText(String.valueOf(details.getProcessInstanceId()));
+                    view.getProcessIdText().setText(details.getProcessId());
                 }
 
-                view.getProcessInstanceIdText().setEnabled( false );
+                view.getProcessInstanceIdText().setEnabled(false);
 
                 int i = 0;
                 // Commented out until we add the posibility of adding sub tasks
@@ -221,39 +224,56 @@ public class TaskDetailsPresenter {
                 // i++;
                 // }
                 i = 0;
-                for ( String priority : view.getPriorities() ) {
-                    if ( details.getPriority() == i ) {
-                        view.getTaskPriorityListBox().setSelectedIndex( i );
+                for (String priority : view.getPriorities()) {
+                    if (details.getPriority() == i) {
+                        view.getTaskPriorityListBox().setSelectedIndex(i);
                     }
                     i++;
                 }
-                
-                changeStyleRow( details.getId() );
+
+                changeStyleRow(details.getId());
 
             }
-        } ).getTaskDetails( currentTaskId );
+        }).getTaskDetails(currentTaskId);
+        taskServices.call(new RemoteCallback<List<TaskEventSummary>>() {
+            @Override
+            public void callback(List<TaskEventSummary> events) {
+                view.getLogTextArea().setText("");
+                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+                DateTimeFormat format = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm");
+                for (TaskEventSummary tes : events) {
+                    String timeStamp = format.format(tes.getLogTime());
+                    safeHtmlBuilder.appendEscapedLines(timeStamp + ": Task - " + tes.getType() + " (" + tes.getUserId() + ") \n");
+                }
+                view.getLogTextArea().setHTML(safeHtmlBuilder.toSafeHtml());
+            }
+
+        }).getAllTaskEvents(currentTaskId);
 
     }
     
-    private void changeStyleRow( long idTask ){
-        taskStyleEvent.fire( new TaskStyleEvent( idTask ) );
+   
+        
+
+    private void changeStyleRow(long idTask) {
+        taskStyleEvent.fire(new TaskStyleEvent(idTask));
     }
 
     @OnOpen
     public void onOpen() {
-        this.currentTaskId = Long.parseLong( place.getParameter( "taskId", "0" ).toString() );
-        this.currentTaskName =  place.getParameter( "taskName", "" ) ;
-        refreshTask( );
+        this.currentTaskId = Long.parseLong(place.getParameter("taskId", "0").toString());
+        this.currentTaskName = place.getParameter("taskName", "");
+        refreshTask();
     }
-    
-    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event){
-        if(currentTaskId == event.getTaskId()){
-            refreshTask( );
+
+    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
+        if (currentTaskId == event.getTaskId()) {
+            refreshTask();
         }
     }
 
     public void close() {
-        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
+        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
 
 }

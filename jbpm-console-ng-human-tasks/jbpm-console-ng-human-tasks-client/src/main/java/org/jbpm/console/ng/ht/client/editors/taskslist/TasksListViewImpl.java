@@ -177,12 +177,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
         taskListMultiDayBox.init();
         taskListMultiDayBox.setPresenter(presenter);
-        
-        
-        
+
         currentDate = new Date();
-       
-        
         
         liCalendarPicker.addValueChangeHandler(new ValueChangeHandler<Date>() {
             @Override
@@ -202,7 +198,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             public void onClick(ClickEvent event) {
                 liCalendarPicker.clear();
                 setGridView();
-
+                refreshTasks();
             }
 
         });
@@ -215,7 +211,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 liCalendarPicker.setListContainer(container);
                 liCalendarPicker.init();
                 setDayView();
-
+                refreshTasks();
             }
 
         });
@@ -227,7 +223,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             @Override
             public void onClick(ClickEvent event) {
                 setPersonalTasks();
-
+                refreshTasks();
             }
         });
         showGroupTasksButton.setSize(ButtonSize.SMALL);
@@ -236,7 +232,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             @Override
             public void onClick(ClickEvent event) {
                 setGroupTasks();
-
+                refreshTasks();
             }
         });
         showActiveTasksButton.setSize(ButtonSize.SMALL);
@@ -245,7 +241,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             @Override
             public void onClick(ClickEvent event) {
                 setActiveTasks();
-
+                refreshTasks();
             }
         });
         showAllTasksButton.setSize(ButtonSize.SMALL);
@@ -254,10 +250,10 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             @Override
             public void onClick(ClickEvent event) {
                 setAllTasks();
-
+                refreshTasks();
             }
         });
-        refreshTasks();
+        
     }
     
     
@@ -289,7 +285,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         showActiveTasksButton.setStyleName("btn btn-small active");
         showAllTasksButton.setStyleName("btn btn-small");
         currentTaskType = TaskType.ACTIVE;
-        refreshTasks();
     }
 
     @Override
@@ -299,7 +294,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         showActiveTasksButton.setStyleName("btn btn-small");
         showAllTasksButton.setStyleName("btn btn-small");
         currentTaskType = TaskType.GROUP;
-        refreshTasks();
     }
 
     @Override
@@ -309,7 +303,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         showActiveTasksButton.setStyleName("btn btn-small");
         showAllTasksButton.setStyleName("btn btn-small");
         currentTaskType = TaskType.PERSONAL;
-        refreshTasks();
     }
 
     @Override
@@ -319,7 +312,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         if ((getParent().getOffsetHeight() - 120) > 0) {
             tasksViewContainer.setHeight(getParent().getOffsetHeight() - 120 + "px");
         }
-        refreshTasks();
     }
 
     @Override
@@ -334,7 +326,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         liCalendarPicker.setDayView();
         pager.setVisible(false);
         tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
-        refreshTasks();
     }
 
     @Override
@@ -349,7 +340,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         liCalendarPicker.setWeekView();
         pager.setVisible(false);
         tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
-        refreshTasks();
     }
 
     @Override
@@ -364,7 +354,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         liCalendarPicker.setMonthView();
         pager.setVisible(false);
         tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
-        refreshTasks();
     }
     
     private void paintCalendarFromGrid(){

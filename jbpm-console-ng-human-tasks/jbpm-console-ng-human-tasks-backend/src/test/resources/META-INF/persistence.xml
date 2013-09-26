@@ -27,6 +27,7 @@
         <class>org.jbpm.services.task.impl.model.TaskDefImpl</class>
         <class>org.jbpm.services.task.impl.model.TaskDataImpl</class>
         <class>org.jbpm.services.task.impl.model.UserImpl</class>
+        <class>org.jbpm.services.task.audit.TaskEventImpl</class>
 
 
         <!--BAM for task service -->

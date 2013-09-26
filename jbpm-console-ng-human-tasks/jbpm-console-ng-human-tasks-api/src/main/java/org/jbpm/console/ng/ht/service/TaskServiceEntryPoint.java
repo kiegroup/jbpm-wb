@@ -23,7 +23,7 @@ import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.Day;
-import org.jbpm.console.ng.ht.model.IdentitySummary;
+import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 
 @Remote
@@ -128,5 +128,9 @@ public interface TaskServiceEntryPoint {
     
     
     Map<Long, List<String>> getPotentialOwnersForTaskIds(List<Long> taskIds);
+    
+    
+    //Audit Methods
+    List<TaskEventSummary> getAllTaskEvents(long taskId);
 
 }
