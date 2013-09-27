@@ -257,9 +257,10 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Started" );
-                if(selectedTasks.size() == 1){
+                //TODO this line is unnecesary
+                /*if(selectedTasks.size() == 1){
                     taskRefreshed.fire(new TaskRefreshedEvent(selectedTasks.get(0)));
-                }
+                }*/
                 view.refreshTasks();
             }
         } ).startBatch( selectedTasks, userId );
@@ -271,9 +272,11 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Released" );
-                if(selectedTasks.size() == 1){
-                    taskRefreshed.fire(new TaskRefreshedEvent(selectedTasks.get(0)));
-                }
+                DataGridUtils.currentIdSelected = DataGridUtils.getIdRowSelected(view.getTaskListGrid());
+                //TODO this line is unnecesary
+                /*if(selectedTasks.size() == 1){
+                    //taskRefreshed.fire(new TaskRefreshedEvent(selectedTasks.get(0)));
+                }*/
                 view.refreshTasks();
             }
         } ).releaseBatch( selectedTasks, userId );
@@ -285,9 +288,10 @@ public class TasksListPresenter {
             @Override
             public void callback( Void nothing ) {
                 view.displayNotification( "Task(s) Completed" );
-                if(selectedTasks.size() == 1){
+                //TODO this call is unnecesary
+                /*if(selectedTasks.size() == 1){
                     taskRefreshed.fire(new TaskRefreshedEvent(selectedTasks.get(0)));
-                }
+                }*/
                 view.refreshTasks();
             }
         } ).completeBatch( selectedTasks, userId, null );
@@ -299,9 +303,11 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Claimed" );
-                if(selectedTasks.size() == 1){
+                DataGridUtils.currentIdSelected = DataGridUtils.getIdRowSelected(view.getTaskListGrid());
+                //TODO this call is unnecesary
+                /*if(selectedTasks.size() == 1){
                     taskRefreshed.fire(new TaskRefreshedEvent(selectedTasks.get(0)));
-                }
+                }*/
                 view.refreshTasks();
 
             }
