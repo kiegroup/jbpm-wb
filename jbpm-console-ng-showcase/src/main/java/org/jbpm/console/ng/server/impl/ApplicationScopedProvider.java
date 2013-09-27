@@ -22,6 +22,8 @@ import org.kie.internal.task.api.UserGroupCallback;
 import org.uberfire.backend.repositories.Repository;
 
 import static org.uberfire.backend.server.repositories.SystemRepository.*;
+
+import org.uberfire.backend.server.IOWatchServiceNonDotImpl;
 import org.uberfire.security.impl.authz.RuntimeAuthorizationManager;
 import org.uberfire.security.server.cdi.SecurityFactory;
 
@@ -30,6 +32,9 @@ import org.uberfire.security.server.cdi.SecurityFactory;
  */
 @ApplicationScoped
 public class ApplicationScopedProvider {
+
+    @Inject
+    private IOWatchServiceNonDotImpl watchService;
 
     @Inject
     @Named("clusterServiceFactory")
@@ -41,9 +46,9 @@ public class ApplicationScopedProvider {
     public void setup() {
         SecurityFactory.setAuthzManager( new RuntimeAuthorizationManager() );
         if ( clusterServiceFactory == null ) {
-            ioService = new IOServiceDotFileImpl();
+            ioService = new IOServiceDotFileImpl( watchService );
         } else {
-            ioService = new IOServiceClusterImpl( new IOServiceDotFileImpl(), clusterServiceFactory );
+            ioService = new IOServiceClusterImpl( new IOServiceDotFileImpl( watchService ), clusterServiceFactory );
         }
     }
 
