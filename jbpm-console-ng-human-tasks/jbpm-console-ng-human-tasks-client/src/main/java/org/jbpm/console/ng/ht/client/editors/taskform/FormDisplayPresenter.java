@@ -17,6 +17,7 @@
 package org.jbpm.console.ng.ht.client.editors.taskform;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +61,6 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
-import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @WorkbenchScreen(identifier = "Form Display")
@@ -122,14 +122,10 @@ public class FormDisplayPresenter {
     @Inject
     private Event<TaskStyleEvent> taskStyleEvent;
     
-    @Inject
-    private Event<NotificationEvent> notification;
 
     public interface FormDisplayView extends UberView<FormDisplayPresenter> {
 
         void displayNotification(String text);
-
-        
 
         FlowPanel getOptionsDiv();
 
@@ -196,9 +192,32 @@ public class FormDisplayPresenter {
                 FlowPanel wrapperFlowPanel = new FlowPanel();
                 wrapperFlowPanel.setStyleName( "wrapper form-actions" );
                 view.getOptionsDiv().add( wrapperFlowPanel );
-                if ( task.getStatus().equals( "Reserved" ) ) {
+                
+                if ( task.getStatus().equals( "Ready" ) && task.getActualOwner().equals(identity.getName()) ) {
+                    ClickHandler click = new ClickHandler() {
+                            @Override
+                            public native void onClick( ClickEvent event )/*-{
+                                $wnd.claimTask($wnd.getFormValues($doc.getElementById("form-data")));
+                            }-*/;
+                        };
+                    Button claimButton = new Button();
+                    claimButton.setType(ButtonType.PRIMARY);
+                    claimButton.setText(constants.Claim());
+                    claimButton.addClickHandler(click);
+                    wrapperFlowPanel.add( claimButton );
+                    view.getOptionsDiv().add( wrapperFlowPanel );
+                }
+                
+                if ( task.getStatus().equals( "Reserved" ) && task.getActualOwner().equals(identity.getName()) ) {
                     
-                    ClickHandler click;
+                    ClickHandler click, release;
+                     release = new ClickHandler() {
+                            @Override
+                            public native void onClick( ClickEvent event )/*-{
+                                $wnd.releaseTask($wnd.getFormValues($doc.getElementById("form-data")));
+                            }-*/;
+                    };
+                    
                     if (modelerForm)
                         click = new ClickHandler() {
                             @Override
@@ -214,14 +233,31 @@ public class FormDisplayPresenter {
                                 $wnd.startTask($wnd.getFormValues($doc.getElementById("form-data")));
                             }-*/;
                         };
+                    
+                    Button releaseButton = new Button();
+                    releaseButton.setText(constants.Release());
+                    releaseButton.addClickHandler(release);
+                    wrapperFlowPanel.add( releaseButton );
+                    
                     Button startButton = new Button();
+                    startButton.setType(ButtonType.PRIMARY);
                     startButton.setText(constants.Start());
                     startButton.addClickHandler(click);
                     wrapperFlowPanel.add( startButton );
-                    view.getOptionsDiv().add( wrapperFlowPanel );
-                } else if ( task.getStatus().equals( "InProgress" ) ) {
                     
-                    ClickHandler save, complete;
+                    
+                    view.getOptionsDiv().add( wrapperFlowPanel );
+                } else if ( task.getStatus().equals( "InProgress" ) && task.getActualOwner().equals(identity.getName()) ) {
+                    
+                    ClickHandler save, complete, release;
+                    
+                    release = new ClickHandler() {
+                            @Override
+                            public native void onClick( ClickEvent event )/*-{
+                                $wnd.releaseTask($wnd.getFormValues($doc.getElementById("form-data")));
+                            }-*/;
+                    };
+                    
                     if (modelerForm) {
                         save = new ClickHandler() {
                             @Override
@@ -236,6 +272,7 @@ public class FormDisplayPresenter {
                             };
                         };
                     } else {
+                        
                         save = new ClickHandler() {
                             @Override
                             public native void onClick( ClickEvent event )/*-{
@@ -257,8 +294,15 @@ public class FormDisplayPresenter {
                     
                     wrapperFlowPanel.add( saveButton );
                     
+                    Button releaseButton = new Button();
+                    releaseButton.setText(constants.Release());
+                    releaseButton.addClickHandler(release);
+                    
+                    
+                    wrapperFlowPanel.add( releaseButton );
                     
                     Button completeButton = new Button();
+                    completeButton.setType(ButtonType.PRIMARY);
                     completeButton.setText(constants.Complete());
                     completeButton.addClickHandler(complete);
                     
@@ -347,6 +391,7 @@ public class FormDisplayPresenter {
             @Override
             public void callback(Void nothing) {
                 view.displayNotification("Form for Task Id: " + params.get("taskId") + " was completed!");
+                taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 dispose();
             }
         }).complete(Long.parseLong(params.get("taskId")), identity.getName(), objParams);
@@ -389,6 +434,7 @@ public class FormDisplayPresenter {
             @Override
             public void callback(Void nothing) {
                 view.displayNotification("Task Id: " + taskId + " was started!");
+                taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 renderTaskForm();
             }
         }).start(taskId, identity);
@@ -400,9 +446,36 @@ public class FormDisplayPresenter {
             @Override
             public void callback( Void nothing ) {
                 view.displayNotification( "Task Id: " + params.get( "taskId" ) + " was started!" );
+                taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 renderTaskForm();
             }
         } ).start( Long.parseLong( params.get( "taskId" ).toString() ), identity.getName() );
+
+    }
+    
+    public void releaseTask( String values ) {
+        final Map<String, String> params = getUrlParameters( values );
+        taskServices.call( new RemoteCallback<Void>() {
+            @Override
+            public void callback( Void nothing ) {
+                view.displayNotification( "Task Id: " + params.get( "taskId" ) + " was released!" );
+                taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
+                renderTaskForm();
+            }
+        } ).release( Long.parseLong( params.get( "taskId" ).toString() ), identity.getName() );
+
+    }
+    
+    public void claimTask( String values ) {
+        final Map<String, String> params = getUrlParameters( values );
+        taskServices.call( new RemoteCallback<Void>() {
+            @Override
+            public void callback( Void nothing ) {
+                view.displayNotification( "Task Id: " + params.get( "taskId" ) + " was claimed!" );
+                taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
+                renderTaskForm();
+            }
+        } ).claim( Long.parseLong( params.get( "taskId" ).toString() ), identity.getName() );
 
     }
 
@@ -411,6 +484,7 @@ public class FormDisplayPresenter {
             @Override
             public void callback(Long contentId) {
                 view.displayNotification("Task Id: " + currentTaskId + " State was Saved! ContentId : " + contentId);
+                taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 renderTaskForm();
             }
         }).saveTaskStateFromRenderContext(formCtx, currentTaskId);
@@ -451,7 +525,6 @@ public class FormDisplayPresenter {
             @Override
             public void callback(Long processInstanceId) {
                 view.displayNotification("Process Id: " + processInstanceId + " started!");
-                System.out.println("Current ProcessId: "+currentProcessId + " - current Process Instnace ID: "+processInstanceId);
                 newProcessInstanceEvent.fire(new NewProcessInstanceEvent(processInstanceId, currentProcessId));
                 close();
  
@@ -466,7 +539,6 @@ public class FormDisplayPresenter {
             @Override
             public void callback(Long processInstanceId) {
                 view.displayNotification("Process Id: " + processInstanceId + " started!");
-                System.out.println("Current ProcessId: "+currentProcessId + " - current Process Instnace ID: "+processInstanceId);
                 newProcessInstanceEvent.fire(new NewProcessInstanceEvent(processInstanceId, currentProcessId));
                 close();
                
@@ -484,6 +556,14 @@ public class FormDisplayPresenter {
 
         $wnd.startTask = function (from) {
             fdp.@org.jbpm.console.ng.ht.client.editors.taskform.FormDisplayPresenter::startTask(Ljava/lang/String;)(from);
+        }
+            
+        $wnd.claimTask = function (from) {
+            fdp.@org.jbpm.console.ng.ht.client.editors.taskform.FormDisplayPresenter::claimTask(Ljava/lang/String;)(from);
+        }
+            
+        $wnd.releaseTask = function (from) {
+            fdp.@org.jbpm.console.ng.ht.client.editors.taskform.FormDisplayPresenter::releaseTask(Ljava/lang/String;)(from);
         }
 
         $wnd.saveTaskState = function (from) {

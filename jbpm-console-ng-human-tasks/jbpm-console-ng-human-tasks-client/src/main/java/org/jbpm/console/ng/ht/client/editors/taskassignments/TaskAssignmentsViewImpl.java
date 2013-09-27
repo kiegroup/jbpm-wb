@@ -89,7 +89,13 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
 
     @EventHandler("delegateButton")
     public void delegateButton( ClickEvent e ) {
-        presenter.delegateTask( userOrGroupText.getText());
+        String userOrGroup = userOrGroupText.getText();
+        if(!userOrGroup.equals("")){
+            presenter.delegateTask( userOrGroup);
+            delegateButton.setEnabled(false);
+        }else{
+            displayNotification("Please enter a user or a group to delegate the task");
+        }
     }
 
     @Override

@@ -16,8 +16,6 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskform;
 
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
