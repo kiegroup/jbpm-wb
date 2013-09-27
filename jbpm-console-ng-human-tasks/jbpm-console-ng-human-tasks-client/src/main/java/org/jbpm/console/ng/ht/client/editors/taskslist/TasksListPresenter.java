@@ -315,6 +315,7 @@ public class TasksListPresenter {
     }
 
     public void formClosed( @Observes BeforeClosePlaceEvent closed ) {
+        
         if(closed.getPlace().getIdentifier().equals("Form Display") ||
                 closed.getPlace().getIdentifier().equals("Quick New Task")){
             view.refreshTasks();
@@ -334,7 +335,6 @@ public class TasksListPresenter {
      * Refresh tasks based on specified date, view (day/week/month) and task type.
      */
     public void refreshTasks(Date date, TaskView taskView, TaskType taskType) {
-        
         switch (taskType) {
             case PERSONAL:
                 refreshPersonalTasks(date, taskView);
@@ -580,7 +580,6 @@ public class TasksListPresenter {
         if(!currentTaskType.equals("")){
             currentTaskTypeEnum = TaskType.valueOf(currentTaskType);
         }
-        
         switch(currentTaskView){
             case GRID:
                 view.setGridView();
@@ -595,7 +594,6 @@ public class TasksListPresenter {
                 view.setMonthView();
                 break;
         }
-        
         switch(currentTaskTypeEnum){
             case ACTIVE:
                 view.setActiveTasks();
@@ -610,7 +608,6 @@ public class TasksListPresenter {
                 view.setAllTasks();
                 break;
         }
-        view.refreshTasks();
     }
     
     public void changeBgTaskCalendar(@Observes TaskCalendarEvent taskCalendarEvent) {

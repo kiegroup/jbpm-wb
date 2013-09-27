@@ -273,7 +273,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         showActiveTasksButton.setStyleName("btn btn-small");
         showAllTasksButton.setStyleName("btn btn-small active");
         currentTaskType = TaskType.ALL;
-        refreshTasks();
     }
 
     @Override
