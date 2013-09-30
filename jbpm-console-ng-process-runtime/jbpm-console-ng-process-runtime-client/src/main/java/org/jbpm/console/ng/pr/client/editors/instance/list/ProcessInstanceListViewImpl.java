@@ -41,6 +41,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
@@ -54,6 +55,7 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
+import java.util.Date;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
@@ -390,7 +392,9 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         Column<ProcessInstanceSummary, String> startTimeColumn = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
             @Override
             public String getValue( ProcessInstanceSummary object ) {
-                return object.getStartTime();
+                Date expirationTime = object.getStartTime();
+                DateTimeFormat format = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm");
+                return format.format(expirationTime);
             }
         };
         startTimeColumn.setSortable( true );
@@ -398,7 +402,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
             @Override
             public int compare( ProcessInstanceSummary o1,
                                 ProcessInstanceSummary o2 ) {
-                return Long.valueOf( o1.getStartTime() ).compareTo( Long.valueOf( o2.getStartTime() ) );
+                return o1.getStartTime().compareTo(  o2.getStartTime() );
             }
         } );
         processInstanceListGrid.addColumn( startTimeColumn, new ResizableHeader( constants.Start_Date(), processInstanceListGrid,

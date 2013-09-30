@@ -17,6 +17,7 @@
 package org.jbpm.console.ng.pr.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
@@ -26,12 +27,12 @@ public class ProcessInstanceSummary implements Serializable {
     private String processName;
     private String processVersion;
     private int state;
-    private String startTime;
+    private Date startTime;
     private String deploymentId;
     private String initiator;
 
     public ProcessInstanceSummary(long id, String processId, String deploymentId, String processName, String processVersion,
-            int state, String startTime, String initiator) {
+            int state, Date startTime, String initiator) {
         super();
         this.id = id;
         this.processId = processId;
@@ -86,11 +87,11 @@ public class ProcessInstanceSummary implements Serializable {
         this.processVersion = processVersion;
     }
 
-    public String getStartTime() {
+    public Date getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(String startTime) {
+    public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
 

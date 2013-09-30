@@ -23,10 +23,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -261,7 +260,7 @@ public class ProcessInstanceDetailsPresenter {
         return Position.EAST;
     }
 
-    private void changeStyleRow(long processInstanceId, String processDefName, String processDefVersion, String startTime) {
+    private void changeStyleRow(long processInstanceId, String processDefName, String processDefVersion, Date startTime) {
         processInstanceStyleEvent.fire(new ProcessInstanceStyleEvent(processInstanceId, processDefName, processDefVersion, startTime));
     }
 
