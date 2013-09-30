@@ -44,6 +44,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
@@ -442,8 +443,9 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         cells.add( new AbortActionHasCell( "Abort", new Delegate<ProcessInstanceSummary>() {
             @Override
             public void execute( ProcessInstanceSummary processInstance ) {
-
-                presenter.abortProcessInstance( processInstance.getId() );
+                if( Window.confirm("Are you sure that you want to abort the process instance?") ){
+                    presenter.abortProcessInstance( processInstance.getId() );
+                }
             }
         } ) );
 
