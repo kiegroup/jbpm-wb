@@ -16,6 +16,8 @@
 package org.jbpm.console.ng.pr.client.util;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import java.util.Date;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 
@@ -30,7 +32,7 @@ public class DataGridUtils {
     public static Long newProcessInstanceId = null;
     public static String newProcessInstanceDefName = null;
     public static String newProcessInstanceDefVersion = null;
-    public static String newProcessInstanceStartDate = null;
+    public static Date newProcessInstanceStartDate = null;
     
     public static void paintRowSelected(DataGrid<ProcessSummary> myProcessDefListGrid, String nameProcessDef, String versionProcessDef) {
         for (int i = 0; i < myProcessDefListGrid.getRowCount(); i++) {
@@ -57,7 +59,7 @@ public class DataGridUtils {
     }
     
     public static void paintInstanceRowSelected(DataGrid<ProcessInstanceSummary> myProcessInstanceListGrid, String nameProcessDef, 
-            String versionProcessDef, String startDateInstance) {
+            String versionProcessDef, Date startDateInstance) {
         for (int i = 0; i < myProcessInstanceListGrid.getRowCount(); i++) {
             boolean nameMatch = false;
             boolean versionMatch = false;
@@ -69,7 +71,9 @@ public class DataGridUtils {
                 if (myProcessInstanceListGrid.getRowElement(i).getCells().getItem(j).getInnerText().equals(versionProcessDef)) {
                     versionMatch = true;
                 }
-                if (myProcessInstanceListGrid.getRowElement(i).getCells().getItem(j).getInnerText().equals(startDateInstance)) {
+                DateTimeFormat format = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm");
+                String date =  format.format(startDateInstance);       
+                if (myProcessInstanceListGrid.getRowElement(i).getCells().getItem(j).getInnerText().equals(date)) {
                     startDateMatch = true;
                 }
 

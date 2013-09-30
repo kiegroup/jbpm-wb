@@ -16,10 +16,8 @@
 
 package org.jbpm.console.ng.pr.backend.server;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import org.jbpm.kie.services.impl.model.ProcessInstanceDesc;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
@@ -38,11 +36,9 @@ public class ProcessInstanceHelper {
     }
 
     public static ProcessInstanceSummary adapt(ProcessInstanceDesc processInstance) {
-        Date date = processInstance.getDataTimeStamp();
-        String formattedDate = new SimpleDateFormat("d/MMM/yy HH:mm:ss").format(date);
         return new ProcessInstanceSummary(processInstance.getId(), processInstance.getProcessId(),
                 processInstance.getDeploymentId(), processInstance.getProcessName(), processInstance.getProcessVersion(),
-                processInstance.getState(), formattedDate, processInstance.getInitiator());
+                processInstance.getState(), processInstance.getDataTimeStamp(), processInstance.getInitiator());
     }
 
     public static Collection<String> collectActiveSignals(Collection<NodeInstance> activeNodes) {

@@ -16,6 +16,7 @@
 
 package org.jbpm.console.ng.pr.model.events;
 
+import java.util.Date;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
@@ -24,13 +25,13 @@ public class ProcessInstanceStyleEvent {
     private Long processInstanceId;
     private String processDefName;
     private String processDefVersion;
-    private String processInstanceStartDate;
+    private Date processInstanceStartDate;
     
     public ProcessInstanceStyleEvent(){
         
     }
 
-    public ProcessInstanceStyleEvent(Long processInstanceId, String processDefName, String processDefVersion, String processInstanceStartDate) {
+    public ProcessInstanceStyleEvent(Long processInstanceId, String processDefName, String processDefVersion, Date processInstanceStartDate) {
         this.processInstanceId = processInstanceId;
         this.processDefName = processDefName;
         this.processDefVersion = processDefVersion;
@@ -61,11 +62,11 @@ public class ProcessInstanceStyleEvent {
         this.processDefVersion = processDefVersion;
     }
 
-    public String getProcessInstanceStartDate() {
+    public Date getProcessInstanceStartDate() {
         return processInstanceStartDate;
     }
 
-    public void setProcessInstanceStartDate(String processInstanceStartDate) {
+    public void setProcessInstanceStartDate(Date processInstanceStartDate) {
         this.processInstanceStartDate = processInstanceStartDate;
     }
 
