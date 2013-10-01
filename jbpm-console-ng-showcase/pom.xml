@@ -114,6 +114,16 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-bpm-home-client</artifactId>
     </dependency>
+    
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-wb-workitems-editor-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-wb-workitems-editor-backend</artifactId>
+    </dependency>
 
     <!-- jBPM Designer -->
     <dependency>
@@ -607,6 +617,9 @@
 
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-client</compileSourcesArtifact>
+            
+            <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-client</compileSourcesArtifact>
 
             <!-- Kie Commons -->
             <compileSourcesArtifact>org.kie.commons:kie-commons-data</compileSourcesArtifact>

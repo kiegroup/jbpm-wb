@@ -57,6 +57,12 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
     BPMN2DataService bpmn2Service;
 
     @Override
+    public Map<String, String> getServiceTasks(String processId){
+        return bpmn2Service.getAllServiceTasks(processId);
+    }
+    
+    
+    @Override
     public Collection<ProcessInstanceSummary> getProcessInstances() {
         return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstances());
     }

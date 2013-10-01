@@ -29,6 +29,8 @@ import org.jbpm.console.ng.pr.model.VariableSummary;
 @Remote
 public interface DataServiceEntryPoint {
 
+    Map<String, String> getServiceTasks(String processId);
+    
     Collection<ProcessInstanceSummary> getProcessInstances();
 
     Collection<ProcessInstanceSummary> getProcessInstancesByDeploymentId(String sessionId, List<Integer> states);

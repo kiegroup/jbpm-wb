@@ -193,4 +193,6 @@ public interface Constants extends Messages {
 
     String Process_Variables_Refreshed();
 
+    String Services();
+
 }

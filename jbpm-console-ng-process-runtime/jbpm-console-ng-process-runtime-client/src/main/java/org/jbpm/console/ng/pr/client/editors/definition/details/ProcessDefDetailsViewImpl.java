@@ -71,6 +71,10 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
     @Inject
     @DataField
     public HTML processDataListBox;
+    
+    @Inject
+    @DataField
+    public HTML processServicesListBox;
 
     @Inject
     @DataField
@@ -112,6 +116,10 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
     @Inject
     @DataField
     public Label processDataListLabel;
+    
+    @Inject
+    @DataField
+    public Label processServicesListLabel;
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -144,7 +152,7 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
         usersGroupsListLabel.setText( constants.User_And_Groups() );
         subprocessListLabel.setText( constants.SubProcesses() );
         processDataListLabel.setText( constants.Process_Variables() );
-
+        processServicesListLabel.setText( constants.Services() );
 
     }
 
@@ -173,7 +181,12 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
     public HTML getProcessDataListBox() {
         return processDataListBox;
     }
-
+    
+    @Override
+    public HTML getProcessServicesListBox() {
+        return processServicesListBox;
+    }
+    
     @Override
     public HTML getSubprocessListBox() {
         return subprocessListBox;

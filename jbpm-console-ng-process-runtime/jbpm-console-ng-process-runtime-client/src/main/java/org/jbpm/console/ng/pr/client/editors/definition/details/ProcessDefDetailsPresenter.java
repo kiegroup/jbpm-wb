@@ -79,6 +79,8 @@ public class ProcessDefDetailsPresenter {
         HTML getUsersGroupsListBox();
 
         HTML getProcessDataListBox();
+        
+        HTML getProcessServicesListBox();
 
         HTML getSubprocessListBox();
 
@@ -148,10 +150,17 @@ public class ProcessDefDetailsPresenter {
                 view.getNroOfHumanTasksText().setText( String.valueOf( tasks.size() ) );
                 view.getHumanTasksListBox().setText("");
                 SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                for ( TaskDefSummary t : tasks ) {
-                   safeHtmlBuilder.appendEscapedLines(t.getName() +"\n" );
+                if(tasks.isEmpty()){
+                    safeHtmlBuilder.appendEscapedLines("No User Tasks defined in this process");
+                    view.getHumanTasksListBox().setStyleName("muted");
+                    view.getHumanTasksListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+                }else{
+                    for ( TaskDefSummary t : tasks ) {
+                       safeHtmlBuilder.appendEscapedLines(t.getName() +"\n" );
+                    }
+                    view.getHumanTasksListBox().setHTML(safeHtmlBuilder.toSafeHtml());
                 }
-                view.getHumanTasksListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+                
             }
         } ).getAllTasksDef( processId );
 
@@ -160,10 +169,17 @@ public class ProcessDefDetailsPresenter {
             public void callback( Map<String, String> entities ) {
                 view.getUsersGroupsListBox().setText("");
                 SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                for ( String key : entities.keySet() ) {
-                    safeHtmlBuilder.appendEscapedLines(entities.get( key ) + " - " + key +"\n");
+                if(entities.keySet().isEmpty()){
+                    safeHtmlBuilder.appendEscapedLines("No user or group used in this process");
+                    view.getUsersGroupsListBox().setStyleName("muted");
+                    view.getUsersGroupsListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+                }else{
+                    for ( String key : entities.keySet() ) {
+                        safeHtmlBuilder.appendEscapedLines(entities.get( key ) + " - " + key +"\n");
+                    }
+                    view.getUsersGroupsListBox().setHTML(safeHtmlBuilder.toSafeHtml());
                 }
-                view.getUsersGroupsListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+                
             }
         } ).getAssociatedEntities( processId );
 
@@ -172,10 +188,17 @@ public class ProcessDefDetailsPresenter {
             public void callback( Map<String, String> inputs ) {
                 view.getProcessDataListBox().setText("");
                 SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                for ( String key : inputs.keySet() ) {
-                    safeHtmlBuilder.appendEscapedLines(key + " - " + inputs.get( key ) +"\n");
+                if(inputs.keySet().isEmpty()){
+                    safeHtmlBuilder.appendEscapedLines("No process variables defined for this process");
+                    view.getProcessDataListBox().setStyleName("muted");
+                    view.getProcessDataListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+                }else{
+                    for ( String key : inputs.keySet() ) {
+                        safeHtmlBuilder.appendEscapedLines(key + " - " + inputs.get( key ) +"\n");
+                    }
+                    view.getProcessDataListBox().setHTML(safeHtmlBuilder.toSafeHtml());
                 }
-                view.getProcessDataListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+                
             }
         } ).getRequiredInputData( processId );
 
@@ -184,10 +207,17 @@ public class ProcessDefDetailsPresenter {
             public void callback( Collection<String> subprocesses ) {
                 view.getSubprocessListBox().setText("");
                 SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                for ( String key : subprocesses ) {
-                    safeHtmlBuilder.appendEscapedLines(key + "\n");
+                if(subprocesses.isEmpty()){
+                    safeHtmlBuilder.appendEscapedLines("No subproceses required by this process");
+                    view.getSubprocessListBox().setStyleName("muted");
+                    view.getSubprocessListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+                }else{
+                    for ( String key : subprocesses ) {
+                        safeHtmlBuilder.appendEscapedLines(key + "\n");
+                    }
+                    view.getSubprocessListBox().setHTML(safeHtmlBuilder.toSafeHtml());
                 }
-                view.getSubprocessListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+                
             }
         } ).getReusableSubProcesses( processId );
 
@@ -209,6 +239,27 @@ public class ProcessDefDetailsPresenter {
                 changeStyleRow(process.getName(), process.getVersion());
             }
         } ).getProcessById( processId );
+        
+        dataServices.call( new RemoteCallback<Map<String, String>>() {
+            @Override
+            public void callback( Map<String, String> services ) {
+                view.getProcessServicesListBox().setText("");
+                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+                if(services.keySet().isEmpty()){
+                    safeHtmlBuilder.appendEscaped("No services required for this process");
+                    view.getProcessServicesListBox().setStyleName("muted");
+                    view.getProcessServicesListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+                }else{
+                    for ( String key : services.keySet() ) {
+                        safeHtmlBuilder.appendEscapedLines(key + " - " + services.get( key ) +"\n");
+                    }
+                    view.getProcessServicesListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+                }
+                
+            }
+        } ).getServiceTasks( processId );
+        
+        
     }
 
     @OnOpen
