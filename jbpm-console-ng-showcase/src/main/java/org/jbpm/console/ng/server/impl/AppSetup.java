@@ -20,8 +20,11 @@ package org.jbpm.console.ng.server.impl;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.jbpm.console.ng.bd.service.AdministrationService;
+import org.kie.commons.io.IOClusteredService;
+import org.kie.commons.io.IOService;
 import org.kie.commons.services.cdi.Startup;
 import org.uberfire.backend.repositories.Repository;
 import org.uberfire.backend.server.config.ConfigGroup;
@@ -40,6 +43,10 @@ public class AppSetup {
     private static final String JBPM_WB_PLAYGROUND_PWD = "test1234";
 
     private static final String GLOBAL_SETTINGS = "settings";
+
+    @Inject
+    @Named("ioStrategy")
+    private IOService ioService;
 
     @Inject
     private AdministrationService administrationService;
@@ -67,6 +74,11 @@ public class AppSetup {
         administrationService.bootstrapDeployments();
 
         configurationService.addConfiguration( getGlobalConfiguration() );
+
+        // notify cluster service that bootstrap is completed to start synchronization
+        if (ioService instanceof IOClusteredService) {
+            ((IOClusteredService) ioService).start();
+        }
     }
 
 

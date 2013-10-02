@@ -48,7 +48,7 @@ public class ApplicationScopedProvider {
         if ( clusterServiceFactory == null ) {
             ioService = new IOServiceDotFileImpl( watchService );
         } else {
-            ioService = new IOServiceClusterImpl( new IOServiceDotFileImpl( watchService ), clusterServiceFactory );
+            ioService = new IOServiceClusterImpl( new IOServiceDotFileImpl( watchService ), clusterServiceFactory, false );
         }
     }
 
