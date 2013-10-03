@@ -27,9 +27,7 @@ public class DataGridUtils {
     
     private static final String BG_ROW_COMPLETED = "#EFBDBD";
 
-    private static final String COMPLETED = "Completed";
-
-    public static Long newTaskId = null;
+    public static Long currentIdSelected = null;
     
     public static Long idTaskCalendar = null;
     
@@ -44,6 +42,26 @@ public class DataGridUtils {
         
         StatusTaskDataGrid(String description){
              this.description = description;
+        }
+        
+        public String getDescription() {
+            return description;
+        }
+        
+    }
+    
+    public static enum ActionsDataGrid{
+        
+        CLAIM("Claim"),
+        RELEASE("Release"),
+        START("Start"),
+        COMPLETE("Complete"),
+        DETAILS("Details");
+        
+        private String description;
+        
+        ActionsDataGrid(String description){
+            this.description = description;
         }
         
         public String getDescription() {
