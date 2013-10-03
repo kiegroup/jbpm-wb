@@ -32,7 +32,8 @@ public class IdentitySummary implements Serializable {
     protected String id;
     private String name;
 
-    public IdentitySummary() {
+
+    public IdentitySummary(){
 
     }
 
@@ -54,14 +55,15 @@ public class IdentitySummary implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+
     }
 
-    public String getIdParent() {
-        return idParent;
+    public String getId() {
+        return id;
     }
 
-    public void setIdParent(String idParent) {
-        this.idParent = idParent;
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

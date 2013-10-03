@@ -24,7 +24,7 @@ import org.jboss.errai.bus.server.annotations.Remote;
 public interface IdentityService<T> {
 
     void save(T identity);
-
+    
     void remove(String id);
     
     void removeAll();

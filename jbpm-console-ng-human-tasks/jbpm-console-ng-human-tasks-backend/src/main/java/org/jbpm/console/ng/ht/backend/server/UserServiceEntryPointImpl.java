@@ -65,11 +65,13 @@ public class UserServiceEntryPointImpl implements UserServiceEntryPoint {
     @Override
     public void remove(String id) {
         // TODO Auto-generated method stub
+
     }
 
     @Override
     public void removeAll() {
         // TODO Auto-generated method stub
+
     }
 
     @Override
