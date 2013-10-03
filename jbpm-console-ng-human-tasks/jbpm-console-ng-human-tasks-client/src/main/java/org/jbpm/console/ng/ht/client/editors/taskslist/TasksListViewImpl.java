@@ -31,7 +31,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.Navbar;
 import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
@@ -59,7 +58,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.enterprise.event.Observes;
 
@@ -100,7 +98,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     private PlaceManager placeManager;
 
     private TasksListPresenter presenter;
-
 
     @Inject
     @DataField
@@ -150,8 +147,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Inject
     private Event<TaskSelectionEvent> taskSelected;
-    
-    private Set<TaskSummary> selectedTasks;
     
     private ListHandler<TaskSummary> sortHandler;
 
@@ -253,9 +248,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         });
         
     }
-    
-    
-   
 
     public void filterTasks(String text) {
         presenter.filterTasks(text);
@@ -304,7 +296,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Override
     public void setGridView() {
-        PaintGridFromCalendar(); 
+        DataGridUtils.PaintGridFromCalendar(myTaskListGrid); 
         initializeGridView();
         pager.setVisible(true);
         if ((getParent().getOffsetHeight() - 120) > 0) {
@@ -314,7 +306,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Override
     public void setDayView() {
-        paintCalendarFromGrid();
+        DataGridUtils.paintCalendarFromGrid(myTaskListGrid);
         tasksViewContainer.clear();
         tasksViewContainer.add(taskListMultiDayBox);
         tasksViewContainer.setStyleName("day");
@@ -328,7 +320,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Override
     public void setWeekView() {
-        paintCalendarFromGrid();
+        DataGridUtils.paintCalendarFromGrid(myTaskListGrid);
         tasksViewContainer.clear();
         tasksViewContainer.add(taskListMultiDayBox);
         tasksViewContainer.setStyleName("week");
@@ -342,7 +334,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Override
     public void setMonthView() {
-        paintCalendarFromGrid();
+        DataGridUtils.paintCalendarFromGrid(myTaskListGrid);
         tasksViewContainer.clear();
         tasksViewContainer.add(taskListMultiDayBox);
         tasksViewContainer.setStyleName("month");
@@ -354,12 +346,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
     }
     
-    private void paintCalendarFromGrid(){
-        if(DataGridUtils.idTaskCalendar == null ){
-            DataGridUtils.idTaskCalendar = DataGridUtils.getIdRowSelected(myTaskListGrid);
-        }
-    } 
-
     private void initializeGridView() {
         tasksViewContainer.clear();
         calendarViewTasksNavLink.setStyleName("");
@@ -436,7 +422,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     public TaskListMultiDayBox getTaskListMultiDayBox() {
         return taskListMultiDayBox;
     }
-
     private void initTableColumns() {
         // Checkbox column. This table will uses a checkbox column for selection.
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
@@ -865,9 +850,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             placeManager.goTo("Task Details Multi");
             taskSelected.fire(new TaskSelectionEvent(newTask.getNewTaskId(), newTask.getNewTaskName()));
         }
-        if( this.getCurrentView() == TaskView.GRID){
-            myTaskListGrid.setFocus(true);
-        }else{
+        if( this.getCurrentView() != TaskView.GRID){
             presenter.changeBgTaskCalendar(new TaskCalendarEvent(newTask.getNewTaskId()));
         } 
     }
@@ -910,11 +893,5 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             myTaskListGrid.getRowElement(event.getIndex()).getCells().getItem(event.getColumn()).setTitle(task.getDescription());
         }
     }
-    
-    private void PaintGridFromCalendar(){
-        if(DataGridUtils.idTaskCalendar != null){
-            DataGridUtils.currentIdSelected = DataGridUtils.idTaskCalendar; 
-        }
-    } 
     
 }

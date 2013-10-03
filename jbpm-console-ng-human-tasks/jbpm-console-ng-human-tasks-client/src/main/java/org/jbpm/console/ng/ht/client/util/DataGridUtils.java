@@ -104,5 +104,17 @@ public class DataGridUtils {
             }
         }
     }
+    
+    public static void paintCalendarFromGrid(DataGrid<TaskSummary> myTaskListGrid){
+        if(idTaskCalendar == null ){
+            idTaskCalendar = DataGridUtils.getIdRowSelected(myTaskListGrid);
+        }
+    }
+    
+    public static void PaintGridFromCalendar(DataGrid<TaskSummary> myTaskListGrid){
+        if(idTaskCalendar != null){
+            currentIdSelected = DataGridUtils.idTaskCalendar; 
+        }
+    }
 
 }
