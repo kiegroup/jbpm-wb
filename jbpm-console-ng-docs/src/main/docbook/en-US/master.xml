@@ -33,6 +33,10 @@
 
  
   <xi:include href="Chapter-Introduction/Chapter-Introduction.xml" />
+  <xi:include href="Chapter-Runtime/Chapter-Runtime.xml" />
+  <xi:include href="Chapter-Tasks/Chapter-Tasks.xml" />
+  <xi:include href="Chapter-Deployments/Chapter-Deployments.xml" />
+  <xi:include href="Chapter-Jobs/Chapter-Jobs.xml" />
  
 
 </book>
