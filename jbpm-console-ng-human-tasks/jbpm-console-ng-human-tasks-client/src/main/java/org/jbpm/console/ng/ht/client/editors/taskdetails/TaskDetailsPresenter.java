@@ -116,9 +116,9 @@ public class TaskDetailsPresenter {
 
     @Inject
     private Event<TaskStyleEvent> taskStyleEvent;
-
+    
     @Inject
-    private Event<TaskCalendarEvent> taskCalendarEvent;
+    private Event<TaskCalendarEvent> taskCalendarEvent; 
 
     private PlaceRequest place;
 
