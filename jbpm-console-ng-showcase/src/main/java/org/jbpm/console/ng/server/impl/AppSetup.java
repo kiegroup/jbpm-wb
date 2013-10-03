@@ -65,8 +65,8 @@ public class AppSetup {
             administrationService.bootstrapRepository( "demo", JBPM_WB_PLAYGROUND_ALIAS, JBPM_WB_PLAYGROUND_ORIGIN,
                                                        JBPM_WB_PLAYGROUND_UID, JBPM_WB_PLAYGROUND_PWD );
         } else if ("true".equalsIgnoreCase(System.getProperty("org.kie.example"))) {
-            administrationService.bootstrapRepository( "example", "example-repository", null, "", "" );
-            administrationService.bootstrapProject("example-repository", "org.kie.example", "example-project", "1.0.0-SNAPSHOT");
+            administrationService.bootstrapRepository( "example", "repository1", null, "", "" );
+            administrationService.bootstrapProject("repository1", "org.kie.example", "project1", "1.0.0-SNAPSHOT");
         }
         
         administrationService.bootstrapConfig();
