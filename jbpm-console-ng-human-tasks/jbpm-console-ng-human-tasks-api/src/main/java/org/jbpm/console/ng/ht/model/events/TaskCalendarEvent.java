@@ -17,21 +17,20 @@
 package org.jbpm.console.ng.ht.model.events;
 
 import java.io.Serializable;
-
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class TaskStyleEvent implements Serializable {
-    
-    private static final long serialVersionUID = 5971973595763612116L;
-    
+public class TaskCalendarEvent implements Serializable {
+
+    private static final long serialVersionUID = -4283709388851995527L;
+
     private Long taskEventId;
-    
-    public TaskStyleEvent(){
-        
+
+    public TaskCalendarEvent() {
+
     }
-    
-    public TaskStyleEvent(Long taskEventId){
+
+    public TaskCalendarEvent(Long taskEventId) {
         this.taskEventId = taskEventId;
     }
 
@@ -43,7 +42,5 @@ public class TaskStyleEvent implements Serializable {
         this.taskEventId = taskEventId;
     }
 
-    
-    
     
 }

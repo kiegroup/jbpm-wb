@@ -30,6 +30,27 @@ public class DataGridUtils {
     private static final String COMPLETED = "Completed";
 
     public static Long newTaskId = null;
+    
+    public static Long idTaskCalendar = null;
+    
+    public static enum StatusTaskDataGrid{
+        
+        COMPLETED("Completed"),
+        INPROGRESS("InProgress"),
+        RESERVED("Reserved"),
+        READY("Ready");
+        
+        private String description;
+        
+        StatusTaskDataGrid(String description){
+             this.description = description;
+        }
+        
+        public String getDescription() {
+            return description;
+        }
+        
+    }
 
     public static void paintRowSelected(DataGrid<TaskSummary> myTaskListGrid, Long idTask) {
         for (int i = 0; i < myTaskListGrid.getRowCount(); i++) {

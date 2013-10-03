@@ -69,6 +69,7 @@ import org.jbpm.console.ng.ht.client.util.DataGridUtils;
 import org.jbpm.console.ng.ht.client.util.ResizableHeader;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
+import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
@@ -151,6 +152,9 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Inject
     private Event<TaskSelectionEvent> taskSelected;
+    
+    @Inject
+    private Event<TaskCalendarEvent> taskCalendarEvent; 
     
     private Set<TaskSummary> selectedTasks;
     
@@ -325,6 +329,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Override
     public void setDayView() {
+        paintCalendarFromGrid();
         tasksViewContainer.clear();
         tasksViewContainer.add(taskListMultiDayBox);
         tasksViewContainer.setStyleName("day");
@@ -341,6 +346,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Override
     public void setWeekView() {
+        paintCalendarFromGrid();
         tasksViewContainer.clear();
         tasksViewContainer.add(taskListMultiDayBox);
         tasksViewContainer.setStyleName("week");
@@ -357,6 +363,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Override
     public void setMonthView() {
+        paintCalendarFromGrid();
         tasksViewContainer.clear();
         tasksViewContainer.add(taskListMultiDayBox);
         tasksViewContainer.setStyleName("month");
@@ -370,6 +377,12 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
         refreshTasks();
     }
+    
+    private void paintCalendarFromGrid(){
+        if(DataGridUtils.idTaskCalendar == null ){
+            DataGridUtils.idTaskCalendar = DataGridUtils.getIdRowSelected(myTaskListGrid);
+        }
+    } 
 
     private void initializeGridView() {
         tasksViewContainer.clear();
@@ -481,6 +494,10 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                  }
                 
                 if (BrowserEvents.FOCUS.equalsIgnoreCase(event.getNativeEvent().getType())) {
+                    if(DataGridUtils.idTaskCalendar!=null){
+                        DataGridUtils.newTaskId = DataGridUtils.idTaskCalendar;
+                        DataGridUtils.idTaskCalendar = null;
+                    }
                     if(DataGridUtils.newTaskId != null){
                         changeRowSelected(new TaskStyleEvent(DataGridUtils.newTaskId));
                     }
@@ -877,9 +894,9 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     }
     
     public void changeRowSelected(@Observes TaskStyleEvent taskStyleEvent){
-        if( taskStyleEvent.getTaskEventId() != null ){
-        	DataGridUtils.paintRowSelected(myTaskListGrid, taskStyleEvent.getTaskEventId());
-        }
+        if( taskStyleEvent.getTaskEventId() != null && this.getCurrentView() == TaskView.GRID){
+            DataGridUtils.paintRowSelected(myTaskListGrid, taskStyleEvent.getTaskEventId());
+        } 
         if(currentTaskType.equals(TaskType.ALL)){
             DataGridUtils.paintRowsCompleted(myTaskListGrid);
         }
@@ -887,12 +904,18 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     
     public void refreshNewTask(@Observes NewTaskEvent newTask){
         PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
+        DataGridUtils.newTaskId = newTask.getNewTaskId();
         if( status == PlaceStatus.OPEN ){
             placeManager.goTo("Task Details Multi");
             taskSelected.fire(new TaskSelectionEvent(newTask.getNewTaskId(), newTask.getNewTaskName()));
         }
-        DataGridUtils.newTaskId = newTask.getNewTaskId();
-        myTaskListGrid.setFocus(true);
+        if( this.getCurrentView() == TaskView.GRID){
+            myTaskListGrid.setFocus(true);
+        }else{
+            presenter.changeBgTaskCalendar(new TaskCalendarEvent(newTask.getNewTaskId()));
+        } 
     }
+    
+    
     
 }
