@@ -86,7 +86,6 @@ public class IdentityListPresenter {
         
         ListBox getIdentityTypesList();
 
-        ListBox getIdentityTypesList();
 
     }
 

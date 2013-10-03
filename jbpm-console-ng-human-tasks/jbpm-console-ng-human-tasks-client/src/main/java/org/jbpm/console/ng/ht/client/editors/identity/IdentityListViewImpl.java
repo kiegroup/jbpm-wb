@@ -84,9 +84,6 @@ public class IdentityListViewImpl extends Composite implements IdentityListPrese
     @DataField
     public ListBox identityTypesList;
 
-    @Inject
-    @DataField
-    public ListBox identityTypesList;
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -225,13 +222,6 @@ public class IdentityListViewImpl extends Composite implements IdentityListPrese
         }
     }
 
-    private void searchEntity() {
-        if (identityTypesList.getValue().equals(IdentityType.USERS.toString())) {
-            presenter.getUserById(filterUserText.getText());
-        } else {
-            presenter.getGroupById(filterUserText.getText());
-        }
-    }
 
     @Override
     public void displayNotification(String text) {

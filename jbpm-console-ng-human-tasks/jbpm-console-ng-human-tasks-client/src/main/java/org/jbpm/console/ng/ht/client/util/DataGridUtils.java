@@ -95,7 +95,7 @@ public class DataGridUtils {
     
     public static void paintRowsCompleted(DataGrid<TaskSummary> myTaskListGrid) {
         for (int i = 0; i < myTaskListGrid.getRowCount(); i++) {
-            if (myTaskListGrid.getRowElement(i).getCells().getItem(3).getInnerText().equals(COMPLETED)
+            if (myTaskListGrid.getRowElement(i).getCells().getItem(3).getInnerText().equals(StatusTaskDataGrid.COMPLETED)
                     && !myTaskListGrid.getRowElement(i).getCells().getItem(0).getStyle().getBackgroundColor()
                             .equals(BG_ROW_SELECTED)) {
                 for (int j = 0; j < myTaskListGrid.getColumnCount(); j++) {
