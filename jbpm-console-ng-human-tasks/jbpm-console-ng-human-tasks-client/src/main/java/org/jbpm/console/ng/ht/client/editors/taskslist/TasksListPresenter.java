@@ -248,7 +248,6 @@ public class TasksListPresenter {
             }
          }
         view.getTaskListGrid().setFocus(true);
-        
     }
 
     public void startTasks( final List<Long> selectedTasks,

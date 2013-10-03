@@ -204,7 +204,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                 liCalendarPicker.setListContainer(container);
                 liCalendarPicker.init();
                 setDayView();
-                refreshTasks();
             }
 
         });
@@ -265,7 +264,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         showActiveTasksButton.setStyleName("btn btn-small");
         showAllTasksButton.setStyleName("btn btn-small active");
         currentTaskType = TaskType.ALL;
-        refreshTasks();
     }
 
     @Override
@@ -275,7 +273,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         showActiveTasksButton.setStyleName("btn btn-small active");
         showAllTasksButton.setStyleName("btn btn-small");
         currentTaskType = TaskType.ACTIVE;
-        refreshTasks();
     }
 
     @Override
@@ -285,7 +282,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         showActiveTasksButton.setStyleName("btn btn-small");
         showAllTasksButton.setStyleName("btn btn-small");
         currentTaskType = TaskType.GROUP;
-        refreshTasks();
     }
 
     @Override
@@ -295,7 +291,6 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         showActiveTasksButton.setStyleName("btn btn-small");
         showAllTasksButton.setStyleName("btn btn-small");
         currentTaskType = TaskType.PERSONAL;
-        refreshTasks();
     }
 
     @Override
@@ -310,44 +305,40 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
 
     @Override
     public void setDayView() {
-        DataGridUtils.paintCalendarFromGrid(myTaskListGrid);
-        tasksViewContainer.clear();
-        tasksViewContainer.add(taskListMultiDayBox);
-        tasksViewContainer.setStyleName("day");
-        gridViewTasksNavLink.setStyleName("");
-        calendarViewTasksNavLink.setStyleName("active");
-        currentView = TaskView.DAY;
-        liCalendarPicker.setDayView();
-        pager.setVisible(false);
-        tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
-        refreshTasks();
+        refreshCalendarView("day", TaskView.DAY);
     }
 
     @Override
     public void setWeekView() {
-        DataGridUtils.paintCalendarFromGrid(myTaskListGrid);
-        tasksViewContainer.clear();
-        tasksViewContainer.add(taskListMultiDayBox);
-        tasksViewContainer.setStyleName("week");
-        gridViewTasksNavLink.setStyleName("");
-        calendarViewTasksNavLink.setStyleName("active");
-        currentView = TaskView.WEEK;
-        liCalendarPicker.setWeekView();
-        pager.setVisible(false);
-        tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
-        refreshTasks();
+        refreshCalendarView("week", TaskView.WEEK);
     }
 
     @Override
     public void setMonthView() {
-        DataGridUtils.paintCalendarFromGrid(myTaskListGrid);
+        refreshCalendarView("month", TaskView.MONTH);
+    }
+    
+    private void refreshCalendarView(String type, TaskView taskView){
+    	DataGridUtils.paintCalendarFromGrid(myTaskListGrid);
         tasksViewContainer.clear();
         tasksViewContainer.add(taskListMultiDayBox);
-        tasksViewContainer.setStyleName("month");
+        tasksViewContainer.setStyleName(type);
         gridViewTasksNavLink.setStyleName("");
         calendarViewTasksNavLink.setStyleName("active");
-        currentView = TaskView.MONTH;
-        liCalendarPicker.setMonthView();
+        currentView = taskView;
+        switch (taskView) {
+        	case DAY:
+        		liCalendarPicker.setDayView();
+        		break;
+        	case WEEK:
+        		liCalendarPicker.setWeekView();
+        		break;
+        	case MONTH:
+        		liCalendarPicker.setMonthView();
+        		break;
+        	default:
+                throw new IllegalStateException("Unrecognized view type '" + taskView + "'!");	
+        } 
         pager.setVisible(false);
         tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
         refreshTasks();
