@@ -16,6 +16,8 @@
 
 package org.jbpm.console.ng.ht.client.editors.quicknewgroup;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -24,7 +26,7 @@ import javax.inject.Inject;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.model.IdentitySummary;
+import org.jbpm.console.ng.ht.model.Group;
 import org.jbpm.console.ng.ht.service.GroupServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -36,6 +38,7 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 
+import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 
@@ -43,10 +46,8 @@ import com.google.gwt.core.client.GWT;
 @WorkbenchPopup(identifier = "Quick New Group")
 public class QuickNewGroupPresenter {
 
-    private static final String GROUP = "Group";
+    private Constants constants = GWT.create(Constants.class);
 
-	private Constants constants = GWT.create( Constants.class );
-    
     @Inject
     QuickNewGroupView view;
 
@@ -61,16 +62,18 @@ public class QuickNewGroupPresenter {
 
     public interface QuickNewGroupView extends UberView<QuickNewGroupPresenter> {
 
-        void displayNotification( String text );
-        
+        void displayNotification(String text);
+
         TextBox getDescriptionText();
+
+        ListBox getParentGroupList();
 
     }
 
     private PlaceRequest place;
 
     @OnStartup
-    public void onStartup( final PlaceRequest place ) {
+    public void onStartup(final PlaceRequest place) {
         this.place = place;
     }
 
@@ -91,24 +94,45 @@ public class QuickNewGroupPresenter {
     public void init() {
     }
 
-    
     @OnOpen
     public void onOpen() {
-        view.getDescriptionText().setFocus( true );
+        view.getDescriptionText().setFocus(true);
     }
-    
-    public void addGroup(  ){
-    	groupService.call( new RemoteCallback<Void>() {
+
+    public void addGroup() {
+        Group group = new Group(view.getDescriptionText().getText());
+        if (view.getParentGroupList().getValue() != null && !view.getParentGroupList().getValue().isEmpty()) {
+            group.setParent(new Group(view.getParentGroupList().getValue()));
+        }
+        groupService.call(new RemoteCallback<Void>() {
             @Override
-            public void callback( Void nothing ) {
-                view.displayNotification( "Group Created (id = " + view.getDescriptionText().getText() + ")" );
+            public void callback(Void nothing) {
+                view.displayNotification("Group Created (id = " + view.getDescriptionText().getText() + ")");
                 close();
 
             }
-        } ).save(new IdentitySummary(view.getDescriptionText().getText(), GROUP));
+        }).save(group);
+    }
+
+    public void loadGroups() {
+        groupService.call(new RemoteCallback<List<Group>>() {
+            @Override
+            public void callback(List<Group> groups) {
+                if (groups != null && !groups.isEmpty()) {
+                    fillListGroups(groups);
+                }
+
+            }
+        }).getAll();
+    }
+
+    private void fillListGroups(List<Group> groups) {
+        for (Group group : groups) {
+            view.getParentGroupList().addItem(group.getName(), group.getId());
+        }
     }
 
     public void close() {
-        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
+        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
 }

@@ -110,10 +110,6 @@ public interface TaskServiceEntryPoint {
 
     Map<String, String> getContentListByTaskId(long taskId);
 
-    IdentitySummary getOrganizationalEntityById(String entityId);
-
-    List<IdentitySummary> getOrganizationalEntities();
-
     long addComment(long taskId, String text, String addedBy, Date addedOn);
 
     void deleteComment(long taskId, long commentId);

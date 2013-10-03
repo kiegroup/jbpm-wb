@@ -28,6 +28,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.IdentitySummary;
 import org.jbpm.console.ng.ht.service.GroupServiceEntryPoint;
+import org.jbpm.console.ng.ht.service.TypeRoleServiceEntryPoint;
 import org.jbpm.console.ng.ht.service.UserServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -36,7 +37,11 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
+import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import com.github.gwtbootstrap.client.ui.ListBox;
@@ -45,10 +50,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
-import org.uberfire.workbench.model.menu.MenuFactory;
-import org.uberfire.mvp.Command;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest; 
 
 @Dependent
 @WorkbenchScreen(identifier = "Users and Groups")
@@ -60,6 +61,9 @@ public class IdentityListPresenter {
 
     @Inject
     private Identity identity;
+
+    @Inject
+    Caller<TypeRoleServiceEntryPoint> typeRoleService;
 
     private Menus menus;
 
@@ -93,7 +97,7 @@ public class IdentityListPresenter {
     Caller<GroupServiceEntryPoint> groupService;
 
     public enum IdentityType {
-        USERS, GROUPS;
+        USERS, GROUPS, TYPES_ROLE;
     }
 
     private ListDataProvider<IdentitySummary> dataProvider = new ListDataProvider<IdentitySummary>();
@@ -130,15 +134,30 @@ public class IdentityListPresenter {
 
     @OnOpen
     public void onOpen() {
-        refreshIdentityList();
+        refreshIdentityList(IdentityType.valueOf(view.getIdentityTypesList().getValue()));
     }
 
-    public void refreshIdentityList() {
-        if (view.getIdentityTypesList().getValue().equals(IdentityType.USERS.toString())) {
+    public void refreshIdentityList(IdentityType identityType) {
+        switch (identityType) {
+        case USERS:
             refreshUsers();
-        } else {
+            break;
+        case GROUPS:
             refreshGroups();
+            break;
+        case TYPES_ROLE:
+            refreshTypesRole();
         }
+
+    }
+
+    public void refreshTypesRole() {
+        typeRoleService.call(new RemoteCallback<List<IdentitySummary>>() {
+            @Override
+            public void callback(List<IdentitySummary> entities) {
+                refreshList(entities);
+            }
+        }).getAll();
     }
 
     public void refreshUsers() {
@@ -209,6 +228,12 @@ public class IdentityListPresenter {
             @Override
             public void execute() {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Quick New Group");
+                placeManager.goTo(placeRequestImpl);
+            }
+        }).endMenu().newTopLevelMenu(constants.Add_TypeRole()).respondsWith(new Command() {
+            @Override
+            public void execute() {
+                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Quick New TypeRole");
                 placeManager.goTo(placeRequestImpl);
             }
         }).endMenu().build();

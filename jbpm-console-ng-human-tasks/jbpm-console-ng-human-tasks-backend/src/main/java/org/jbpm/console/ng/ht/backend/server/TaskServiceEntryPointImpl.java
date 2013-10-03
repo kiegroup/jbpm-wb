@@ -466,43 +466,6 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return new HashMap<String, String>();
     }
 
-
-    @Override
-    public IdentitySummary getOrganizationalEntityById(String entityId) {
-        OrganizationalEntity entity = taskService.getOrganizationalEntityById(entityId);
-        if (entity != null) {
-            IdentitySummary idSummary = new IdentitySummary(entity.getId(), "");
-            if (entity instanceof User) {
-                idSummary.setType("user");
-            } else {
-                idSummary.setType("group");
-            }
-
-            return idSummary;
-        }
-
-        return null;
-    }
-
-    @Override
-    public List<IdentitySummary> getOrganizationalEntities() {
-        List<User> users = taskService.getUsers();
-        List<Group> groups = taskService.getGroups();
-
-        List<IdentitySummary> allEntitites = new ArrayList<IdentitySummary>();
-        if (users != null) {
-            for (User user : users) {
-                allEntitites.add(new IdentitySummary(user.getId(), "user"));
-            }
-        }
-        if (users != null) {
-            for (Group group : groups) {
-                allEntitites.add(new IdentitySummary(group.getId(), "group"));
-            }
-        }
-        return allEntitites;
-    }
-
     @Override
     public long addComment(long taskId, String text, String addedBy, Date addedOn) {
         InternalComment comment = new CommentImpl();

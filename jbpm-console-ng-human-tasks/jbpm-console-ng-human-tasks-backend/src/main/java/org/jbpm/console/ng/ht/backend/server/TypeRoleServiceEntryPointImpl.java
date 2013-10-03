@@ -23,42 +23,28 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.seam.transaction.Transactional;
-import org.jbpm.console.ng.ht.model.Group;
 import org.jbpm.console.ng.ht.model.TypeRole;
-import org.jbpm.console.ng.ht.model.User;
 import org.jbpm.console.ng.ht.service.IdentityServiceMock;
-import org.jbpm.console.ng.ht.service.UserServiceEntryPoint;
+import org.jbpm.console.ng.ht.service.TypeRoleServiceEntryPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Service
 @ApplicationScoped
 @Transactional
-public class UserServiceEntryPointImpl implements UserServiceEntryPoint {
+public class TypeRoleServiceEntryPointImpl implements TypeRoleServiceEntryPoint {
     
-    private static final Logger log = LoggerFactory.getLogger(UserServiceEntryPointImpl.class);
-    
+    private static final Logger log = LoggerFactory.getLogger(TypeRoleServiceEntryPointImpl.class);
+
     @Inject
     private IdentityServiceMock identityServiceMock;
 
     @Override
-    public void save(User identity) {
+    public void save(TypeRole identity) {
         // TODO log
-        log.info("** Save User ** ");
-        log.info("User id: " + identity.getId());
-        if(identity.getGroups()!=null){
-            for(Group group :  identity.getGroups()){
-                log.info("Group id: " + group.getName());
-            }
-        }
-
-        if(identity.getTypesRole()!=null){
-            for(TypeRole type :  identity.getTypesRole()){
-                log.info("TypeRole : " + type.getName());
-            }
-            
-        }
-
+        log.info("** Save TypeRole ** ");
+        log.info("typeRole id: " + identity.getId());
+        
     }
 
     @Override
@@ -74,13 +60,13 @@ public class UserServiceEntryPointImpl implements UserServiceEntryPoint {
     }
 
     @Override
-    public List<User> getAll() {
+    public List<TypeRole> getAll() {
         // TODO invoke mock
-        return identityServiceMock.getAllUser();
+        return identityServiceMock.getAllTypeRole();
     }
 
     @Override
-    public User getById(String id) {
+    public TypeRole getById(String id) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -90,19 +76,5 @@ public class UserServiceEntryPointImpl implements UserServiceEntryPoint {
         // TODO Auto-generated method stub
         return 0;
     }
-
-    @Override
-    public List<User> getUsersByGroup(String idGroup) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public List<User> getUsersByTypeRole(String idTypeRole) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-   
 
 }

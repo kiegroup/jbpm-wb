@@ -16,23 +16,10 @@
 
 package org.jbpm.console.ng.ht.service;
 
-import java.util.List;
-
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.console.ng.ht.model.TypeRole;
 
 @Remote
-public interface IdentityService<T> {
+public interface TypeRoleServiceEntryPoint extends IdentityService<TypeRole> {
 
-    void save(T identity);
-    
-    void remove(String id);
-    
-    void removeAll();
-    
-    List<T> getAll();
-    
-    T getById(String id);
-    
-    int getCount();
-    
 }

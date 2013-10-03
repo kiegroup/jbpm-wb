@@ -16,7 +16,6 @@
 
 package org.jbpm.console.ng.ht.client.editors.quicknewgroup;
 
-
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -32,6 +31,8 @@ import com.github.gwtbootstrap.client.ui.ControlGroup;
 import com.github.gwtbootstrap.client.ui.ControlLabel;
 import com.github.gwtbootstrap.client.ui.Controls;
 import com.github.gwtbootstrap.client.ui.HelpInline;
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.google.gwt.core.client.GWT;
@@ -43,76 +44,93 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 @Templated(value = "QuickNewGroupViewImpl.html")
 public class QuickNewGroupViewImpl extends Composite implements QuickNewGroupPresenter.QuickNewGroupView {
 
-	private Constants constants = GWT.create( Constants.class );
+    private Constants constants = GWT.create(Constants.class);
 
     private QuickNewGroupPresenter presenter;
-    
+
     @Inject
     public TextBox descriptionText;
-    
+
     @Inject
     @DataField
     public Button addGroupButton;
-    
+
     @Inject
     @DataField
     public ControlGroup descriptionControlGroup;
-    
+
     @Inject
     public HelpInline descriptionHelpLabel;
-    
+
     @Inject
     public ControlLabel groupLabel;
 
     @Inject
+    @DataField
+    public Label parentGroupLabel;
+
+    @Inject
+    @DataField
+    public ListBox parentGroupList;
+
+    @Inject
     private Event<NotificationEvent> notification;
 
-
     @Override
-    public void init( QuickNewGroupPresenter presenter ) {
+    public void init(QuickNewGroupPresenter presenter) {
         this.presenter = presenter;
         initializeHtml();
     }
-    
-    private void initializeHtml(){
-    	groupLabel.add( new HTMLPanel( constants.Group() ) );
-        
+
+    private void initializeHtml() {
+        groupLabel.add(new HTMLPanel(constants.Group()));
+        parentGroupLabel.setText(constants.Parent_Group());
+
         Controls descriptionControl = new Controls();
         descriptionControl.add(descriptionText);
         descriptionControl.add(descriptionHelpLabel);
         descriptionControlGroup.add(groupLabel);
         descriptionControlGroup.add(descriptionControl);
-        
-        addGroupButton.setText( constants.Create() );
+
+        addGroupButton.setText(constants.Create());
+
+        initializeListParentGroup();
     }
-    
+
+    private void initializeListParentGroup() {
+        presenter.loadGroups();
+    }
+
     @EventHandler("addGroupButton")
-    public void addGroupButton( ClickEvent e ) {
-    	if(!descriptionText.getText().isEmpty()){
-    		addGroup();
-    	}else {
+    public void addGroupButton(ClickEvent e) {
+        if (!descriptionText.getText().isEmpty()) {
+            addGroup();
+        } else {
             descriptionText.setFocus(true);
             descriptionText.setErrorLabel(descriptionHelpLabel);
             descriptionControlGroup.setType(ControlGroupType.ERROR);
             descriptionHelpLabel.setText(constants.Text_Require());
         }
-    	
-        
+
     }
-    
-    private void addGroup(){
-    	presenter.addGroup();
-    }
-    
-    @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+
+    private void addGroup() {
+        presenter.addGroup();
     }
 
     @Override
-	public TextBox getDescriptionText() {
-		return descriptionText;
-	}
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
+    }
 
+    @Override
+    public TextBox getDescriptionText() {
+        return descriptionText;
+    }
+
+    @Override
+    public ListBox getParentGroupList() {
+        return parentGroupList;
+    }
 
 }
