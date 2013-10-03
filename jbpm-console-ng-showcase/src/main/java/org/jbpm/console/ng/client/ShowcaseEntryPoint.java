@@ -98,6 +98,7 @@ public class ShowcaseEntryPoint {
                 .newTopLevelMenu( constants.Process_Management() ).withItems( getProcessMGMTViews() ).endMenu()
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu().newTopLevelMenu( constants.Dashboards() )
                     .withItems( getDashboardsViews() ).endMenu()
+                .newTopLevelMenu( constants.Settings() ).withItems( getSettingsViews() ).endMenu()
                 .newTopLevelMenu( constants.User()+": "+identity.getName() ).position(MenuPosition.RIGHT).withItems( getRoles() ).endMenu()
                 .build();
 
@@ -216,8 +217,6 @@ public class ShowcaseEntryPoint {
 
         return result;
     }
-
-
 
     private AbstractWorkbenchPerspectiveActivity getDefaultPerspectiveActivity() {
         AbstractWorkbenchPerspectiveActivity defaultPerspective = null;

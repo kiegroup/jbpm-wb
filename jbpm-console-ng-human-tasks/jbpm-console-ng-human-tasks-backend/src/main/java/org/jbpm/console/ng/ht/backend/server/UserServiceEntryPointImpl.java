@@ -31,6 +31,7 @@ import org.jbpm.console.ng.ht.service.UserServiceEntryPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 @Service
 @ApplicationScoped
 @Transactional
@@ -64,13 +65,11 @@ public class UserServiceEntryPointImpl implements UserServiceEntryPoint {
     @Override
     public void remove(String id) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
     public void removeAll() {
         // TODO Auto-generated method stub
-
     }
 
     @Override

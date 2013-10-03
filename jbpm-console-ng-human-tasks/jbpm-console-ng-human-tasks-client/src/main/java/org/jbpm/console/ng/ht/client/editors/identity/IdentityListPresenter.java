@@ -47,6 +47,7 @@ import org.uberfire.workbench.model.menu.Menus;
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
+
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
@@ -82,6 +83,8 @@ public class IdentityListPresenter {
         TextBox getUserText();
 
         DataGrid<IdentitySummary> getDataGrid();
+        
+        ListBox getIdentityTypesList();
 
         ListBox getIdentityTypesList();
 

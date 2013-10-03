@@ -56,4 +56,12 @@ public class IdentitySummary implements Serializable {
         this.id = id;
     }
 
+    public String getIdParent() {
+        return idParent;
+    }
+
+    public void setIdParent(String idParent) {
+        this.idParent = idParent;
+    }
+
 }

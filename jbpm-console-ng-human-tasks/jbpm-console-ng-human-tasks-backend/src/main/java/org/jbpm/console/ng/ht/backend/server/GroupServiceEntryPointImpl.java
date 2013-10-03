@@ -29,7 +29,6 @@ import org.jbpm.console.ng.ht.service.IdentityServiceMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Service
 @ApplicationScoped
 @Transactional
 public class GroupServiceEntryPointImpl implements GroupServiceEntryPoint {

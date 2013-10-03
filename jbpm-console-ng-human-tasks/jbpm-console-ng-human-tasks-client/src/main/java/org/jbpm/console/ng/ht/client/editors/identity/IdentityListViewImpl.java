@@ -40,10 +40,13 @@ import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.ListBox;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.Composite;
@@ -79,6 +82,10 @@ public class IdentityListViewImpl extends Composite implements IdentityListPrese
 
     @DataField
     public SimplePager pager;
+    
+    @Inject
+    @DataField
+    public ListBox identityTypesList;
 
     @Inject
     @DataField
@@ -211,6 +218,14 @@ public class IdentityListViewImpl extends Composite implements IdentityListPrese
             presenter.refreshIdentityList(IdentityType.valueOf(identityTypesList.getValue()));
         }
 
+    }
+    
+    private void searchEntity(){
+        if(identityTypesList.getValue().equals(IdentityType.USERS.toString())){
+            presenter.getUserById( filterUserText.getText() );
+        }else{
+            presenter.getGroupById( filterUserText.getText() );
+        }
     }
 
     private void searchEntity() {
