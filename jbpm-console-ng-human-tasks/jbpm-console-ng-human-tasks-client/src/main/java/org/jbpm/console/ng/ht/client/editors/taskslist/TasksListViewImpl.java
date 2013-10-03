@@ -265,6 +265,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         showActiveTasksButton.setStyleName("btn btn-small");
         showAllTasksButton.setStyleName("btn btn-small active");
         currentTaskType = TaskType.ALL;
+        refreshTasks();
     }
 
     @Override
@@ -274,6 +275,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         showActiveTasksButton.setStyleName("btn btn-small active");
         showAllTasksButton.setStyleName("btn btn-small");
         currentTaskType = TaskType.ACTIVE;
+        refreshTasks();
     }
 
     @Override
@@ -283,6 +285,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         showActiveTasksButton.setStyleName("btn btn-small");
         showAllTasksButton.setStyleName("btn btn-small");
         currentTaskType = TaskType.GROUP;
+        refreshTasks();
     }
 
     @Override
@@ -292,6 +295,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         showActiveTasksButton.setStyleName("btn btn-small");
         showAllTasksButton.setStyleName("btn btn-small");
         currentTaskType = TaskType.PERSONAL;
+        refreshTasks();
     }
 
     @Override
@@ -316,6 +320,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         liCalendarPicker.setDayView();
         pager.setVisible(false);
         tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
+        refreshTasks();
     }
 
     @Override
@@ -330,6 +335,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         liCalendarPicker.setWeekView();
         pager.setVisible(false);
         tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
+        refreshTasks();
     }
 
     @Override
@@ -344,6 +350,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         liCalendarPicker.setMonthView();
         pager.setVisible(false);
         tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
+        refreshTasks();
     }
     
     private void initializeGridView() {
