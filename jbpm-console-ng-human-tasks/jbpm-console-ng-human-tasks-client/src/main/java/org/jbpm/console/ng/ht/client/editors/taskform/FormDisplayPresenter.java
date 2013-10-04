@@ -18,6 +18,12 @@ package org.jbpm.console.ng.ht.client.editors.taskform;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -25,15 +31,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FocusPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.bus.client.api.messaging.Message;
-
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -42,6 +40,7 @@ import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.EditPanelEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
+import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.jbpm.console.ng.ht.model.fb.events.FormRenderedEvent;
 import org.jbpm.console.ng.ht.service.FormModelerProcessStarterEntryPoint;
@@ -51,13 +50,13 @@ import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
 import org.kie.workbench.common.widgets.client.callbacks.DefaultErrorCallback;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
@@ -676,4 +675,15 @@ public class FormDisplayPresenter {
             }
         }
     }
+    
+     public void onTaskSelectionEvent(@Observes TaskSelectionEvent event){
+        if(currentTaskId == event.getTaskId()){
+            if (currentTaskId != -1) {
+                renderTaskForm();
+            } else if (!currentProcessId.equals("none")) {
+                renderProcessForm();
+            }
+        }
+    }
+    
 }

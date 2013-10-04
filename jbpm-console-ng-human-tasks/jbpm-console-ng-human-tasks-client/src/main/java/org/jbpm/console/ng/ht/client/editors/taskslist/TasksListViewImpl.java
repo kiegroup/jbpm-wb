@@ -140,6 +140,9 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
 
     @Inject
     private Event<TaskSelectionEvent> taskSelected;
+    
+    @Inject
+    private Event<TaskRefreshedEvent> taskRefreshedEvent;
 
     private Date currentDate;
 
@@ -226,7 +229,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
                 liCalendarPicker.clear();
                 liCalendarPicker.setListContainer(container);
                 liCalendarPicker.init();
-                setCalendarView(TaskView.DAY);
+                setDayView();
             }
 
         });
@@ -292,11 +295,25 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
     }
 
     @Override
-    public void setCalendarView(TaskView taskView) {
-        DataGridUtils.paintCalendarFromGrid(myTaskListGrid);
+    public void setDayView() {
+        refreshCalendarView("day", TaskView.DAY);
+    }
+
+    @Override
+    public void setWeekView() {
+        refreshCalendarView("week", TaskView.WEEK);
+    }
+
+    @Override
+    public void setMonthView() {
+        refreshCalendarView("month", TaskView.MONTH);
+    }
+    
+    private void refreshCalendarView(String type, TaskView taskView){
+    	DataGridUtils.paintCalendarFromGrid(myTaskListGrid);
         tasksViewContainer.clear();
         tasksViewContainer.add(taskListMultiDayBox);
-        tasksViewContainer.setStyleName(taskView.name().toLowerCase());
+        tasksViewContainer.setStyleName(type);
         gridViewTasksNavLink.setStyleName("");
         calendarViewTasksNavLink.setStyleName("active");
         currentView = taskView;
@@ -526,6 +543,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
             public void execute(TaskSummary task) {
                 currentAction = ActionsDataGrid.CLAIM;
                 presenter.claimTasks(Lists.newArrayList(task.getId()), identity.getName());
+                taskRefreshedEvent.fire(new TaskRefreshedEvent(task.getId()));
             }
         }));
 
@@ -534,6 +552,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
             public void execute(TaskSummary task) {
                 currentAction = ActionsDataGrid.RELEASE;
                 presenter.releaseTasks(Lists.newArrayList(task.getId()), identity.getName());
+                taskRefreshedEvent.fire(new TaskRefreshedEvent(task.getId()));
             }
         }));
 
@@ -543,6 +562,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
                 currentAction = ActionsDataGrid.START;
                 DataGridUtils.currentIdSelected = task.getId();
                 presenter.startTasks(Lists.newArrayList(task.getId()), identity.getName());
+                taskRefreshedEvent.fire(new TaskRefreshedEvent(task.getId()));
             }
         }));
 
@@ -584,21 +604,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
         myTaskListGrid.setColumnWidth(actionsColumn, "120px");
     }
 
-    @Override
-    public void setDayView() {
-        setCalendarView(TaskView.DAY);
-    }
-
-    @Override
-    public void setWeekView() {
-        setCalendarView(TaskView.WEEK);
-    }
-
-    @Override
-    public void setMonthView() {
-        setCalendarView(TaskView.MONTH);
-    }
-
+    
     @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
@@ -661,6 +667,11 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
             presenter.changeBgTaskCalendar(new TaskCalendarEvent(newTask.getNewTaskId()));
         } 
         this.setSelectionModel();
+    }
+
+    @Override
+    public void setCalendarView(TaskView taskView) {
+        liCalendarPicker.setCalendarView(taskView);
     }
 
 }
