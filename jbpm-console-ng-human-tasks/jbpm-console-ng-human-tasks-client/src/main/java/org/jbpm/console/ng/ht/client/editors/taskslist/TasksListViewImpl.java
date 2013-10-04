@@ -630,6 +630,8 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         };
         myTaskListGrid.addColumn(actionsColumn, new ResizableHeader(constants.Actions(), myTaskListGrid, actionsColumn));
         myTaskListGrid.setColumnWidth(actionsColumn, "120px");
+        
+        DataGridUtils.setHideOnAllColumns(myTaskListGrid);
 
     }
 

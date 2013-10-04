@@ -19,6 +19,7 @@ package org.jbpm.console.ng.ht.client.util;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.constants.ResponsiveStyle;
 
 public class DataGridUtils {
 
@@ -69,6 +70,35 @@ public class DataGridUtils {
         }
         
     }
+    
+    public enum ColumnsTask{
+        
+        ID(false, 0),
+        TASK(false, 1),
+        PRIORITY(true, 2),
+        STATUS(false, 3),
+        CREATED_ON(true, 4),
+        DUE_ON(true, 5),
+        ACTIONS(false, 6);
+        
+        ColumnsTask(boolean responsive, int column){
+           this.responsive = responsive;
+           this.column = column;
+        }
+        
+        private boolean responsive;
+        
+        private int column;
+
+        public boolean isResponsive() {
+            return responsive;
+        }
+
+        public int getColumn() {
+            return column;
+        }
+        
+    }
 
     public static void paintRowSelected(DataGrid<TaskSummary> myTaskListGrid, Long idTask) {
         for (int i = 0; i < myTaskListGrid.getRowCount(); i++) {
@@ -115,6 +145,16 @@ public class DataGridUtils {
         if(idTaskCalendar != null){
             currentIdSelected = DataGridUtils.idTaskCalendar; 
         }
+    }
+    
+    public static void setHideOnAllColumns(DataGrid<TaskSummary> myTaskListGrid){
+    	for(ColumnsTask col : ColumnsTask.values()){
+    		if(col.isResponsive()){
+	    		myTaskListGrid.getColumn(col.getColumn()).setCellStyleNames(ResponsiveStyle.HIDDEN_PHONE.get());
+	    		myTaskListGrid.getHeader(col.getColumn()).setHeaderStyleNames(ResponsiveStyle.HIDDEN_PHONE.get());
+	    		myTaskListGrid.addColumnStyleName(col.getColumn(), ResponsiveStyle.HIDDEN_PHONE.get());
+    		}
+    	}
     }
 
 
