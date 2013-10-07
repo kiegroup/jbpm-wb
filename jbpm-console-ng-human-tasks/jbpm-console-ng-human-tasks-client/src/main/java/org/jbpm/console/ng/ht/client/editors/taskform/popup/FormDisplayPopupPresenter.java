@@ -498,7 +498,7 @@ public class FormDisplayPopupPresenter {
             @Override
             public void callback(Long processInstanceId) {
                 view.displayNotification("Process Id: " + processInstanceId + " started!");
-                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(processInstanceId, view.getProcessId()));
+                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(view.getDomainId(), processInstanceId, view.getProcessId()));
                 close();
                
             }
@@ -512,7 +512,7 @@ public class FormDisplayPopupPresenter {
             @Override
             public void callback(Long processInstanceId) {
                 view.displayNotification("Process Id: " + processInstanceId + " started!");
-                 newProcessInstanceEvent.fire(new NewProcessInstanceEvent(processInstanceId, view.getProcessId()));
+                 newProcessInstanceEvent.fire(new NewProcessInstanceEvent(view.getDomainId(), processInstanceId, view.getProcessId()));
                 close();
                 
             }

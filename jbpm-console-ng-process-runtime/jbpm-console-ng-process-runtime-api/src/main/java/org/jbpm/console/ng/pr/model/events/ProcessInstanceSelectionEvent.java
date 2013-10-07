@@ -22,14 +22,16 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 public class ProcessInstanceSelectionEvent {
     private long processInstanceId;
     private String processDefId;
+    private String deploymentId;
     
 
     public ProcessInstanceSelectionEvent() {
     }
 
-    public ProcessInstanceSelectionEvent(long processInstanceId, String processDefId) {
+    public ProcessInstanceSelectionEvent(String deploymentId, long processInstanceId, String processDefId) {
         this.processInstanceId = processInstanceId;
         this.processDefId = processDefId;
+        this.deploymentId = deploymentId;
     }
     
 
@@ -49,9 +51,16 @@ public class ProcessInstanceSelectionEvent {
         this.processDefId = processDefId;
     }
 
-    
+    public String getDeploymentId() {
+        return deploymentId;
+    }
 
-   
+    public void setDeploymentId(String deploymentId) {
+        this.deploymentId = deploymentId;
+    }
 
-    
+
+
+
+
 }

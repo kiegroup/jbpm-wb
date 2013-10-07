@@ -402,7 +402,7 @@ public class ProcessDefinitionListViewImpl extends Composite
             placeManager.closePlace("Process Definition Details");
         }
         placeManager.goTo("Process Instance Details");
-        processInstanceSelected.fire(new ProcessInstanceSelectionEvent(
+        processInstanceSelected.fire(new ProcessInstanceSelectionEvent( newProcessInstance.getDeploymentId(),
                 newProcessInstance.getNewProcessInstanceId(),
                 newProcessInstance.getNewProcessDefId()));
 

@@ -27,14 +27,16 @@ public class NewProcessInstanceEvent implements Serializable {
     private Long newProcessInstanceId;
     
     private String newProcessDefId;
+    private String deploymentId;
     
     
     public NewProcessInstanceEvent(){
     }
 
-    public NewProcessInstanceEvent(Long newProcessInstanceId, String newProcessDefId) {
+    public NewProcessInstanceEvent(String deploymentId, Long newProcessInstanceId, String newProcessDefId) {
         this.newProcessInstanceId = newProcessInstanceId;
         this.newProcessDefId = newProcessDefId;
+        this.deploymentId = deploymentId;
     }
 
     public Long getNewProcessInstanceId() {
@@ -53,5 +55,11 @@ public class NewProcessInstanceEvent implements Serializable {
         this.newProcessDefId = newProcessDefId;
     }
 
+    public String getDeploymentId() {
+        return deploymentId;
+    }
 
+    public void setDeploymentId(String deploymentId) {
+        this.deploymentId = deploymentId;
+    }
 }

@@ -262,7 +262,8 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
                         
                         processInstance = event.getValue();
                         placeManager.goTo("Process Instance Details");
-                        processInstanceSelected.fire(new ProcessInstanceSelectionEvent(processInstance.getId(), processInstance.getProcessId()));
+                        processInstanceSelected.fire(new ProcessInstanceSelectionEvent(processInstance.getDeploymentId(),
+                                processInstance.getId(), processInstance.getProcessId()));
                     }
                  }
                 
@@ -422,7 +423,8 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
                                                        && processInstance.getProcessVersion().equals(versionSelected)
                                                         && processInstance.getStartTime().equals(startDateSelected))){
                     placeManager.goTo("Process Instance Details");
-                    processInstanceSelected.fire(new ProcessInstanceSelectionEvent(processInstance.getId(), processInstance.getProcessId()));
+                    processInstanceSelected.fire(new ProcessInstanceSelectionEvent(processInstance.getDeploymentId(),
+                            processInstance.getId(), processInstance.getProcessId()));
                 }else if( status == PlaceStatus.OPEN || (processInstance.getProcessName().equals(nameSelected) 
                                                        && processInstance.getProcessVersion().equals(versionSelected)
                                                         && processInstance.getStartTime().equals(startDateSelected))){

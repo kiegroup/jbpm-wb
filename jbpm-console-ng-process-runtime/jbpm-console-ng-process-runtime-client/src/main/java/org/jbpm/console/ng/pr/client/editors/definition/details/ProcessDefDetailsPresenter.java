@@ -143,7 +143,7 @@ public class ProcessDefDetailsPresenter {
         processDefStyleEvent.fire( new ProcessDefStyleEvent( processDefName, processDefVersion ) );
     }
 
-    public void refreshProcessDef( final String processId ) {
+    public void refreshProcessDef( final String deploymentId, final String processId ) {
         dataServices.call( new RemoteCallback<List<TaskDefSummary>>() {
             @Override
             public void callback( List<TaskDefSummary> tasks ) {
@@ -238,7 +238,7 @@ public class ProcessDefDetailsPresenter {
                 }
                 changeStyleRow(process.getName(), process.getVersion());
             }
-        } ).getProcessById( processId );
+        } ).getProcessById( deploymentId, processId );
         
         dataServices.call( new RemoteCallback<Map<String, String>>() {
             @Override
@@ -275,7 +275,7 @@ public class ProcessDefDetailsPresenter {
         
         view.getDeploymentIdText().setText( event.getDeploymentId() );
 
-        refreshProcessDef( event.getProcessId() );
+        refreshProcessDef( event.getDeploymentId(), event.getProcessId() );
     }
     
     @WorkbenchMenu
@@ -301,7 +301,7 @@ public class ProcessDefDetailsPresenter {
                 .respondsWith( new Command() {
                     @Override
                     public void execute() {
-                        refreshProcessDef( view.getProcessNameText().getText() );
+                        refreshProcessDef( view.getDeploymentIdText().getText(), view.getProcessNameText().getText() );
                         view.displayNotification( constants.Process_Definition_Details_Refreshed() );
                     }
                 } )
