@@ -153,7 +153,7 @@ public class ProcessInstanceDetailsPresenter {
         return view;
     }
 
-    public void refreshProcessInstanceData(final String processId,
+    public void refreshProcessInstanceData(final String deploymentId, final String processId,
             final String processDefId) {
         dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
@@ -252,7 +252,7 @@ public class ProcessInstanceDetailsPresenter {
                     view.setProcessAssetPath(new DummyProcessPath(process.getId()));
                 }
             }
-        }).getProcessById(processDefId);
+        }).getProcessById(deploymentId, processDefId);
     }
 
     @DefaultPosition
@@ -281,7 +281,7 @@ public class ProcessInstanceDetailsPresenter {
 
         view.getProcessNameText().setText(event.getProcessDefId());
 
-        refreshProcessInstanceData(String.valueOf(event.getProcessInstanceId()), event.getProcessDefId());
+        refreshProcessInstanceData(event.getDeploymentId(), String.valueOf(event.getProcessInstanceId()), event.getProcessDefId());
     }
 
     @WorkbenchMenu
@@ -301,7 +301,8 @@ public class ProcessInstanceDetailsPresenter {
                 .respondsWith(new Command() {
                     @Override
                     public void execute() {
-                        refreshProcessInstanceData(view.getProcessInstanceIdText().getText(),
+                        refreshProcessInstanceData(view.getProcessDeploymentText().getText(),
+                                view.getProcessInstanceIdText().getText(),
                         view.getProcessDefinitionIdText().getText());
                         view.displayNotification(constants.Process_Instances_Details_Refreshed());
                     }
@@ -331,7 +332,8 @@ public class ProcessInstanceDetailsPresenter {
                     kieSessionServices.call(new RemoteCallback<Void>() {
                         @Override
                         public void callback(Void v) {
-                            refreshProcessInstanceData(view.getProcessInstanceIdText().getText(),
+                            refreshProcessInstanceData(view.getProcessDeploymentText().getText(),
+                                    view.getProcessInstanceIdText().getText(),
                                     view.getProcessDefinitionIdText().getText());
                             view.displayNotification(constants.Aborting_Process_Instance() + "(id=" + processInstanceId + ")");
 

@@ -37,7 +37,7 @@ public interface DataServiceEntryPoint {
 
     ProcessInstanceSummary getProcessInstanceById(long processInstanceId);
 
-    ProcessSummary getProcessById(String processId);
+    ProcessSummary getProcessById(String deploymentId, String processId);
 
     Collection<ProcessSummary> getProcesses();
 

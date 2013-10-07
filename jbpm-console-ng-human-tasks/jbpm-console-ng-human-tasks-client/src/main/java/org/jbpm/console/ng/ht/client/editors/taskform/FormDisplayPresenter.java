@@ -520,7 +520,7 @@ public class FormDisplayPresenter {
             @Override
             public void callback(Long processInstanceId) {
                 view.displayNotification("Process Id: " + processInstanceId + " started!");
-                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(processInstanceId, currentProcessId));
+                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(currentDomainId, processInstanceId, currentProcessId));
                 close();
  
             }
@@ -534,7 +534,7 @@ public class FormDisplayPresenter {
             @Override
             public void callback(Long processInstanceId) {
                 view.displayNotification("Process Id: " + processInstanceId + " started!");
-                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(processInstanceId, currentProcessId));
+                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(currentDomainId, processInstanceId, currentProcessId));
                 close();
                
 

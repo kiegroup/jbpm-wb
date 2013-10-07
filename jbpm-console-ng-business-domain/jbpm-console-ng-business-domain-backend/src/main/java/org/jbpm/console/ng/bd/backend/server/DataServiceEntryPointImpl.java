@@ -77,8 +77,8 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
     }
 
     @Override
-    public ProcessSummary getProcessById(String processId) {
-        return ProcessHelper.adapt(dataService.getProcessById(processId));
+    public ProcessSummary getProcessById(String deploymentId, String processId) {
+        return ProcessHelper.adapt(dataService.getProcessesByDeploymentIdProcessId(deploymentId, processId));
     }
 
     @Override
