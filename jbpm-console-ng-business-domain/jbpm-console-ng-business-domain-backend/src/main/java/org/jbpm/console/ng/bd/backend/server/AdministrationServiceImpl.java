@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.bd.backend.server;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,6 +44,7 @@ import org.jbpm.kie.services.api.DeploymentUnit;
 import org.jbpm.kie.services.api.Kjar;
 import org.jbpm.kie.services.api.Vfs;
 import org.kie.commons.io.IOService;
+import org.kie.commons.java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.organizationalunit.OrganizationalUnit;
@@ -222,9 +224,10 @@ public class AdministrationServiceImpl implements AdministrationService {
         try {
             Repository repository = repositoryService.getRepository(repoAlias);
             if (repository != null) {
-
-
-                projectService.newProject(repository, artifact, new POM(gav), "/");
+                String projectLocation = repository.getUri() + ioService.getFileSystem(URI.create(repository.getUri())).getSeparator() + artifact;
+                if (!ioService.exists(ioService.get(URI.create(projectLocation)))) {
+                    projectService.newProject(repository, artifact, new POM(gav), "/");
+                }
             } else {
                 logger.error("Repository " + repoAlias + " was not found, cannot add project");
             }
