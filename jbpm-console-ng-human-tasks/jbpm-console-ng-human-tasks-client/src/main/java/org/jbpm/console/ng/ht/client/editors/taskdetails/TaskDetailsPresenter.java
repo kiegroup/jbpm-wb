@@ -45,6 +45,7 @@ import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -52,8 +53,8 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.lifecycle.OnClose;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 
@@ -101,6 +102,9 @@ public class TaskDetailsPresenter {
 
     @Inject
     Identity identity;
+    
+    @Inject
+    private Event<ProcessInstancesWithDetailsRequestEvent> processInstanceSelected;
 
     @Inject
     Caller<TaskServiceEntryPoint> taskServices;
@@ -142,17 +146,17 @@ public class TaskDetailsPresenter {
     }
 
     public void goToProcessInstanceDetails() {
-
+        
         dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
             @Override
             public void callback(ProcessInstanceSummary processInstance) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instance Details");
-                placeRequestImpl.addParameter("processInstanceId", view.getProcessInstanceIdText().getText());
-                placeRequestImpl.addParameter("processDefId", processInstance.getProcessId());
-                placeManager.goTo(placeRequestImpl);
+                
+                placeManager.goTo("Process Instances");
+                processInstanceSelected.fire(new ProcessInstancesWithDetailsRequestEvent(processInstance.getDeploymentId(),
+                                processInstance.getId(), processInstance.getProcessId()));
             }
         }).getProcessInstanceById(Long.parseLong(view.getProcessInstanceIdText().getText()));
-
+        
     }
 
     public void updateTask(final String taskDescription,
@@ -271,7 +275,7 @@ public class TaskDetailsPresenter {
             refreshTask();
         }
     }
-
+    @OnClose
     public void close() {
         closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
