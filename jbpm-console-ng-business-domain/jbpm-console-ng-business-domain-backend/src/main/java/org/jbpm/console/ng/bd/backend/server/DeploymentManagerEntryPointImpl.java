@@ -74,7 +74,9 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         for (DeploymentUnit unit : deploymentUnits) {
             if (deploymentService.getDeployedUnit(unit.getIdentifier()) == null) {
                 try {
-                    cleanup(unit.getIdentifier());
+                    if ("true".equals(System.getProperty("org.kie.clean.onstartup"))) {
+                        cleanup(unit.getIdentifier());
+                    }
                     deploymentService.deploy(unit);
                 } catch (Exception e) {
                     logger.warn("Error when deploying unit {} error message {}", unit, e.getMessage());
