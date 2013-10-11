@@ -162,6 +162,8 @@ public class ProcessInstanceDetailsPresenter {
 
     public void refreshProcessInstanceData(final String deploymentId, final String processId,
             final String processDefId) {
+    	processSelected = null;
+    	
         dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
             public void callback(List<NodeInstanceSummary> details) {
