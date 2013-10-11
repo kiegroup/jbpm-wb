@@ -470,6 +470,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
                     processInstanceStyleEvent.getProcessDefName(),
                     processInstanceStyleEvent.getProcessDefVersion(),
                     processInstanceStyleEvent.getProcessInstanceStartDate());
+            processInstanceListGrid.setFocus(true);
         }
     }
 

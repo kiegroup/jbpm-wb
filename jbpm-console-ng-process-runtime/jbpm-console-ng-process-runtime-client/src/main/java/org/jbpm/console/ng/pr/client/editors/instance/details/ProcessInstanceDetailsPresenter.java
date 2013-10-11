@@ -23,6 +23,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
+
 import com.google.gwt.view.client.ProvidesKey;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,6 +45,7 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.DefaultPosition;
+
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -53,6 +55,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.split.WorkbenchSplitLayoutPanel;
+
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -64,6 +67,7 @@ import org.uberfire.workbench.model.menu.Menus;
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance Details")
 public class ProcessInstanceDetailsPresenter {
+
 
     private Constants constants = GWT.create(Constants.class);
 
@@ -113,6 +117,7 @@ public class ProcessInstanceDetailsPresenter {
 
     private Menus menus;
 
+
     @Inject
     private PlaceManager placeManager;
 
@@ -131,6 +136,8 @@ public class ProcessInstanceDetailsPresenter {
     private String processInstanceId = "";
 
     private String processDefId = "";
+   
+    private ProcessInstanceSummary processSelected = null;
 
     public ProcessInstanceDetailsPresenter() {
         makeMenuBar();
@@ -191,7 +198,6 @@ public class ProcessInstanceDetailsPresenter {
         dataServices.call(new RemoteCallback<ProcessSummary>() {
             @Override
             public void callback(ProcessSummary process) {
-
                 view.getProcessDefinitionIdText().setText(process.getId());
                 view.getProcessNameText().setText(process.getName());
                 view.getProcessVersionText().setText(process.getVersion());
@@ -226,7 +232,10 @@ public class ProcessInstanceDetailsPresenter {
                 }
 
                 view.getStateText().setText(statusStr);
-                changeStyleRow(process.getId(), process.getProcessName(), process.getProcessVersion(), process.getStartTime());
+                processSelected = process;
+                changeStyleRow(processSelected.getId(), processSelected.getProcessName(), processSelected.getProcessVersion(), 
+                		processSelected.getStartTime());
+               
             }
         }).getProcessInstanceById(Long.parseLong(processId));
 
@@ -239,17 +248,25 @@ public class ProcessInstanceDetailsPresenter {
 
         dataServices.call(new RemoteCallback<ProcessSummary>() {
             @Override
-            public void callback(ProcessSummary process) {
+            public void callback(final ProcessSummary process) {
                 view.setEncodedProcessSource(process.getEncodedProcessSource());
                 if (process.getOriginalPath() != null) {
                     fileServices.call(new RemoteCallback<Path>() {
                         @Override
                         public void callback(Path processPath) {
                             view.setProcessAssetPath(processPath);
+                            if( processSelected != null ){
+                                changeStyleRow(processSelected.getId(), processSelected.getProcessName(), processSelected.getProcessVersion(), 
+                                		processSelected.getStartTime());
+                            }
                         }
                     }).get(process.getOriginalPath());
                 } else {
                     view.setProcessAssetPath(new DummyProcessPath(process.getId()));
+                }
+                if( processSelected != null ){
+                    changeStyleRow(processSelected.getId(), processSelected.getProcessName(), processSelected.getProcessVersion(), 
+                    		processSelected.getStartTime());
                 }
             }
         }).getProcessById(deploymentId, processDefId);
@@ -262,6 +279,7 @@ public class ProcessInstanceDetailsPresenter {
 
     private void changeStyleRow(long processInstanceId, String processDefName, String processDefVersion, Date startTime) {
         processInstanceStyleEvent.fire(new ProcessInstanceStyleEvent(processInstanceId, processDefName, processDefVersion, startTime));
+
     }
 
     @OnStartup
@@ -280,8 +298,10 @@ public class ProcessInstanceDetailsPresenter {
         view.getProcessInstanceIdText().setText(String.valueOf(event.getProcessInstanceId()));
 
         view.getProcessNameText().setText(event.getProcessDefId());
-
+       
+       
         refreshProcessInstanceData(event.getDeploymentId(), String.valueOf(event.getProcessInstanceId()), event.getProcessDefId());
+
     }
 
     @WorkbenchMenu
