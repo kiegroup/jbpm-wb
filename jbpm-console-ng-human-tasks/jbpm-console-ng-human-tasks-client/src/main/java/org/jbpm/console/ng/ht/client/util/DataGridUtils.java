@@ -32,6 +32,8 @@ public class DataGridUtils {
     
     public static Long idTaskCalendar = null;
     
+    public static int pageSize = 10;
+    
     public static enum StatusTaskDataGrid{
         
         COMPLETED("Completed"),
@@ -73,10 +75,10 @@ public class DataGridUtils {
     
     public enum ColumnsTask{
         
-        ID(false, 0),
+        ID(true, 0),
         TASK(false, 1),
         PRIORITY(true, 2),
-        STATUS(false, 3),
+        STATUS(true, 3),
         CREATED_ON(true, 4),
         DUE_ON(true, 5),
         ACTIONS(false, 6);
@@ -100,8 +102,8 @@ public class DataGridUtils {
         
     }
 
-    public static void paintRowSelected(DataGrid<TaskSummary> myTaskListGrid, Long idTask) {
-        for (int i = 0; i < myTaskListGrid.getRowCount(); i++) {
+    public static void paintRowSelected(DataGrid<TaskSummary> myTaskListGrid, Long idTask, int page) {
+        for (int i = 0; i < getCurrentRowCount(myTaskListGrid); i++) {
             for (int j = 0; j < myTaskListGrid.getColumnCount(); j++) {
                 if (!Long.valueOf(myTaskListGrid.getRowElement(i).getCells().getItem(0).getInnerText()).equals(idTask)) {
                     myTaskListGrid.getRowElement(i).getCells().getItem(j).getStyle().clearBackgroundColor();
@@ -114,7 +116,7 @@ public class DataGridUtils {
 
     public static Long getIdRowSelected(DataGrid<TaskSummary> myTaskListGrid) {
         Long idTaskSelected = null;
-        for (int i = 0; i < myTaskListGrid.getRowCount(); i++) {
+        for (int i = 0; i < getCurrentRowCount(myTaskListGrid); i++) {
             if (myTaskListGrid.getRowElement(i).getCells().getItem(0).getStyle().getBackgroundColor().equals(BG_ROW_SELECTED)) {
                 idTaskSelected = Long.valueOf(myTaskListGrid.getRowElement(i).getCells().getItem(0).getInnerText());
                 break;
@@ -124,7 +126,7 @@ public class DataGridUtils {
     }
     
     public static void paintRowsCompleted(DataGrid<TaskSummary> myTaskListGrid) {
-        for (int i = 0; i < myTaskListGrid.getRowCount(); i++) {
+        for (int i = 0; i < getCurrentRowCount(myTaskListGrid); i++) {
             if (myTaskListGrid.getRowElement(i).getCells().getItem(3).getInnerText().equals(StatusTaskDataGrid.COMPLETED.getDescription())
                     && !myTaskListGrid.getRowElement(i).getCells().getItem(0).getStyle().getBackgroundColor()
                             .equals(BG_ROW_SELECTED)) {
@@ -155,6 +157,10 @@ public class DataGridUtils {
 	    		myTaskListGrid.addColumnStyleName(col.getColumn(), ResponsiveStyle.HIDDEN_PHONE.get());
     		}
     	}
+    }
+    
+    private static int getCurrentRowCount(DataGrid<TaskSummary> myTaskListGrid){
+    	return myTaskListGrid.getRowCount() >= DataGridUtils.pageSize ? DataGridUtils.pageSize : myTaskListGrid.getRowCount();
     }
 
 
