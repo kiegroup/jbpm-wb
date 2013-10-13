@@ -4,7 +4,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.naming.InitialContext;
@@ -14,10 +13,10 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceUnit;
 
 import org.jbpm.shared.services.cdi.Selectable;
-import org.kie.commons.cluster.ClusterServiceFactory;
-import org.kie.commons.io.IOService;
-import org.kie.commons.io.impl.IOServiceDotFileImpl;
-import org.kie.commons.io.impl.cluster.IOServiceClusterImpl;
+import org.uberfire.commons.cluster.ClusterServiceFactory;
+import org.uberfire.io.IOService;
+import org.uberfire.io.impl.IOServiceDotFileImpl;
+import org.uberfire.io.impl.cluster.IOServiceClusterImpl;
 import org.kie.internal.task.api.UserGroupCallback;
 import org.uberfire.backend.repositories.Repository;
 

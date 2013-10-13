@@ -195,26 +195,22 @@
     </dependency>
 
     <dependency>
-      <groupId>org.kie.commons</groupId>
-      <artifactId>kie-nio2-jgit</artifactId>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-nio2-jgit</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.kie.commons</groupId>
-      <artifactId>kie-nio2-fs</artifactId>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-nio2-fs</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.kie.commons</groupId>
-      <artifactId>kie-commons-io</artifactId>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-io</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.commons</groupId>
-      <artifactId>kie-commons-cdi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.commons</groupId>
-      <artifactId>kie-commons-data</artifactId>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-commons</artifactId>
     </dependency>
 
     <!-- Errai AS -->
@@ -606,12 +602,12 @@
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-client</compileSourcesArtifact>
 
-            <!-- Kie Commons -->
-            <compileSourcesArtifact>org.kie.commons:kie-commons-data</compileSourcesArtifact>
-            <compileSourcesArtifact>org.kie.commons:kie-commons-validation</compileSourcesArtifact>
-            <compileSourcesArtifact>org.kie.commons:kie-nio2-model</compileSourcesArtifact>
+            <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-client</compileSourcesArtifact>
 
             <!-- UberFire -->
+            <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-nio2-model</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-js</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-security-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-security-client</compileSourcesArtifact>
@@ -700,9 +696,8 @@
             WEB-INF/lib/guvnor-project-*.jar,
             WEB-INF/lib/kie-api*.jar,
             WEB-INF/lib/kie-ci*.jar,
-            WEB-INF/lib/kie-commons-*.jar,
             WEB-INF/lib/kie-internal*.jar,
-            WEB-INF/lib/kie-nio2-fs*.jar,
+            WEB-INF/lib/uberfire-nio2-fs*.jar,
             WEB-INF/lib/kie-wb-common-*.jar,
             WEB-INF/lib/uberfire-*.jar,
             WEB-INF/lib/jbpm-form-modeler-*.war,
