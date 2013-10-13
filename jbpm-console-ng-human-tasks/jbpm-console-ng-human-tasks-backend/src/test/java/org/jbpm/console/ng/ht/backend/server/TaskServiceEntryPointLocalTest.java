@@ -15,7 +15,7 @@ public class TaskServiceEntryPointLocalTest extends TaskServiceEntryPointBaseTes
     @Deployment()
     public static Archive<?> createDeployment() {
         return ShrinkWrap
-                .create(JavaArchive.class, "jbpm-console-ng-human-task-org.uberfire.commons.services.cdi.jar")
+                .create(JavaArchive.class, "jbpm-console-ng-human-task-cdi.jar")
                 
                 .addPackage("org.jboss.seam.transaction")
                 // core jbpm
