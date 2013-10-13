@@ -79,7 +79,7 @@
 
           <!-- Jetty -->
           <exclude>WEB-INF/lib/jetty-*.jar</exclude>
-          <exclude>WEB-INF/lib/errai-org.uberfire.commons.services.cdi-jetty-*.jar</exclude>
+          <exclude>WEB-INF/lib/-jetty-*.jar</exclude>
           <exclude>WEB-INF/lib/mail-*.jar</exclude>
           <exclude>WEB-INF/lib/geronimo-spec-jta-*.jar</exclude>
           <exclude>WEB-INF/lib/servlet-api-*.jar</exclude>
