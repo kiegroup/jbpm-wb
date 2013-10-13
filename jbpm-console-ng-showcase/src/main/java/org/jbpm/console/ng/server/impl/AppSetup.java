@@ -23,9 +23,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jbpm.console.ng.bd.service.AdministrationService;
-import org.kie.commons.io.IOClusteredService;
-import org.kie.commons.io.IOService;
-import org.kie.commons.services.cdi.Startup;
+import org.uberfire.io.IOClusteredService;
+import org.uberfire.io.IOService;
+import org.uberfire.commons.services.cdi.Startup;
 import org.uberfire.backend.repositories.Repository;
 import org.uberfire.backend.server.config.ConfigGroup;
 import org.uberfire.backend.server.config.ConfigType;

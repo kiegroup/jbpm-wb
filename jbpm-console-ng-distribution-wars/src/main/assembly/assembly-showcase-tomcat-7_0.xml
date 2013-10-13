@@ -39,7 +39,7 @@
         <include>org.apache.ant:ant-launcher:jar</include>
         <include>org.jboss.resteasy:jaxrs-api</include>
         <include>org.jboss.resteasy:resteasy-jaxrs</include>
-        <include>org.jboss.resteasy:resteasy-cdi</include>
+        <include>org.jboss.resteasy:resteasy-org.uberfire.commons.services.cdi</include>
       </includes>
       <unpack>false</unpack>
       <outputDirectory>WEB-INF/lib</outputDirectory>
@@ -79,7 +79,7 @@
 
           <!-- Jetty -->
           <exclude>WEB-INF/lib/jetty-*.jar</exclude>
-          <exclude>WEB-INF/lib/errai-cdi-jetty-*.jar</exclude>
+          <exclude>WEB-INF/lib/errai-org.uberfire.commons.services.cdi-jetty-*.jar</exclude>
           <exclude>WEB-INF/lib/mail-*.jar</exclude>
           <exclude>WEB-INF/lib/geronimo-spec-jta-*.jar</exclude>
           <exclude>WEB-INF/lib/servlet-api-*.jar</exclude>

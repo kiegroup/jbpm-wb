@@ -27,11 +27,12 @@ import org.jbpm.console.ng.bd.service.DeploymentUnitProvider;
 import org.jbpm.kie.services.api.DeploymentUnit;
 import org.jbpm.kie.services.api.Vfs;
 import org.jbpm.kie.services.impl.VFSDeploymentUnit;
-import org.kie.commons.io.IOService;
-import org.kie.commons.java.nio.file.DirectoryStream;
-import org.kie.commons.java.nio.file.Path;
+import org.uberfire.io.IOService;
+import org.uberfire.java.nio.file.DirectoryStream;
+import org.uberfire.java.nio.file.Path;
 import org.uberfire.backend.repositories.Repository;
 import org.uberfire.backend.repositories.RepositoryService;
+import org.uberfire.java.nio.file.Files;
 
 @ApplicationScoped
 @Vfs
@@ -59,7 +60,7 @@ public class VFSRepoDeploymentUnitProvider implements DeploymentUnitProvider<Dep
                     new DirectoryStream.Filter<Path>() {
                         @Override
                         public boolean accept(final Path entry) {
-                            if (org.kie.commons.java.nio.file.Files.isDirectory(entry)) {
+                            if ( Files.isDirectory( entry )) {
                                 return true;
                             }
                             return false;
