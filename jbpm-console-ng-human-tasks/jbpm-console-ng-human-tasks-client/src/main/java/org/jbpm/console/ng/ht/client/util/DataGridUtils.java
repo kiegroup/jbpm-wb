@@ -148,16 +148,6 @@ public class DataGridUtils {
         }
     }
     
-    public static void setHideOnAllColumns(DataGrid<TaskSummary> myTaskListGrid){
-    	for(ColumnsTask col : ColumnsTask.values()){
-    		if(col.isResponsive()){
-	    		myTaskListGrid.getColumn(col.getColumn()).setCellStyleNames(ResponsiveStyle.HIDDEN_PHONE.get());
-	    		myTaskListGrid.getHeader(col.getColumn()).setHeaderStyleNames(ResponsiveStyle.HIDDEN_PHONE.get());
-	    		myTaskListGrid.addColumnStyleName(col.getColumn(), ResponsiveStyle.HIDDEN_PHONE.get());
-    		}
-    	}
-    }
-    
     private static int getCurrentRowCount(DataGrid<TaskSummary> myTaskListGrid){
     	return myTaskListGrid.getRowCount() >= DataGridUtils.pageSize ? DataGridUtils.pageSize : myTaskListGrid.getRowCount();
     }
