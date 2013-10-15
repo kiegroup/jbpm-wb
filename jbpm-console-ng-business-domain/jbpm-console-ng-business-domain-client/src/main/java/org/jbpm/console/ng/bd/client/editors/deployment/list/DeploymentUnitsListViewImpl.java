@@ -37,6 +37,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
@@ -298,9 +299,10 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
         cells.add( new DeleteActionHasCell( "Undeploy", new Delegate<KModuleDeploymentUnitSummary>() {
             @Override
             public void execute( KModuleDeploymentUnitSummary unit ) {
-
-                presenter.undeployUnit( unit.getId(), unit.getGroupId(), unit.getArtifactId(),
-                                        unit.getVersion(), unit.getKbaseName(), unit.getKsessionName() );
+                if (Window.confirm("Are you sure that you want to undeploy the deployment unit?")) {
+                    presenter.undeployUnit( unit.getId(), unit.getGroupId(), unit.getArtifactId(),
+                                            unit.getVersion(), unit.getKbaseName(), unit.getKsessionName() );
+                }
 
             }
         } ) );
