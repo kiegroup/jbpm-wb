@@ -195,4 +195,6 @@ public interface Constants extends Messages {
 
     String Services();
 
+    String Id();
+
 }

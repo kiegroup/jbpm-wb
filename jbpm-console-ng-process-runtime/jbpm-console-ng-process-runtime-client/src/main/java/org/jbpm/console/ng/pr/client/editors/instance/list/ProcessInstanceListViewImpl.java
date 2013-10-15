@@ -293,6 +293,25 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
                 checkColumn));
         processInstanceListGrid.setColumnWidth(checkColumn, "40px");
 
+         // Process Instance Id.
+        Column<ProcessInstanceSummary, String> processInstanceIdColumn = new Column<ProcessInstanceSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(ProcessInstanceSummary object) {
+                return String.valueOf(object.getId());
+            }
+        };
+        processInstanceIdColumn.setSortable(true);
+        sortHandler.setComparator(processInstanceIdColumn, new Comparator<ProcessInstanceSummary>() {
+            @Override
+            public int compare(ProcessInstanceSummary o1,
+                    ProcessInstanceSummary o2) {
+                return Long.valueOf(o1.getId()).compareTo(o2.getId());
+            }
+        });
+        processInstanceListGrid.addColumn(processInstanceIdColumn, new ResizableHeader(constants.Id(), processInstanceListGrid,
+                processInstanceIdColumn));
+        
+        
         // Process Name.
         Column<ProcessInstanceSummary, String> processNameColumn = new Column<ProcessInstanceSummary, String>(new TextCell()) {
             @Override
@@ -467,9 +486,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
     public void changeRowSelected(@Observes ProcessInstanceStyleEvent processInstanceStyleEvent) {
         if (processInstanceStyleEvent.getProcessInstanceId() != null) {
             DataGridUtils.paintInstanceRowSelected(processInstanceListGrid,
-                    processInstanceStyleEvent.getProcessDefName(),
-                    processInstanceStyleEvent.getProcessDefVersion(),
-                    processInstanceStyleEvent.getProcessInstanceStartDate());
+                    processInstanceStyleEvent.getProcessInstanceId());
             processInstanceListGrid.setFocus(true);
         }
     }
