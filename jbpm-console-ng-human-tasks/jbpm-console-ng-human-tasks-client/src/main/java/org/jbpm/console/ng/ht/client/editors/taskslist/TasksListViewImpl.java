@@ -353,7 +353,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         myTaskListGrid.setStyleName("table table-bordered table-striped table-hover");
 
         pager.setDisplay(myTaskListGrid);
-        pager.setPageSize(10);
+        pager.setPageSize(DataGridUtils.pageSize);
 
         tasksViewContainer.add(myTaskListGrid);
 
@@ -834,7 +834,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     
     public void changeRowSelected(@Observes TaskStyleEvent taskStyleEvent){
         if( taskStyleEvent.getTaskEventId() != null && this.getCurrentView() == TaskView.GRID){
-            DataGridUtils.paintRowSelected(myTaskListGrid, taskStyleEvent.getTaskEventId());
+            DataGridUtils.paintRowSelected(myTaskListGrid, taskStyleEvent.getTaskEventId(), pager.getPage());
         } 
         if(currentTaskType.equals(TaskType.ALL)){
             DataGridUtils.paintRowsCompleted(myTaskListGrid);
