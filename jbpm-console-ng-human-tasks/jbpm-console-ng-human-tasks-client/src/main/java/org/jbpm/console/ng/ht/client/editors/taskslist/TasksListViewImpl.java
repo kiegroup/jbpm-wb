@@ -34,6 +34,7 @@ import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -319,7 +320,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     }
     
     private void refreshCalendarView(String type, TaskView taskView){
-    	DataGridUtils.paintCalendarFromGrid(myTaskListGrid);
+    	DataGridUtils.paintCalendarFromGrid(myTaskListGrid, pager.getPage());
         tasksViewContainer.clear();
         tasksViewContainer.add(taskListMultiDayBox);
         tasksViewContainer.setStyleName(type);
@@ -610,7 +611,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             public void execute(TaskSummary task) {
                 currentAction = ActionsDataGrid.DETAILS;
                 PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
-                Long idSelected = DataGridUtils.getIdRowSelected(myTaskListGrid);
+                Long idSelected = DataGridUtils.getIdRowSelected(myTaskListGrid, pager.getPage());
                 DataGridUtils.currentIdSelected = task.getId();
                 if(status == PlaceStatus.CLOSE || !Long.valueOf(task.getId()).equals(idSelected)){
                     placeManager.goTo("Task Details Multi");
@@ -839,7 +840,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             DataGridUtils.paintRowSelected(myTaskListGrid, taskStyleEvent.getTaskEventId(), pager.getPage());
         } 
         if(currentTaskType.equals(TaskType.ALL)){
-            DataGridUtils.paintRowsCompleted(myTaskListGrid);
+            DataGridUtils.paintRowsCompleted(myTaskListGrid, pager.getPage());
         }
     }
     
@@ -883,15 +884,20 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         if(DataGridUtils.currentIdSelected != null){
             changeRowSelected(new TaskStyleEvent(DataGridUtils.currentIdSelected));
         }else if(currentTaskType.equals(TaskType.ALL)){
-            DataGridUtils.paintRowsCompleted(myTaskListGrid);
+            DataGridUtils.paintRowsCompleted(myTaskListGrid, pager.getPage());
         }
     }
     
     private void onMouseOverGrid(final CellPreviewEvent<TaskSummary> event){
         TaskSummary task = event.getValue();
         if(task.getDescription() != null){
-            myTaskListGrid.getRowElement(event.getIndex()).getCells().getItem(event.getColumn()).setTitle(task.getDescription());
+        	DataGridUtils.setTooltip(myTaskListGrid, pager.getPage(), event.getValue().getId(), event.getColumn(), task.getDescription());
         }
     }
+
+	@Override
+	public SimplePager getPager() {
+		return this.pager;
+	}
     
 }

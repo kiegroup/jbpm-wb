@@ -17,6 +17,7 @@
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
@@ -117,6 +118,8 @@ public class TasksListPresenter {
         void setPersonalTasks();
         
         void changeCurrentDate(Date date);
+        
+        SimplePager getPager();
     }
 
     public enum TaskType {
@@ -248,6 +251,7 @@ public class TasksListPresenter {
             }
          }
         view.getTaskListGrid().setFocus(true);
+        
     }
 
     public void startTasks( final List<Long> selectedTasks,
@@ -271,7 +275,7 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Released" );
-                DataGridUtils.currentIdSelected = DataGridUtils.getIdRowSelected(view.getTaskListGrid());
+                DataGridUtils.currentIdSelected = DataGridUtils.getIdRowSelected(view.getTaskListGrid(), view.getPager().getPage());
                 //TODO this line is unnecesary
                 /*if(selectedTasks.size() == 1){
                     //taskRefreshed.fire(new TaskRefreshedEvent(selectedTasks.get(0)));
@@ -302,7 +306,7 @@ public class TasksListPresenter {
             @Override
             public void callback( List<TaskSummary> tasks ) {
                 view.displayNotification( "Task(s) Claimed" );
-                DataGridUtils.currentIdSelected = DataGridUtils.getIdRowSelected(view.getTaskListGrid());
+                DataGridUtils.currentIdSelected = DataGridUtils.getIdRowSelected(view.getTaskListGrid(), view.getPager().getPage());
                 //TODO this call is unnecesary
                 /*if(selectedTasks.size() == 1){
                     taskRefreshed.fire(new TaskRefreshedEvent(selectedTasks.get(0)));
