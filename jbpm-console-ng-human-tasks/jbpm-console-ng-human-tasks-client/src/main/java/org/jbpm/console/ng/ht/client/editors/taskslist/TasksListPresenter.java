@@ -70,6 +70,7 @@ import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
+import org.uberfire.client.mvp.PlaceStatus;
 
 @Dependent
 @WorkbenchScreen(identifier = "Tasks List")

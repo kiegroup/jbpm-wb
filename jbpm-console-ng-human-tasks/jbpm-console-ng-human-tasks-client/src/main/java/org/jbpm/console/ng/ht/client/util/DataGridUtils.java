@@ -16,9 +16,9 @@
 
 package org.jbpm.console.ng.ht.client.util;
 
-import org.jbpm.console.ng.ht.model.TaskSummary;
-
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.constants.ResponsiveStyle;
+import org.jbpm.console.ng.ht.model.TaskSummary;
 
 public class DataGridUtils {
 
@@ -97,7 +97,7 @@ public class DataGridUtils {
         }
 
     }
-    
+
     public static void paintRowSelected(DataGrid<TaskSummary> myTaskListGrid, Long idTask) {
         for (int i = 0; i < getCurrentRowCount(myTaskListGrid); i++) {
             for (int j = 0; j < myTaskListGrid.getColumnCount(); j++) {
@@ -143,6 +143,16 @@ public class DataGridUtils {
     public static void PaintGridFromCalendar(DataGrid<TaskSummary> myTaskListGrid) {
         if (idTaskCalendar != null) {
             currentIdSelected = DataGridUtils.idTaskCalendar;
+        }
+    }
+
+    public static void setHideOnAllColumns(DataGrid<TaskSummary> myTaskListGrid) {
+        for (ColumnsTask col : ColumnsTask.values()) {
+            if (col.isResponsive()) {
+                myTaskListGrid.getColumn(col.getColumn()).setCellStyleNames(ResponsiveStyle.HIDDEN_PHONE.get());
+                myTaskListGrid.getHeader(col.getColumn()).setHeaderStyleNames(ResponsiveStyle.HIDDEN_PHONE.get());
+                myTaskListGrid.addColumnStyleName(col.getColumn(), ResponsiveStyle.HIDDEN_PHONE.get());
+            }
         }
     }
 
