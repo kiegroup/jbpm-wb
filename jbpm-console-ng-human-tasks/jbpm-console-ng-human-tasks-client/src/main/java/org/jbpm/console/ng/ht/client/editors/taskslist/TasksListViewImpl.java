@@ -890,7 +890,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     private void onMouseOverGrid(final CellPreviewEvent<TaskSummary> event){
         TaskSummary task = event.getValue();
         if(task.getDescription() != null){
-            myTaskListGrid.getRowElement(event.getIndex()).getCells().getItem(event.getColumn()).setTitle(task.getDescription());
+            DataGridUtils.setTooltip(myTaskListGrid, event.getValue().getId(), event.getColumn(), task.getDescription());
         }
     }
     
