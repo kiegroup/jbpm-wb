@@ -235,7 +235,7 @@ public class ProcessInstanceDetailsPresenter {
 
                 view.getStateText().setText(statusStr);
                 processSelected = process;
-                changeStyleRow(processSelected.getId(), processSelected.getProcessName(), processSelected.getProcessVersion(), 
+                changeStyleRow(Long.parseLong(processId), processSelected.getProcessName(), processSelected.getProcessVersion(), 
                 		processSelected.getStartTime());
                
             }

@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.pr.client.util;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import java.util.Date;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
@@ -28,12 +27,12 @@ public class DataGridUtils {
 
     public static String newProcessDefName = null;
     public static String newProcessDefVersion = null;
-    
+
     public static Long newProcessInstanceId = null;
     public static String newProcessInstanceDefName = null;
     public static String newProcessInstanceDefVersion = null;
     public static Date newProcessInstanceStartDate = null;
-    
+
     public static void paintRowSelected(DataGrid<ProcessSummary> myProcessDefListGrid, String nameProcessDef, String versionProcessDef) {
         for (int i = 0; i < myProcessDefListGrid.getRowCount(); i++) {
             boolean nameMatch = false;
@@ -57,29 +56,16 @@ public class DataGridUtils {
         }
 
     }
-    
-    public static void paintInstanceRowSelected(DataGrid<ProcessInstanceSummary> myProcessInstanceListGrid, String nameProcessDef, 
-            String versionProcessDef, Date startDateInstance) {
-        for (int i = 0; i < myProcessInstanceListGrid.getRowCount(); i++) {
-            boolean nameMatch = false;
-            boolean versionMatch = false;
-            boolean startDateMatch = false;
-            for (int j = 0; j < myProcessInstanceListGrid.getColumnCount(); j++) {
-                if (myProcessInstanceListGrid.getRowElement(i).getCells().getItem(j).getInnerText().equals(nameProcessDef)) {
-                    nameMatch = true;
-                }
-                if (myProcessInstanceListGrid.getRowElement(i).getCells().getItem(j).getInnerText().equals(versionProcessDef)) {
-                    versionMatch = true;
-                }
-                DateTimeFormat format = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm");
-                String date =  format.format(startDateInstance);       
-                if (myProcessInstanceListGrid.getRowElement(i).getCells().getItem(j).getInnerText().equals(date)) {
-                    startDateMatch = true;
-                }
 
+    public static void paintInstanceRowSelected(DataGrid<ProcessInstanceSummary> myProcessInstanceListGrid, Long id) {
+        for (int i = 0; i < myProcessInstanceListGrid.getRowCount(); i++) {
+            boolean idMatch = false;
+            if (myProcessInstanceListGrid.getRowElement(i).getCells().getItem(1).getInnerText().equals(String.valueOf(id))) {
+                idMatch = true;
             }
+
             for (int k = 0; k < myProcessInstanceListGrid.getColumnCount(); k++) {
-                if (nameMatch && versionMatch & startDateMatch) {
+                if (idMatch) {
                     myProcessInstanceListGrid.getRowElement(i).getCells().getItem(k).getStyle().setBackgroundColor(BG_ROW_SELECTED);
                 } else {
                     myProcessInstanceListGrid.getRowElement(i).getCells().getItem(k).getStyle().clearBackgroundColor();
@@ -99,7 +85,7 @@ public class DataGridUtils {
         }
         return processDefName;
     }
-    
+
     public static String getProcessVersionRowSelected(DataGrid<ProcessSummary> myProcessDefListGrid) {
         String processDefVersion = null;
         for (int i = 0; i < myProcessDefListGrid.getRowCount(); i++) {
@@ -121,7 +107,7 @@ public class DataGridUtils {
         }
         return processDefName;
     }
-    
+
     public static String getProcessInstanceVersionRowSelected(DataGrid<ProcessInstanceSummary> myProcessInstanceListGrid) {
         String processDefVersion = null;
         for (int i = 0; i < myProcessInstanceListGrid.getRowCount(); i++) {
@@ -132,7 +118,7 @@ public class DataGridUtils {
         }
         return processDefVersion;
     }
-    
+
     public static String getProcessInstanceStartDateRowSelected(DataGrid<ProcessInstanceSummary> myProcessInstanceListGrid) {
         String processStartDate = null;
         for (int i = 0; i < myProcessInstanceListGrid.getRowCount(); i++) {
