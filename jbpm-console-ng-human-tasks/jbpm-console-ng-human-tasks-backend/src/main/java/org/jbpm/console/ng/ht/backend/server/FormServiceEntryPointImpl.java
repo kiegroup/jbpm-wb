@@ -20,7 +20,9 @@ package org.jbpm.console.ng.ht.backend.server;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.interceptor.Interceptors;
 
+import org.jboss.seam.transaction.TransactionInterceptor;
 import org.jbpm.kie.services.api.FormProviderService;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.seam.transaction.Transactional;
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
 @Service
 @ApplicationScoped
 @Transactional
+@Interceptors({TransactionInterceptor.class})
 public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
 
     private static final Logger logger = LoggerFactory.getLogger(FormServiceEntryPointImpl.class);
