@@ -23,8 +23,10 @@ import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.interceptor.Interceptors;
 
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jboss.seam.transaction.TransactionInterceptor;
 import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.es.model.ErrorSummary;
 import org.jbpm.console.ng.es.model.RequestDetails;
@@ -39,6 +41,7 @@ import org.kie.internal.executor.api.STATUS;
 @Service
 @ApplicationScoped
 @Transactional
+@Interceptors({TransactionInterceptor.class})
 public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint {
 
     @Inject

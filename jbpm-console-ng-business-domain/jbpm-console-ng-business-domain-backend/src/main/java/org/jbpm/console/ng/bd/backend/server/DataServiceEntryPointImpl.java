@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.interceptor.Interceptors;
+
+import org.jboss.seam.transaction.TransactionInterceptor;
 import org.jbpm.kie.services.api.RuntimeDataService;
 import org.jbpm.kie.services.api.bpmn2.BPMN2DataService;
 import org.jbpm.kie.services.impl.model.ProcessInstanceDesc;
@@ -48,6 +51,7 @@ import org.jbpm.console.ng.pr.model.VariableSummary;
 @Service
 @ApplicationScoped
 @Transactional
+@Interceptors({TransactionInterceptor.class})
 public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
 
     @Inject

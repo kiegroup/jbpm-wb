@@ -24,7 +24,9 @@ import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.interceptor.Interceptors;
 
+import org.jboss.seam.transaction.TransactionInterceptor;
 import org.jbpm.kie.services.api.DeploymentService;
 import org.jbpm.kie.services.api.RuntimeDataService;
 import org.jbpm.kie.services.impl.model.ProcessInstanceDesc;
@@ -43,6 +45,7 @@ import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 @Service
 @ApplicationScoped
 @Transactional
+@Interceptors({TransactionInterceptor.class})
 public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
 
     @Inject

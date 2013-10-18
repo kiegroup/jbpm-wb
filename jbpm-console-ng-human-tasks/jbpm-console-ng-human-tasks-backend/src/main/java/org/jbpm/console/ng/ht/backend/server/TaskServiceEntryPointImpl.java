@@ -25,8 +25,10 @@ import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.interceptor.Interceptors;
 
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jboss.seam.transaction.TransactionInterceptor;
 import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.Day;
@@ -54,6 +56,7 @@ import org.kie.internal.task.api.model.SubTasksStrategy;
 @Service
 @ApplicationScoped
 @Transactional
+@Interceptors({TransactionInterceptor.class})
 public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Inject
