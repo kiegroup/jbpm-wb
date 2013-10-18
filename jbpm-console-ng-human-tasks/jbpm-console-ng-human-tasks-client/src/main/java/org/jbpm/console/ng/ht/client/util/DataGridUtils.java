@@ -24,71 +24,68 @@ public class DataGridUtils {
 
     // it is rgb because datagrid returns this info
     private static final String BG_ROW_SELECTED = "rgb(229, 241, 255)";
-    
+
     private static final String BG_ROW_COMPLETED = "#EFBDBD";
 
     public static Long currentIdSelected = null;
-    
+
     public static Long idTaskCalendar = null;
-    
+
     public static int pageSize = 10;
-    
-    public static enum StatusTaskDataGrid{
-        
-        COMPLETED("Completed"),
-        INPROGRESS("InProgress"),
-        RESERVED("Reserved"),
+
+    public static enum StatusTaskDataGrid {
+        COMPLETED("Completed"), 
+        INPROGRESS("InProgress"), 
+        RESERVED("Reserved"), 
         READY("Ready");
-        
+
         private String description;
-        
-        StatusTaskDataGrid(String description){
-             this.description = description;
-        }
-        
-        public String getDescription() {
-            return description;
-        }
-        
-    }
-    
-    public static enum ActionsDataGrid{
-        
-        CLAIM("Claim"),
-        RELEASE("Release"),
-        START("Start"),
-        COMPLETE("Complete"),
-        DETAILS("Details");
-        
-        private String description;
-        
-        ActionsDataGrid(String description){
+
+        StatusTaskDataGrid(String description) {
             this.description = description;
         }
-        
+
         public String getDescription() {
             return description;
         }
-        
+
     }
-    
-    public enum ColumnsTask{
-        
-        ID(true, 0),
-        TASK(false, 1),
-        PRIORITY(true, 2),
-        STATUS(true, 3),
-        CREATED_ON(true, 4),
-        DUE_ON(true, 5),
-        ACTIONS(false, 6);
-        
-        ColumnsTask(boolean responsive, int column){
-           this.responsive = responsive;
-           this.column = column;
+
+    public static enum ActionsDataGrid {
+        CLAIM("Claim"), 
+        RELEASE("Release"), 
+        START("Start"), 
+        COMPLETE("Complete"), 
+        DETAILS("Details");
+
+        private String description;
+
+        ActionsDataGrid(String description) {
+            this.description = description;
         }
-        
+
+        public String getDescription() {
+            return description;
+        }
+
+    }
+
+    public enum ColumnsTask {
+        ID(true, 0), 
+        TASK(false, 1), 
+        PRIORITY(true, 2), 
+        STATUS(true, 3), 
+        CREATED_ON(true, 4), 
+        DUE_ON(true, 5), 
+        ACTIONS(false, 6);
+
+        ColumnsTask(boolean responsive, int column) {
+            this.responsive = responsive;
+            this.column = column;
+        }
+
         private boolean responsive;
-        
+
         private int column;
 
         public boolean isResponsive() {
@@ -98,7 +95,7 @@ public class DataGridUtils {
         public int getColumn() {
             return column;
         }
-        
+
     }
 
     public static void paintRowSelected(DataGrid<TaskSummary> myTaskListGrid, Long idTask, int page) {
@@ -123,10 +120,11 @@ public class DataGridUtils {
         }
         return idTaskSelected;
     }
-    
+
     public static void paintRowsCompleted(DataGrid<TaskSummary> myTaskListGrid) {
         for (int i = 0; i < getCurrentRowCount(myTaskListGrid); i++) {
-            if (myTaskListGrid.getRowElement(i).getCells().getItem(3).getInnerText().equals(StatusTaskDataGrid.COMPLETED.getDescription())
+            if (myTaskListGrid.getRowElement(i).getCells().getItem(3).getInnerText()
+                    .equals(StatusTaskDataGrid.COMPLETED.getDescription())
                     && !myTaskListGrid.getRowElement(i).getCells().getItem(0).getStyle().getBackgroundColor()
                             .equals(BG_ROW_SELECTED)) {
                 for (int j = 0; j < myTaskListGrid.getColumnCount(); j++) {
@@ -135,22 +133,41 @@ public class DataGridUtils {
             }
         }
     }
-    
-    public static void paintCalendarFromGrid(DataGrid<TaskSummary> myTaskListGrid){
-        if(idTaskCalendar == null ){
+
+    public static void paintCalendarFromGrid(DataGrid<TaskSummary> myTaskListGrid) {
+        if (idTaskCalendar == null) {
             idTaskCalendar = DataGridUtils.getIdRowSelected(myTaskListGrid);
         }
     }
-    
-    public static void PaintGridFromCalendar(DataGrid<TaskSummary> myTaskListGrid){
-        if(idTaskCalendar != null){
-            currentIdSelected = DataGridUtils.idTaskCalendar; 
+
+    public static void PaintGridFromCalendar(DataGrid<TaskSummary> myTaskListGrid) {
+        if (idTaskCalendar != null) {
+            currentIdSelected = DataGridUtils.idTaskCalendar;
         }
     }
-    
-    private static int getCurrentRowCount(DataGrid<TaskSummary> myTaskListGrid){
-    	return myTaskListGrid.getRowCount() >= DataGridUtils.pageSize ? DataGridUtils.pageSize : myTaskListGrid.getRowCount();
+
+    private static int getCurrentRowCount(DataGrid<TaskSummary> myTaskListGrid) {
+        int rowCount = 0;
+        for (int i = 0; i < DataGridUtils.pageSize; i++) {
+            try {
+                rowCount = i + 1;
+                myTaskListGrid.getRowElement(i);
+            } catch (Exception e) {
+                rowCount = i;
+                break;
+            }
+        }
+        return rowCount;
     }
 
+    public static void setTooltip(DataGrid<TaskSummary> myTaskListGrid, long idCurrentRow, int column,
+            String description) {
+        for (int i = 0; i < getCurrentRowCount(myTaskListGrid); i++) {
+            if (myTaskListGrid.getRowElement(i).getCells().getItem(1).getInnerText().equals(String.valueOf(idCurrentRow))) {
+                myTaskListGrid.getRowElement(i).getCells().getItem(column).setTitle(description);
+                break;
+            }
+        }
+    }
 
 }
