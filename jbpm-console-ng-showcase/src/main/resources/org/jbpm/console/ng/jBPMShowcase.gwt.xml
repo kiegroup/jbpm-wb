@@ -69,9 +69,9 @@
  
   <extend-property name="locale" values="de"/>
   <extend-property name="locale" values="es_AR"/>
-  <extend-property name="locale" values="fr_FR"/>
+  <!--extend-property name="locale" values="fr_FR"/ ..This is breaking the gwt compilation--> 
   <extend-property name="locale" values="ja_JP"/>
-  <extend-property name="locale" values="pt_BR"/>
+  <!--extend-property name="locale" values="pt_BR"/ ..This is breaking the gwt compilation-->
   <extend-property name="locale" values="zh_CN"/>
   
 
