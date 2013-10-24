@@ -65,12 +65,6 @@ public class ApplicationScopedProvider {
         return userGroupCallback;
     }
 
-    @Produces
-    @Named("system")
-    public Repository systemRepository() {
-        return SYSTEM_REPO;
-    }
-
     @PersistenceUnit(unitName = "org.jbpm.domain")
     private EntityManagerFactory emf;
 
