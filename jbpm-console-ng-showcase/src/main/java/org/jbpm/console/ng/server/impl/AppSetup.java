@@ -19,10 +19,12 @@ package org.jbpm.console.ng.server.impl;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jbpm.console.ng.bd.service.AdministrationService;
+import org.uberfire.commons.services.cdi.ApplicationStarted;
 import org.uberfire.io.IOClusteredService;
 import org.uberfire.io.IOService;
 import org.uberfire.commons.services.cdi.Startup;
@@ -59,6 +61,9 @@ public class AppSetup {
     @Inject
     private ConfigurationFactory configurationFactory;
 
+    @Inject
+    private Event<ApplicationStarted> applicationStartedEvent;
+
     @PostConstruct
     public void onStartup() {
         if (!"false".equalsIgnoreCase(System.getProperty("org.kie.demo"))) {
@@ -76,9 +81,7 @@ public class AppSetup {
         configurationService.addConfiguration( getGlobalConfiguration() );
 
         // notify cluster service that bootstrap is completed to start synchronization
-        if (ioService instanceof IOClusteredService) {
-            ((IOClusteredService) ioService).start();
-        }
+        applicationStartedEvent.fire(new ApplicationStarted());
     }
 
 
