@@ -616,7 +616,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
                     placeManager.goTo("Task Details Multi");
                     taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
                 }else if( status == PlaceStatus.OPEN || Long.valueOf(task.getId()).equals(idSelected)){
-                    placeManager.closePlace(new DefaultPlaceRequest("Task Details Multi"));
+                    presenter.closeEditPanel();
                 }
             }
         }));

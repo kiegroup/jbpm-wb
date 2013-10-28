@@ -56,6 +56,7 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnFocus;
@@ -247,7 +248,31 @@ public class TasksListPresenter {
                 view.getTaskListMultiDayBox().refresh();
             }
          }
+        refreshEditPanel();
         view.getTaskListGrid().setFocus(true);
+    }
+    
+    private void refreshEditPanel() {
+        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
+        if (this.getCurrentView() == TaskView.GRID) {
+            if (view.getTaskListGrid().getRowCount() == 0 && status == PlaceStatus.OPEN) {
+                closeEditPanel();
+            }
+        } else {
+            boolean close = true;
+            if (currentDayTasks != null) {
+                for (Map.Entry<Day, List<TaskSummary>> entry : currentDayTasks.entrySet()) {
+                    if (entry.getValue() != null && entry.getValue().size() > 0) {
+                        close = false;
+                        break;
+                    }
+                }
+            }
+            if (close && status == PlaceStatus.OPEN) {
+                closeEditPanel();
+            }
+        }
+
     }
 
     public void startTasks( final List<Long> selectedTasks,
@@ -639,6 +664,10 @@ public class TasksListPresenter {
     
     public String getCurrentFilter(){
         return view.getCurrentFilter();
+    }
+    
+    public void closeEditPanel() {
+        placeManager.closePlace(new DefaultPlaceRequest("Task Details Multi"));
     }
     
 }
