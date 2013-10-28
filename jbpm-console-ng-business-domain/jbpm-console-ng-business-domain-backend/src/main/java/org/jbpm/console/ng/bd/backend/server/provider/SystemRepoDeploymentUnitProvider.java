@@ -22,10 +22,10 @@ import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.jbpm.console.ng.bd.api.Vfs;
 import org.jbpm.console.ng.bd.service.DeploymentUnitProvider;
 import org.jbpm.kie.services.api.DeploymentUnit;
 import org.jbpm.kie.services.api.Kjar;
-import org.jbpm.kie.services.api.Vfs;
 import org.uberfire.backend.deployment.DeploymentConfig;
 import org.uberfire.backend.deployment.DeploymentConfigService;
 

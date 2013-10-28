@@ -23,10 +23,10 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.jbpm.console.ng.bd.api.VFSDeploymentUnit;
+import org.jbpm.console.ng.bd.api.Vfs;
 import org.jbpm.console.ng.bd.service.DeploymentUnitProvider;
 import org.jbpm.kie.services.api.DeploymentUnit;
-import org.jbpm.kie.services.api.Vfs;
-import org.jbpm.kie.services.impl.VFSDeploymentUnit;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.DirectoryStream;
 import org.uberfire.java.nio.file.Path;
