@@ -6,14 +6,130 @@
          xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink"
          xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:ns="http://docbook.org/ns/docbook">
   <title>Configurations</title>
-  
-  
-
   <section>
-    <title>Set up</title>
-    
-    <para>TBD</para>
-    
+    <para>There are three points to consider when we configure the application for deployment: </para>
+    <para>
+      <itemizedlist>
+        <listitem>
+          <para>Users/Groups/Roles</para>
+        </listitem>
+        <listitem>
+          <para>Domain Specific Tasks (Connectors)</para>
+        </listitem>
+        <listitem>
+          <para> JBoss AS 7 Profile</para>
+        </listitem>
+      </itemizedlist>
+    </para>
+
+    <section>
+      <title>User/Groups/Roles</title>
+      <para>By default the KIE-Workbench uses the JBoss AS configured users to work. 
+        In order to create a new user we need to use the ./add-user.sh script located inside the /bin/ directory. 
+        Using this script we will be creating all the users required by our business processes, and for that reason 
+        we will be also assigning them groups and roles.
+      </para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" format="PNG" role=""
+            fileref="images/Chapter-Configurations/add-user.png" width="700" height="200"/>
+        </imageobject>
+      </mediaobject>
+      <para>As you can see in the previous image, using the ./add-user.sh script you can create a
+        new user for the Application User (first two options: option B, and empty realm). Note that
+        you need to use different strings for the user name and for the password. For now you can
+        create users with role admin, so it will have access to all the screens of the tool and then
+        you can write the groups where the user belongs. In this case the user salaboy has Role:
+        admin and he belongs to the IT group. There are some restricted words that cannot be used as
+        group names. For now avoid using “analyst”, “admin”, “developer” for group names. </para>
+      
+    </section>
+    <section>
+      <title>Domain Specific Tasks (Connectors)</title>
+      <para>Domain Specific Tasks (Connectors) are the way to integrate your business processes with
+        external services that can be inside or outside your company. These connectors are
+        considered technical assets and because of that needs to be handled by technical users. Most
+        of the time it is recommended to not change/modify the connectors when the application is
+        running, and for that reason these connectors needs to be provided for the application to
+        use in runtime. Three things are required to use a Custom Connector: </para>
+      
+      <para>
+        <itemizedlist>
+          <listitem>
+            <para>Provide an implementation of the WorkItemHandler interface, which is the one that
+              will be executed in runtime.</para>
+          </listitem>
+          <listitem>
+            <para>Bind the implementation to a Service Task name.</para>
+          </listitem>
+          <listitem>
+            <para>Create the WorkItem Descriptor inside the tool.</para>
+          </listitem>
+        </itemizedlist>
+        
+      </para>
+      <para>In order to provide these three configuration points you can take a look at the Customer
+        Relationship example in the jbpm-playground repository. </para>
+      
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" format="PNG" role=""
+            fileref="images/Chapter-Configurations/customer-relationships.png" width="600"
+            height="200"/>
+        </imageobject>
+      </mediaobject>
+       
+      <para>The main idea here is to have a separate project that contains the workItems
+        implementations, for example: CreateCustomerWorkItemHandler , you will need to compile this
+        project with maven and install the produced jar file inside the KIE-WB application. In order
+        to do that you just copy the customer-services-workitems-1.0-SNAPSHOT.jar into the
+        WEB-INF/lib directory of the kie-wb.war app. On this example the workItemHandler
+        implementations interacts with a public web service that you can check here , so you will
+        require internet connection in order to try this example. </para>
+      <para>Notice also that inside the customer-relationship project there are some high level
+        mappings of the Domain Specific Tasks that can be used inside our Customer Relationship
+        Project -> WorkItemDefinitions.wid. 
+      </para>
+      
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" format="PNG" role=""
+            fileref="images/Chapter-Configurations/wid.png" width="700" height="200"/>
+        </imageobject>
+      </mediaobject>
+      
+      <para>This configuration will basically add you Service Tasks inside the Process Designer
+        Palette: </para>
+      
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" format="PNG" role=""
+            fileref="images/Chapter-Configurations/service-tasks.png" width="200" height="200"/>
+        </imageobject>
+      </mediaobject>
+      
+      <para>The last step is to bind the High Level mapping to their implementation for this
+        environment. You can do that by adding new entries into the
+        WEB-INF/classes/META-INF/CustomWorkItemHandlers.conf file, for this example we just need to
+        add the following entries: </para>
+      <programlisting>
+          …
+        “CreateCustomer”: new org.jbpm.customer.services.CreateCustomerWorkItemHandler(),
+        “AddCustomerComment”: new org.jbpm.customer.services.AddCustomerCommentsWorkItemHandler(),
+        “ManagersReport”: new org.jbpm.customer.services.ManagersReportWorkItemHandler(),
+        …
+      </programlisting>
+    </section>
+    <section>
+      <title>JBoss AS 7 Profile</title>
+      <para>
+        In order to run the KIE Workbench (or the jBPM Console NG) in JBoss AS 7 you need to run it with full JBoss AS7 profile, 
+        so if you are installing it using a fresh JBoss AS7 please don’t forget to start it using the full profile:
+      </para>
+      <programlisting>
+        ./standalone.sh –server-config=standalone-full.xml
+      </programlisting>
+    </section>
     
   </section>
 </chapter>

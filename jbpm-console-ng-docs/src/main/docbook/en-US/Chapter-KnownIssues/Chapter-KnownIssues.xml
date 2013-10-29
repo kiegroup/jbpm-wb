@@ -11,8 +11,24 @@
 
   <section>
     <title>Known Issues</title>
+    <section>
+      <title>Deployment Timeout</title>
+      <para>
+        the deployment time out. In some machines and some operating systems the deployment time could be greater than a minute and that will cause the application server to throw a timeout exception. In order to override the default configurations you need to edit the standalone.xml file and add the following attribute:
+        
+      
+      </para>
+      <programlisting>
+         &lt;subsystem xmlns="urn:jboss:domain:deployment-scanner:1.0"&gt;
+          &lt;deployment-scanner scan-interval="5000" relative-to="jboss.server.base.dir"
+            path="deployments" deployment-timeout="1200" /&gt;
+        &lt;/subsystem&gt;
+      </programlisting>
+      <para> So if your applications are not deploying add the extra attribute: <emphasis
+          role="bold">deployment-timeout="1200"</emphasis> to the <emphasis role="bold"
+          >urn:jboss:domain:deployment-scanner:1.0</emphasis> subsystem. </para>
+    </section>
     
-    <para>TBD</para>
     
     
   </section>
