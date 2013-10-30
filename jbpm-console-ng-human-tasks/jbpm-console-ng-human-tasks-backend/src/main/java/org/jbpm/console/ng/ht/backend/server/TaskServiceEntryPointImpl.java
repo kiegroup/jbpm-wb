@@ -404,7 +404,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
                 ((InternalTask) task).getSubTaskStrategy().name(), (int) task.getTaskData().getParentId(),
                 potOwnersString);
     }
-
+    
     @Override
     public long saveContent(long taskId, Map<String, String> values) {
         return addContent(taskId, (Map) values);
@@ -529,6 +529,11 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     public List<TaskEventSummary> getAllTaskEvents(long taskId) {
         return TaskEventSummaryHelper.adaptCollection(taskAudit.getAllTaskEvents(taskId));
+    }
+    
+    @Override
+    public Boolean existsInDatabase(long taskId){
+        return taskService.getTaskById(taskId) == null ? false : true;
     }
 
 }
