@@ -40,6 +40,7 @@ import javax.enterprise.event.Event;
 
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.console.ng.ht.model.events.EditPanelEvent;
 import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSearchEvent;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
@@ -668,6 +669,11 @@ public class TasksListPresenter {
     
     public void closeEditPanel() {
         placeManager.closePlace(new DefaultPlaceRequest("Task Details Multi"));
+    }
+    
+    public void editPanelEvent( @Observes EditPanelEvent editPanelEvent ){
+        view.displayNotification( "The process was finished. Last task completed: " + editPanelEvent.getTaskId() );
+        closeEditPanel();
     }
     
 }

@@ -376,6 +376,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
     }
     
     public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
+        currentAction = null;
         refreshTasks();
     }
 
@@ -431,10 +432,10 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
             @Override
             public void onCellPreview(final CellPreviewEvent<TaskSummary> event) {
 
-             if (BrowserEvents.MOUSEOVER.equalsIgnoreCase(event.getNativeEvent().getType())) {
+                if (BrowserEvents.MOUSEOVER.equalsIgnoreCase(event.getNativeEvent().getType())) {
                     onMouseOverGrid(event);
-                 }
-                
+                }
+
                 if (BrowserEvents.FOCUS.equalsIgnoreCase(event.getNativeEvent().getType())) {
                     onFocusGrid();
                 }
@@ -853,6 +854,7 @@ public class TasksListViewImpl extends Composite implements TasksListPresenter.T
         if( this.getCurrentView() != TaskView.GRID){
             presenter.changeBgTaskCalendar(new TaskCalendarEvent(newTask.getNewTaskId()));
         } 
+        this.setSelectionModel();
     }
     
     private void setSelectionModel(){

@@ -530,5 +530,10 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     public List<TaskEventSummary> getAllTaskEvents(long taskId) {
         return TaskEventSummaryHelper.adaptCollection(taskAudit.getAllTaskEvents(taskId));
     }
+    
+    @Override
+    public Boolean existInDatabase(long taskId){
+        return taskService.getTaskById(taskId) == null ? false : true;
+    }
 
 }
