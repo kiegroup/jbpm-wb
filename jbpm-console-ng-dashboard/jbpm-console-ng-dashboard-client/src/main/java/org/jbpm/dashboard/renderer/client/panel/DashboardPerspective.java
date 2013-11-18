@@ -18,6 +18,7 @@ package org.jbpm.dashboard.renderer.client.panel;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
+import org.uberfire.workbench.model.PanelType;
 import org.uberfire.workbench.model.PartDefinition;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
@@ -37,7 +38,7 @@ public class DashboardPerspective {
 
     @Perspective
     public PerspectiveDefinition buildPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl();
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_STATIC);
         p.setName("Dashboard builder");
         PartDefinition pDef = new PartDefinitionImpl(new DefaultPlaceRequest("DashboardPanel"));
         p.getRoot().addPart(pDef);
