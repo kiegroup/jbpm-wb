@@ -170,6 +170,10 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
         taskStatusLabel.add( new HTMLPanel( constants.Status() ) );
         userLabel.add( new HTMLPanel( constants.User() ) );
         dueDateLabel.add( new HTMLPanel( constants.Due_On() ) );
+        dueDate.setHighlightToday(true);
+        dueDate.setShowTodayButton(true);
+        dueDate.setFormat("dd/mm/yyyy hh:ii");
+        dueDate.setAutoClose(true);
         taskPriorityLabel.add( new HTMLPanel( constants.Priority() ) );
 
         processInstanceIdLabel.add( new HTMLPanel( constants.Process_Instance_Id() ) );
