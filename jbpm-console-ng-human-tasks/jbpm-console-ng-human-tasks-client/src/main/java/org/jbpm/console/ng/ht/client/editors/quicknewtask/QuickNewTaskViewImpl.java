@@ -85,6 +85,11 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
     @Inject
     @DataField
     public ControlGroup taskNameControlGroup;
+    
+    
+    @Inject
+    @DataField
+    public ControlGroup userGroupControlGroup;
 
     @Inject
     @DataField
@@ -92,6 +97,9 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
     
     @Inject
     public HelpInline taskNameHelpLabel;
+    
+    @Inject
+    public HelpInline userGroupHelpLabel;
 
     @Inject
     @DataField
@@ -148,6 +156,8 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
         taskNameControls.add(taskNameHelpLabel);
         taskNameControlGroup.add(taskNameLabel);
         taskNameControlGroup.add(taskNameControls);
+        
+        userGroupControlGroup.add(userGroupHelpLabel);
         
         dueDate.setHighlightToday(true);
         dueDate.setShowTodayButton(true);
@@ -241,6 +251,7 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
     }
     
     private void refreshUserGroupControls(){
+        
         usersGroupsControlsPanel.clear();
         for(ControlGroup userGroupControl : userControlGroups){
             usersGroupsControlsPanel.add(userGroupControl);
@@ -249,6 +260,8 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
         for(ControlGroup groupGroupControl : groupControlGroups){
             usersGroupsControlsPanel.add(groupGroupControl);
         }
+        
+        
     
     }
     
@@ -321,7 +334,15 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
 
     @EventHandler("addTaskButton")
     public void addTaskButton( ClickEvent e ) {
-        addTask();
+        if(userControlGroups.isEmpty() && groupControlGroups.isEmpty()){
+            initializeUserGroupControls();
+            refreshUserGroupControls();
+            userGroupHelpLabel.setText(constants.Provide_User_Or_Group());
+            userGroupControlGroup.setType(ControlGroupType.ERROR);
+            
+        }else{
+            addTask();
+        }
     }
     
     @EventHandler("addUserButton")
