@@ -324,7 +324,7 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
             @Override
             public int compare(ProcessInstanceSummary o1,
                     ProcessInstanceSummary o2) {
-                return o1.getProcessId().compareTo(o2.getProcessId());
+                return o1.getProcessName().toLowerCase().compareTo(o2.getProcessName().toLowerCase());
             }
         });
         processInstanceListGrid.addColumn(processNameColumn, new ResizableHeader(constants.Name(), processInstanceListGrid,
@@ -359,7 +359,15 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
             @Override
             public int compare(ProcessInstanceSummary o1,
                     ProcessInstanceSummary o2) {
-                return o1.getProcessVersion().compareTo(o2.getProcessVersion());
+                Integer version1;
+                Integer version2;
+                try{
+                    version1 =  Integer.valueOf(o1.getProcessVersion());
+                    version2 = Integer.valueOf(o2.getProcessVersion());
+                    return version1.compareTo(version2);
+                }catch(NumberFormatException nfe){
+                    return o1.getProcessVersion().compareTo(o2.getProcessVersion());
+                }
             }
         });
         processInstanceListGrid.addColumn(processVersionColumn, new ResizableHeader(constants.Version(),
