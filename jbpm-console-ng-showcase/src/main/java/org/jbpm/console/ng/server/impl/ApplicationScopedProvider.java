@@ -13,16 +13,16 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceUnit;
 
 import org.jbpm.shared.services.cdi.Selectable;
+import org.kie.internal.task.api.UserGroupCallback;
+import org.uberfire.backend.server.IOWatchServiceNonDotImpl;
+import org.uberfire.backend.server.io.IOSecurityAuth;
+import org.uberfire.backend.server.io.IOSecurityAuthz;
 import org.uberfire.commons.cluster.ClusterServiceFactory;
 import org.uberfire.io.IOService;
 import org.uberfire.io.impl.IOServiceDotFileImpl;
 import org.uberfire.io.impl.cluster.IOServiceClusterImpl;
-import org.kie.internal.task.api.UserGroupCallback;
-import org.uberfire.backend.repositories.Repository;
-
-import static org.uberfire.backend.server.repositories.SystemRepository.*;
-
-import org.uberfire.backend.server.IOWatchServiceNonDotImpl;
+import org.uberfire.security.auth.AuthenticationManager;
+import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.security.impl.authz.RuntimeAuthorizationManager;
 import org.uberfire.security.server.cdi.SecurityFactory;
 
@@ -31,6 +31,14 @@ import org.uberfire.security.server.cdi.SecurityFactory;
  */
 @ApplicationScoped
 public class ApplicationScopedProvider {
+
+    @Inject
+    @IOSecurityAuth
+    private AuthenticationManager authenticationManager;
+
+    @Inject
+    @IOSecurityAuthz
+    private AuthorizationManager authorizationManager;
 
     @Inject
     private IOWatchServiceNonDotImpl watchService;
@@ -49,6 +57,8 @@ public class ApplicationScopedProvider {
         } else {
             ioService = new IOServiceClusterImpl( new IOServiceDotFileImpl( watchService ), clusterServiceFactory, false );
         }
+        ioService.setAuthenticationManager( authenticationManager );
+        ioService.setAuthorizationManager( authorizationManager );
     }
 
     @PreDestroy
