@@ -19,6 +19,7 @@ import com.github.gwtbootstrap.client.ui.DataGrid;
 import java.util.Date;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
+import org.jbpm.console.ng.pr.model.VariableSummary;
 
 public class DataGridUtils {
 
@@ -32,6 +33,8 @@ public class DataGridUtils {
     public static String newProcessInstanceDefName = null;
     public static String newProcessInstanceDefVersion = null;
     public static Date newProcessInstanceStartDate = null;
+    
+    public static int pageSize = 5;
 
     public static void paintRowSelected(DataGrid<ProcessSummary> myProcessDefListGrid, String nameProcessDef, String versionProcessDef) {
         for (int i = 0; i < myProcessDefListGrid.getRowCount(); i++) {
@@ -129,5 +132,28 @@ public class DataGridUtils {
         }
         return processStartDate;
     }
+    
+     public static void setTooltip(DataGrid<VariableSummary> varListGrid, String idCurrentRow, int column,
+            String newValue, String oldValue) {
+        for (int i = 0; i < getCurrentRowCount(varListGrid); i++) {
+            if (varListGrid.getRowElement(i).getCells().getItem(0).getInnerText().equals(newValue.substring(0, 20) + "...")) {
+                varListGrid.getRowElement(i).getCells().getItem(column).setTitle("New Value: "+newValue +", Old Value: "+oldValue);
+                break;
+            }
+        }
+    }
 
+     private static int getCurrentRowCount(DataGrid<VariableSummary> varListGrid) {
+        int rowCount = 0;
+        for (int i = 0; i < DataGridUtils.pageSize; i++) {
+            try {
+                rowCount = i + 1;
+                varListGrid.getRowElement(i);
+            } catch (Exception e) {
+                rowCount = i;
+                break;
+            }
+        }
+        return rowCount;
+    }
 }
