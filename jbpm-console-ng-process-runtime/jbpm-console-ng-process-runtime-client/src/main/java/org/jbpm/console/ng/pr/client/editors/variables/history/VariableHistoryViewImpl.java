@@ -26,17 +26,20 @@ import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.view.client.CellPreviewEvent;
 import java.util.Comparator;
 import java.util.Date;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
+import org.jbpm.console.ng.pr.client.util.DataGridUtils;
 import org.jbpm.console.ng.pr.client.util.ResizableHeader;
 import org.jbpm.console.ng.pr.model.VariableSummary;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -92,16 +95,34 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
         sortHandler = new ListHandler<VariableSummary>( presenter.getDataProvider().getList() );
         processVarListGrid.addColumnSortHandler( sortHandler );
         
+         processVarListGrid.addCellPreviewHandler(new CellPreviewEvent.Handler<VariableSummary>() {
+
+            @Override
+            public void onCellPreview(final CellPreviewEvent<VariableSummary> event) {
+
+             if (BrowserEvents.MOUSEOVER.equalsIgnoreCase(event.getNativeEvent().getType())) {
+                    onMouseOverGrid(event);
+                 }
+
+            }
+        });
+        
         // Create a Pager to control the table.
 
         pager.setDisplay( processVarListGrid );
         pager.setPageSize( 5 );
 
+        
+        
         // Value.
         Column<VariableSummary, String> valueColumn = new Column<VariableSummary, String>( new TextCell() ) {
             @Override
             public String getValue( VariableSummary object ) {
-                return object.getNewValue();
+                if(object.getNewValue() != null && object.getNewValue().length() > 20){
+                    return object.getNewValue().substring(0, 20) + "...";
+                }else{
+                    return object.getNewValue();
+                }   
             }
         };
 
@@ -120,7 +141,11 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
         Column<VariableSummary, String> oldValueColumn = new Column<VariableSummary, String>( new TextCell() ) {
             @Override
             public String getValue( VariableSummary object ) {
-                return object.getOldValue();
+                if(object.getOldValue() != null && object.getOldValue().length() > 20){
+                    return object.getOldValue().substring(0, 20) + "...";
+                }else{
+                    return object.getOldValue();
+                }
             }
         };
         oldValueColumn.setSortable( true );
@@ -191,6 +216,13 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
     @Override
     public String getVariableId() {
         return variableId;
+    }
+    
+     private void onMouseOverGrid(final CellPreviewEvent<VariableSummary> event){
+        VariableSummary var = event.getValue();
+        if(var.getNewValue() != null){
+            DataGridUtils.setTooltip(processVarListGrid, event.getValue().getVariableId(), event.getColumn(), var.getNewValue(), var.getOldValue());
+        }
     }
 
 }
