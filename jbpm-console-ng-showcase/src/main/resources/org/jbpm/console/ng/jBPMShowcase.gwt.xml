@@ -68,7 +68,7 @@
   <source path='client' />
  
   <extend-property name="locale" values="de"/>
-  <extend-property name="locale" values="es_AR"/>
+  <extend-property name="locale" values="es_ES"/>
   <extend-property name="locale" values="fr_FR"/> 
   <extend-property name="locale" values="ja_JP"/>
   <extend-property name="locale" values="pt_BR"/>
