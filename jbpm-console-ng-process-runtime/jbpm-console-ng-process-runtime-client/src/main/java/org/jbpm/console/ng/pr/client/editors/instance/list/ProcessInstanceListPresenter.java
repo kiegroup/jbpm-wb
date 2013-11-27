@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import java.util.Set;
@@ -213,7 +214,7 @@ public class ProcessInstanceListPresenter {
     public void onStartup(final PlaceRequest place) {
         this.place = place;
     }
-    
+
     @OnFocus
     public void onFocus() {
         refreshActiveProcessList();
@@ -235,7 +236,7 @@ public class ProcessInstanceListPresenter {
             }
         }).abortProcessInstance(processInstanceId);
     }
-    
+
     public void abortProcessInstance(List<Long> processInstanceIds) {
         kieSessionServices.call(new RemoteCallback<Void>() {
             @Override
@@ -246,7 +247,6 @@ public class ProcessInstanceListPresenter {
         }).abortProcessInstances(processInstanceIds);
     }
 
-    
     public void suspendProcessInstance(String processDefId,
             long processInstanceId) {
         kieSessionServices.call(new RemoteCallback<Void>() {
@@ -283,18 +283,18 @@ public class ProcessInstanceListPresenter {
                 .endMenu()
                 .newTopLevelMenu(constants.Refresh())
                 .respondsWith(new Command() {
-            @Override
-            public void execute() {
-                view.getShowAllLink().setStyleName("active");
-                view.getShowCompletedLink().setStyleName("");
-                view.getShowAbortedLink().setStyleName("");
-                view.getShowRelatedToMeLink().setStyleName("");
-                refreshActiveProcessList();
-                clearSearchEvent.fire(new ClearSearchEvent());
-                view.setCurrentFilter("");
-                view.displayNotification(constants.Process_Instances_Refreshed());
-            }
-        })
+                    @Override
+                    public void execute() {
+                        view.getShowAllLink().setStyleName("active");
+                        view.getShowCompletedLink().setStyleName("");
+                        view.getShowAbortedLink().setStyleName("");
+                        view.getShowRelatedToMeLink().setStyleName("");
+                        refreshActiveProcessList();
+                        clearSearchEvent.fire(new ClearSearchEvent());
+                        view.setCurrentFilter("");
+                        view.displayNotification(constants.Process_Instances_Refreshed());
+                    }
+                })
                 .endMenu().build();
 
     }
@@ -335,24 +335,25 @@ public class ProcessInstanceListPresenter {
             @Override
             public void execute() {
                 if (view.getSelectedProcessInstances() != null) {
-                    List<Long> ids = new ArrayList<Long>();
-                    for (ProcessInstanceSummary selected : view.getSelectedProcessInstances()) {
-                        if (selected.getState() != ProcessInstance.STATE_ACTIVE) {
-                            view.displayNotification(constants.Aborting_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
-                                    + ")");
-                            continue;
+                    if (Window.confirm("Are you sure that you want to abort the selected process instances?")) {
+                        List<Long> ids = new ArrayList<Long>();
+                        for (ProcessInstanceSummary selected : view.getSelectedProcessInstances()) {
+                            if (selected.getState() != ProcessInstance.STATE_ACTIVE) {
+                                view.displayNotification(constants.Aborting_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
+                                        + ")");
+                                continue;
+                            }
+                            ids.add(selected.getId());
+
+                            view.getProcessInstanceListGrid().getSelectionModel().setSelected(selected, false);
+                            view.displayNotification(constants.Aborting_Process_Instance() + "(id=" + selected.getId() + ")");
                         }
-                        ids.add(selected.getId());
-                        
-                        view.getProcessInstanceListGrid().getSelectionModel().setSelected(selected, false);
-                        view.displayNotification(constants.Aborting_Process_Instance() + "(id=" + selected.getId() + ")");
+                        abortProcessInstance(ids);
+
                     }
-                    abortProcessInstance(ids);
-                    
                 }
             }
         }).endMenu().build().getItems().get(0));
-
 
         return bulkActions;
     }
