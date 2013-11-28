@@ -34,6 +34,9 @@ public class ProcessHelper {
     }
 
     public static ProcessSummary adapt(ProcessDesc p) {
+        if (p == null) {
+            return null;
+        }
         return new ProcessSummary(p.getId(), p.getName(), p.getDeploymentId(), p.getPackageName(), p.getType(), p.getVersion(),
                 p.getOriginalPath(), p.getEncodedProcessSource());
     }
