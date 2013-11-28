@@ -251,24 +251,30 @@ public class ProcessInstanceDetailsPresenter {
         dataServices.call(new RemoteCallback<ProcessSummary>() {
             @Override
             public void callback(final ProcessSummary process) {
-                view.setEncodedProcessSource(process.getEncodedProcessSource());
-                if (process.getOriginalPath() != null) {
-                    fileServices.call(new RemoteCallback<Path>() {
-                        @Override
-                        public void callback(Path processPath) {
-                            view.setProcessAssetPath(processPath);
-                            if( processSelected != null ){
-                                changeStyleRow(processSelected.getId(), processSelected.getProcessName(), processSelected.getProcessVersion(), 
-                                		processSelected.getStartTime());
+                if (process != null) {
+                    view.setEncodedProcessSource(process.getEncodedProcessSource());
+                    if (process.getOriginalPath() != null) {
+                        fileServices.call(new RemoteCallback<Path>() {
+                            @Override
+                            public void callback(Path processPath) {
+                                view.setProcessAssetPath(processPath);
+                                if( processSelected != null ){
+                                    changeStyleRow(processSelected.getId(), processSelected.getProcessName(), processSelected.getProcessVersion(),
+                                            processSelected.getStartTime());
+                                }
                             }
-                        }
-                    }).get(process.getOriginalPath());
+                        }).get(process.getOriginalPath());
+                    } else {
+                        view.setProcessAssetPath(new DummyProcessPath(process.getId()));
+                    }
+                    if( processSelected != null ){
+                        changeStyleRow(processSelected.getId(), processSelected.getProcessName(), processSelected.getProcessVersion(),
+                                processSelected.getStartTime());
+                    }
                 } else {
-                    view.setProcessAssetPath(new DummyProcessPath(process.getId()));
-                }
-                if( processSelected != null ){
-                    changeStyleRow(processSelected.getId(), processSelected.getProcessName(), processSelected.getProcessVersion(), 
-                    		processSelected.getStartTime());
+                    // set to null to ensure it's clear state
+                    view.setEncodedProcessSource(null);
+                    view.setProcessAssetPath(null);
                 }
             }
         }).getProcessById(deploymentId, processDefId);
@@ -374,6 +380,10 @@ public class ProcessInstanceDetailsPresenter {
                 .respondsWith(new Command() {
                     @Override
                     public void execute() {
+                        if (view.getProcessAssetPath() == null) {
+                            view.displayNotification("Process definition not found, most likely it's not deployed");
+                            return;
+                        }
                         StringBuffer nodeParam = new StringBuffer();
                         for (NodeInstanceSummary activeNode : view.getActiveNodes()) {
                             nodeParam.append(activeNode.getNodeUniqueName() + ",");

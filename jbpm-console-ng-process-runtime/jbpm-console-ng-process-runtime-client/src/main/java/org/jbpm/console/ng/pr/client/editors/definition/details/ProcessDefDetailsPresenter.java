@@ -224,19 +224,25 @@ public class ProcessDefDetailsPresenter {
         dataServices.call( new RemoteCallback<ProcessSummary>() {
             @Override
             public void callback( ProcessSummary process ) {
-                view.setEncodedProcessSource( process.getEncodedProcessSource() );
-                view.getProcessNameText().setText(process.getName());
-                if ( process.getOriginalPath() != null ) {
-                    fileServices.call( new RemoteCallback<Path>() {
-                        @Override
-                        public void callback( Path processPath ) {
-                            view.setProcessAssetPath( processPath );
-                        }
-                    } ).get( process.getOriginalPath() );
+                if (process != null) {
+                    view.setEncodedProcessSource( process.getEncodedProcessSource() );
+                    view.getProcessNameText().setText(process.getName());
+                    if ( process.getOriginalPath() != null ) {
+                        fileServices.call( new RemoteCallback<Path>() {
+                            @Override
+                            public void callback( Path processPath ) {
+                                view.setProcessAssetPath( processPath );
+                            }
+                        } ).get( process.getOriginalPath() );
+                    } else {
+                        view.setProcessAssetPath( new DummyProcessPath( process.getId() ) );
+                    }
+                    changeStyleRow(process.getName(), process.getVersion());
                 } else {
-                    view.setProcessAssetPath( new DummyProcessPath( process.getId() ) );
+                    // set to null to ensure it's clear state
+                    view.setEncodedProcessSource(null);
+                    view.setProcessAssetPath(null);
                 }
-                changeStyleRow(process.getName(), process.getVersion());
             }
         } ).getProcessById( deploymentId, processId );
         
