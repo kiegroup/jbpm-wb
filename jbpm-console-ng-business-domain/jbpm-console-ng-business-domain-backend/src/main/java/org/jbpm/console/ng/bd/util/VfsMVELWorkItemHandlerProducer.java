@@ -6,16 +6,15 @@ import java.util.Map;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import org.drools.core.util.MVELSafeHelper;
 import org.jbpm.console.ng.bd.api.FileException;
 import org.jbpm.console.ng.bd.api.FileService;
 import org.jbpm.console.ng.bd.api.VFSDeploymentUnit;
 import org.jbpm.console.ng.bd.api.Vfs;
-import org.jbpm.flow.util.MVELSafeHelper;
 import org.jbpm.kie.services.api.DeployedUnit;
 import org.jbpm.kie.services.api.DeploymentService;
 import org.jbpm.runtime.manager.api.WorkItemHandlerProducer;
 import org.kie.api.runtime.process.WorkItemHandler;
-import org.mvel2.MVEL;
 import org.uberfire.java.nio.file.Path;
 
 public class VfsMVELWorkItemHandlerProducer implements WorkItemHandlerProducer {
