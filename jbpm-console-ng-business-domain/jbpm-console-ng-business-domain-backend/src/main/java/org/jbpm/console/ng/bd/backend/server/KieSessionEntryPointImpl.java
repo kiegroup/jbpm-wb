@@ -26,20 +26,20 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 
-import org.jboss.seam.transaction.TransactionInterceptor;
-import org.jbpm.kie.services.api.DeploymentService;
-import org.jbpm.kie.services.api.RuntimeDataService;
-import org.jbpm.kie.services.impl.model.ProcessInstanceDesc;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jboss.seam.transaction.TransactionInterceptor;
 import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.backend.server.ProcessInstanceHelper;
+import org.jbpm.kie.services.api.RuntimeDataService;
+import org.jbpm.kie.services.impl.model.ProcessInstanceDesc;
 import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
+import org.kie.internal.deployment.DeploymentService;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 
 @Service
