@@ -123,7 +123,7 @@ public class DeploymentUnitsListPresenter {
                                     public boolean error( Message message,
                                                           Throwable throwable ) {
                                         view.hideBusyIndicator();
-                                        view.displayNotification( "Error: Deploy failed, check Problems panel" );
+                                        view.displayNotification( "Error: Undeploy failed, check Problems panel" );
                                         return true;
                                     }
                                 }
