@@ -1,6 +1,7 @@
 package org.jbpm.console.ng.bd.api;
 
-import org.jbpm.kie.services.api.DeploymentUnit;
+import org.kie.internal.deployment.DeploymentUnit;
+import org.kie.internal.deployment.DeploymentUnit.RuntimeStrategy;
 
 public class VFSDeploymentUnit implements DeploymentUnit {
 

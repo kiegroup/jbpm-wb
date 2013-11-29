@@ -19,13 +19,14 @@ package org.jbpm.console.ng.pr.backend.server;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.jbpm.kie.services.impl.model.ProcessDesc;
+
 import org.jbpm.console.ng.pr.model.ProcessSummary;
+import org.jbpm.kie.services.impl.model.ProcessAssetDesc;
 
 public class ProcessHelper {
-    public static Collection<ProcessSummary> adaptCollection(Collection<ProcessDesc> processes) {
+    public static Collection<ProcessSummary> adaptCollection(Collection<ProcessAssetDesc> processes) {
         List<ProcessSummary> processesSummary = new ArrayList<ProcessSummary>();
-        for (ProcessDesc p : processes) {
+        for (ProcessAssetDesc p : processes) {
             processesSummary.add(new ProcessSummary(p.getId(), p.getName(), p.getDeploymentId(), p.getPackageName(), p
                     .getType(), p.getVersion(), p.getOriginalPath(), p.getEncodedProcessSource()));
         }
@@ -33,7 +34,7 @@ public class ProcessHelper {
         return processesSummary;
     }
 
-    public static ProcessSummary adapt(ProcessDesc p) {
+    public static ProcessSummary adapt(ProcessAssetDesc p) {
         if (p == null) {
             return null;
         }

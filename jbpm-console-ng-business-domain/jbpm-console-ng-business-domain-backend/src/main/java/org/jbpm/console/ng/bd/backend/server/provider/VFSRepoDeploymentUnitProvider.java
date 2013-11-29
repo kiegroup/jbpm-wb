@@ -26,13 +26,13 @@ import javax.inject.Named;
 import org.jbpm.console.ng.bd.api.VFSDeploymentUnit;
 import org.jbpm.console.ng.bd.api.Vfs;
 import org.jbpm.console.ng.bd.service.DeploymentUnitProvider;
-import org.jbpm.kie.services.api.DeploymentUnit;
-import org.uberfire.io.IOService;
-import org.uberfire.java.nio.file.DirectoryStream;
-import org.uberfire.java.nio.file.Path;
+import org.kie.internal.deployment.DeploymentUnit;
 import org.uberfire.backend.repositories.Repository;
 import org.uberfire.backend.repositories.RepositoryService;
+import org.uberfire.io.IOService;
+import org.uberfire.java.nio.file.DirectoryStream;
 import org.uberfire.java.nio.file.Files;
+import org.uberfire.java.nio.file.Path;
 
 @ApplicationScoped
 @Vfs

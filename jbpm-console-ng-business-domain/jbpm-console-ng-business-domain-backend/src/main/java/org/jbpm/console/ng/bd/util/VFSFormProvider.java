@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import org.jbpm.console.ng.bd.api.FileException;
 import org.jbpm.console.ng.bd.api.FileService;
 import org.jbpm.kie.services.impl.form.provider.FreemakerFormProvider;
-import org.jbpm.kie.services.impl.model.ProcessDesc;
+import org.jbpm.kie.services.impl.model.ProcessAssetDesc;
 import org.kie.api.task.model.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ public class VFSFormProvider extends FreemakerFormProvider {
     private FileService fileService;
 
     @Override
-    public String render(String name, ProcessDesc process, Map<String, Object> renderContext) {
+    public String render(String name, ProcessAssetDesc process, Map<String, Object> renderContext) {
         if (process == null || process.getOriginalPath() == null) {
             return null;
         }
@@ -78,7 +78,7 @@ public class VFSFormProvider extends FreemakerFormProvider {
     }
 
     @Override
-    public String render(String name, Task task, ProcessDesc process, Map<String, Object> renderContext) {
+    public String render(String name, Task task, ProcessAssetDesc process, Map<String, Object> renderContext) {
         InputStream template = null;
         Path processPath = null;
 
