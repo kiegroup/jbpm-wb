@@ -32,6 +32,7 @@ import java.util.List;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.client.util.UTCDateBox;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
@@ -112,9 +113,9 @@ public class QuickNewTaskPresenter {
                          final String taskName,
                          int priority,
                          boolean isAssignToMe,
-                         Date due ) {
-
+                         long dueDate, long dueDateTime ) {
         Map<String, Object> templateVars = new HashMap<String, Object>();
+        Date due = UTCDateBox.utc2date( dueDate + dueDateTime ); 
         templateVars.put( "due", due );
         templateVars.put( "now", new Date() );
 
