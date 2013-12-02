@@ -19,7 +19,6 @@ package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.CheckBox;
-import java.util.Date;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -32,7 +31,6 @@ import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -50,7 +48,8 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
+import org.jbpm.console.ng.ht.client.util.UTCDateBox;
+import org.jbpm.console.ng.ht.client.util.UTCTimeBox;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -93,7 +92,11 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
 
     @Inject
     @DataField
-    public DateTimeBox dueDate;
+    public UTCDateBox dueDate;
+    
+    @Inject
+    @DataField
+    public UTCTimeBox dueDateTime;
     
     @Inject
     public HelpInline taskNameHelpLabel;
@@ -158,14 +161,16 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
         taskNameControlGroup.add(taskNameControls);
         
         userGroupControlGroup.add(userGroupHelpLabel);
-        
-        dueDate.setHighlightToday(true);
-        dueDate.setShowTodayButton(true);
-        dueDate.setFormat("dd/mm/yyyy hh:ii");
-        dueDate.setAutoClose(true);
+       
+
         long day = new Long(24 * 60 * 60 * 1000);
         long now = System.currentTimeMillis();
-        dueDate.setValue(new Date( day + now ) );
+        dueDate.setEnabled(true);
+        
+        dueDate.setValue( day + now  );
+        
+        dueDateTime.setValue(UTCTimeBox.getValueForNextHour());
+        
         initializeUserGroupControls();
         refreshUserGroupControls();
         
@@ -415,9 +420,11 @@ public class QuickNewTaskViewImpl extends Composite implements QuickNewTaskPrese
                 }
             }
             
+            
+         
             presenter.addTask( users, groups,
                                 taskNameText.getText(), taskPriorityListBox.getSelectedIndex(),
-                               assignToMeTaskCheck.getValue(), dueDate.getValue() );
+                               assignToMeTaskCheck.getValue(), dueDate.getValue() , dueDateTime.getValue() );
         } else {
             displayNotification( constants.Task_Must_Have_A_Name() );
             taskNameText.setFocus(true);

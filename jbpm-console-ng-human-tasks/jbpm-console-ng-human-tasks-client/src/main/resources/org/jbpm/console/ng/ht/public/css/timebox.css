@@ -1,0 +1,32 @@
+.gwt-TimeBox.invalid {
+  color: #900;    
+}
+.gwt-TimeBox-menu {
+  z-index: 1060;
+}
+.gwt-TimeBox-menu .popupContent {
+    height: 200px;
+    overflow: auto;
+    background: #fff;
+    border-style: solid;
+    border-color: #ccc;
+    border-width: 0 1px 1px;
+}
+.gwt-TimeBox-menu A {
+    white-space: nowrap;
+    display: block;
+    padding: 2px 26px 2px 15px;
+    color: #111;
+}
+.gwt-TimeBox-menu .selected A, .gwt-TimeBox-menu .selected.highlighted A {
+    background-color: #ccc;
+}
+.gwt-TimeBox-menu .highlighted A, .gwt-TimeBox-menu A:hover {
+    background-color: #eee;
+    color: #000;
+    text-decoration: none;
+}
+
+.dateBoxPopup{
+    z-index: 1060;
+}

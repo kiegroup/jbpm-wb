@@ -22,7 +22,6 @@ import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.ControlLabel;
 import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -32,10 +31,13 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+import java.util.Date;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.client.util.UTCDateBox;
+import org.jbpm.console.ng.ht.client.util.UTCTimeBox;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
 
@@ -91,7 +93,12 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
 
     @Inject
     @DataField
-    public DateTimeBox dueDate;
+    public UTCDateBox dueDate;
+    
+    
+    @Inject
+    @DataField
+    public UTCTimeBox dueDateTime;
 
     @Inject
     @DataField
@@ -170,10 +177,7 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
         taskStatusLabel.add( new HTMLPanel( constants.Status() ) );
         userLabel.add( new HTMLPanel( constants.User() ) );
         dueDateLabel.add( new HTMLPanel( constants.Due_On() ) );
-        dueDate.setHighlightToday(true);
-        dueDate.setShowTodayButton(true);
-        dueDate.setFormat("dd/mm/yyyy hh:ii");
-        dueDate.setAutoClose(true);
+
         taskPriorityLabel.add( new HTMLPanel( constants.Priority() ) );
 
         processInstanceIdLabel.add( new HTMLPanel( constants.Process_Instance_Id() ) );
@@ -197,7 +201,7 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
         presenter.updateTask( taskDescriptionTextArea.getText(),
                               userText.getText(),
                               // subTaskStrategyListBox.getItemText(subTaskStrategyListBox.getSelectedIndex()),
-                              dueDate.getValue(), taskPriorityListBox.getSelectedIndex() );
+                              UTCDateBox.utc2date(dueDate.getValue() + dueDateTime.getValue()), taskPriorityListBox.getSelectedIndex() );
 
     }
     
@@ -224,7 +228,7 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     }
 
     @Override
-    public DateTimeBox getDueDate() {
+    public UTCDateBox getDueDate() {
         return dueDate;
     }
 
@@ -271,6 +275,11 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @Override
     public HTML getLogTextArea() {
         return logTextArea;
+    }
+
+    @Override
+    public UTCTimeBox getDueDateTime() {
+        return dueDateTime;
     }
 
     

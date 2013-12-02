@@ -24,7 +24,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -38,6 +37,8 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.client.util.UTCDateBox;
+import org.jbpm.console.ng.ht.client.util.UTCTimeBox;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
@@ -72,7 +73,9 @@ public class TaskDetailsPresenter {
 
         ListBox getTaskPriorityListBox();
 
-        DateTimeBox getDueDate();
+        UTCDateBox getDueDate();
+        
+        UTCTimeBox getDueDateTime();
 
         TextBox getUserText();
 
@@ -202,7 +205,8 @@ public class TaskDetailsPresenter {
                 }
 
                 view.getTaskDescriptionTextArea().setText(details.getDescription());
-                view.getDueDate().setValue(details.getExpirationTime());
+                view.getDueDate().setValue(UTCDateBox.date2utc(details.getExpirationTime()));
+                view.getDueDateTime().setValue(UTCDateBox.date2utc(details.getExpirationTime()));
                 view.getUserText().setText(details.getActualOwner());
                 view.getUserText().setEnabled(false);
                 view.getTaskStatusText().setText(details.getStatus());
