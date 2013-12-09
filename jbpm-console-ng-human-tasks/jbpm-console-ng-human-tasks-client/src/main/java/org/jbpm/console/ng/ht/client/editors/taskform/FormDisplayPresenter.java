@@ -32,6 +32,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import org.jboss.errai.bus.client.api.messaging.Message;
+
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -47,6 +49,7 @@ import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
+import org.kie.workbench.common.widgets.client.callbacks.DefaultErrorCallback;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -511,6 +514,13 @@ public class FormDisplayPresenter {
                 view.displayNotification("Form for Task Id: " + currentTaskId + " was completed!");
                 taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 dispose();
+            }
+        }, new DefaultErrorCallback() {
+
+            @Override
+            public boolean error(Message message, Throwable throwable) {
+                view.displayNotification("Task failed to complete: "+throwable.getMessage());
+                return false;
             }
         }).completeTaskFromContext(formCtx, currentTaskId, identity.getName());
     }

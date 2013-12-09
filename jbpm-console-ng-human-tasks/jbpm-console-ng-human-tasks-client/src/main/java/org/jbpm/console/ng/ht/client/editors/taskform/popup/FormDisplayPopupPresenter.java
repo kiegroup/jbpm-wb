@@ -33,6 +33,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -46,6 +47,7 @@ import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
+import org.kie.workbench.common.widgets.client.callbacks.DefaultErrorCallback;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -502,6 +504,14 @@ public class FormDisplayPopupPresenter {
                 close();
                
             }
+        }, new DefaultErrorCallback() {
+
+            @Override
+            public boolean error(Message message, Throwable throwable) {
+                close();
+                view.displayNotification("Process Instances failed to start: "+throwable.getMessage());
+                return false;
+            }
         }).startProcessFromRenderContext(formCtx, view.getDomainId(), view.getProcessId());
     }
 
@@ -515,6 +525,15 @@ public class FormDisplayPopupPresenter {
                  newProcessInstanceEvent.fire(new NewProcessInstanceEvent(view.getDomainId(), processInstanceId, view.getProcessId()));
                 close();
                 
+            }
+            
+        }, new DefaultErrorCallback() {
+
+            @Override
+            public boolean error(Message message, Throwable throwable) {
+                close();
+                view.displayNotification("Process Instances failed to start: "+throwable.getMessage());
+                return false;
             }
         }).startProcess(view.getDomainId(), params.get("processId").toString(), params);
 
