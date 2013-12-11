@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
+import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.seam.transaction.TransactionInterceptor;
@@ -315,7 +316,11 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Override
     public void complete(long taskId, String user, Map<String, Object> params) {
-        taskService.complete(taskId, user, params);
+        try{
+            taskService.complete(taskId, user, params);
+        } catch (Exception e) {
+            throw ExceptionUtilities.handleException(e);
+        }
     }
 
     @Override
