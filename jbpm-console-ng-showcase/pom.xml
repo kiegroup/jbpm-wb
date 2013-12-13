@@ -357,7 +357,6 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-shared-services</artifactId>
-      <classifier>btm</classifier>
     </dependency>
 
     <!--Miscellaneous -->

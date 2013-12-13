@@ -23,11 +23,8 @@ import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jboss.seam.transaction.TransactionInterceptor;
-import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.backend.server.TaskDefHelper;
 import org.jbpm.console.ng.ht.model.TaskDefSummary;
@@ -51,8 +48,6 @@ import org.jbpm.kie.services.impl.model.ProcessInstanceDesc;
  */
 @Service
 @ApplicationScoped
-@Transactional
-@Interceptors({TransactionInterceptor.class})
 public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
 
     @Inject

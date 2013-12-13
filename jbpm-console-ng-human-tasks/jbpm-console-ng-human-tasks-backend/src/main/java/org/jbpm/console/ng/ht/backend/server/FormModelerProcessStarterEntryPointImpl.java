@@ -17,8 +17,6 @@ package org.jbpm.console.ng.ht.backend.server;
 
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jboss.seam.transaction.TransactionInterceptor;
-import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.ht.service.FormModelerProcessStarterEntryPoint;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
@@ -26,13 +24,10 @@ import org.jbpm.formModeler.api.client.FormRenderContextManager;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import java.util.Map;
 
 @Service
 @ApplicationScoped
-@Transactional
-@Interceptors({TransactionInterceptor.class})
 public class FormModelerProcessStarterEntryPointImpl implements FormModelerProcessStarterEntryPoint {
     @Inject
     private FormRenderContextManager formRenderContextManager;

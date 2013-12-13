@@ -25,22 +25,19 @@ import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jboss.seam.transaction.TransactionInterceptor;
-import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
-import org.jbpm.services.task.audit.TaskAuditService;
 import org.jbpm.services.task.impl.factories.TaskFactory;
 import org.jbpm.services.task.impl.model.CommentImpl;
 import org.jbpm.services.task.impl.model.UserImpl;
 import org.jbpm.services.task.utils.ContentMarshallerHelper;
+import org.jbpm.services.task.audit.GetAuditEventsCommand;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.kie.api.task.model.Content;
@@ -56,15 +53,10 @@ import org.kie.internal.task.api.model.SubTasksStrategy;
 
 @Service
 @ApplicationScoped
-@Transactional
-@Interceptors({TransactionInterceptor.class})
 public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Inject
     private InternalTaskService taskService;
-    
-    @Inject
-    private TaskAuditService taskAudit;
 
     @Override
     public List<TaskSummary> getTasksAssignedAsPotentialOwnerByExpirationDateOptional(String userId,
@@ -533,7 +525,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
 
     public List<TaskEventSummary> getAllTaskEvents(long taskId) {
-        return TaskEventSummaryHelper.adaptCollection(taskAudit.getAllTaskEvents(taskId));
+        return TaskEventSummaryHelper.adaptCollection(taskService.execute(new GetAuditEventsCommand(taskId)));
     }
 
 }

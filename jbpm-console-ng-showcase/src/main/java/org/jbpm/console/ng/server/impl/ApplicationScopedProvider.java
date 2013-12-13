@@ -12,8 +12,10 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceUnit;
 
+import org.jbpm.kie.services.cdi.producer.UserGroupInfoProducer;
 import org.jbpm.shared.services.cdi.Selectable;
-import org.kie.internal.task.api.UserGroupCallback;
+import org.kie.api.task.UserGroupCallback;
+import org.kie.internal.task.api.UserInfo;
 import org.uberfire.backend.server.IOWatchServiceNonDotImpl;
 import org.uberfire.backend.server.io.IOSecurityAuth;
 import org.uberfire.backend.server.io.IOSecurityAuthz;
@@ -68,11 +70,16 @@ public class ApplicationScopedProvider {
 
     @Inject
     @Selectable
-    private UserGroupCallback userGroupCallback;
+    private UserGroupInfoProducer userGroupInfoProducer;
 
     @Produces
     public UserGroupCallback produceSelectedUserGroupCalback() {
-        return userGroupCallback;
+        return userGroupInfoProducer.produceCallback();
+    }
+
+    @Produces
+    public UserInfo produceUserInfo() {
+        return userGroupInfoProducer.produceUserInfo();
     }
 
     @PersistenceUnit(unitName = "org.jbpm.domain")

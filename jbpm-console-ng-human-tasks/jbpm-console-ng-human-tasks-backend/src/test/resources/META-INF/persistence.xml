@@ -2,9 +2,9 @@
 <persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd                        http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd">
-    <persistence-unit name="org.jbpm.servies.task" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="org.jbpm.servies.task" transaction-type="JTA">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
-
+        <jta-data-source>jdbc/testDS1</jta-data-source>
         <mapping-file>META-INF/Taskorm.xml</mapping-file>
 
         <class>org.jbpm.services.task.impl.model.AttachmentImpl</class>
@@ -40,10 +40,7 @@
             <property name="hibernate.hbm2ddl.auto" value="create-drop" />
             <property name="hibernate.show_sql" value="false" />
 
-            <property name="hibernate.connection.driver_class" value="org.h2.Driver" />
-            <property name="hibernate.connection.url" value="jdbc:h2:mem:test;MVCC=true" />
-            <property name="hibernate.connection.username" value="sa" />
-            <property name="hibernate.connection.password" value="sasa" />
+            <property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.BTMTransactionManagerLookup" />
 
         </properties>
     </persistence-unit>

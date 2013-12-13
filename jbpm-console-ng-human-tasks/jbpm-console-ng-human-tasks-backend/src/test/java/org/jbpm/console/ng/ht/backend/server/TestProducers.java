@@ -6,19 +6,15 @@ package org.jbpm.console.ng.ht.backend.server;
 
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceUnit;
 
-import org.jbpm.shared.services.cdi.Selectable;
 import org.uberfire.io.IOService;
 import org.uberfire.io.impl.IOServiceNio2WrapperImpl;
-import org.kie.internal.task.api.UserGroupCallback;
 
 public class TestProducers {
     private final IOService ioService = new IOServiceNio2WrapperImpl();
@@ -37,33 +33,6 @@ public class TestProducers {
         return this.emf;
     }
 
-    @Produces
-    @ApplicationScoped
-    public EntityManager getEntityManager() {
-        EntityManager em = getEntityManagerFactory().createEntityManager();
-        em.getTransaction().begin();
-        return em;
-    }
-
-    @ApplicationScoped
-    public void commitAndClose(@Disposes EntityManager em) {
-        try {
-            em.getTransaction().commit();
-            em.close();
-        } catch (Exception e) {
-
-        }
-    }
-
-
-    @Inject
-    @Selectable
-    private UserGroupCallback userGroupCallback;
-
-    @Produces
-    public UserGroupCallback produceSelectedUserGroupCalback() {
-        return userGroupCallback;
-    }
 
     @Produces
     @Named("ioStrategy")

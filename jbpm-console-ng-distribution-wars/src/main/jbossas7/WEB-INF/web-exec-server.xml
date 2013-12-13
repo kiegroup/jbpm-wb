@@ -45,11 +45,6 @@
     <welcome-file>rest-api.jsp</welcome-file>
   </welcome-file-list>
 
-  <context-param>
-    <param-name>org.jboss.seam.transaction.disableListener</param-name>
-    <param-value>true</param-value>
-  </context-param>
-
 
   <!-- security settings -->
 

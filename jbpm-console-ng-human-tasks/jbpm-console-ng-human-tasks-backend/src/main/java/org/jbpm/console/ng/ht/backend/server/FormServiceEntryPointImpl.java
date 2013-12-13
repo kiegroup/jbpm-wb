@@ -20,20 +20,15 @@ package org.jbpm.console.ng.ht.backend.server;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 
-import org.jboss.seam.transaction.TransactionInterceptor;
 import org.jbpm.kie.services.api.FormProviderService;
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.ht.service.FormServiceEntryPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Service
 @ApplicationScoped
-@Transactional
-@Interceptors({TransactionInterceptor.class})
 public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
 
     private static final Logger logger = LoggerFactory.getLogger(FormServiceEntryPointImpl.class);
