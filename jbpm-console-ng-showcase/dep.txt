@@ -1,0 +1,387 @@
+[INFO] Scanning for projects...
+Downloading: http://repository.jboss.org/nexus/content/groups/public/org/apache/maven/plugins/maven-dependency-plugin/2.8/maven-dependency-plugin-2.8.pom
+Downloading: http://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-dependency-plugin/2.8/maven-dependency-plugin-2.8.pom
+2/12 KB   3/12 KB   4/12 KB   6/12 KB   7/12 KB   9/12 KB   10/12 KB   11/12 KB   12/12 KB              Downloaded: http://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-dependency-plugin/2.8/maven-dependency-plugin-2.8.pom (12 KB at 49.7 KB/sec)
+Downloading: http://repository.jboss.org/nexus/content/groups/public/org/apache/maven/plugins/maven-dependency-plugin/2.8/maven-dependency-plugin-2.8.jar
+           Downloading: http://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-dependency-plugin/2.8/maven-dependency-plugin-2.8.jar
+4/150 KB   8/150 KB   12/150 KB   16/150 KB   20/150 KB   21/150 KB   25/150 KB   29/150 KB   33/150 KB   34/150 KB   35/150 KB   37/150 KB   38/150 KB   40/150 KB   41/150 KB   43/150 KB   44/150 KB   45/150 KB   47/150 KB   48/150 KB   50/150 KB   51/150 KB   52/150 KB   54/150 KB   55/150 KB   57/150 KB   58/150 KB   60/150 KB   61/150 KB   62/150 KB   64/150 KB   65/150 KB   67/150 KB   68/150 KB   69/150 KB   71/150 KB   72/150 KB   74/150 KB   78/150 KB   82/150 KB   85/150 KB   86/150 KB   88/150 KB   89/150 KB   91/150 KB   92/150 KB   93/150 KB   95/150 KB   96/150 KB   98/150 KB   99/150 KB   101/150 KB   102/150 KB   103/150 KB   107/150 KB   109/150 KB   113/150 KB   116/150 KB   118/150 KB   119/150 KB   120/150 KB   122/150 KB   123/150 KB   125/150 KB   126/150 KB   127/150 KB   129/150 KB   130/150 KB   132/150 KB   133/150 KB   134/150 KB   136/150 KB   137/150 KB   139/150 KB   140/150 KB   142/150 KB   143/150 KB   144/150 KB   146/150 KB   147/150 KB   149/150 KB   150/150 KB   150/150 KB                Downloaded: http://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-dependency-plugin/2.8/maven-dependency-plugin-2.8.jar (150 KB at 194.0 KB/sec)
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building jBPM Console NG - Showcase 6.1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ jbpm-console-ng-showcase ---
+Downloading: http://repository.jboss.org/nexus/content/groups/public/org/codehaus/plexus/plexus-archiver/2.3/plexus-archiver-2.3.pom
+1/4 KB       4/4 KB            Downloaded: http://repository.jboss.org/nexus/content/groups/public/org/codehaus/plexus/plexus-archiver/2.3/plexus-archiver-2.3.pom (4 KB at 1.5 KB/sec)
+Downloading: http://repository.jboss.org/nexus/content/groups/public/org/apache/maven/shared/maven-dependency-analyzer/1.4/maven-dependency-analyzer-1.4.pom
+         Downloading: http://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-dependency-analyzer/1.4/maven-dependency-analyzer-1.4.pom
+2/6 KB   3/6 KB   4/6 KB   6/6 KB            Downloaded: http://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-dependency-analyzer/1.4/maven-dependency-analyzer-1.4.pom (6 KB at 50.3 KB/sec)
+Downloading: http://repository.jboss.org/nexus/content/groups/public/org/codehaus/plexus/plexus-archiver/2.3/plexus-archiver-2.3.jar
+Downloading: http://repository.jboss.org/nexus/content/groups/public/org/apache/maven/shared/maven-dependency-analyzer/1.4/maven-dependency-analyzer-1.4.jar
+         1/183 KB   3/183 KB   4/183 KB   5/183 KB   7/183 KB   8/183 KB   9/183 KB   11/183 KB   12/183 KB   13/183 KB   14/183 KB   16/183 KB   17/183 KB   18/183 KB   20/183 KB   21/183 KB   22/183 KB   24/183 KB   25/183 KB   26/183 KB   28/183 KB   29/183 KB   30/183 KB   32/183 KB   33/183 KB   34/183 KB   36/183 KB   37/183 KB   38/183 KB   39/183 KB   41/183 KB   42/183 KB   43/183 KB   45/183 KB   46/183 KB   50/183 KB   54/183 KB   58/183 KB   62/183 KB   66/183 KB   70/183 KB   74/183 KB   78/183 KB   79/183 KB   80/183 KB   82/183 KB   83/183 KB   84/183 KB   86/183 KB   87/183 KB   88/183 KB   90/183 KB   94/183 KB   98/183 KB   102/183 KB   106/183 KB   110/183 KB   114/183 KB   117/183 KB   118/183 KB   120/183 KB   121/183 KB   122/183 KB   124/183 KB   125/183 KB   126/183 KB   128/183 KB   129/183 KB   130/183 KB   132/183 KB   133/183 KB   134/183 KB   138/183 KB   140/183 KB   142/183 KB   146/183 KB   150/183 KB   154/183 KB   158/183 KB   159/183 KB   161/183 KB   162/183 KB   163/183 KB   165/183 KB   166/183 KB   167/183 KB   168/183 KB   170/183 KB   171/183 KB   172/183 KB   174/183 KB   175/183 KB   176/183 KB   178/183 KB   179/183 KB   180/183 KB   182/183 KB   183/183 KB                Downloaded: http://repository.jboss.org/nexus/content/groups/public/org/codehaus/plexus/plexus-archiver/2.3/plexus-archiver-2.3.jar (183 KB at 50.0 KB/sec)
+Downloading: http://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-dependency-analyzer/1.4/maven-dependency-analyzer-1.4.jar
+2/27 KB      3/27 KB   4/27 KB   6/27 KB   7/27 KB   9/27 KB   10/27 KB   11/27 KB   15/27 KB   19/27 KB   23/27 KB   27/27 KB   27/27 KB              Downloaded: http://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-dependency-analyzer/1.4/maven-dependency-analyzer-1.4.jar (27 KB at 136.7 KB/sec)
+[INFO] org.jbpm:jbpm-console-ng-showcase:war:6.1.0-SNAPSHOT
+[INFO] +- org.kie:kie-ci:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.drools:drools-core:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.drools:drools-compiler:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  |  +- org.antlr:antlr-runtime:jar:3.5:compile
+[INFO] |  |  \- org.eclipse.jdt.core.compiler:ecj:jar:3.7.2:compile
+[INFO] |  +- org.apache.maven:maven-core:jar:3.0.5:compile
+[INFO] |  |  +- org.apache.maven:maven-settings:jar:3.0.5:compile
+[INFO] |  |  +- org.apache.maven:maven-settings-builder:jar:3.0.5:compile
+[INFO] |  |  +- org.apache.maven:maven-repository-metadata:jar:3.0.5:compile
+[INFO] |  |  +- org.apache.maven:maven-artifact:jar:3.0.5:compile
+[INFO] |  |  +- org.apache.maven:maven-plugin-api:jar:3.0.5:compile
+[INFO] |  |  +- org.apache.maven:maven-model-builder:jar:3.0.5:compile
+[INFO] |  |  +- org.apache.maven:maven-aether-provider:jar:3.0.5:compile
+[INFO] |  |  +- org.sonatype.sisu:sisu-inject-plexus:jar:2.2.3:compile
+[INFO] |  |  |  \- org.sonatype.sisu:sisu-inject-bean:jar:2.2.3:compile
+[INFO] |  |  |     \- org.sonatype.sisu:sisu-guice:jar:no_aop:3.0.3:compile
+[INFO] |  |  +- org.codehaus.plexus:plexus-interpolation:jar:1.14:compile
+[INFO] |  |  +- org.codehaus.plexus:plexus-utils:jar:3.0.7:compile
+[INFO] |  |  +- org.codehaus.plexus:plexus-classworlds:jar:2.4:compile
+[INFO] |  |  +- org.codehaus.plexus:plexus-component-annotations:jar:1.5.5:compile
+[INFO] |  |  \- org.sonatype.plexus:plexus-sec-dispatcher:jar:1.3:compile
+[INFO] |  |     \- org.sonatype.plexus:plexus-cipher:jar:1.4:compile
+[INFO] |  +- org.apache.maven:maven-model:jar:3.0.5:compile
+[INFO] |  +- org.apache.maven:maven-compat:jar:3.0.5:compile
+[INFO] |  |  \- org.apache.maven.wagon:wagon-provider-api:jar:1.0:compile
+[INFO] |  +- org.sonatype.aether:aether-api:jar:1.13.1:compile
+[INFO] |  +- org.sonatype.aether:aether-util:jar:1.13.1:compile
+[INFO] |  +- org.sonatype.aether:aether-impl:jar:1.13.1:compile
+[INFO] |  |  \- org.sonatype.aether:aether-spi:jar:1.13.1:compile
+[INFO] |  +- org.sonatype.aether:aether-connector-wagon:jar:1.13.1:compile
+[INFO] |  +- org.sonatype.aether:aether-connector-file:jar:1.13.1:compile
+[INFO] |  \- org.sonatype.maven:wagon-ahc:jar:1.2.1:compile
+[INFO] |     \- com.ning:async-http-client:jar:1.6.5:compile
+[INFO] |        \- org.jboss.netty:netty:jar:3.2.6.Final:compile
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] +- ch.qos.logback:logback-classic:jar:1.0.9:runtime
+[INFO] |  \- ch.qos.logback:logback-core:jar:1.0.9:runtime
+[INFO] +- org.drools:drools-wb-scorecard-xls-editor-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.drools:drools-wb-scorecard-xls-editor-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- javax.inject:javax.inject:jar:1:compile
+[INFO] +- org.jbpm:jbpm-console-ng-human-tasks-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.jbpm:jbpm-console-ng-human-tasks-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.jbpm:jbpm-console-ng-process-runtime-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.jbpm:jbpm-console-ng-business-domain-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- org.uberfire:uberfire-backend-api:jar:0.4.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-console-ng-human-tasks-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.kie:kie-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.kie:kie-internal:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.jbpm:jbpm-human-task-core:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.jbpm:jbpm-human-task-jpa:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.jbpm:jbpm-human-task-audit:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.jbpm:jbpm-kie-services:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  |  +- org.jbpm:jbpm-runtime-manager:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  |  |  \- org.jbpm:jbpm-persistence-jpa:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  |  +- org.jbpm:jbpm-human-task-workitems:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  |  +- org.apache.lucene:lucene-core:jar:4.0.0:compile
+[INFO] |  |  +- org.apache.lucene:lucene-queryparser:jar:4.0.0:compile
+[INFO] |  |  |  +- org.apache.lucene:lucene-queries:jar:4.0.0:compile
+[INFO] |  |  |  \- org.apache.lucene:lucene-sandbox:jar:4.0.0:compile
+[INFO] |  |  |     \- jakarta-regexp:jakarta-regexp:jar:1.4:compile
+[INFO] |  |  +- org.apache.lucene:lucene-analyzers-common:jar:4.0.0:compile
+[INFO] |  |  \- org.jboss.spec.javax.el:jboss-el-api_2.2_spec:jar:1.0.2.Final:compile
+[INFO] |  +- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+[INFO] |  +- joda-time:joda-time:jar:1.6.2:compile
+[INFO] |  \- org.jbpm:jbpm-form-modeler-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-console-ng-business-domain-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-console-ng-business-domain-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.uberfire:uberfire-backend-server:jar:0.4.0-SNAPSHOT:compile
+[INFO] |  |  +- org.ocpsoft.prettytime:prettytime:jar:3.0.2.Final:compile
+[INFO] |  |  \- org.jasypt:jasypt:jar:1.9.0:compile
+[INFO] |  +- org.uberfire:uberfire-nio2-api:jar:0.4.0-SNAPSHOT:compile
+[INFO] |  \- org.uberfire:uberfire-nio2-model:jar:0.4.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-console-ng-process-runtime-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-console-ng-process-runtime-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-console-ng-executor-service-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- org.jbpm:jbpm-console-ng-executor-service-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-console-ng-executor-service-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- org.jbpm:jbpm-executor:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-console-ng-bpm-home-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.drools:drools-wb-workitems-editor-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- org.drools:drools-wb-workitems-editor-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.drools:drools-wb-workitems-editor-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- org.jbpm:jbpm-bpmn2:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-designer-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-designer-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- org.uberfire:uberfire-api:jar:0.4.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-designer-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.mvel:mvel2:jar:2.1.8.Final:compile
+[INFO] |  +- org.jbpm:jbpm-flow:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.jbpm:jbpm-flow-builder:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.jbpm:jbpm-workitems:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  |  +- org.apache.commons:commons-compress:jar:1.4.1:compile
+[INFO] |  |  |  \- org.tukaani:xz:jar:1.0:compile
+[INFO] |  |  +- org.apache.commons:commons-exec:jar:1.0.1:compile
+[INFO] |  |  +- jivesoftware:smack:jar:3.1.0:compile
+[INFO] |  |  +- rome:rome:jar:1.0:compile
+[INFO] |  |  +- commons-net:commons-net:jar:2.2:compile
+[INFO] |  |  +- org.apache.cxf:cxf-rt-frontend-jaxws:jar:2.6.8:compile
+[INFO] |  |  |  +- xml-resolver:xml-resolver:jar:1.2:compile
+[INFO] |  |  |  +- asm:asm:jar:3.1:compile
+[INFO] |  |  |  +- org.apache.cxf:cxf-api:jar:2.6.8:compile
+[INFO] |  |  |  |  \- org.apache.geronimo.specs:geronimo-javamail_1.4_spec:jar:1.7.1:compile
+[INFO] |  |  |  +- org.apache.cxf:cxf-rt-core:jar:2.6.8:compile
+[INFO] |  |  |  +- org.apache.cxf:cxf-rt-bindings-soap:jar:2.6.8:compile
+[INFO] |  |  |  +- org.apache.cxf:cxf-rt-bindings-xml:jar:2.6.8:compile
+[INFO] |  |  |  +- org.apache.cxf:cxf-rt-frontend-simple:jar:2.6.8:compile
+[INFO] |  |  |  \- org.apache.cxf:cxf-rt-ws-addr:jar:2.6.8:compile
+[INFO] |  |  |     \- org.apache.cxf:cxf-rt-ws-policy:jar:2.6.8:compile
+[INFO] |  |  +- org.apache.cxf:cxf-rt-databinding-jaxb:jar:2.6.8:compile
+[INFO] |  |  +- org.apache.cxf:cxf-rt-transports-http:jar:2.6.8:compile
+[INFO] |  |  +- wsdl4j:wsdl4j:jar:1.6.2:compile
+[INFO] |  |  +- org.apache.neethi:neethi:jar:3.0.2:compile
+[INFO] |  |  |  \- org.codehaus.woodstox:woodstox-core-asl:jar:4.2.0:compile
+[INFO] |  |  |     +- javax.xml.stream:stax-api:jar:1.0-2:compile
+[INFO] |  |  |     \- org.codehaus.woodstox:stax2-api:jar:3.1.1:compile
+[INFO] |  |  \- org.apache.ws.xmlschema:xmlschema-core:jar:2.0.3:compile
+[INFO] |  +- org.jbpm.jbpm5:jbpmmigration:jar:0.11:compile
+[INFO] |  +- org.jbpm:jbpm-form-modeler-bpmn-form-builder:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- com.google.javascript:closure-compiler:jar:r1741:compile
+[INFO] |  |  +- args4j:args4j:jar:2.0.12:compile
+[INFO] |  |  +- com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] |  |  \- com.googlecode.jarjar:jarjar:jar:1.1:compile
+[INFO] |  +- org.json:json:jar:20090211:compile
+[INFO] |  +- org.jdom:jdom:jar:1.1.3:compile
+[INFO] |  +- org.apache.velocity:velocity:jar:1.7:compile
+[INFO] |  +- org.apache.xmlgraphics:xmlgraphics-commons:jar:1.4:compile
+[INFO] |  |  \- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] |  +- batik:batik-parser:jar:1.6-1:compile
+[INFO] |  +- batik:batik-transcoder:jar:1.6-1:compile
+[INFO] |  +- batik:batik-extension:jar:1.6-1:compile
+[INFO] |  +- batik:batik-dom:jar:1.6-1:compile
+[INFO] |  +- batik:batik-xml:jar:1.6-1:compile
+[INFO] |  +- batik:batik-bridge:jar:1.6-1:compile
+[INFO] |  +- batik:batik-css:jar:1.6-1:compile
+[INFO] |  +- batik:batik-svg-dom:jar:1.6-1:compile
+[INFO] |  +- batik:batik-svggen:jar:1.6-1:compile
+[INFO] |  +- batik:batik-util:jar:1.6-1:compile
+[INFO] |  |  \- batik:batik-gui-util:jar:1.6-1:compile
+[INFO] |  +- batik:batik-ext:jar:1.6-1:compile
+[INFO] |  +- batik:batik-script:jar:1.6-1:compile
+[INFO] |  +- batik:batik-gvt:jar:1.6-1:compile
+[INFO] |  +- batik:batik-awt-util:jar:1.6-1:compile
+[INFO] |  +- org.apache.xmlgraphics:fop:jar:0.95:compile
+[INFO] |  |  \- org.apache.avalon.framework:avalon-framework-api:jar:4.3.1:compile
+[INFO] |  +- xerces:xercesImpl:jar:2.9.1:compile
+[INFO] |  |  \- xml-apis:xml-apis:jar:1.3.04:compile
+[INFO] |  +- com.thoughtworks.xstream:xstream:jar:1.4.3:compile
+[INFO] |  |  +- xmlpull:xmlpull:jar:1.1.3.1:compile
+[INFO] |  |  \- xpp3:xpp3_min:jar:1.1.4c:compile
+[INFO] |  +- javax.mail:mail:jar:1.4.5:compile
+[INFO] |  +- rhino:js:jar:1.7R2:compile
+[INFO] |  +- xalan:xalan:jar:2.7.1:compile
+[INFO] |  |  \- xalan:serializer:jar:2.7.1:compile
+[INFO] |  +- org.codehaus.jackson:jackson-core-asl:jar:1.9.9:compile
+[INFO] |  +- org.codehaus.jackson:jackson-mapper-asl:jar:1.9.9:compile
+[INFO] |  +- org.antlr:ST4:jar:4.0.7:compile
+[INFO] |  +- org.osgi:org.osgi.compendium:jar:4.2.0:compile
+[INFO] |  +- avalon-framework:avalon-framework:jar:4.1.4:compile
+[INFO] |  +- org.apache.abdera:abdera-i18n:jar:1.1.2:compile
+[INFO] |  |  \- org.apache.geronimo.specs:geronimo-activation_1.0.2_spec:jar:1.1:compile
+[INFO] |  +- commons-collections:commons-collections:jar:3.2.1:compile
+[INFO] |  +- commons-codec:commons-codec:jar:1.4:compile
+[INFO] |  +- commons-configuration:commons-configuration:jar:1.6:compile
+[INFO] |  +- commons-httpclient:commons-httpclient:jar:3.1:compile
+[INFO] |  +- commons-fileupload:commons-fileupload:jar:1.2.2:compile
+[INFO] |  +- commons-lang:commons-lang:jar:2.6:compile
+[INFO] |  +- org.drools:jbpm-simulation:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  |  +- org.apache.commons:commons-math:jar:2.2:compile
+[INFO] |  |  \- org.drools:drools-simulator:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  |     \- javax.xml.bind:jaxb-api:jar:2.2.5:compile
+[INFO] |  \- org.jboss.solder:solder-api:jar:3.2.1.Final:compile
+[INFO] +- org.uberfire:uberfire-js:jar:0.4.0-SNAPSHOT:compile
+[INFO] |  \- org.uberfire:uberfire-security-api:jar:0.4.0-SNAPSHOT:compile
+[INFO] +- org.uberfire:uberfire-server:jar:0.4.0-SNAPSHOT:compile
+[INFO] |  \- commons-io:commons-io:jar:2.1:compile
+[INFO] +- org.uberfire:uberfire-security-client:jar:0.4.0-SNAPSHOT:compile
+[INFO] +- org.uberfire:uberfire-security-server:jar:0.4.0-SNAPSHOT:compile
+[INFO] |  \- org.yaml:snakeyaml:jar:1.8:compile
+[INFO] +- org.uberfire:uberfire-client-api:jar:0.4.0-SNAPSHOT:compile
+[INFO] |  \- org.jboss.errai:errai-common:jar:2.4.1.Final:compile
+[INFO] |     \- org.jboss.errai.reflections:reflections:jar:2.4.1.Final:compile
+[INFO] +- org.uberfire:uberfire-widgets-core-client:jar:0.4.0-SNAPSHOT:compile
+[INFO] +- org.uberfire:uberfire-widgets-commons:jar:0.4.0-SNAPSHOT:compile
+[INFO] |  \- com.github.gwtbootstrap:gwt-bootstrap:jar:2.2.1.0:compile
+[INFO] +- org.uberfire:uberfire-workbench:jar:0.4.0-SNAPSHOT:compile
+[INFO] |  +- org.freemarker:freemarker:jar:2.3.19:compile
+[INFO] |  \- com.allen-sauer.gwt.dnd:gwt-dnd:jar:3.1.2:compile
+[INFO] +- javax.enterprise:cdi-api:jar:1.0-SP4:compile
+[INFO] |  +- org.jboss.spec.javax.interceptor:jboss-interceptors-api_1.1_spec:jar:1.0.0.Beta1:compile
+[INFO] |  \- javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] +- org.uberfire:uberfire-nio2-jgit:jar:0.4.0-SNAPSHOT:compile
+[INFO] |  +- org.apache.sshd:sshd-core:jar:0.9.0:compile
+[INFO] |  |  \- org.apache.mina:mina-core:jar:2.0.4:compile
+[INFO] |  \- org.eclipse.jgit:org.eclipse.jgit:jar:2.1.0.201209190230-r:compile
+[INFO] |     \- com.jcraft:jsch:jar:0.1.48:compile
+[INFO] +- org.uberfire:uberfire-nio2-fs:jar:0.4.0-SNAPSHOT:compile
+[INFO] +- org.uberfire:uberfire-io:jar:0.4.0-SNAPSHOT:compile
+[INFO] |  \- org.apache.helix:helix-core:jar:0.6.2-incubating:compile
+[INFO] |     +- log4j:log4j:jar:1.2.17:compile
+[INFO] |     +- org.apache.zookeeper:zookeeper:jar:3.3.4:compile
+[INFO] |     +- commons-cli:commons-cli:jar:1.2:compile
+[INFO] |     +- com.github.sgroschupf:zkclient:jar:0.1:compile
+[INFO] |     +- org.apache.camel:camel-josql:jar:2.12.1:compile
+[INFO] |     |  +- org.apache.camel:camel-core:jar:2.10.3:compile
+[INFO] |     |  +- net.sf.josql:josql:jar:1.5:compile
+[INFO] |     |  \- net.sf.josql:gentlyweb-utils:jar:1.5:compile
+[INFO] |     \- org.restlet.jse:org.restlet:jar:2.1.4:compile
+[INFO] +- org.uberfire:uberfire-commons:jar:0.4.0-SNAPSHOT:compile
+[INFO] +- org.jboss.errai:errai-jboss-as-support:jar:2.4.1.Final:compile
+[INFO] +- org.jboss.errai:errai-bus:jar:2.4.1.Final:compile
+[INFO] |  +- org.jboss.errai:errai-config:jar:2.4.1.Final:compile
+[INFO] |  +- org.jboss.errai:errai-marshalling:jar:2.4.1.Final:compile
+[INFO] |  +- com.google.inject:guice:jar:3.0:compile
+[INFO] |  |  \- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  +- org.javassist:javassist:jar:3.15.0-GA:compile
+[INFO] |  +- org.jboss.errai.io.netty:netty:jar:4.0.0.Alpha1.errai.r1:compile
+[INFO] |  +- com.google.guava:guava:jar:13.0.1:compile
+[INFO] |  \- org.jgroups:jgroups:jar:3.2.10.Final:compile
+[INFO] +- org.jboss.errai:errai-ioc:jar:2.4.1.Final:compile
+[INFO] |  +- org.jboss.errai:errai-codegen:jar:2.4.1.Final:compile
+[INFO] |  \- org.jboss.errai:errai-codegen-gwt:jar:2.4.1.Final:compile
+[INFO] +- org.jboss.errai:errai-cdi-client:jar:2.4.1.Final:compile
+[INFO] |  \- org.jboss.errai:errai-ioc-bus-support:jar:2.4.1.Final:compile
+[INFO] +- org.jboss.errai:errai-javax-enterprise:jar:2.4.1.Final:provided
+[INFO] +- org.jboss.errai:errai-weld-integration:jar:2.4.1.Final:compile
+[INFO] +- org.jboss.errai:errai-cdi-jetty:jar:2.4.1.Final:compile
+[INFO] +- org.jboss.errai:errai-ui:jar:2.4.1.Final:compile
+[INFO] |  +- org.jsoup:jsoup:jar:1.7.1:compile
+[INFO] |  +- org.apache.stanbol:org.apache.stanbol.enhancer.engines.htmlextractor:jar:0.10.0:compile
+[INFO] |  |  \- org.apache.clerezza:rdf.core:jar:0.12-incubating:compile
+[INFO] |  |     \- org.apache.clerezza:utils:jar:0.1-incubating:compile
+[INFO] |  |        +- org.apache.httpcomponents:httpcore:jar:4.1:compile
+[INFO] |  |        \- org.wymiwyg:wymiwyg-commons-core:jar:0.7.6:compile
+[INFO] |  |           \- commons-logging:commons-logging-api:jar:1.1:compile
+[INFO] |  \- org.lesscss:lesscss:jar:1.3.3:compile
+[INFO] |     +- org.apache.commons:commons-lang3:jar:3.1:compile
+[INFO] |     \- org.mozilla:rhino:jar:1.7R4:compile
+[INFO] +- org.jboss.errai:errai-data-binding:jar:2.4.1.Final:compile
+[INFO] |  \- com.google.guava:guava-gwt:jar:14.0.1:compile
+[INFO] +- com.h2database:h2:jar:1.3.168:compile
+[INFO] +- org.hibernate:hibernate-entitymanager:jar:4.2.0.SP1:compile
+[INFO] |  +- org.jboss.logging:jboss-logging:jar:3.1.2.GA:compile
+[INFO] |  +- org.jboss.spec.javax.transaction:jboss-transaction-api_1.1_spec:jar:1.0.1.Final:compile
+[INFO] |  +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |  \- org.hibernate.common:hibernate-commons-annotations:jar:4.0.1.Final:compile
+[INFO] +- org.hibernate:hibernate-core:jar:4.2.0.SP1:compile
+[INFO] |  \- antlr:antlr:jar:2.7.7:compile
+[INFO] +- org.hibernate:hibernate-validator:jar:4.3.1.Final:compile
+[INFO] |  \- javax.validation:validation-api:jar:1.0.0.GA:compile
+[INFO] +- org.mortbay.jetty:jetty:jar:6.1.25:compile
+[INFO] |  +- org.mortbay.jetty:jetty-util:jar:6.1.25:compile
+[INFO] |  \- org.mortbay.jetty:servlet-api:jar:2.5-20081211:compile
+[INFO] +- org.mortbay.jetty:jetty-plus:jar:6.1.25:compile
+[INFO] +- org.mortbay.jetty:jetty-naming:jar:6.1.25:compile
+[INFO] |  \- javax.activation:activation:jar:1.1.1:compile
+[INFO] +- org.jboss.weld.se:weld-se-core:jar:1.1.13.Final:compile
+[INFO] |  +- org.jboss.weld:weld-spi:jar:1.1.Final:compile
+[INFO] |  |  \- org.jboss.weld:weld-api:jar:1.1.Final:compile
+[INFO] |  +- org.jboss.weld:weld-core:jar:1.1.13.Final:compile
+[INFO] |  |  +- org.slf4j:slf4j-ext:jar:1.7.2:compile
+[INFO] |  |  \- ch.qos.cal10n:cal10n-api:jar:0.7.4:compile
+[INFO] |  \- javax.el:el-api:jar:2.2:compile
+[INFO] +- org.jboss.weld.servlet:weld-servlet-core:jar:1.1.13.Final:compile
+[INFO] +- org.jboss.solder:solder-impl:jar:3.2.1.Final:compile
+[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.3.RC2:compile
+[INFO] +- org.jboss.solder:solder-logging:jar:3.2.1.Final:runtime
+[INFO] +- com.google.gwt:gwt-user:jar:2.5.0:provided
+[INFO] |  \- javax.validation:validation-api:jar:sources:1.0.0.GA:provided
+[INFO] +- org.osgi:org.osgi.core:jar:4.2.0:compile
+[INFO] +- com.sun.xml.bind:jaxb-impl:jar:2.2.5:compile
+[INFO] +- com.sun.xml.bind:jaxb-xjc:jar:2.2.5:compile
+[INFO] +- javax.transaction:jta:jar:1.1:compile
+[INFO] +- org.codehaus.btm:btm:jar:2.1.4:compile
+[INFO] +- org.jbpm:jbpm-shared-services:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- org.drools:drools-persistence-jpa:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.quartz-scheduler:quartz:jar:1.8.5:runtime
+[INFO] +- org.jbpm:jbpm-bpmn2-emfextmodel:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.eclipse.emf:org.eclipse.emf.common:jar:2.6.0.v20100614-1136:compile
+[INFO] |  +- org.eclipse.emf:org.eclipse.emf.ecore:jar:2.6.0.v20100614-1136:compile
+[INFO] |  \- org.eclipse.emf:org.eclipse.emf.ecore.xmi:jar:2.5.0.v20100521-1846:compile
+[INFO] +- org.eclipse:org.eclipse.bpmn2:jar:0.7.3:compile
+[INFO] +- org.kie.remote:kie-services-remote:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.kie.remote:kie-services-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  |  +- javax.jms:jms:jar:1.1:compile
+[INFO] |  |  +- org.jboss.spec.javax.servlet:jboss-servlet-api_3.0_spec:jar:1.0.2.Final:compile
+[INFO] |  |  +- org.jboss.resteasy:resteasy-jaxrs:jar:2.3.6.Final:compile
+[INFO] |  |  |  +- org.scannotation:scannotation:jar:1.0.3:compile
+[INFO] |  |  |  |  \- javassist:javassist:jar:3.12.1.GA:compile
+[INFO] |  |  |  +- org.apache.httpcomponents:httpclient:jar:4.2.1:compile
+[INFO] |  |  |  \- net.jcip:jcip-annotations:jar:1.0:compile
+[INFO] |  |  +- org.jboss.resteasy:resteasy-jaxb-provider:jar:2.3.6.Final:compile
+[INFO] |  |  \- org.jboss.resteasy:resteasy-jackson-provider:jar:2.3.6.Final:compile
+[INFO] |  |     +- org.codehaus.jackson:jackson-jaxrs:jar:1.9.9:compile
+[INFO] |  |     \- org.codehaus.jackson:jackson-xc:jar:1.9.9:compile
+[INFO] |  +- org.jbpm:jbpm-audit:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.jboss.resteasy:jaxrs-api:jar:2.3.6.Final:compile
+[INFO] |  +- org.jboss.resteasy:resteasy-jettison-provider:jar:2.3.6.Final:compile
+[INFO] |  |  \- org.codehaus.jettison:jettison:jar:1.3.1:compile
+[INFO] |  \- org.jboss.spec.javax.ejb:jboss-ejb-api_3.1_spec:jar:1.0.2.Final:compile
+[INFO] +- org.guvnor:guvnor-services-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.guvnor:guvnor-m2repo-editor-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.guvnor:guvnor-m2repo-editor-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.guvnor:guvnor-m2repo-editor-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.guvnor:guvnor-project-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- org.drools:drools-workbench-models-datamodel-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.guvnor:guvnor-project-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- org.guvnor:guvnor-services-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.guvnor:guvnor-workingset-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.guvnor:guvnor-workingset-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.guvnor:guvnor-project-builder:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- com.google.protobuf:protobuf-java:jar:2.5.0:compile
+[INFO] +- org.kie.workbench.screens:kie-wb-common-project-explorer-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- org.kie.workbench.screens:kie-wb-common-project-explorer-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.kie.workbench.screens:kie-wb-common-project-explorer-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.kie.workbench.screens:kie-wb-common-project-editor-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.kie.workbench.screens:kie-wb-common-project-editor-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.kie.workbench.widgets:kie-wb-view-source-widget:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.kie.workbench.screens:kie-wb-common-default-editor-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- org.kie.workbench.screens:kie-wb-common-default-editor-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.kie.workbench.screens:kie-wb-common-project-editor-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.kie.workbench.screens:kie-wb-common-project-imports-editor-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- org.kie.workbench.screens:kie-wb-common-project-imports-editor-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.kie.workbench.services:kie-wb-common-datamodel-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.kie.workbench.services:kie-wb-common-security:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.kie.workbench.widgets:kie-wb-common-ui:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  +- org.drools:drools-workbench-models-commons:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- org.kie.workbench.services:kie-wb-common-datamodel-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.kie.workbench.services:kie-wb-common-services-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.kie.workbench.services:kie-wb-common-services-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.kie.workbench.widgets:kie-wb-metadata-widget:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.kie.workbench.widgets:kie-wb-config-resource-widget:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-console-ng-dashboard-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-console-ng-dashboard-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-console-ng-dashboard-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-form-modeler-app:war:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-form-modeler-renderer-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-form-modeler-renderer-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-form-modeler-renderer-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-form-modeler-editor-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-form-modeler-editor-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-form-modeler-editor-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- org.kie.workbench.services:kie-wb-common-data-modeller-core:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-form-modeler-form-provider:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.kie.workbench.screens:kie-wb-common-data-modeller-api:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.kie.workbench.screens:kie-wb-common-data-modeller-backend:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.kie.workbench.screens:kie-wb-common-data-modeller-client:jar:6.1.0-SNAPSHOT:compile
+[INFO] +- org.jbpm:jbpm-form-modeler-data-modeler:jar:6.1.0-SNAPSHOT:compile
+[INFO] |  \- org.jbpm:jbpm-form-modeler-service-core:jar:6.1.0-SNAPSHOT:compile
+[INFO] |     \- org.jbpm:jbpm-form-modeler-common:jar:6.1.0-SNAPSHOT:compile
+[INFO] |        +- net.sf.opencsv:opencsv:jar:2.3:compile
+[INFO] |        +- commons-jxpath:commons-jxpath:jar:1.3:compile
+[INFO] |        +- org.beanshell:bsh:jar:1.3.0:compile
+[INFO] |        \- org.jboss.spec.javax.servlet.jsp:jboss-jsp-api_2.2_spec:jar:1.0.1.Final:compile
+[INFO] +- javax.servlet:jstl:jar:1.2:compile
+[INFO] +- junit:junit:jar:4.11:test
+[INFO] \- org.mockito:mockito-all:jar:1.9.0:test
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 15.282s
+[INFO] Finished at: Thu Dec 12 19:15:06 CET 2013
+[INFO] Final Memory: 58M/472M
+[INFO] ------------------------------------------------------------------------

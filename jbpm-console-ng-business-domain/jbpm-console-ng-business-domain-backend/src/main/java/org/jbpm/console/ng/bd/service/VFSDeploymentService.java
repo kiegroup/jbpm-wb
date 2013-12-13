@@ -18,7 +18,6 @@ import org.jbpm.kie.services.impl.model.ProcessAssetDesc;
 import org.jbpm.process.audit.AbstractAuditLogger;
 import org.jbpm.runtime.manager.impl.RuntimeEnvironmentBuilder;
 import org.jbpm.runtime.manager.impl.cdi.InjectableRegisterableItemsFactory;
-import org.jbpm.shared.services.api.JbpmServicesPersistenceManager;
 import org.kie.api.io.ResourceType;
 import org.kie.internal.deployment.DeploymentUnit;
 import org.kie.internal.io.ResourceFactory;
@@ -34,8 +33,6 @@ public class VFSDeploymentService extends AbstractDeploymentService {
 
     @Inject
     private BeanManager beanManager;
-    @Inject
-    private JbpmServicesPersistenceManager pm;
     @Inject
     private FileService fs;
     @Inject
@@ -119,16 +116,7 @@ public class VFSDeploymentService extends AbstractDeploymentService {
             }
         }
     }
-    
 
-
-    public JbpmServicesPersistenceManager getPm() {
-        return pm;
-    }
-
-    public void setPm(JbpmServicesPersistenceManager pm) {
-        this.pm = pm;
-    }
 
     public FileService getFs() {
         return fs;

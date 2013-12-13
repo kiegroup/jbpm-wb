@@ -44,6 +44,7 @@ public class TaskServiceEntryPointLocalTest extends TaskServiceEntryPointBaseTes
                 .addPackage("org.jbpm.services.task.subtask")
                 // console-ng task service
                 .addPackage("org.jbpm.console.ng.ht.service")
+                .addPackage("org.jbpm.kie.services.cdi.producer")
                 .addPackages(true, Filters.exclude(FormServiceEntryPointImpl.class, FormModelerProcessStarterEntryPointImpl.class), "org.jbpm.console.ng.ht.backend.server")
                 // .addPackage("org.jbpm.services.task.commands") // This should not be
                 // required here

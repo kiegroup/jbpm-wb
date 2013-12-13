@@ -424,12 +424,6 @@ profile in pom.xml to use that. -->
   </context-param>
 
   <context-param>
-    <param-name>org.jboss.seam.transaction.disableListener</param-name>
-    <param-value>true</param-value>
-  </context-param>
-
-
-  <context-param>
     <param-name>resteasy.scan</param-name>
     <param-value>true</param-value>
   </context-param>

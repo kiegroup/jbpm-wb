@@ -18,6 +18,7 @@ import org.jbpm.services.task.impl.model.TaskImpl;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.junit.Test;
+import org.kie.api.task.model.Task;
 
 public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBaseTest {
     private static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
@@ -314,7 +315,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
     }
 
     protected void createAndAddTaskFromString(String taskStr) {
-        TaskImpl task = TaskFactory.evalTask(new StringReader(taskStr));
+        Task task = TaskFactory.evalTask(new StringReader(taskStr));
         taskService.addTask(task, new HashMap<String, Object>());
     }
 

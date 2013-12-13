@@ -20,11 +20,8 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jboss.seam.transaction.TransactionInterceptor;
-import org.jboss.seam.transaction.Transactional;
 import org.jbpm.console.ng.ht.model.TypeRole;
 import org.jbpm.console.ng.ht.service.IdentityServiceMock;
 import org.jbpm.console.ng.ht.service.TypeRoleServiceEntryPoint;
@@ -33,8 +30,6 @@ import org.slf4j.LoggerFactory;
 
 @Service
 @ApplicationScoped
-@Transactional
-@Interceptors({TransactionInterceptor.class})
 public class TypeRoleServiceEntryPointImpl implements TypeRoleServiceEntryPoint {
     
     private static final Logger log = LoggerFactory.getLogger(TypeRoleServiceEntryPointImpl.class);
