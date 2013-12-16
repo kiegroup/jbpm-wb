@@ -68,7 +68,6 @@ import org.uberfire.workbench.model.menu.Menus;
 @WorkbenchScreen(identifier = "Process Instance Details")
 public class ProcessInstanceDetailsPresenter {
 
-
     private Constants constants = GWT.create(Constants.class);
 
     private PlaceRequest place;
@@ -117,7 +116,6 @@ public class ProcessInstanceDetailsPresenter {
 
     private Menus menus;
 
-
     @Inject
     private PlaceManager placeManager;
 
@@ -136,7 +134,7 @@ public class ProcessInstanceDetailsPresenter {
     private String processInstanceId = "";
 
     private String processDefId = "";
-   
+
     private ProcessInstanceSummary processSelected = null;
 
     public ProcessInstanceDetailsPresenter() {
@@ -162,8 +160,8 @@ public class ProcessInstanceDetailsPresenter {
 
     public void refreshProcessInstanceData(final String deploymentId, final String processId,
             final String processDefId) {
-    	processSelected = null;
-    	
+        processSelected = null;
+
         dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
             public void callback(List<NodeInstanceSummary> details) {
@@ -235,9 +233,9 @@ public class ProcessInstanceDetailsPresenter {
 
                 view.getStateText().setText(statusStr);
                 processSelected = process;
-                changeStyleRow(Long.parseLong(processId), processSelected.getProcessName(), processSelected.getProcessVersion(), 
-                		processSelected.getStartTime());
-               
+                changeStyleRow(Long.parseLong(processId), processSelected.getProcessName(), processSelected.getProcessVersion(),
+                        processSelected.getStartTime());
+
             }
         }).getProcessInstanceById(Long.parseLong(processId));
 
@@ -258,7 +256,7 @@ public class ProcessInstanceDetailsPresenter {
                             @Override
                             public void callback(Path processPath) {
                                 view.setProcessAssetPath(processPath);
-                                if( processSelected != null ){
+                                if (processSelected != null) {
                                     changeStyleRow(processSelected.getId(), processSelected.getProcessName(), processSelected.getProcessVersion(),
                                             processSelected.getStartTime());
                                 }
@@ -267,7 +265,7 @@ public class ProcessInstanceDetailsPresenter {
                     } else {
                         view.setProcessAssetPath(new DummyProcessPath(process.getId()));
                     }
-                    if( processSelected != null ){
+                    if (processSelected != null) {
                         changeStyleRow(processSelected.getId(), processSelected.getProcessName(), processSelected.getProcessVersion(),
                                 processSelected.getStartTime());
                     }
@@ -306,8 +304,7 @@ public class ProcessInstanceDetailsPresenter {
         view.getProcessInstanceIdText().setText(String.valueOf(event.getProcessInstanceId()));
 
         view.getProcessNameText().setText(event.getProcessDefId());
-       
-       
+
         refreshProcessInstanceData(event.getDeploymentId(), String.valueOf(event.getProcessInstanceId()), event.getProcessDefId());
 
     }
@@ -331,7 +328,7 @@ public class ProcessInstanceDetailsPresenter {
                     public void execute() {
                         refreshProcessInstanceData(view.getProcessDeploymentText().getText(),
                                 view.getProcessInstanceIdText().getText(),
-                        view.getProcessDefinitionIdText().getText());
+                                view.getProcessDefinitionIdText().getText());
                         view.displayNotification(constants.Process_Instances_Details_Refreshed());
                     }
                 })
@@ -410,10 +407,8 @@ public class ProcessInstanceDetailsPresenter {
                         placeRequestImpl.addParameter("activeNodes", nodeParam.toString());
                         placeRequestImpl.addParameter("completedNodes", completedNodeParam.toString());
                         placeRequestImpl.addParameter("readOnly", "true");
-                        if (view.getEncodedProcessSource() != null) {
-                            placeRequestImpl.addParameter("encodedProcessSource", view.getEncodedProcessSource());
-                        }
-
+                        placeRequestImpl.addParameter("processId", view.getProcessDefinitionIdText().getText());
+                        placeRequestImpl.addParameter("deploymentId", view.getProcessDeploymentText().getText());
                         placeManager.goTo(view.getProcessAssetPath(), placeRequestImpl);
                     }
                 }).endMenu().build().getItems().get(0));
