@@ -24,6 +24,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
 
 import java.util.ArrayList;
@@ -268,15 +269,18 @@ public class ProcessDefDetailsPresenter {
         
         menuItems.add( MenuFactory.newSimpleItem( constants.View_Process_Model()).respondsWith( new Command() {
             @Override
-            public void execute() {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Designer" );
+            public void execute() {   
+                    PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Designer" );
 
-                if ( view.getEncodedProcessSource() != null ) {
-                    placeRequestImpl.addParameter( "readOnly", "true" );
-                    placeRequestImpl.addParameter( "encodedProcessSource", view.getEncodedProcessSource() );
-                }
-                placeManager.goTo( view.getProcessAssetPath(), placeRequestImpl );
-            }
+                   // if ( view.getEncodedProcessSource() != null ) {
+                        placeRequestImpl.addParameter( "readOnly", "true" );
+                        //placeRequestImpl.addParameter( "encodedProcessSource", view.getEncodedProcessSource() );
+                        placeRequestImpl.addParameter("processId", view.getProcessIdText().getText());
+                        placeRequestImpl.addParameter("deploymentId", view.getDeploymentIdText().getText());
+                        
+                    //}
+                    placeManager.goTo( view.getProcessAssetPath(), placeRequestImpl );
+                }        
         } ).endMenu().build().getItems().get( 0 ) );
         
         menuItems.add( MenuFactory.newSimpleItem( constants.View_Process_Instances()).respondsWith( new Command() {
