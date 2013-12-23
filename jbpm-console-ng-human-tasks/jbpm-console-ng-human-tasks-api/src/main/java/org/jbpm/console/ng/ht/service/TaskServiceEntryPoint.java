@@ -128,5 +128,13 @@ public interface TaskServiceEntryPoint {
     
     //Audit Methods
     List<TaskEventSummary> getAllTaskEvents(long taskId);
+    
+    /**
+     * false: when the task was deleted in data base (it happens when the process is finished)
+     * 
+     * @param taskId
+     * @return
+     */
+    Boolean existInDatabase(long taskId);
 
 }

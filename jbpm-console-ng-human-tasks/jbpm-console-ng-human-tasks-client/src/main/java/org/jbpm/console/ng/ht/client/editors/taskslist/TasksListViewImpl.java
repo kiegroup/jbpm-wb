@@ -204,6 +204,8 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
         myTaskListGrid.addColumnSortHandler(sortHandler);
         presenter.addDataDisplay(myTaskListGrid);
     }
+    
+   
 
     private void initializeButtonsView() {
         gridViewTasksNavLink.setText(constants.Grid());
@@ -303,7 +305,14 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
         tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
         refreshTasks();
     }
-
+    
+    
+    
+    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
+        currentAction = null;
+        refreshTasks();
+    }
+    
     private void initGridColumns() {
         this.idColumn();
         this.nameColumn();
@@ -319,9 +328,11 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
         myTaskListGrid.addCellPreviewHandler(new CellPreviewEvent.Handler<TaskSummary>() {
             @Override
             public void onCellPreview(final CellPreviewEvent<TaskSummary> event) {
+
                 if (BrowserEvents.MOUSEOVER.equalsIgnoreCase(event.getNativeEvent().getType())) {
                     onMouseOverGrid(event);
                 }
+
                 if (BrowserEvents.FOCUS.equalsIgnoreCase(event.getNativeEvent().getType())) {
                     onFocusGrid();
                 }
@@ -365,15 +376,16 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
     }
 
     private void onFocusGrid() {
-        if (DataGridUtils.idTaskCalendar != null) {
-            DataGridUtils.currentIdSelected = DataGridUtils.idTaskCalendar;
+         if(DataGridUtils.idTaskCalendar != null){
+         DataGridUtils.currentIdSelected = DataGridUtils.idTaskCalendar;
             DataGridUtils.idTaskCalendar = null;
         }
-        if (DataGridUtils.currentIdSelected != null) {
+        if(DataGridUtils.currentIdSelected != null){
             changeRowSelected(new TaskStyleEvent(DataGridUtils.currentIdSelected));
-        } else if (currentTaskType.equals(TaskType.ALL)) {
+        }else if(currentTaskType.equals(TaskType.ALL)){
             DataGridUtils.paintRowsCompleted(myTaskListGrid);
         }
+        this.setSelectionModel();
     }
 
     private void onMouseOverGrid(final CellPreviewEvent<TaskSummary> event) {
@@ -556,7 +568,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
                     placeManager.goTo("Task Details Multi");
                     taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
                 }else if( status == PlaceStatus.OPEN || Long.valueOf(task.getId()).equals(idSelected)){
-                    placeManager.closePlace(new DefaultPlaceRequest("Task Details Multi"));
+                    presenter.closeEditPanel();
                 }
             }
         }));
@@ -647,13 +659,8 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
         }
         if( this.getCurrentView() != TaskView.GRID){
             presenter.changeBgTaskCalendar(new TaskCalendarEvent(newTask.getNewTaskId()));
-        }
+        } 
         this.setSelectionModel();
-    }
-
-    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
-        currentAction = null;
-        refreshTasks();
     }
 
 }

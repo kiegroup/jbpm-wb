@@ -40,6 +40,7 @@ import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.ht.model.events.EditPanelEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.jbpm.console.ng.ht.model.fb.events.FormRenderedEvent;
@@ -99,6 +100,9 @@ public class FormDisplayPresenter {
     
     @Inject
     private Event<NewProcessInstanceEvent> newProcessInstanceEvent;
+    
+    @Inject
+    private Event<EditPanelEvent> editPanelEvent;
 
     @Inject
     private Identity identity;
@@ -192,7 +196,7 @@ public class FormDisplayPresenter {
                 wrapperFlowPanel.setStyleName( "wrapper form-actions" );
                 view.getOptionsDiv().add( wrapperFlowPanel );
                 
-                if ( task.getStatus().equals( "Ready" ) && task.getActualOwner().equals(identity.getName()) ) {
+                if ( task.getStatus().equals( "Ready" ) ) {
                     ClickHandler click = new ClickHandler() {
                             @Override
                             public native void onClick( ClickEvent event )/*-{
@@ -289,15 +293,11 @@ public class FormDisplayPresenter {
                     Button saveButton = new Button();
                     saveButton.setText(constants.Save());
                     saveButton.addClickHandler(save);
-                    
-                    
                     wrapperFlowPanel.add( saveButton );
                     
                     Button releaseButton = new Button();
                     releaseButton.setText(constants.Release());
                     releaseButton.addClickHandler(release);
-                    
-                    
                     wrapperFlowPanel.add( releaseButton );
                     
                     Button completeButton = new Button();
@@ -391,6 +391,16 @@ public class FormDisplayPresenter {
                 view.displayNotification("Form for Task Id: " + params.get("taskId") + " was completed!");
                 taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 dispose();
+                
+                taskServices.call(new RemoteCallback<Boolean>() {
+                    @Override
+                    public void callback(Boolean response) {
+                        if( !response ){
+                            editPanelEvent.fire( new EditPanelEvent( currentTaskId ) );
+                        }
+                    }
+                }).existInDatabase(currentTaskId);
+                
             }
         },
          new DefaultErrorCallback() {
@@ -459,28 +469,26 @@ public class FormDisplayPresenter {
     }
     
     public void releaseTask( String values ) {
-        final Map<String, String> params = getUrlParameters( values );
         taskServices.call( new RemoteCallback<Void>() {
             @Override
             public void callback( Void nothing ) {
-                view.displayNotification( "Task Id: " + params.get( "taskId" ) + " was released!" );
+                view.displayNotification( "Task Id: " + currentTaskId + " was released!" );
                 taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 renderTaskForm();
             }
-        } ).release( Long.parseLong( params.get( "taskId" ).toString() ), identity.getName() );
+        } ).release( currentTaskId, identity.getName() );
 
     }
     
     public void claimTask( String values ) {
-        final Map<String, String> params = getUrlParameters( values );
         taskServices.call( new RemoteCallback<Void>() {
             @Override
             public void callback( Void nothing ) {
-                view.displayNotification( "Task Id: " + params.get( "taskId" ) + " was claimed!" );
+                view.displayNotification( "Task Id: " + currentTaskId + " was claimed!" );
                 taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 renderTaskForm();
             }
-        } ).claim( Long.parseLong( params.get( "taskId" ).toString() ), identity.getName() );
+        } ).claim( currentTaskId, identity.getName() );
 
     }
 
