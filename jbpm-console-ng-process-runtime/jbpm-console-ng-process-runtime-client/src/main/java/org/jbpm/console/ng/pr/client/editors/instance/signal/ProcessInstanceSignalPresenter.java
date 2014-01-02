@@ -28,6 +28,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
+import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -69,6 +70,9 @@ public class ProcessInstanceSignalPresenter {
     private PlaceManager placeManager;
 
     @Inject
+    private Event<ProcessInstancesUpdateEvent> processInstancesUpdatedEvent;
+    
+    @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
 
     private PlaceRequest place;
@@ -101,8 +105,9 @@ public class ProcessInstanceSignalPresenter {
         kieSessionServices.call( new RemoteCallback<Void>() {
             @Override
             public void callback( Void v ) {
+                processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
                 close();
-
+                
             }
         } ).signalProcessInstances( processInstanceIds, view.getSignalRefText(), view.getEventText() );
     }

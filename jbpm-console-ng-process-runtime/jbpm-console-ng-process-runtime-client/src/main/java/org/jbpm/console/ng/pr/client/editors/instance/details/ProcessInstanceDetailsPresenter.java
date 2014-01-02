@@ -41,6 +41,7 @@ import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.VariableSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceStyleEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
@@ -127,6 +128,9 @@ public class ProcessInstanceDetailsPresenter {
 
     @Inject
     private Event<ProcessInstanceStyleEvent> processInstanceStyleEvent;
+    
+    @Inject
+    private Event<ProcessInstancesUpdateEvent> processInstancesUpdatedEvent;
 
     @Inject
     private Caller<VFSService> fileServices;
@@ -360,6 +364,7 @@ public class ProcessInstanceDetailsPresenter {
                             refreshProcessInstanceData(view.getProcessDeploymentText().getText(),
                                     view.getProcessInstanceIdText().getText(),
                                     view.getProcessDefinitionIdText().getText());
+                            processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(processInstanceId));
                             view.displayNotification(constants.Aborting_Process_Instance() + "(id=" + processInstanceId + ")");
 
                         }

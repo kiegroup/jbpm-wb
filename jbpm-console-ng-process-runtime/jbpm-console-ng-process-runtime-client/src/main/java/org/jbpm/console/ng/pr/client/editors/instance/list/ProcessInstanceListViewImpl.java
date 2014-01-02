@@ -64,6 +64,7 @@ import org.jbpm.console.ng.pr.client.util.ResizableHeader;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceStyleEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.mvp.PlaceManager;
@@ -229,6 +230,18 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
 
         presenter.addDataDisplay(processInstanceListGrid);
 
+    }
+    
+    public void refreshProcessInstanceListOnUpdates(@Observes ProcessInstancesUpdateEvent event){
+        if(showAllLink.getStyleName().equals("active")){
+            presenter.refreshActiveProcessList();
+        }else if(showRelatedToMeLink.getStyleName().equals("active")){
+            presenter.refreshRelatedToMeProcessList();
+        }else if(showCompletedLink.getStyleName().equals("active")){
+            presenter.refreshCompletedProcessList();
+        }else if(showAbortedLink.getStyleName().equals("active")){
+            presenter.refreshAbortedProcessList();
+        }
     }
 
     @Override

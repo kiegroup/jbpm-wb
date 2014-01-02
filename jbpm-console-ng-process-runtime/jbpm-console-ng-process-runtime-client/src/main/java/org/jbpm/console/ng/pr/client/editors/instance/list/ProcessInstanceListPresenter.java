@@ -197,6 +197,7 @@ public class ProcessInstanceListPresenter {
     public void newInstanceCreated(@Observes NewProcessInstanceEvent pi) {
         refreshActiveProcessList();
     }
+    
 
     public void addDataDisplay(HasData<ProcessInstanceSummary> display) {
         dataProvider.addDataDisplay(display);
