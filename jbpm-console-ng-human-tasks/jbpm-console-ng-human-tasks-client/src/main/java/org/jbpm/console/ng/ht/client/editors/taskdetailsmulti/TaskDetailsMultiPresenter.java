@@ -273,6 +273,34 @@ public class TaskDetailsMultiPresenter {
             }
         })
                 .endMenu()
+                .newTopLevelMenu("Attachments")
+                .respondsWith(new Command() {
+            @Override
+            public void execute() {
+                view.getContent().clear();
+                String placeToGo = "Task Attachments";
+
+                DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
+                //Set Parameters here: 
+                defaultPlaceRequest.addParameter("taskId", String.valueOf(selectedTaskId));
+                defaultPlaceRequest.addParameter("taskName", selectedTaskName);
+
+                AbstractWorkbenchScreenActivity activity = null;
+                if(activitiesMap.get(placeToGo) == null){
+                    Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
+                    activity = ((AbstractWorkbenchScreenActivity) activities.iterator().next());
+                    
+                }else{
+                    activity = activitiesMap.get(placeToGo);
+                }
+                IsWidget widget = activity.getWidget();
+                activity.launch(place, null);
+                activity.onStartup(defaultPlaceRequest);
+                view.getContent().add(widget);
+                activity.onOpen();
+            }
+        })
+                .endMenu()
                 .build();
 
     }

@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.console.ng.ht.model.AttachmentSummary;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
@@ -136,5 +137,40 @@ public interface TaskServiceEntryPoint {
      * @return
      */
     Boolean existInDatabase(long taskId);
+    
+    /**
+     * Creates a new attachment with the given attributes
+     * 
+     * @param taskId id of the task to which the attachment belongs
+     * @param name attachment name
+     * @param attachedBy user who added the attachment
+     * @param content plain text content of the attachment
+     * @return id of the new attachment
+     */
+    long addAttachment(Long taskId, String name, String attachedBy, String content);
+    
+    /**
+     * Deletes the attachment with the given id
+     * 
+     * @param taskId id of the task to which the attachment belongs
+     * @param attachmentId id of the attachment
+     */
+    void deleteAttachment(long taskId, long attachmentId);
+    
+    /**
+     * Gets all attachments for the task with the given id
+     * 
+     * @param taskId id of the task
+     * @return list of attachments for the given task
+     */
+    List<AttachmentSummary> getAllAttachmentsByTaskId(long taskId);
+    
+    /**
+     * Gets attachment with the given id
+     * 
+     * @param attachmentId id of the attachment
+     * @return attachment with the given id
+     */
+    AttachmentSummary getAttachmentById(long attachmentId);
 
 }
