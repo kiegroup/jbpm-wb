@@ -19,6 +19,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.enterprise.event.Event;
+
+import org.jbpm.console.ng.ht.client.util.DataGridUtils;
+import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
+import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.security.Identity;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
@@ -26,16 +34,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
-
-import javax.enterprise.event.Event;
-
-import org.jbpm.console.ng.ht.client.util.DataGridUtils;
-import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
-import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.security.Identity;
 
 public class TaskBox extends Composite {
 

@@ -478,7 +478,7 @@ public class TasksListPresenter {
     public void changeBgTaskCalendar(@Observes TaskCalendarEvent taskCalendarEvent) {
         if (currentDayTasks != null) {
             DataGridUtils.idTaskCalendar = taskCalendarEvent.getTaskEventId();
-            this.filterCalendar(taskCalendarEvent.getTaskEventId(), "");
+            this.filterCalendar(taskCalendarEvent.getTaskEventId(), view.getCurrentFilter());
         }
     }
 

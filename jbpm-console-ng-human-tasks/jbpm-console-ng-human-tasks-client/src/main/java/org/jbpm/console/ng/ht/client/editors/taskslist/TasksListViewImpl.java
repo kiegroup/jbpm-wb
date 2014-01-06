@@ -153,8 +153,6 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
 
     public DataGrid<TaskSummary> myTaskListGrid;
 
-    private Column<TaskSummary, Number> taskIdColumn;
-    
     private ActionsDataGrid currentAction = null; 
 
 
