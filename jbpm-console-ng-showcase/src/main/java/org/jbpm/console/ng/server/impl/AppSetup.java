@@ -40,9 +40,8 @@ public class AppSetup {
 
      // default repository section - start
     private static final String JBPM_WB_PLAYGROUND_ALIAS = "jbpm-playground";
-    private static final String JBPM_WB_PLAYGROUND_ORIGIN = "https://github.com/guvnorngtestuser1/jbpm-console-ng-playground-kjar.git";
-    private static final String JBPM_WB_PLAYGROUND_UID = "guvnorngtestuser1";
-    private static final String JBPM_WB_PLAYGROUND_PWD = "test1234";
+    private static final String JBPM_WB_PLAYGROUND_ORIGIN = "https://github.com/droolsjbpm/jbpm-playground.git";
+   
 
     private static final String GLOBAL_SETTINGS = "settings";
 
@@ -68,7 +67,7 @@ public class AppSetup {
     public void onStartup() {
         if (!"false".equalsIgnoreCase(System.getProperty("org.kie.demo"))) {
             administrationService.bootstrapRepository( "demo", JBPM_WB_PLAYGROUND_ALIAS, JBPM_WB_PLAYGROUND_ORIGIN,
-                                                       JBPM_WB_PLAYGROUND_UID, JBPM_WB_PLAYGROUND_PWD );
+                                                       "", "" );
         } else if ("true".equalsIgnoreCase(System.getProperty("org.kie.example"))) {
             administrationService.bootstrapRepository( "example", "repository1", null, "", "" );
             administrationService.bootstrapProject("repository1", "org.kie.example", "project1", "1.0.0-SNAPSHOT");
