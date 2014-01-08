@@ -18,6 +18,7 @@ package org.jbpm.console.ng.ht.client.util;
 import java.util.Date;
 
 import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.client.util.TaskUtils.TaskView;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ButtonGroup;
@@ -38,6 +39,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
+
 import org.jbpm.console.ng.ht.model.CalendarListContainer;
 
 /**
@@ -103,7 +105,7 @@ public class LiCalendarPicker extends Composite implements HasValueChangeHandler
         buttonGroupLi = new NavLink();
 
         ul.add(calendarLink);
-        
+
         initPrevNextTodayButtons();
 
         ul.add(buttonGroupLi);
@@ -112,7 +114,7 @@ public class LiCalendarPicker extends Composite implements HasValueChangeHandler
         dividerNavLink1.setStyleName("divider-vertical");
         dividerNavLink1.remove(dividerNavLink1.getAnchor());
         ul.add(dividerNavLink1);
-        
+
         ul.add(dayViewTasksNavLink);
 
         ul.add(weekViewTasksNavLink);
@@ -152,8 +154,6 @@ public class LiCalendarPicker extends Composite implements HasValueChangeHandler
 
             }
         });
-
-       
 
         calendarIcon = new IconAnchor();
         calendarLink.add(calendarIcon);
@@ -212,30 +212,25 @@ public class LiCalendarPicker extends Composite implements HasValueChangeHandler
 
     }
 
-    public void setDayView() {
-
-        dayViewTasksNavLink.setStyleName("active");
-        weekViewTasksNavLink.setStyleName("");
-        monthViewTasksNavLink.setStyleName("");
-        setViewType("day");
-    }
-
-    public void setWeekView() {
-
-        dayViewTasksNavLink.setStyleName("");
-        monthViewTasksNavLink.setStyleName("");
-
-        weekViewTasksNavLink.setStyleName("active");
-        setViewType("week");
-
-    }
-
-    public void setMonthView() {
+    public void setCalendarView(TaskView taskView) {
         dayViewTasksNavLink.setStyleName("");
         weekViewTasksNavLink.setStyleName("");
-        monthViewTasksNavLink.setStyleName("active");
-        setViewType("month");
-        updateTodayButtonEnabled();
+        monthViewTasksNavLink.setStyleName("");
+        setViewType(taskView.name().toLowerCase());
+        switch (taskView) {
+        case DAY:
+            dayViewTasksNavLink.setStyleName("active");
+            break;
+        case WEEK:
+            weekViewTasksNavLink.setStyleName("active");
+            break;
+        case MONTH:
+            monthViewTasksNavLink.setStyleName("active");
+            updateTodayButtonEnabled();
+            break;
+        default:
+            throw new IllegalStateException("Unrecognized view type '" + taskView + "'!");
+        }
     }
 
     public String getViewType() {
@@ -259,40 +254,41 @@ public class LiCalendarPicker extends Composite implements HasValueChangeHandler
     /**
      * Adjust the date (back or to future) based on current view type
      * (day/week/month).
-     *
-     * @param back flag that indicates if the date should be adjusted to future
-     * (+) or back (-)
+     * 
+     * @param back
+     *            flag that indicates if the date should be adjusted to future
+     *            (+) or back (-)
      */
     public void adjustDate(boolean back) {
         switch (viewType) {
-            case DAY:
-                if (back) {
+        case DAY:
+            if (back) {
                 CalendarUtil.addDaysToDate(currentDate, -1);
             } else {
                 CalendarUtil.addDaysToDate(currentDate, 1);
             }
-                break;
+            break;
 
-            case WEEK:
-                if (back) {
+        case WEEK:
+            if (back) {
                 CalendarUtil.addDaysToDate(currentDate, -7);
             } else {
                 CalendarUtil.addDaysToDate(currentDate, 7);
             }
 
-                break;
+            break;
 
-            case MONTH:
-                if (back) {
+        case MONTH:
+            if (back) {
                 currentDate = DateUtils.getSameOrClosestDateInPreviousMonth(currentDate);
             } else {
                 currentDate = DateUtils.getSameOrClosestDateInNextMonth(currentDate);
             }
 
-                break;
-            case GRID:
-                // no date change needed
-                break;
+            break;
+        case GRID:
+            // no date change needed
+            break;
 
         }
         propagateDateChanges();
@@ -315,33 +311,33 @@ public class LiCalendarPicker extends Composite implements HasValueChangeHandler
      */
     private void updateCalendarLabelText() {
         switch (viewType) {
-            case DAY: {
-                calendarLink.setVisible(true);
-                DateTimeFormat fmt = DateTimeFormat.getFormat("EEE, dd MMMM");
-                calendarLink.setText(fmt.format(currentDate));
-                break;
-            }
-            case WEEK: {
-                calendarLink.setVisible(true);
-                DateTimeFormat fmt = DateTimeFormat.getFormat("dd MMM");
-                DateRange weekRange = DateUtils.getWeekDateRange(currentDate);
-                String text = fmt.format(weekRange.getStartDate());
-                text = text + " - " + fmt.format(weekRange.getEndDate());
-                calendarLink.setText(text);
-                break;
-            }
-            case MONTH: {
-                calendarLink.setVisible(true);
-                DateTimeFormat fmt = DateTimeFormat.getFormat("MMMM yy");
-                calendarLink.setText(fmt.format(currentDate));
-                break;
-            }
-            case GRID:
-                calendarLink.setVisible(false);
-                break;
+        case DAY: {
+            calendarLink.setVisible(true);
+            DateTimeFormat fmt = DateTimeFormat.getFormat("EEE, dd MMMM");
+            calendarLink.setText(fmt.format(currentDate));
+            break;
+        }
+        case WEEK: {
+            calendarLink.setVisible(true);
+            DateTimeFormat fmt = DateTimeFormat.getFormat("dd MMM");
+            DateRange weekRange = DateUtils.getWeekDateRange(currentDate);
+            String text = fmt.format(weekRange.getStartDate());
+            text = text + " - " + fmt.format(weekRange.getEndDate());
+            calendarLink.setText(text);
+            break;
+        }
+        case MONTH: {
+            calendarLink.setVisible(true);
+            DateTimeFormat fmt = DateTimeFormat.getFormat("MMMM yy");
+            calendarLink.setText(fmt.format(currentDate));
+            break;
+        }
+        case GRID:
+            calendarLink.setVisible(false);
+            break;
 
-            default:
-                throw new IllegalStateException("Unrecognized view type " + viewType);
+        default:
+            throw new IllegalStateException("Unrecognized view type " + viewType);
         }
     }
 
@@ -390,30 +386,30 @@ public class LiCalendarPicker extends Composite implements HasValueChangeHandler
         Date today = new Date();
 
         switch (viewType) {
-            case DAY:
-                if (DateUtils.areDatesEqual(today, currentDate)) {
+        case DAY:
+            if (DateUtils.areDatesEqual(today, currentDate)) {
                 todayBtnEnabled = false;
             }
-                break;
+            break;
 
-            case WEEK:
-                DateRange weekRange = DateUtils.getWeekDateRange(currentDate);
-                if (DateUtils.isDateInRange(today, weekRange)) {
-                    todayBtnEnabled = false;
-                }
-                break;
-
-            case MONTH:
-                DateRange monthRange = DateUtils.getMonthDateRange(currentDate);
-                if (DateUtils.isDateInRange(today, monthRange)) {
-                    todayBtnEnabled = false;
-                }
-                break;
-            case GRID:
+        case WEEK:
+            DateRange weekRange = DateUtils.getWeekDateRange(currentDate);
+            if (DateUtils.isDateInRange(today, weekRange)) {
                 todayBtnEnabled = false;
-                break;
-            default:
-                throw new IllegalStateException("Unrecognized calendar view type: " + viewType);
+            }
+            break;
+
+        case MONTH:
+            DateRange monthRange = DateUtils.getMonthDateRange(currentDate);
+            if (DateUtils.isDateInRange(today, monthRange)) {
+                todayBtnEnabled = false;
+            }
+            break;
+        case GRID:
+            todayBtnEnabled = false;
+            break;
+        default:
+            throw new IllegalStateException("Unrecognized calendar view type: " + viewType);
         }
         todayButton.setEnabled(todayBtnEnabled);
     }
