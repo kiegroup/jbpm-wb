@@ -20,6 +20,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import java.util.HashMap;
@@ -117,7 +118,7 @@ public class TaskDetailsMultiPresenter {
         selectedTaskId = event.getTaskId();
         selectedTaskName = event.getTaskName();
         
-        view.getTaskIdAndName().setText(String.valueOf(selectedTaskId) + " - "+selectedTaskName);
+        view.getTaskIdAndName().setText(SafeHtmlUtils.htmlEscape(String.valueOf(selectedTaskId) + " - "+selectedTaskName));
         
         view.getContent().clear();
         
