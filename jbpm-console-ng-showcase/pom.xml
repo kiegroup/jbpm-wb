@@ -572,6 +572,7 @@
         <artifactId>gwt-maven-plugin</artifactId>
         <configuration>
           <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
+          <localWorkers>4</localWorkers>
           <module>org.jbpm.console.ng.FastCompiledjBPMShowcase</module>
           <logLevel>INFO</logLevel>
           <compileSourcesArtifacts>
