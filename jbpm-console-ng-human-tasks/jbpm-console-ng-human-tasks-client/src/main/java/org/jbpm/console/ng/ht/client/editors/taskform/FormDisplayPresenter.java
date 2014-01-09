@@ -392,6 +392,13 @@ public class FormDisplayPresenter {
                 taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 dispose();
             }
+        },
+         new DefaultErrorCallback() {
+            @Override
+            public boolean error(Message message, Throwable throwable) {
+                view.displayNotification("Task failed to complete: "+throwable.getMessage());
+                return false;
+            }
         }).complete(Long.parseLong(params.get("taskId")), identity.getName(), objParams);
 
     }
