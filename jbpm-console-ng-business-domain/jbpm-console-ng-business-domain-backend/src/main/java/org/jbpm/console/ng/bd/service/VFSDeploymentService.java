@@ -54,11 +54,8 @@ public class VFSDeploymentService extends AbstractDeploymentService {
         RuntimeEnvironmentBuilder builder = RuntimeEnvironmentBuilder.getDefault()
                 .entityManagerFactory(getEmf());
         
-        AbstractAuditLogger auditLogger = getAuditLogger();
-        ServicesAwareAuditEventBuilder auditEventBuilder = new ServicesAwareAuditEventBuilder();
-        auditEventBuilder.setIdentityProvider(identityProvider);
-        auditEventBuilder.setDeploymentUnitId(vfsUnit.getIdentifier());
-        auditLogger.setBuilder(auditEventBuilder);
+        AbstractAuditLogger auditLogger = setupAuditLogger(identityProvider, vfsUnit.getIdentifier());
+        
         if (beanManager != null) {
             builder.registerableItemsFactory(InjectableRegisterableItemsFactory.getFactory(beanManager, auditLogger));
         }
@@ -66,10 +63,9 @@ public class VFSDeploymentService extends AbstractDeploymentService {
         loadRules(vfsUnit, builder, deployedUnit); 
         
         commonDeploy(vfsUnit, deployedUnit, builder.get());
-        
     }
 
-   
+
     
     protected void loadProcesses(VFSDeploymentUnit vfsUnit, RuntimeEnvironmentBuilder builder, DeployedUnitImpl deployedUnit) {
         Iterable<Path> loadProcessFiles = null;
