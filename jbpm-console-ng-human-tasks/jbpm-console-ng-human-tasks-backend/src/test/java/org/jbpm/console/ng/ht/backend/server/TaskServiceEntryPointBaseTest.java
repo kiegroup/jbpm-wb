@@ -10,11 +10,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.services.task.impl.factories.TaskFactory;
 import org.jbpm.services.task.impl.model.TaskImpl;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -36,6 +38,24 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
         tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
                 getTaskStatuses(), createDate("2013-09-30"), 35, "en-UK");
         assertEquals(35, tasksByDays.size());
+    }
+
+    @Test
+    public void testGetTasksForLongPeriodWithDayLightSaving() {
+        DateTimeZone defaultTZ = DateTimeZone.getDefault();
+        DateTimeZone.setDefault(DateTimeZone.forTimeZone(TimeZone.getTimeZone("Brazil/East")));
+        Map<Day, List<TaskSummary>> tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
+                getTaskStatuses(), createDate("2014-02-24"), 42, "en-UK");
+        assertEquals(42, tasksByDays.size());
+
+        tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
+                getTaskStatuses(), createDate("2014-02-24"), 3000, "en-UK");
+        assertEquals(3000, tasksByDays.size());
+
+        tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
+                getTaskStatuses(), createDate("2013-09-30"), 35, "en-UK");
+        assertEquals(35, tasksByDays.size());
+        DateTimeZone.setDefault(defaultTZ);
     }
 
     @Test

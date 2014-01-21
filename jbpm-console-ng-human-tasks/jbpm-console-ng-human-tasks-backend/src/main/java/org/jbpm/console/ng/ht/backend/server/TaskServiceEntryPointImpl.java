@@ -191,7 +191,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         Map<Day, List<TaskSummary>> tasksByDay = new LinkedHashMap<Day, List<TaskSummary>>();
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE dd");
         for (Map.Entry<LocalDate, List<TaskSummary>> entry : tasksByLocalDate.entrySet()) {
-            Date dayDate = entry.getKey().toDateMidnight().toDate();
+            Date dayDate = entry.getKey().toDateTimeAtStartOfDay().toDate();
             tasksByDay.put(new Day(dayDate, dayFormat.format(dayDate)), entry.getValue());
         }
         return tasksByDay;
