@@ -350,8 +350,11 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
                 if (currentAction == null) {
                     TaskSummary task = selectionModel.getSelectedObject();
                     if (task != null) {
-                        placeManager.goTo("Task Details Multi");
-                        taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
+                        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
+                        if(status == PlaceStatus.CLOSE){
+                            placeManager.goTo("Task Details Multi");
+                            taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
+                        }
                         DataGridUtils.currentIdSelected = task.getId();
                     }
                 }
