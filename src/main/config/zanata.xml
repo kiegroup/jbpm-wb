@@ -6,7 +6,7 @@
   <project-type>utf8properties</project-type>
 
   <locales>
-    <locale map-from="es_AR">es</locale>
+    <locale map-from="es_ES">es</locale>
     <locale map-from="fr_FR">fr</locale>
     <locale map-from="ja_JP">ja</locale>
     <locale>de</locale>
