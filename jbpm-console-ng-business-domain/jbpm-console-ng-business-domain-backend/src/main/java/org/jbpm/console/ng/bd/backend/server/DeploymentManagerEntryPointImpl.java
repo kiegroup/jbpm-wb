@@ -257,7 +257,17 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
      * @param event - event that carries the complete DeploymentUnit to be undeployed
      */
     public void undeployOnEvent(@Observes @Removed DeploymentConfigChangedEvent event) {
-        undeploy((DeploymentUnit) event.getDeploymentUnit());
+        String deploymentId = ((DeploymentUnit) event.getDeploymentUnit()).getIdentifier();
+        try {
+
+            undeploy((DeploymentUnit) event.getDeploymentUnit());
+        } catch (RuntimeException e) {
+            // in case undeloy failed it might be due to active process instances and thus it shall be kept in system repo
+            if (deploymentConfigService.getDeployment(deploymentId) == null) {
+                deploymentConfigService.addDeployment(deploymentId, event.getDeploymentUnit());
+            }
+            throw e;
+        }
     }
 
     /**
