@@ -19,14 +19,19 @@ package org.jbpm.console.ng.bd.client.util;
 
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.cellview.client.AbstractCellTable;
+import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.view.client.Range;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 
 
 public class DataGridUtils {
 
-   
     public static int pageSize = 10;
 
+    public static int CHAR_SIZE_IN_PIXELS = 10;
  
     private static int getCurrentRowCount(DataGrid<KModuleDeploymentUnitSummary> myTaskListGrid) {
         int rowCount = 0;
@@ -56,6 +61,53 @@ public class DataGridUtils {
                 break;
             }
         }
+    }
+
+    public static String trimToColumnWidth(DataGrid dataGrid, Column column, String value) {
+        if (value != null && value.length() > 0) {
+            String columnWidth = dataGrid.getColumnWidth(column);
+            if (columnWidth != null && !columnWidth.equals("null")) {
+                String widthStr = columnWidth.substring(0, columnWidth.length() - 2);
+                int width = Integer.valueOf(widthStr);
+                int textWidth = CHAR_SIZE_IN_PIXELS * value.length();
+
+                if (width < textWidth) {
+                    int visibleChars = width / CHAR_SIZE_IN_PIXELS;
+                    visibleChars = visibleChars > value.length() ? value.length() : visibleChars;
+                    value = value.substring(0, visibleChars) + "...";
+                }
+            }
+        }
+        return value;
+    }
+
+    public static void redrawVisibleRange(AbstractCellTable table) {
+        if (table != null) {
+            Range range = table.getVisibleRange();
+            if (range != null && range.getLength() > 0) {
+                int offset = range.getStart();
+                int count = 0;
+
+                for ( ; (count < table.getVisibleItemCount()) && (offset < (range.getStart() + range.getLength() )) ; ) {
+                    table.redrawRow(offset);
+                    count++;
+                    offset++;
+                }
+            }
+        }
+    }
+
+    public static SafeHtml createDivStart(String title) {
+        return createDivStart(title, "");
+    }
+
+    public static SafeHtml createDivStart(String title, String defaultValue) {
+        if (title == null || "".equals(title)) title = defaultValue;
+        return SafeHtmlUtils.fromTrustedString("<div title=\"" + title.trim() + "\">");
+    }
+
+    public static SafeHtml createDivEnd() {
+        return SafeHtmlUtils.fromTrustedString("</div>");
     }
 
 }
