@@ -22,10 +22,13 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
+import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -120,7 +123,13 @@ public class VariableEditPresenter {
                 close();
 
             }
-        } ).setProcessVariable( view.getProcessInstanceId(), view.getVariableId(), value );
+        }, new ErrorCallback<Message>() {
+             @Override
+             public boolean error( Message message, Throwable throwable ) {
+                 ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                 return true;
+             }
+         } ).setProcessVariable( view.getProcessInstanceId(), view.getVariableId(), value );
     }
 
 }

@@ -30,12 +30,16 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import javax.enterprise.event.Observes;
+
+import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -128,7 +132,13 @@ public class TaskCommentsPresenter {
                 dataProvider.refresh();
                 view.getDataGrid().redraw();
             }
-        } ).getAllCommentsByTaskId( currentTaskId );
+        }, new ErrorCallback<Message>() {
+               @Override
+               public boolean error( Message message, Throwable throwable ) {
+                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                   return true;
+               }
+           } ).getAllCommentsByTaskId( currentTaskId );
 
     }
 
@@ -141,7 +151,13 @@ public class TaskCommentsPresenter {
                 refreshComments( );
                 view.getNewTaskCommentTextArea().setText("");
             }
-        } ).addComment( currentTaskId, text, identity.getName(), addedOn );
+        }, new ErrorCallback<Message>() {
+               @Override
+               public boolean error( Message message, Throwable throwable ) {
+                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                   return true;
+               }
+           } ).addComment( currentTaskId, text, identity.getName(), addedOn );
     }
     
     public void removeTaskComment( long commentId ) {
@@ -152,7 +168,13 @@ public class TaskCommentsPresenter {
                 view.getNewTaskCommentTextArea().setText("");
                 view.displayNotification("Comment Deleted!");
             }
-        } ).deleteComment( currentTaskId, commentId );
+        }, new ErrorCallback<Message>() {
+               @Override
+               public boolean error( Message message, Throwable throwable ) {
+                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                   return true;
+               }
+           } ).deleteComment( currentTaskId, commentId );
     }
 
     public void addDataDisplay( HasData<CommentSummary> display ) {

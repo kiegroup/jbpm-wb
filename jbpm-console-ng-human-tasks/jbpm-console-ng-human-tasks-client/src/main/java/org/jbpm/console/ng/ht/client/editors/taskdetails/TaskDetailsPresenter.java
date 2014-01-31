@@ -33,7 +33,9 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 
+import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
@@ -47,6 +49,7 @@ import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -158,7 +161,13 @@ public class TaskDetailsPresenter {
                 processInstanceSelected.fire(new ProcessInstancesWithDetailsRequestEvent(processInstance.getDeploymentId(),
                                 processInstance.getId(), processInstance.getProcessId()));
             }
-        }).getProcessInstanceById(Long.parseLong(view.getProcessInstanceIdText().getText()));
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getProcessInstanceById(Long.parseLong(view.getProcessInstanceIdText().getText()));
         
     }
 
@@ -182,7 +191,13 @@ public class TaskDetailsPresenter {
                     taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                     taskCalendarEvent.fire(new TaskCalendarEvent(currentTaskId));
                 }
-            }).updateSimpleTaskDetails(currentTaskId, names, Integer.valueOf(priority), descriptions,
+            }, new ErrorCallback<Message>() {
+                  @Override
+                  public boolean error( Message message, Throwable throwable ) {
+                      ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                      return true;
+                  }
+              }).updateSimpleTaskDetails(currentTaskId, names, Integer.valueOf(priority), descriptions,
                     // subTaskStrategy,
                     dueDate);
 
@@ -242,7 +257,13 @@ public class TaskDetailsPresenter {
                 changeStyleRow(details.getId());
 
             }
-        }).getTaskDetails(currentTaskId);
+        }, new ErrorCallback<Message>() {
+          @Override
+          public boolean error( Message message, Throwable throwable ) {
+              ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+              return true;
+          }
+      }).getTaskDetails(currentTaskId);
         taskServices.call(new RemoteCallback<List<TaskEventSummary>>() {
             @Override
             public void callback(List<TaskEventSummary> events) {
@@ -256,7 +277,13 @@ public class TaskDetailsPresenter {
                 view.getLogTextArea().setHTML(safeHtmlBuilder.toSafeHtml());
             }
 
-        }).getAllTaskEvents(currentTaskId);
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getAllTaskEvents(currentTaskId);
 
     }
     

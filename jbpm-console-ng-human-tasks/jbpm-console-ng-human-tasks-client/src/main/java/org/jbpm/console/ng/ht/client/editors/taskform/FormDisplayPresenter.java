@@ -37,6 +37,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.bus.client.api.messaging.Message;
 
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
@@ -53,6 +54,9 @@ import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
 import org.kie.workbench.common.widgets.client.callbacks.DefaultErrorCallback;
+import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
+import org.uberfire.client.common.BusyPopup;
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -313,7 +317,13 @@ public class FormDisplayPresenter {
                     taskStyleEvent.fire( new TaskStyleEvent( task.getId() ) );
                 }
             }
-        } ).getTaskDetails(currentTaskId);
+        }, new ErrorCallback<Message>() {
+               @Override
+               public boolean error( Message message, Throwable throwable ) {
+                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                   return true;
+               }
+           } ).getTaskDetails(currentTaskId);
     }
 
     public void renderProcessForm() {
@@ -356,7 +366,13 @@ public class FormDisplayPresenter {
                     }
                 } ).getProcessDesc(currentProcessId);
             }
-        }).getFormDisplayProcess(currentDomainId, currentProcessId);
+        }, new ErrorCallback<Message>() {
+           @Override
+           public boolean error( Message message, Throwable throwable ) {
+               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+               return true;
+           }
+       }).getFormDisplayProcess(currentDomainId, currentProcessId);
         
     }
 
@@ -406,14 +422,13 @@ public class FormDisplayPresenter {
                 }).existInDatabase(currentTaskId);
                 
             }
-        },
-         new DefaultErrorCallback() {
-            @Override
-            public boolean error(Message message, Throwable throwable) {
-                view.displayNotification("Task failed to complete: "+throwable.getMessage());
-                return false;
-            }
-        }).complete(Long.parseLong(params.get("taskId")), identity.getName(), objParams);
+        }, new ErrorCallback<Message>() {
+          @Override
+          public boolean error( Message message, Throwable throwable ) {
+              ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+              return true;
+          }
+      }).complete(Long.parseLong(params.get("taskId")), identity.getName(), objParams);
 
     }
 
@@ -424,7 +439,13 @@ public class FormDisplayPresenter {
                 view.displayNotification("Task Id: " + currentTaskId + " State was Saved! ContentId : " + contentId);
                 renderTaskForm();
             }
-        }).saveContent(currentTaskId, values);
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).saveContent(currentTaskId, values);
     }
 
     public void saveTaskState(String values) {
@@ -435,7 +456,13 @@ public class FormDisplayPresenter {
                 view.displayNotification("Task Id: " + params.get("taskId") + " State was Saved! ContentId : " + contentId);
                 renderTaskForm();
             }
-        }).saveContent(Long.parseLong(params.get("taskId").toString()), params);
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).saveContent(Long.parseLong(params.get("taskId").toString()), params);
 
     }
 
@@ -456,7 +483,13 @@ public class FormDisplayPresenter {
                 taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 renderTaskForm();
             }
-        }).start(taskId, identity);
+        }, new ErrorCallback<Message>() {
+          @Override
+          public boolean error( Message message, Throwable throwable ) {
+              ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+              return true;
+          }
+      }).start(taskId, identity);
     }
 
     public void startTask( String values ) {
@@ -468,7 +501,13 @@ public class FormDisplayPresenter {
                 taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 renderTaskForm();
             }
-        } ).start( Long.parseLong( params.get( "taskId" ).toString() ), identity.getName() );
+        }, new ErrorCallback<Message>() {
+           @Override
+           public boolean error( Message message, Throwable throwable ) {
+               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+               return true;
+           }
+       } ).start( Long.parseLong( params.get( "taskId" ).toString() ), identity.getName() );
 
     }
     
@@ -480,7 +519,13 @@ public class FormDisplayPresenter {
                 taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 renderTaskForm();
             }
-        } ).release( currentTaskId, identity.getName() );
+        }, new ErrorCallback<Message>() {
+           @Override
+           public boolean error( Message message, Throwable throwable ) {
+               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+               return true;
+           }
+       } ).release( currentTaskId, identity.getName() );
 
     }
     
@@ -492,7 +537,13 @@ public class FormDisplayPresenter {
                 taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 renderTaskForm();
             }
-        } ).claim( currentTaskId, identity.getName() );
+        }, new ErrorCallback<Message>() {
+           @Override
+           public boolean error( Message message, Throwable throwable ) {
+               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+               return true;
+           }
+       } ).claim( currentTaskId, identity.getName() );
 
     }
 
@@ -504,7 +555,13 @@ public class FormDisplayPresenter {
                 taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 renderTaskForm();
             }
-        }).saveTaskStateFromRenderContext(formCtx, currentTaskId);
+        }, new ErrorCallback<Message>() {
+           @Override
+           public boolean error( Message message, Throwable throwable ) {
+               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+               return true;
+           }
+       }).saveTaskStateFromRenderContext(formCtx, currentTaskId);
     }
 
     protected void changeActionTab() {
@@ -516,7 +573,13 @@ public class FormDisplayPresenter {
                 placeRequestImpl.addParameter("taskId", String.valueOf(currentTaskId));
                 placeManager.goTo(placeRequestImpl);
             }
-        }).saveTaskStateFromRenderContext(formCtx, currentTaskId, true);
+        }, new ErrorCallback<Message>() {
+           @Override
+           public boolean error( Message message, Throwable throwable ) {
+               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+               return true;
+           }
+       }).saveTaskStateFromRenderContext(formCtx, currentTaskId, true);
     }
 
     protected void changeTab(String tabId) {
@@ -534,14 +597,13 @@ public class FormDisplayPresenter {
                 taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 dispose();
             }
-        }, new DefaultErrorCallback() {
-
-            @Override
-            public boolean error(Message message, Throwable throwable) {
-                view.displayNotification("Task failed to complete: "+throwable.getMessage());
-                return false;
-            }
-        }).completeTaskFromContext(formCtx, currentTaskId, identity.getName());
+        }, new ErrorCallback<Message>() {
+               @Override
+               public boolean error( Message message, Throwable throwable ) {
+                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                   return true;
+               }
+           }).completeTaskFromContext(formCtx, currentTaskId, identity.getName());
     }
 
     protected void startProcess() {
@@ -553,7 +615,13 @@ public class FormDisplayPresenter {
                 close();
  
             }
-        }).startProcessFromRenderContext(formCtx, currentDomainId, currentProcessId);
+        }, new ErrorCallback<Message>() {
+           @Override
+           public boolean error( Message message, Throwable throwable ) {
+               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+               return true;
+           }
+       }).startProcessFromRenderContext(formCtx, currentDomainId, currentProcessId);
     }
 
     public void startProcess(String values) {
@@ -568,7 +636,13 @@ public class FormDisplayPresenter {
                
 
             }
-        }).startProcess(currentDomainId, params.get("processId").toString(), params);
+        }, new ErrorCallback<Message>() {
+             @Override
+             public boolean error( Message message, Throwable throwable ) {
+                 ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                 return true;
+             }
+         }).startProcess(currentDomainId, params.get("processId").toString(), params);
 
     }
 

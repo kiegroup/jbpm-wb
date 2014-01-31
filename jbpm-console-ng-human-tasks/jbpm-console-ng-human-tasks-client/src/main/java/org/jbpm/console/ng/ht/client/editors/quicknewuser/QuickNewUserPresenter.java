@@ -23,6 +23,8 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
@@ -35,6 +37,7 @@ import org.jbpm.console.ng.ht.service.UserServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
@@ -127,7 +130,13 @@ public class QuickNewUserPresenter {
                 close();
 
             }
-        }).save(user);
+        }, new ErrorCallback<Message>() {
+             @Override
+             public boolean error( Message message, Throwable throwable ) {
+                 ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                 return true;
+             }
+         }).save(user);
     }
 
     public List<Group> getSelectedGroups() {
@@ -159,7 +168,13 @@ public class QuickNewUserPresenter {
                 }
 
             }
-        }).getAll();
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getAll();
     }
 
     public void loadTypesRole() {
@@ -171,7 +186,13 @@ public class QuickNewUserPresenter {
                 }
 
             }
-        }).getAll();
+        }, new ErrorCallback<Message>() {
+             @Override
+             public boolean error( Message message, Throwable throwable ) {
+                 ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                 return true;
+             }
+         }).getAll();
     }
 
     private void fillListGroups(List<Group> groups) {

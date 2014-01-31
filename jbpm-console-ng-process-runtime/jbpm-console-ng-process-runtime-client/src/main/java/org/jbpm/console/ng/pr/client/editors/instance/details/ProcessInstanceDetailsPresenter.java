@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
+
+import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -47,6 +50,7 @@ import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.DefaultPosition;
 
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -182,7 +186,13 @@ public class ProcessInstanceDetailsPresenter {
                 }
                 view.getLogTextArea().setHTML(safeHtmlBuilder.toSafeHtml());
             }
-        }).getProcessInstanceHistory(Long.parseLong(processId));
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getProcessInstanceHistory(Long.parseLong(processId));
 
         view.getProcessDefinitionIdText().setText(processId);
         dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
@@ -197,7 +207,13 @@ public class ProcessInstanceDetailsPresenter {
                 }
                 view.getCurrentActivitiesListBox().setHTML(safeHtmlBuilder.toSafeHtml());
             }
-        }).getProcessInstanceActiveNodes(Long.parseLong(processId));
+        }, new ErrorCallback<Message>() {
+          @Override
+          public boolean error( Message message, Throwable throwable ) {
+              ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+              return true;
+          }
+      }).getProcessInstanceActiveNodes(Long.parseLong(processId));
 
         dataServices.call(new RemoteCallback<ProcessSummary>() {
             @Override
@@ -206,7 +222,13 @@ public class ProcessInstanceDetailsPresenter {
                 view.getProcessNameText().setText(process.getName());
                 view.getProcessVersionText().setText(process.getVersion());
             }
-        }).getProcessDesc(processDefId);
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getProcessDesc(processDefId);
 
         dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
             @Override
@@ -241,14 +263,26 @@ public class ProcessInstanceDetailsPresenter {
                         processSelected.getStartTime());
 
             }
-        }).getProcessInstanceById(Long.parseLong(processId));
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getProcessInstanceById(Long.parseLong(processId));
 
         dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
             public void callback(List<NodeInstanceSummary> details) {
                 view.setCurrentCompletedNodes(details);
             }
-        }).getProcessInstanceCompletedNodes(Long.parseLong(processId));
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getProcessInstanceCompletedNodes(Long.parseLong(processId));
 
         dataServices.call(new RemoteCallback<ProcessSummary>() {
             @Override
@@ -279,7 +313,13 @@ public class ProcessInstanceDetailsPresenter {
                     view.setProcessAssetPath(null);
                 }
             }
-        }).getProcessById(deploymentId, processDefId);
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getProcessById(deploymentId, processDefId);
     }
 
     @DefaultPosition

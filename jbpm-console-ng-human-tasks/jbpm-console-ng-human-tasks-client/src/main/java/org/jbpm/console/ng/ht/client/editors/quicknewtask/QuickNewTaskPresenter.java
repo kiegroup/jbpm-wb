@@ -29,6 +29,9 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 
 import java.util.List;
+
+import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
@@ -36,6 +39,7 @@ import org.jbpm.console.ng.ht.client.util.UTCDateBox;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -147,7 +151,13 @@ public class QuickNewTaskPresenter {
                 public void callback( Long taskId ) {
                     refreshNewTask(taskId, taskName, "Task Created and Started (id = " + taskId + ")");
                 }
-            } ).addTaskAndClaimAndStart( str, null, identity.getName(), templateVars );
+            }, new ErrorCallback<Message>() {
+                   @Override
+                   public boolean error( Message message, Throwable throwable ) {
+                       ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                       return true;
+                   }
+               } ).addTaskAndClaimAndStart( str, null, identity.getName(), templateVars );
         } else if ( !isAssignToMe && users != null && users.isEmpty() && groups != null 
                 && containsGroup(groups, identity.getRoles()) ) {
             //System.out.println(" Second OPTION -> Group task but I don't want to be assigned automatically  -> just add!!");
@@ -157,7 +167,13 @@ public class QuickNewTaskPresenter {
                     refreshNewTask(taskId, taskName, "Task Created and Started (id = " + taskId + ")");
 
                 }
-            } ).addTask( str, null, templateVars );
+            }, new ErrorCallback<Message>() {
+                   @Override
+                   public boolean error( Message message, Throwable throwable ) {
+                       ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                       return true;
+                   }
+               } ).addTask( str, null, templateVars );
         }  if (users != null && !users.isEmpty() && users.contains(identity.getName())) {
             //System.out.println(" THIRD OPTION -> Users that includes me add / start!!");
             taskServices.call( new RemoteCallback<Long>() {
@@ -166,7 +182,13 @@ public class QuickNewTaskPresenter {
                     refreshNewTask(taskId, taskName, "Task Created (id = " + taskId + ")");
 
                 }
-            } ).addTaskAndStart(str, null, identity.getName(), templateVars );
+            }, new ErrorCallback<Message>() {
+               @Override
+               public boolean error( Message message, Throwable throwable ) {
+                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                   return true;
+               }
+           } ).addTaskAndStart(str, null, identity.getName(), templateVars );
         } else if (users != null && !users.isEmpty() && !users.contains(identity.getName())) {
             //System.out.println(" FOURTH OPTION -> users that are not me -> just adding!!");
             taskServices.call( new RemoteCallback<Long>() {
@@ -175,7 +197,13 @@ public class QuickNewTaskPresenter {
                     refreshNewTask(taskId, taskName, "Task Created (id = " + taskId + ")");
 
                 }
-            } ).addTask(str, null, templateVars );
+            }, new ErrorCallback<Message>() {
+               @Override
+               public boolean error( Message message, Throwable throwable ) {
+                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                   return true;
+               }
+           } ).addTask(str, null, templateVars );
         }else if(groups != null && !groups.isEmpty() && !containsGroup(groups, identity.getRoles())){
             //System.out.println(" FIFTH OPTION -> groups were I'm not in -> just adding!!");
             taskServices.call( new RemoteCallback<Long>() {
@@ -183,7 +211,13 @@ public class QuickNewTaskPresenter {
                 public void callback( Long taskId ) {
                     refreshNewTask(taskId, taskName, "Task Created (id = " + taskId + ")");
                 }
-            } ).addTask(str, null, templateVars );
+            }, new ErrorCallback<Message>() {
+                   @Override
+                   public boolean error( Message message, Throwable throwable ) {
+                       ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                       return true;
+                   }
+               } ).addTask(str, null, templateVars );
         } 
 
     }

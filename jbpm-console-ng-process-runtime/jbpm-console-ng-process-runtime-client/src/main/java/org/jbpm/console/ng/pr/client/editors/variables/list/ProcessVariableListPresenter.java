@@ -24,6 +24,8 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
+import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -34,6 +36,7 @@ import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.VariableSummary;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.backend.vfs.VFSService;
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -123,7 +126,13 @@ public class ProcessVariableListPresenter {
                 view.setProcessInstance(process);
                 
             }
-        }).getProcessInstanceById(Long.parseLong(processId));
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getProcessInstanceById(Long.parseLong(processId));
         
         dataServices.call(new RemoteCallback<ProcessSummary>() {
             @Override
@@ -132,7 +141,13 @@ public class ProcessVariableListPresenter {
                 view.getProcessDefinitionIdText().setText(process.getId());
                 view.getProcessNameText().setText(process.getName());
             }
-        }).getProcessDesc(processDefId);
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getProcessDesc(processDefId);
         loadVariables(processId, processDefId);
         
     }
@@ -172,7 +187,13 @@ public class ProcessVariableListPresenter {
                 dataProvider.getList().addAll(variables);
                 dataProvider.refresh();
             }
-        }).getVariablesCurrentState(Long.parseLong(processId), processDefId);
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getVariablesCurrentState(Long.parseLong(processId), processDefId);
     }
     
     @WorkbenchMenu

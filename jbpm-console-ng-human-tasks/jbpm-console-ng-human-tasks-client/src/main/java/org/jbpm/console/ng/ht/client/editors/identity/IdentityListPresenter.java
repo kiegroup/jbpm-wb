@@ -23,6 +23,8 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
@@ -34,6 +36,7 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnOpen;
@@ -157,7 +160,13 @@ public class IdentityListPresenter {
             public void callback(List<IdentitySummary> entities) {
                 refreshList(entities);
             }
-        }).getAll();
+        }, new ErrorCallback<Message>() {
+             @Override
+             public boolean error( Message message, Throwable throwable ) {
+                 ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                 return true;
+             }
+         }).getAll();
     }
 
     public void refreshUsers() {
@@ -166,7 +175,13 @@ public class IdentityListPresenter {
             public void callback(List<IdentitySummary> entities) {
                 refreshList(entities);
             }
-        }).getAll();
+        }, new ErrorCallback<Message>() {
+             @Override
+             public boolean error( Message message, Throwable throwable ) {
+                 ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                 return true;
+             }
+         }).getAll();
     }
 
     public void refreshGroups() {
@@ -175,7 +190,14 @@ public class IdentityListPresenter {
             public void callback(List<IdentitySummary> entities) {
                 refreshList(entities);
             }
-        }).getAll();
+        }
+            , new ErrorCallback<Message>() {
+                @Override
+                public boolean error( Message message, Throwable throwable ) {
+                    ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                    return true;
+                }
+            }).getAll();
     }
 
     public void getUserById(String entityId) {
@@ -185,7 +207,13 @@ public class IdentityListPresenter {
                 refreshIdentity(identity);
 
             }
-        }).getById(entityId);
+        }, new ErrorCallback<Message>() {
+             @Override
+             public boolean error( Message message, Throwable throwable ) {
+                 ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                 return true;
+             }
+         }).getById(entityId);
     }
 
     public void getGroupById(String entityId) {
@@ -195,7 +223,13 @@ public class IdentityListPresenter {
                 refreshIdentity(identity);
 
             }
-        }).getById(entityId);
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getById(entityId);
     }
 
     private void refreshList(List<IdentitySummary> entities) {

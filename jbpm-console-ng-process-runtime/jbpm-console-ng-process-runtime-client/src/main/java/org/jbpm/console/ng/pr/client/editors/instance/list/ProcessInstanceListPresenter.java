@@ -30,6 +30,9 @@ import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import java.util.Set;
 import javax.enterprise.event.Event;
+
+import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -40,6 +43,7 @@ import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnFocus;
 import org.uberfire.lifecycle.OnStartup;
@@ -155,7 +159,13 @@ public class ProcessInstanceListPresenter {
                 currentProcessInstances = processInstances;
                 filterProcessList(view.getCurrentFilter());
             }
-        }).getProcessInstances(states, "", null);
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getProcessInstances(states, "", null);
     }
 
     public void refreshRelatedToMeProcessList() {
@@ -167,7 +177,13 @@ public class ProcessInstanceListPresenter {
                 currentProcessInstances = processInstances;
                 filterProcessList(view.getCurrentFilter());
             }
-        }).getProcessInstances(states, "", identity.getName());
+        }, new ErrorCallback<Message>() {
+          @Override
+          public boolean error( Message message, Throwable throwable ) {
+              ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+              return true;
+          }
+      }).getProcessInstances(states, "", identity.getName());
     }
 
     public void refreshAbortedProcessList() {
@@ -179,7 +195,13 @@ public class ProcessInstanceListPresenter {
                 currentProcessInstances = processInstances;
                 filterProcessList(view.getCurrentFilter());
             }
-        }).getProcessInstances(states, "", null);
+        }, new ErrorCallback<Message>() {
+          @Override
+          public boolean error( Message message, Throwable throwable ) {
+              ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+              return true;
+          }
+      }).getProcessInstances(states, "", null);
     }
 
     public void refreshCompletedProcessList() {
@@ -191,7 +213,13 @@ public class ProcessInstanceListPresenter {
                 currentProcessInstances = processInstances;
                 filterProcessList(view.getCurrentFilter());
             }
-        }).getProcessInstances(states, "", null);
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getProcessInstances(states, "", null);
     }
 
     public void newInstanceCreated(@Observes NewProcessInstanceEvent pi) {
@@ -269,7 +297,13 @@ public class ProcessInstanceListPresenter {
                 currentProcessInstances = processInstances;
                 filterProcessList(view.getCurrentFilter());
             }
-        }).getProcessInstances(states, "", null);
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getProcessInstances(states, "", null);
     }
 
     @WorkbenchMenu

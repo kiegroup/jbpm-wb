@@ -24,11 +24,15 @@ import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import java.util.List;
+
+import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -109,7 +113,13 @@ public class ProcessInstanceSignalPresenter {
                 close();
                 
             }
-        } ).signalProcessInstances( processInstanceIds, view.getSignalRefText(), view.getEventText() );
+        }, new ErrorCallback<Message>() {
+             @Override
+             public boolean error( Message message, Throwable throwable ) {
+                 ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                 return true;
+             }
+         } ).signalProcessInstances( processInstanceIds, view.getSignalRefText(), view.getEventText() );
     }
 
     @OnOpen
@@ -138,7 +148,13 @@ public class ProcessInstanceSignalPresenter {
                 view.setAvailableSignals( signals );
 
             }
-        } ).getAvailableSignals( processInstanceId );
+        }, new ErrorCallback<Message>() {
+             @Override
+             public boolean error( Message message, Throwable throwable ) {
+                 ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                 return true;
+             }
+         } ).getAvailableSignals( processInstanceId );
     }
 
 }
