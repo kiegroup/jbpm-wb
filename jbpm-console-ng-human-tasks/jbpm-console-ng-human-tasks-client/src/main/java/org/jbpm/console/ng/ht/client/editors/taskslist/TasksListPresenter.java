@@ -35,7 +35,10 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+
+import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.util.DataGridUtils;
@@ -55,6 +58,7 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.mvp.UberView;
@@ -274,7 +278,13 @@ public class TasksListPresenter {
                 view.displayNotification("Task(s) Started");
                 view.refreshTasks();
             }
-        }).startBatch(selectedTasks, userId);
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).startBatch(selectedTasks, userId);
     }
 
     public void releaseTasks(final List<Long> selectedTasks, final String userId) {
@@ -285,7 +295,13 @@ public class TasksListPresenter {
                 DataGridUtils.currentIdSelected = DataGridUtils.getIdRowSelected(view.getTaskListGrid());
                 view.refreshTasks();
             }
-        }).releaseBatch(selectedTasks, userId);
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).releaseBatch(selectedTasks, userId);
     }
 
     public void completeTasks(final List<Long> selectedTasks, final String userId) {
@@ -295,7 +311,13 @@ public class TasksListPresenter {
                 view.displayNotification("Task(s) Completed");
                 view.refreshTasks();
             }
-        }).completeBatch(selectedTasks, userId, null);
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).completeBatch(selectedTasks, userId, null);
     }
 
     public void claimTasks(final List<Long> selectedTasks, final String userId) {
@@ -307,7 +329,13 @@ public class TasksListPresenter {
                 view.refreshTasks();
 
             }
-        }).claimBatch(selectedTasks, userId);
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).claimBatch(selectedTasks, userId);
     }
 
     /**
@@ -367,7 +395,13 @@ public class TasksListPresenter {
                 filterTasks(view.getCurrentFilter());
                 view.getTaskListGrid().setFocus(true);
             }
-        }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), TaskUtils.getStatusByType(type),
+        }, new ErrorCallback<Message>() {
+          @Override
+          public boolean error( Message message, Throwable throwable ) {
+              ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+              return true;
+          }
+      }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), TaskUtils.getStatusByType(type),
                 null, LANGUAGE);
     }
     
@@ -382,7 +416,13 @@ public class TasksListPresenter {
                 currentDayTasks = tasks;
                 filterTasks(view.getCurrentFilter());
             }
-        }).getTasksAssignedAsPotentialOwnerFromDateToDateByDays(identity.getName(), TaskUtils.getStatusByType(type),
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getTasksAssignedAsPotentialOwnerFromDateToDateByDays(identity.getName(), TaskUtils.getStatusByType(type),
                 fromDate, daysTotal, LANGUAGE);
     }
 
@@ -395,7 +435,13 @@ public class TasksListPresenter {
                     filterTasks(view.getCurrentFilter());
 
                 }
-            }).getTasksOwnedByExpirationDateOptional(identity.getName(), TaskUtils.getStatusByType(TaskType.PERSONAL), null,
+            }, new ErrorCallback<Message>() {
+                  @Override
+                  public boolean error( Message message, Throwable throwable ) {
+                      ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                      return true;
+                  }
+              }).getTasksOwnedByExpirationDateOptional(identity.getName(), TaskUtils.getStatusByType(TaskType.PERSONAL), null,
                     LANGUAGE);
 
         } else {
@@ -410,7 +456,13 @@ public class TasksListPresenter {
                     filterTasks(view.getCurrentFilter());
                     view.getTaskListGrid().setFocus(true);
                 }
-            }).getTasksOwnedFromDateToDateByDays(identity.getName(), TaskUtils.getStatusByType(TaskType.PERSONAL), fromDate,
+            }, new ErrorCallback<Message>() {
+                  @Override
+                  public boolean error( Message message, Throwable throwable ) {
+                      ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                      return true;
+                  }
+              }).getTasksOwnedFromDateToDateByDays(identity.getName(), TaskUtils.getStatusByType(TaskType.PERSONAL), fromDate,
                     daysTotal, LANGUAGE);
         }
     }

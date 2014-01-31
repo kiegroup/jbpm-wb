@@ -30,6 +30,9 @@ import com.google.gwt.user.client.ui.HTML;
 import java.util.ArrayList;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
+
+import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -42,6 +45,7 @@ import org.jbpm.console.ng.pr.model.events.ProcessDefStyleEvent;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.DefaultPosition;
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -154,7 +158,13 @@ public class ProcessDefDetailsPresenter {
                 }
                 view.getHumanTasksListBox().setHTML(safeHtmlBuilder.toSafeHtml());
             }
-        } ).getAllTasksDef( processId );
+        }, new ErrorCallback<Message>() {
+           @Override
+           public boolean error( Message message, Throwable throwable ) {
+               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+               return true;
+           }
+       } ).getAllTasksDef( processId );
 
         dataServices.call( new RemoteCallback<Map<String, String>>() {
             @Override
@@ -166,7 +176,13 @@ public class ProcessDefDetailsPresenter {
                 }
                 view.getUsersGroupsListBox().setHTML(safeHtmlBuilder.toSafeHtml());
             }
-        } ).getAssociatedEntities( processId );
+        }, new ErrorCallback<Message>() {
+           @Override
+           public boolean error( Message message, Throwable throwable ) {
+               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+               return true;
+           }
+       } ).getAssociatedEntities( processId );
 
         dataServices.call( new RemoteCallback<Map<String, String>>() {
             @Override
@@ -178,7 +194,13 @@ public class ProcessDefDetailsPresenter {
                 }
                 view.getProcessDataListBox().setHTML(safeHtmlBuilder.toSafeHtml());
             }
-        } ).getRequiredInputData( processId );
+        }, new ErrorCallback<Message>() {
+           @Override
+           public boolean error( Message message, Throwable throwable ) {
+               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+               return true;
+           }
+       } ).getRequiredInputData( processId );
 
         dataServices.call( new RemoteCallback<Collection<String>>() {
             @Override
@@ -190,7 +212,13 @@ public class ProcessDefDetailsPresenter {
                 }
                 view.getSubprocessListBox().setHTML(safeHtmlBuilder.toSafeHtml());
             }
-        } ).getReusableSubProcesses( processId );
+        }, new ErrorCallback<Message>() {
+           @Override
+           public boolean error( Message message, Throwable throwable ) {
+               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+               return true;
+           }
+       } ).getReusableSubProcesses( processId );
 
         dataServices.call( new RemoteCallback<ProcessSummary>() {
             @Override
@@ -215,7 +243,14 @@ public class ProcessDefDetailsPresenter {
                     view.setProcessAssetPath(null);
                 }
             }
-        } ).getProcessById( deploymentId, processId );
+        }, new ErrorCallback<Message>() {
+               @Override
+               public boolean error( Message message, Throwable throwable ) {
+                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                   return true;
+               }
+           } ).getProcessById( deploymentId, processId );
+
     }
 
     @OnOpen

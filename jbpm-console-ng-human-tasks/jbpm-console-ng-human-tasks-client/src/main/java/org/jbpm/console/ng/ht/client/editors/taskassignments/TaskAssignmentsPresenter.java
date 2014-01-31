@@ -36,6 +36,7 @@ import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -111,15 +112,12 @@ public class TaskAssignmentsPresenter {
             }
 
         }, new ErrorCallback<Message>() {
-
-            @Override
-            public boolean error(Message message,
-                    Throwable throwable) {
-                view.displayNotification("Error: " + message);
-                return true;
-            }
-        }
-                ).delegate(currentTaskId, identity.getName(), entity);
+          @Override
+          public boolean error( Message message, Throwable throwable ) {
+              ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+              return true;
+          }
+      }).delegate(currentTaskId, identity.getName(), entity);
     }
 
     public void refreshTaskPotentialOwners(final long taskId) {
@@ -134,7 +132,13 @@ public class TaskAssignmentsPresenter {
                     view.getUsersGroupsControlsPanel().setText(("" + ids.get(taskId).toString()));
                 }
             }
-        }).getPotentialOwnersForTaskIds(taskIds);
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getPotentialOwnersForTaskIds(taskIds);
 
     }
 

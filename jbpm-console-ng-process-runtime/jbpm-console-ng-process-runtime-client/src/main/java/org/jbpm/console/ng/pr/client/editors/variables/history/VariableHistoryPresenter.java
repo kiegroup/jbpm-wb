@@ -25,11 +25,14 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
+import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.VariableSummary;
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -119,7 +122,13 @@ public class VariableHistoryPresenter {
                 dataProvider.getList().addAll( processInstances );
                 dataProvider.refresh();
             }
-        } ).getVariableHistory( view.getProcessInstanceId(), view.getVariableId() );
+        }, new ErrorCallback<Message>() {
+               @Override
+               public boolean error( Message message, Throwable throwable ) {
+                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                   return true;
+               }
+           } ).getVariableHistory( view.getProcessInstanceId(), view.getVariableId() );
     }
 
     public void addDataDisplay( HasData<VariableSummary> display ) {
