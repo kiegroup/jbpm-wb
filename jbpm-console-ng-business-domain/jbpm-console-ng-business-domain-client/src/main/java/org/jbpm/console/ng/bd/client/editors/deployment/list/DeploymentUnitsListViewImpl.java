@@ -33,7 +33,6 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
@@ -43,7 +42,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
-import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -112,10 +110,6 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
 
         listContainerDeployedUnits.add(deployedUnitsListGrid);
 
-        pager.setStyleName("pagination pagination-right pull-right");
-        pager.setDisplay(deployedUnitsListGrid);
-        pager.setPageSize(10);
-
         // Set the message to display when the table is empty.
         Label emptyTable = new Label(constants.No_Deployment_Units_Available());
         emptyTable.setStyleName("");
@@ -126,6 +120,7 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
         deployedUnitsListGrid.addColumnSortHandler(sortHandler);
 
         // Create a Pager to control the table.
+        pager.setStyleName("pagination pagination-right pull-right");
         pager.setDisplay(deployedUnitsListGrid);
         pager.setPageSize(10);
 
@@ -159,32 +154,20 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
 
     private void initTableColumns(final SelectionModel<KModuleDeploymentUnitSummary> selectionModel) {
 
-        deployedUnitsListGrid.addCellPreviewHandler(new CellPreviewEvent.Handler<KModuleDeploymentUnitSummary>() {
-
-            @Override
-            public void onCellPreview(final CellPreviewEvent<KModuleDeploymentUnitSummary> event) {
-
-                if (BrowserEvents.MOUSEOVER.equalsIgnoreCase(event.getNativeEvent().getType())) {
-                    onMouseOverGrid(event);
-                }
-
-            }
-        });
-
         // Unit Id
         Column<KModuleDeploymentUnitSummary, String> unitIdColumn = new Column<KModuleDeploymentUnitSummary, String>(new TextCell()) {
+
+            @Override
+            public void render(Cell.Context context, KModuleDeploymentUnitSummary unit, SafeHtmlBuilder sb) {
+                String title = unit.getId();
+                sb.append(DataGridUtils.createDivStart(title));
+                super.render(context, unit, sb);
+                sb.append(DataGridUtils.createDivEnd());
+            }
+
             @Override
             public String getValue(KModuleDeploymentUnitSummary unit) {
-                if (unit.getId() != null) {
-                    String columnWidth = deployedUnitsListGrid.getColumnWidth(this);
-                    if (!columnWidth.equals("null")) {
-                        String width = columnWidth.substring(0, columnWidth.length() - 2);
-                        if (Integer.valueOf(width) <= 200 & unit.getId().length() > 25) {
-                            return unit.getId().substring(0, 25) + "...";
-                        }
-                    }
-                }
-                return unit.getId();
+                return DataGridUtils.trimToColumnWidth(deployedUnitsListGrid, this, unit.getId());
             }
         };
         unitIdColumn.setSortable(true);
@@ -195,14 +178,23 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
                 return o1.getId().compareTo(o2.getId());
             }
         });
-        deployedUnitsListGrid.addColumn(unitIdColumn, new ResizableHeader(constants.Deployment(), deployedUnitsListGrid, unitIdColumn));
-        deployedUnitsListGrid.setColumnWidth(unitIdColumn, "200px");
+        deployedUnitsListGrid.addColumn(unitIdColumn, new ResizableHeader(constants.Deployment(), 100, deployedUnitsListGrid, unitIdColumn));
+        deployedUnitsListGrid.setColumnWidth(unitIdColumn, "275px");
 
         // Unit Group Id
         Column<KModuleDeploymentUnitSummary, String> groupIdColumn = new Column<KModuleDeploymentUnitSummary, String>(new TextCell()) {
+
+            @Override
+            public void render(Cell.Context context, KModuleDeploymentUnitSummary unit, SafeHtmlBuilder sb) {
+                String title = unit.getGroupId();
+                sb.append(DataGridUtils.createDivStart(title));
+                super.render(context, unit, sb);
+                sb.append(DataGridUtils.createDivEnd());
+            }
+
             @Override
             public String getValue(KModuleDeploymentUnitSummary unit) {
-                return unit.getGroupId();
+                return DataGridUtils.trimToColumnWidth(deployedUnitsListGrid, this, unit.getGroupId());
             }
         };
         groupIdColumn.setSortable(true);
@@ -213,13 +205,22 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
                 return o1.getGroupId().compareTo(o2.getGroupId());
             }
         });
-        deployedUnitsListGrid.addColumn(groupIdColumn, new ResizableHeader(constants.GroupID(), deployedUnitsListGrid, groupIdColumn));
+        deployedUnitsListGrid.addColumn(groupIdColumn, new ResizableHeader(constants.GroupID(), 100, deployedUnitsListGrid, groupIdColumn));
 
         // Unit Artifact Id
         Column<KModuleDeploymentUnitSummary, String> artifactIdColumn = new Column<KModuleDeploymentUnitSummary, String>(new TextCell()) {
+
+            @Override
+            public void render(Cell.Context context, KModuleDeploymentUnitSummary unit, SafeHtmlBuilder sb) {
+                String title = unit.getArtifactId();
+                sb.append(DataGridUtils.createDivStart(title));
+                super.render(context, unit, sb);
+                sb.append(DataGridUtils.createDivEnd());
+            }
+
             @Override
             public String getValue(KModuleDeploymentUnitSummary unit) {
-                return unit.getArtifactId();
+                return DataGridUtils.trimToColumnWidth(deployedUnitsListGrid, this, unit.getArtifactId());
             }
         };
         artifactIdColumn.setSortable(true);
@@ -230,13 +231,22 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
                 return o1.getArtifactId().compareTo(o2.getArtifactId());
             }
         });
-        deployedUnitsListGrid.addColumn(artifactIdColumn, new ResizableHeader(constants.Artifact(), deployedUnitsListGrid, artifactIdColumn));
+        deployedUnitsListGrid.addColumn(artifactIdColumn, new ResizableHeader(constants.Artifact(), 100, deployedUnitsListGrid, artifactIdColumn));
 
         // Unit Version
         Column<KModuleDeploymentUnitSummary, String> versionColumn = new Column<KModuleDeploymentUnitSummary, String>(new TextCell()) {
+
+            @Override
+            public void render(Cell.Context context, KModuleDeploymentUnitSummary unit, SafeHtmlBuilder sb) {
+                String title = unit.getVersion();
+                sb.append(DataGridUtils.createDivStart(title));
+                super.render(context, unit, sb);
+                sb.append(DataGridUtils.createDivEnd());
+            }
+
             @Override
             public String getValue(KModuleDeploymentUnitSummary unit) {
-                return unit.getVersion();
+                return DataGridUtils.trimToColumnWidth(deployedUnitsListGrid, this, unit.getVersion());
             }
         };
         versionColumn.setSortable(true);
@@ -247,17 +257,26 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
                 return o1.getVersion().compareTo(o2.getVersion());
             }
         });
-        deployedUnitsListGrid.addColumn(versionColumn, new ResizableHeader(constants.Version(), deployedUnitsListGrid, versionColumn));
+        deployedUnitsListGrid.addColumn(versionColumn, new ResizableHeader(constants.Version(), 50, deployedUnitsListGrid, versionColumn));
 
         // Unit KBase
         Column<KModuleDeploymentUnitSummary, String> kbaseColumn = new Column<KModuleDeploymentUnitSummary, String>(new TextCell()) {
+
+            @Override
+            public void render(Cell.Context context, KModuleDeploymentUnitSummary unit, SafeHtmlBuilder sb) {
+                String title = unit.getKbaseName();
+                sb.append(DataGridUtils.createDivStart(title, "DEFAULT"));
+                super.render(context, unit, sb);
+                sb.append(DataGridUtils.createDivEnd());
+            }
+
             @Override
             public String getValue(KModuleDeploymentUnitSummary unit) {
                 String kbaseName = unit.getKbaseName();
                 if (kbaseName.equals("")) {
                     kbaseName = "DEFAULT";
                 }
-                return kbaseName;
+                return DataGridUtils.trimToColumnWidth(deployedUnitsListGrid, this, kbaseName);
             }
         };
         kbaseColumn.setSortable(true);
@@ -268,17 +287,25 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
                 return o1.getKbaseName().compareTo(o2.getKbaseName());
             }
         });
-        deployedUnitsListGrid.addColumn(kbaseColumn, new ResizableHeader(constants.KieBaseName(), deployedUnitsListGrid, kbaseColumn));
+        deployedUnitsListGrid.addColumn(kbaseColumn, new ResizableHeader(constants.KieBaseName(), 75, deployedUnitsListGrid, kbaseColumn));
 
         // Unit KBase
         Column<KModuleDeploymentUnitSummary, String> ksessionColumn = new Column<KModuleDeploymentUnitSummary, String>(new TextCell()) {
+
+            public void render(Cell.Context context, KModuleDeploymentUnitSummary unit, SafeHtmlBuilder sb) {
+                String title = unit.getKsessionName();
+                sb.append(DataGridUtils.createDivStart(title, "DEFAULT"));
+                super.render(context, unit, sb);
+                sb.append(DataGridUtils.createDivEnd());
+            }
+
             @Override
             public String getValue(KModuleDeploymentUnitSummary unit) {
                 String ksessionName = unit.getKsessionName();
                 if (ksessionName.equals("")) {
                     ksessionName = "DEFAULT";
                 }
-                return ksessionName;
+                return DataGridUtils.trimToColumnWidth(deployedUnitsListGrid, this, ksessionName);
             }
         };
         ksessionColumn.setSortable(true);
@@ -289,14 +316,21 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
                 return o1.getKsessionName().compareTo(o2.getKsessionName());
             }
         });
-        deployedUnitsListGrid.addColumn(ksessionColumn, new ResizableHeader(constants.KieSessionName(), deployedUnitsListGrid, ksessionColumn));
+        deployedUnitsListGrid.addColumn(ksessionColumn, new ResizableHeader(constants.KieSessionName(), 75, deployedUnitsListGrid, ksessionColumn));
 
         // Unit KBase
         Column<KModuleDeploymentUnitSummary, String> strategyColumn = new Column<KModuleDeploymentUnitSummary, String>(new TextCell()) {
+
+            public void render(Cell.Context context, KModuleDeploymentUnitSummary unit, SafeHtmlBuilder sb) {
+                String title = unit.getStrategy();
+                sb.append(DataGridUtils.createDivStart(title));
+                super.render(context, unit, sb);
+                sb.append(DataGridUtils.createDivEnd());
+            }
+
             @Override
             public String getValue(KModuleDeploymentUnitSummary unit) {
-
-                return unit.getStrategy();
+                return DataGridUtils.trimToColumnWidth(deployedUnitsListGrid, this, unit.getStrategy());
             }
         };
         strategyColumn.setSortable(true);
@@ -448,13 +482,6 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
         @Override
         public KModuleDeploymentUnitSummary getValue(KModuleDeploymentUnitSummary object) {
             return object;
-        }
-    }
-
-    private void onMouseOverGrid(final CellPreviewEvent<KModuleDeploymentUnitSummary> event) {
-        KModuleDeploymentUnitSummary kmodule = event.getValue();
-        if (kmodule.getId() != null) {
-            DataGridUtils.setTooltip(deployedUnitsListGrid, event.getValue().getId(), event.getColumn(), kmodule.getId());
         }
     }
 
