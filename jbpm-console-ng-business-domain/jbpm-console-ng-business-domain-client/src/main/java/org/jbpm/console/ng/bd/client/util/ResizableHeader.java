@@ -98,7 +98,7 @@ public class ResizableHeader<T> extends Header<String> {
             this.el = el;
             this.table = table;
             this.col = col;
-            this.initialColWith = getColumnWith(table, col);
+            this.initialColWith = DataGridUtils.getColumnWith(table, col);
             this.newColWidth = initialColWith;
             handler = Event.addNativePreviewHandler(this);
             this.minWidth = minWidth;
@@ -194,11 +194,6 @@ public class ResizableHeader<T> extends Header<String> {
 
         private void finishMeasuring() {
             Document.get().getBody().removeChild(measuringElement);
-        }
-
-        private int getColumnWith(AbstractCellTable<E> table, Column<E, ?> col) {
-            String columnWidth = table.getColumnWidth(col);
-            return columnWidth != null ? Integer.parseInt(columnWidth.substring(0, columnWidth.length() - 2)) : -1;
         }
 
     }

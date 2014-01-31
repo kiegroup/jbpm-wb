@@ -33,6 +33,7 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
@@ -179,7 +180,7 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
             }
         });
         deployedUnitsListGrid.addColumn(unitIdColumn, new ResizableHeader(constants.Deployment(), 100, deployedUnitsListGrid, unitIdColumn));
-        deployedUnitsListGrid.setColumnWidth(unitIdColumn, "275px");
+        deployedUnitsListGrid.setColumnWidth(unitIdColumn, "300px");
 
         // Unit Group Id
         Column<KModuleDeploymentUnitSummary, String> groupIdColumn = new Column<KModuleDeploymentUnitSummary, String>(new TextCell()) {
@@ -206,6 +207,7 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
             }
         });
         deployedUnitsListGrid.addColumn(groupIdColumn, new ResizableHeader(constants.GroupID(), 100, deployedUnitsListGrid, groupIdColumn));
+        //deployedUnitsListGrid.setColumnWidth(groupIdColumn, "150px");
 
         // Unit Artifact Id
         Column<KModuleDeploymentUnitSummary, String> artifactIdColumn = new Column<KModuleDeploymentUnitSummary, String>(new TextCell()) {
@@ -258,6 +260,7 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
             }
         });
         deployedUnitsListGrid.addColumn(versionColumn, new ResizableHeader(constants.Version(), 50, deployedUnitsListGrid, versionColumn));
+        deployedUnitsListGrid.setColumnWidth(versionColumn, "75px");
 
         // Unit KBase
         Column<KModuleDeploymentUnitSummary, String> kbaseColumn = new Column<KModuleDeploymentUnitSummary, String>(new TextCell()) {
@@ -341,7 +344,7 @@ public class DeploymentUnitsListViewImpl extends Composite implements Deployment
                 return o1.getStrategy().compareTo(o2.getStrategy());
             }
         });
-        deployedUnitsListGrid.addColumn(strategyColumn, new ResizableHeader(constants.Strategy(), deployedUnitsListGrid, strategyColumn));
+        deployedUnitsListGrid.addColumn(strategyColumn, new ResizableHeader(constants.Strategy(), 75, deployedUnitsListGrid, strategyColumn));
 
         // actions (icons)
         List<HasCell<KModuleDeploymentUnitSummary, ?>> cells = new LinkedList<HasCell<KModuleDeploymentUnitSummary, ?>>();

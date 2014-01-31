@@ -63,19 +63,18 @@ public class DataGridUtils {
         }
     }
 
-    public static String trimToColumnWidth(DataGrid dataGrid, Column column, String value) {
+    public static String trimToColumnWidth(AbstractCellTable table, Column column, String value) {
         if (value != null && value.length() > 0) {
-            String columnWidth = dataGrid.getColumnWidth(column);
-            if (columnWidth != null && !columnWidth.equals("null")) {
-                String widthStr = columnWidth.substring(0, columnWidth.length() - 2);
-                int width = Integer.valueOf(widthStr);
-                int textWidth = CHAR_SIZE_IN_PIXELS * value.length();
-
-                if (width < textWidth) {
-                    int visibleChars = width / CHAR_SIZE_IN_PIXELS;
-                    visibleChars = visibleChars > value.length() ? value.length() : visibleChars;
-                    value = value.substring(0, visibleChars) + "...";
-                }
+            int columnWidth = getColumnWith(table, column);
+            if (columnWidth < 0) {
+                columnWidth = getDistributedColumnWidth(table, column);
+            }
+            if (columnWidth < 0) return "";
+            int textWidth = CHAR_SIZE_IN_PIXELS * value.length();
+            if (columnWidth < textWidth) {
+                int visibleChars = columnWidth / CHAR_SIZE_IN_PIXELS;
+                visibleChars = visibleChars > value.length() ? value.length() : visibleChars;
+                value = value.substring(0, visibleChars) + "...";
             }
         }
         return value;
@@ -95,6 +94,33 @@ public class DataGridUtils {
                 }
             }
         }
+    }
+
+    public static int getDistributedColumnWidth(AbstractCellTable table, Column col) {
+        int width = getColumnWith(table, col);
+        if (width <= 0) {
+            width = table.getOffsetWidth();
+            int columnWidth = 0;
+            int columns = table.getColumnCount();
+            for (int i = 0; i < table.getColumnCount() ; i++) {
+                columnWidth = getColumnWith(table, i);
+                if (columnWidth > 0) {
+                    columns--;
+                    width = width - columnWidth;
+                }
+            }
+            width = width >= 0 ? width / (columns != 0 ? columns : 1) : -1;
+        }
+        return width;
+    }
+
+    public static int getColumnWith(AbstractCellTable table, int col) {
+        return getColumnWith(table, table.getColumn(col));
+    }
+
+    public static int getColumnWith(AbstractCellTable table, Column col) {
+        String columnWidth = table.getColumnWidth(col);
+        return columnWidth != null && !"null".equals(columnWidth) ? Integer.parseInt(columnWidth.substring(0, columnWidth.length() - 2)) : -1;
     }
 
     public static SafeHtml createDivStart(String title) {
