@@ -289,8 +289,19 @@ public class ProcessInstanceListPresenter {
 
     public void onSearch(@Observes final ProcessInstancesSearchEvent searchFilter) {
         view.setCurrentFilter(searchFilter.getFilter());
+        String relatedToMe = identity.getName();
         List<Integer> states = new ArrayList<Integer>();
-        states.add(ProcessInstance.STATE_ACTIVE);
+        
+         if(view.getShowAllLink().getStyleName().equals("active")){
+            states.add(ProcessInstance.STATE_ACTIVE);
+        }else if(view.getShowRelatedToMeLink().getStyleName().equals("active")){
+            states.add(ProcessInstance.STATE_ACTIVE);
+        }else if(view.getShowCompletedLink().getStyleName().equals("active")){
+            states.add(ProcessInstance.STATE_COMPLETED);
+        }else if(view.getShowAbortedLink().getStyleName().equals("active")){
+            states.add(ProcessInstance.STATE_ABORTED);
+        }
+        
         dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
             @Override
             public void callback(List<ProcessInstanceSummary> processInstances) {
@@ -303,7 +314,7 @@ public class ProcessInstanceListPresenter {
                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                   return true;
               }
-          }).getProcessInstances(states, "", null);
+          }).getProcessInstances(states, "", relatedToMe);
     }
 
     @WorkbenchMenu
