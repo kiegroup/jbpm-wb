@@ -108,5 +108,15 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
         notification.fire( new NotificationEvent( text ) );
     }
 
-
+    @Override
+    public Button getDelegateButton(){
+        return delegateButton;
+    }
+    
+    @Override
+    public TextBox getUserOrGroupText() {
+        return userOrGroupText;
+    }
+    
+    
 }
