@@ -15,35 +15,36 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskassignments;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.messaging.Message;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
-import org.uberfire.client.common.popups.errors.ErrorPopup;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.BeforeClosePlaceEvent;
@@ -60,6 +61,9 @@ public class TaskAssignmentsPresenter {
 
         Label getUsersGroupsControlsPanel();
 
+        Button getDelegateButton();
+        
+        TextBox getUserOrGroupText();
     }
 
     @Inject
@@ -139,6 +143,26 @@ public class TaskAssignmentsPresenter {
                   return true;
               }
           }).getPotentialOwnersForTaskIds(taskIds);
+        
+        taskServices.call(new RemoteCallback<TaskSummary>() {
+            @Override
+            public void callback(TaskSummary ts) {
+                String actualOwner = ts.getActualOwner();
+                if(actualOwner.equals("") || !actualOwner.equals(identity.getName())){
+                    view.getDelegateButton().setEnabled(false);
+                    view.getUserOrGroupText().setEnabled(false);
+                }else{
+                    view.getDelegateButton().setEnabled(true);
+                    view.getUserOrGroupText().setEnabled(true);
+                }
+            }
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).getTaskDetails(taskId);
 
     }
 
