@@ -24,10 +24,12 @@ import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.Composite;
@@ -94,39 +96,30 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
         
         sortHandler = new ListHandler<VariableSummary>( presenter.getDataProvider().getList() );
         processVarListGrid.addColumnSortHandler( sortHandler );
-        
-         processVarListGrid.addCellPreviewHandler(new CellPreviewEvent.Handler<VariableSummary>() {
 
-            @Override
-            public void onCellPreview(final CellPreviewEvent<VariableSummary> event) {
-
-             if (BrowserEvents.MOUSEOVER.equalsIgnoreCase(event.getNativeEvent().getType())) {
-                    onMouseOverGrid(event);
-                 }
-
-            }
-        });
-        
         // Create a Pager to control the table.
 
         pager.setDisplay( processVarListGrid );
         pager.setPageSize( 5 );
 
-        
-        
         // Value.
         Column<VariableSummary, String> valueColumn = new Column<VariableSummary, String>( new TextCell() ) {
+
+            @Override
+            public void render(Cell.Context context, VariableSummary variableSummary, SafeHtmlBuilder sb) {
+                String title = variableSummary.getNewValue();
+                sb.append(DataGridUtils.createDivStart(title));
+                super.render(context, variableSummary, sb);
+                sb.append(DataGridUtils.createDivEnd());
+            }
+
             @Override
             public String getValue( VariableSummary object ) {
-                if(object.getNewValue() != null && object.getNewValue().length() > 20){
-                    return object.getNewValue().substring(0, 20) + "...";
-                }else{
-                    return object.getNewValue();
-                }   
+                return DataGridUtils.trimToColumnWidth(processVarListGrid, this, object.getNewValue());
             }
         };
 
-        processVarListGrid.addColumn( valueColumn, new ResizableHeader( constants.Value(), processVarListGrid, valueColumn ) );
+        processVarListGrid.addColumn( valueColumn, new ResizableHeader( constants.Value(), 75, processVarListGrid, valueColumn ) );
         valueColumn.setSortable( true );
         sortHandler.setComparator( valueColumn, new Comparator<VariableSummary>() {
             @Override
@@ -139,19 +132,24 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
         
         // Old Value.
         Column<VariableSummary, String> oldValueColumn = new Column<VariableSummary, String>( new TextCell() ) {
+
+            @Override
+            public void render(Cell.Context context, VariableSummary variableSummary, SafeHtmlBuilder sb) {
+                String title = variableSummary.getOldValue();
+                sb.append(DataGridUtils.createDivStart(title));
+                super.render(context, variableSummary, sb);
+                sb.append(DataGridUtils.createDivEnd());
+            }
+
             @Override
             public String getValue( VariableSummary object ) {
-                if(object.getOldValue() != null && object.getOldValue().length() > 20){
-                    return object.getOldValue().substring(0, 20) + "...";
-                }else{
-                    return object.getOldValue();
-                }
+                return DataGridUtils.trimToColumnWidth(processVarListGrid, this, object.getOldValue());
             }
         };
         oldValueColumn.setSortable( true );
         
 
-        processVarListGrid.addColumn( oldValueColumn, new ResizableHeader( constants.Previous_Value(), processVarListGrid,
+        processVarListGrid.addColumn( oldValueColumn, new ResizableHeader( constants.Previous_Value(), 75, processVarListGrid,
                                                                            oldValueColumn ) );
         sortHandler.setComparator( oldValueColumn, new Comparator<VariableSummary>() {
             @Override
@@ -163,12 +161,23 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
 
         // Last Time Changed Date.
         Column<VariableSummary, String> lastTimeChangedColumn = new Column<VariableSummary, String>( new TextCell() ) {
+
+            @Override
+            public void render(Cell.Context context, VariableSummary variableSummary, SafeHtmlBuilder sb) {
+                Date lastMofidication = new Date(variableSummary.getTimestamp());
+                DateTimeFormat format = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm");
+
+                String title = format.format(lastMofidication);
+                sb.append(DataGridUtils.createDivStart(title));
+                super.render(context, variableSummary, sb);
+                sb.append(DataGridUtils.createDivEnd());
+            }
+
             @Override
             public String getValue( VariableSummary variable ) {
                 Date lastMofidication = new Date(variable.getTimestamp());
                 DateTimeFormat format = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm");
-                return format.format(lastMofidication);
-
+                return DataGridUtils.trimToColumnWidth(processVarListGrid, this, format.format(lastMofidication));
             }
         };
         lastTimeChangedColumn.setSortable( true );
@@ -180,7 +189,7 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
             }
         } );
 
-        processVarListGrid.addColumn( lastTimeChangedColumn, new ResizableHeader( constants.Last_Modification(), processVarListGrid,
+        processVarListGrid.addColumn( lastTimeChangedColumn, new ResizableHeader( constants.Last_Modification(), 60, processVarListGrid,
         
                 lastTimeChangedColumn ) );
 
@@ -216,13 +225,6 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
     @Override
     public String getVariableId() {
         return variableId;
-    }
-    
-     private void onMouseOverGrid(final CellPreviewEvent<VariableSummary> event){
-        VariableSummary var = event.getValue();
-        if(var.getNewValue() != null){
-            DataGridUtils.setTooltip(processVarListGrid, event.getValue().getVariableId(), event.getColumn(), var.getNewValue(), var.getOldValue());
-        }
     }
 
 }

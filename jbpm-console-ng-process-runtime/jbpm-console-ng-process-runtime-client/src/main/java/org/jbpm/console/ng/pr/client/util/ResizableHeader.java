@@ -41,12 +41,24 @@ public class ResizableHeader<T> extends Header<String> {
     private AbstractCellTable<T> cellTable;
     private String title = "";
     private static final int width = 20;
+    private int minWidth = 0;
+    private int maxWidth = Integer.MAX_VALUE;
 
     public ResizableHeader(String title, AbstractCellTable<T> cellTable, Column<T, ?> column) {
+        this(title, 0, Integer.MAX_VALUE, cellTable, column);
+    }
+
+    public ResizableHeader(String title, int minWidth, AbstractCellTable<T> cellTable, Column<T, ?> column) {
+        this(title, minWidth, Integer.MAX_VALUE, cellTable, column);
+    }
+
+    public ResizableHeader(String title, int minWidth, int maxWidth, AbstractCellTable<T> cellTable, Column<T, ?> column) {
         super(new HeaderCell());
         this.title = title;
         this.cellTable = cellTable;
         this.column = column;
+        this.minWidth = minWidth;
+        this.maxWidth = maxWidth;
     }
 
     @Override
@@ -58,7 +70,7 @@ public class ResizableHeader<T> extends Header<String> {
     public void onBrowserEvent(Context context, Element target, NativeEvent event) {
         String eventType = event.getType();
         if (eventType.equals("mousemove")) {
-            new ColumnResizeHelper<T>(cellTable, column, target);
+            new ColumnResizeHelper<T>(cellTable, column, target, minWidth, maxWidth);
         } else {
             return;
         }
@@ -77,11 +89,20 @@ public class ResizableHeader<T> extends Header<String> {
         private boolean mousedown;
         private Element measuringElement;
 
-        public ColumnResizeHelper(AbstractCellTable<E> table, Column<E, ?> col, Element el) {
+        private int initialColWith;
+        private int newColWidth;
+        private int minWidth;
+        private int maxWidth;
+
+        public ColumnResizeHelper(AbstractCellTable<E> table, Column<E, ?> col, Element el, int minWidth, int maxWidth) {
             this.el = el;
             this.table = table;
             this.col = col;
+            this.initialColWith = DataGridUtils.getColumnWith(table, col);
+            this.newColWidth = initialColWith;
             handler = Event.addNativePreviewHandler(this);
+            this.minWidth = minWidth;
+            this.maxWidth = maxWidth;
         }
 
         @SuppressWarnings("unchecked")
@@ -96,8 +117,8 @@ public class ResizableHeader<T> extends Header<String> {
             if (eventType.equals("mousemove") && mousedown) {
                 int absoluteLeft = el.getAbsoluteLeft();
                 int newWidth = clientX - absoluteLeft;
-                newWidth = newWidth < width ? width : newWidth;
-                table.setColumnWidth(col, newWidth + "px");
+                newColWidth = getBestSuitedWidth(minWidth, maxWidth, newWidth);
+                table.setColumnWidth(col, newColWidth + "px");
                 return;
             }
 
@@ -126,7 +147,7 @@ public class ResizableHeader<T> extends Header<String> {
                 // Get column
                 nativeEvent.preventDefault();
                 nativeEvent.stopPropagation();
-                double max = 0;
+                int max = 0;
                 startMeasuring();
                 for (E t : table.getVisibleItems()) {
                     Object value = col.getValue(t);
@@ -136,12 +157,17 @@ public class ResizableHeader<T> extends Header<String> {
                     max = Math.max(measureText(sb.toSafeHtml().asString()), max);
                 }
                 finishMeasuring();
-                table.setColumnWidth(col, (max + width) + "px");
+                max = max + width;
+                newColWidth = getBestSuitedWidth(minWidth, maxWidth, max);
+                table.setColumnWidth(col, newColWidth + "px");
                 removeHandler();
             }
         }
 
         private void removeHandler() {
+            if (initialColWith != newColWidth) {
+                DataGridUtils.redrawVisibleRange(table);
+            }
             handler.removeHandler();
             setCursor(el, Cursor.DEFAULT);
         }
@@ -155,9 +181,15 @@ public class ResizableHeader<T> extends Header<String> {
             document.getBody().appendChild(measuringElement);
         }
 
-        private double measureText(String text) {
+        private int measureText(String text) {
             measuringElement.setInnerHTML(text);
             return measuringElement.getOffsetWidth();
+        }
+
+        private int getBestSuitedWidth(int minWidth, int maxWidth, int newWidth) {
+            if (newWidth < minWidth) return minWidth;
+            if (newWidth > maxWidth) return maxWidth;
+            return newWidth;
         }
 
         private void finishMeasuring() {
@@ -175,7 +207,5 @@ public class ResizableHeader<T> extends Header<String> {
         public void render(Context context, String value, SafeHtmlBuilder sb) {
             sb.append(SafeHtmlUtils.fromString(value));
         }
-
     }
-
 }
