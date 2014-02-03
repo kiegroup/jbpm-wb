@@ -17,6 +17,12 @@ package org.jbpm.console.ng.pr.client.util;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import java.util.Date;
+
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.cellview.client.AbstractCellTable;
+import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.view.client.Range;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.VariableSummary;
@@ -35,6 +41,8 @@ public class DataGridUtils {
     public static Date newProcessInstanceStartDate = null;
     
     public static int pageSize = 5;
+
+    public static int CHAR_SIZE_IN_PIXELS = 10;
 
     public static void paintRowSelected(DataGrid<ProcessSummary> myProcessDefListGrid, String nameProcessDef, String versionProcessDef) {
         for (int i = 0; i < myProcessDefListGrid.getRowCount(); i++) {
@@ -155,5 +163,78 @@ public class DataGridUtils {
             }
         }
         return rowCount;
+    }
+
+    public static String trimToColumnWidth(AbstractCellTable table, Column column, String value) {
+        if (value != null && value.length() > 0) {
+            int columnWidth = getColumnWith(table, column);
+            if (columnWidth < 0) {
+                columnWidth = getDistributedColumnWidth(table, column);
+            }
+            if (columnWidth < 0) return "";
+            int textWidth = CHAR_SIZE_IN_PIXELS * value.length();
+            if (columnWidth < textWidth) {
+                int visibleChars = columnWidth / CHAR_SIZE_IN_PIXELS;
+                visibleChars = visibleChars > value.length() ? value.length() : visibleChars;
+                value = value.substring(0, visibleChars) + "...";
+            }
+        }
+        return value;
+    }
+
+    public static void redrawVisibleRange(AbstractCellTable table) {
+        if (table != null) {
+            Range range = table.getVisibleRange();
+            if (range != null && range.getLength() > 0) {
+                int offset = range.getStart();
+                int count = 0;
+
+                for ( ; (count < table.getVisibleItemCount()) && (offset < (range.getStart() + range.getLength() )) ; ) {
+                    table.redrawRow(offset);
+                    count++;
+                    offset++;
+                }
+            }
+        }
+    }
+
+    public static int getDistributedColumnWidth(AbstractCellTable table, Column col) {
+        int width = getColumnWith(table, col);
+        if (width <= 0) {
+            width = table.getOffsetWidth();
+            int columnWidth = 0;
+            int columns = table.getColumnCount();
+            for (int i = 0; i < table.getColumnCount() ; i++) {
+                columnWidth = getColumnWith(table, i);
+                if (columnWidth > 0) {
+                    columns--;
+                    width = width - columnWidth;
+                }
+            }
+            width = width >= 0 ? width / (columns != 0 ? columns : 1) : -1;
+        }
+        return width;
+    }
+
+    public static int getColumnWith(AbstractCellTable table, int col) {
+        return getColumnWith(table, table.getColumn(col));
+    }
+
+    public static int getColumnWith(AbstractCellTable table, Column col) {
+        String columnWidth = table.getColumnWidth(col);
+        return columnWidth != null && !"null".equals(columnWidth) ? Integer.parseInt(columnWidth.substring(0, columnWidth.length() - 2)) : -1;
+    }
+
+    public static SafeHtml createDivStart(String title) {
+        return createDivStart(title, "");
+    }
+
+    public static SafeHtml createDivStart(String title, String defaultValue) {
+        if (title == null || "".equals(title)) title = defaultValue;
+        return SafeHtmlUtils.fromTrustedString("<div title=\"" + title.trim() + "\">");
+    }
+
+    public static SafeHtml createDivEnd() {
+        return SafeHtmlUtils.fromTrustedString("</div>");
     }
 }

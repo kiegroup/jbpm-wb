@@ -51,6 +51,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
+import org.jbpm.console.ng.pr.client.util.DataGridUtils;
 import org.jbpm.console.ng.pr.client.util.ResizableHeader;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
@@ -189,13 +190,21 @@ public class ProcessVariableListViewImpl extends Composite implements
         // Id
         Column<VariableSummary, String> variableId = new Column<VariableSummary, String>( new TextCell() ) {
             @Override
+            public void render(Cell.Context context, VariableSummary variableSummary, SafeHtmlBuilder sb) {
+                String title = variableSummary.getVariableId();
+                sb.append(DataGridUtils.createDivStart(title));
+                super.render(context, variableSummary, sb);
+                sb.append(DataGridUtils.createDivEnd());
+            }
+
+            @Override
             public String getValue( VariableSummary object ) {
-                return object.getVariableId();
+                return DataGridUtils.trimToColumnWidth(processDataGrid, this, object.getVariableId());
             }
         };
         variableId.setSortable( true );
 
-        processDataGrid.addColumn( variableId, new ResizableHeader( constants.Name(), processDataGrid, variableId ) );
+        processDataGrid.addColumn( variableId, new ResizableHeader( constants.Name(), 75, processDataGrid, variableId ) );
         sortHandler.setComparator( variableId, new Comparator<VariableSummary>() {
             @Override
             public int compare( VariableSummary o1,
@@ -207,8 +216,16 @@ public class ProcessVariableListViewImpl extends Composite implements
         // Value.
         Column<VariableSummary, String> valueColumn = new Column<VariableSummary, String>( new TextCell() ) {
             @Override
+            public void render(Cell.Context context, VariableSummary variableSummary, SafeHtmlBuilder sb) {
+                String title = variableSummary.getNewValue();
+                sb.append(DataGridUtils.createDivStart(title));
+                super.render(context, variableSummary, sb);
+                sb.append(DataGridUtils.createDivEnd());
+            }
+
+            @Override
             public String getValue( VariableSummary object ) {
-                return object.getNewValue();
+                return DataGridUtils.trimToColumnWidth(processDataGrid, this, object.getNewValue());
             }
         };
         valueColumn.setSortable( true );
@@ -225,8 +242,16 @@ public class ProcessVariableListViewImpl extends Composite implements
         // Type.
         Column<VariableSummary, String> typeColumn = new Column<VariableSummary, String>( new TextCell() ) {
             @Override
+            public void render(Cell.Context context, VariableSummary variableSummary, SafeHtmlBuilder sb) {
+                String title = variableSummary.getType();
+                sb.append(DataGridUtils.createDivStart(title));
+                super.render(context, variableSummary, sb);
+                sb.append(DataGridUtils.createDivEnd());
+            }
+
+            @Override
             public String getValue( VariableSummary object ) {
-                return object.getType();
+                return DataGridUtils.trimToColumnWidth(processDataGrid, this, object.getType());
             }
         };
         typeColumn.setSortable( true );
@@ -243,10 +268,19 @@ public class ProcessVariableListViewImpl extends Composite implements
         // Last Time Changed Date.
         Column<VariableSummary, String> lastModificationColumn = new Column<VariableSummary, String>( new TextCell() ) {
             @Override
+            public void render(Cell.Context context, VariableSummary variableSummary, SafeHtmlBuilder sb) {
+                Date lastMofidication = new Date(variableSummary.getTimestamp());
+                DateTimeFormat format = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm");
+                String title = format.format(lastMofidication);
+                sb.append(DataGridUtils.createDivStart(title));
+                super.render(context, variableSummary, sb);
+                sb.append(DataGridUtils.createDivEnd());
+            }
+            @Override
             public String getValue( VariableSummary object ) {
                 Date lastMofidication = new Date(object.getTimestamp());
                 DateTimeFormat format = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm");
-                return format.format(lastMofidication);
+                return DataGridUtils.trimToColumnWidth(processDataGrid, this, format.format(lastMofidication));
             }
         };
         lastModificationColumn.setSortable( true );
