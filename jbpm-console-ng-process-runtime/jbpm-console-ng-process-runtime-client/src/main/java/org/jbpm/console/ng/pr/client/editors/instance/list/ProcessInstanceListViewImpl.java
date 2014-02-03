@@ -430,16 +430,22 @@ public class ProcessInstanceListViewImpl extends Composite implements ProcessIns
         Column<ProcessInstanceSummary, String> startTimeColumn = new Column<ProcessInstanceSummary, String>(new TextCell()) {
             @Override
             public String getValue(ProcessInstanceSummary object) {
-                Date expirationTime = object.getStartTime();
-                DateTimeFormat format = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm");
-                return format.format(expirationTime);
+                Date startTime = object.getStartTime();
+                if(startTime != null){
+                    DateTimeFormat format = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm");
+                    return format.format(startTime);
+                }
+                return "";
             }
         };
         startTimeColumn.setSortable(true);
         sortHandler.setComparator(startTimeColumn, new Comparator<ProcessInstanceSummary>() {
             @Override
             public int compare(ProcessInstanceSummary o1,
-                    ProcessInstanceSummary o2) {
+                    ProcessInstanceSummary o2) { 
+                if (o1.getStartTime() == null || o2.getStartTime() == null) {
+                    return 0;
+                }
                 return o1.getStartTime().compareTo(o2.getStartTime());
             }
         });
