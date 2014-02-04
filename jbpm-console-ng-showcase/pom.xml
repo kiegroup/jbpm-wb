@@ -112,6 +112,12 @@
     </dependency>
     
     <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-generic-client</artifactId>
+      <version>6.1.0-SNAPSHOT</version>
+    </dependency>
+    
+    <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-workitems-editor-client</artifactId>
     </dependency>
@@ -639,6 +645,7 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-client</compileSourcesArtifact>
 
             <compileSourcesArtifact>org.jbpm:jbpm-designer-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-designer-client</compileSourcesArtifact>
