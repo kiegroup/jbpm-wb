@@ -2,29 +2,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>jbpm-console-ng-dashboard</artifactId>
-        <groupId>org.jbpm</groupId>
-        <version>6.1.0-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>jbpm-console-ng-dashboard</artifactId>
+    <groupId>org.jbpm</groupId>
+    <version>6.1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
 
 
-    <artifactId>jbpm-console-ng-dashboard-api</artifactId>
+  <artifactId>jbpm-console-ng-dashboard-api</artifactId>
 
-    <name>jBPM Console NG - Dashboard API</name>
+  <name>jBPM Console NG - Dashboard API</name>
 
-    <dependencies>
-        <!-- GWT and GWT Extensions -->
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-        </dependency>
-        <!-- Errai bus -->
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-bus</artifactId>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <!-- Errai bus -->
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-bus</artifactId>
+    </dependency>
+  </dependencies>
 
 </project>

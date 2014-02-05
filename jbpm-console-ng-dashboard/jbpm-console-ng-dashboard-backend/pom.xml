@@ -2,26 +2,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>jbpm-console-ng-dashboard</artifactId>
-        <groupId>org.jbpm</groupId>
-        <version>6.1.0-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>jbpm-console-ng-dashboard</artifactId>
+    <groupId>org.jbpm</groupId>
+    <version>6.1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jbpm-console-ng-dashboard-backend</artifactId>
+  <artifactId>jbpm-console-ng-dashboard-backend</artifactId>
 
-    <name>jBPM Console NG - Dashboard Backend</name>
+  <name>jBPM Console NG - Dashboard Backend</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-bus</artifactId>
-        </dependency>
+  <dependencies>
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-bus</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-dashboard-api</artifactId>
-        </dependency>
-    </dependencies>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-dashboard-api</artifactId>
+    </dependency>
+  </dependencies>
 </project>

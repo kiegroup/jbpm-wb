@@ -60,7 +60,7 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnClose;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
-import org.uberfire.workbench.events.BeforeClosePlaceEvent;
+import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
 @WorkbenchScreen(identifier = "Task Details")

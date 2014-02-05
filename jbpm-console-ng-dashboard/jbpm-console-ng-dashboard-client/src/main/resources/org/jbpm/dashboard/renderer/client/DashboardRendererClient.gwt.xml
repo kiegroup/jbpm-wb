@@ -20,20 +20,18 @@
     "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
 <module>
 
-    <!-- Inherit the core Web Toolkit stuff. -->
-    <inherits name="com.google.gwt.i18n.I18N"/>
-    <inherits name="com.google.gwt.http.HTTP"/>
-    <inherits name="com.google.gwt.user.User"/>
+  <!-- Inherit the core Web Toolkit stuff. -->
+  <inherits name="com.google.gwt.i18n.I18N"/>
+  <inherits name="com.google.gwt.http.HTTP"/>
+  <inherits name="com.google.gwt.user.User"/>
 
-    <inherits name='org.jboss.errai.bus.ErraiBus'/>
-    <inherits name="org.jboss.errai.ui.UI"/>
+  <inherits name="org.jboss.errai.ui.UI"/>
 
-    <inherits name="org.jboss.errai.enterprise.CDI"/>
+  <inherits name="org.uberfire.UberfireWorkbench"/>
 
-    <inherits name="org.uberfire.UberfireWorkbench"/>
-    <inherits name="org.uberfire.UberfireWidgetsCommons"/>
+  <inherits name="org.jbpm.dashboard.renderer.DashboardRendererApi"/>
+  <inherits name="org.kie.workbench.common.widgets.KieWorkbenchWidgetsCommon"/>
 
-    <inherits name="org.jbpm.dashboard.renderer.DashboardRendererApi"/>
-    <source path="panel"/>
+  <source path="panel"/>
 
 </module>

@@ -16,7 +16,7 @@
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jbpm</groupId>
@@ -31,12 +31,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.jboss.errai</groupId>
-      <artifactId>errai-bus</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-backend-api</artifactId>
+      <artifactId>uberfire-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -46,11 +42,11 @@
 
   <build>
     <resources>
-            <!-- Include src/main/java in order not to break the Eclipse GWT plug-in -->
+      <!-- Include src/main/java in order not to break the Eclipse GWT plug-in -->
       <resource>
         <directory>src/main/java</directory>
       </resource>
-            <!-- Include module descriptors from src/main/resources in order not to break the Intellij GWT plug-in -->
+      <!-- Include module descriptors from src/main/resources in order not to break the Intellij GWT plug-in -->
       <resource>
         <directory>src/main/resources</directory>
       </resource>

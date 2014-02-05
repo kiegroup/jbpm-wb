@@ -205,7 +205,7 @@ public class ShowcaseEntryPoint {
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
-        final String dashbuilderURL = DashboardURLBuilder.getDashboardURL("/dashbuilder/workspace", null, LocaleInfo.getCurrentLocale());
+        final String dashbuilderURL = DashboardURLBuilder.getDashboardURL("/dashbuilder/workspace", null, LocaleInfo.getCurrentLocale().getLocaleName());
         result.add( MenuFactory.newSimpleItem( constants.Business_Dashboard() ).respondsWith( new Command() {
             @Override
             public void execute() {

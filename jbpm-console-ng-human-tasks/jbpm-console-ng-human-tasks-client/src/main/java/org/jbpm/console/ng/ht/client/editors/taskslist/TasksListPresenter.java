@@ -21,12 +21,21 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.google.common.collect.Lists;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.cellview.client.ColumnSortEvent;
+import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.ProvidesKey;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -53,6 +62,7 @@ import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.lifecycle.OnFocus;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
@@ -60,20 +70,8 @@ import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Identity;
-import org.uberfire.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
-
-import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.google.common.collect.Lists;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.cellview.client.ColumnSortEvent;
-import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
-import com.google.gwt.user.datepicker.client.CalendarUtil;
-import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.ProvidesKey;
 
 @Dependent
 @WorkbenchScreen(identifier = "Tasks List")
@@ -136,7 +134,7 @@ public class TasksListPresenter {
 
     @Inject
     private Event<ClearSearchEvent> clearSearchEvent;
-    
+
     private static final String LANGUAGE = "en-UK";
 
     private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
@@ -388,7 +386,7 @@ public class TasksListPresenter {
         }
 
     }
-    
+
     private void refreshGrid(TaskType type){
         taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
@@ -406,7 +404,7 @@ public class TasksListPresenter {
       }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), TaskUtils.getStatusByType(type),
                 null, LANGUAGE);
     }
-    
+
     private void refreshCalendar(TaskType type, Date date, TaskView taskView){
         DateRange dateRangeToShow = determineDateRangeForTaskViewBasedOnSpecifiedDate(date, taskView);
         Date fromDate = dateRangeToShow.getStartDate();
@@ -549,6 +547,6 @@ public class TasksListPresenter {
         view.displayNotification( "The process was finished. Last task completed: " + editPanelEvent.getTaskId() );
         closeEditPanel();
     }
-    
+
 
 }

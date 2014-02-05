@@ -65,7 +65,7 @@ public class DashboardPanelPresenter {
 
     @OnStartup
     public void isAppOnline() {
-        final String dashboardUrl = DashboardURLBuilder.getDashboardURL(DASHBOARD_URL_PREFFIX, DASHBOARD_URL_SUFFIX, LocaleInfo.getCurrentLocale());
+        final String dashboardUrl = DashboardURLBuilder.getDashboardURL(DASHBOARD_URL_PREFFIX, DASHBOARD_URL_SUFFIX, LocaleInfo.getCurrentLocale().getLocaleName());
         GWT.log("URL for jBPM dashboard: " + dashboardUrl);
         rendererService.call(new RemoteCallback<ConnectionStatus>() {
             @Override

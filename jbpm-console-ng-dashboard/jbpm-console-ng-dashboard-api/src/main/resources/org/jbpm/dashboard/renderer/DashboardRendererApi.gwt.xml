@@ -20,16 +20,11 @@
     "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
 <module>
 
-    <inherits name="com.google.gwt.i18n.I18N"/>
-    <inherits name='org.jboss.errai.bus.ErraiBus'/>
-    <inherits name="org.jboss.errai.ui.UI"/>
+  <inherits name='org.jboss.errai.bus.ErraiBus'/>
 
-    <inherits name="org.jboss.errai.enterprise.CDI"/>
-
-
-    <source path="service">
-        <!-- Exclude service implementations (dashboard-backend defines some) -->
-        <exclude name="**/impl/**" />
-    </source>
+  <source path="service">
+    <!-- Exclude service implementations (dashboard-backend defines some) -->
+    <exclude name="**/impl/**"/>
+  </source>
 
 </module>

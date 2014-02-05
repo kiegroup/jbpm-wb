@@ -15,9 +15,6 @@
  */
 package org.jbpm.dashboard.renderer.service;
 
-import com.google.gwt.i18n.client.LocaleInfo;
-import com.google.gwt.user.client.Window;
-
 /**
  * This class builds the URL to navigate to a dashbuilder application.
  * Basically, adds the locale support,
@@ -35,19 +32,18 @@ public class DashboardURLBuilder {
      * the URL is splitted in:a preffix and a suffix.</p>
      * @param preffix The URL value before the language parameter
      * @param suffix The URL value after the language parameter
-     * @param localeInfo The GWT locale instance for building the URL.
+     * @param localeName The GWT locale name.
      * @return The url for the jBPM dashboard.
      */
-    public static String getDashboardURL(String preffix, String suffix, LocaleInfo localeInfo) {
+    public static String getDashboardURL(String preffix, String suffix, String localeName) {
         if (preffix == null && suffix == null) return null;
 
         StringBuilder result = new StringBuilder();
 
         if (preffix != null) result.append(preffix);
 
-        if (localeInfo != null) {
+        if (localeName != null) {
             if (!preffix.endsWith(SLASH)) result.append(SLASH);
-            String localeName = localeInfo.getLocaleName();
             if (GWT_DEFAULT_LOCALE.equals(localeName)) localeName = DASHBUILDER_DEFAULT_LOCALE;
             result. append(localeName);
         }
