@@ -4,7 +4,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.jbpm.console.ng.ht.model.events.TaskSearchEvent;
+import org.jbpm.console.ng.ht.model.events.SearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
 import org.uberfire.client.annotations.Perspective;
@@ -24,7 +24,7 @@ public class IdentityPerspective {
     private ContextualSearch contextualSearch;
     
     @Inject
-    private Event<TaskSearchEvent> searchEvents;
+    private Event<SearchEvent> searchEvents;
     
     @Perspective
     public PerspectiveDefinition getPerspective() {
@@ -40,7 +40,7 @@ public class IdentityPerspective {
         contextualSearch.setSearchBehavior(new SearchBehavior() {
             @Override
             public void execute(String searchFilter) {
-                searchEvents.fire(new TaskSearchEvent(searchFilter));
+                searchEvents.fire(new SearchEvent(searchFilter));
             }
            
         });

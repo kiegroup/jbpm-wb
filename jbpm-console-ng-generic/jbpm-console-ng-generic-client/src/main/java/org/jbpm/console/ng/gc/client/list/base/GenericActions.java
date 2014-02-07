@@ -18,6 +18,7 @@ package org.jbpm.console.ng.gc.client.list.base;
 
 import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.jbpm.console.ng.gc.client.resources.GenericImages;
+import org.jbpm.console.ng.ht.model.GenericSummary;
 
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
@@ -28,23 +29,30 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
-public abstract class GenericActions<T> extends BaseGenericCRUD {
+public abstract class GenericActions<T extends GenericSummary> extends BaseGenericCRUD {
 
-    protected Constants constants = GWT.create(Constants.class);
-    protected GenericImages images = GWT.create(GenericImages.class);
+    protected Constants genericConstants = GWT.create(Constants.class);
+    protected GenericImages genericImages = GWT.create(GenericImages.class);
 
-    protected class ReadHasCell implements HasCell<T, T> {
+    protected String readActionTitle = null;
+    protected String deleteActionTitle = null;
+    protected String updateActionTitle = null;
+
+    protected ImageResource READ_ACTION_IMAGE = genericImages.detailsIcon();
+    protected ImageResource UPDATE_ACTION_IMAGE = genericImages.editGridIcon();
+    protected ImageResource DELETE_ACTION_IMAGE = genericImages.deleteGridIcon();
+
+    protected class ReadActionHasCell implements HasCell<T, T> {
         private ActionCell<T> cell;
 
-        public ReadHasCell(String text, ActionCell.Delegate<T> delegate) {
+        public ReadActionHasCell(final String text, ActionCell.Delegate<T> delegate) {
             cell = new ActionCell<T>(text, delegate) {
                 @Override
                 public void render(Cell.Context context, T value, SafeHtmlBuilder sb) {
-
-                    ImageResource detailsIcon = images.detailsIcon();
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(detailsIcon);
+                    String title = (readActionTitle != null) ? readActionTitle : text;
+                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(READ_ACTION_IMAGE);
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='" + constants.Details() + "' style='margin-right:5px;'>");
+                    mysb.appendHtmlConstant("<span title='" + title + "' style='margin-right:5px;'>");
                     mysb.append(imageProto.getSafeHtml());
                     mysb.appendHtmlConstant("</span>");
                     sb.append(mysb.toSafeHtml());
@@ -69,18 +77,17 @@ public abstract class GenericActions<T> extends BaseGenericCRUD {
         }
     }
 
-    protected class DeleteHasCell implements HasCell<T, T> {
+    protected class DeleteActionHasCell implements HasCell<T, T> {
         private ActionCell<T> cell;
 
-        public DeleteHasCell(String text, ActionCell.Delegate<T> delegate) {
+        public DeleteActionHasCell(final String text, ActionCell.Delegate<T> delegate) {
             cell = new ActionCell<T>(text, delegate) {
                 @Override
                 public void render(Cell.Context context, T value, SafeHtmlBuilder sb) {
-
-                    ImageResource detailsIcon = images.deleteGridIcon();
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(detailsIcon);
+                    String title = (deleteActionTitle != null) ? deleteActionTitle : text;
+                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(DELETE_ACTION_IMAGE);
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='" + constants.Delete() + "' style='margin-right:5px;'>");
+                    mysb.appendHtmlConstant("<span title='" + title + "' style='margin-right:5px;'>");
                     mysb.append(imageProto.getSafeHtml());
                     mysb.appendHtmlConstant("</span>");
                     sb.append(mysb.toSafeHtml());
@@ -105,18 +112,17 @@ public abstract class GenericActions<T> extends BaseGenericCRUD {
         }
     }
 
-    protected class UpdateHasCell implements HasCell<T, T> {
+    protected class UpdateActionHasCell implements HasCell<T, T> {
         private ActionCell<T> cell;
 
-        public UpdateHasCell(String text, ActionCell.Delegate<T> delegate) {
+        public UpdateActionHasCell(final String text, ActionCell.Delegate<T> delegate) {
             cell = new ActionCell<T>(text, delegate) {
                 @Override
                 public void render(Cell.Context context, T value, SafeHtmlBuilder sb) {
-
-                    ImageResource detailsIcon = images.editGridIcon();
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(detailsIcon);
+                    String title = (updateActionTitle != null) ? updateActionTitle : text;
+                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(UPDATE_ACTION_IMAGE);
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='" + constants.Update() + "' style='margin-right:5px;'>");
+                    mysb.appendHtmlConstant("<span title='" + title + "' style='margin-right:5px;'>");
                     mysb.append(imageProto.getSafeHtml());
                     mysb.appendHtmlConstant("</span>");
                     sb.append(mysb.toSafeHtml());
