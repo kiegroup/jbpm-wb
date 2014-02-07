@@ -22,7 +22,11 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.Modal;
+import com.github.gwtbootstrap.client.ui.event.ShownEvent;
+import com.github.gwtbootstrap.client.ui.event.ShownHandler;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import org.jboss.errai.bus.client.api.messaging.Message;
@@ -61,6 +65,8 @@ public class VariableHistoryPresenter {
         void setVariableId( String variableId );
 
         String getVariableId();
+
+        void refreshTable();
     }
 
     @Inject
@@ -107,6 +113,24 @@ public class VariableHistoryPresenter {
         view.setProcessInstanceId( Long.parseLong( place.getParameter( "processInstanceId", "-1" ).toString() ) );
         view.setVariableId( place.getParameter( "variableId", "-1" ).toString() );
 
+        Modal modal = null;
+        Widget parent = ((VariableHistoryViewImpl)view).getParent();
+        while (parent != null) {
+            if (parent instanceof Modal) {
+                modal = (Modal)parent;
+                break;
+            } else {
+                parent = parent.getParent();
+            }
+        }
+        if (modal != null) {
+            modal.addShownHandler( new ShownHandler() {
+                @Override
+                public void onShown(ShownEvent shownEvent) {
+                    view.refreshTable();
+                }
+            });
+        }
         loadVariableHistory();
     }
 
