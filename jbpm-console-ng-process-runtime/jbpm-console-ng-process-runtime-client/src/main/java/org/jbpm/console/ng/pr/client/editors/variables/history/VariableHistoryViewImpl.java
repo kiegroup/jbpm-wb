@@ -27,15 +27,14 @@ import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
+import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.view.client.CellPreviewEvent;
 import java.util.Comparator;
 import java.util.Date;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -93,7 +92,7 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
         // Set the message to display when the table is empty.
         
         processVarListGrid.setEmptyTableWidget( new HTMLPanel(constants.No_History_For_This_Variable()) );
-        
+
         sortHandler = new ListHandler<VariableSummary>( presenter.getDataProvider().getList() );
         processVarListGrid.addColumnSortHandler( sortHandler );
 
@@ -198,6 +197,14 @@ public class VariableHistoryViewImpl extends Composite implements VariableHistor
         variableHistoryLabel.setText( constants.Variable_History() );
         variableNameText.setReadOnly(true);
 
+
+
+    }
+
+    @Override
+    public void refreshTable() {
+        processVarListGrid.getColumnSortList().push(new ColumnSortList.ColumnSortInfo(processVarListGrid.getColumn(2), false));
+        processVarListGrid.redraw();
     }
 
     @Override
