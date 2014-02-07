@@ -1,0 +1,11 @@
+org.jbpm.console.ng.gc.client.list.base.BaseViewImpl
+org.jbpm.console.ng.gc.client.list.base.BaseGenericCRUD
+org.jbpm.console.ng.gc.client.util.DataGridUtils
+org.jbpm.console.ng.gc.client.i18n.Constants
+org.jbpm.console.ng.gc.client.resources.GenericImages
+org.jbpm.console.ng.gc.client.list.base.PagerContainer
+org.jbpm.console.ng.gc.client.list.base.BasePresenter
+org.jbpm.console.ng.gc.client.util.ResizableHeader
+org.jbpm.console.ng.gc.client.list.base.ButtonsPanelContainer
+org.jbpm.console.ng.gc.client.list.base.GridViewContainer
+org.jbpm.console.ng.gc.client.list.base.GenericActions
