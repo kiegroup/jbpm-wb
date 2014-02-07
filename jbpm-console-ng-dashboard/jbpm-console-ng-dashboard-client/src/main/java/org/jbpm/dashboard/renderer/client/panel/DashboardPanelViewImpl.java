@@ -30,12 +30,11 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
 import org.jbpm.dashboard.renderer.service.ConnectionStatus;
-import org.jbpm.dashboard.renderer.client.panel.i18n.Constants;
 
 public class DashboardPanelViewImpl extends Composite implements DashboardPanelPresenter.DashboardView {
 
-    private Constants constants = GWT.create(Constants.class);
 
     interface DashboardViewBinder
             extends
@@ -66,7 +65,7 @@ public class DashboardPanelViewImpl extends Composite implements DashboardPanelP
             message.setVisible(false);
         }else{
             frame.setVisible(false);
-            message.setHTML(constants.Instructions());
+            message.setHTML(DashboardConstants.INSTANCE.Instructions());
         }
     }
 

@@ -24,12 +24,12 @@ import com.google.gwt.i18n.client.Messages;
  * http://code.google.com/docreader/#p=google-web-toolkit-doc-1-5&s=google-web- toolkit-doc-1-5&t=DevGuideInternationalization
  * (for more information).
  * <p/>
- * Each method name matches up with a key in Constants.properties (the properties file can still be used on the server). To use
- * this, use <code>GWT.create(Constants.class)</code>.
+ * Each method name matches up with a key in DashboardConstants.properties (the properties file can still be used on the server). To use
+ * this, use <code>GWT.create(DashboardConstants.class)</code>.
  */
-public interface Constants extends Messages {
+public interface DashboardConstants extends Messages {
 
-    Constants INSTANCE = GWT.create(Constants.class);
+    DashboardConstants INSTANCE = GWT.create(DashboardConstants.class);
 
     String Instructions();
 }
