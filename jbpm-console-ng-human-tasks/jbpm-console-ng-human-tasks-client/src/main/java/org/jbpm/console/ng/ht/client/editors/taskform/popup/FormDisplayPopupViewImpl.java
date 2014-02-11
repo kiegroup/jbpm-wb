@@ -23,6 +23,8 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -69,6 +71,9 @@ public class FormDisplayPopupViewImpl extends Composite implements FormDisplayPo
     @Inject
     @DataField
     public UnorderedList navBarUL;
+
+    @DataField
+    public Element headerDiv = DOM.createDiv();
 
     private long taskId;
     private String domainId;
@@ -215,4 +220,12 @@ public class FormDisplayPopupViewImpl extends Composite implements FormDisplayPo
     public boolean isFormModeler() {
         return formModeler;
     }
+
+    @Override
+    public void displayHeader(boolean display) {
+        String style = display ? "display:;" : "display:none;";
+        if (headerDiv != null) headerDiv.setAttribute("style", style);
+    }
+
+
 }

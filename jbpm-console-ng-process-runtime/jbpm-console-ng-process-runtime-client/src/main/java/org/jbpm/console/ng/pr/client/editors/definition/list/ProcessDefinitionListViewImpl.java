@@ -244,6 +244,7 @@ public class ProcessDefinitionListViewImpl extends Composite
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display Popup");
                 placeRequestImpl.addParameter("processId", process.getId());
                 placeRequestImpl.addParameter("domainId", process.getDeploymentId());
+                placeRequestImpl.addParameter("processName", process.getName() );
                 placeManager.goTo(placeRequestImpl);
             }
         }));

@@ -282,6 +282,7 @@ public class ProcessDefDetailsPresenter {
                             PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display Popup" );
                             placeRequestImpl.addParameter( "processId", view.getProcessIdText().getText() );
                             placeRequestImpl.addParameter( "domainId", view.getDeploymentIdText().getText() );
+                            placeRequestImpl.addParameter( "processName", view.getProcessNameText().getText() );
                             placeManager.goTo( placeRequestImpl );
                         }
                      }).endMenu()

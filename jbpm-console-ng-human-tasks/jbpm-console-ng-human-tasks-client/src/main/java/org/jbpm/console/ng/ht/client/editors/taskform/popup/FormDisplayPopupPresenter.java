@@ -29,6 +29,7 @@ import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -162,6 +163,8 @@ public class FormDisplayPopupPresenter {
 
         boolean isFormModeler();
 
+        void displayHeader(boolean display);
+
     }
 
     @PostConstruct
@@ -174,8 +177,6 @@ public class FormDisplayPopupPresenter {
     public void onStartup(final PlaceRequest place) {
         this.place = place;
     }
-    
-    
 
     public void renderTaskForm(final long taskId) {
         
@@ -384,7 +385,24 @@ public class FormDisplayPopupPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.Form();
+        String title = createTitle();
+        return SafeHtmlUtils.htmlEscape(title != null ? title : "");
+    }
+
+    protected String createTitle() {
+        long taskId = Long.parseLong( place != null ? place.getParameter("taskId", "-1") : "-1");
+        String processId = place.getParameter("processId", "none").toString();
+        String taskName;
+        String title = "";
+        if (taskId != -1) {
+            title = Constants.INSTANCE.Details();
+        } else if (!processId.equals("none")) {
+            title = place.getParameter("processName", "");
+        }
+        if (title != null && title.length() > 25) {
+            title = title.substring(0, 25) + "...";
+        }
+        return title;
     }
 
     @WorkbenchPartView
@@ -649,15 +667,18 @@ public class FormDisplayPopupPresenter {
 
     @OnOpen
     public void onOpen() {
+
         long taskId = Long.parseLong(place.getParameter("taskId", "-1").toString());
         String processId = place.getParameter("processId", "none").toString();
         String domainId = place.getParameter("domainId", "none").toString();
         if (taskId != -1) {
             view.setTaskId(taskId);
+            view.displayHeader(true);
             renderTaskForm(taskId);
         } else if (!processId.equals("none")) {
             view.setProcessId(processId);
             view.setDomainId(domainId);
+            view.displayHeader(false);
             renderProcessForm(domainId, processId);
         }
     }
