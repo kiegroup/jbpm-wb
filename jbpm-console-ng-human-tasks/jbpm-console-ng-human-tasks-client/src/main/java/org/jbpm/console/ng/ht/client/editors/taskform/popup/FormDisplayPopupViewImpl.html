@@ -1,13 +1,15 @@
 <form id="form-data" class="form-horizontal">
     <!-- MODAL BODY -->
     <div>
-        <h4 id="myModalLabel">
-            <div class="row-fluid">
-                <label data-field="taskIdText" class="inline span1"></label>
-                <label data-field="nameText" class="inline span8"></label>
-            </div>
-            <div class="page-header"></div>
-        </h4>
+        <div data-field="headerDiv" id="headerDiv" style="display:none;">
+            <h4 data-field="myModalLabel" id="myModalLabel">
+                <div class="row-fluid">
+                    <label data-field="taskIdText" class="inline span1"></label>
+                    <label data-field="nameText" class="inline span8"></label>
+                </div>
+                <div class="page-header"></div>
+            </h4>
+        </div>
         <!-- MODAL NAV -->
         <div class="navbar">
             <div class="navbar-inner" data-field="innerNavPanel">
