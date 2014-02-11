@@ -16,6 +16,8 @@
 
 package org.jbpm.console.ng.bd.client.util;
 
+import org.jbpm.console.ng.gc.client.util.DataGridUtils;
+
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.Cell.Context;

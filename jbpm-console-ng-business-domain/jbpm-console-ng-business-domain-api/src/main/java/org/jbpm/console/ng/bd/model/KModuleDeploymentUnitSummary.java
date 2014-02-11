@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class KModuleDeploymentUnitSummary extends DeploymentUnitSummary {
 
+    private static final long serialVersionUID = 3208375669317804514L;
     private String groupId;
     private String artifactId;
     private String version;
@@ -92,6 +93,10 @@ public class KModuleDeploymentUnitSummary extends DeploymentUnitSummary {
 
     public void setStrategy(String strategy) {
         this.strategy = strategy;
+    }
+
+    public String getName() {
+        return this.artifactId;
     }
 
 }

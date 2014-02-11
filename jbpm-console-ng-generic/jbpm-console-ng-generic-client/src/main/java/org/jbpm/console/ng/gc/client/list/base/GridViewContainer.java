@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,11 +16,23 @@
 
 package org.jbpm.console.ng.gc.client.list.base;
 
-public interface GridViewContainer {
+import java.util.Set;
+
+import com.google.gwt.view.client.SelectionChangeEvent;
+
+public interface GridViewContainer<T> {
 
     static final String GRID_STYLE = "table table-bordered table-striped table-hover";
 
-    void setSelectionModel();
+    enum GridSelectionModel {
+        SIMPLE, MULTI;
+    }
+
+    void setSelectionModel(GridSelectionModel selectionModel);
+
+    void multiSelectionModelChange(SelectionChangeEvent event, Set<T> selectedItemsSelectionModel);
+
+    void simpleSelectionModelChange(SelectionChangeEvent event, T selectedItemSelectionModel);
 
     void setGridEvents();
 
