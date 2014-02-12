@@ -101,7 +101,7 @@ public class RequestListPresenter {
     
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Requests List";
+        return constants.RequestsListTitle();
     }
 
     @WorkbenchPartView

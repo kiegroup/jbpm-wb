@@ -382,7 +382,7 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
                 return o1.getCommandName().compareTo( o2.getCommandName() );
             }
         } );
-        myRequestListGrid.addColumn( taskNameColumn, new ResizableHeader( "Job Name", myRequestListGrid, taskNameColumn ) );
+        myRequestListGrid.addColumn( taskNameColumn, new ResizableHeader( constants.JobName(), myRequestListGrid, taskNameColumn ) );
 
         // Status
         Column<RequestSummary, String> statusColumn = new Column<RequestSummary, String>( new EditTextCell() ) {
@@ -399,7 +399,7 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
                 return o1.getStatus().compareTo( o2.getStatus() );
             }
         } );
-        myRequestListGrid.addColumn( statusColumn, new ResizableHeader( "Status", myRequestListGrid, taskNameColumn ) );
+        myRequestListGrid.addColumn( statusColumn, new ResizableHeader( constants.Status(), myRequestListGrid, taskNameColumn ) );
         myRequestListGrid.setColumnWidth( statusColumn, "100px" );
 
         // Due Date.

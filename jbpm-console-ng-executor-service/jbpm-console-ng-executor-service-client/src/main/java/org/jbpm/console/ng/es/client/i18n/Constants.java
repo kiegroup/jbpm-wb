@@ -86,6 +86,10 @@ public interface Constants extends Messages {
 
     String Frequency();
 
+    String JobName();
+
+    String RequestsListTitle();
+
    
 
 }
