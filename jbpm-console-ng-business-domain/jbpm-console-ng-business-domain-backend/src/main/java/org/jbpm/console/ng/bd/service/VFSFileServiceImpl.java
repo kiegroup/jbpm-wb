@@ -18,6 +18,7 @@ package org.jbpm.console.ng.bd.service;
 import java.io.OutputStream;
 import java.net.URI;
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -36,7 +37,7 @@ import static org.uberfire.commons.validation.PortablePreconditions.*;
 /**
  *
  */
-@Singleton
+@ApplicationScoped
 public class VFSFileServiceImpl implements FileService {
 
     private static final String REPO_PLAYGROUND = "git://jbpm-playground/";

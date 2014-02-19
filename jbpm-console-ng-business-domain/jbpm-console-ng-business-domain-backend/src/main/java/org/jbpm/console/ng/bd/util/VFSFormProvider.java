@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.jbpm.console.ng.bd.api.FileException;
@@ -22,7 +23,9 @@ public class VFSFormProvider extends FreemakerFormProvider {
     private static final Logger logger = LoggerFactory.getLogger(VFSFormProvider.class);
 
     @Inject
-    private FileService fileService;
+    private Instance<FileService> fileServiceIn;
+
+    private FileService fs;
 
     @Override
     public String render(String name, ProcessAssetDesc process, Map<String, Object> renderContext) {
@@ -32,12 +35,12 @@ public class VFSFormProvider extends FreemakerFormProvider {
 
         InputStream template = null;
         Iterable<Path> availableForms = null;
-        Path processPath = fileService.getPath(process.getOriginalPath());
-        Path formsPath = fileService.getPath(processPath.getParent().toUri().toString() + "/forms/");
+        Path processPath = getFs().getPath(process.getOriginalPath());
+        Path formsPath = getFs().getPath(processPath.getParent().toUri().toString() + "/forms/");
         try {
 
-            if(fileService.exists(formsPath)){
-                availableForms = fileService.loadFilesByType(formsPath, "ftl");
+            if(getFs().exists(formsPath)){
+                availableForms = getFs().loadFilesByType(formsPath, "ftl");
             }
         } catch (FileException ex) {
             logger.error("File exception", ex);
@@ -58,14 +61,14 @@ public class VFSFormProvider extends FreemakerFormProvider {
                     rootPath +=processPath.getFileSystem().getSeparator();
                 }
 
-                Path defaultFormPath = fileService.getPath(rootPath +"globals/forms/DefaultProcess.ftl");
-                if (fileService.exists(defaultFormPath)) {
-                    template = new ByteArrayInputStream(fileService.loadFile(defaultFormPath));
+                Path defaultFormPath = getFs().getPath(rootPath +"globals/forms/DefaultProcess.ftl");
+                if (getFs().exists(defaultFormPath)) {
+                    template = new ByteArrayInputStream(getFs().loadFile(defaultFormPath));
                 }
 
             } else {
 
-                template = new ByteArrayInputStream(fileService.loadFile(selectedForm));
+                template = new ByteArrayInputStream(getFs().loadFile(selectedForm));
 
             }
         } catch (FileException ex) {
@@ -85,10 +88,10 @@ public class VFSFormProvider extends FreemakerFormProvider {
         Iterable<Path> availableForms = null;
         try {
             if(process != null && process.getOriginalPath() != null){
-                processPath = fileService.getPath(process.getOriginalPath());
-                Path formsPath = fileService.getPath(processPath.getParent().toUri().toString() + "/forms/");
-                if(fileService.exists(formsPath)){
-                    availableForms = fileService.loadFilesByType(formsPath, "ftl");
+                processPath = getFs().getPath(process.getOriginalPath());
+                Path formsPath = getFs().getPath(processPath.getParent().toUri().toString() + "/forms/");
+                if(getFs().exists(formsPath)){
+                    availableForms = getFs().loadFilesByType(formsPath, "ftl");
                 }
             }
         } catch (FileException ex) {
@@ -113,13 +116,13 @@ public class VFSFormProvider extends FreemakerFormProvider {
                     }
                 }
                 if(!rootPath.equals("")){
-                    Path defaultFormPath = fileService.getPath(rootPath +"globals/forms/DefaultTask.ftl");
-                    if (fileService.exists(defaultFormPath)) {
-                        template = new ByteArrayInputStream(fileService.loadFile(defaultFormPath));
+                    Path defaultFormPath = getFs().getPath(rootPath +"globals/forms/DefaultTask.ftl");
+                    if (getFs().exists(defaultFormPath)) {
+                        template = new ByteArrayInputStream(getFs().loadFile(defaultFormPath));
                     }
                 }
             } else {
-                template = new ByteArrayInputStream(fileService.loadFile(selectedForm));
+                template = new ByteArrayInputStream(getFs().loadFile(selectedForm));
             }
         } catch (FileException ex) {
             logger.error("File exception", ex);
@@ -135,4 +138,14 @@ public class VFSFormProvider extends FreemakerFormProvider {
         return 1;
     }
 
+    public FileService getFs() {
+        if (fs == null) {
+            fs = fileServiceIn.get();
+        }
+        return fs;
+    }
+
+    public void setFs(FileService fs) {
+        this.fs = fs;
+    }
 }
