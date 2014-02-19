@@ -2,6 +2,7 @@ package org.jbpm.console.ng.bd.service;
 
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
@@ -34,12 +35,15 @@ public class VFSDeploymentService extends AbstractDeploymentService {
     @Inject
     private BeanManager beanManager;
     @Inject
-    private FileService fs;
+    private Instance<FileService> fileServiceIn;
+
+
     @Inject
     private IdentityProvider identityProvider; 
     @Inject
     private BPMN2DataService bpmn2Service;
 
+    private FileService fs;
 
     @Override
     public void deploy(DeploymentUnit unit) {
@@ -71,15 +75,15 @@ public class VFSDeploymentService extends AbstractDeploymentService {
         Iterable<Path> loadProcessFiles = null;
 
         try {
-            Path processFolder = fs.getPath(vfsUnit.getRepository() + vfsUnit.getRepositoryFolder());
-            loadProcessFiles = fs.loadFilesByType(processFolder, ".+bpmn[2]?$");
+            Path processFolder = getFs().getPath(vfsUnit.getRepository() + vfsUnit.getRepositoryFolder());
+            loadProcessFiles = getFs().loadFilesByType(processFolder, ".+bpmn[2]?$");
         } catch (FileException ex) {
             logger.error("Error while loading process files", ex);
         }
         for (Path p : loadProcessFiles) {
             String processString = "";
             try {
-                processString = new String(fs.loadFile(p));
+                processString = new String(getFs().loadFile(p));
                 builder.addAsset(ResourceFactory.newByteArrayResource(processString.getBytes()), ResourceType.BPMN2);
                 ProcessAssetDesc process = bpmn2Service.findProcessId(processString, null);
                 process.setOriginalPath(p.toUri().toString());
@@ -96,15 +100,15 @@ public class VFSDeploymentService extends AbstractDeploymentService {
         Iterable<Path> loadRuleFiles = null;
 
         try {
-            Path rulesFolder = fs.getPath(vfsUnit.getRepository() + vfsUnit.getRepositoryFolder());
-            loadRuleFiles = fs.loadFilesByType(rulesFolder, ".+drl");
+            Path rulesFolder = getFs().getPath(vfsUnit.getRepository() + vfsUnit.getRepositoryFolder());
+            loadRuleFiles = getFs().loadFilesByType(rulesFolder, ".+drl");
         } catch (FileException ex) {
             logger.error("Error while loading rule files", ex);
         }
         for (Path p : loadRuleFiles) {
             String ruleString = "";
             try {
-                ruleString = new String(fs.loadFile(p));
+                ruleString = new String(getFs().loadFile(p));
                 builder.addAsset(ResourceFactory.newByteArrayResource(ruleString.getBytes()), ResourceType.DRL);                
                 
             } catch (Exception ex) {
@@ -115,6 +119,9 @@ public class VFSDeploymentService extends AbstractDeploymentService {
 
 
     public FileService getFs() {
+        if (fs == null) {
+            fs = fileServiceIn.get();
+        }
         return fs;
     }
 

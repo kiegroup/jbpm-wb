@@ -20,10 +20,12 @@ import org.uberfire.java.nio.file.Path;
 public class VfsMVELWorkItemHandlerProducer implements WorkItemHandlerProducer {
 
     @Inject
-    private FileService fs;
+    private Instance<FileService> fsIin;
     @Inject
     @Vfs
     private Instance<DeploymentService> deploymentService;
+
+    private FileService fs;
 
     public VfsMVELWorkItemHandlerProducer() {
     }
@@ -40,6 +42,9 @@ public class VfsMVELWorkItemHandlerProducer implements WorkItemHandlerProducer {
         try {
             if (deploymentService.get() == null) {
                 return handlers;
+            }
+            if (fs != null) {
+                fs = fsIin.get();
             }
             DeployedUnit deployedUnit = deploymentService.get().getDeployedUnit(identifier);
             if (deployedUnit == null) {
