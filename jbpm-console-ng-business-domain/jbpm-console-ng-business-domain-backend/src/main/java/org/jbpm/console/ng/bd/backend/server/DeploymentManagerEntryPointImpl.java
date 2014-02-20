@@ -13,6 +13,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.builder.model.BuildResults;
@@ -51,6 +52,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
 
     @Inject
     @RequestScoped
+    @Named("DeployList")
     private Set<DeploymentUnit> deploymentUnits;
 
     @Inject
