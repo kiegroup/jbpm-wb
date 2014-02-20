@@ -198,6 +198,7 @@ public class AdministrationServiceImpl implements AdministrationService {
      */
     @Produces
     @RequestScoped
+    @Named("DeployList")
     public Set<DeploymentUnit> produceDeploymentUnits() {
         Set<DeploymentUnit> deploymentUnits = new HashSet<DeploymentUnit>();
 
