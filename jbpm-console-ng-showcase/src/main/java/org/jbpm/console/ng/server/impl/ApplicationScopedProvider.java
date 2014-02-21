@@ -14,6 +14,7 @@ import javax.persistence.PersistenceUnit;
 
 import org.jbpm.kie.services.cdi.producer.UserGroupInfoProducer;
 import org.jbpm.shared.services.cdi.Selectable;
+import org.kie.api.task.TaskLifeCycleEventListener;
 import org.kie.api.task.UserGroupCallback;
 import org.kie.internal.task.api.UserInfo;
 import org.uberfire.backend.server.IOWatchServiceNonDotImpl;
@@ -27,6 +28,8 @@ import org.uberfire.security.auth.AuthenticationManager;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.security.impl.authz.RuntimeAuthorizationManager;
 import org.uberfire.security.server.cdi.SecurityFactory;
+import org.jbpm.services.task.lifecycle.listeners.BAMTaskEventListener;
+import org.jbpm.services.task.audit.JPATaskLifeCycleEventListener;
 
 /**
  * This class should contain all ApplicationScoped producers required by the application.
@@ -105,4 +108,15 @@ public class ApplicationScopedProvider {
         return ioService;
     }
 
+    @Produces
+    @ApplicationScoped
+    public TaskLifeCycleEventListener produceBAMListener() {
+        return new BAMTaskEventListener();
+    }
+
+    @Produces
+    @ApplicationScoped
+    public TaskLifeCycleEventListener produceTaskAuditListener() {
+        return new JPATaskLifeCycleEventListener();
+    }
 }
