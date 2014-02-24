@@ -210,6 +210,9 @@ public class TaskDetailsPresenter {
         taskServices.call(new RemoteCallback<TaskSummary>() {
             @Override
             public void callback(TaskSummary details) {
+                if (details == null) {
+                    return;
+                }
                 if (details.getStatus().equals("Completed")) {
 
                     view.getTaskDescriptionTextArea().setEnabled(false);
