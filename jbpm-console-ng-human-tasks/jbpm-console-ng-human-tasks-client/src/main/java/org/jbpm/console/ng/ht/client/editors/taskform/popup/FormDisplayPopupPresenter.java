@@ -249,6 +249,7 @@ public class FormDisplayPopupPresenter {
                 FlowPanel wrapperFlowPanel = new FlowPanel();
                 wrapperFlowPanel.setStyleName( "wrapper" );
                 view.getOptionsDiv().add( wrapperFlowPanel );
+                if (task == null) return;
                 view.getNameText().setText( task.getName() );
                 view.getTaskIdText().setText( String.valueOf( task.getId() ) );
                 if ( task.getStatus().equals( "Reserved" ) ) {

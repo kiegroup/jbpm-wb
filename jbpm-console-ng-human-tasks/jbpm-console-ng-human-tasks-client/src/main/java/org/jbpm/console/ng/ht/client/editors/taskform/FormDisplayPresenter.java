@@ -196,7 +196,8 @@ public class FormDisplayPresenter {
                 FlowPanel wrapperFlowPanel = new FlowPanel();
                 wrapperFlowPanel.setStyleName( "wrapper form-actions" );
                 view.getOptionsDiv().add( wrapperFlowPanel );
-                
+
+                if (task == null) return;
                 if ( task.getStatus().equals( "Ready" ) ) {
                     ClickHandler click = new ClickHandler() {
                             @Override

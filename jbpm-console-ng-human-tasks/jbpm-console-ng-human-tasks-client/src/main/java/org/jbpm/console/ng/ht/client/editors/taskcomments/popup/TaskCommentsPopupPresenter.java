@@ -169,6 +169,7 @@ public class TaskCommentsPopupPresenter {
 
             @Override
             public void callback( TaskSummary details ) {
+                if (details == null) return;
                 view.getTaskIdText().setText( String.valueOf( details.getId() ) );
                 view.getTaskNameText().setText( details.getName() );
             }
