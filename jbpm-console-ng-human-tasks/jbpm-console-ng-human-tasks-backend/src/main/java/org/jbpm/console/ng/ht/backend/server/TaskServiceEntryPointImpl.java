@@ -106,7 +106,6 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return taskSummaries;
     }
 
-
     @Override
     public Map<Long, List<String>> getPotentialOwnersForTaskIds(List<Long> taskIds) {
         Map<Long, List<OrganizationalEntity>> potentialOwnersForTaskIds = taskService.getPotentialOwnersForTaskIds(
@@ -236,7 +235,6 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return new LocalDate(from.getTime()).plusDays(nrOfDaysTotal - 1).toDateMidnight().toDate();
     }
 
-
     public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, Date from, Date to, String language) {
         List<String> statuses = new ArrayList<String>();
         statuses.add("InProgress");
@@ -244,7 +242,6 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         statuses.add("Created");
         return getTasksOwnedFromDateToDateByDays(userId, statuses, from, to, language);
     }
-
 
     /**
      * Group Operations
@@ -300,7 +297,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     public void forward(long taskId, String userId, String targetEntityId) {
         taskService.forward(taskId, userId, targetEntityId);
     }
-    
+
     @Override
     public void delegate(long taskId, String userId, String targetEntityId) {
         taskService.delegate(taskId, userId, targetEntityId);
@@ -308,7 +305,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Override
     public void complete(long taskId, String user, Map<String, Object> params) {
-        try{
+        try {
             taskService.complete(taskId, user, params);
         } catch (Exception e) {
             throw ExceptionUtilities.handleException(e);
@@ -382,24 +379,30 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     @Override
     public TaskSummary getTaskDetails(long taskId) {
         Task task = taskService.getTaskById(taskId);
-        List<OrganizationalEntity> potentialOwners = task.getPeopleAssignments().getPotentialOwners();
-        List<String> potOwnersString = new ArrayList<String>(potentialOwners.size());
-        for (OrganizationalEntity e : potentialOwners) {
-            potOwnersString.add(e.getId());
+        if (task != null) {
+            List<OrganizationalEntity> potentialOwners = task.getPeopleAssignments().getPotentialOwners();
+            List<String> potOwnersString = null;
+            if (potentialOwners != null) {
+                potOwnersString = new ArrayList<String>(potentialOwners.size());
+                for (OrganizationalEntity e : potentialOwners) {
+                    potOwnersString.add(e.getId());
+                }
+            }
+            return new TaskSummary(task.getId(), task.getTaskData().getProcessInstanceId(),
+                    ((task.getNames() != null && task
+                    .getNames().size() > 0)) ? task.getNames().get(0).getText() : "",
+                    ((task.getSubjects() != null && task
+                    .getSubjects().size() > 0)) ? task.getSubjects().get(0).getText() : "",
+                    ((task.getDescriptions() != null && task.getDescriptions().size() > 0)) ? task.getDescriptions().get(0)
+                    .getText() : "", task.getTaskData().getStatus().name(), task.getPriority(), task.getTaskData()
+                    .isSkipable(), (task.getTaskData().getActualOwner() != null) ? task.getTaskData().getActualOwner()
+                    .getId() : "", (task.getTaskData().getCreatedBy() != null) ? task.getTaskData().getCreatedBy().getId()
+                    : "", task.getTaskData().getCreatedOn(), task.getTaskData().getActivationTime(), task.getTaskData()
+                    .getExpirationTime(), task.getTaskData().getProcessId(), task.getTaskData().getProcessSessionId(),
+                    ((InternalTask) task).getSubTaskStrategy().name(), (int) task.getTaskData().getParentId(),
+                    potOwnersString);
         }
-        return new TaskSummary(task.getId(), task.getTaskData().getProcessInstanceId(),
-                ((task.getNames() != null && task
-                        .getNames().size() > 0)) ? task.getNames().get(0).getText() : "",
-                ((task.getSubjects() != null && task
-                        .getSubjects().size() > 0)) ? task.getSubjects().get(0).getText() : "",
-                ((task.getDescriptions() != null && task.getDescriptions().size() > 0)) ? task.getDescriptions().get(0)
-                        .getText() : "", task.getTaskData().getStatus().name(), task.getPriority(), task.getTaskData()
-                .isSkipable(), (task.getTaskData().getActualOwner() != null) ? task.getTaskData().getActualOwner()
-                .getId() : "", (task.getTaskData().getCreatedBy() != null) ? task.getTaskData().getCreatedBy().getId()
-                : "", task.getTaskData().getCreatedOn(), task.getTaskData().getActivationTime(), task.getTaskData()
-                .getExpirationTime(), task.getTaskData().getProcessId(), task.getTaskData().getProcessSessionId(),
-                ((InternalTask) task).getSubTaskStrategy().name(), (int) task.getTaskData().getParentId(),
-                potOwnersString);
+        return null;
     }
 
     @Override
@@ -527,9 +530,9 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     public List<TaskEventSummary> getAllTaskEvents(long taskId) {
         return TaskEventSummaryHelper.adaptCollection(taskService.execute(new GetAuditEventsCommand(taskId)));
     }
-    
+
     @Override
-    public Boolean existInDatabase(long taskId){
+    public Boolean existInDatabase(long taskId) {
         return taskService.getTaskById(taskId) == null ? false : true;
     }
 
