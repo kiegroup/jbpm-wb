@@ -17,6 +17,7 @@ import org.jbpm.kie.services.impl.DeployedUnitImpl;
 import org.jbpm.kie.services.impl.audit.ServicesAwareAuditEventBuilder;
 import org.jbpm.kie.services.impl.model.ProcessAssetDesc;
 import org.jbpm.process.audit.AbstractAuditLogger;
+import org.jbpm.process.audit.event.AuditEventBuilder;
 import org.jbpm.runtime.manager.impl.RuntimeEnvironmentBuilder;
 import org.jbpm.runtime.manager.impl.cdi.InjectableRegisterableItemsFactory;
 import org.kie.api.io.ResourceType;
@@ -57,11 +58,11 @@ public class VFSDeploymentService extends AbstractDeploymentService {
         // Create Runtime Manager Based on the Reference
         RuntimeEnvironmentBuilder builder = RuntimeEnvironmentBuilder.getDefault()
                 .entityManagerFactory(getEmf());
-        
-        AbstractAuditLogger auditLogger = setupAuditLogger(identityProvider, vfsUnit.getIdentifier());
+
+        AuditEventBuilder auditLoggerBuilder = setupAuditLogger(identityProvider, vfsUnit.getIdentifier());
         
         if (beanManager != null) {
-            builder.registerableItemsFactory(InjectableRegisterableItemsFactory.getFactory(beanManager, auditLogger));
+            builder.registerableItemsFactory(InjectableRegisterableItemsFactory.getFactory(beanManager, auditLoggerBuilder));
         }
         loadProcesses(vfsUnit, builder, deployedUnit);
         loadRules(vfsUnit, builder, deployedUnit); 
