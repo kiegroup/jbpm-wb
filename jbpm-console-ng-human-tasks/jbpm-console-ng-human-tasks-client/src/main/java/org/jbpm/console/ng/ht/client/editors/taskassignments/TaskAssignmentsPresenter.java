@@ -147,6 +147,7 @@ public class TaskAssignmentsPresenter {
         taskServices.call(new RemoteCallback<TaskSummary>() {
             @Override
             public void callback(TaskSummary ts) {
+                if (ts == null) return;
                 String actualOwner = ts.getActualOwner();
                 if(actualOwner.equals("") || !actualOwner.equals(identity.getName())){
                     view.getDelegateButton().setEnabled(false);
