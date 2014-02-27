@@ -183,6 +183,9 @@ public class FormDisplayPresenter {
 
     protected void initTaskForm(String form) {
 
+        if (form == null || form.length() == 0) {
+            return;
+        }
         view.loadForm(form);
 
         final boolean modelerForm = view.isFormModeler();
