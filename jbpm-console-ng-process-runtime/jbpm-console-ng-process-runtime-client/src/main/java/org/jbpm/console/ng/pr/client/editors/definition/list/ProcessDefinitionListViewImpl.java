@@ -224,11 +224,15 @@ public class ProcessDefinitionListViewImpl extends Composite
             @Override
             public int compare(ProcessSummary o1,
                     ProcessSummary o2) {
-                Integer version1 = ((o1.getVersion() == null || o1.getVersion().equals(""))) ? 0 : Integer.valueOf(o1
-                        .getVersion());
-                Integer version2 = ((o2.getVersion() == null || o2.getVersion().equals(""))) ? 0 : Integer.valueOf(o2
-                        .getVersion());
-                return version1.compareTo(version2);
+                Integer version1;
+                Integer version2;
+                try{
+                    version1 =  Integer.valueOf(o1.getVersion());
+                    version2 = Integer.valueOf(o2.getVersion());
+                    return version1.compareTo(version2);
+                }catch(NumberFormatException nfe){
+                    return o1.getVersion().compareTo(o2.getVersion());
+                }
             }
         });
         processdefListGrid
