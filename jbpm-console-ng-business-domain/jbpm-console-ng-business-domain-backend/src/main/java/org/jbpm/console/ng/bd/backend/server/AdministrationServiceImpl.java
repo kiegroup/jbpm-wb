@@ -89,7 +89,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 
     @Inject
     @Any
-    private Instance<DeploymentUnitProvider> deploymentUnitProviders;
+    private Instance<DeploymentUnitProvider<DeploymentUnit>> deploymentUnitProviders;
 
     private String deploymentServiceType;
     
@@ -202,7 +202,7 @@ public class AdministrationServiceImpl implements AdministrationService {
     public Set<DeploymentUnit> produceDeploymentUnits() {
         Set<DeploymentUnit> deploymentUnits = new HashSet<DeploymentUnit>();
 
-        Instance<DeploymentUnitProvider> suitableProviders = this.deploymentUnitProviders.select( getDeploymentType() );
+        Instance<DeploymentUnitProvider<DeploymentUnit>> suitableProviders = this.deploymentUnitProviders.select( getDeploymentType() );
 
         for ( DeploymentUnitProvider provider : suitableProviders ) {
             deploymentUnits.addAll( provider.getDeploymentUnits() );
