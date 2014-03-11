@@ -38,31 +38,37 @@ public class VfsMVELWorkItemHandlerProducer implements WorkItemHandlerProducer {
     @Override
     public Map<String, WorkItemHandler> getWorkItemHandlers(String identifier, Map<String, Object> params) {
         Map<String, WorkItemHandler> handlers = new HashMap<String, WorkItemHandler>();
-
+        DeploymentService deployment = null;
         try {
-            if (deploymentService.get() == null) {
+            // proceed only if there is VFS based deployment service otherwise this producer should not be used
+            if (deploymentService.isUnsatisfied()) {
                 return handlers;
             }
-            if (fs != null) {
+            deployment = deploymentService.get();
+            // if there is no file service already set try one from injection if available
+            if (fs == null && !fsIin.isUnsatisfied()) {
                 fs = fsIin.get();
             }
-            DeployedUnit deployedUnit = deploymentService.get().getDeployedUnit(identifier);
-            if (deployedUnit == null) {
-                return handlers;
-            }
-            VFSDeploymentUnit vfsUnit = (VFSDeploymentUnit) deployedUnit.getDeploymentUnit();
-            Path assetFolder = fs.getPath(vfsUnit.getRepository() + vfsUnit.getRepositoryFolder());
-            if (identifier == null || !fs.exists(assetFolder)) {
-                return handlers;
-            }
-            params.put("fs", fs);
-        
-            Iterable<Path> widFiles = fs.loadFilesByType(assetFolder, "conf");
-            
-            for (Path widPath : widFiles) {
-                String content = new String(fs.loadFile(widPath), "UTF-8");
-                
-                handlers.putAll((Map<String, WorkItemHandler>) MVELSafeHelper.getEvaluator().eval( content, params ));
+            // proceed only if both deployment service and file service is available and file service is active
+            if (deployment != null && fs != null && fs.isActive()) {
+                DeployedUnit deployedUnit = deployment.getDeployedUnit(identifier);
+                if (deployedUnit == null) {
+                    return handlers;
+                }
+                VFSDeploymentUnit vfsUnit = (VFSDeploymentUnit) deployedUnit.getDeploymentUnit();
+                Path assetFolder = fs.getPath(vfsUnit.getRepository() + vfsUnit.getRepositoryFolder());
+                if (identifier == null || !fs.exists(assetFolder)) {
+                    return handlers;
+                }
+                params.put("fs", fs);
+
+                Iterable<Path> widFiles = fs.loadFilesByType(assetFolder, "conf");
+
+                for (Path widPath : widFiles) {
+                    String content = new String(fs.loadFile(widPath), "UTF-8");
+
+                    handlers.putAll((Map<String, WorkItemHandler>) MVELSafeHelper.getEvaluator().eval( content, params ));
+                }
             }
         } catch (FileException e) {
             e.printStackTrace();
