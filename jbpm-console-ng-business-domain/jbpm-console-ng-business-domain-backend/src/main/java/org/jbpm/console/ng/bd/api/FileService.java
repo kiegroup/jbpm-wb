@@ -46,5 +46,7 @@ public interface FileService {
     OutputStream openFile(Path path);
     
     Path getPath(String path);
+
+    boolean isActive();
     
 }

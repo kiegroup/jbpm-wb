@@ -17,6 +17,7 @@ package org.jbpm.console.ng.bd.service;
 
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -29,6 +30,8 @@ import org.jbpm.console.ng.bd.api.FileService;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.IOException;
 import org.uberfire.java.nio.file.DirectoryStream;
+import org.uberfire.java.nio.file.FileSystem;
+import org.uberfire.java.nio.file.FileSystemNotFoundException;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 
@@ -42,22 +45,37 @@ public class VFSFileServiceImpl implements FileService {
 
     private static final String REPO_PLAYGROUND = "git://jbpm-playground/";
 
+    private boolean active;
+
     @Inject
     @Named("ioStrategy")
     private Instance<IOService> ioService;
 
     @PostConstruct
     public void init() {
-        fetchChanges();
+
+        try {
+            getIOService().get(URI.create( REPO_PLAYGROUND));
+            fetchChanges();
+            active = true;
+        } catch (FileSystemNotFoundException e) {
+            active = false;
+        }
+
+
     }
 
     public void fetchChanges() {
         getIOService().getFileSystem( URI.create( REPO_PLAYGROUND + "?fetch" ) );
+        active = true;
+
     }
     
     @Override
     public byte[] loadFile( final Path file ) throws FileException {
-        
+        if (!isActive()) {
+            return new byte[0];
+        }
         checkNotNull( "file", file );
 
         try {
@@ -72,6 +90,9 @@ public class VFSFileServiceImpl implements FileService {
     @Override
     public Iterable<Path> loadFilesByType( final Path path,
                                            final String fileType ) {
+        if (!isActive()) {
+            return new ArrayList<Path>();
+        }
         return getIOService().newDirectoryStream( path, new DirectoryStream.Filter<Path>() {
             @Override
             public boolean accept( final Path entry ) throws IOException {
@@ -86,6 +107,9 @@ public class VFSFileServiceImpl implements FileService {
     }
     
     public Iterable<Path> listDirectories(final Path path){
+        if (!isActive()) {
+            return new ArrayList<Path>();
+        }
       return getIOService().newDirectoryStream( path, new DirectoryStream.Filter<Path>() {
             @Override
             public boolean accept( final Path entry ) throws IOException {
@@ -99,24 +123,39 @@ public class VFSFileServiceImpl implements FileService {
     }
     
     public Path getPath(String path){
+        if (!isActive()) {
+            return null;
+        }
         return getIOService().get(path);
     }
 
     @Override
+    public boolean isActive() {
+        return active;
+    }
+
+    @Override
     public boolean exists(Path file){
+        if (!isActive()) {
+            return false;
+        }
         return getIOService().exists(file);
     }
 
     @Override
     public void move(Path source, Path dest){
-        
+        if (!isActive()) {
+            return;
+        }
         this.copy(source, dest);
         getIOService().delete(source);
     }
     
     @Override
     public void copy(Path source, Path dest){
-        
+        if (!isActive()) {
+            return;
+        }
         checkNotNull( "source", source );
         checkNotNull( "dest", dest );
         
@@ -125,7 +164,9 @@ public class VFSFileServiceImpl implements FileService {
     
     @Override
     public Path createDirectory(Path path){
-        
+        if (!isActive()) {
+            return null;
+        }
         checkNotNull( "path", path );
         
         return getIOService().createDirectory(path);
@@ -133,12 +174,17 @@ public class VFSFileServiceImpl implements FileService {
     
     @Override
     public Path createFile(Path path){
+        if (!isActive()) {
+            return null;
+        }
         return getIOService().createFile(path);
     }
     
     @Override
     public boolean deleteIfExists(Path path){
-        
+        if (!isActive()) {
+            return false;
+        }
         checkNotNull( "path", path );
         
         return getIOService().deleteIfExists(path);
@@ -146,7 +192,9 @@ public class VFSFileServiceImpl implements FileService {
     
     @Override
     public OutputStream openFile(Path path){
-        
+        if (!isActive()) {
+            return null;
+        }
         checkNotNull( "path", path );
         
         return getIOService().newOutputStream(path);

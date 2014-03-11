@@ -133,4 +133,9 @@ public class TestVFSFileServiceImpl implements FileService {
         return ioService.get(repositoryRoot + path);
     }
 
+    @Override
+    public boolean isActive() {
+        return true;
+    }
+
 }
