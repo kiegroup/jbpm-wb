@@ -191,6 +191,12 @@ public class ShowcaseEntryPoint {
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
+        result.add( MenuFactory.newSimpleItem( constants.Tasks_List_Admin() ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "Tasks Admin" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
 
         return result;
     }
