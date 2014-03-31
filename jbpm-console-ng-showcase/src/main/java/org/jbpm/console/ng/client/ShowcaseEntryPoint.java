@@ -169,7 +169,7 @@ public class ShowcaseEntryPoint {
         result.add( MenuFactory.newSimpleItem( constants.Pagination_For_Tables()).respondsWith( new Command() {
             @Override
             public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Pagination For Tables" ) );
+                placeManager.goTo( new DefaultPlaceRequest( "Experimental Paging" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
 

@@ -30,8 +30,6 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.Menus;
 
 import com.google.gwt.core.client.GWT;
@@ -60,11 +58,10 @@ public class BasicPaginationListPresenter extends BasePresenter<DataMockSummary,
     }
 
     @WorkbenchPartTitle
+    @Override
     public String getTitle() {
-        return "Pagination For Tables - Experimental";
+        return "Pagination For Tables";
     }
-
-   
 
     @Inject
     private Event<ClearSearchEvent> clearSearchEvent;
@@ -73,7 +70,7 @@ public class BasicPaginationListPresenter extends BasePresenter<DataMockSummary,
     
     @PostConstruct
     public void init() {
-        super.NEW_ITEM_MENU = "Mock Button";
+        super.NEW_ITEM_MENU = "Create Data";
         super.makeMenuBar();
     }
 
@@ -95,9 +92,9 @@ public class BasicPaginationListPresenter extends BasePresenter<DataMockSummary,
 
     @Override
     protected void createItem() {
-        
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("");
-        placeManager.goTo(placeRequestImpl);
+        for(int i = 0; i < 100; i++){
+            allItemsSummaries.add(new DataMockSummary("ID:"+i, "Data 1:"+i,"Data 2:"+i, "Data 3:"+i, "Data 4:"+i));
+        }
     }
 
     @Override
