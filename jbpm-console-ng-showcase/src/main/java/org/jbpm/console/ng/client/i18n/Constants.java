@@ -18,6 +18,7 @@ package org.jbpm.console.ng.client.i18n;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Messages;
+import org.uberfire.workbench.model.menu.MenuItem;
 
 /**
  * This uses GWT to provide client side compile time resolving of locales. See:
@@ -72,6 +73,10 @@ public interface Constants extends Messages {
     String Users();
 
     String Jobs();
+
+    String Pagination_For_Tables();
+
+    String Experimental();
 
 
 }

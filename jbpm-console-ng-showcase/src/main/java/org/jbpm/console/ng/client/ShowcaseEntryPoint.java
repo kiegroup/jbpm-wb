@@ -96,9 +96,11 @@ public class ShowcaseEntryPoint {
                 .newTopLevelMenu( constants.Authoring() ).withItems( getAuthoringViews() ).endMenu()
                 .newTopLevelMenu( constants.Deploy() ).withItems( getDeploymentViews() ).endMenu()
                 .newTopLevelMenu( constants.Process_Management() ).withItems( getProcessMGMTViews() ).endMenu()
-                .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu().newTopLevelMenu( constants.Dashboards() )
-                    .withItems( getDashboardsViews() ).endMenu()
+                .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu()
+                .newTopLevelMenu( constants.Dashboards() ).withItems( getDashboardsViews() ).endMenu()
+                .newTopLevelMenu( constants.Experimental() ).withItems( getExperimentalViews() ).endMenu()
                 .newTopLevelMenu( constants.User()+": "+identity.getName() ).position(MenuPosition.RIGHT).withItems( getRoles() ).endMenu()
+                
                 .build();
 
         menubar.addMenus( menus );
@@ -157,6 +159,21 @@ public class ShowcaseEntryPoint {
                 placeManager.goTo( new DefaultPlaceRequest( "Process Instances" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
+
+        return result;
+    }
+    
+    private List<? extends MenuItem> getExperimentalViews() {
+        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
+
+        result.add( MenuFactory.newSimpleItem( constants.Pagination_For_Tables()).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "Pagination For Tables" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+
+       
 
         return result;
     }
