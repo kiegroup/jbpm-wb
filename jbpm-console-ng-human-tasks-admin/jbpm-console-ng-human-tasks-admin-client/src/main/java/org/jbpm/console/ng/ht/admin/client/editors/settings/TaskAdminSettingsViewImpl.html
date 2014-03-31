@@ -1,36 +1,45 @@
-<div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span12">
-            <div class="form-horizontal">
-                <fieldset>
-
-                    <div class="control-group">
-                        <label class="control-label" for="userNameText" data-field="userNameLabel"></label>
-                        <div class="controls">
-                            
-                            <input type="text" id="taskNameText" data-field="userNameText" />
-
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <label class="control-label" for="amountOfTasksText" data-field="amountOfTasksLabel"></label>
-                        <div class="controls">
-                            
-                            <input type="text" id="taskNameText" data-field="amountOfTasksText" />
-
-                        </div>
-                    </div>
-
-                </fieldset>
+<div class="row-fluid">
+    <div class="accordion" id="accordion">
+        <!-- GROUP -->
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#desc_collapse"> <label data-field="detailsAccordionLabel"></label>
+                </a>
             </div>
-         
-            <div class="form-horizontal">
-                <fieldset>
-                    <div class="form-actions">
-                        <button class="btn btn-primary" data-field="generateMockTasksButton" id="generateMockTasksButton"></button>
-                    </div>
-                </fieldset>
+            <div id="desc_collapse" class="accordion-body collapse in" style="position: relative;">
+                <div class="accordion-inner">
+                    <div class="form-horizontal">
+                        <fieldset>
 
+                            <div class="control-group">
+                                <label class="control-label" for="userNameText" data-field="userNameLabel"></label>
+                                <div class="controls">
+
+                                    <input type="text" id="taskNameText" data-field="userNameText" />
+
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="amountOfTasksText" data-field="amountOfTasksLabel"></label>
+                                <div class="controls">
+
+                                    <input type="text" id="taskNameText" data-field="amountOfTasksText" />
+
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+
+                    <div class="form-horizontal">
+                        <fieldset>
+                            <div class="form-actions">
+                                <button class="btn btn-primary" data-field="generateMockTasksButton" id="generateMockTasksButton"></button>
+                            </div>
+                        </fieldset>
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>
