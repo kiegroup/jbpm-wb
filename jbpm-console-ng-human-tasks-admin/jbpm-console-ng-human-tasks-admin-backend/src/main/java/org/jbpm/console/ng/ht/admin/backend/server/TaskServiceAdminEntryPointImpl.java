@@ -24,7 +24,6 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ht.admin.service.TaskServiceAdminEntryPoint;
-import org.jbpm.services.task.audit.service.TaskAuditService;
 import org.jbpm.services.task.impl.factories.TaskFactory;
 import org.kie.api.task.model.Task;
 import org.kie.internal.task.api.InternalTaskService;
@@ -36,13 +35,10 @@ public class TaskServiceAdminEntryPointImpl implements TaskServiceAdminEntryPoin
 
     @Inject
     private InternalTaskService taskService;
-    
-    @Inject
-    private TaskAuditService taskAudit;
+
 
     @PostConstruct
     public void init(){
-        taskAudit.setTaskService(taskService);
     }
 
     @Override
