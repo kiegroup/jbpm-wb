@@ -18,13 +18,13 @@ package org.jbpm.console.ng.bd.client.perspectives;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import org.jbpm.console.ng.bd.model.events.DeploymentsSearchEvent;
+
+import org.jbpm.console.ng.ht.model.events.SearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
-import org.uberfire.lifecycle.OnStartup;
-
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.PanelType;
@@ -46,7 +46,7 @@ public class DeploymentListPerspective {
     private ContextualSearch contextualSearch;
     
     @Inject
-    private Event<DeploymentsSearchEvent> searchEvents;
+    private Event<SearchEvent> searchEvents;
     
     @Perspective
     public PerspectiveDefinition getPerspective() {
@@ -69,7 +69,7 @@ public class DeploymentListPerspective {
         contextualSearch.setSearchBehavior(new SearchBehavior() {
             @Override
             public void execute(String searchFilter) {
-                searchEvents.fire(new DeploymentsSearchEvent(searchFilter));
+                searchEvents.fire(new SearchEvent(searchFilter));
             }
 
         });

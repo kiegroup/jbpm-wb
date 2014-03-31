@@ -69,7 +69,7 @@ public interface GenericImages extends ClientBundle {
     @Source("org/jbpm/console/ng/ht/public/images/icons/suboptionsactive-cal-icon.png")
     public ImageResource subOptionsActiveCalIcon();
 
-    @Source("org/jbpm/console/ng/ht/public/images/icons/delete.png")
+    @Source("org/jbpm/console/ng/ht/public/images/icons/delete-grid-icon.png")
     public ImageResource deleteGridIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/edit-grid-icon.png")

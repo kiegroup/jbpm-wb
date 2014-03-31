@@ -18,8 +18,6 @@ package org.jbpm.console.ng.ht.client.editors.taskassignments;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import java.util.ArrayList;
 import java.util.List;
