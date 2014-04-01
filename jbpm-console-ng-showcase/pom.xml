@@ -64,6 +64,7 @@
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
         </dependency>
+        
 
         <dependency>
             <groupId>org.jbpm</groupId>
@@ -85,6 +86,16 @@
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-admin-backend</artifactId>
+        </dependency>
+        
+         <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-human-tasks-forms-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-human-tasks-forms-backend</artifactId>
         </dependency>
 
         <dependency>
@@ -588,6 +599,8 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-bpm-home-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-admin-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-forms-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-api</compileSourcesArtifact>

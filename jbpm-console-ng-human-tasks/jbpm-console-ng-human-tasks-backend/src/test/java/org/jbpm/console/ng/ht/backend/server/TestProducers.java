@@ -24,10 +24,10 @@ public class TestProducers {
 
     @Produces
     @ApplicationScoped
-    @PersistenceUnit(unitName = "org.jbpm.servies.task")
+    @PersistenceUnit(unitName = "org.jbpm.domain")
     public EntityManagerFactory getEntityManagerFactory() {
         if (this.emf == null) {
-            this.emf = Persistence.createEntityManagerFactory("org.jbpm.servies.task");
+            this.emf = Persistence.createEntityManagerFactory("org.jbpm.domain");
 
         }
         return this.emf;

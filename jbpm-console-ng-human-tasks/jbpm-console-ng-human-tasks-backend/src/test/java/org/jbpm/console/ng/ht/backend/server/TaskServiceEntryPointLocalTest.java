@@ -4,7 +4,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePaths;
-import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.runner.RunWith;
@@ -22,9 +21,11 @@ public class TaskServiceEntryPointLocalTest extends TaskServiceEntryPointBaseTes
                 .addPackage("org.jbpm.shared.services.api")
                 .addPackage("org.jbpm.shared.services.impl")
                 .addPackage("org.jbpm.services.task")
+                
                 .addPackage("org.jbpm.services.task.annotations")
                 .addPackage("org.jbpm.services.task.api")
                 .addPackage("org.jbpm.services.task.impl")
+                .addPackage("org.jbpm.services.task.impl.command")
                 .addPackage("org.jbpm.services.task.impl.model")
                 .addPackage("org.jbpm.services.task.events")
                 .addPackage("org.jbpm.services.task.exception")
@@ -45,7 +46,7 @@ public class TaskServiceEntryPointLocalTest extends TaskServiceEntryPointBaseTes
                 // console-ng task service
                 .addPackage("org.jbpm.console.ng.ht.service")
                 .addPackage("org.jbpm.kie.services.cdi.producer")
-                .addPackages(true, Filters.exclude(FormServiceEntryPointImpl.class, FormModelerProcessStarterEntryPointImpl.class), "org.jbpm.console.ng.ht.backend.server")
+                .addPackage("org.jbpm.console.ng.ht.backend.server")
                 // .addPackage("org.jbpm.services.task.commands") // This should not be
                 // required here
                 .addAsManifestResource("META-INF/persistence.xml", ArchivePaths.create("persistence.xml"))

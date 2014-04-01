@@ -33,6 +33,7 @@
 
   <modules>
     <module>jbpm-console-ng-human-tasks-admin</module>
+    <module>jbpm-console-ng-human-tasks-forms</module>
     <module>jbpm-console-ng-human-tasks</module>
     <module>jbpm-console-ng-process-runtime</module>
     <module>jbpm-console-ng-business-domain</module>

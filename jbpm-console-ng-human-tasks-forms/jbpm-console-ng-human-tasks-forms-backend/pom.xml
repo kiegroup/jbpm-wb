@@ -19,17 +19,21 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jbpm</groupId>
-    <artifactId>jbpm-console-ng-human-tasks</artifactId>
+    <artifactId>jbpm-console-ng-human-tasks-forms</artifactId>
     <version>6.1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>jbpm-console-ng-human-tasks-backend</artifactId>
+  <artifactId>jbpm-console-ng-human-tasks-forms-backend</artifactId>
   <packaging>jar</packaging>
-  <name>jBPM Console NG - Human Tasks Backend</name>
+  <name>jBPM Console NG - Human Tasks Forms Backend</name>
   <dependencies>
     <!-- Internal dependencies -->
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
+      <artifactId>jbpm-console-ng-human-tasks-forms-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie</groupId>
@@ -63,10 +67,7 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-shared-services</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-services-api</artifactId>
-    </dependency>
+    
     <!-- External dependencies -->
     <dependency>
       <groupId>javax.enterprise</groupId>
@@ -181,6 +182,14 @@
       <groupId>org.jboss.arquillian.container</groupId>
       <artifactId>arquillian-container-test-api</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-business-domain-api</artifactId>
     </dependency>
   </dependencies>
 </project>
