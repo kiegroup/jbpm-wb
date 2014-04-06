@@ -284,7 +284,7 @@ public class FormDisplayPresenter {
                         save = new ClickHandler() {
                             @Override
                             public native void onClick( ClickEvent event )/*-{
-                                $wnd.startTask($wnd.getFormValues($doc.getElementById("form-data")));
+                                $wnd.saveTaskState($wnd.getFormValues($doc.getElementById("form-data")));
                             }-*/;
                         };
                         complete = new ClickHandler() {
@@ -460,7 +460,6 @@ public class FormDisplayPresenter {
                   return true;
               }
           }).saveContent(Long.parseLong(params.get("taskId").toString()), params);
-
     }
 
     public void startFormModelerTask(final Long taskId, final String identity) {
