@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.ht.model.AttachmentSummary;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
@@ -38,6 +39,8 @@ import org.jbpm.services.task.impl.model.CommentImpl;
 import org.jbpm.services.task.impl.model.UserImpl;
 import org.jbpm.services.task.utils.ContentMarshallerHelper;
 import org.jbpm.services.task.audit.GetAuditEventsCommand;
+import org.jbpm.services.task.impl.model.AttachmentImpl;
+import org.jbpm.services.task.impl.model.ContentImpl;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.kie.api.task.model.Content;
@@ -47,7 +50,10 @@ import org.kie.api.task.model.Status;
 import org.kie.api.task.model.Task;
 import org.kie.api.task.model.User;
 import org.kie.internal.task.api.InternalTaskService;
+import org.kie.internal.task.api.model.AccessType;
+import org.kie.internal.task.api.model.InternalAttachment;
 import org.kie.internal.task.api.model.InternalComment;
+import org.kie.internal.task.api.model.InternalContent;
 import org.kie.internal.task.api.model.InternalTask;
 import org.kie.internal.task.api.model.SubTasksStrategy;
 
@@ -534,6 +540,36 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     @Override
     public Boolean existInDatabase(long taskId) {
         return taskService.getTaskById(taskId) == null ? false : true;
+    }
+
+    @Override
+    public long addAttachment(Long taskId, String name, String attachedBy, String byteContent) {
+        InternalContent content = new ContentImpl();
+        content.setContent(ContentMarshallerHelper.marshallContent(byteContent, null));
+        
+        InternalAttachment attachment = new AttachmentImpl();
+        attachment.setName(name);
+        attachment.setAccessType(AccessType.Inline);
+        attachment.setContentType("String");
+        attachment.setAttachedAt(new Date());
+        attachment.setAttachedBy(new UserImpl(attachedBy));
+        
+        return taskService.addAttachment(taskId, attachment, content);
+    }
+
+    @Override
+    public void deleteAttachment(long taskId, long attachmentId) {
+        taskService.deleteAttachment(taskId, attachmentId);
+    }
+
+    @Override
+    public List<AttachmentSummary> getAllAttachmentsByTaskId(long taskId) {
+        return AttachmentSummaryHelper.adaptCollection(taskService.getAllAttachmentsByTaskId(taskId));
+    }
+
+    @Override
+    public AttachmentSummary getAttachmentById(long attachmentId) {
+        return AttachmentSummaryHelper.adapt(taskService.getAttachmentById(attachmentId));
     }
 
 }

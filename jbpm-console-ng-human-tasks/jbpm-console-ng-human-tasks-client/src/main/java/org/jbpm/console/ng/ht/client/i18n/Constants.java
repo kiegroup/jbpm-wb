@@ -170,4 +170,25 @@ public interface Constants extends Messages {
     String Task_Log();
 
     String Provide_User_Or_Group();
+    
+    String Attachments();
+    
+    String Attachment_Deleted();
+
+    String Attachment_Name();
+
+    String Content();
+
+    String Add_Attachment();
+    
+    String No_Attachments_For_This_Task();
+    
+    String Fill_In_All_Fields();
+    
+    String Name();
+    
+    String Attached_By();
+    
+    String Date();
+    
 }

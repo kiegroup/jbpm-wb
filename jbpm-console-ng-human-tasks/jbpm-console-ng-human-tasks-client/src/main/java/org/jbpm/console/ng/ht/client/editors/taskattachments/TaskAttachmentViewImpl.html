@@ -1,0 +1,42 @@
+<div>
+
+  <div class="accordion" id="accordion">
+    <!-- GROUP -->
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#desc_attachments"> <label data-field="attachmentsAccordionLabel"></label>
+        </a>
+      </div>
+      <div id="desc_attachments" class="accordion-body collapse" style="position: relative;">
+        <div class="accordion-inner">
+          <div class="form-horizontal">
+            <fieldset>
+              <div class="control-group">
+                <label class="control-label" for="attachmentNameText" data-field="attachmentNameLabel"></label>
+                <div class="controls">
+                  <input type="text" data-field="attachmentNameText" id="attachmentNameText" placeholder="" />
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label" for="attachmentContentTextArea" data-field="attachmentContentLabel"></label>
+                <div class="controls">
+                  <input type="text" data-field="attachmentContentTextArea" id="attachmentContentTextArea" placeholder="" />
+                </div>
+              </div>
+            </fieldset>
+            <div class="form-actions">
+              <button class="btn btn-primary" data-field="addAttachmentButton" id="addAttachmentButton"></button>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+      <div data-field="listContainer">
+        <table id="attachmentsListGrid" data-field="attachmentsListGrid" class="table table-bordered table-striped table-hover">
+        </table>
+        <div id="pager" class="pagination pagination-right pull-right" data-field="pager"></div>
+      </div>
+    </div>
+  </div>
+</div>
