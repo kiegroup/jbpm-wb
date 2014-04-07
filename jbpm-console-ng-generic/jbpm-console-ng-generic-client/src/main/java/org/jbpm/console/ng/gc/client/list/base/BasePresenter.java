@@ -87,15 +87,15 @@ public abstract class BasePresenter<T extends GenericSummary, V> extends BaseGen
         }).endMenu().build();
     }
 
-    protected void filterItems(String text, DataGrid<T> listGrid) {
+    protected void filterItems(String text, DataGrid<T> listGrid, boolean clear) {
         ColumnSortList.ColumnSortInfo sortInfo = listGrid.getColumnSortList().size() > 0 ? listGrid.getColumnSortList().get(0)
                 : null;
         if (allItemsSummaries != null) {
-            this.filterGrid(sortInfo, text, listGrid);
+            this.filterGrid(sortInfo, text, listGrid, clear);
         }
     }
 
-    protected void filterGrid(ColumnSortList.ColumnSortInfo sortInfo, String text, DataGrid<T> listGrid) {
+    protected void filterGrid(ColumnSortList.ColumnSortInfo sortInfo, String text, DataGrid<T> listGrid, boolean clear) {
         List<T> filtereditems = Lists.newArrayList();
         if (!text.equals("")) {
             for (T ts : allItemsSummaries) {
@@ -106,7 +106,9 @@ public abstract class BasePresenter<T extends GenericSummary, V> extends BaseGen
         } else {
             filtereditems = allItemsSummaries;
         }
-        dataProvider.getList().clear();
+        if(clear){
+            dataProvider.getList().clear();
+        }
         dataProvider.getList().addAll(filtereditems);
         if (sortInfo != null && sortInfo.isAscending()) {
             listGrid.getColumnSortList().clear();

@@ -36,6 +36,8 @@ public class DataGridUtils {
     public static Long idTaskCalendar = null;
 
     public static int pageSize = 10;
+    
+    public static int clientSidePages = 3;
 
     public static int CHAR_SIZE_IN_PIXELS = 10;
 

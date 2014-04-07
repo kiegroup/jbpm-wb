@@ -16,24 +16,7 @@
 
 package org.jbpm.console.ng.gc.client.list.base;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jbpm.console.ng.gc.client.util.DataGridUtils;
-import org.jbpm.console.ng.gc.client.util.DataGridUtils.ActionsCRUD;
-import org.jbpm.console.ng.gc.client.util.ResizableHeader;
-import org.jbpm.console.ng.ht.model.GenericSummary;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.security.Identity;
-import org.uberfire.workbench.events.NotificationEvent;
-
 import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
@@ -51,6 +34,21 @@ import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
 import com.google.gwt.view.client.SingleSelectionModel;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jbpm.console.ng.gc.client.experimental.pagination.GenericDataProvider;
+import org.jbpm.console.ng.gc.client.experimental.pagination.JBPMSimplePager;
+import org.jbpm.console.ng.gc.client.util.DataGridUtils;
+import org.jbpm.console.ng.gc.client.util.DataGridUtils.ActionsCRUD;
+import org.jbpm.console.ng.gc.client.util.ResizableHeader;
+import org.jbpm.console.ng.ht.model.GenericSummary;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.security.Identity;
+import org.uberfire.workbench.events.NotificationEvent;
 
 public abstract class BaseViewImpl<T extends GenericSummary, P> extends GenericActions<T> implements GridViewContainer<T>,
         ButtonsPanelContainer, PagerContainer, RequiresResize {
@@ -79,7 +77,7 @@ public abstract class BaseViewImpl<T extends GenericSummary, P> extends GenericA
     /* pager */
     @Inject
     @DataField
-    public SimplePager pager;
+    protected JBPMSimplePager pager;
 
     @Inject
     protected PlaceManager placeManager;
@@ -119,8 +117,11 @@ public abstract class BaseViewImpl<T extends GenericSummary, P> extends GenericA
         pager.setDisplay(listGrid);
         pager.setStyleName(STYLE_PAGER);
         pager.setPageSize(DataGridUtils.pageSize);
+        
     }
-
+    public void setPagerDataProvider(GenericDataProvider<T> dataProvider){
+        pager.setDataProvider(dataProvider);
+    }
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
@@ -270,6 +271,10 @@ public abstract class BaseViewImpl<T extends GenericSummary, P> extends GenericA
     @Override
     protected void readItem(Long id) {
         ((BaseGenericCRUD) presenter).readItem(id);
+    }
+
+    public JBPMSimplePager getPager() {
+        return pager;
     }
     
 }

@@ -31,12 +31,18 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.workbench.model.menu.Menus;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.view.client.ListDataProvider;
 import java.util.ArrayList;
+import java.util.List;
 import org.jbpm.console.ng.gc.client.i18n.Constants;
+import org.jbpm.console.ng.gc.client.util.DataGridUtils;
 
 @Dependent
 @WorkbenchScreen(identifier = "Pagination For Tables")
-public class BasicPaginationListPresenter extends BasePresenter<DataMockSummary, BasicPagiantionListViewImpl> {
+public class BasicPaginationListPresenter extends BasePresenter<DataMockSummary, BasicPagiantionListViewImpl> implements GenericDataProvider<DataMockSummary> {
+
+   
+    private List<DataMockSummary> serverSideData  = new ArrayList<DataMockSummary>(1000);
 
     public interface BasicPaginationListView extends UberView<BasicPaginationListPresenter> {
 
@@ -78,13 +84,32 @@ public class BasicPaginationListPresenter extends BasePresenter<DataMockSummary,
     }
 
     @Override
-    public void refreshItems() {
-        view.setCurrentFilter("");
-        filterItems(view.getCurrentFilter(), view.getListGrid());
-        clearSearchEvent.fire(new ClearSearchEvent());
-        view.setCurrentFilter("");
+    public List<DataMockSummary> getAllServerSideData() {
+        return allItemsSummaries;
     }
 
+    @Override
+    public ListDataProvider<DataMockSummary> getClientSideDataProvider() {
+        return dataProvider;
+    }
+
+    @Override
+    public void refresh(int start, int offset, boolean clear) {
+        if(serverSideData.size() > 0 && serverSideData.size() + 1 > (start + offset)){
+            view.displayNotification(" Getting from the server from (" + start +" ) to (" + (start + offset) +")");
+            allItemsSummaries = serverSideData.subList(start, start + offset);
+            view.setCurrentFilter("");
+            filterItems(view.getCurrentFilter(), view.getListGrid(), clear);
+            clearSearchEvent.fire(new ClearSearchEvent());
+            view.setCurrentFilter("");
+        }
+    }
+    
+    @Override
+    protected void refreshItems() {
+        refresh(view.getPager().getCurrentPage() * DataGridUtils.pageSize, (DataGridUtils.pageSize * DataGridUtils.clientSidePages), true);
+    }
+    
     @Override
     protected void onSearchEvent(SearchEvent searchEvent) {
         view.setCurrentFilter(searchEvent.getFilter());
@@ -93,10 +118,10 @@ public class BasicPaginationListPresenter extends BasePresenter<DataMockSummary,
 
     @Override
     protected void createItem() {
-        allItemsSummaries = new ArrayList<DataMockSummary>(100);
-        for (int i = 0; i < 100; i++) {
-            allItemsSummaries.add(new DataMockSummary("ID:" + i, "Data 1:" + i, "Data 2:" + i, "Data 3:" + i, "Data 4:" + i));
+        for (int i = 0; i < 1000; i++) {
+            serverSideData.add(new DataMockSummary("ID:" + i, "Data 1:" + i, "Data 2:" + i, "Data 3:" + i, "Data 4:" + i));
         }
+        view.displayNotification(" 1000 Items created in the backend !");
     }
 
     @Override

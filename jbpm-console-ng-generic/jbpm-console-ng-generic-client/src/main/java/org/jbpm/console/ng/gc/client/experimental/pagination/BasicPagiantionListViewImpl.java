@@ -56,6 +56,7 @@ public class BasicPagiantionListViewImpl extends BaseViewImpl<DataMockSummary, B
         DELETE_ACTION_IMAGE = images.deleteGridIcon();
         MSJ_NO_ITEMS_FOUND = constants.No_Items_Found();
         initializeComponents(presenter, presenter.getDataProvider(), GridSelectionModel.MULTI);
+        setPagerDataProvider(presenter);
     }
 
     @Override

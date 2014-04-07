@@ -112,7 +112,7 @@ public class DeploymentUnitsListPresenter extends BasePresenter<KModuleDeploymen
             @Override
             public void callback(List<KModuleDeploymentUnitSummary> units) {
                 allItemsSummaries = units;
-                filterItems(view.getCurrentFilter(), view.getListGrid());
+                filterItems(view.getCurrentFilter(), view.getListGrid(), true);
                 clearSearchEvent.fire(new ClearSearchEvent());
                 view.setCurrentFilter( "" );
                 view.displayNotification( constants.Deployed_Units_Refreshed() );
@@ -127,7 +127,7 @@ public class DeploymentUnitsListPresenter extends BasePresenter<KModuleDeploymen
             @Override
             public void callback(List<KModuleDeploymentUnitSummary> units) {
                 allItemsSummaries = units;
-                filterItems(view.getCurrentFilter(), view.getListGrid());
+                filterItems(view.getCurrentFilter(), view.getListGrid(), true);
             }
         }).getDeploymentUnits();
     }
