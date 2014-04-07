@@ -45,6 +45,12 @@
   <inherits name="org.jbpm.console.ng.es.JbpmConsoleNGExecutorServiceClient"/>
   <inherits name="org.jbpm.console.ng.gc.JbpmConsoleNGGenericClient"/>
   
+  <!-- jBPM Mobile --> 
+  <inherits name="com.googlecode.mgwt.MGWT"/>
+  <inherits name="com.googlecode.mgwt.linker.Linker" />
+  <inherits name="org.jbpm.console.ng.mobile.ht.JbpmMobileHumanTasksClient"/>
+  <inherits name="org.jbpm.console.ng.mobile.pr.JbpmMobileProcessRuntimeClient"/>
+  
   <!-- designer -->
   <inherits name="org.jbpm.designer.jBPMDesignerAPI"/>
   <inherits name="org.jbpm.designer.jBPMDesignerClient"/>
@@ -72,5 +78,6 @@
   <extend-property name="locale" values="pt_BR"/>
   <extend-property name="locale" values="zh_CN"/>
   
+  <set-property name="mgwt.os" value="iphone,retina,ipad,ipad_retina,desktop,android,android_tablet,blackberry" />  
 
 </module>
