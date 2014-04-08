@@ -9,6 +9,9 @@
   <!-- Uberfire dependencies -->
   <inherits name="org.uberfire.UberfireClientAll"/>
   <inherits name="org.uberfire.UberfireNSWEManager"/>
+  
+  <inherits name="com.googlecode.mgwt.MGWT"/>
+  <inherits name="com.googlecode.mgwt.linker.Linker" />
 
   <!-- Drools dependencies -->
   <inherits name="org.drools.workbench.models.datamodel.DroolsWorkbenchDataModelAPI"/>
@@ -50,12 +53,13 @@
   <inherits name="com.googlecode.mgwt.linker.Linker" />
   <inherits name="org.jbpm.console.ng.mobile.ht.JbpmMobileHumanTasksClient"/>
   <inherits name="org.jbpm.console.ng.mobile.pr.JbpmMobileProcessRuntimeClient"/>
+  <inherits name="org.jbpm.console.ng.mobile.core.JbpmMobileCore"/>
   
   <!-- designer -->
   <inherits name="org.jbpm.designer.jBPMDesignerAPI"/>
   <inherits name="org.jbpm.designer.jBPMDesignerClient"/>
 
-  <!-- Form-Modelere -->
+  <!-- Form-Modeller -->
   <inherits name="org.jbpm.formModeler.editor.FormModelerEditorClient"/>
   <inherits name="org.jbpm.formModeler.renderer.FormRendererClient"/>
 
@@ -77,7 +81,5 @@
   <extend-property name="locale" values="ja"/>
   <extend-property name="locale" values="pt_BR"/>
   <extend-property name="locale" values="zh_CN"/>
-  
-  <set-property name="mgwt.os" value="iphone,retina,ipad,ipad_retina,desktop,android,android_tablet,blackberry" />  
 
 </module>
