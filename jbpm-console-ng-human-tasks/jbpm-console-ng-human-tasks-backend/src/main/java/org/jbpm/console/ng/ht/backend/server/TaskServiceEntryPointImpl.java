@@ -37,7 +37,7 @@ import org.jbpm.services.task.impl.factories.TaskFactory;
 import org.jbpm.services.task.impl.model.CommentImpl;
 import org.jbpm.services.task.impl.model.UserImpl;
 import org.jbpm.services.task.utils.ContentMarshallerHelper;
-import org.jbpm.services.task.audit.GetAuditEventsCommand;
+import org.jbpm.services.task.audit.commands.GetAuditEventsCommand;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.kie.api.task.model.Content;
@@ -528,7 +528,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
 
     public List<TaskEventSummary> getAllTaskEvents(long taskId) {
-        return TaskEventSummaryHelper.adaptCollection(taskService.execute(new GetAuditEventsCommand(taskId)));
+         return TaskEventSummaryHelper.adaptCollection(taskService.execute(new GetAuditEventsCommand(taskId,0,0)));
     }
 
     @Override
