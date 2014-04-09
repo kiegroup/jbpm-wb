@@ -585,7 +585,7 @@
                     <modules>
                         <module>org.jbpm.console.ng.FastCompiledjBPMShowcase</module>
                     </modules>
-                    <logLevel>DEBUG</logLevel>
+                    <logLevel>INFO</logLevel>
                     <compileSourcesArtifacts>
 
                         <!-- Guvnor -->
@@ -662,7 +662,7 @@
                         <compileSourcesArtifact>org.jbpm:jbpm-form-modeler-renderer-client</compileSourcesArtifact>
 
                     </compileSourcesArtifacts>
-                    <runTarget>org.jbpm.console.ng.jBPMMobileShowcase/jBPM.html</runTarget>
+                    <runTarget>org.jbpm.console.ng.jBPMShowcase/jBPM.html</runTarget>
                     <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m -Djetty.custom.sys.classes=bitronix;javax.transaction -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true</extraJvmArgs>
                     <soyc>false</soyc>
                     <strict>false</strict>
