@@ -584,6 +584,7 @@
                     <localWorkers>4</localWorkers>
                     <modules>
                         <module>org.jbpm.console.ng.FastCompiledjBPMShowcase</module>
+                        <module>org.jbpm.console.ng.FastCompiledjBPMMobileShowcase</module>
                     </modules>
                     <logLevel>INFO</logLevel>
                     <compileSourcesArtifacts>
