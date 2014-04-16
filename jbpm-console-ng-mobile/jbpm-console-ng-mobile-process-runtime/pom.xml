@@ -11,7 +11,7 @@
   
     <groupId>org.jbpm</groupId>
     <artifactId>jbpm-console-ng-mobile-process-runtime</artifactId>
-    <name>jBPM Console NG Mobile :: Process Runtime</name>
+    <name>jBPM Console NG - Mobile UI :: Process Runtime</name>
   
     <dependencies>
         <dependency>

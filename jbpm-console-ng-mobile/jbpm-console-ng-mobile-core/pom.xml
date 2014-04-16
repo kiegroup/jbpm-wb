@@ -11,7 +11,7 @@
   
   <groupId>org.jbpm</groupId>
   <artifactId>jbpm-console-ng-mobile-core</artifactId>
-  <name>jBPM Console NG Mobile :: Core</name>
+  <name>jBPM Console NG - Mobile UI :: Core</name>
   
   <dependencies>
     <!-- GWT and GWT Extensions -->
