@@ -72,6 +72,10 @@ public class TaskListPresenter {
         
     }
 
+    public TaskListView getView() {
+        return view;
+    }
+
     public void refresh() {
         List<String> statuses = new ArrayList<String>();
         for (TaskStatus status : TaskStatus.values()) {

@@ -47,22 +47,16 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 @Dependent
 @WorkbenchScreen(identifier = "MobilePresenter")
 public class MobileWorkBenchPresenter {
-
-    
     
     @Inject 
     private MGWTPlaceManager placeManager;
     
-    @Inject
     private HomeView homeView;
     
-    @Inject
     private TaskListView taskListView;
     
-    @Inject
     private NewTaskView newTaskView;
     
-    @Inject
     private TaskDetailsView taskDetailsView;
     
     @Inject
@@ -121,14 +115,23 @@ public class MobileWorkBenchPresenter {
         AnimationHelper animationHelper = new AnimationHelper();
         RootPanel.get().add(animationHelper);
         GWT.log("Adding Screens to MGWT PLACEMANAGER");
+        
+        homeView = homePresenter.getView();
         placeManager.addScreen("Home", homeView);
         homeView.init(homePresenter);
+        
+        taskListView = taskListPresenter.getView();
         placeManager.addScreen("Tasks List", taskListView);
         taskListView.init(taskListPresenter);
+        
+        newTaskView = newTaskPresenter.getView();
         placeManager.addScreen("New Task", newTaskView);
         newTaskView.init(newTaskPresenter);
+        
+        taskDetailsView = taskDetailsPresenter.getView();
         placeManager.addScreen("Task Details", taskDetailsView);
         taskDetailsView.init(taskDetailsPresenter);
+        
         //animate
         placeManager.goTo("Home", Animation.SLIDE);
     }
