@@ -13,23 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.mobile.client;
+package org.jbpm.console.ng.mobile.ht.client;
 
-import com.google.gwt.user.client.ui.IsWidget;
-import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
+import org.jbpm.console.ng.mobile.generic.client.AbstractView;
+
+
 
 /**
- * 
+ *
  * @author livthomas
  */
-public abstract class AbstractPresenter {
+public abstract class AbstractTaskView extends AbstractView {
 
-    public interface View extends IsWidget {
-
-        void displayNotification(String title, String text);
-
-        HasTapHandlers getBackButton();
-
-    }
+    protected final String[] priorities = {"0 - High", "1", "2", "3", "4", "5 - Medium", "6", "7", "8", "9", "10 - Low"};
 
 }
