@@ -26,7 +26,7 @@ import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import org.jbpm.console.ng.mobile.core.client.MGWTPlaceManager;
-import org.jbpm.console.ng.mobile.generic.client.AbstractView;
+import org.jbpm.console.ng.mobile.core.client.AbstractView;
 
 /**
  *

@@ -31,7 +31,7 @@ import com.googlecode.mgwt.ui.client.widget.celllist.BasicCell;
 import java.util.List;
 import java.util.Map;
 import org.jbpm.console.ng.mobile.core.client.MGWTPlaceManager;
-import org.jbpm.console.ng.mobile.generic.client.AbstractView;
+import org.jbpm.console.ng.mobile.core.client.AbstractView;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 
 /**

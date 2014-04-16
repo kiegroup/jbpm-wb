@@ -15,7 +15,7 @@
  */
 package org.jbpm.console.ng.mobile.ht.client;
 
-import org.jbpm.console.ng.mobile.generic.client.AbstractView;
+import org.jbpm.console.ng.mobile.core.client.AbstractView;
 
 
 
