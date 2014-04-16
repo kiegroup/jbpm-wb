@@ -67,6 +67,9 @@ public class NewTaskPresenter  {
     public NewTaskPresenter() {
     }
 
+    public NewTaskView getView() {
+        return view;
+    }
 
     public void addTask(final List<String> users, List<String> groups, final String taskName, int priority,
             boolean isAssignToMe, long dueDate, long dueDateTime) {

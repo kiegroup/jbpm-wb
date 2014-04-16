@@ -37,8 +37,6 @@ public class HomePresenter {
         HasTapHandlers getTasksListButton();
 
     }
-
-    
   
     @Inject
     private HomeView view;
@@ -46,8 +44,9 @@ public class HomePresenter {
     
     public HomePresenter() {
     }
-    
 
-   
+    public HomeView getView() {
+        return view;
+    }
 
 }

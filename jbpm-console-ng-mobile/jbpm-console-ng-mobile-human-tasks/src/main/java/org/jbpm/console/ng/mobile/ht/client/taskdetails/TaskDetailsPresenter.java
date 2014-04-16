@@ -89,6 +89,9 @@ public class TaskDetailsPresenter {
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
 
+    public TaskDetailsView getView() {
+        return view;
+    }
 
     public void refresh(final long taskId) {
         taskServices.call(new RemoteCallback<TaskSummary>() {
