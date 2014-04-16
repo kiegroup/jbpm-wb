@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.mobile.core.client;
 
 import com.google.gwt.user.client.ui.RootPanel;
@@ -31,25 +30,32 @@ import org.uberfire.client.mvp.UberView;
  */
 @ApplicationScoped
 public class MGWTPlaceManager {
-      private Map<String, MGWTUberView> screens = new HashMap<String, MGWTUberView>();
-      
-      public void addScreen(String name, MGWTUberView view){
-          screens.put(name, view);
-      }
-      
-      public UberView getScreen(String name){
-          return screens.get(name);
-      }
-      
-      public Set<String> getScreenNames(){
-          return screens.keySet();
-      }
-      
-      public void goTo(String screen, Animation animation){
-          AnimationHelper animationHelper = new AnimationHelper();
-          RootPanel.get().clear();
-          RootPanel.get().add(animationHelper);
-          animationHelper.goTo(screens.get(screen), animation);
-          screens.get(screen).refresh();
-      }
+
+    private final Map<String, MGWTUberView> screens = new HashMap<String, MGWTUberView>();
+
+    public void addScreen(String name, MGWTUberView view) {
+        screens.put(name, view);
+    }
+
+    public UberView getScreen(String name) {
+        return screens.get(name);
+    }
+
+    public Set<String> getScreenNames() {
+        return screens.keySet();
+    }
+
+    public void goTo(String screen, Animation animation) {
+        AnimationHelper animationHelper = new AnimationHelper();
+        RootPanel.get().clear();
+        RootPanel.get().add(animationHelper);
+        animationHelper.goTo(screens.get(screen), animation);
+        screens.get(screen).refresh();
+    }
+
+    public void goTo(String screen, Animation animation, Map<String, Object> params) {
+        screens.get(screen).setParameters(params);
+        goTo(screen, animation);
+    }
+
 }

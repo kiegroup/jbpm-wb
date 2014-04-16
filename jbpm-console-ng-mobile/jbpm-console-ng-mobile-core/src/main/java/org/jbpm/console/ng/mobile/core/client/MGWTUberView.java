@@ -16,6 +16,7 @@
 
 package org.jbpm.console.ng.mobile.core.client;
 
+import java.util.Map;
 import org.uberfire.client.mvp.UberView;
 
 /**
@@ -23,5 +24,9 @@ import org.uberfire.client.mvp.UberView;
  * @author salaboy
  */
 public interface MGWTUberView<T> extends UberView<T> {
+    
     void refresh();
+    
+    void setParameters(Map<String,Object> params);
+    
 }

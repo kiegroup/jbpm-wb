@@ -18,12 +18,10 @@ package org.jbpm.console.ng.mobile.ht.client.newtask;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
 import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
 import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
 import com.googlecode.mgwt.mvp.client.Animation;
-import com.googlecode.mgwt.ui.client.animation.AnimationHelper;
 import com.googlecode.mgwt.ui.client.widget.Button;
 import com.googlecode.mgwt.ui.client.widget.FormListEntry;
 import com.googlecode.mgwt.ui.client.widget.MCheckBox;
@@ -39,12 +37,12 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import org.jbpm.console.ng.mobile.core.client.MGWTPlaceManager;
 import org.jbpm.console.ng.mobile.ht.client.AbstractTaskView;
 import org.uberfire.security.Identity;
-
 
 /**
  *
@@ -65,17 +63,17 @@ public class NewTaskViewGwtImpl extends AbstractTaskView implements NewTaskPrese
     private final MTextBox userTextBox = new MTextBox();
 
     private final Button addTaskButton;
-    
-    private NewTaskPresenter presenter; 
-    
+
+    private NewTaskPresenter presenter;
+
     @Inject
-    private  MGWTPlaceManager placeManager;
-    
+    private MGWTPlaceManager placeManager;
+
     @Inject
     protected Identity identity;
 
     public NewTaskViewGwtImpl() {
-        GWT.log("NEW NewTaskViewGwtImpl "+this.hashCode());
+        GWT.log("NEW NewTaskViewGwtImpl " + this.hashCode());
         title.setHTML("New Task");
 
         ScrollPanel scrollPanel = new ScrollPanel();
@@ -102,15 +100,15 @@ public class NewTaskViewGwtImpl extends AbstractTaskView implements NewTaskPrese
 
         scrollPanel.add(newTaskPanel);
     }
-    
+
     @Override
     public void init(final NewTaskPresenter presenter) {
-       this.presenter = presenter; 
-       getAssignToMeCheckBox().setValue(false);
-       getDueOnDateBox().setText(new DateRenderer().render(new Date()));
-       getUserTextBox().setText(identity.getName());
+        this.presenter = presenter;
+        getAssignToMeCheckBox().setValue(false);
+        getDueOnDateBox().setText(new DateRenderer().render(new Date()));
+        getUserTextBox().setText(identity.getName());
 
-       getAddTaskButton().addTapHandler(new TapHandler() {
+        getAddTaskButton().addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
                 try {
@@ -178,12 +176,17 @@ public class NewTaskViewGwtImpl extends AbstractTaskView implements NewTaskPrese
 
     @Override
     public void goBackToTaskList() {
-            placeManager.goTo("Tasks List", Animation.SLIDE_REVERSE);
+        placeManager.goTo("Tasks List", Animation.SLIDE_REVERSE);
     }
 
     @Override
     public void refresh() {
-        
+
+    }
+
+    @Override
+    public void setParameters(Map<String, Object> params) {
+
     }
 
 }

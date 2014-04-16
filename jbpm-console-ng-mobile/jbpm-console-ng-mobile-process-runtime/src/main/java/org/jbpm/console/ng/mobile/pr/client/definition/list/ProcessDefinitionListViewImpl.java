@@ -29,10 +29,10 @@ import com.googlecode.mgwt.ui.client.widget.base.PullArrowWidget;
 import com.googlecode.mgwt.ui.client.widget.base.PullPanel;
 import com.googlecode.mgwt.ui.client.widget.celllist.BasicCell;
 import java.util.List;
+import java.util.Map;
 import org.jbpm.console.ng.mobile.core.client.MGWTPlaceManager;
 import org.jbpm.console.ng.mobile.generic.client.AbstractView;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
-
 
 /**
  *
@@ -41,11 +41,11 @@ import org.jbpm.console.ng.pr.model.ProcessSummary;
 public class ProcessDefinitionListViewImpl extends AbstractView implements ProcessDefinitionListPresenter.ProcessDefinitionListView {
 
     private PullPanel pullPanel;
-    
+
     private PullArrowHeader pullArrowHeader;
-    
+
     private CellList<ProcessSummary> definitionsList;
-    
+
     private ProcessDefinitionListPresenter presenter;
     @Inject
     private MGWTPlaceManager placeManager;
@@ -65,7 +65,7 @@ public class ProcessDefinitionListViewImpl extends AbstractView implements Proce
             }
         });
         pullPanel.add(definitionsList);
-        
+
         getBackButton().addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
@@ -97,7 +97,7 @@ public class ProcessDefinitionListViewImpl extends AbstractView implements Proce
 
     @Override
     public void init(final ProcessDefinitionListPresenter presenter) {
-      this.presenter = presenter;
+        this.presenter = presenter;
         getPullHeader().setHTML("pull down");
 
         PullArrowStandardHandler headerHandler = new PullArrowStandardHandler(getPullHeader(), getPullPanel());
@@ -119,14 +119,19 @@ public class ProcessDefinitionListViewImpl extends AbstractView implements Proce
             }
         });
         setHeaderPullHandler(headerHandler);
-        
+
         presenter.refresh();
-    
+
     }
 
     @Override
     public void refresh() {
         presenter.refresh();
+    }
+
+    @Override
+    public void setParameters(Map<String, Object> params) {
+
     }
 
 }
