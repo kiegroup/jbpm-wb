@@ -37,18 +37,16 @@ import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.mobile.core.client.AbstractView;
 import org.jbpm.console.ng.mobile.core.client.MGWTPlaceManager;
-import org.jbpm.console.ng.mobile.ht.client.AbstractTaskView;
 import org.jbpm.console.ng.mobile.ht.client.utils.TaskStatus;
-
-
 
 /**
  *
  * @author livthomas
  */
 @Dependent
-public class TaskDetailsViewGwtImpl extends AbstractTaskView implements TaskDetailsPresenter.TaskDetailsView {
+public class TaskDetailsViewGwtImpl extends AbstractView implements TaskDetailsPresenter.TaskDetailsView {
 
     private final Button saveButton;
     private final Button releaseButton;
@@ -69,7 +67,7 @@ public class TaskDetailsViewGwtImpl extends AbstractTaskView implements TaskDeta
     private final Label potentialOwnersLabel = new Label();
     private final MTextBox delegateTextBox = new MTextBox();
     private final Button delegateButton;
-    
+
     private TaskDetailsPresenter presenter;
 
     @Inject
@@ -170,7 +168,7 @@ public class TaskDetailsViewGwtImpl extends AbstractTaskView implements TaskDeta
 
         tabPanel.setSelectedChild(1);
     }
-    
+
     @Override
     public void init(final TaskDetailsPresenter presenter) {
         this.presenter = presenter;
@@ -231,7 +229,7 @@ public class TaskDetailsViewGwtImpl extends AbstractTaskView implements TaskDeta
         getDelegateButton().addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
-               presenter.delegateTask(taskId, getDelegateTextBox().getText());
+                presenter.delegateTask(taskId, getDelegateTextBox().getText());
             }
         });
     }
@@ -377,5 +375,4 @@ public class TaskDetailsViewGwtImpl extends AbstractTaskView implements TaskDeta
         taskId = (Long) params.get("taskId");
     }
 
-    
 }
