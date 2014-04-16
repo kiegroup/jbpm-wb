@@ -15,15 +15,12 @@
  */
 package org.jbpm.console.ng.mobile.ht.client.tasklist;
 
-
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
 import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
 import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
 import com.googlecode.mgwt.mvp.client.Animation;
-import com.googlecode.mgwt.ui.client.animation.AnimationHelper;
 import com.googlecode.mgwt.ui.client.widget.CellList;
 import com.googlecode.mgwt.ui.client.widget.HeaderButton;
 import com.googlecode.mgwt.ui.client.widget.base.HasRefresh;
@@ -35,13 +32,14 @@ import com.googlecode.mgwt.ui.client.widget.celllist.BasicCell;
 import com.googlecode.mgwt.ui.client.widget.celllist.CellSelectedEvent;
 import com.googlecode.mgwt.ui.client.widget.celllist.CellSelectedHandler;
 import com.googlecode.mgwt.ui.client.widget.celllist.HasCellSelectedHandler;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.mobile.core.client.MGWTPlaceManager;
 import org.jbpm.console.ng.mobile.ht.client.AbstractTaskView;
-
 
 /**
  *
@@ -55,12 +53,14 @@ public class TaskListViewGwtImpl extends AbstractTaskView implements TaskListPre
 
     private PullPanel pullPanel;
     private PullArrowHeader pullArrowHeader;
-    
-    private final CellList<TaskSummary> taskList;
+
+    private final CellList<TaskSummary> cellList;
+
+    private List<TaskSummary> tasksList;
 
     @Inject
     private MGWTPlaceManager placeManager;
-   
+
     private TaskListPresenter presenter;
 
     public TaskListViewGwtImpl() {
@@ -75,15 +75,15 @@ public class TaskListViewGwtImpl extends AbstractTaskView implements TaskListPre
         pullPanel.setHeader(pullArrowHeader);
         layoutPanel.add(pullPanel);
 
-        taskList = new CellList<TaskSummary>(new BasicCell<TaskSummary>() {
+        cellList = new CellList<TaskSummary>(new BasicCell<TaskSummary>() {
             @Override
             public String getDisplayString(TaskSummary model) {
                 return model.getId() + " : " + model.getName();
             }
         });
-        pullPanel.add(taskList);
+        pullPanel.add(cellList);
     }
-    
+
     @Override
     public void init(final TaskListPresenter presenter) {
         this.presenter = presenter;
@@ -100,7 +100,7 @@ public class TaskListViewGwtImpl extends AbstractTaskView implements TaskListPre
                 placeManager.goTo("Home", Animation.SLIDE_REVERSE);
             }
         });
-        
+
         getPullHeader().setHTML("pull down");
 
         PullArrowStandardHandler headerHandler = new PullArrowStandardHandler(getPullHeader(), getPullPanel());
@@ -126,8 +126,9 @@ public class TaskListViewGwtImpl extends AbstractTaskView implements TaskListPre
         getTaskList().addCellSelectedHandler(new CellSelectedHandler() {
             @Override
             public void onCellSelected(CellSelectedEvent event) {
-                 //TODO ----> taskDetailsView.setTaskId(event.getIndex());
-                placeManager.goTo("Task Details", Animation.SLIDE); 
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("taskId", tasksList.get(event.getIndex()).getId());
+                placeManager.goTo("Task Details", Animation.SLIDE, params);
             }
         });
 
@@ -156,18 +157,24 @@ public class TaskListViewGwtImpl extends AbstractTaskView implements TaskListPre
 
     @Override
     public void render(List<TaskSummary> tasks) {
-        taskList.render(tasks);
+        tasksList = tasks;
+        cellList.render(tasks);
         pullPanel.refresh();
     }
 
     @Override
     public HasCellSelectedHandler getTaskList() {
-        return taskList;
+        return cellList;
     }
 
     @Override
     public void refresh() {
         presenter.refresh();
+    }
+
+    @Override
+    public void setParameters(Map<String, Object> params) {
+
     }
 
 }

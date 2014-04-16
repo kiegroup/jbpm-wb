@@ -33,6 +33,7 @@ import com.googlecode.mgwt.ui.client.widget.WidgetList;
 import com.googlecode.mgwt.ui.client.widget.tabbar.TabBarButton;
 import com.googlecode.mgwt.ui.client.widget.tabbar.TabPanel;
 import java.text.ParseException;
+import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import org.jbpm.console.ng.ht.model.TaskSummary;
@@ -369,6 +370,11 @@ public class TaskDetailsViewGwtImpl extends AbstractTaskView implements TaskDeta
     @Override
     public void refresh() {
         presenter.refresh(taskId);
+    }
+
+    @Override
+    public void setParameters(Map<String, Object> params) {
+        taskId = (Long) params.get("taskId");
     }
 
     
