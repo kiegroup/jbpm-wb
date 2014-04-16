@@ -40,8 +40,8 @@ import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import org.jbpm.console.ng.mobile.core.client.AbstractView;
 import org.jbpm.console.ng.mobile.core.client.MGWTPlaceManager;
-import org.jbpm.console.ng.mobile.ht.client.AbstractTaskView;
 import org.uberfire.security.Identity;
 
 /**
@@ -50,7 +50,7 @@ import org.uberfire.security.Identity;
  * @author salaboy
  */
 @Dependent
-public class NewTaskViewGwtImpl extends AbstractTaskView implements NewTaskPresenter.NewTaskView {
+public class NewTaskViewGwtImpl extends AbstractView implements NewTaskPresenter.NewTaskView {
 
     private final MTextBox taskNameTextBox = new MTextBox();
 

@@ -31,6 +31,8 @@ import com.googlecode.mgwt.ui.client.widget.LayoutPanel;
  */
 public abstract class AbstractView implements IsWidget {
 
+    protected final String[] priorities = {"0 - High", "1", "2", "3", "4", "5 - Medium", "6", "7", "8", "9", "10 - Low"};
+
     protected final LayoutPanel layoutPanel;
 
     protected final HeaderPanel headerPanel;

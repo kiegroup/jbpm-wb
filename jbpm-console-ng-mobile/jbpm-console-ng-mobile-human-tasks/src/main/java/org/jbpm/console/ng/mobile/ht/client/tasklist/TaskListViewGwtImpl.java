@@ -38,8 +38,8 @@ import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.mobile.core.client.AbstractView;
 import org.jbpm.console.ng.mobile.core.client.MGWTPlaceManager;
-import org.jbpm.console.ng.mobile.ht.client.AbstractTaskView;
 
 /**
  *
@@ -47,7 +47,7 @@ import org.jbpm.console.ng.mobile.ht.client.AbstractTaskView;
  * @author salaboy
  */
 @Dependent
-public class TaskListViewGwtImpl extends AbstractTaskView implements TaskListPresenter.TaskListView {
+public class TaskListViewGwtImpl extends AbstractView implements TaskListPresenter.TaskListView {
 
     private final HeaderButton newTaskButton;
 
