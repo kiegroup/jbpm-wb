@@ -33,7 +33,6 @@
   </properties>
   <modules>
     <module>jbpm-console-ng-mobile-core</module>
-    <module>jbpm-console-ng-mobile-generic</module>
     <module>jbpm-console-ng-mobile-human-tasks</module>
     <module>jbpm-console-ng-mobile-process-runtime</module>
   </modules>
