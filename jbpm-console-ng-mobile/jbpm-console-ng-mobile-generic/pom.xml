@@ -11,7 +11,7 @@
   
   <groupId>org.jbpm</groupId>
   <artifactId>jbpm-console-ng-mobile-generic</artifactId>
-  <name>jBPM Console NG Mobile :: Generic</name>
+  <name>jBPM Console NG - Mobile UI :: Generic</name>
   
   <dependencies>
     <!-- GWT and GWT Extensions -->
