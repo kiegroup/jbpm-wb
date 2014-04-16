@@ -16,17 +16,30 @@
 package org.jbpm.console.ng.mobile.ht.client.tasklist;
 
 
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
+import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
+import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
+import com.googlecode.mgwt.mvp.client.Animation;
+import com.googlecode.mgwt.ui.client.animation.AnimationHelper;
 import com.googlecode.mgwt.ui.client.widget.CellList;
 import com.googlecode.mgwt.ui.client.widget.HeaderButton;
 import com.googlecode.mgwt.ui.client.widget.base.HasRefresh;
 import com.googlecode.mgwt.ui.client.widget.base.PullArrowHeader;
+import com.googlecode.mgwt.ui.client.widget.base.PullArrowStandardHandler;
 import com.googlecode.mgwt.ui.client.widget.base.PullArrowWidget;
 import com.googlecode.mgwt.ui.client.widget.base.PullPanel;
 import com.googlecode.mgwt.ui.client.widget.celllist.BasicCell;
+import com.googlecode.mgwt.ui.client.widget.celllist.CellSelectedEvent;
+import com.googlecode.mgwt.ui.client.widget.celllist.CellSelectedHandler;
 import com.googlecode.mgwt.ui.client.widget.celllist.HasCellSelectedHandler;
 import java.util.List;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.mobile.core.client.MGWTPlaceManager;
 import org.jbpm.console.ng.mobile.ht.client.AbstractTaskView;
 
 
@@ -35,13 +48,20 @@ import org.jbpm.console.ng.mobile.ht.client.AbstractTaskView;
  * @author livthomas
  * @author salaboy
  */
+@Dependent
 public class TaskListViewGwtImpl extends AbstractTaskView implements TaskListPresenter.TaskListView {
 
     private final HeaderButton newTaskButton;
 
     private PullPanel pullPanel;
     private PullArrowHeader pullArrowHeader;
+    
     private final CellList<TaskSummary> taskList;
+
+    @Inject
+    private MGWTPlaceManager placeManager;
+   
+    private TaskListPresenter presenter;
 
     public TaskListViewGwtImpl() {
         title.setHTML("Task List");
@@ -62,6 +82,56 @@ public class TaskListViewGwtImpl extends AbstractTaskView implements TaskListPre
             }
         });
         pullPanel.add(taskList);
+    }
+    
+    @Override
+    public void init(final TaskListPresenter presenter) {
+        this.presenter = presenter;
+        getNewTaskButton().addTapHandler(new TapHandler() {
+            @Override
+            public void onTap(TapEvent event) {
+                placeManager.goTo("New Task", Animation.SLIDE);
+            }
+        });
+
+        getBackButton().addTapHandler(new TapHandler() {
+            @Override
+            public void onTap(TapEvent event) {
+                placeManager.goTo("Home", Animation.SLIDE_REVERSE);
+            }
+        });
+        
+        getPullHeader().setHTML("pull down");
+
+        PullArrowStandardHandler headerHandler = new PullArrowStandardHandler(getPullHeader(), getPullPanel());
+
+        headerHandler.setErrorText("Error");
+        headerHandler.setLoadingText("Loading");
+        headerHandler.setNormalText("pull down");
+        headerHandler.setPulledText("release to load");
+        headerHandler.setPullActionHandler(new PullArrowStandardHandler.PullActionHandler() {
+            @Override
+            public void onPullAction(final AsyncCallback<Void> callback) {
+                new Timer() {
+                    @Override
+                    public void run() {
+                        presenter.refresh();
+                    }
+                }.schedule(1000);
+
+            }
+        });
+        setHeaderPullHandler(headerHandler);
+
+        getTaskList().addCellSelectedHandler(new CellSelectedHandler() {
+            @Override
+            public void onCellSelected(CellSelectedEvent event) {
+                 //TODO ----> taskDetailsView.setTaskId(event.getIndex());
+                placeManager.goTo("Task Details", Animation.SLIDE); 
+            }
+        });
+
+        presenter.refresh();
     }
 
     @Override
@@ -93,6 +163,11 @@ public class TaskListViewGwtImpl extends AbstractTaskView implements TaskListPre
     @Override
     public HasCellSelectedHandler getTaskList() {
         return taskList;
+    }
+
+    @Override
+    public void refresh() {
+        presenter.refresh();
     }
 
 }

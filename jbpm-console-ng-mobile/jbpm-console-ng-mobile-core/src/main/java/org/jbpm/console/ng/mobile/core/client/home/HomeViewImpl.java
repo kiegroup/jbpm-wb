@@ -17,15 +17,22 @@ package org.jbpm.console.ng.mobile.core.client.home;
 
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
+import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
+import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
+import com.googlecode.mgwt.mvp.client.Animation;
 import com.googlecode.mgwt.ui.client.widget.Button;
 import com.googlecode.mgwt.ui.client.widget.RoundPanel;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+import org.jbpm.console.ng.mobile.core.client.MGWTPlaceManager;
+import org.jbpm.console.ng.mobile.generic.client.AbstractView;
 
-import org.jbpm.console.ng.mobile.client.AbstractView;
 
 /**
  * 
  * @author livthomas
  */
+@Dependent
 public class HomeViewImpl extends AbstractView implements HomePresenter.HomeView {
     
     private final Button processDefinitionsButton;
@@ -33,6 +40,12 @@ public class HomeViewImpl extends AbstractView implements HomePresenter.HomeView
     private final Button processInstancesButton;
     
     private final Button tasksListButton;
+    
+    private HomePresenter presenter;
+    
+   @Inject
+   private MGWTPlaceManager placeManager;
+
 
     public HomeViewImpl() {
         title.setHTML("jBPM Mobile");
@@ -54,7 +67,33 @@ public class HomeViewImpl extends AbstractView implements HomePresenter.HomeView
 
         scrollPanel.add(homePanel);
     }
-
+    
+    @Override
+    public void init(HomePresenter presenter) {
+        this.presenter = presenter;
+   
+    
+    
+        getTasksListButton().addTapHandler(new TapHandler() {
+            @Override
+            public void onTap(TapEvent event) {
+                placeManager.goTo("Tasks List", Animation.SLIDE);
+            }
+        });
+//
+//        taskListView.
+//        
+//        processDefinitionListView.getBackButton().addTapHandler(new TapHandler() {
+//            @Override
+//            public void onTap(TapEvent event) {
+//                AnimationHelper animationHelper = new AnimationHelper();
+//                RootPanel.get().clear();
+//                RootPanel.get().add(animationHelper);
+//                animationHelper.goTo(getView(), Animation.SLIDE_REVERSE);
+//            }
+//        });
+    }
+    
     @Override
     public HasTapHandlers getProcessDefinitionsButton() {
         return processDefinitionsButton;
@@ -69,5 +108,11 @@ public class HomeViewImpl extends AbstractView implements HomePresenter.HomeView
     public HasTapHandlers getTasksListButton() {
         return tasksListButton;
     }
+
+    @Override
+    public void refresh() {
+    }
+
+    
 
 }

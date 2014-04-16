@@ -13,57 +13,76 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.mobile.pr.client.definition.list;
+package org.jbpm.console.ng.mobile.ht.client.tasklist;
 
-import com.google.inject.Inject;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
 import com.googlecode.mgwt.ui.client.widget.base.HasRefresh;
 import com.googlecode.mgwt.ui.client.widget.base.PullArrowWidget;
 import com.googlecode.mgwt.ui.client.widget.base.PullPanel;
+import com.googlecode.mgwt.ui.client.widget.celllist.HasCellSelectedHandler;
+import java.util.ArrayList;
 import java.util.List;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
+import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.mobile.core.client.MGWTUberView;
-import org.jbpm.console.ng.pr.model.ProcessSummary;
+import org.jbpm.console.ng.mobile.ht.client.utils.TaskStatus;
+import org.uberfire.security.Identity;
 
 
 /**
  *
  * @author livthomas
+ * @author salaboy
  */
-public class ProcessDefinitionListPresenter {
-    
-    public interface ProcessDefinitionListView extends MGWTUberView<ProcessDefinitionListPresenter> {
+@Dependent
+public class TaskListPresenter {
+
+    public interface TaskListView extends MGWTUberView<TaskListPresenter> {
+
+        HasTapHandlers getNewTaskButton();
 
         HasRefresh getPullPanel();
 
         void setHeaderPullHandler(PullPanel.Pullhandler pullHandler);
 
         PullArrowWidget getPullHeader();
-        
-        void render(List<ProcessSummary> tasks);
-        
+
+        void render(List<TaskSummary> tasks);
+
+        HasCellSelectedHandler getTaskList();
+
         HasTapHandlers getBackButton();
-        
     }
 
     @Inject
-    private Caller<DataServiceEntryPoint> dataServices;
+    private TaskListView view;
     
     @Inject
-    private ProcessDefinitionListView view;
+    private Caller<TaskServiceEntryPoint> taskServices;
     
-    private List<ProcessSummary> definitionsList;
+    @Inject
+    private Identity identity;
+    
+
+    public TaskListPresenter() {
+        
+    }
 
     public void refresh() {
-        dataServices.call(new RemoteCallback<List<ProcessSummary>>() {
+        List<String> statuses = new ArrayList<String>();
+        for (TaskStatus status : TaskStatus.values()) {
+            statuses.add(status.toString());
+        }
+        taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
-            public void callback(List<ProcessSummary> definitions) {
-                definitionsList = definitions;
-                view.render(definitionsList);
+            public void callback(List<TaskSummary> tasks) {
+                view.render(tasks);
             }
-        } ).getProcesses();
+        }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), statuses, null, "en-UK");
     }
 
 }

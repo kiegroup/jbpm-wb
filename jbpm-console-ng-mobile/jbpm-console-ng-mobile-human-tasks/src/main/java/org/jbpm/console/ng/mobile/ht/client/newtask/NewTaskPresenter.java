@@ -17,25 +17,18 @@ package org.jbpm.console.ng.mobile.ht.client.newtask;
 
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
-import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
-import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
-import com.googlecode.mgwt.mvp.client.Animation;
-import com.googlecode.mgwt.ui.client.animation.AnimationHelper;
-import com.googlecode.mgwt.ui.client.widget.MDateBox.DateParser;
-import com.googlecode.mgwt.ui.client.widget.MDateBox.DateRenderer;
 import com.googlecode.mgwt.ui.client.widget.MListBox;
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.AfterInitialization;
-import org.jbpm.console.ng.mobile.ht.client.AbstractTaskPresenter;
+import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.jbpm.console.ng.mobile.core.client.MGWTUberView;
 
 
 /**
@@ -43,9 +36,10 @@ import org.jbpm.console.ng.mobile.ht.client.AbstractTaskPresenter;
  * @author livthomas
  * @author salaboy
  */
-public class NewTaskPresenter extends AbstractTaskPresenter {
+@Dependent
+public class NewTaskPresenter  {
 
-    public interface NewTaskView extends View {
+    public interface NewTaskView extends MGWTUberView<NewTaskPresenter> {
 
         HasText getTaskNameTextBox();
 
@@ -58,65 +52,23 @@ public class NewTaskPresenter extends AbstractTaskPresenter {
         HasText getUserTextBox();
 
         HasTapHandlers getAddTaskButton();
+        
+        void goBackToTaskList();
 
     }
 
     @Inject
     private NewTaskView view;
+    
+    
+    @Inject
+    private Caller<TaskServiceEntryPoint> taskServices;
 
-    public NewTaskView getView() {
-        return view;
+    public NewTaskPresenter() {
     }
 
-    @AfterInitialization
-    public void init() {
-        view.getAssignToMeCheckBox().setValue(false);
-        view.getDueOnDateBox().setText(new DateRenderer().render(new Date()));
-        view.getUserTextBox().setText(identity.getName());
 
-        view.getAddTaskButton().addTapHandler(new TapHandler() {
-            @Override
-            public void onTap(TapEvent event) {
-                try {
-                    List<String> users = new ArrayList<String>();
-                    users.add(view.getUserTextBox().getText());
-                    List<String> groups = new ArrayList<String>();
-                    String taskName = view.getTaskNameTextBox().getText();
-                    int priority = view.getPriorityListBox().getSelectedIndex();
-                    boolean assignToMe = view.getAssignToMeCheckBox().getValue();
-                    long date = new DateParser().parse(view.getDueOnDateBox().getText()).getTime();
-                    long time = 0;
-
-                    addTask(users, groups, taskName, priority, assignToMe, date, time);
-
-                    view.getTaskNameTextBox().setText("");
-                    view.getPriorityListBox().setSelectedIndex(0);
-                    view.getAssignToMeCheckBox().setValue(false);
-                    view.getDueOnDateBox().setText(new DateRenderer().render(new Date()));
-
-                    AnimationHelper animationHelper = new AnimationHelper();
-                    RootPanel.get().clear();
-                    RootPanel.get().add(animationHelper);
-                    animationHelper.goTo(clientFactory.getTaskListPresenter().getView(), Animation.SLIDE_REVERSE);
-                } catch (ParseException ex) {
-                    view.displayNotification("Wrong date format", "Enter the date in the correct format!");
-                }
-            }
-        });
-
-        view.getBackButton().addTapHandler(new TapHandler() {
-            @Override
-            public void onTap(TapEvent event) {
-                view.getTaskNameTextBox().setText("");
-                AnimationHelper animationHelper = new AnimationHelper();
-                RootPanel.get().clear();
-                RootPanel.get().add(animationHelper);
-                animationHelper.goTo(clientFactory.getTaskListPresenter().getView(), Animation.SLIDE_REVERSE);
-            }
-        });
-    }
-
-    private void addTask(final List<String> users, List<String> groups, final String taskName, int priority,
+    public void addTask(final List<String> users, List<String> groups, final String taskName, int priority,
             boolean isAssignToMe, long dueDate, long dueDateTime) {
         Map<String, Object> templateVars = new HashMap<String, Object>();
         Date due = new Date(dueDate + dueDateTime);
@@ -147,7 +99,7 @@ public class NewTaskPresenter extends AbstractTaskPresenter {
         taskServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long taskId) {
-                clientFactory.getTaskListPresenter().refresh();
+                view.goBackToTaskList();
             }
         }).addTask(str, null, templateVars);
     }

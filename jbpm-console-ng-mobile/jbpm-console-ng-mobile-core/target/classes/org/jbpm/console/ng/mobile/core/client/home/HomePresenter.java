@@ -13,18 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.mobile.ht.client;
+package org.jbpm.console.ng.mobile.core.client.home;
 
-import org.jbpm.console.ng.mobile.generic.client.AbstractView;
-
+import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+import org.jbpm.console.ng.mobile.core.client.MGWTUberView;
 
 
 /**
  *
  * @author livthomas
  */
-public abstract class AbstractTaskView extends AbstractView {
+@Dependent
+public class HomePresenter {
 
-    protected final String[] priorities = {"0 - High", "1", "2", "3", "4", "5 - Medium", "6", "7", "8", "9", "10 - Low"};
+    public interface HomeView extends MGWTUberView<HomePresenter> {
+
+        HasTapHandlers getProcessDefinitionsButton();
+
+        HasTapHandlers getProcessInstancesButton();
+
+        HasTapHandlers getTasksListButton();
+
+    }
+
+    
+  
+    @Inject
+    private HomeView view;
+
+    
+    public HomePresenter() {
+    }
+    
+
+   
 
 }

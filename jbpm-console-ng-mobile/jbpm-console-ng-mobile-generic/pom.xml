@@ -26,6 +26,11 @@
       <artifactId>mgwt</artifactId>
       <version>${mgwt.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-client-api</artifactId>
+      <type>jar</type>
+    </dependency>
   </dependencies>
   
   <build>

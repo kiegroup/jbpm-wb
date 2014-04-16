@@ -15,14 +15,22 @@
  */
 package org.jbpm.console.ng.mobile.pr.client.definition.list;
 
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.inject.Inject;
+import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
+import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
+import com.googlecode.mgwt.mvp.client.Animation;
 import com.googlecode.mgwt.ui.client.widget.CellList;
 import com.googlecode.mgwt.ui.client.widget.base.HasRefresh;
 import com.googlecode.mgwt.ui.client.widget.base.PullArrowHeader;
+import com.googlecode.mgwt.ui.client.widget.base.PullArrowStandardHandler;
 import com.googlecode.mgwt.ui.client.widget.base.PullArrowWidget;
 import com.googlecode.mgwt.ui.client.widget.base.PullPanel;
 import com.googlecode.mgwt.ui.client.widget.celllist.BasicCell;
 import java.util.List;
-import org.jbpm.console.ng.mobile.client.AbstractView;
+import org.jbpm.console.ng.mobile.core.client.MGWTPlaceManager;
+import org.jbpm.console.ng.mobile.generic.client.AbstractView;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 
 
@@ -37,6 +45,10 @@ public class ProcessDefinitionListViewImpl extends AbstractView implements Proce
     private PullArrowHeader pullArrowHeader;
     
     private CellList<ProcessSummary> definitionsList;
+    
+    private ProcessDefinitionListPresenter presenter;
+    @Inject
+    private MGWTPlaceManager placeManager;
 
     public ProcessDefinitionListViewImpl() {
         title.setHTML("Process Definitions");
@@ -54,6 +66,12 @@ public class ProcessDefinitionListViewImpl extends AbstractView implements Proce
         });
         pullPanel.add(definitionsList);
         
+        getBackButton().addTapHandler(new TapHandler() {
+            @Override
+            public void onTap(TapEvent event) {
+                placeManager.goTo("Home", Animation.SLIDE_REVERSE);
+            }
+        });
     }
 
     @Override
@@ -75,6 +93,40 @@ public class ProcessDefinitionListViewImpl extends AbstractView implements Proce
     @Override
     public PullArrowWidget getPullHeader() {
         return pullArrowHeader;
+    }
+
+    @Override
+    public void init(final ProcessDefinitionListPresenter presenter) {
+      this.presenter = presenter;
+        getPullHeader().setHTML("pull down");
+
+        PullArrowStandardHandler headerHandler = new PullArrowStandardHandler(getPullHeader(), getPullPanel());
+
+        headerHandler.setErrorText("Error");
+        headerHandler.setLoadingText("Loading");
+        headerHandler.setNormalText("pull down");
+        headerHandler.setPulledText("release to load");
+        headerHandler.setPullActionHandler(new PullArrowStandardHandler.PullActionHandler() {
+            @Override
+            public void onPullAction(final AsyncCallback<Void> callback) {
+                new Timer() {
+                    @Override
+                    public void run() {
+                        presenter.refresh();
+                    }
+                }.schedule(1000);
+
+            }
+        });
+        setHeaderPullHandler(headerHandler);
+        
+        presenter.refresh();
+    
+    }
+
+    @Override
+    public void refresh() {
+        presenter.refresh();
     }
 
 }

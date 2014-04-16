@@ -37,7 +37,7 @@
 </div>
 
 <!-- The GWT js file generated at run time -->
-            <script type="text/javascript" src='/org.jbpm.console.ng.jBPMMobileShowcase/org.jbpm.console.ng.jBPMMobileShowcase.nocache.js'></script>
+            <script type="text/javascript" src='org.jbpm.console.ng.jBPMShowcase.nocache.js'></script>
             
 </body>
 </html>

@@ -18,6 +18,9 @@ package org.jbpm.console.ng.mobile.ht.client.taskdetails;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Label;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
+import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
+import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
+import com.googlecode.mgwt.mvp.client.Animation;
 import com.googlecode.mgwt.ui.client.widget.Button;
 import com.googlecode.mgwt.ui.client.widget.FormListEntry;
 import com.googlecode.mgwt.ui.client.widget.MDateBox;
@@ -29,7 +32,11 @@ import com.googlecode.mgwt.ui.client.widget.RoundPanel;
 import com.googlecode.mgwt.ui.client.widget.WidgetList;
 import com.googlecode.mgwt.ui.client.widget.tabbar.TabBarButton;
 import com.googlecode.mgwt.ui.client.widget.tabbar.TabPanel;
+import java.text.ParseException;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.mobile.core.client.MGWTPlaceManager;
 import org.jbpm.console.ng.mobile.ht.client.AbstractTaskView;
 import org.jbpm.console.ng.mobile.ht.client.utils.TaskStatus;
 
@@ -39,6 +46,7 @@ import org.jbpm.console.ng.mobile.ht.client.utils.TaskStatus;
  *
  * @author livthomas
  */
+@Dependent
 public class TaskDetailsViewGwtImpl extends AbstractTaskView implements TaskDetailsPresenter.TaskDetailsView {
 
     private final Button saveButton;
@@ -46,7 +54,7 @@ public class TaskDetailsViewGwtImpl extends AbstractTaskView implements TaskDeta
     private final Button claimButton;
     private final Button startButton;
     private final Button completeButton;
-
+    private long taskId = 0;
     private final MTextArea descriptionTextArea = new MTextArea();
     private final MTextBox statusTextBox = new MTextBox();
     private final MDateBox dueOnDateBox = new MDateBox();
@@ -60,6 +68,11 @@ public class TaskDetailsViewGwtImpl extends AbstractTaskView implements TaskDeta
     private final Label potentialOwnersLabel = new Label();
     private final MTextBox delegateTextBox = new MTextBox();
     private final Button delegateButton;
+    
+    private TaskDetailsPresenter presenter;
+
+    @Inject
+    private MGWTPlaceManager placeManager;
 
     public TaskDetailsViewGwtImpl() {
         title.setHTML("Task Details");
@@ -155,6 +168,71 @@ public class TaskDetailsViewGwtImpl extends AbstractTaskView implements TaskDeta
         tabPanel.add(commentsTabButton, commentsPanel);
 
         tabPanel.setSelectedChild(1);
+    }
+    
+    @Override
+    public void init(final TaskDetailsPresenter presenter) {
+        this.presenter = presenter;
+        getBackButton().addTapHandler(new TapHandler() {
+            @Override
+            public void onTap(TapEvent event) {
+                placeManager.goTo("Tasks List", Animation.SLIDE_REVERSE);
+            }
+        });
+
+        getSaveButton().addTapHandler(new TapHandler() {
+            @Override
+            public void onTap(TapEvent event) {
+                presenter.saveTask(taskId);
+            }
+        });
+
+        getReleaseButton().addTapHandler(new TapHandler() {
+            @Override
+            public void onTap(TapEvent event) {
+                presenter.releaseTask(taskId);
+            }
+        });
+
+        getClaimButton().addTapHandler(new TapHandler() {
+            @Override
+            public void onTap(TapEvent event) {
+                presenter.claimTask(taskId);
+            }
+        });
+
+        getStartButton().addTapHandler(new TapHandler() {
+            @Override
+            public void onTap(TapEvent event) {
+                presenter.startTask(taskId);
+            }
+        });
+
+        getCompleteButton().addTapHandler(new TapHandler() {
+            @Override
+            public void onTap(TapEvent event) {
+                presenter.completeTask(taskId);
+            }
+        });
+
+        getUpdateButton().addTapHandler(new TapHandler() {
+            @Override
+            public void onTap(TapEvent event) {
+                try {
+                    presenter.updateTask(taskId, "", getDescriptionTextArea().getText(), new MDateBox.DateParser().parse(getDueOnDateBox()
+                            .getText()), getPriorityListBox().getSelectedIndex());
+                } catch (ParseException ex) {
+                    displayNotification("Wrong date format", "Enter the date in the correct format!");
+                }
+            }
+        });
+
+        getDelegateButton().addTapHandler(new TapHandler() {
+            @Override
+            public void onTap(TapEvent event) {
+               presenter.delegateTask(taskId, getDelegateTextBox().getText());
+            }
+        });
     }
 
     @Override
@@ -284,4 +362,14 @@ public class TaskDetailsViewGwtImpl extends AbstractTaskView implements TaskDeta
         return startButton;
     }
 
+    public void setTaskId(long taskId) {
+        this.taskId = taskId;
+    }
+
+    @Override
+    public void refresh() {
+        presenter.refresh(taskId);
+    }
+
+    
 }

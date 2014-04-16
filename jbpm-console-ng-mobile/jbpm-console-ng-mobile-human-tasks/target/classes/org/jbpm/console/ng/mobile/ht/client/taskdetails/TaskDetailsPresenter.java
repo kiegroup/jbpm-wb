@@ -16,36 +16,34 @@
 package org.jbpm.console.ng.mobile.ht.client.taskdetails;
 
 import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
-import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
-import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
-import com.googlecode.mgwt.mvp.client.Animation;
-import com.googlecode.mgwt.ui.client.animation.AnimationHelper;
-import com.googlecode.mgwt.ui.client.widget.MDateBox.DateParser;
 import com.googlecode.mgwt.ui.client.widget.MListBox;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jbpm.console.ng.ht.model.TaskSummary;
-import org.jbpm.console.ng.mobile.ht.client.AbstractTaskPresenter;
+import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.jbpm.console.ng.mobile.core.client.MGWTUberView;
+import org.jbpm.console.ng.mobile.ht.client.tasklist.TaskListPresenter.TaskListView;
+import org.uberfire.security.Identity;
 
 
 /**
  *
  * @author livthomas
  */
-public class TaskDetailsPresenter extends AbstractTaskPresenter {
+@Dependent
+public class TaskDetailsPresenter {
 
-    public interface TaskDetailsView extends View {
+    public interface TaskDetailsView extends MGWTUberView<TaskDetailsPresenter> {
 
         void refreshTask(TaskSummary task, boolean owned);
 
@@ -72,41 +70,47 @@ public class TaskDetailsPresenter extends AbstractTaskPresenter {
         HasText getDelegateTextBox();
 
         HasTapHandlers getDelegateButton();
+        
+        void displayNotification(String title, String message);
+        
+        void setTaskId(long taskId);
 
     }
 
     @Inject
     private TaskDetailsView view;
+    
+    @Inject
+    private TaskListView taskListView;
+    
+    @Inject
+    private Identity identity;
+    
+    @Inject
+    private Caller<TaskServiceEntryPoint> taskServices;
 
-    private TaskSummary task;
 
-    public TaskDetailsView getView(TaskSummary task) {
-        this.task = task;
-        refresh();
-        return view;
-    }
-
-    public void refresh() {
+    public void refresh(final long taskId) {
         taskServices.call(new RemoteCallback<TaskSummary>() {
             @Override
-            public void callback(TaskSummary response) {
-                task = response;
+            public void callback(TaskSummary task) {
+                
                 view.refreshTask(task, task.getActualOwner().equals(identity.getName()));
-                refreshPotentialOwners();
+                refreshPotentialOwners(taskId);
             }
-        }).getTaskDetails(task.getId());
+        }).getTaskDetails(taskId);
     }
 
-    public void refreshPotentialOwners() {
+    public void refreshPotentialOwners(final long taskId) {
         List<Long> taskIds = new ArrayList<Long>(1);
-        taskIds.add(task.getId());
+        taskIds.add(taskId);
         taskServices.call(new RemoteCallback<Map<Long, List<String>>>() {
             @Override
             public void callback(Map<Long, List<String>> ids) {
                 if (ids.isEmpty()) {
                     view.getPotentialOwnersText().setText("No potential owners");
                 } else {
-                    view.getPotentialOwnersText().setText(ids.get(task.getId()).toString());
+                    view.getPotentialOwnersText().setText(ids.get(taskId).toString());
                 }
             }
         }, new ErrorCallback<Message>() {
@@ -118,16 +122,16 @@ public class TaskDetailsPresenter extends AbstractTaskPresenter {
         }).getPotentialOwnersForTaskIds(taskIds);
     }
 
-    private void saveTask() {
+    public void saveTask(final long taskId) {
         // TODO with forms
     }
 
-    private void releaseTask() {
+    public void releaseTask(final long taskId) {
         taskServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
-                view.displayNotification("Success", "Task with id = " + task.getId() + " was released!");
-                refresh();
+                view.displayNotification("Success", "Task with id = " +taskId + " was released!");
+                refresh(taskId);
             }
         }, new ErrorCallback<Message>() {
             @Override
@@ -135,15 +139,15 @@ public class TaskDetailsPresenter extends AbstractTaskPresenter {
                 view.displayNotification("Unexpected error encountered", throwable.getMessage());
                 return true;
             }
-        }).release(task.getId(), identity.getName());
+        }).release(taskId, identity.getName());
     }
 
-    private void claimTask() {
+    public void claimTask(final long taskId) {
         taskServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
-                view.displayNotification("Success", "Task with id = " + task.getId() + " was claimed!");
-                refresh();
+                view.displayNotification("Success", "Task with id = " + taskId + " was claimed!");
+                refresh(taskId);
             }
         }, new ErrorCallback<Message>() {
             @Override
@@ -151,15 +155,15 @@ public class TaskDetailsPresenter extends AbstractTaskPresenter {
                 view.displayNotification("Unexpected error encountered", throwable.getMessage());
                 return true;
             }
-        }).claim(task.getId(), identity.getName());
+        }).claim(taskId, identity.getName());
     }
 
-    private void startTask() {
+    public void startTask(final long taskId) {
         taskServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
-                view.displayNotification("Success", "Task with id = " + task.getId() + " was started!");
-                refresh();
+                view.displayNotification("Success", "Task with id = " + taskId + " was started!");
+                refresh(taskId);
             }
         }, new ErrorCallback<Message>() {
             @Override
@@ -167,16 +171,16 @@ public class TaskDetailsPresenter extends AbstractTaskPresenter {
                 view.displayNotification("Unexpected error encountered", throwable.getMessage());
                 return true;
             }
-        }).start(task.getId(), identity.getName());
+        }).start(taskId, identity.getName());
     }
 
-    private void completeTask() {
+    public void completeTask(final long taskId) {
         final Map<String, Object> params = new HashMap<String, Object>();
         taskServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
-                view.displayNotification("Success", "Task with id = " + task.getId() + " was completed!");
-                refresh();
+                view.displayNotification("Success", "Task with id = " + taskId + " was completed!");
+                refresh(taskId);
             }
         }, new ErrorCallback<Message>() {
             @Override
@@ -184,22 +188,22 @@ public class TaskDetailsPresenter extends AbstractTaskPresenter {
                 view.displayNotification("Unexpected error encountered", throwable.getMessage());
                 return true;
             }
-        }).complete(task.getId(), identity.getName(), params);
+        }).complete(taskId, identity.getName(), params);
     }
 
-    private void updateTask(String description, Date dueDate, int priority) {
+    public void updateTask(final long taskId, String name, String description, Date dueDate, int priority) {
         List<String> descriptions = new ArrayList<String>();
         descriptions.add(description);
 
         List<String> names = new ArrayList<String>();
-        names.add(task.getName());
+        names.add(name);
 
         taskServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void response) {
                 view.displayNotification("Success", "Task details has been updated for the task with id = "
-                        + task.getId());
-                refresh();
+                        + taskId);
+                refresh(taskId);
             }
         }, new ErrorCallback<Message>() {
             @Override
@@ -207,16 +211,16 @@ public class TaskDetailsPresenter extends AbstractTaskPresenter {
                 view.displayNotification("Unexpected error encountered", throwable.getMessage());
                 return true;
             }
-        }).updateSimpleTaskDetails(task.getId(), names, priority, descriptions, dueDate);
+        }).updateSimpleTaskDetails(taskId, names, priority, descriptions, dueDate);
     }
 
-    private void delegateTask(String entity) {
+    public void delegateTask(final long taskId, String entity) {
         taskServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
                 view.displayNotification("Success", "Task was succesfully delegated");
                 view.getDelegateTextBox().setText("");
-                refresh();
+                refresh(taskId);
             }
         }, new ErrorCallback<Message>() {
             @Override
@@ -224,74 +228,9 @@ public class TaskDetailsPresenter extends AbstractTaskPresenter {
                 view.displayNotification("Unexpected error encountered", throwable.getMessage());
                 return true;
             }
-        }).delegate(task.getId(), identity.getName(), entity);
+        }).delegate(taskId, identity.getName(), entity);
     }
 
-    @AfterInitialization
-    public void setUpHandlers() {
-        view.getBackButton().addTapHandler(new TapHandler() {
-            @Override
-            public void onTap(TapEvent event) {
-                AnimationHelper animationHelper = new AnimationHelper();
-                RootPanel.get().clear();
-                RootPanel.get().add(animationHelper);
-                animationHelper.goTo(clientFactory.getTaskListPresenter().getView(), Animation.SLIDE_REVERSE);
-            }
-        });
-
-        view.getSaveButton().addTapHandler(new TapHandler() {
-            @Override
-            public void onTap(TapEvent event) {
-                saveTask();
-            }
-        });
-
-        view.getReleaseButton().addTapHandler(new TapHandler() {
-            @Override
-            public void onTap(TapEvent event) {
-                releaseTask();
-            }
-        });
-
-        view.getClaimButton().addTapHandler(new TapHandler() {
-            @Override
-            public void onTap(TapEvent event) {
-                claimTask();
-            }
-        });
-
-        view.getStartButton().addTapHandler(new TapHandler() {
-            @Override
-            public void onTap(TapEvent event) {
-                startTask();
-            }
-        });
-
-        view.getCompleteButton().addTapHandler(new TapHandler() {
-            @Override
-            public void onTap(TapEvent event) {
-                completeTask();
-            }
-        });
-
-        view.getUpdateButton().addTapHandler(new TapHandler() {
-            @Override
-            public void onTap(TapEvent event) {
-                try {
-                    updateTask(view.getDescriptionTextArea().getText(), new DateParser().parse(view.getDueOnDateBox()
-                            .getText()), view.getPriorityListBox().getSelectedIndex());
-                } catch (ParseException ex) {
-                    view.displayNotification("Wrong date format", "Enter the date in the correct format!");
-                }
-            }
-        });
-
-        view.getDelegateButton().addTapHandler(new TapHandler() {
-            @Override
-            public void onTap(TapEvent event) {
-                delegateTask(view.getDelegateTextBox().getText());
-            }
-        });
-    }
+   
 
 }
