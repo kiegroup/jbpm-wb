@@ -138,13 +138,7 @@
             <artifactId>jbpm-console-ng-generic-client</artifactId>
         </dependency>
     
-        <!-- jBPM Mobile --> 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-mobile-generic</artifactId>
-            <version>6.1.0-SNAPSHOT</version>
-        </dependency>
-        
+        <!-- jBPM Mobile -->
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-mobile-core</artifactId>

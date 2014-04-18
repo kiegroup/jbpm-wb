@@ -11,7 +11,6 @@
   <inherits name="org.uberfire.UberfireClientAll"/>
   
   <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksAPI"/>
-  <inherits name="org.jbpm.console.ng.mobile.generic.JbpmMobileGenericClient"/>
   <inherits name="org.jbpm.console.ng.mobile.ht.JbpmMobileHumanTasksClient"/>
   <inherits name="org.jbpm.console.ng.mobile.pr.JbpmMobileProcessRuntimeClient"/>
 
