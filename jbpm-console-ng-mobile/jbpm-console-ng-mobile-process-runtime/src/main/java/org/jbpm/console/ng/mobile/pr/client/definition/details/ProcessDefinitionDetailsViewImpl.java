@@ -20,6 +20,7 @@ import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
 import com.googlecode.mgwt.mvp.client.Animation;
 import com.googlecode.mgwt.ui.client.widget.Button;
 import com.googlecode.mgwt.ui.client.widget.FormListEntry;
+import com.googlecode.mgwt.ui.client.widget.MTextArea;
 import com.googlecode.mgwt.ui.client.widget.MTextBox;
 import com.googlecode.mgwt.ui.client.widget.RoundPanel;
 import com.googlecode.mgwt.ui.client.widget.WidgetList;
@@ -27,7 +28,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import org.jbpm.console.ng.mobile.core.client.AbstractView;
 import org.jbpm.console.ng.mobile.core.client.MGWTPlaceManager;
-import org.jbpm.console.ng.pr.model.ProcessSummary;
 
 /**
  *
@@ -39,6 +39,11 @@ public class ProcessDefinitionDetailsViewImpl extends AbstractView implements
     private final MTextBox definitionIdText = new MTextBox();
     private final MTextBox definitionNameText = new MTextBox();
     private final MTextBox deploymentText = new MTextBox();
+    private final MTextArea humanTasksText = new MTextArea();
+    private final MTextArea usersAndGroupsText = new MTextArea();
+    private final MTextArea subprocessesText = new MTextArea();
+    private final MTextArea processVariablesText = new MTextArea();
+    private final MTextArea servicesText = new MTextArea();
 
     private final Button newInstanceButton;
 
@@ -58,12 +63,22 @@ public class ProcessDefinitionDetailsViewImpl extends AbstractView implements
         definitionIdText.setReadOnly(true);
         definitionNameText.setReadOnly(true);
         deploymentText.setReadOnly(true);
+        humanTasksText.setReadOnly(true);
+        usersAndGroupsText.setReadOnly(true);
+        subprocessesText.setReadOnly(true);
+        processVariablesText.setReadOnly(true);
+        servicesText.setReadOnly(true);
 
         WidgetList widgetList = new WidgetList();
         widgetList.setRound(true);
         widgetList.add(new FormListEntry("Definition Id", definitionIdText));
         widgetList.add(new FormListEntry("Definition Name", definitionNameText));
         widgetList.add(new FormListEntry("Deployment", deploymentText));
+        widgetList.add(new FormListEntry("Human Tasks", humanTasksText));
+        widgetList.add(new FormListEntry("Users and Groups", usersAndGroupsText));
+        widgetList.add(new FormListEntry("Subprocesses", subprocessesText));
+        widgetList.add(new FormListEntry("Process Variables", processVariablesText));
+        widgetList.add(new FormListEntry("Services", servicesText));
         roundPanel.add(widgetList);
 
         newInstanceButton = new Button("New Instance");
@@ -92,13 +107,6 @@ public class ProcessDefinitionDetailsViewImpl extends AbstractView implements
     }
 
     @Override
-    public void refreshDetails(ProcessSummary process) {
-        definitionIdText.setText(process.getId());
-        definitionNameText.setText(process.getName());
-        deploymentText.setText(process.getDeploymentId());
-    }
-
-    @Override
     public void refresh() {
         presenter.refresh(deploymentId, processId);
     }
@@ -107,6 +115,46 @@ public class ProcessDefinitionDetailsViewImpl extends AbstractView implements
     public void setParameters(Map<String, Object> params) {
         processId = (String) params.get("processId");
         deploymentId = (String) params.get("deploymentId");
+    }
+
+    @Override
+    public MTextBox getDefinitionIdText() {
+        return definitionIdText;
+    }
+
+    @Override
+    public MTextBox getDefinitionNameText() {
+        return definitionNameText;
+    }
+
+    @Override
+    public MTextBox getDeploymentText() {
+        return deploymentText;
+    }
+
+    @Override
+    public MTextArea getHumanTasksText() {
+        return humanTasksText;
+    }
+
+    @Override
+    public MTextArea getUsersAndGroupsText() {
+        return usersAndGroupsText;
+    }
+
+    @Override
+    public MTextArea getSubprocessesText() {
+        return subprocessesText;
+    }
+
+    @Override
+    public MTextArea getProcessVariablesText() {
+        return processVariablesText;
+    }
+
+    @Override
+    public MTextArea getServicesText() {
+        return servicesText;
     }
 
 }
