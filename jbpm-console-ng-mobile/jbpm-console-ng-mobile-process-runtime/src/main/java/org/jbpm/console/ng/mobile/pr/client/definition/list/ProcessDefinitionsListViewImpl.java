@@ -28,6 +28,9 @@ import com.googlecode.mgwt.ui.client.widget.base.PullArrowStandardHandler;
 import com.googlecode.mgwt.ui.client.widget.base.PullArrowWidget;
 import com.googlecode.mgwt.ui.client.widget.base.PullPanel;
 import com.googlecode.mgwt.ui.client.widget.celllist.BasicCell;
+import com.googlecode.mgwt.ui.client.widget.celllist.CellSelectedEvent;
+import com.googlecode.mgwt.ui.client.widget.celllist.CellSelectedHandler;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.jbpm.console.ng.mobile.core.client.MGWTPlaceManager;
@@ -38,19 +41,22 @@ import org.jbpm.console.ng.pr.model.ProcessSummary;
  *
  * @author livthomas
  */
-public class ProcessDefinitionListViewImpl extends AbstractView implements ProcessDefinitionListPresenter.ProcessDefinitionListView {
+public class ProcessDefinitionsListViewImpl extends AbstractView implements
+        ProcessDefinitionsListPresenter.ProcessDefinitionsListView {
 
     private PullPanel pullPanel;
 
     private PullArrowHeader pullArrowHeader;
 
-    private CellList<ProcessSummary> definitionsList;
+    private final CellList<ProcessSummary> cellList;
 
-    private ProcessDefinitionListPresenter presenter;
+    private List<ProcessSummary> definitionsList;
+
+    private ProcessDefinitionsListPresenter presenter;
     @Inject
     private MGWTPlaceManager placeManager;
 
-    public ProcessDefinitionListViewImpl() {
+    public ProcessDefinitionsListViewImpl() {
         title.setHTML("Process Definitions");
 
         pullPanel = new PullPanel();
@@ -58,13 +64,13 @@ public class ProcessDefinitionListViewImpl extends AbstractView implements Proce
         pullPanel.setHeader(pullArrowHeader);
         layoutPanel.add(pullPanel);
 
-        definitionsList = new CellList<ProcessSummary>(new BasicCell<ProcessSummary>() {
+        cellList = new CellList<ProcessSummary>(new BasicCell<ProcessSummary>() {
             @Override
             public String getDisplayString(ProcessSummary model) {
                 return model.getName() + " : " + model.getVersion();
             }
         });
-        pullPanel.add(definitionsList);
+        pullPanel.add(cellList);
 
         getBackButton().addTapHandler(new TapHandler() {
             @Override
@@ -76,7 +82,8 @@ public class ProcessDefinitionListViewImpl extends AbstractView implements Proce
 
     @Override
     public void render(List<ProcessSummary> definitions) {
-        definitionsList.render(definitions);
+        definitionsList = definitions;
+        cellList.render(definitions);
         pullPanel.refresh();
     }
 
@@ -96,8 +103,9 @@ public class ProcessDefinitionListViewImpl extends AbstractView implements Proce
     }
 
     @Override
-    public void init(final ProcessDefinitionListPresenter presenter) {
+    public void init(final ProcessDefinitionsListPresenter presenter) {
         this.presenter = presenter;
+
         getPullHeader().setHTML("pull down");
 
         PullArrowStandardHandler headerHandler = new PullArrowStandardHandler(getPullHeader(), getPullPanel());
@@ -120,8 +128,18 @@ public class ProcessDefinitionListViewImpl extends AbstractView implements Proce
         });
         setHeaderPullHandler(headerHandler);
 
-        presenter.refresh();
+        cellList.addCellSelectedHandler(new CellSelectedHandler() {
+            @Override
+            public void onCellSelected(CellSelectedEvent event) {
+                Map<String, Object> params = new HashMap<String, Object>();
+                ProcessSummary process = definitionsList.get(event.getIndex());
+                params.put("processId", process.getId());
+                params.put("deploymentId", process.getDeploymentId());
+                placeManager.goTo("Process Definition Details", Animation.SLIDE, params);
+            }
+        });
 
+        presenter.refresh();
     }
 
     @Override
