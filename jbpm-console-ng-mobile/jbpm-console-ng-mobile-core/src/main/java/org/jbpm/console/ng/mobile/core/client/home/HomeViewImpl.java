@@ -70,8 +70,15 @@ public class HomeViewImpl extends AbstractView implements HomePresenter.HomeView
     @Override
     public void init(HomePresenter presenter) {
         this.presenter = presenter;
+        
+        processDefinitionsButton.addTapHandler(new TapHandler() {
+            @Override
+            public void onTap(TapEvent event) {
+                placeManager.goTo("Process Definitions List", Animation.SLIDE);
+            }
+        });
 
-        getTasksListButton().addTapHandler(new TapHandler() {
+        tasksListButton.addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
                 placeManager.goTo("Tasks List", Animation.SLIDE);

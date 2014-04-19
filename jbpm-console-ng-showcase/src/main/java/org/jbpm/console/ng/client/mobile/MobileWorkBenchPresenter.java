@@ -36,6 +36,10 @@ import org.jbpm.console.ng.mobile.ht.client.taskdetails.TaskDetailsPresenter;
 import org.jbpm.console.ng.mobile.ht.client.taskdetails.TaskDetailsPresenter.TaskDetailsView;
 import org.jbpm.console.ng.mobile.ht.client.tasklist.TaskListPresenter;
 import org.jbpm.console.ng.mobile.ht.client.tasklist.TaskListPresenter.TaskListView;
+import org.jbpm.console.ng.mobile.pr.client.definition.details.ProcessDefinitionDetailsPresenter;
+import org.jbpm.console.ng.mobile.pr.client.definition.details.ProcessDefinitionDetailsPresenter.ProcessDefinitionDetailsView;
+import org.jbpm.console.ng.mobile.pr.client.definition.list.ProcessDefinitionsListPresenter;
+import org.jbpm.console.ng.mobile.pr.client.definition.list.ProcessDefinitionsListPresenter.ProcessDefinitionsListView;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -53,6 +57,10 @@ public class MobileWorkBenchPresenter {
     
     private HomeView homeView;
     
+    private ProcessDefinitionsListView processDefinitionsListView;
+    
+    private ProcessDefinitionDetailsView processDefinitionDetailsView;
+    
     private TaskListView taskListView;
     
     private NewTaskView newTaskView;
@@ -61,6 +69,12 @@ public class MobileWorkBenchPresenter {
     
     @Inject
     private HomePresenter homePresenter;
+    
+    @Inject
+    private ProcessDefinitionsListPresenter processDefinitionsListPresenter;
+    
+    @Inject
+    private ProcessDefinitionDetailsPresenter processDefinitionDetailsPresenter;
     
     @Inject 
     private TaskListPresenter taskListPresenter;
@@ -119,6 +133,14 @@ public class MobileWorkBenchPresenter {
         homeView = homePresenter.getView();
         placeManager.addScreen("Home", homeView);
         homeView.init(homePresenter);
+        
+        processDefinitionDetailsView = processDefinitionDetailsPresenter.getView();
+        placeManager.addScreen("Process Definition Details", processDefinitionDetailsView);
+        processDefinitionDetailsView.init(processDefinitionDetailsPresenter);
+        
+        processDefinitionsListView = processDefinitionsListPresenter.getView();
+        placeManager.addScreen("Process Definitions List", processDefinitionsListView);
+        processDefinitionsListView.init(processDefinitionsListPresenter);
         
         taskListView = taskListPresenter.getView();
         placeManager.addScreen("Tasks List", taskListView);

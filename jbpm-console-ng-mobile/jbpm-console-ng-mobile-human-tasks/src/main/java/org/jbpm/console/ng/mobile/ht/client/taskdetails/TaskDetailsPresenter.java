@@ -32,9 +32,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.mobile.core.client.MGWTUberView;
-import org.jbpm.console.ng.mobile.ht.client.tasklist.TaskListPresenter.TaskListView;
 import org.uberfire.security.Identity;
-
 
 /**
  *
@@ -64,28 +62,25 @@ public class TaskDetailsPresenter {
         MListBox getPriorityListBox();
 
         HasTapHandlers getUpdateButton();
-        
+
         HasText getPotentialOwnersText();
 
         HasText getDelegateTextBox();
 
         HasTapHandlers getDelegateButton();
-        
+
         void displayNotification(String title, String message);
-        
+
         void setTaskId(long taskId);
 
     }
 
     @Inject
     private TaskDetailsView view;
-    
-    @Inject
-    private TaskListView taskListView;
-    
+
     @Inject
     private Identity identity;
-    
+
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
 
@@ -97,7 +92,6 @@ public class TaskDetailsPresenter {
         taskServices.call(new RemoteCallback<TaskSummary>() {
             @Override
             public void callback(TaskSummary task) {
-                
                 view.refreshTask(task, task.getActualOwner().equals(identity.getName()));
                 refreshPotentialOwners(taskId);
             }
@@ -133,7 +127,7 @@ public class TaskDetailsPresenter {
         taskServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
-                view.displayNotification("Success", "Task with id = " +taskId + " was released!");
+                view.displayNotification("Success", "Task with id = " + taskId + " was released!");
                 refresh(taskId);
             }
         }, new ErrorCallback<Message>() {
@@ -233,7 +227,5 @@ public class TaskDetailsPresenter {
             }
         }).delegate(taskId, identity.getName(), entity);
     }
-
-   
 
 }

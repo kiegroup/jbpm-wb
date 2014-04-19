@@ -27,43 +27,43 @@ import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.mobile.core.client.MGWTUberView;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 
-
 /**
  *
  * @author livthomas
  */
-public class ProcessDefinitionListPresenter {
-    
-    public interface ProcessDefinitionListView extends MGWTUberView<ProcessDefinitionListPresenter> {
+public class ProcessDefinitionsListPresenter {
+
+    public interface ProcessDefinitionsListView extends MGWTUberView<ProcessDefinitionsListPresenter> {
 
         HasRefresh getPullPanel();
 
         void setHeaderPullHandler(PullPanel.Pullhandler pullHandler);
 
         PullArrowWidget getPullHeader();
-        
+
         void render(List<ProcessSummary> tasks);
-        
+
         HasTapHandlers getBackButton();
-        
+
     }
 
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
-    
+
     @Inject
-    private ProcessDefinitionListView view;
-    
-    private List<ProcessSummary> definitionsList;
+    private ProcessDefinitionsListView view;
+
+    public ProcessDefinitionsListView getView() {
+        return view;
+    }
 
     public void refresh() {
         dataServices.call(new RemoteCallback<List<ProcessSummary>>() {
             @Override
             public void callback(List<ProcessSummary> definitions) {
-                definitionsList = definitions;
-                view.render(definitionsList);
+                view.render(definitions);
             }
-        } ).getProcesses();
+        }).getProcesses();
     }
 
 }
