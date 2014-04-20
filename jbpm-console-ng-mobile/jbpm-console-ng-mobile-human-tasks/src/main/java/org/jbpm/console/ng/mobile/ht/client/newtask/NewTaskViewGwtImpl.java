@@ -16,9 +16,6 @@
 package org.jbpm.console.ng.mobile.ht.client.newtask;
 
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.HasValue;
-import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
 import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
 import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
 import com.googlecode.mgwt.mvp.client.Animation;
@@ -53,15 +50,10 @@ import org.uberfire.security.Identity;
 public class NewTaskViewGwtImpl extends AbstractView implements NewTaskPresenter.NewTaskView {
 
     private final MTextBox taskNameTextBox = new MTextBox();
-
     private final MCheckBox assignToMeCheckBox = new MCheckBox();
-
     private final MDateBox dueOnDateBox = new MDateBox();
-
     private final MListBox priorityListBox = new MListBox();
-
     private final MTextBox userTextBox = new MTextBox();
-
     private final Button addTaskButton;
 
     private NewTaskPresenter presenter;
@@ -74,6 +66,7 @@ public class NewTaskViewGwtImpl extends AbstractView implements NewTaskPresenter
 
     public NewTaskViewGwtImpl() {
         GWT.log("NEW NewTaskViewGwtImpl " + this.hashCode());
+
         title.setHTML("New Task");
 
         ScrollPanel scrollPanel = new ScrollPanel();
@@ -104,29 +97,29 @@ public class NewTaskViewGwtImpl extends AbstractView implements NewTaskPresenter
     @Override
     public void init(final NewTaskPresenter presenter) {
         this.presenter = presenter;
-        getAssignToMeCheckBox().setValue(false);
-        getDueOnDateBox().setText(new DateRenderer().render(new Date()));
-        getUserTextBox().setText(identity.getName());
+        assignToMeCheckBox.setValue(false);
+        dueOnDateBox.setText(new DateRenderer().render(new Date()));
+        userTextBox.setText(identity.getName());
 
-        getAddTaskButton().addTapHandler(new TapHandler() {
+        addTaskButton.addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
                 try {
                     List<String> users = new ArrayList<String>();
-                    users.add(getUserTextBox().getText());
+                    users.add(userTextBox.getText());
                     List<String> groups = new ArrayList<String>();
-                    String taskName = getTaskNameTextBox().getText();
-                    int priority = getPriorityListBox().getSelectedIndex();
-                    boolean assignToMe = getAssignToMeCheckBox().getValue();
-                    long date = new DateParser().parse(getDueOnDateBox().getText()).getTime();
+                    String taskName = taskNameTextBox.getText();
+                    int priority = priorityListBox.getSelectedIndex();
+                    boolean assignToMe = assignToMeCheckBox.getValue();
+                    long date = new DateParser().parse(dueOnDateBox.getText()).getTime();
                     long time = 0;
 
                     presenter.addTask(users, groups, taskName, priority, assignToMe, date, time);
 
-                    getTaskNameTextBox().setText("");
-                    getPriorityListBox().setSelectedIndex(0);
-                    getAssignToMeCheckBox().setValue(false);
-                    getDueOnDateBox().setText(new DateRenderer().render(new Date()));
+                    taskNameTextBox.setText("");
+                    priorityListBox.setSelectedIndex(0);
+                    assignToMeCheckBox.setValue(false);
+                    dueOnDateBox.setText(new DateRenderer().render(new Date()));
 
                     placeManager.goTo("New Task", Animation.SLIDE);
                 } catch (ParseException ex) {
@@ -138,40 +131,10 @@ public class NewTaskViewGwtImpl extends AbstractView implements NewTaskPresenter
         getBackButton().addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
-                getTaskNameTextBox().setText("");
+                taskNameTextBox.setText("");
                 placeManager.goTo("Tasks List", Animation.SLIDE_REVERSE);
             }
         });
-    }
-
-    @Override
-    public HasText getTaskNameTextBox() {
-        return taskNameTextBox;
-    }
-
-    @Override
-    public HasTapHandlers getAddTaskButton() {
-        return addTaskButton;
-    }
-
-    @Override
-    public HasValue<Boolean> getAssignToMeCheckBox() {
-        return assignToMeCheckBox;
-    }
-
-    @Override
-    public HasText getDueOnDateBox() {
-        return dueOnDateBox;
-    }
-
-    @Override
-    public MListBox getPriorityListBox() {
-        return priorityListBox;
-    }
-
-    @Override
-    public HasText getUserTextBox() {
-        return userTextBox;
     }
 
     @Override

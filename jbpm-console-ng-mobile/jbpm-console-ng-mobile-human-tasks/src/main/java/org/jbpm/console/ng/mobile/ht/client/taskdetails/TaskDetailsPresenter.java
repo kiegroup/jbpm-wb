@@ -16,8 +16,6 @@
 package org.jbpm.console.ng.mobile.ht.client.taskdetails;
 
 import com.google.gwt.user.client.ui.HasText;
-import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
-import com.googlecode.mgwt.ui.client.widget.MListBox;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,33 +43,11 @@ public class TaskDetailsPresenter {
 
         void refreshTask(TaskSummary task, boolean owned);
 
-        HasTapHandlers getSaveButton();
-
-        HasTapHandlers getReleaseButton();
-
-        HasTapHandlers getClaimButton();
-
-        HasTapHandlers getStartButton();
-
-        HasTapHandlers getCompleteButton();
-
-        HasText getDescriptionTextArea();
-
-        HasText getDueOnDateBox();
-
-        MListBox getPriorityListBox();
-
-        HasTapHandlers getUpdateButton();
-
         HasText getPotentialOwnersText();
 
         HasText getDelegateTextBox();
 
-        HasTapHandlers getDelegateButton();
-
         void displayNotification(String title, String message);
-
-        void setTaskId(long taskId);
 
     }
 

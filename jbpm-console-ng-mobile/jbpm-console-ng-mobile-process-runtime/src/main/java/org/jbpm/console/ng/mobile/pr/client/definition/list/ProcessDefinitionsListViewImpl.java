@@ -22,10 +22,8 @@ import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
 import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
 import com.googlecode.mgwt.mvp.client.Animation;
 import com.googlecode.mgwt.ui.client.widget.CellList;
-import com.googlecode.mgwt.ui.client.widget.base.HasRefresh;
 import com.googlecode.mgwt.ui.client.widget.base.PullArrowHeader;
 import com.googlecode.mgwt.ui.client.widget.base.PullArrowStandardHandler;
-import com.googlecode.mgwt.ui.client.widget.base.PullArrowWidget;
 import com.googlecode.mgwt.ui.client.widget.base.PullPanel;
 import com.googlecode.mgwt.ui.client.widget.celllist.BasicCell;
 import com.googlecode.mgwt.ui.client.widget.celllist.CellSelectedEvent;
@@ -53,6 +51,7 @@ public class ProcessDefinitionsListViewImpl extends AbstractView implements
     private List<ProcessSummary> definitionsList;
 
     private ProcessDefinitionsListPresenter presenter;
+
     @Inject
     private MGWTPlaceManager placeManager;
 
@@ -88,27 +87,12 @@ public class ProcessDefinitionsListViewImpl extends AbstractView implements
     }
 
     @Override
-    public HasRefresh getPullPanel() {
-        return pullPanel;
-    }
-
-    @Override
-    public void setHeaderPullHandler(PullPanel.Pullhandler pullHandler) {
-        pullPanel.setHeaderPullhandler(pullHandler);
-    }
-
-    @Override
-    public PullArrowWidget getPullHeader() {
-        return pullArrowHeader;
-    }
-
-    @Override
     public void init(final ProcessDefinitionsListPresenter presenter) {
         this.presenter = presenter;
 
-        getPullHeader().setHTML("pull down");
+        pullArrowHeader.setHTML("pull down");
 
-        PullArrowStandardHandler headerHandler = new PullArrowStandardHandler(getPullHeader(), getPullPanel());
+        PullArrowStandardHandler headerHandler = new PullArrowStandardHandler(pullArrowHeader, pullPanel);
 
         headerHandler.setErrorText("Error");
         headerHandler.setLoadingText("Loading");
@@ -126,7 +110,7 @@ public class ProcessDefinitionsListViewImpl extends AbstractView implements
 
             }
         });
-        setHeaderPullHandler(headerHandler);
+        pullPanel.setHeaderPullhandler(headerHandler);
 
         cellList.addCellSelectedHandler(new CellSelectedHandler() {
             @Override

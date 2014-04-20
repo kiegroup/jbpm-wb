@@ -16,10 +16,6 @@
 package org.jbpm.console.ng.mobile.pr.client.definition.list;
 
 import com.google.inject.Inject;
-import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
-import com.googlecode.mgwt.ui.client.widget.base.HasRefresh;
-import com.googlecode.mgwt.ui.client.widget.base.PullArrowWidget;
-import com.googlecode.mgwt.ui.client.widget.base.PullPanel;
 import java.util.List;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -35,15 +31,7 @@ public class ProcessDefinitionsListPresenter {
 
     public interface ProcessDefinitionsListView extends MGWTUberView<ProcessDefinitionsListPresenter> {
 
-        HasRefresh getPullPanel();
-
-        void setHeaderPullHandler(PullPanel.Pullhandler pullHandler);
-
-        PullArrowWidget getPullHeader();
-
-        void render(List<ProcessSummary> tasks);
-
-        HasTapHandlers getBackButton();
+        void render(List<ProcessSummary> definitions);
 
     }
 

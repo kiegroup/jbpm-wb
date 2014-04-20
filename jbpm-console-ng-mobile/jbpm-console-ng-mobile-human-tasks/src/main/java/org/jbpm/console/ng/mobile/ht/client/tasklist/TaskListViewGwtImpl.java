@@ -17,21 +17,17 @@ package org.jbpm.console.ng.mobile.ht.client.tasklist;
 
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
 import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
 import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
 import com.googlecode.mgwt.mvp.client.Animation;
 import com.googlecode.mgwt.ui.client.widget.CellList;
 import com.googlecode.mgwt.ui.client.widget.HeaderButton;
-import com.googlecode.mgwt.ui.client.widget.base.HasRefresh;
 import com.googlecode.mgwt.ui.client.widget.base.PullArrowHeader;
 import com.googlecode.mgwt.ui.client.widget.base.PullArrowStandardHandler;
-import com.googlecode.mgwt.ui.client.widget.base.PullArrowWidget;
 import com.googlecode.mgwt.ui.client.widget.base.PullPanel;
 import com.googlecode.mgwt.ui.client.widget.celllist.BasicCell;
 import com.googlecode.mgwt.ui.client.widget.celllist.CellSelectedEvent;
 import com.googlecode.mgwt.ui.client.widget.celllist.CellSelectedHandler;
-import com.googlecode.mgwt.ui.client.widget.celllist.HasCellSelectedHandler;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +83,8 @@ public class TaskListViewGwtImpl extends AbstractView implements TaskListPresent
     @Override
     public void init(final TaskListPresenter presenter) {
         this.presenter = presenter;
-        getNewTaskButton().addTapHandler(new TapHandler() {
+        
+        newTaskButton.addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
                 placeManager.goTo("New Task", Animation.SLIDE);
@@ -101,9 +98,9 @@ public class TaskListViewGwtImpl extends AbstractView implements TaskListPresent
             }
         });
 
-        getPullHeader().setHTML("pull down");
+        pullArrowHeader.setHTML("pull down");
 
-        PullArrowStandardHandler headerHandler = new PullArrowStandardHandler(getPullHeader(), getPullPanel());
+        PullArrowStandardHandler headerHandler = new PullArrowStandardHandler(pullArrowHeader, pullPanel);
 
         headerHandler.setErrorText("Error");
         headerHandler.setLoadingText("Loading");
@@ -121,9 +118,9 @@ public class TaskListViewGwtImpl extends AbstractView implements TaskListPresent
 
             }
         });
-        setHeaderPullHandler(headerHandler);
+        pullPanel.setHeaderPullhandler(headerHandler);
 
-        getTaskList().addCellSelectedHandler(new CellSelectedHandler() {
+        cellList.addCellSelectedHandler(new CellSelectedHandler() {
             @Override
             public void onCellSelected(CellSelectedEvent event) {
                 Map<String, Object> params = new HashMap<String, Object>();
@@ -136,35 +133,10 @@ public class TaskListViewGwtImpl extends AbstractView implements TaskListPresent
     }
 
     @Override
-    public HasTapHandlers getNewTaskButton() {
-        return newTaskButton;
-    }
-
-    @Override
-    public HasRefresh getPullPanel() {
-        return pullPanel;
-    }
-
-    @Override
-    public void setHeaderPullHandler(PullPanel.Pullhandler pullHandler) {
-        pullPanel.setHeaderPullhandler(pullHandler);
-    }
-
-    @Override
-    public PullArrowWidget getPullHeader() {
-        return pullArrowHeader;
-    }
-
-    @Override
     public void render(List<TaskSummary> tasks) {
         tasksList = tasks;
         cellList.render(tasks);
         pullPanel.refresh();
-    }
-
-    @Override
-    public HasCellSelectedHandler getTaskList() {
-        return cellList;
     }
 
     @Override

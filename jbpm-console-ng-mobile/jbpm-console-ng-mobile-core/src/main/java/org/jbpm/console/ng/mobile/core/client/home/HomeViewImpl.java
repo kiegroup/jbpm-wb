@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.mobile.core.client.home;
 
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
 import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
 import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
 import com.googlecode.mgwt.mvp.client.Animation;
@@ -70,7 +69,7 @@ public class HomeViewImpl extends AbstractView implements HomePresenter.HomeView
     @Override
     public void init(HomePresenter presenter) {
         this.presenter = presenter;
-        
+
         processDefinitionsButton.addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
@@ -87,22 +86,8 @@ public class HomeViewImpl extends AbstractView implements HomePresenter.HomeView
     }
 
     @Override
-    public HasTapHandlers getProcessDefinitionsButton() {
-        return processDefinitionsButton;
-    }
-
-    @Override
-    public HasTapHandlers getProcessInstancesButton() {
-        return processInstancesButton;
-    }
-
-    @Override
-    public HasTapHandlers getTasksListButton() {
-        return tasksListButton;
-    }
-
-    @Override
     public void refresh() {
+
     }
 
     @Override
