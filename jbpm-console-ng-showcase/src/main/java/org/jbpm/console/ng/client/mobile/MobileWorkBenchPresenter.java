@@ -40,6 +40,10 @@ import org.jbpm.console.ng.mobile.pr.client.definition.details.ProcessDefinition
 import org.jbpm.console.ng.mobile.pr.client.definition.details.ProcessDefinitionDetailsPresenter.ProcessDefinitionDetailsView;
 import org.jbpm.console.ng.mobile.pr.client.definition.list.ProcessDefinitionsListPresenter;
 import org.jbpm.console.ng.mobile.pr.client.definition.list.ProcessDefinitionsListPresenter.ProcessDefinitionsListView;
+import org.jbpm.console.ng.mobile.pr.client.instance.details.ProcessInstanceDetailsPresenter;
+import org.jbpm.console.ng.mobile.pr.client.instance.details.ProcessInstanceDetailsPresenter.ProcessInstanceDetailsView;
+import org.jbpm.console.ng.mobile.pr.client.instance.list.ProcessInstancesListPresenter;
+import org.jbpm.console.ng.mobile.pr.client.instance.list.ProcessInstancesListPresenter.ProcessInstancesListView;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -52,7 +56,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 @WorkbenchScreen(identifier = "MobilePresenter")
 public class MobileWorkBenchPresenter {
     
-    @Inject 
+    @Inject    
     private MGWTPlaceManager placeManager;
     
     private HomeView homeView;
@@ -60,6 +64,10 @@ public class MobileWorkBenchPresenter {
     private ProcessDefinitionsListView processDefinitionsListView;
     
     private ProcessDefinitionDetailsView processDefinitionDetailsView;
+    
+    private ProcessInstancesListView processInstancesListView;
+    
+    private ProcessInstanceDetailsView processInstanceDetailsView;
     
     private TaskListView taskListView;
     
@@ -76,7 +84,13 @@ public class MobileWorkBenchPresenter {
     @Inject
     private ProcessDefinitionDetailsPresenter processDefinitionDetailsPresenter;
     
-    @Inject 
+    @Inject
+    private ProcessInstancesListPresenter processInstancesListPresenter;
+    
+    @Inject
+    private ProcessInstanceDetailsPresenter processInstanceDetailsPresenter;
+    
+    @Inject    
     private TaskListPresenter taskListPresenter;
     
     @Inject
@@ -84,22 +98,22 @@ public class MobileWorkBenchPresenter {
     
     @Inject
     private NewTaskPresenter newTaskPresenter;
-
+    
     private VerticalPanel widgets;
-
+    
     public MobileWorkBenchPresenter() {
-
+        
     }
-
+    
     @WorkbenchPartTitle
     public String getTitle() {
         return "Mobile View";
     }
-
+    
     @WorkbenchPartView
     public IsWidget getView() {
         widgets = new VerticalPanel();
-
+        
         GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
             @Override
             public void onUncaughtException(Throwable e) {
@@ -108,21 +122,21 @@ public class MobileWorkBenchPresenter {
             }
         });
         new Timer() {
-
+            
             @Override
             public void run() {
                 start();
-
+                
             }
         }.schedule(1);
-
+        
         return widgets;
     }
-
+    
     public void start() {
-
+        
         MGWTSettings appSetting = MGWTSettings.getAppSetting();
-
+        
         MGWT.applySettings(appSetting);
 
         //build animation helper and attach it
@@ -142,6 +156,14 @@ public class MobileWorkBenchPresenter {
         placeManager.addScreen("Process Definitions List", processDefinitionsListView);
         processDefinitionsListView.init(processDefinitionsListPresenter);
         
+        processInstancesListView = processInstancesListPresenter.getView();
+        placeManager.addScreen("Process Instances List", processInstancesListView);
+        processInstancesListView.init(processInstancesListPresenter);
+        
+        processInstanceDetailsView = processInstanceDetailsPresenter.getView();
+        placeManager.addScreen("Process Instance Details", processInstanceDetailsView);
+        processInstanceDetailsView.init(processInstanceDetailsPresenter);
+        
         taskListView = taskListPresenter.getView();
         placeManager.addScreen("Tasks List", taskListView);
         taskListView.init(taskListPresenter);
@@ -153,7 +175,7 @@ public class MobileWorkBenchPresenter {
         taskDetailsView = taskDetailsPresenter.getView();
         placeManager.addScreen("Task Details", taskDetailsView);
         taskDetailsView.init(taskDetailsPresenter);
-        
+
         //animate
         placeManager.goTo("Home", Animation.SLIDE);
     }
