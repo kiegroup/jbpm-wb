@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.mobile.core.client.home;
 
-import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import org.jbpm.console.ng.mobile.core.client.MGWTUberView;
@@ -29,12 +28,6 @@ import org.jbpm.console.ng.mobile.core.client.MGWTUberView;
 public class HomePresenter {
 
     public interface HomeView extends MGWTUberView<HomePresenter> {
-
-        HasTapHandlers getProcessDefinitionsButton();
-
-        HasTapHandlers getProcessInstancesButton();
-
-        HasTapHandlers getTasksListButton();
 
     }
   

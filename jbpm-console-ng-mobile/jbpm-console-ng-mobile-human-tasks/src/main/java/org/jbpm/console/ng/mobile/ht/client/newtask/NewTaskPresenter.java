@@ -15,10 +15,6 @@
  */
 package org.jbpm.console.ng.mobile.ht.client.newtask;
 
-import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.HasValue;
-import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
-import com.googlecode.mgwt.ui.client.widget.MListBox;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,37 +26,23 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.mobile.core.client.MGWTUberView;
 
-
 /**
  *
  * @author livthomas
  * @author salaboy
  */
 @Dependent
-public class NewTaskPresenter  {
+public class NewTaskPresenter {
 
     public interface NewTaskView extends MGWTUberView<NewTaskPresenter> {
 
-        HasText getTaskNameTextBox();
-
-        HasValue<Boolean> getAssignToMeCheckBox();
-
-        HasText getDueOnDateBox();
-
-        MListBox getPriorityListBox();
-
-        HasText getUserTextBox();
-
-        HasTapHandlers getAddTaskButton();
-        
         void goBackToTaskList();
 
     }
 
     @Inject
     private NewTaskView view;
-    
-    
+
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
 

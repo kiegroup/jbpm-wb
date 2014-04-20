@@ -15,11 +15,6 @@
  */
 package org.jbpm.console.ng.mobile.ht.client.tasklist;
 
-import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
-import com.googlecode.mgwt.ui.client.widget.base.HasRefresh;
-import com.googlecode.mgwt.ui.client.widget.base.PullArrowWidget;
-import com.googlecode.mgwt.ui.client.widget.base.PullPanel;
-import com.googlecode.mgwt.ui.client.widget.celllist.HasCellSelectedHandler;
 import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
@@ -32,7 +27,6 @@ import org.jbpm.console.ng.mobile.core.client.MGWTUberView;
 import org.jbpm.console.ng.mobile.ht.client.utils.TaskStatus;
 import org.uberfire.security.Identity;
 
-
 /**
  *
  * @author livthomas
@@ -43,33 +37,21 @@ public class TaskListPresenter {
 
     public interface TaskListView extends MGWTUberView<TaskListPresenter> {
 
-        HasTapHandlers getNewTaskButton();
-
-        HasRefresh getPullPanel();
-
-        void setHeaderPullHandler(PullPanel.Pullhandler pullHandler);
-
-        PullArrowWidget getPullHeader();
-
         void render(List<TaskSummary> tasks);
 
-        HasCellSelectedHandler getTaskList();
-
-        HasTapHandlers getBackButton();
     }
 
     @Inject
     private TaskListView view;
-    
+
     @Inject
     private Caller<TaskServiceEntryPoint> taskServices;
-    
+
     @Inject
     private Identity identity;
-    
 
     public TaskListPresenter() {
-        
+
     }
 
     public TaskListView getView() {

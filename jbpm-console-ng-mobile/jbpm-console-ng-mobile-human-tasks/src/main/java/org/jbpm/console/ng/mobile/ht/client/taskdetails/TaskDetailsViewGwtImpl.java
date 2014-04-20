@@ -17,7 +17,6 @@ package org.jbpm.console.ng.mobile.ht.client.taskdetails;
 
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Label;
-import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
 import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
 import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
 import com.googlecode.mgwt.mvp.client.Animation;
@@ -179,57 +178,57 @@ public class TaskDetailsViewGwtImpl extends AbstractView implements TaskDetailsP
             }
         });
 
-        getSaveButton().addTapHandler(new TapHandler() {
+        saveButton.addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
                 presenter.saveTask(taskId);
             }
         });
 
-        getReleaseButton().addTapHandler(new TapHandler() {
+        releaseButton.addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
                 presenter.releaseTask(taskId);
             }
         });
 
-        getClaimButton().addTapHandler(new TapHandler() {
+        claimButton.addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
                 presenter.claimTask(taskId);
             }
         });
 
-        getStartButton().addTapHandler(new TapHandler() {
+        startButton.addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
                 presenter.startTask(taskId);
             }
         });
 
-        getCompleteButton().addTapHandler(new TapHandler() {
+        completeButton.addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
                 presenter.completeTask(taskId);
             }
         });
 
-        getUpdateButton().addTapHandler(new TapHandler() {
+        updateButton.addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
                 try {
-                    presenter.updateTask(taskId, "", getDescriptionTextArea().getText(), new MDateBox.DateParser().parse(getDueOnDateBox()
-                            .getText()), getPriorityListBox().getSelectedIndex());
+                    presenter.updateTask(taskId, "", descriptionTextArea.getText(), new MDateBox.DateParser().parse(
+                            dueOnDateBox.getText()), priorityListBox.getSelectedIndex());
                 } catch (ParseException ex) {
                     displayNotification("Wrong date format", "Enter the date in the correct format!");
                 }
             }
         });
 
-        getDelegateButton().addTapHandler(new TapHandler() {
+        delegateButton.addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
-                presenter.delegateTask(taskId, getDelegateTextBox().getText());
+                presenter.delegateTask(taskId, delegateTextBox.getText());
             }
         });
     }
@@ -302,31 +301,6 @@ public class TaskDetailsViewGwtImpl extends AbstractView implements TaskDetailsP
     }
 
     @Override
-    public HasTapHandlers getUpdateButton() {
-        return updateButton;
-    }
-
-    @Override
-    public HasTapHandlers getDelegateButton() {
-        return delegateButton;
-    }
-
-    @Override
-    public HasText getDescriptionTextArea() {
-        return descriptionTextArea;
-    }
-
-    @Override
-    public HasText getDueOnDateBox() {
-        return dueOnDateBox;
-    }
-
-    @Override
-    public MListBox getPriorityListBox() {
-        return priorityListBox;
-    }
-
-    @Override
     public HasText getPotentialOwnersText() {
         return potentialOwnersLabel;
     }
@@ -334,31 +308,6 @@ public class TaskDetailsViewGwtImpl extends AbstractView implements TaskDetailsP
     @Override
     public HasText getDelegateTextBox() {
         return delegateTextBox;
-    }
-
-    @Override
-    public HasTapHandlers getSaveButton() {
-        return saveButton;
-    }
-
-    @Override
-    public HasTapHandlers getReleaseButton() {
-        return releaseButton;
-    }
-
-    @Override
-    public HasTapHandlers getCompleteButton() {
-        return completeButton;
-    }
-
-    @Override
-    public HasTapHandlers getClaimButton() {
-        return claimButton;
-    }
-
-    @Override
-    public HasTapHandlers getStartButton() {
-        return startButton;
     }
 
     public void setTaskId(long taskId) {
