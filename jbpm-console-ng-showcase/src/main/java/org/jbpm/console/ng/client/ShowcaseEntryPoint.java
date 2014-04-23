@@ -173,7 +173,12 @@ public class ShowcaseEntryPoint {
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
-       
+        result.add( MenuFactory.newSimpleItem( constants.Experimental_Grid() ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "Grid Experimental" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
 
         return result;
     }
