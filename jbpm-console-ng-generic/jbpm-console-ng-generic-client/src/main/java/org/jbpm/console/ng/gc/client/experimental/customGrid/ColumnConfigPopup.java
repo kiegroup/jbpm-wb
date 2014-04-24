@@ -66,7 +66,7 @@ public class ColumnConfigPopup extends Modal {
 			checkBox.addClickHandler( new ClickHandler() {
 				@Override
 				public void onClick( ClickEvent event ) {
-					gridColumnsHelper.applyGridChange( entry.getKey(), checkBox.getValue() );
+					gridColumnsHelper.applyGridColumnConfig( entry.getKey(), checkBox.getValue() );
 				}
 			} );
 			columnPopupMainPanel.add( new ColumnConfigRowWidget( checkBox, columnSettings.getColumnLabel() ) );

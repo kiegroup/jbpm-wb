@@ -51,7 +51,14 @@ public class GridColumnsHelper {
 		// TODO persist, attach to user preferences, ...
 	}
 
-	public void applyGridChange( int selectedColumnIndex, boolean insertColumn ) {
+	public void applyGridColumnsConfig() {
+		if ( gridColumnsConfig == null ) throw new RuntimeException( "Grid customization widget is not correctly configured!" );
+		for ( Map.Entry<Integer, ColumnSettings> entry : gridColumnsConfig.entrySet() ) {
+			if ( !entry.getValue().isVisible() ) applyGridColumnConfig( entry.getKey(), false );
+        }
+	}
+
+	public void applyGridColumnConfig( int selectedColumnIndex, boolean insertColumn ) {
 		ColumnSettings columnSettings = gridColumnsConfig.get( selectedColumnIndex );
 		columnSettings.setVisible( insertColumn );
 
@@ -161,7 +168,8 @@ public class GridColumnsHelper {
 			int current = gridIndexes[selectedColumnIndex];
 			int counter = current;
 			if ( current == -1 )
-				throw new RuntimeException( "Internal error: index to be dropped (" + selectedColumnIndex + ") was not set (" + current + "). Something went wrong." );
+				throw new RuntimeException( "Internal error: index to be dropped (" + selectedColumnIndex + ") was not set (" + current + "). " +
+						"Probably the widget's client forgot to call applyGridColumnsConfig()." );
 			for ( int i = selectedColumnIndex; i < selectorIndexes.length; i++ ) {
 				if ( i == selectedColumnIndex ) gridIndexes[i] = -1;
 				else if ( gridIndexes[i] != -1 ) {
@@ -175,7 +183,8 @@ public class GridColumnsHelper {
 		private int indexAdded( int selectedColumnIndex ) {
 			int current = gridIndexes[selectedColumnIndex];
 			if ( current != -1 )
-				throw new RuntimeException( "Internal error: index to be added (" + selectedColumnIndex + ") was internally still set (" + current + "). Something went wrong." );
+				throw new RuntimeException( "Internal error: index to be added (" + selectedColumnIndex + ") was internally still set (" + current + "). " +
+						"Probably the widget's client forgot to call applyGridColumnsConfig()." );
 			int nextValidIndex = 0;
 			for ( int i = 0; i < selectedColumnIndex; i++ ) {
 				if ( gridIndexes[i] != -1 ) nextValidIndex = gridIndexes[i] + 1;

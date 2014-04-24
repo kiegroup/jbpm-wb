@@ -42,8 +42,17 @@ public class ColumnSelectionWidget extends Composite {
 	}
 
 	public void setDataGrid( String gridId, DataGrid dataGrid ) {
-		if ( dataGrid == null ) Window.alert( "Grid customization widget is not correctly configured!" );
+		if ( dataGrid == null ) {
+			Window.alert( "Grid customization widget is not correctly configured!" );
+			return;
+		}
 		gridColumnsHelper = new GridColumnsHelper( gridId, dataGrid );
+	}
+
+	// Apply any previously applied column configuration to the data grid (an explicit call to this method is necessary whenever the data grid is being redrawn)
+	// Made this into a separate call, so that it can be executed when clicking the typical table refresh button (for example)
+	public void applyGridColumnsConfig() {
+		gridColumnsHelper.applyGridColumnsConfig();
 	}
 
 	private void iconClicked() {
