@@ -7,18 +7,18 @@ import com.google.gwt.user.client.ui.*;
 
 public class ColumnConfigRowWidget extends Composite {
 
-    interface ColumnConfigRowWidgetUIBinder
-            extends UiBinder<Widget, ColumnConfigRowWidget> {
-    };
+	interface ColumnConfigRowWidgetUIBinder
+			extends UiBinder<Widget, ColumnConfigRowWidget> {
+	}
 
-    private static ColumnConfigRowWidgetUIBinder uiBinder = GWT.create(ColumnConfigRowWidgetUIBinder.class);
+	private static ColumnConfigRowWidgetUIBinder uiBinder = GWT.create( ColumnConfigRowWidgetUIBinder.class );
 
-    @UiField
-    HTMLPanel rowPanel;
+	@UiField
+	HTMLPanel rowPanel;
 
-    public ColumnConfigRowWidget(CheckBox checkBox, String columnLabel) {
-        initWidget( uiBinder.createAndBindUi( this ) );
-        rowPanel.add( checkBox, "columnVisibleId");
-        rowPanel.add( new Label(columnLabel), "columnLabelId");
-    }
+	public ColumnConfigRowWidget( CheckBox checkBox, String columnLabel ) {
+		initWidget( uiBinder.createAndBindUi( this ) );
+		rowPanel.add( checkBox, "columnVisibleId" );
+		rowPanel.add( new Label( columnLabel ), "columnLabelId" );
+	}
 }
