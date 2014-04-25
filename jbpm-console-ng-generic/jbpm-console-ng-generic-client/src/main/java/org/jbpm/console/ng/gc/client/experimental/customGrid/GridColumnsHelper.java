@@ -17,7 +17,7 @@ public class GridColumnsHelper {
 	private DataGrid dataGrid;
 
 	private GridColumnsConfig gridColumnsConfig;
-	private ColumnConfigPopup selectorPopup;
+
 	private ColumnIndexHelper indexManager;
 
 
@@ -38,12 +38,6 @@ public class GridColumnsHelper {
 			);
 		}
 		indexManager = new ColumnIndexHelper( cachedColumns.size() );
-		selectorPopup = new ColumnConfigPopup( this );
-	}
-
-	public void showConfig() {
-		selectorPopup.setup( gridColumnsConfig );
-		selectorPopup.show();
 	}
 
 	public void saveGridColumnsConfig() {
@@ -68,13 +62,17 @@ public class GridColumnsHelper {
 		} else {
 			int addIndex = columnAdded( selectedColumnIndex );
 			dataGrid.insertColumn( addIndex,
-								   getColumn( selectedColumnIndex ),
-								   getColumnHeader( selectedColumnIndex ),
-								   getColumnFooter( selectedColumnIndex ) );
+					getColumn( selectedColumnIndex ),
+					getColumnHeader( selectedColumnIndex ),
+					getColumnFooter( selectedColumnIndex ) );
 			dataGrid.setColumnWidth( addIndex, getColumnWidth( selectedColumnIndex ) );
 		}
 
 		dataGrid.redraw();
+	}
+
+	public GridColumnsConfig getGridColumnsConfig() {
+		return gridColumnsConfig;
 	}
 
 	private int columnRemoved( int selectedColumnIndex ) {

@@ -3,11 +3,11 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui">
 
     <g:HTMLPanel ui:field="rowPanel">
-        <table class="row-fluid span12" style="padding: 4px;">
+        <table  class="row-fluid" cellpadding="8">
             <tr>
                 <td id="columnVisibleId" style="padding: 4px;">
                 </td>
-                <td id="columnLabelId" style="white-space: nowrap; vertical-align: top;">
+                <td id="columnLabelId" style="padding: 4px;">
                 </td>
             </tr>
         </table>
