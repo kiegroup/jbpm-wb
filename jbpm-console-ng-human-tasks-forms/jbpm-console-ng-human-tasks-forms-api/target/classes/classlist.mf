@@ -1,0 +1,5 @@
+org.jbpm.console.ng.ht.forms.service.FormServiceEntryPoint
+org.jbpm.console.ng.ht.forms.model.events.PaletteItemAddedEvent
+org.jbpm.console.ng.ht.forms.model.events.FormRenderedEvent
+org.jbpm.console.ng.ht.forms.model.events.FormLoadedEvent
+org.jbpm.console.ng.ht.forms.service.FormModelerProcessStarterEntryPoint

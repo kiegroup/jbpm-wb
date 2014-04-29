@@ -1,0 +1,7 @@
+org.jbpm.console.ng.ht.forms.client.editors.taskform.popup.FormDisplayPopupViewImpl
+org.jbpm.console.ng.ht.forms.client.editors.taskform.FormDisplayPresenterActivity
+org.jbpm.console.ng.ht.forms.client.editors.taskform.popup.FormDisplayPopupPresenter
+org.jbpm.console.ng.ht.forms.client.editors.taskform.popup.FormDisplayPopupPresenterActivity
+org.jbpm.console.ng.ht.forms.client.editors.taskform.FormDisplayViewImpl
+org.jbpm.console.ng.ht.forms.client.editors.taskform.FormDisplayPresenter
+org.jbpm.console.ng.ht.forms.client.i18n.Constants

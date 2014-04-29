@@ -1,0 +1,6 @@
+org.jbpm.console.ng.ht.admin.client.perspectives.TaskAdminSettingsPerspective
+org.jbpm.console.ng.ht.admin.client.perspectives.TaskAdminSettingsPerspectiveActivity
+org.jbpm.console.ng.ht.admin.client.editors.settings.TaskAdminSettingsViewImpl
+org.jbpm.console.ng.ht.admin.client.i18n.Constants
+org.jbpm.console.ng.ht.admin.client.editors.settings.TaskAdminSettingsPresenter
+org.jbpm.console.ng.ht.admin.client.editors.settings.TaskAdminSettingsPresenterActivity
