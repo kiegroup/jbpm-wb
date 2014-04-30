@@ -24,6 +24,7 @@ import com.googlecode.mgwt.ui.client.widget.MTextArea;
 import com.googlecode.mgwt.ui.client.widget.MTextBox;
 import com.googlecode.mgwt.ui.client.widget.RoundPanel;
 import com.googlecode.mgwt.ui.client.widget.WidgetList;
+import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
 import org.jbpm.console.ng.mobile.core.client.AbstractView;
@@ -46,6 +47,7 @@ public class ProcessDefinitionDetailsViewImpl extends AbstractView implements
     private final MTextArea servicesText = new MTextArea();
 
     private final Button newInstanceButton;
+    private final Button instancesListButton;
 
     private String processId;
     private String deploymentId;
@@ -82,7 +84,11 @@ public class ProcessDefinitionDetailsViewImpl extends AbstractView implements
         roundPanel.add(widgetList);
 
         newInstanceButton = new Button("New Instance");
+        newInstanceButton.setConfirm(true);
         roundPanel.add(newInstanceButton);
+
+        instancesListButton = new Button("View Process Instances");
+        roundPanel.add(instancesListButton);
 
         layoutPanel.add(roundPanel);
     }
@@ -102,6 +108,15 @@ public class ProcessDefinitionDetailsViewImpl extends AbstractView implements
             @Override
             public void onTap(TapEvent event) {
                 presenter.startProcess(deploymentId, processId);
+            }
+        });
+
+        instancesListButton.addTapHandler(new TapHandler() {
+            @Override
+            public void onTap(TapEvent event) {
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("definitionId", processId);
+                placeManager.goTo("Process Instances List", Animation.SLIDE_REVERSE, params);
             }
         });
     }

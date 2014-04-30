@@ -32,6 +32,7 @@ import com.googlecode.mgwt.ui.client.widget.WidgetList;
 import com.googlecode.mgwt.ui.client.widget.tabbar.TabBarButton;
 import com.googlecode.mgwt.ui.client.widget.tabbar.TabPanel;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -171,6 +172,7 @@ public class TaskDetailsViewGwtImpl extends AbstractView implements TaskDetailsP
     @Override
     public void init(final TaskDetailsPresenter presenter) {
         this.presenter = presenter;
+
         getBackButton().addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
@@ -285,10 +287,27 @@ public class TaskDetailsViewGwtImpl extends AbstractView implements TaskDetailsP
             updateButton.setVisible(true);
         }
 
-        String instanceId = (task.getProcessInstanceId() == -1) ? "None" : Long.toString(task.getProcessInstanceId());
-        String definitionId = (task.getProcessId() == null) ? "None" : task.getProcessId();
-        processInstanceIdTextBox.setText(instanceId);
-        processDefinitionIdTextBox.setText(definitionId);
+        final Long instanceId = task.getProcessInstanceId();
+        final String definitionId = task.getProcessId();
+        if (instanceId != -1 && definitionId != null) {
+            processInstanceIdTextBox.setText(Long.toString(instanceId));
+            processDefinitionIdTextBox.setText(definitionId);
+        } else {
+            processInstanceIdTextBox.setText("None");
+            processDefinitionIdTextBox.setText("None");
+        }
+
+        processInstanceDetailsButton.addTapHandler(new TapHandler() {
+            @Override
+            public void onTap(TapEvent event) {
+                if (instanceId != -1 && definitionId != null) {
+                    Map<String, Object> params = new HashMap<String, Object>();
+                    params.put("instanceId", instanceId);
+                    params.put("definitionId", definitionId);
+                    placeManager.goTo("Process Instance Details", Animation.SLIDE, params);
+                }
+            }
+        });
 
 //        potentialOwnersLabel.setText(task.getPotentialOwners().toString());
         if (owned && !status.equals(TaskStatus.Completed)) {

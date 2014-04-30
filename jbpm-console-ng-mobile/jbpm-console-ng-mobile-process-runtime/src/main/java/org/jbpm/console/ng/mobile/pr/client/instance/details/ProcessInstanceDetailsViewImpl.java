@@ -33,17 +33,17 @@ import org.jbpm.console.ng.mobile.core.client.MGWTPlaceManager;
  *
  * @author livthomas
  */
-public class ProcessInstanceDetailsViewImpl extends AbstractView implements 
+public class ProcessInstanceDetailsViewImpl extends AbstractView implements
         ProcessInstanceDetailsPresenter.ProcessInstanceDetailsView {
 
     @Inject
     private MGWTPlaceManager placeManager;
-    
+
     private ProcessInstanceDetailsPresenter presenter;
-    
+
     private Long instanceId;
     private String definitionId;
-    
+
     private final MTextBox instanceIdText = new MTextBox();
     private final MTextBox definitionIdText = new MTextBox();
     private final MTextBox definitionNameText = new MTextBox();
@@ -52,11 +52,11 @@ public class ProcessInstanceDetailsViewImpl extends AbstractView implements
     private final MTextBox instanceStateText = new MTextBox();
     private final MTextArea currentActivitiesText = new MTextArea();
     private final MTextArea instanceLogText = new MTextArea();
-    
+
     private final Button abortButton;
 
     public ProcessInstanceDetailsViewImpl() {
-        title.setHTML("Definition Details");
+        title.setHTML("Instance Details");
 
         RoundPanel roundPanel = new RoundPanel();
 
