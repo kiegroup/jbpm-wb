@@ -80,7 +80,7 @@ public class HomeViewImpl extends AbstractView implements HomePresenter.HomeView
         processInstancesButton.addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
-                placeManager.goTo("Process Instances List", Animation.SLIDE);
+                placeManager.goTo("Process Instances List", Animation.SLIDE, null);
             }
         });
 

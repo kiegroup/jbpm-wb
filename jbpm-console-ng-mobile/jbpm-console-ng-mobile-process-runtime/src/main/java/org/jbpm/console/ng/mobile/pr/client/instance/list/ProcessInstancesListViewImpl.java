@@ -139,7 +139,7 @@ public class ProcessInstancesListViewImpl extends AbstractView implements
 
     @Override
     public void setParameters(Map<String, Object> params) {
-        if (params == null || params.isEmpty()) {
+        if (params == null || !params.containsKey("definitionId")) {
             definitionId = null;
         } else {
             definitionId = (String) params.get("definitionId");
