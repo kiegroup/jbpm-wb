@@ -17,6 +17,7 @@ package org.jbpm.console.ng.mobile.pr.client.instance.details;
 
 import com.google.gwt.user.client.ui.HasText;
 import com.google.inject.Inject;
+import com.googlecode.mgwt.ui.client.widget.Button;
 import java.util.List;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
@@ -35,44 +36,46 @@ import org.kie.api.runtime.process.ProcessInstance;
  * @author livthomas
  */
 public class ProcessInstanceDetailsPresenter {
-
+    
     public interface ProcessInstanceDetailsView extends MGWTUberView<ProcessInstanceDetailsPresenter> {
-
+        
         HasText getInstanceIdText();
-
+        
         HasText getDefinitionIdText();
-
+        
         HasText getDefinitionNameText();
-
+        
         HasText getDefinitionVersionText();
-
+        
         HasText getDeploymentText();
-
+        
         HasText getInstanceStateText();
-
+        
         HasText getCurrentActivitiesText();
-
+        
         HasText getInstanceLogText();
-
+        
+        Button getAbortButton();
+        
         void goToInstancesList();
-
+        
         void displayNotification(String title, String message);
-
+        
     }
-
+    
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
-
+    
     @Inject
     private Caller<KieSessionEntryPoint> sessionServices;
-
+    
     @Inject
     private ProcessInstanceDetailsView view;
-
+    
     public ProcessInstanceDetailsView getView() {
         return view;
     }
-
+    
     public void refresh(long instanceId, String definitionId) {
         // Instance ID, Deployment, Instance State
         dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
@@ -80,17 +83,20 @@ public class ProcessInstanceDetailsPresenter {
             public void callback(ProcessInstanceSummary process) {
                 view.getInstanceIdText().setText(Long.toString(process.getId()));
                 view.getDeploymentText().setText(process.getDeploymentId());
-
+                
                 String status = "Unknown";
+                boolean showAbortButton = true;
                 switch (process.getState()) {
                     case ProcessInstance.STATE_ACTIVE:
                         status = "Active";
                         break;
                     case ProcessInstance.STATE_ABORTED:
                         status = "Aborted";
+                        showAbortButton = false;
                         break;
                     case ProcessInstance.STATE_COMPLETED:
                         status = "Completed";
+                        showAbortButton = false;
                         break;
                     case ProcessInstance.STATE_PENDING:
                         status = "Pending";
@@ -101,8 +107,9 @@ public class ProcessInstanceDetailsPresenter {
                     default:
                         break;
                 }
-
+                
                 view.getInstanceStateText().setText(status);
+                view.getAbortButton().setVisible(showAbortButton);
             }
         }, new ErrorCallback<Message>() {
             @Override
@@ -183,7 +190,7 @@ public class ProcessInstanceDetailsPresenter {
             }
         }).getProcessInstanceHistory(instanceId);
     }
-
+    
     public void abortProcessInstance(long instanceId) {
         sessionServices.call(new RemoteCallback<Void>() {
             @Override
@@ -198,5 +205,5 @@ public class ProcessInstanceDetailsPresenter {
             }
         }).abortProcessInstance(instanceId);
     }
-
+    
 }
