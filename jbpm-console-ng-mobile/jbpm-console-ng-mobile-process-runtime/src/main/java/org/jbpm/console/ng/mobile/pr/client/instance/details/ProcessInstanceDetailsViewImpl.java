@@ -163,4 +163,9 @@ public class ProcessInstanceDetailsViewImpl extends AbstractView implements
         return instanceLogText;
     }
 
+    @Override
+    public Button getAbortButton() {
+        return abortButton;
+    }
+
 }
