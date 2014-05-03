@@ -231,7 +231,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
     @Override
     public void process(BuildResults buildResults) {
 
-        if (!buildResults.getMessages().isEmpty()) {
+        if (!buildResults.getErrorMessages().isEmpty()) {
             return;
         }
         try {
