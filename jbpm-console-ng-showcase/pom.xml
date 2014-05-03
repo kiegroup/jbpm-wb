@@ -64,7 +64,7 @@
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
         </dependency>
-        
+
 
         <dependency>
             <groupId>org.jbpm</groupId>
@@ -76,8 +76,8 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
-        
+
+
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-admin-client</artifactId>
@@ -87,7 +87,7 @@
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-admin-backend</artifactId>
         </dependency>
-        
+
          <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-forms-client</artifactId>
@@ -132,12 +132,12 @@
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-bpm-home-client</artifactId>
         </dependency>
-    
+
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-generic-client</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-workitems-editor-client</artifactId>
@@ -255,7 +255,7 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
-    <!-- This must be placed above com.google.gwt:gwt-dev to override the 
+    <!-- This must be placed above com.google.gwt:gwt-dev to override the
       Jetty that is present there -->
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
@@ -293,7 +293,7 @@
       <groupId>org.jboss.solder</groupId>
       <artifactId>solder-impl</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.jboss.solder</groupId>
       <artifactId>solder-logging</artifactId>
@@ -633,7 +633,7 @@
           <soyc>false</soyc>
           <strict>false</strict>
           <server>org.jboss.errai.cdi.server.gwt.JettyLauncher</server>
-          <!-- drools-compiler has dependency on org.eclipse.jdt.core.compiler:ecj:jar:3.5.1:compile, 
+          <!-- drools-compiler has dependency on org.eclipse.jdt.core.compiler:ecj:jar:3.5.1:compile,
                see http://code.google.com/p/google-web-toolkit/issues/detail?id=4479 -->
           <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
         </configuration>
@@ -694,7 +694,7 @@
         </configuration>
       </plugin>
 
-      <!-- Tests are skipped by default because they require additional GWT 
+      <!-- Tests are skipped by default because they require additional GWT
            dependencies. Run mvn with -Pintegration-test to enable testing. -->
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
