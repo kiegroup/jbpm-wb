@@ -52,6 +52,7 @@
       <unpack>true</unpack>
       <unpackOptions>
         <excludes>
+          <exclude>login.jsp</exclude>
           <exclude>META-INF/context.xml</exclude>
           <exclude>WEB-INF/jetty-env.xml</exclude>
           <exclude>WEB-INF/web.xml</exclude>
