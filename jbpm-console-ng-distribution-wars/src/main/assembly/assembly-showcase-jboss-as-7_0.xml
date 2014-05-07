@@ -49,7 +49,7 @@
       <unpack>true</unpack>
       <unpackOptions>
         <excludes>
-
+          <exclude>login.jsp</exclude>
           <exclude>WEB-INF/jetty-env.xml</exclude>
           <exclude>WEB-INF/web.xml</exclude>
           <!-- Dom4j on as 7.1.1 breaks the PU-->
