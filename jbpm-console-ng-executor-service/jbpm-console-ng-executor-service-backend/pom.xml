@@ -29,6 +29,11 @@
   <name>jBPM Console NG - Executor Service Backend</name>
 
   <dependencies>
+
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-internal</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-executor-service-api</artifactId>
