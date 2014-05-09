@@ -51,7 +51,7 @@ public class NewTaskViewGwtImpl extends AbstractView implements NewTaskPresenter
 
     private final MTextBox taskNameTextBox = new MTextBox();
     private final MCheckBox assignToMeCheckBox = new MCheckBox();
-    private final MDateBox dueOnDateBox = new MDateBox();
+  //  private final MDateBox dueOnDateBox = new MDateBox();
     private final MListBox priorityListBox = new MListBox();
     private final MTextBox userTextBox = new MTextBox();
     private final Button addTaskButton;
@@ -82,7 +82,7 @@ public class NewTaskViewGwtImpl extends AbstractView implements NewTaskPresenter
         newTaskForm.setRound(true);
         newTaskForm.add(new FormListEntry("Task Name", taskNameTextBox));
         newTaskForm.add(new FormListEntry("Auto Assign To Me", assignToMeCheckBox));
-        newTaskForm.add(new FormListEntry("Due On", dueOnDateBox));
+        //newTaskForm.add(new FormListEntry("Due On", dueOnDateBox));
         newTaskForm.add(new FormListEntry("Priority", priorityListBox));
         newTaskForm.add(new FormListEntry("User", userTextBox));
         newTaskPanel.add(newTaskForm);
@@ -98,33 +98,33 @@ public class NewTaskViewGwtImpl extends AbstractView implements NewTaskPresenter
     public void init(final NewTaskPresenter presenter) {
         this.presenter = presenter;
         assignToMeCheckBox.setValue(false);
-        dueOnDateBox.setText(new DateRenderer().render(new Date()));
+      //  dueOnDateBox.setText(new DateRenderer().render(new Date()));
         userTextBox.setText(identity.getName());
 
         addTaskButton.addTapHandler(new TapHandler() {
             @Override
             public void onTap(TapEvent event) {
-                try {
+//                try {
                     List<String> users = new ArrayList<String>();
                     users.add(userTextBox.getText());
                     List<String> groups = new ArrayList<String>();
                     String taskName = taskNameTextBox.getText();
                     int priority = priorityListBox.getSelectedIndex();
                     boolean assignToMe = assignToMeCheckBox.getValue();
-                    long date = new DateParser().parse(dueOnDateBox.getText()).getTime();
+               //     long date = new DateParser().parse(dueOnDateBox.getText()).getTime();
                     long time = 0;
 
-                    presenter.addTask(users, groups, taskName, priority, assignToMe, date, time);
+                    presenter.addTask(users, groups, taskName, priority, assignToMe, time, time);
 
                     taskNameTextBox.setText("");
                     priorityListBox.setSelectedIndex(0);
                     assignToMeCheckBox.setValue(false);
-                    dueOnDateBox.setText(new DateRenderer().render(new Date()));
+                 //   dueOnDateBox.setText(new DateRenderer().render(new Date()));
 
                     placeManager.goTo("New Task", Animation.SLIDE);
-                } catch (ParseException ex) {
-                    displayNotification("Wrong date format", "Enter the date in the correct format!");
-                }
+//                } catch (ParseException ex) {
+//                    displayNotification("Wrong date format", "Enter the date in the correct format!");
+//                }
             }
         });
 

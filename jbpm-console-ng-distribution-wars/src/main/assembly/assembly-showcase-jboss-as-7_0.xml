@@ -152,6 +152,7 @@
           <!-- jBPM console & other client related -->
           <exclude>WEB-INF/lib/jbpm-*-client-*.jar</exclude>
           <exclude>WEB-INF/lib/jbpm-console-ng-mobile-*.jar</exclude>
+          <exclude>WEB-INF/lib/mgwt-*.jar</exclude>
 
         </excludes>
       </unpackOptions>
