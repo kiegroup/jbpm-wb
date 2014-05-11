@@ -19,7 +19,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.mgwt.dom.client.event.tap.HasTapHandlers;
-import com.googlecode.mgwt.ui.client.MGWT;
 import com.googlecode.mgwt.ui.client.dialog.Dialogs;
 import com.googlecode.mgwt.ui.client.widget.HeaderButton;
 import com.googlecode.mgwt.ui.client.widget.HeaderPanel;
@@ -51,7 +50,6 @@ public abstract class AbstractView implements IsWidget {
         headerBackButton = new HeaderButton();
         headerBackButton.setBackButton(true);
         headerBackButton.setText("Back");
-        headerBackButton.setVisible(!MGWT.getOsDetection().isAndroid());
         headerPanel.setLeftWidget(headerBackButton);
 
         layoutPanel.add(headerPanel);
