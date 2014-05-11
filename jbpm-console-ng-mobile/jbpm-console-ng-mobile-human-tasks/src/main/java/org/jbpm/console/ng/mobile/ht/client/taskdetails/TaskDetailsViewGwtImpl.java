@@ -159,13 +159,6 @@ public class TaskDetailsViewGwtImpl extends AbstractView implements TaskDetailsP
         assignmentsTabButton.setText("Assignments");
         tabPanel.add(assignmentsTabButton, assignmentsPanel);
 
-        // Comments tab
-        RoundPanel commentsPanel = new RoundPanel();
-
-        TabBarButton commentsTabButton = new TabBarButton(null);
-        commentsTabButton.setText("Comments");
-        tabPanel.add(commentsTabButton, commentsPanel);
-
         tabPanel.setSelectedChild(1);
     }
 
