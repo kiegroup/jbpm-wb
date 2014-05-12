@@ -408,6 +408,12 @@ public class ProcessInstanceDetailsPresenter {
                             view.displayNotification(constants.Aborting_Process_Instance() + "(id=" + processInstanceId + ")");
 
                         }
+                    }, new ErrorCallback<Message>() {
+                        @Override
+                        public boolean error( Message message, Throwable throwable ) {
+                            ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                            return true;
+                        }
                     }).abortProcessInstance(processInstanceId);
                 }
             }

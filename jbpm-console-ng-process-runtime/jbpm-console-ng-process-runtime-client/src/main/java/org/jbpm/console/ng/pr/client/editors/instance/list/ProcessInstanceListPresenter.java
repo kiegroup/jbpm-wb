@@ -263,6 +263,12 @@ public class ProcessInstanceListPresenter {
                 refreshActiveProcessList();
 
             }
+        }, new ErrorCallback<Message>() {
+            @Override
+            public boolean error( Message message, Throwable throwable ) {
+                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                return true;
+            }
         }).abortProcessInstance(processInstanceId);
     }
 
@@ -272,6 +278,12 @@ public class ProcessInstanceListPresenter {
             public void callback(Void v) {
                 refreshActiveProcessList();
 
+            }
+        }, new ErrorCallback<Message>() {
+            @Override
+            public boolean error( Message message, Throwable throwable ) {
+                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                return true;
             }
         }).abortProcessInstances(processInstanceIds);
     }
@@ -283,6 +295,12 @@ public class ProcessInstanceListPresenter {
             public void callback(Void v) {
                 refreshActiveProcessList();
 
+            }
+        }, new ErrorCallback<Message>() {
+            @Override
+            public boolean error( Message message, Throwable throwable ) {
+                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                return true;
             }
         }).suspendProcessInstance(processInstanceId);
     }
