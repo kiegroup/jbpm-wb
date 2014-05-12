@@ -27,15 +27,15 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
     @Test
     public void testGetTasksForLongPeriod() {
         Map<Day, List<TaskSummary>> tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
-                getTaskStatuses(), createDate("2014-02-24"), 42, "en-UK");
+                getTaskStatuses(), createDate("2014-02-24"), 42);
         assertEquals(42, tasksByDays.size());
 
         tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
-                getTaskStatuses(), createDate("2014-02-24"), 3000, "en-UK");
+                getTaskStatuses(), createDate("2014-02-24"), 3000);
         assertEquals(3000, tasksByDays.size());
 
         tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
-                getTaskStatuses(), createDate("2013-09-30"), 35, "en-UK");
+                getTaskStatuses(), createDate("2013-09-30"), 35);
         assertEquals(35, tasksByDays.size());
     }
 
@@ -44,15 +44,15 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
         DateTimeZone defaultTZ = DateTimeZone.getDefault();
         DateTimeZone.setDefault(DateTimeZone.forTimeZone(TimeZone.getTimeZone("Brazil/East")));
         Map<Day, List<TaskSummary>> tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
-                getTaskStatuses(), createDate("2014-02-24"), 42, "en-UK");
+                getTaskStatuses(), createDate("2014-02-24"), 42);
         assertEquals(42, tasksByDays.size());
 
         tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
-                getTaskStatuses(), createDate("2014-02-24"), 3000, "en-UK");
+                getTaskStatuses(), createDate("2014-02-24"), 3000);
         assertEquals(3000, tasksByDays.size());
 
         tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
-                getTaskStatuses(), createDate("2013-09-30"), 35, "en-UK");
+                getTaskStatuses(), createDate("2013-09-30"), 35);
         assertEquals(35, tasksByDays.size());
         DateTimeZone.setDefault(defaultTZ);
     }
@@ -60,7 +60,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
     @Test
     public void testGetTasksOwnedFromDateToDateByDaysNoTasksAtAll() {
         Map<Day, List<TaskSummary>> tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
-                getTaskStatuses(), createDate("2013-04-18"), 3, "en-UK");
+                getTaskStatuses(), createDate("2013-04-18"), 3);
         assertEquals(3, tasksByDays.size());
         verifyNoTasksPresent(tasksByDays);
     }
@@ -73,7 +73,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
         createTaskWithSpecifiedDueDateAndUserAndName("2014-01-12", "Bobba Fet", "Task after 2");
         createTaskWithNoDueDateAndUserAndName("Bobba Fet", "No due date");
         Map<Day, List<TaskSummary>> tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
-                getTaskStatuses(), createDate("2013-04-18"), 3, "en-UK");
+                getTaskStatuses(), createDate("2013-04-18"), 3);
         assertEquals(3, tasksByDays.size());
         verifyNoTasksPresent(tasksByDays);
     }
@@ -84,7 +84,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
         createTaskWithNoDueDateAndUserAndName("Bobba Fet", "No due date 2");
         LocalDate today = new LocalDate();
         Map<Day, List<TaskSummary>> tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
-                getTaskStatuses(), toJavaUtilDate(today), 3, "en-UK");
+                getTaskStatuses(), toJavaUtilDate(today), 3);
         assertEquals(3, tasksByDays.size());
         verifyCorrectTasksForSpecifiedDay(tasksByDays, today, 2);
         verifyCorrectTasksForSpecifiedDay(tasksByDays, today.plusDays(1), 0);
@@ -136,7 +136,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
         createTasksWithSpecifiedDueDateAndUserAndName(fifthDay, "Bobba Fet", "fifth day task", nrOfTasksForFifthDay);
 
         Map<Day, List<TaskSummary>> tasksByDays = consoleTaskService.getTasksOwnedFromDateToDateByDays("Bobba Fet",
-                getTaskStatuses(), toJavaUtilDate(from), nrOfDaysTotal, "en-UK");
+                getTaskStatuses(), toJavaUtilDate(from), nrOfDaysTotal);
 
         assertEquals(nrOfDaysTotal, tasksByDays.size());
 
@@ -151,7 +151,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
     @Test
     public void testGetTasksAssignedAsPotentialOwnerFromDateToDateByDaysNoTasksAtAll() {
         Map<Day, List<TaskSummary>> tasksByDays = consoleTaskService.getTasksAssignedAsPotentialOwnerFromDateToDateByDays(
-                "Bobba Fet", getTaskStatuses(), createDate("2013-04-18"), 3, "en-UK");
+                "Bobba Fet", getTaskStatuses(), createDate("2013-04-18"), 3);
         assertEquals(3, tasksByDays.size());
         verifyNoTasksPresent(tasksByDays);
     }
@@ -164,7 +164,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
         createTaskWithSpecifiedDueDateAndUserAndName("2014-01-12", "Bobba Fet", "Task after 2");
         createTaskWithNoDueDateAndUserAndName("Bobba Fet", "No due date");
         Map<Day, List<TaskSummary>> tasksByDays = consoleTaskService.getTasksAssignedAsPotentialOwnerFromDateToDateByDays(
-                "Bobba Fet", getTaskStatuses(), createDate("2013-04-18"), 3, "en-UK");
+                "Bobba Fet", getTaskStatuses(), createDate("2013-04-18"), 3);
         assertEquals(3, tasksByDays.size());
         verifyNoTasksPresent(tasksByDays);
     }
@@ -175,7 +175,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
         createTaskWithNoDueDateAndGroupAndName("Bounty Hunters", "No due date 2");
         LocalDate today = new LocalDate();
         Map<Day, List<TaskSummary>> tasksByDays = consoleTaskService.getTasksAssignedAsPotentialOwnerFromDateToDateByDays(
-                "Bobba Fet", getTaskStatuses(), toJavaUtilDate(today), 3, "en-UK");
+                "Bobba Fet", getTaskStatuses(), toJavaUtilDate(today), 3);
         assertEquals(3, tasksByDays.size());
         verifyCorrectTasksForSpecifiedDay(tasksByDays, today, 2);
         verifyCorrectTasksForSpecifiedDay(tasksByDays, today.plusDays(1), 0);
@@ -185,7 +185,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
     @Test
     public void testGetTasksAssignedAsPotentialOwnerFromDateToDateByDaysOnlyGroupTasksNoTasksAtAll() {
         Map<Day, List<TaskSummary>> tasksByDays = consoleTaskService.getTasksAssignedAsPotentialOwnerFromDateToDateByDays(
-                "Bobba Fet", getStatusesForGroupTasksOnly(), createDate("2013-04-18"), 3, "en-UK");
+                "Bobba Fet", getStatusesForGroupTasksOnly(), createDate("2013-04-18"), 3);
         assertEquals(3, tasksByDays.size());
         verifyNoTasksPresent(tasksByDays);
     }
@@ -202,7 +202,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
         createTaskWithSpecifiedDueDateAndGroupAndName(today.plusDays(2), "Bounty Hunters", "Valid group - another day");
 
         Map<Day, List<TaskSummary>> tasksByDays = consoleTaskService.getTasksAssignedAsPotentialOwnerFromDateToDateByDays(
-                "Bobba Fet", getStatusesForGroupTasksOnly(), toJavaUtilDate(today), 3, "en-UK");
+                "Bobba Fet", getStatusesForGroupTasksOnly(), toJavaUtilDate(today), 3);
         assertEquals(3, tasksByDays.size());
         verifyCorrectTasksForSpecifiedDay(tasksByDays, today, 2);
         verifyCorrectTasksForSpecifiedDay(tasksByDays, today.plusDays(1), 0);
@@ -267,7 +267,7 @@ public abstract class TaskServiceEntryPointBaseTest extends HumanTasksBackendBas
         createTasksWithSpecifiedDueDateAndGroupAndName(fifthDay, "Bounty Hunters", "5th group task", nrOfTasksForFifthDay / 2);
 
         Map<Day, List<TaskSummary>> tasksByDays = consoleTaskService.getTasksAssignedAsPotentialOwnerFromDateToDateByDays(
-                "Bobba Fet", getTaskStatuses(), toJavaUtilDate(from), nrOfDaysTotal, "en-UK");
+                "Bobba Fet", getTaskStatuses(), toJavaUtilDate(from), nrOfDaysTotal);
 
         assertEquals(nrOfDaysTotal, tasksByDays.size());
 

@@ -82,7 +82,6 @@ public class TaskBox extends Composite {
             final long taskId,
             final String taskName,
             final String actualOwner,
-            final List<String> potentialOwners,
             final String status, 
             final int priority, 
             String hour,
@@ -93,7 +92,6 @@ public class TaskBox extends Composite {
         this.taskName = taskName;
         taskNameLabel.setText(taskName);
         this.actualOwner = actualOwner;
-        this.potentialOwners = potentialOwners == null ? Collections.EMPTY_LIST : potentialOwners;
         this.status = status;
         this.presenter = presenter;
         this.identity = identity;

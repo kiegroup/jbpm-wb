@@ -135,7 +135,6 @@ public class TasksListPresenter {
     @Inject
     private Event<ClearSearchEvent> clearSearchEvent;
 
-    private static final String LANGUAGE = "en-UK";
 
     private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
 
@@ -388,12 +387,15 @@ public class TasksListPresenter {
     }
 
     private void refreshGrid(TaskType type){
+        final long currentTime = System.currentTimeMillis();
         taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback(List<TaskSummary> tasks) {
+                view.displayNotification("Tasks ("+tasks.size()+") retrieved in: "+((double)(System.currentTimeMillis()-currentTime)/1000)+"s");
                 allTaskSummaries = tasks;
                 filterTasks(view.getCurrentFilter());
                 view.getTaskListGrid().setFocus(true);
+                
             }
         }, new ErrorCallback<Message>() {
           @Override
@@ -402,17 +404,19 @@ public class TasksListPresenter {
               return true;
           }
       }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), TaskUtils.getStatusByType(type),
-                null, LANGUAGE);
+                null);
+        
     }
 
     private void refreshCalendar(TaskType type, Date date, TaskView taskView){
         DateRange dateRangeToShow = determineDateRangeForTaskViewBasedOnSpecifiedDate(date, taskView);
         Date fromDate = dateRangeToShow.getStartDate();
         int daysTotal = dateRangeToShow.getDaysInBetween() + 1;
-
+        final long currentTime = System.currentTimeMillis();
         taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
             @Override
             public void callback(Map<Day, List<TaskSummary>> tasks) {
+                view.displayNotification("Tasks ("+tasks.size()+") retrieved in: "+((double)(System.currentTimeMillis()-currentTime)/1000)+"s");
                 currentDayTasks = tasks;
                 filterTasks(view.getCurrentFilter());
             }
@@ -423,14 +427,16 @@ public class TasksListPresenter {
                   return true;
               }
           }).getTasksAssignedAsPotentialOwnerFromDateToDateByDays(identity.getName(), TaskUtils.getStatusByType(type),
-                fromDate, daysTotal, LANGUAGE);
+                fromDate, daysTotal);
     }
 
     public void refreshPersonalTasks(Date date, TaskView taskView) {
         if (taskView.equals(TaskView.GRID)) {
+            final long currentTime = System.currentTimeMillis();
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
+                    view.displayNotification("Tasks ("+tasks.size()+") retrieved in: "+((double)(System.currentTimeMillis()-currentTime)/1000)+"s");
                     allTaskSummaries = tasks;
                     filterTasks(view.getCurrentFilter());
 
@@ -441,17 +447,17 @@ public class TasksListPresenter {
                       ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                       return true;
                   }
-              }).getTasksOwnedByExpirationDateOptional(identity.getName(), TaskUtils.getStatusByType(TaskType.PERSONAL), null,
-                    LANGUAGE);
+              }).getTasksOwnedByExpirationDateOptional(identity.getName(), TaskUtils.getStatusByType(TaskType.PERSONAL), null);
 
         } else {
             DateRange dateRangeToShow = determineDateRangeForTaskViewBasedOnSpecifiedDate(date, taskView);
             Date fromDate = dateRangeToShow.getStartDate();
             int daysTotal = dateRangeToShow.getDaysInBetween() + 1;
-
+            final long currentTime = System.currentTimeMillis();
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
+                    view.displayNotification("Tasks ("+tasks.size()+") retrieved in: "+((double)(System.currentTimeMillis()-currentTime)/1000)+"s");
                     currentDayTasks = tasks;
                     filterTasks(view.getCurrentFilter());
                     view.getTaskListGrid().setFocus(true);
@@ -463,7 +469,7 @@ public class TasksListPresenter {
                       return true;
                   }
               }).getTasksOwnedFromDateToDateByDays(identity.getName(), TaskUtils.getStatusByType(TaskType.PERSONAL), fromDate,
-                    daysTotal, LANGUAGE);
+                    daysTotal);
         }
     }
 

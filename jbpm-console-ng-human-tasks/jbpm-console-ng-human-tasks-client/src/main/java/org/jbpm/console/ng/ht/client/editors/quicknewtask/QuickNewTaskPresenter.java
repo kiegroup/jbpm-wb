@@ -118,31 +118,8 @@ public class QuickNewTaskPresenter {
                          int priority,
                          boolean isAssignToMe,
                          long dueDate, long dueDateTime ) {
-        Map<String, Object> templateVars = new HashMap<String, Object>();
         Date due = UTCDateBox.utc2date( dueDate + dueDateTime ); 
-        templateVars.put( "due", due );
-        templateVars.put( "now", new Date() );
-
-        String str = "(with (new Task()) { priority = " + priority
-                + ", taskData = (with( new TaskData()) { createdOn = now, expirationTime = due } ), ";
-        str += "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = ";
-        str += " [";
-        if ( users != null && !users.isEmpty() ) {
-            
-            for(String user : users){
-                str += "new User('" + user + "'), ";
-            } 
-            
-        }
-        if ( groups != null && !groups.isEmpty() ) {
-            
-            for(String group : groups){
-                str += "new Group('" + group + "'), ";
-            } 
-            
-        }
-        str+="], businessAdministrators = [ new Group('Administrators') ],}),";
-        str += "names = [ new I18NText( 'en-UK', '" + taskName + "')]})";
+        
         if ( isAssignToMe && users != null && users.isEmpty() && groups != null 
                 && containsGroup(groups, identity.getRoles()) ) {
             //System.out.println(" FIRST OPTION -> Groups were I'm Included  and I want to be autoassigned add/start/claim!!");
@@ -157,10 +134,9 @@ public class QuickNewTaskPresenter {
                        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                        return true;
                    }
-               } ).addTaskAndClaimAndStart( str, null, identity.getName(), templateVars );
+               } ).addQuickTask(taskName, priority, due, users, groups, identity.getName(), true, true);
         } else if ( !isAssignToMe && users != null && users.isEmpty() && groups != null 
                 && containsGroup(groups, identity.getRoles()) ) {
-            //System.out.println(" Second OPTION -> Group task but I don't want to be assigned automatically  -> just add!!");
             taskServices.call( new RemoteCallback<Long>() {
                 @Override
                 public void callback( Long taskId ) {
@@ -173,9 +149,8 @@ public class QuickNewTaskPresenter {
                        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                        return true;
                    }
-               } ).addTask( str, null, templateVars );
+               } ).addQuickTask(taskName, priority, due, users, groups, identity.getName(), false, false);
         }  if (users != null && !users.isEmpty() && users.contains(identity.getName())) {
-            //System.out.println(" THIRD OPTION -> Users that includes me add / start!!");
             taskServices.call( new RemoteCallback<Long>() {
                 @Override
                 public void callback( Long taskId ) {
@@ -188,9 +163,8 @@ public class QuickNewTaskPresenter {
                    ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                    return true;
                }
-           } ).addTaskAndStart(str, null, identity.getName(), templateVars );
+           } ).addQuickTask(taskName, priority, due, users, groups, identity.getName(), true, false);
         } else if (users != null && !users.isEmpty() && !users.contains(identity.getName())) {
-            //System.out.println(" FOURTH OPTION -> users that are not me -> just adding!!");
             taskServices.call( new RemoteCallback<Long>() {
                 @Override
                 public void callback( Long taskId ) {
@@ -203,9 +177,8 @@ public class QuickNewTaskPresenter {
                    ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                    return true;
                }
-           } ).addTask(str, null, templateVars );
+           } ).addQuickTask(taskName, priority, due, users, groups, identity.getName(), false, false);
         }else if(groups != null && !groups.isEmpty() && !containsGroup(groups, identity.getRoles())){
-            //System.out.println(" FIFTH OPTION -> groups were I'm not in -> just adding!!");
             taskServices.call( new RemoteCallback<Long>() {
                 @Override
                 public void callback( Long taskId ) {
@@ -217,7 +190,7 @@ public class QuickNewTaskPresenter {
                        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                        return true;
                    }
-               } ).addTask(str, null, templateVars );
+               } ).addQuickTask(taskName, priority, due, users, groups, identity.getName(), false, false);
         } 
 
     }

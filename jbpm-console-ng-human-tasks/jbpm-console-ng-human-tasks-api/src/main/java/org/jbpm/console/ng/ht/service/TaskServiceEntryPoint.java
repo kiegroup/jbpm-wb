@@ -29,11 +29,10 @@ import org.jbpm.console.ng.ht.model.TaskSummary;
 @Remote
 public interface TaskServiceEntryPoint {
 
-    List<TaskSummary> getTasksAssignedAsPotentialOwnerByExpirationDateOptional(String userId, List<String> status, Date from, 
-            String language);
+    List<TaskSummary> getTasksAssignedAsPotentialOwnerByExpirationDateOptional(String userId, List<String> status, Date from);
     
     Map<Day, List<TaskSummary>> getTasksAssignedAsPotentialOwnerFromDateToDateByDays(String userId, List<String> strStatuses,
-                                                        Date from, int nrOfDaysTotal, String language);
+                                                        Date from, int nrOfDaysTotal);
 
 
     /**
@@ -43,17 +42,20 @@ public interface TaskServiceEntryPoint {
      * @param userId id of the task owner
      * @param from start day
      * @param nrOfDaysTotal how many days to return including start date
-     * @param language
      * 
      * @return list of tasks per day for specified days (dates)
      */
     Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, List<String> strStatuses, Date from,
-            int nrOfDaysTotal, String language);
+            int nrOfDaysTotal);
 
-    List<TaskSummary> getTasksOwnedByExpirationDateOptional(String userId, List<String> strStatuses, Date from,
-            String language);
+    List<TaskSummary> getTasksOwnedByExpirationDateOptional(String userId, List<String> strStatuses, Date from);
 
     long addTask(String taskString, Map<String, Object> inputs, Map<String, Object> templateInputs);
+    
+    long addQuickTask(String taskName, int priority,
+                      Date dueDate, 
+                      List<String> users, List<String> groups, String identity, 
+                      boolean start, boolean claim);
 
     long addTaskAndStart(String taskString, Map<String, Object> inputs, String userId, Map<String, Object> templateInputs);
     
