@@ -60,7 +60,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Override
     public List<TaskSummary> getTasksAssignedAsPotentialOwnerByExpirationDateOptional(String userId,
-            List<String> status, Date from) { 
+            List<String> status, Date from, int offset, int count) { 
         List<Status> statuses = new ArrayList<Status>();
         for (String s : status) {
             statuses.add(Status.valueOf(s));
@@ -70,12 +70,12 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("expirationDate", from);
 		QueryFilter qf = new QueryFilterImpl( "(t.taskData.expirationTime = :expirationDate or t.taskData.expirationTime is null)", 
-                            params, "order by t.id DESC", 0, 0);
+                            params, "order by t.id DESC", offset, count);
                 
             taskSummaries = TaskSummaryHelper.adaptCollection(
                     taskService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf ));
         } else {
-            QueryFilter qf = new QueryFilterImpl(0,0);
+            QueryFilter qf = new QueryFilterImpl(offset,count);
             taskSummaries = TaskSummaryHelper.adaptCollection(
                     taskService.getTasksAssignedAsPotentialOwner(userId,null, statuses, qf));
         }
@@ -98,14 +98,14 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 //    }
 
     @Override
-    public List<TaskSummary> getTasksOwnedByExpirationDateOptional(String userId, List<String> status, Date from) { 
+    public List<TaskSummary> getTasksOwnedByExpirationDateOptional(String userId, List<String> status, Date from, int offset, int count) { 
         List<Status> statuses = new ArrayList<Status>();
         for (String s : status) {
             statuses.add(Status.valueOf(s));
         }
         List<TaskSummary> taskSummaries = TaskSummaryHelper.adaptCollection(
                 taskService.getTasksOwned(
-                        userId, statuses, new QueryFilterImpl(0, 0)));
+                        userId, statuses, new QueryFilterImpl(offset, count)));
 //        setPotentionalOwners(taskSummaries);
         return taskSummaries;
     }

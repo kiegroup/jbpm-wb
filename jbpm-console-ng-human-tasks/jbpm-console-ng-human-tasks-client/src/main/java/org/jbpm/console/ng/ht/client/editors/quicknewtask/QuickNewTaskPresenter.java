@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+    
 package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -51,6 +49,7 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.security.Role;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
+import org.uberfire.lifecycle.OnClose;
 
 @Dependent
 @WorkbenchPopup(identifier = "Quick New Task")
@@ -219,7 +218,8 @@ public class QuickNewTaskPresenter {
         view.getTaskNameText().setFocus( true );
 
     }
-
+    
+    
     public void close() {
         closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }

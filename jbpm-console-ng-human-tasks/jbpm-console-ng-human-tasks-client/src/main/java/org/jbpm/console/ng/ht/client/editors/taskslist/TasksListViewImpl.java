@@ -15,40 +15,9 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskslist;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.ht.client.util.DataGridUtils;
-import org.jbpm.console.ng.ht.client.util.DataGridUtils.ActionsDataGrid;
-import org.jbpm.console.ng.ht.client.util.LiCalendarPicker;
-import org.jbpm.console.ng.ht.client.util.ResizableHeader;
-import org.jbpm.console.ng.ht.client.util.TaskUtils.TaskType;
-import org.jbpm.console.ng.ht.client.util.TaskUtils.TaskView;
-import org.jbpm.console.ng.ht.model.CalendarListContainer;
-import org.jbpm.console.ng.ht.model.TaskSummary;
-import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
-import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
-import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
-import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.PlaceStatus;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.events.NotificationEvent;
-
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.common.collect.Lists;
 import com.google.gwt.cell.client.ActionCell;
@@ -71,6 +40,36 @@ import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.gc.client.experimental.pagination.JBPMSimplePager;
+import org.jbpm.console.ng.gc.client.experimental.pagination.JBPMSimplePager.TextLocation;
+import static org.jbpm.console.ng.gc.client.list.base.PagerContainer.STYLE_PAGER;
+import org.jbpm.console.ng.gc.client.util.DataGridUtils;
+import org.jbpm.console.ng.gc.client.util.DataGridUtils.ActionsDataGrid;
+import org.jbpm.console.ng.ht.client.util.LiCalendarPicker;
+import org.jbpm.console.ng.ht.client.util.ResizableHeader;
+import org.jbpm.console.ng.ht.client.util.TaskUtils.TaskType;
+import org.jbpm.console.ng.ht.client.util.TaskUtils.TaskView;
+import org.jbpm.console.ng.ht.model.CalendarListContainer;
+import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
+import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
+import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
+import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
+import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "TasksListViewImpl.html")
@@ -78,7 +77,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
         CalendarListContainer {
     
     public TasksListViewImpl() {
-        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
+        pager = new JBPMSimplePager(TextLocation.CENTER, false, true);
         pager.sinkEvents(1);
         pager.addHandler(new ClickHandler(){
             @Override
@@ -86,7 +85,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
                 if(currentTaskType.equals(TaskType.ALL)){
                     DataGridUtils.paintRowsCompleted(myTaskListGrid);
                 }else if(DataGridUtils.currentIdSelected != null){
-                    DataGridUtils.paintRowSelected(myTaskListGrid, DataGridUtils.currentIdSelected);
+                    DataGridUtils.paintRowSelected(myTaskListGrid, String.valueOf(DataGridUtils.currentIdSelected));
                 }
             }
         }, ClickEvent.getType());
@@ -130,7 +129,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
     public LayoutPanel tasksViewContainer;
 
     @DataField
-    public SimplePager pager;
+    public JBPMSimplePager pager;
 
     @Inject
     private TaskListMultiDayBox taskListMultiDayBox;
@@ -189,7 +188,8 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
         
         pager.setDisplay(myTaskListGrid);
         pager.setPageSize(DataGridUtils.pageSize);
-        
+        pager.setStyleName(STYLE_PAGER);
+        pager.setDataProvider(presenter);
         tasksViewContainer.add(myTaskListGrid);
         myTaskListGrid.setEmptyTableWidget(new HTMLPanel(constants.No_Tasks_Found()));
         // Attach a column sort handler to the ListDataProvider to sort the
@@ -285,6 +285,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
         if ((getParent().getOffsetHeight() - 120) > 0) {
             tasksViewContainer.setHeight(getParent().getOffsetHeight() - 120 + "px");
         }
+        
     }
 
     @Override
@@ -298,6 +299,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
         currentView = taskView;
         liCalendarPicker.setCalendarView(taskView);
         pager.setVisible(false);
+        
         tasksViewContainer.setHeight(getParent().getOffsetHeight() + "px");
         refreshTasks();
     }
@@ -544,7 +546,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
             public void execute(TaskSummary task) {
                 currentAction = ActionsDataGrid.DETAILS;
                 PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
-                Long idSelected = DataGridUtils.getIdRowSelected(myTaskListGrid);
+                Long idSelected = Long.valueOf(DataGridUtils.getIdRowSelected(myTaskListGrid));
                 DataGridUtils.currentIdSelected = task.getId();
                 if(status == PlaceStatus.CLOSE || !Long.valueOf(task.getId()).equals(idSelected)){
                     placeManager.goTo("Task Details Multi");
@@ -588,7 +590,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
 
     @Override
     public void refreshTasks() {
-        presenter.refreshTasks(currentDate, currentView, currentTaskType);
+        presenter.refreshTasks(currentDate, currentView, currentTaskType, pager.getCurrentPage() * DataGridUtils.pageSize, (DataGridUtils.pageSize * DataGridUtils.clientSidePages), true);
     }
 
     public DataGrid<TaskSummary> getTaskListGrid() {
@@ -624,7 +626,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
 
     public void changeRowSelected(@Observes TaskStyleEvent taskStyleEvent) {
         if (taskStyleEvent.getTaskEventId() != null && this.getCurrentView() == TaskView.GRID) {
-            DataGridUtils.paintRowSelected(myTaskListGrid, taskStyleEvent.getTaskEventId());
+            DataGridUtils.paintRowSelected(myTaskListGrid, String.valueOf(taskStyleEvent.getTaskEventId()));
         }
         if (currentTaskType.equals(TaskType.ALL)) {
             DataGridUtils.paintRowsCompleted(myTaskListGrid);
@@ -648,6 +650,11 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
     public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
         currentAction = null;
         refreshTasks();
+    }
+
+    @Override
+    public JBPMSimplePager getPager() {
+        return pager;
     }
 
 }

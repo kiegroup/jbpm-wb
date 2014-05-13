@@ -29,7 +29,7 @@ import org.jbpm.console.ng.ht.model.TaskSummary;
 @Remote
 public interface TaskServiceEntryPoint {
 
-    List<TaskSummary> getTasksAssignedAsPotentialOwnerByExpirationDateOptional(String userId, List<String> status, Date from);
+    List<TaskSummary> getTasksAssignedAsPotentialOwnerByExpirationDateOptional(String userId, List<String> status, Date from, int offset, int count);
     
     Map<Day, List<TaskSummary>> getTasksAssignedAsPotentialOwnerFromDateToDateByDays(String userId, List<String> strStatuses,
                                                         Date from, int nrOfDaysTotal);
@@ -48,7 +48,7 @@ public interface TaskServiceEntryPoint {
     Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, List<String> strStatuses, Date from,
             int nrOfDaysTotal);
 
-    List<TaskSummary> getTasksOwnedByExpirationDateOptional(String userId, List<String> strStatuses, Date from);
+    List<TaskSummary> getTasksOwnedByExpirationDateOptional(String userId, List<String> strStatuses, Date from, int offset, int count);
 
     long addTask(String taskString, Map<String, Object> inputs, Map<String, Object> templateInputs);
     
