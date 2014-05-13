@@ -21,6 +21,10 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.Modal;
+import com.github.gwtbootstrap.client.ui.event.ShownEvent;
+import com.github.gwtbootstrap.client.ui.event.ShownHandler;
+import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.es.model.ErrorSummary;
@@ -28,6 +32,7 @@ import org.jbpm.console.ng.es.model.RequestDetails;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
+import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -44,9 +49,11 @@ public class JobDetailsPresenter {
         void setRequest( RequestSummary request,
                          List<ErrorSummary> errors,
                          List<RequestParameterSummary> params );
+        void refreshTable();
     }
 
     private Long requestId;
+    private PlaceRequest place;
 
     @Inject
     JobDetailsView view;
@@ -73,7 +80,30 @@ public class JobDetailsPresenter {
 
     @OnStartup
     public void onStartup( final PlaceRequest place ) {
+        this.place = place;
+    }
+
+    @OnOpen
+    public void onOpen() {
         this.requestId = Long.valueOf( place.getParameter( "requestId", "0" ) );
+        Modal modal = null;
+        Widget parent = ((JobDetailsViewImpl)view).getParent();
+        while (parent != null) {
+            if (parent instanceof Modal) {
+                modal = (Modal)parent;
+                break;
+            } else {
+                parent = parent.getParent();
+            }
+        }
+        if (modal != null) {
+            modal.addShownHandler( new ShownHandler() {
+                @Override
+                public void onShown(ShownEvent shownEvent) {
+                    view.refreshTable();
+                }
+            });
+        }
         this.executorServices.call( new RemoteCallback<RequestDetails>() {
             @Override
             public void callback( RequestDetails response ) {

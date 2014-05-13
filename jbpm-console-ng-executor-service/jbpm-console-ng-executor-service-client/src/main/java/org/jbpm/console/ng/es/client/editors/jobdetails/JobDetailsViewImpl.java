@@ -17,18 +17,8 @@
 package org.jbpm.console.ng.es.client.editors.jobdetails;
 
 import java.util.List;
-
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.es.client.editors.jobdetails.JobDetailsPresenter.JobDetailsView;
-import org.jbpm.console.ng.es.client.i18n.Constants;
-import org.jbpm.console.ng.es.client.util.ResizableHeader;
-import org.jbpm.console.ng.es.model.ErrorSummary;
-import org.jbpm.console.ng.es.model.RequestParameterSummary;
-import org.jbpm.console.ng.es.model.RequestSummary;
 
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.shared.GWT;
@@ -40,6 +30,14 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.ListDataProvider;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.es.client.editors.jobdetails.JobDetailsPresenter.JobDetailsView;
+import org.jbpm.console.ng.es.client.i18n.Constants;
+import org.jbpm.console.ng.es.client.util.ResizableHeader;
+import org.jbpm.console.ng.es.model.ErrorSummary;
+import org.jbpm.console.ng.es.model.RequestParameterSummary;
+import org.jbpm.console.ng.es.model.RequestSummary;
 
 @Dependent
 @Templated(value = "JobDetailsViewImpl.html")
@@ -95,11 +93,15 @@ public class JobDetailsViewImpl extends Composite implements JobDetailsView {
             }
         }
         if (params != null) {
-            for (RequestParameterSummary param : params) {
-                this.dataProvider.getList().add(param);
-            }
+            this.dataProvider.getList().clear();
+            this.dataProvider.getList().addAll(params);
+            this.dataProvider.refresh();
             dataProvider.addDataDisplay(executionParametersGrid);
         }
     }
 
+    @Override
+    public void refreshTable() {
+        executionParametersGrid.redraw();
+    }
 }
