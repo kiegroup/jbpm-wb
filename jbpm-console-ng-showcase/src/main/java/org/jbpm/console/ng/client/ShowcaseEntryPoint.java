@@ -184,7 +184,7 @@ public class ShowcaseEntryPoint {
     }
 
     private List<? extends MenuItem> getDeploymentViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
+        final List<MenuItem> result = new ArrayList<MenuItem>( 3 );
 
         result.add( MenuFactory.newSimpleItem( constants.Deployments() ).respondsWith( new Command() {
             @Override
@@ -197,6 +197,13 @@ public class ShowcaseEntryPoint {
             @Override
             public void execute() {
                 placeManager.goTo( new DefaultPlaceRequest( "Jobs" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+        
+        result.add( MenuFactory.newSimpleItem( constants.Asset_Management() ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "Asset Management" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
 

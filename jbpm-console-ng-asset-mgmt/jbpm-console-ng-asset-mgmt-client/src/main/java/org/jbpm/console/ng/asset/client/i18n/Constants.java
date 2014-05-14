@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.client.i18n;
+package org.jbpm.console.ng.asset.client.i18n;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Messages;
-import org.uberfire.workbench.model.menu.MenuItem;
 
 /**
  * This uses GWT to provide client side compile time resolving of locales. See:
@@ -32,55 +31,14 @@ public interface Constants extends Messages {
 
     Constants INSTANCE = GWT.create(Constants.class);
 
-    String Tasks_List();
-    
-    String Tasks_List_Admin();
 
-    String Dashboards();
+    String Release_Branch();
 
-    String Process_Dashboard();
+    String Dev_Branch();
 
-    String Business_Dashboard();
+    String Configure_Repository();
 
-    String Process_Authoring();
+    String Choose_Repository();
 
-    String Authoring();
-
-    String Process_Management();
-
-    String Work();
-
-    String LogOut();
-
-    String Home();
-
-    String Process_Definitions();
-
-    String Process_Instances();
-
-    String Deploy();
-
-    String Deployments();
-
-    String newItem();
-
-    String Role();
-
-    String User();
-    
-    String Settings();
-    
-    String Users();
-
-    String Jobs();
-
-    String Pagination_For_Tables();
-
-    String Experimental_Grid();
-
-    String Experimental();
-
-    String Asset_Management();
-
-
+    String Repository_Configuration();
 }

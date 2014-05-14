@@ -45,6 +45,10 @@
   <inherits name="org.jbpm.console.ng.es.JbpmConsoleNGExecutorServiceClient"/>
   <inherits name="org.jbpm.console.ng.gc.JbpmConsoleNGGenericClient"/>
   
+  <!-- asset mgmt -->
+  
+  <inherits name="org.jbpm.console.ng.asset.JbpmConsoleNGAssetMgmtClient"/>
+  
   <!-- designer -->
   <inherits name="org.jbpm.designer.jBPMDesignerAPI"/>
   <inherits name="org.jbpm.designer.jBPMDesignerClient"/>

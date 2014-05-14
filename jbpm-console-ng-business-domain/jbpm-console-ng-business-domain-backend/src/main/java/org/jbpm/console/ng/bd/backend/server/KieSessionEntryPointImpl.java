@@ -53,8 +53,8 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
     private RuntimeDataService dataService;
 
     @Override
-    public long startProcess(String domainName, String processId) {
-        RuntimeManager runtimesByDomain = deploymentService.getDeployedUnit(domainName).getRuntimeManager();
+    public long startProcess(String deploymentId, String processId) {
+        RuntimeManager runtimesByDomain = deploymentService.getDeployedUnit(deploymentId).getRuntimeManager();
         RuntimeEngine engine = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get());
         KieSession ksession = engine.getKieSession();
         ProcessInstance pi = null;
@@ -70,8 +70,8 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
     }
 
     @Override
-    public long startProcess(String domainName, String processId, Map<String, String> params) {
-        RuntimeManager runtimesByDomain = deploymentService.getDeployedUnit(domainName).getRuntimeManager();
+    public long startProcess(String deploymentUnitId, String processId, Map<String, String> params) {
+        RuntimeManager runtimesByDomain = deploymentService.getDeployedUnit(deploymentUnitId).getRuntimeManager();
         RuntimeEngine engine = runtimesByDomain.getRuntimeEngine(ProcessInstanceIdContext.get());
         KieSession ksession = engine.getKieSession();
         ProcessInstance pi = null;
