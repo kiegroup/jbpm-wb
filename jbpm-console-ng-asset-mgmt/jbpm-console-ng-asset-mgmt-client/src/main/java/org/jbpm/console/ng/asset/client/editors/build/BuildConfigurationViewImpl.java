@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.asset.client.editors.conf;
+package org.jbpm.console.ng.asset.client.editors.build;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
@@ -29,14 +30,13 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.asset.client.i18n.Constants;
-
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
-@Templated(value = "RepositoryConfigurationViewImpl.html")
-public class RepositoryConfigurationViewImpl extends Composite implements RepositoryConfigurationPresenter.RepositoryConfigurationView {
+@Templated(value = "BuildConfigurationViewImpl.html")
+public class BuildConfigurationViewImpl extends Composite implements BuildConfigurationPresenter.BuildConfigurationView {
 
     @Inject
     private Identity identity;
@@ -44,7 +44,7 @@ public class RepositoryConfigurationViewImpl extends Composite implements Reposi
     @Inject
     private PlaceManager placeManager;
 
-    private RepositoryConfigurationPresenter presenter;
+    private BuildConfigurationPresenter presenter;
 
     @Inject
     @DataField
@@ -64,23 +64,64 @@ public class RepositoryConfigurationViewImpl extends Composite implements Reposi
     
     @Inject
     @DataField
-    public Button configureButton;
+    public Label chooseBranchLabel;
+    
+//    @Inject
+//    @DataField
+//    public ListBox chooseBranchBox;
+    
+    @Inject
+    @DataField
+    public TextBox chooseBranchBox;
+    
+    @Inject
+    @DataField
+    public Label chooseProjectLabel;
+    
+//    @Inject
+//    @DataField
+//    public ListBox chooseProjectBox;
+    
+    @Inject
+    @DataField
+    public TextBox chooseProjectBox;
+    
+    @Inject
+    @DataField
+    public Button buildButton;
 
     @Inject
     @DataField
-    public Label releaseBranchLabel;
+    public Label userNameLabel;
     
     @Inject
     @DataField
-    public TextBox releaseBranchText;
-    
-     @Inject
-    @DataField
-    public Label devBranchLabel;
+    public TextBox userNameText;
     
     @Inject
     @DataField
-    public TextBox devBranchText;
+    public Label passwordLabel;
+    
+    @Inject
+    @DataField
+    public TextBox passwordText;
+    
+    @Inject
+    @DataField
+    public Label serverURLLabel;
+    
+    @Inject
+    @DataField
+    public TextBox serverURLText;
+    
+    
+    @Inject
+    @DataField
+    public Label deployToRuntimeLabel;
+    
+    @Inject
+    @DataField
+    public CheckBox deployToRuntimeCheck;
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -88,22 +129,25 @@ public class RepositoryConfigurationViewImpl extends Composite implements Reposi
     private Constants constants = GWT.create(Constants.class);
 
     @Override
-    public void init(RepositoryConfigurationPresenter presenter) {
+    public void init(BuildConfigurationPresenter presenter) {
         this.presenter = presenter;
-        accordionLabel.setText(constants.Repository_Configuration());
+        accordionLabel.setText(constants.Build_Configuration());
         chooseRepositoryLabel.setText(constants.Choose_Repository());
-        releaseBranchLabel.setText(constants.Release_Branch());
-        devBranchLabel.setText(constants.Dev_Branch());
-        configureButton.setText(constants.Configure_Repository());
+        chooseBranchLabel.setText(constants.Choose_Branch());
+        chooseProjectLabel.setText(constants.Choose_Project());
+        userNameLabel.setText(constants.User_Name());
+        passwordLabel.setText(constants.Password());
+        serverURLLabel.setText(constants.Server_URL());
+        deployToRuntimeLabel.setText(constants.Deploy_To_Runtime());
+        buildButton.setText(constants.Build_Project());
     }
 
     
 
-    @EventHandler("configureButton")
-    public void configureButton(ClickEvent e) {
-        
-           // presenter.configureRepository(chooseRepositoryBox.getItemText(chooseRepositoryBox.getSelectedIndex()), devBranchText.getText(), releaseBranchText.getText());
-         presenter.configureRepository(chooseRepositoryBox.getText(), devBranchText.getText(), releaseBranchText.getText());
+    @EventHandler("buildButton")
+    public void buildButton(ClickEvent e) {
+        presenter.buildProject(chooseRepositoryBox.getText(), chooseBranchBox.getText(), chooseProjectBox.getText(),
+                            userNameText.getText(), passwordText.getText(), serverURLText.getText(), deployToRuntimeCheck.getValue());
        
     }
 
@@ -118,23 +162,17 @@ public class RepositoryConfigurationViewImpl extends Composite implements Reposi
 //        return chooseRepositoryBox;
 //    }
 
-    public Button getConfigureButton() {
-        return configureButton;
-    }
-
-    public TextBox getReleaseBranchText() {
-        return releaseBranchText;
-    }
-
-    public TextBox getDevBranchText() {
-        return devBranchText;
-    }
-
+   
     @Override
     public TextBox getChooseRepositoryBox() {
         return chooseRepositoryBox;
     }
 
+    public Button getBuildButton() {
+        return buildButton;
+    }
+
+    
    
 
 }

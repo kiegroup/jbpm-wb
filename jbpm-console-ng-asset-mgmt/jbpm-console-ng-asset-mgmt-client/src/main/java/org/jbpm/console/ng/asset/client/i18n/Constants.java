@@ -41,4 +41,28 @@ public interface Constants extends Messages {
     String Choose_Repository();
 
     String Repository_Configuration();
+
+    String Choose_Branch();
+
+    String Choose_Project();
+
+    String User_Name();
+
+    String Password();
+
+    String Server_URL();
+
+    String Build_Project();
+
+    String Deploy_To_Maven();
+
+    String Deploy_To_Runtime();
+
+    String Build_Configuration();
+
+    String Promote_Assets();
+
+    String Choose_Source_Branch();
+
+    String Choose_Destination_Branch();
 }

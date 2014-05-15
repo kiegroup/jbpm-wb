@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.asset.client.editors.conf;
+package org.jbpm.console.ng.asset.client.editors.promote;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.github.gwtbootstrap.client.ui.TextBox;
@@ -29,14 +30,13 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.asset.client.i18n.Constants;
-
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
-@Templated(value = "RepositoryConfigurationViewImpl.html")
-public class RepositoryConfigurationViewImpl extends Composite implements RepositoryConfigurationPresenter.RepositoryConfigurationView {
+@Templated(value = "PromoteChangesViewImpl.html")
+public class PromoteChangesViewImpl extends Composite implements PromoteChangesPresenter.PromoteChangesView {
 
     @Inject
     private Identity identity;
@@ -44,7 +44,7 @@ public class RepositoryConfigurationViewImpl extends Composite implements Reposi
     @Inject
     private PlaceManager placeManager;
 
-    private RepositoryConfigurationPresenter presenter;
+    private PromoteChangesPresenter presenter;
 
     @Inject
     @DataField
@@ -64,23 +64,33 @@ public class RepositoryConfigurationViewImpl extends Composite implements Reposi
     
     @Inject
     @DataField
-    public Button configureButton;
+    public Label chooseSourceBranchLabel;
+    
+//    @Inject
+//    @DataField
+//    public ListBox chooseSourceBranchBox;
+    
+    @Inject
+    @DataField
+    public TextBox chooseSourceBranchBox;
+    
+      @Inject
+    @DataField
+    public Label chooseDestBranchLabel;
+    
+//    @Inject
+//    @DataField
+//    public ListBox chooseSourceBranchBox;
+    
+    @Inject
+    @DataField
+    public TextBox chooseDestBranchBox;
+  
+    @Inject
+    @DataField
+    public Button promoteButton;
 
-    @Inject
-    @DataField
-    public Label releaseBranchLabel;
-    
-    @Inject
-    @DataField
-    public TextBox releaseBranchText;
-    
-     @Inject
-    @DataField
-    public Label devBranchLabel;
-    
-    @Inject
-    @DataField
-    public TextBox devBranchText;
+   
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -88,22 +98,20 @@ public class RepositoryConfigurationViewImpl extends Composite implements Reposi
     private Constants constants = GWT.create(Constants.class);
 
     @Override
-    public void init(RepositoryConfigurationPresenter presenter) {
+    public void init(PromoteChangesPresenter presenter) {
         this.presenter = presenter;
-        accordionLabel.setText(constants.Repository_Configuration());
+        accordionLabel.setText(constants.Promote_Assets());
         chooseRepositoryLabel.setText(constants.Choose_Repository());
-        releaseBranchLabel.setText(constants.Release_Branch());
-        devBranchLabel.setText(constants.Dev_Branch());
-        configureButton.setText(constants.Configure_Repository());
+        chooseSourceBranchLabel.setText(constants.Choose_Source_Branch());
+        chooseDestBranchLabel.setText(constants.Choose_Destination_Branch());
+        promoteButton.setText(constants.Promote_Assets());
     }
 
     
 
-    @EventHandler("configureButton")
-    public void configureButton(ClickEvent e) {
-        
-           // presenter.configureRepository(chooseRepositoryBox.getItemText(chooseRepositoryBox.getSelectedIndex()), devBranchText.getText(), releaseBranchText.getText());
-         presenter.configureRepository(chooseRepositoryBox.getText(), devBranchText.getText(), releaseBranchText.getText());
+    @EventHandler("promoteButton")
+    public void promoteButton(ClickEvent e) {
+        presenter.promoteChanges(chooseRepositoryBox.getText(), chooseSourceBranchBox.getText(), chooseDestBranchBox.getText());
        
     }
 
@@ -118,18 +126,7 @@ public class RepositoryConfigurationViewImpl extends Composite implements Reposi
 //        return chooseRepositoryBox;
 //    }
 
-    public Button getConfigureButton() {
-        return configureButton;
-    }
-
-    public TextBox getReleaseBranchText() {
-        return releaseBranchText;
-    }
-
-    public TextBox getDevBranchText() {
-        return devBranchText;
-    }
-
+   
     @Override
     public TextBox getChooseRepositoryBox() {
         return chooseRepositoryBox;

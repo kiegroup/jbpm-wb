@@ -21,8 +21,11 @@ import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.PanelType;
 import org.uberfire.workbench.model.PerspectiveDefinition;
+import org.uberfire.workbench.model.Position;
+import org.uberfire.workbench.model.impl.PanelDefinitionImpl;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
@@ -39,6 +42,23 @@ public class AssetManagementPerspective {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl( PanelType.ROOT_LIST );
         p.setName( "Asset Management" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Repository Configuration" ) ) );
+        
+        final PanelDefinition south = new PanelDefinitionImpl( PanelType.SIMPLE );
+        south.setHeight(300);
+        south.setMinHeight(200);
+        south.addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Build Configuration" ) ) );
+
+        p.getRoot().insertChild( Position.SOUTH, south );
+        
+        final PanelDefinition east = new PanelDefinitionImpl( PanelType.SIMPLE );
+        east.setHeight(400);
+        east.setWidth(400);
+        east.setMinWidth(200);
+        east.addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Promote Changes" ) ) );
+
+        p.getRoot().insertChild( Position.EAST, east );
+        
+        
         p.setTransient( true );
         return p;
     }

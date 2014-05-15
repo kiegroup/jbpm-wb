@@ -50,6 +50,27 @@ public class AssetManagementEntryPointImpl implements AssetManagementEntryPoint 
         params.put("RelBranchName", releaseBranch);
         sessionServices.startProcess("org.kie.management:asset-management-kmodule:1.0.0-SNAPSHOT","asset-management-kmodule.ConfigureRepository", params);
     }
+
+    @Override
+    public void buildProject(String repository, String branch, String project, String userName, String password, String serverURL, Boolean deployToRuntime) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("ProjectURI", repository+"/"+project);
+        params.put("BranchName", branch);
+	params.put("Username", userName);
+	params.put("Password", password);
+	params.put("ExecServerURL", serverURL);
+	params.put("DeployToRuntime", deployToRuntime.toString());
+        sessionServices.startProcess("org.kie.management:asset-management-kmodule:1.0.0-SNAPSHOT","asset-management-kmodule.BuildProject", params);
+    }
+
+    @Override
+    public void promoteChanges(String repository, String sourceBranch, String destBranch) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("GitRepositoryName", repository);
+        params.put("SourceBranchName", sourceBranch);
+        params.put("TargetBranchName", destBranch);
+        sessionServices.startProcess("org.kie.management:asset-management-kmodule:1.0.0-SNAPSHOT","asset-management-kmodule.PromoteAssets", params);
+    }
     
     
     
