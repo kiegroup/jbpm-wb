@@ -15,11 +15,13 @@
  */
 package org.jbpm.console.ng.mobile.ht.client.taskdetails;
 
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Label;
 import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
 import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
 import com.googlecode.mgwt.mvp.client.Animation;
+import com.googlecode.mgwt.ui.client.MGWT;
 import com.googlecode.mgwt.ui.client.widget.Button;
 import com.googlecode.mgwt.ui.client.widget.FormListEntry;
 import com.googlecode.mgwt.ui.client.widget.MDateBox;
@@ -27,7 +29,7 @@ import com.googlecode.mgwt.ui.client.widget.MDateBox.DateRenderer;
 import com.googlecode.mgwt.ui.client.widget.MListBox;
 import com.googlecode.mgwt.ui.client.widget.MTextArea;
 import com.googlecode.mgwt.ui.client.widget.MTextBox;
-import com.googlecode.mgwt.ui.client.widget.RoundPanel;
+import com.googlecode.mgwt.ui.client.widget.ScrollPanel;
 import com.googlecode.mgwt.ui.client.widget.WidgetList;
 import com.googlecode.mgwt.ui.client.widget.tabbar.TabBarButton;
 import com.googlecode.mgwt.ui.client.widget.tabbar.TabPanel;
@@ -81,32 +83,39 @@ public class TaskDetailsViewGwtImpl extends AbstractView implements TaskDetailsP
         layoutPanel.add(tabPanel);
 
         // Work tab
-        RoundPanel workPanel = new RoundPanel();
+        ScrollPanel workScrollPanel = new ScrollPanel();
+        FlowPanel workFlowPanel = new FlowPanel();
 
         saveButton = new Button("Save");
-        workPanel.add(saveButton);
+        workFlowPanel.add(saveButton);
 
         releaseButton = new Button("Release");
-        workPanel.add(releaseButton);
+        workFlowPanel.add(releaseButton);
 
         claimButton = new Button("Claim");
         claimButton.setConfirm(true);
-        workPanel.add(claimButton);
+        workFlowPanel.add(claimButton);
 
         startButton = new Button("Start");
         startButton.setConfirm(true);
-        workPanel.add(startButton);
+        workFlowPanel.add(startButton);
 
         completeButton = new Button("Complete");
         completeButton.setConfirm(true);
-        workPanel.add(completeButton);
+        workFlowPanel.add(completeButton);
 
         TabBarButton workTabButton = new TabBarButton(null);
         workTabButton.setText("Work");
-        tabPanel.add(workTabButton, workPanel);
+
+        workScrollPanel.setWidget(workFlowPanel);
+        workScrollPanel.setScrollingEnabledX(false);
+        workScrollPanel.setUsePos(MGWT.getOsDetection().isAndroid());
+
+        tabPanel.add(workTabButton, workScrollPanel);
 
         // Details tab
-        RoundPanel detailsPanel = new RoundPanel();
+        ScrollPanel detailsScrollPanel = new ScrollPanel();
+        FlowPanel detailsFlowPanel = new FlowPanel();
 
         for (String priority : priorities) {
             priorityListBox.addItem(priority);
@@ -121,7 +130,7 @@ public class TaskDetailsViewGwtImpl extends AbstractView implements TaskDetailsP
         detailsForm.add(new FormListEntry("Due On", dueOnDateBox));
         detailsForm.add(new FormListEntry("Priority", priorityListBox));
         detailsForm.add(new FormListEntry("User", userTextBox));
-        detailsPanel.add(detailsForm);
+        detailsFlowPanel.add(detailsForm);
 
         processInstanceIdTextBox.setReadOnly(true);
         processDefinitionIdTextBox.setReadOnly(true);
@@ -132,32 +141,43 @@ public class TaskDetailsViewGwtImpl extends AbstractView implements TaskDetailsP
         processContextForm.add(new FormListEntry("Process Instance Id", processInstanceIdTextBox));
         processContextForm.add(new FormListEntry("Process Definition Id", processDefinitionIdTextBox));
         processContextForm.add(new FormListEntry("Process Instance Details", processInstanceDetailsButton));
-        detailsPanel.add(processContextForm);
+        detailsFlowPanel.add(processContextForm);
 
         updateButton = new Button("Update");
         updateButton.setConfirm(true);
-        detailsPanel.add(updateButton);
+        detailsFlowPanel.add(updateButton);
 
         TabBarButton detailsTabButton = new TabBarButton(null);
         detailsTabButton.setText("Details");
-        tabPanel.add(detailsTabButton, detailsPanel);
+
+        detailsScrollPanel.setWidget(detailsFlowPanel);
+        detailsScrollPanel.setScrollingEnabledX(false);
+        detailsScrollPanel.setUsePos(MGWT.getOsDetection().isAndroid());
+
+        tabPanel.add(detailsTabButton, detailsScrollPanel);
 
         // Assignments tab
-        RoundPanel assignmentsPanel = new RoundPanel();
+        ScrollPanel assignmentsScrollPanel = new ScrollPanel();
+        FlowPanel assignmentsFlowPanel = new FlowPanel();
 
         WidgetList assignmentsForm = new WidgetList();
         assignmentsForm.setRound(true);
         assignmentsForm.add(new FormListEntry("Potential Owners", potentialOwnersLabel));
         assignmentsForm.add(new FormListEntry("User or Group", delegateTextBox));
-        assignmentsPanel.add(assignmentsForm);
+        assignmentsFlowPanel.add(assignmentsForm);
 
         delegateButton = new Button("Delegate");
         delegateButton.setConfirm(true);
-        assignmentsPanel.add(delegateButton);
+        assignmentsFlowPanel.add(delegateButton);
 
         TabBarButton assignmentsTabButton = new TabBarButton(null);
         assignmentsTabButton.setText("Assignments");
-        tabPanel.add(assignmentsTabButton, assignmentsPanel);
+
+        assignmentsScrollPanel.setWidget(assignmentsFlowPanel);
+        assignmentsScrollPanel.setScrollingEnabledX(false);
+        assignmentsScrollPanel.setUsePos(MGWT.getOsDetection().isAndroid());
+
+        tabPanel.add(assignmentsTabButton, assignmentsScrollPanel);
 
         tabPanel.setSelectedChild(1);
     }

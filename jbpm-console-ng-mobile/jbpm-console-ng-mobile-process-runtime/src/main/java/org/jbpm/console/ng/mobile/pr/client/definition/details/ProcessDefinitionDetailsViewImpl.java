@@ -15,14 +15,17 @@
  */
 package org.jbpm.console.ng.mobile.pr.client.definition.details;
 
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
 import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
 import com.googlecode.mgwt.mvp.client.Animation;
+import com.googlecode.mgwt.ui.client.MGWT;
 import com.googlecode.mgwt.ui.client.widget.Button;
 import com.googlecode.mgwt.ui.client.widget.FormListEntry;
 import com.googlecode.mgwt.ui.client.widget.MTextArea;
 import com.googlecode.mgwt.ui.client.widget.MTextBox;
 import com.googlecode.mgwt.ui.client.widget.RoundPanel;
+import com.googlecode.mgwt.ui.client.widget.ScrollPanel;
 import com.googlecode.mgwt.ui.client.widget.WidgetList;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +63,8 @@ public class ProcessDefinitionDetailsViewImpl extends AbstractView implements
     public ProcessDefinitionDetailsViewImpl() {
         title.setHTML("Definition Details");
 
-        RoundPanel roundPanel = new RoundPanel();
+        ScrollPanel scrollPanel = new ScrollPanel();
+        FlowPanel flowPanel = new FlowPanel();
 
         definitionIdText.setReadOnly(true);
         definitionNameText.setReadOnly(true);
@@ -81,16 +85,19 @@ public class ProcessDefinitionDetailsViewImpl extends AbstractView implements
         widgetList.add(new FormListEntry("Subprocesses", subprocessesText));
         widgetList.add(new FormListEntry("Process Variables", processVariablesText));
         widgetList.add(new FormListEntry("Services", servicesText));
-        roundPanel.add(widgetList);
+        flowPanel.add(widgetList);
 
         newInstanceButton = new Button("New Instance");
         newInstanceButton.setConfirm(true);
-        roundPanel.add(newInstanceButton);
+        flowPanel.add(newInstanceButton);
 
         instancesListButton = new Button("View Process Instances");
-        roundPanel.add(instancesListButton);
+        flowPanel.add(instancesListButton);
 
-        layoutPanel.add(roundPanel);
+        scrollPanel.setWidget(flowPanel);
+        scrollPanel.setScrollingEnabledX(false);
+        scrollPanel.setUsePos(MGWT.getOsDetection().isAndroid());
+        layoutPanel.add(scrollPanel);
     }
 
     @Override

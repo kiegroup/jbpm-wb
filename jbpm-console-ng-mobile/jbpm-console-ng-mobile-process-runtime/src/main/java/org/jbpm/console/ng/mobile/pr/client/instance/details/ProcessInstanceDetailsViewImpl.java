@@ -15,14 +15,17 @@
  */
 package org.jbpm.console.ng.mobile.pr.client.instance.details;
 
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.googlecode.mgwt.dom.client.event.tap.TapEvent;
 import com.googlecode.mgwt.dom.client.event.tap.TapHandler;
 import com.googlecode.mgwt.mvp.client.Animation;
+import com.googlecode.mgwt.ui.client.MGWT;
 import com.googlecode.mgwt.ui.client.widget.Button;
 import com.googlecode.mgwt.ui.client.widget.FormListEntry;
 import com.googlecode.mgwt.ui.client.widget.MTextArea;
 import com.googlecode.mgwt.ui.client.widget.MTextBox;
 import com.googlecode.mgwt.ui.client.widget.RoundPanel;
+import com.googlecode.mgwt.ui.client.widget.ScrollPanel;
 import com.googlecode.mgwt.ui.client.widget.WidgetList;
 import java.util.Map;
 import javax.inject.Inject;
@@ -58,7 +61,8 @@ public class ProcessInstanceDetailsViewImpl extends AbstractView implements
     public ProcessInstanceDetailsViewImpl() {
         title.setHTML("Instance Details");
 
-        RoundPanel roundPanel = new RoundPanel();
+        ScrollPanel scrollPanel = new ScrollPanel();
+        FlowPanel flowPanel = new FlowPanel();
 
         instanceIdText.setReadOnly(true);
         definitionIdText.setReadOnly(true);
@@ -79,13 +83,16 @@ public class ProcessInstanceDetailsViewImpl extends AbstractView implements
         widgetList.add(new FormListEntry("Instance State", instanceStateText));
         widgetList.add(new FormListEntry("Current Activities", currentActivitiesText));
         widgetList.add(new FormListEntry("Instance Log", instanceLogText));
-        roundPanel.add(widgetList);
+        flowPanel.add(widgetList);
 
         abortButton = new Button("Abort");
         abortButton.setImportant(true);
-        roundPanel.add(abortButton);
+        flowPanel.add(abortButton);
 
-        layoutPanel.add(roundPanel);
+        scrollPanel.setWidget(flowPanel);
+        scrollPanel.setScrollingEnabledX(false);
+        scrollPanel.setUsePos(MGWT.getOsDetection().isAndroid());
+        layoutPanel.add(scrollPanel);
     }
 
     @Override
