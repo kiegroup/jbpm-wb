@@ -102,7 +102,7 @@ public class RepositoryConfigurationPresenter {
     public void init() {
     }
 
-    public void configureRepository(String repository, String devBranch, String releaseBranch) {
+    public void configureRepository(String repository, String devBranch, String releaseBranch, String version) {
         assetManagementServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long taskId) {
@@ -114,7 +114,7 @@ public class RepositoryConfigurationPresenter {
                 ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                 return true;
             }
-        }).configureRepository(repository, devBranch, releaseBranch);
+        }).configureRepository(repository, devBranch, releaseBranch, version);
 
     }
 

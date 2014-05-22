@@ -43,11 +43,12 @@ public class AssetManagementEntryPointImpl implements AssetManagementEntryPoint 
     }
 
     @Override
-    public void configureRepository(String repository, String devBranch, String releaseBranch){
+    public void configureRepository(String repository, String devBranch, String releaseBranch, String version){
         Map<String, String> params = new HashMap<String, String>();
         params.put("RepositoryName", repository);
         params.put("DevBranchName", devBranch);
         params.put("RelBranchName", releaseBranch);
+        params.put("Version", version);
         sessionServices.startProcess("org.kie.management:asset-management-kmodule:1.0.0-SNAPSHOT","asset-management-kmodule.ConfigureRepository", params);
     }
 
@@ -64,7 +65,7 @@ public class AssetManagementEntryPointImpl implements AssetManagementEntryPoint 
     }
 
     @Override
-    public void promoteChanges(String repository, String sourceBranch, String destBranch) {
+    public void promoteChanges(String repository, String sourceBranch, String destBranch) { 
         Map<String, String> params = new HashMap<String, String>();
         params.put("GitRepositoryName", repository);
         params.put("SourceBranchName", sourceBranch);

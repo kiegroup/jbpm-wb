@@ -81,6 +81,14 @@ public class RepositoryConfigurationViewImpl extends Composite implements Reposi
     @Inject
     @DataField
     public TextBox devBranchText;
+    
+      @Inject
+    @DataField
+    public Label versionLabel;
+    
+    @Inject
+    @DataField
+    public TextBox versionText;
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -95,6 +103,7 @@ public class RepositoryConfigurationViewImpl extends Composite implements Reposi
         releaseBranchLabel.setText(constants.Release_Branch());
         devBranchLabel.setText(constants.Dev_Branch());
         configureButton.setText(constants.Configure_Repository());
+        versionLabel.setText(constants.Version());
     }
 
     
@@ -103,7 +112,7 @@ public class RepositoryConfigurationViewImpl extends Composite implements Reposi
     public void configureButton(ClickEvent e) {
         
            // presenter.configureRepository(chooseRepositoryBox.getItemText(chooseRepositoryBox.getSelectedIndex()), devBranchText.getText(), releaseBranchText.getText());
-         presenter.configureRepository(chooseRepositoryBox.getText(), devBranchText.getText(), releaseBranchText.getText());
+         presenter.configureRepository(chooseRepositoryBox.getText(), devBranchText.getText(), releaseBranchText.getText(), versionText.getText());
        
     }
 

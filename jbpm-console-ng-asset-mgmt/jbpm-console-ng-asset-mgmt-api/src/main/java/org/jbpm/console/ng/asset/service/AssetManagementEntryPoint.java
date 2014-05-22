@@ -24,7 +24,7 @@ import org.jboss.errai.bus.server.annotations.Remote;
  */
 @Remote
 public interface AssetManagementEntryPoint {
-    void configureRepository(String repository, String devBranch, String releaseBranch);
+    void configureRepository(String repository, String devBranch, String releaseBranch, String version);
     
     void buildProject(String repository, String branch, String project,
                             String userName, String password, String serverURL, Boolean deployToRuntime);

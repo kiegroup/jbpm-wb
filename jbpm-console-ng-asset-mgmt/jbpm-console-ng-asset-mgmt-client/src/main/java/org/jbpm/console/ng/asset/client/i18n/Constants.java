@@ -65,4 +65,6 @@ public interface Constants extends Messages {
     String Choose_Source_Branch();
 
     String Choose_Destination_Branch();
+
+    String Version();
 }
