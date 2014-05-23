@@ -57,7 +57,7 @@ public class DeploymentListPerspective {
         final PanelDefinition problems = new PanelDefinitionImpl( PanelType.MULTI_LIST );
         problems.setHeight(200);
         problems.setMinWidth(100);
-        problems.addPart(new PartDefinitionImpl(new DefaultPlaceRequest("org.kie.guvnor.Problems")));
+        problems.addPart(new PartDefinitionImpl(new DefaultPlaceRequest("org.kie.workbench.common.screens.messageconsole.MessageConsole")));
         p.getRoot().insertChild( Position.SOUTH, problems );
 
         p.setTransient(true);
