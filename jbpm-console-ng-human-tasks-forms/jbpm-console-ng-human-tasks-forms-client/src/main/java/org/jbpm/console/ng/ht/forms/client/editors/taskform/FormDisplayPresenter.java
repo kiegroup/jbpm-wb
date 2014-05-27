@@ -68,13 +68,14 @@ public class FormDisplayPresenter {
     private Constants constants = GWT.create(Constants.class);
 
     public static final String ACTION_START_PROCESS = "startProcess";
+    public static final String ACTION_CLAIM_TASK = "claimTask";
+    public static final String ACTION_START_TASK = "startTask";
+    public static final String ACTION_RELEASE_TASK = "releaseTask";
     public static final String ACTION_SAVE_TASK = "saveTask";
     public static final String ACTION_COMPLETE_TASK = "completeTask";
-    public static final String ACTION_TASK_DETAILS = "Task Details Popup";
-    public static final String ACTION_TASK_COMMENTS = "Task Comments Popup";
 
     @Inject
-    private FormDisplayView view;
+    protected FormDisplayView view;
 
     @Inject
     private Caller<FormServiceEntryPoint> formServices;
@@ -89,19 +90,19 @@ public class FormDisplayPresenter {
     Caller<KieSessionEntryPoint> sessionServices;
 
     @Inject
-    private Caller<TaskServiceEntryPoint> taskServices;
+    protected Caller<TaskServiceEntryPoint> taskServices;
 
     @Inject
     private Event<FormRenderedEvent> formRendered;
-    
+
     @Inject
-    private Event<TaskRefreshedEvent> taskRefreshed;
-    
+    protected Event<TaskRefreshedEvent> taskRefreshed;
+
     @Inject
-    private Event<NewProcessInstanceEvent> newProcessInstanceEvent;
-    
+    protected Event<NewProcessInstanceEvent> newProcessInstanceEvent;
+
     @Inject
-    private Event<EditPanelEvent> editPanelEvent;
+    protected Event<EditPanelEvent> editPanelEvent;
 
     @Inject
     private Identity identity;
@@ -112,19 +113,21 @@ public class FormDisplayPresenter {
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
 
-    private PlaceRequest place;
+    protected PlaceRequest place;
 
-    private String formCtx;
-    
-    private long currentTaskId = 0;
-    
-    private String currentProcessId;
-    
-    private String currentDomainId;
-    
+    protected String formCtx;
+
+    protected boolean isFormModelerForm;
+
+    protected long currentTaskId = 0;
+
+    protected String currentProcessId;
+
+    protected String currentDomainId;
+
     @Inject
-    private Event<TaskStyleEvent> taskStyleEvent;
-    
+    protected Event<TaskStyleEvent> taskStyleEvent;
+
 
     public interface FormDisplayView extends UberView<FormDisplayPresenter> {
 
@@ -164,20 +167,14 @@ public class FormDisplayPresenter {
     public void onStartup(final PlaceRequest place) {
         this.place = place;
     }
-    
-    
 
     public void renderTaskForm() {
-        
-
         formServices.call( new RemoteCallback<String>() {
             @Override
             public void callback( String form ) {
                 initTaskForm(form);
             }
         } ).getFormDisplayTask(currentTaskId);
-        
-        
     }
 
     protected void initTaskForm(String form) {
@@ -187,7 +184,7 @@ public class FormDisplayPresenter {
         }
         view.loadForm(form);
 
-        final boolean modelerForm = view.isFormModeler();
+        isFormModelerForm = view.isFormModeler();
 
         formCtx = form;
 
@@ -200,136 +197,97 @@ public class FormDisplayPresenter {
                 view.getOptionsDiv().add( wrapperFlowPanel );
 
                 if (task == null) return;
+
+                if (!showButtons()) {
+                    view.getOptionsDiv().setVisible(false);
+                    return;
+                }
+
                 if ( task.getStatus().equals( "Ready" ) ) {
-                    ClickHandler click = new ClickHandler() {
-                            @Override
-                            public native void onClick( ClickEvent event )/*-{
-                                $wnd.claimTask($wnd.getFormValues($doc.getElementById("form-data")));
-                            }-*/;
-                        };
                     Button claimButton = new Button();
                     claimButton.setType(ButtonType.PRIMARY);
                     claimButton.setText(constants.Claim());
-                    claimButton.addClickHandler(click);
+                    claimButton.addClickHandler(new ClickHandler() {
+                        @Override
+                        public void onClick(ClickEvent event) {
+                            claimTask();
+                        }
+                    });
                     wrapperFlowPanel.add( claimButton );
                     view.getOptionsDiv().add( wrapperFlowPanel );
                 }
-                
+
                 if ( task.getStatus().equals( "Reserved" ) && task.getActualOwner().equals(identity.getName()) ) {
-                    
-                    ClickHandler click, release;
-                     release = new ClickHandler() {
-                            @Override
-                            public native void onClick( ClickEvent event )/*-{
-                                $wnd.releaseTask($wnd.getFormValues($doc.getElementById("form-data")));
-                            }-*/;
-                    };
-                    
-                    if (modelerForm)
-                        click = new ClickHandler() {
-                            @Override
-                            public void onClick( ClickEvent event ) {
-                                if (view.isFormModeler()) startFormModelerTask(currentTaskId, identity.getName());
-                                else startTask(currentTaskId, identity.getName());
-                            };
-                        };
-                    else
-                        click = new ClickHandler() {
-                            @Override
-                            public native void onClick( ClickEvent event )/*-{
-                                $wnd.startTask($wnd.getFormValues($doc.getElementById("form-data")));
-                            }-*/;
-                        };
-                    
+
                     Button releaseButton = new Button();
                     releaseButton.setText(constants.Release());
-                    releaseButton.addClickHandler(release);
+                    releaseButton.addClickHandler(new ClickHandler() {
+                        @Override
+                        public void onClick(ClickEvent event) {
+                            releaseTask();
+                        }
+                    });
                     wrapperFlowPanel.add( releaseButton );
-                    
+
                     Button startButton = new Button();
                     startButton.setType(ButtonType.PRIMARY);
                     startButton.setText(constants.Start());
-                    startButton.addClickHandler(click);
+                    startButton.addClickHandler(new ClickHandler() {
+                        @Override
+                        public void onClick(ClickEvent event) {
+                            startTask();
+                        }
+                    });
                     wrapperFlowPanel.add( startButton );
-                    
-                    
+
+
                     view.getOptionsDiv().add( wrapperFlowPanel );
                 } else if ( task.getStatus().equals( "InProgress" ) && task.getActualOwner().equals(identity.getName()) ) {
-                    
-                    ClickHandler save, complete, release;
-                    
-                    release = new ClickHandler() {
-                            @Override
-                            public native void onClick( ClickEvent event )/*-{
-                                $wnd.releaseTask($wnd.getFormValues($doc.getElementById("form-data")));
-                            }-*/;
-                    };
-                    
-                    if (modelerForm) {
-                        save = new ClickHandler() {
-                            @Override
-                            public void onClick( ClickEvent event ) {
-                                view.submitSaveTaskStateForm();
-                            };
-                        };
-                        complete = new ClickHandler() {
-                            @Override
-                            public void onClick( ClickEvent event ) {
-                                view.submitCompleteTaskForm();
-                            };
-                        };
-                    } else {
-                        
-                        save = new ClickHandler() {
-                            @Override
-                            public native void onClick( ClickEvent event )/*-{
-                                $wnd.saveTaskState($wnd.getFormValues($doc.getElementById("form-data")));
-                            }-*/;
-                        };
-                        complete = new ClickHandler() {
-                            @Override
-                            public native void onClick( ClickEvent event )/*-{
-                                $wnd.completeTask($wnd.getFormValues($doc.getElementById("form-data")));
-                            }-*/;
-                        };
-                    }
-                    
                     Button saveButton = new Button();
                     saveButton.setText(constants.Save());
-                    saveButton.addClickHandler(save);
+                    saveButton.addClickHandler( new ClickHandler() {
+                        @Override
+                        public void onClick(ClickEvent event) {
+                            saveTaskState();
+                        }
+                    });
                     wrapperFlowPanel.add( saveButton );
-                    
+
                     Button releaseButton = new Button();
                     releaseButton.setText(constants.Release());
-                    releaseButton.addClickHandler(release);
+                    releaseButton.addClickHandler(new ClickHandler() {
+                        @Override
+                        public void onClick(ClickEvent event) {
+                            releaseTask();
+                        }
+                    });
                     wrapperFlowPanel.add( releaseButton );
-                    
+
                     Button completeButton = new Button();
                     completeButton.setType(ButtonType.PRIMARY);
                     completeButton.setText(constants.Complete());
-                    completeButton.addClickHandler(complete);
-                    
+                    completeButton.addClickHandler(new ClickHandler(){
+                        @Override
+                        public void onClick(ClickEvent event) {
+                            completeTask();
+                        }
+                    });
+
                     wrapperFlowPanel.add( completeButton );
                     view.getOptionsDiv().add( wrapperFlowPanel );
                     taskStyleEvent.fire( new TaskStyleEvent( task.getId() ) );
                 }
             }
-        }, new ErrorCallback<Message>() {
-               @Override
-               public boolean error( Message message, Throwable throwable ) {
-                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                   return true;
-               }
-           } ).getTaskDetails(currentTaskId);
+        }, getUnexpectedErrorCallback()).getTaskDetails(currentTaskId);
     }
 
     public void renderProcessForm() {
-        
+
         formServices.call( new RemoteCallback<String>() {
             @Override
             public void callback( String form ) {
                 view.loadForm(form);
-                final boolean modelerForm = view.isFormModeler();
+                isFormModelerForm = view.isFormModeler();
 
                 formCtx = form;
 
@@ -338,52 +296,41 @@ public class FormDisplayPresenter {
                     public void callback( ProcessSummary summary ) {
                         FocusPanel wrapperFlowPanel = new FocusPanel();
                         wrapperFlowPanel.setStyleName( "wrapper form-actions" );
-                       
-                        ClickHandler start;
-                        if (modelerForm)
-                            start =  new ClickHandler() {
-                                @Override
-                                public void onClick(ClickEvent event) {
-                                    view.submitStartProcessForm();
-                                }
-                            };
-                        else
-                            start = new ClickHandler() {
-                                @Override
-                                public native void onClick( ClickEvent event )/*-{
-                                    $wnd.startProcess($wnd.getFormValues($doc.getElementById("form-data")));
-                                }-*/;
-                            };
+
+                        if (!showButtons()) {
+                            view.getOptionsDiv().setVisible(false);
+                            return;
+                        }
+
+                        ClickHandler start =  new ClickHandler() {
+                            @Override
+                            public void onClick(ClickEvent event) {
+                                startProcess();
+                            }
+                        };
+
                         Button startButton = new Button();
                         startButton.setText(constants.Start());
                         startButton.addClickHandler(start);
-                    
+
                         wrapperFlowPanel.add( startButton );
                         view.getOptionsDiv().add( wrapperFlowPanel );
                     }
                 } ).getProcessDesc(currentProcessId);
             }
-        }, new ErrorCallback<Message>() {
-           @Override
-           public boolean error( Message message, Throwable throwable ) {
-               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-               return true;
-           }
-       }).getFormDisplayProcess(currentDomainId, currentProcessId);
-        
+        }, getUnexpectedErrorCallback()).getFormDisplayProcess(currentDomainId, currentProcessId);
+
     }
 
     public void onFormSubmitted(@Observes FormSubmittedEvent event) {
         if (event.isMine(formCtx)) {
             if (event.getContext().getErrors() == 0) {
                 if(ACTION_START_PROCESS.equals(view.getAction())) {
-                    startProcess();
+                    doStartProcess();
                 } else if (ACTION_SAVE_TASK.equals(view.getAction())) {
-                    saveTaskState();
+                    doSaveTaskState();
                 } else if (ACTION_COMPLETE_TASK.equals(view.getAction())) {
-                    completeTask();
-                } else if (ACTION_TASK_COMMENTS.equals(view.getAction()) || ACTION_TASK_DETAILS.equals(view.getAction())) {
-                    changeActionTab();
+                    doCompleteTask();
                 }
             }
         }
@@ -399,16 +346,13 @@ public class FormDisplayPresenter {
         return view;
     }
 
-    public void completeTask(String values) {
-        final Map<String, String> params = getUrlParameters(values);
-        final Map<String, Object> objParams = new HashMap<String, Object>(params);
-        taskServices.call(new RemoteCallback<Void>() {
+    protected RemoteCallback<Void> getCompleteTaskRemoteCallback() {
+        return new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
-                view.displayNotification("Form for Task Id: " + params.get("taskId") + " was completed!");
+                view.displayNotification("Form for Task Id: " + currentTaskId + " was completed!");
                 taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
-                dispose();
-                
+
                 taskServices.call(new RemoteCallback<Boolean>() {
                     @Override
                     public void callback(Boolean response) {
@@ -417,247 +361,198 @@ public class FormDisplayPresenter {
                         }
                     }
                 }).existInDatabase(currentTaskId);
-                
+
             }
-        }, new ErrorCallback<Message>() {
-          @Override
-          public boolean error( Message message, Throwable throwable ) {
-              ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-              return true;
-          }
-      }).complete(Long.parseLong(params.get("taskId")), identity.getName(), objParams);
+        };
+    }
+
+    public void completeTask(String values) {
+        final Map<String, String> params = getUrlParameters(values);
+        final Map<String, Object> objParams = new HashMap<String, Object>(params);
+        taskServices.call(getCompleteTaskRemoteCallback(), getUnexpectedErrorCallback()).complete(currentTaskId, identity.getName(), objParams);
 
     }
 
-    public void saveTaskState(final Map<String, String> values) {
-        taskServices.call(new RemoteCallback<Long>() {
+    public void claimTask() {
+        if (isFormModelerForm) claimTaskFromFromModelerForm();
+        else doClaimTask();
+    }
+
+    public void startTask() {
+        if (isFormModelerForm) startTaskFromFromModelerForm();
+        else doStartTask();
+    }
+
+    public void releaseTask() {
+        if(isFormModelerForm) releaseTaskFromFormModelerForm();
+        else doReleaseTask();
+    }
+
+    public void completeTask() {
+        if (isFormModelerForm) view.submitCompleteTaskForm();
+        else completeTaskFromHTMLForm();
+    }
+
+    public void saveTaskState() {
+        if (isFormModelerForm) view.submitSaveTaskStateForm();
+        else saveTaskStateFromHTMLForm();
+    }
+
+    protected native void completeTaskFromHTMLForm()/*-{
+        $wnd.completeTask($wnd.getFormValues($doc.getElementById("form-data")));
+    }-*/;
+
+    protected native void saveTaskStateFromHTMLForm()/*-{
+        $wnd.saveTaskState($wnd.getFormValues($doc.getElementById("form-data")));
+    }-*/;
+
+
+    protected ErrorCallback<Message> getUnexpectedErrorCallback() {
+        return new ErrorCallback<Message>() {
+            @Override
+            public boolean error( Message message, Throwable throwable ) {
+                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                return true;
+            }
+        };
+    }
+
+    protected RemoteCallback getSaveTaskStateCallback() {
+        return new RemoteCallback<Long>() {
             @Override
             public void callback(Long contentId) {
                 view.displayNotification("Task Id: " + currentTaskId + " State was Saved! ContentId : " + contentId);
+                taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 renderTaskForm();
             }
-        }, new ErrorCallback<Message>() {
-              @Override
-              public boolean error( Message message, Throwable throwable ) {
-                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                  return true;
-              }
-          }).saveContent(currentTaskId, values);
+        };
     }
 
     public void saveTaskState(String values) {
         final Map<String, String> params = getUrlParameters(values);
-        taskServices.call(new RemoteCallback<Long>() {
-            @Override
-            public void callback(Long contentId) {
-                view.displayNotification("Task Id: " + params.get("taskId") + " State was Saved! ContentId : " + contentId);
-                renderTaskForm();
-            }
-        }, new ErrorCallback<Message>() {
-              @Override
-              public boolean error( Message message, Throwable throwable ) {
-                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                  return true;
-              }
-          }).saveContent(Long.parseLong(params.get("taskId").toString()), params);
+        taskServices.call(getSaveTaskStateCallback(), getUnexpectedErrorCallback()).saveContent(currentTaskId, params);
     }
 
-    public void startFormModelerTask(final Long taskId, final String identity) {
+    public void startTaskFromFromModelerForm() {
         renderContextServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void response) {
-                startTask(taskId, identity);
+                doStartTask();
             }
         }).clearContext(formCtx);
     }
 
-    public void startTask(final Long taskId, final String identity) {
-        taskServices.call(new RemoteCallback<Void>() {
+    protected RemoteCallback getStartTaskRemoteCallback() {
+        return new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
-                view.displayNotification("Task Id: " + taskId + " was started!");
+                view.displayNotification("Task Id: " + currentTaskId + " was started!");
                 taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 renderTaskForm();
             }
-        }, new ErrorCallback<Message>() {
-          @Override
-          public boolean error( Message message, Throwable throwable ) {
-              ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-              return true;
-          }
-      }).start(taskId, identity);
+        };
     }
 
-    public void startTask( String values ) {
-        final Map<String, String> params = getUrlParameters( values );
-        taskServices.call( new RemoteCallback<Void>() {
+    public void doStartTask() {
+        taskServices.call(getStartTaskRemoteCallback(), getUnexpectedErrorCallback()).start(currentTaskId, identity.getName());
+    }
+
+    protected void releaseTaskFromFormModelerForm() {
+        renderContextServices.call(new RemoteCallback<Void>() {
             @Override
-            public void callback( Void nothing ) {
-                view.displayNotification( "Task Id: " + params.get( "taskId" ) + " was started!" );
-                taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
-                renderTaskForm();
+            public void callback(Void response) {
+                doReleaseTask();
             }
-        }, new ErrorCallback<Message>() {
-           @Override
-           public boolean error( Message message, Throwable throwable ) {
-               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-               return true;
-           }
-       } ).start( Long.parseLong( params.get( "taskId" ).toString() ), identity.getName() );
-
+        }).clearContext(formCtx);
     }
-    
-    public void releaseTask( String values ) {
-        taskServices.call( new RemoteCallback<Void>() {
+
+    protected RemoteCallback getReleaseTaskRemoteCallback() {
+        return new RemoteCallback<Void>() {
             @Override
             public void callback( Void nothing ) {
                 view.displayNotification( "Task Id: " + currentTaskId + " was released!" );
                 taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 renderTaskForm();
             }
-        }, new ErrorCallback<Message>() {
-           @Override
-           public boolean error( Message message, Throwable throwable ) {
-               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-               return true;
-           }
-       } ).release( currentTaskId, identity.getName() );
+        };
+    }
+
+    protected void doReleaseTask() {
+        taskServices.call(getReleaseTaskRemoteCallback(), getUnexpectedErrorCallback()).release( currentTaskId, identity.getName() );
 
     }
-    
-    public void claimTask( String values ) {
-        taskServices.call( new RemoteCallback<Void>() {
+
+    protected void claimTaskFromFromModelerForm() {
+        renderContextServices.call(new RemoteCallback<Void>() {
+            @Override
+            public void callback(Void response) {
+                doClaimTask();
+            }
+        }).clearContext(formCtx);
+    }
+
+    protected RemoteCallback getClaimTaskCallback() {
+        return new RemoteCallback<Void>() {
             @Override
             public void callback( Void nothing ) {
                 view.displayNotification( "Task Id: " + currentTaskId + " was claimed!" );
                 taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                 renderTaskForm();
             }
-        }, new ErrorCallback<Message>() {
-           @Override
-           public boolean error( Message message, Throwable throwable ) {
-               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-               return true;
-           }
-       } ).claim( currentTaskId, identity.getName() );
-
+        };
     }
 
-    protected void saveTaskState() {
-        renderContextServices.call(new RemoteCallback<Long>() {
-            @Override
-            public void callback(Long contentId) {
-                view.displayNotification("Task Id: " + currentTaskId + " State was Saved! ContentId : " + contentId);
-                taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
-                renderTaskForm();
-            }
-        }, new ErrorCallback<Message>() {
-           @Override
-           public boolean error( Message message, Throwable throwable ) {
-               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-               return true;
-           }
-       }).saveTaskStateFromRenderContext(formCtx, currentTaskId);
+    protected void doClaimTask() {
+        taskServices.call(getClaimTaskCallback(), getUnexpectedErrorCallback()).claim(currentTaskId, identity.getName());
     }
 
-    protected void changeActionTab() {
-        renderContextServices.call(new RemoteCallback<Long>() {
-            @Override
-            public void callback(Long contentId) {
-                dispose();
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest(view.getAction());
-                placeRequestImpl.addParameter("taskId", String.valueOf(currentTaskId));
-                placeManager.goTo(placeRequestImpl);
-            }
-        }, new ErrorCallback<Message>() {
-           @Override
-           public boolean error( Message message, Throwable throwable ) {
-               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-               return true;
-           }
-       }).saveTaskStateFromRenderContext(formCtx, currentTaskId, true);
+    protected void doSaveTaskState() {
+        renderContextServices.call(getSaveTaskStateCallback(), getUnexpectedErrorCallback()).saveTaskStateFromRenderContext(formCtx, currentTaskId);
     }
 
-    protected void changeTab(String tabId) {
-        dispose();
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(tabId);
-        placeRequestImpl.addParameter("taskId", String.valueOf(currentTaskId));
-        placeManager.goTo(placeRequestImpl);
-    }
-
-    protected void completeTask() {
-        renderContextServices.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void nothing) {
-                view.displayNotification("Form for Task Id: " + currentTaskId + " was completed!");
-                taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
-                dispose();
-            }
-        }, new ErrorCallback<Message>() {
-               @Override
-               public boolean error( Message message, Throwable throwable ) {
-                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                   return true;
-               }
-           }).completeTaskFromContext(formCtx, currentTaskId, identity.getName());
+    protected void doCompleteTask() {
+        renderContextServices.call(getCompleteTaskRemoteCallback(), getUnexpectedErrorCallback()).completeTaskFromContext(formCtx, currentTaskId, identity.getName());
     }
 
     protected void startProcess() {
-        renderContextServices.call(new RemoteCallback<Long>() {
+        if (isFormModelerForm) {
+            view.submitStartProcessForm();
+        } else {
+            startProcessFromHTMLForm();
+        }
+    }
+
+    protected native void startProcessFromHTMLForm() /*-{
+        $wnd.startProcess($wnd.getFormValues($doc.getElementById("form-data")));
+    }-*/;
+
+
+    protected RemoteCallback<Long> getStartProcessCallback() {
+        return new RemoteCallback<Long>() {
             @Override
             public void callback(Long processInstanceId) {
                 view.displayNotification("Process Id: " + processInstanceId + " started!");
                 newProcessInstanceEvent.fire(new NewProcessInstanceEvent(currentDomainId, processInstanceId, currentProcessId));
                 close();
- 
             }
-        }, new ErrorCallback<Message>() {
-           @Override
-           public boolean error( Message message, Throwable throwable ) {
-               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-               return true;
-           }
-       }).startProcessFromRenderContext(formCtx, currentDomainId, currentProcessId);
+        };
+    }
+
+    protected void doStartProcess() {
+        renderContextServices.call(getStartProcessCallback(), getUnexpectedErrorCallback()).startProcessFromRenderContext(formCtx, currentDomainId, currentProcessId);
     }
 
     public void startProcess(String values) {
         final Map<String, String> params = getUrlParameters(values);
 
-        sessionServices.call(new RemoteCallback<Long>() {
-            @Override
-            public void callback(Long processInstanceId) {
-                view.displayNotification("Process Id: " + processInstanceId + " started!");
-                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(currentDomainId, processInstanceId, currentProcessId));
-                close();
-               
-
-            }
-        }, new ErrorCallback<Message>() {
-             @Override
-             public boolean error( Message message, Throwable throwable ) {
-                 ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                 return true;
-             }
-         }).startProcess(currentDomainId, params.get("processId").toString(), params);
+        sessionServices.call(getStartProcessCallback(), getUnexpectedErrorCallback()).startProcess(currentDomainId, currentProcessId, params);
 
     }
 
     // Set up the JS-callable signature as a global JS function.
-    private native void publish( FormDisplayPresenter fdp )/*-{
+    protected native void publish( FormDisplayPresenter fdp )/*-{
         $wnd.completeTask = function (from) {
             fdp.@org.jbpm.console.ng.ht.forms.client.editors.taskform.FormDisplayPresenter::completeTask(Ljava/lang/String;)(from);
-        }
-
-        $wnd.startTask = function (from) {
-            fdp.@org.jbpm.console.ng.ht.forms.client.editors.taskform.FormDisplayPresenter::startTask(Ljava/lang/String;)(from);
-        }
-            
-        $wnd.claimTask = function (from) {
-            fdp.@org.jbpm.console.ng.ht.forms.client.editors.taskform.FormDisplayPresenter::claimTask(Ljava/lang/String;)(from);
-        }
-            
-        $wnd.releaseTask = function (from) {
-            fdp.@org.jbpm.console.ng.ht.forms.client.editors.taskform.FormDisplayPresenter::releaseTask(Ljava/lang/String;)(from);
         }
 
         $wnd.saveTaskState = function (from) {
@@ -669,7 +564,7 @@ public class FormDisplayPresenter {
         }
     }-*/;
 
-    private native void publishGetFormValues() /*-{
+    protected native void publishGetFormValues() /*-{
         $wnd.getFormValues = function (form) {
             var params = '';
 
@@ -706,11 +601,10 @@ public class FormDisplayPresenter {
         currentTaskId = Long.parseLong(place.getParameter("taskId", "-1").toString());
         currentProcessId = place.getParameter("processId", "none").toString();
         currentDomainId = place.getParameter("domainId", "none").toString();
+
         if (currentTaskId != -1) {
-            
             renderTaskForm();
         } else if (!currentProcessId.equals("none")) {
-           
             renderProcessForm();
         }
     }
@@ -726,11 +620,11 @@ public class FormDisplayPresenter {
                 } else if (!currentProcessId.equals("none")) {
                     renderProcessForm();
                 }
-                
+
             }
         }).clearContext(formCtx);
     }
-    
+
     public void close() {
         renderContextServices.call(new RemoteCallback<Void>() {
             @Override
@@ -740,14 +634,25 @@ public class FormDisplayPresenter {
             }
         }).clearContext(formCtx);
     }
-    
+
     public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event){
-        if(currentTaskId == event.getTaskId()){
-            if (currentTaskId != -1) {
-                renderTaskForm();
-            } else if (!currentProcessId.equals("none")) {
-                renderProcessForm();
-            }
+        if(currentTaskId == event.getTaskId()) {
+            renderContextServices.call(new RemoteCallback<Void>() {
+                @Override
+                public void callback(Void response) {
+                    formCtx = null;
+                    if (currentTaskId != -1) {
+                        renderTaskForm();
+                    } else if (!currentProcessId.equals("none")) {
+                        renderProcessForm();
+                    }
+
+                }
+            }).clearContext(formCtx);
         }
+    }
+
+    protected boolean showButtons() {
+        return true;
     }
 }
