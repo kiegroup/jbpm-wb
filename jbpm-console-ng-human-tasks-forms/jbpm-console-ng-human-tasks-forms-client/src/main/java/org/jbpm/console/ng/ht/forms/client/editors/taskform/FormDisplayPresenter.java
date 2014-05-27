@@ -110,7 +110,7 @@ public class FormDisplayPresenter {
 
     @Inject
     protected Event<EditPanelEvent> editPanelEvent;
-    
+
     @Inject
     private ActivityManager activityManager;
 
@@ -195,8 +195,7 @@ public class FormDisplayPresenter {
         if (form == null || form.length() == 0) {
             return;
         }
-        view.loadForm(form);
-
+        
         isFormModelerForm = view.isFormModeler();
         if(loadForm){
             view.loadForm(form);
@@ -302,9 +301,8 @@ public class FormDisplayPresenter {
         formServices.call( new RemoteCallback<String>() {
             @Override
             public void callback( String form ) {
-                view.loadForm(form);
-                isFormModelerForm = view.isFormModeler();
                 
+                isFormModelerForm = view.isFormModeler();
                 if(loadForm){
                     view.loadForm(form);
                     formCtx = form;
@@ -339,6 +337,29 @@ public class FormDisplayPresenter {
             }
         }, getUnexpectedErrorCallback()).getFormDisplayProcess(currentDomainId, currentProcessId);
 
+    }
+    
+    public void renderFormViaPlaceManager(@Observes RenderFormEvent event){
+        String taskName = event.getParams().get("TaskName");
+        if(taskName == null || taskName.equals("")){
+            return;
+        }
+        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(taskName, event.getParams());
+        Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
+        if(activities.isEmpty()){
+            return;
+        }
+        AbstractWorkbenchScreenActivity activity = ((AbstractWorkbenchScreenActivity) activities.iterator().next());
+        IsWidget widget = activity.getWidget();
+        activity.launch(place, null);
+        activity.onStartup(defaultPlaceRequest);
+        view.getFormView().clear();
+        view.getFormView().add(widget);
+        activity.onOpen();
+        view.getFormView().setVisible(true);
+        view.getFormRenderer().setVisible(false);
+        loadForm = false;
+        initTaskForm("");
     }
 
     public void onFormSubmitted(@Observes FormSubmittedEvent event) {
