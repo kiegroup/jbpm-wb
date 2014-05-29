@@ -124,6 +124,12 @@ public class FormDisplayViewImpl extends Composite implements FormDisplayPresent
         return formView;
     }
 
+    public FormRendererWidget getFormRenderer() {
+        return formRenderer;
+    }
+    
+    
+
     @Override
     public void loadForm(String form) {
         formModeler = formRenderer.isValidContextUID(form);

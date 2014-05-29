@@ -23,9 +23,11 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -45,14 +47,19 @@ import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.jbpm.console.ng.ht.forms.model.events.FormRenderedEvent;
 import org.jbpm.console.ng.ht.forms.service.FormModelerProcessStarterEntryPoint;
 import org.jbpm.console.ng.ht.forms.service.FormServiceEntryPoint;
+import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
+import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.common.popups.errors.ErrorPopup;
+import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
+import org.uberfire.client.mvp.Activity;
+import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
@@ -103,6 +110,9 @@ public class FormDisplayPresenter {
 
     @Inject
     protected Event<EditPanelEvent> editPanelEvent;
+    
+    @Inject
+    private ActivityManager activityManager;
 
     @Inject
     private Identity identity;
@@ -127,7 +137,8 @@ public class FormDisplayPresenter {
 
     @Inject
     protected Event<TaskStyleEvent> taskStyleEvent;
-
+    
+    private boolean loadForm = true;
 
     public interface FormDisplayView extends UberView<FormDisplayPresenter> {
 
@@ -150,6 +161,8 @@ public class FormDisplayPresenter {
         String getAction();
 
         VerticalPanel getFormView();
+        
+        FormRendererWidget getFormRenderer();
 
         void loadForm(String form);
 
@@ -178,13 +191,16 @@ public class FormDisplayPresenter {
     }
 
     protected void initTaskForm(String form) {
-
+        
         if (form == null || form.length() == 0) {
             return;
         }
         view.loadForm(form);
 
         isFormModelerForm = view.isFormModeler();
+        if(loadForm){
+            view.loadForm(form);
+        }
 
         formCtx = form;
 
@@ -288,8 +304,11 @@ public class FormDisplayPresenter {
             public void callback( String form ) {
                 view.loadForm(form);
                 isFormModelerForm = view.isFormModeler();
-
-                formCtx = form;
+                
+                if(loadForm){
+                    view.loadForm(form);
+                    formCtx = form;
+                }
 
                 dataServices.call( new RemoteCallback<ProcessSummary>() {
                     @Override
