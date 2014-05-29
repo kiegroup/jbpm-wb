@@ -156,8 +156,8 @@ public abstract class ActionsCellTaskList extends Composite {
             cell = new ActionCell<TaskSummary>(text, delegate) {
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
-                    if (value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty()
-                            && value.getStatus().equals("Ready")) {
+//                    if (value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty()
+                    if (value.getStatus().equals("Ready")) {
                         AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.releaseGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
                         mysb.appendHtmlConstant("<span title='" + constants.Claim() + "' style='margin-right:5px;'>");
@@ -192,8 +192,8 @@ public abstract class ActionsCellTaskList extends Composite {
             cell = new ActionCell<TaskSummary>(text, delegate) {
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
-                    if (value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty()
-                            && value.getActualOwner().equals(identity.getName())
+//                    if (value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty()
+                    if (value.getActualOwner().equals(identity.getName())
                             && (value.getStatus().equals("Reserved") || value.getStatus().equals("InProgress"))) {
                         AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.claimGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();

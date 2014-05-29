@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ht.admin.service.TaskServiceAdminEntryPoint;
 import org.jbpm.services.task.impl.factories.TaskFactory;
+import org.jbpm.services.task.utils.TaskFluent;
 import org.kie.api.task.model.Task;
 import org.kie.internal.task.api.InternalTaskService;
 
@@ -44,11 +45,13 @@ public class TaskServiceAdminEntryPointImpl implements TaskServiceAdminEntryPoin
     @Override
     public void generateMockTasks(String userName, int amountOfTasks) {
         for (int i = 0; i < amountOfTasks; i++) {
-            String str = "(with (new Task()) { priority = 55, taskData = (with( new TaskData()) { } ), "
-                    + "peopleAssignments = (with ( new PeopleAssignments() ) { potentialOwners = [new User('"+userName+"' )],"
-                    + "businessAdministrators = [ new User('Administrator') ], }), names = [ new I18NText( 'en-UK', 'Task #" + i + "')] })";
-
-            Task task = (Task) TaskFactory.evalTask(new StringReader(str));
+           
+            Task task = new TaskFluent().setName("Task #" + i + " - name ")
+                                        .setDescription(" Task #" + i + " - description")
+                                        .addPotentialUser(userName)
+                                        .setAdminUser("Administrator")
+                                        .setAdminGroup("Administrators")
+                                        .getTask();
             taskService.addTask(task, new HashMap<String, Object>());
         }
     }

@@ -40,8 +40,11 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jbpm.console.ng.gc.client.experimental.pagination.GenericDataProvider;
+import org.jbpm.console.ng.gc.client.experimental.pagination.JBPMSimplePager;
+import org.jbpm.console.ng.gc.client.util.DataGridUtils;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.client.util.DataGridUtils;
+
 import org.jbpm.console.ng.ht.client.util.DateRange;
 import org.jbpm.console.ng.ht.client.util.DateUtils;
 import org.jbpm.console.ng.ht.client.util.TaskUtils;
@@ -75,10 +78,26 @@ import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
 @WorkbenchScreen(identifier = "Tasks List")
-public class TasksListPresenter {
+public class TasksListPresenter implements GenericDataProvider<TaskSummary>{
 
     public TasksListPresenter() {
         makeMenuBar();
+    }
+
+    @Override
+    public List<TaskSummary> getAllServerSideData() {
+        return allTaskSummaries;
+    }
+
+    @Override
+    public ListDataProvider<TaskSummary> getClientSideDataProvider() {
+        return dataProvider;
+    }
+
+    @Override
+    public void refresh(int start, int offset, boolean clear) {
+        refreshTasks(view.getCurrentDate(), view.getCurrentView(), view.getCurrentTaskType(), 
+                        start, offset, clear);
     }
 
     public interface TaskListView extends UberView<TasksListPresenter> {
@@ -108,6 +127,8 @@ public class TasksListPresenter {
         void setActiveButton(TaskType taskType);
 
         void changeCurrentDate(Date date);
+        
+        JBPMSimplePager getPager();
     }
 
     private Constants constants = GWT.create(Constants.class);
@@ -135,7 +156,6 @@ public class TasksListPresenter {
     @Inject
     private Event<ClearSearchEvent> clearSearchEvent;
 
-    private static final String LANGUAGE = "en-UK";
 
     private ListDataProvider<TaskSummary> dataProvider = new ListDataProvider<TaskSummary>();
 
@@ -163,7 +183,8 @@ public class TasksListPresenter {
 
     @OnFocus
     public void onFocus() {
-        refreshTasks(view.getCurrentDate(), view.getCurrentView(), view.getCurrentTaskType());
+        refreshTasks(view.getCurrentDate(), view.getCurrentView(), view.getCurrentTaskType(), 
+                        view.getPager().getCurrentPage() * DataGridUtils.pageSize, (DataGridUtils.pageSize * DataGridUtils.clientSidePages), true);
     }
 
     @OnStartup
@@ -188,11 +209,11 @@ public class TasksListPresenter {
         return allTaskSummaries;
     }
 
-    public void filterTasks(String text) {
+    public void filterTasks(String text, boolean clear) {
         ColumnSortList.ColumnSortInfo sortInfo = view.getTaskListGrid().getColumnSortList().size() > 0 ? view.getTaskListGrid()
                 .getColumnSortList().get(0) : null;
         if (allTaskSummaries != null) {
-            this.filterGrid(sortInfo, text);
+            this.filterGrid(sortInfo, text, clear);
         }
         if (currentDayTasks != null) {
             this.filterCalendar(DataGridUtils.idTaskCalendar, text);
@@ -201,7 +222,7 @@ public class TasksListPresenter {
         view.getTaskListGrid().setFocus(true);
     }
 
-    private void filterGrid(ColumnSortList.ColumnSortInfo sortInfo, String text) {
+    private void filterGrid(ColumnSortList.ColumnSortInfo sortInfo, String text, boolean clear) {
         List<TaskSummary> filteredTasksSimple = Lists.newArrayList();
         if (!text.equals("")) {
             for (TaskSummary ts : allTaskSummaries) {
@@ -212,7 +233,9 @@ public class TasksListPresenter {
         } else {
             filteredTasksSimple = allTaskSummaries;
         }
-        dataProvider.getList().clear();
+        if(clear){
+            dataProvider.getList().clear();
+        }
         dataProvider.getList().addAll(filteredTasksSimple);
         if (sortInfo != null && sortInfo.isAscending()) {
             view.getTaskListGrid().getColumnSortList().clear();
@@ -292,7 +315,7 @@ public class TasksListPresenter {
             @Override
             public void callback(List<TaskSummary> tasks) {
                 view.displayNotification("Task(s) Released");
-                DataGridUtils.currentIdSelected = DataGridUtils.getIdRowSelected(view.getTaskListGrid());
+                DataGridUtils.currentIdSelected = Long.valueOf(DataGridUtils.getIdRowSelected(view.getTaskListGrid()));
                 view.refreshTasks();
             }
         }, new ErrorCallback<Message>() {
@@ -325,7 +348,7 @@ public class TasksListPresenter {
             @Override
             public void callback(List<TaskSummary> tasks) {
                 view.displayNotification("Task(s) Claimed");
-                DataGridUtils.currentIdSelected = DataGridUtils.getIdRowSelected(view.getTaskListGrid());
+                DataGridUtils.currentIdSelected = Long.valueOf(DataGridUtils.getIdRowSelected(view.getTaskListGrid()));
                 view.refreshTasks();
 
             }
@@ -342,13 +365,13 @@ public class TasksListPresenter {
      * Refresh tasks based on specified date, view (day/week/month) and task
      * type.
      */
-    public void refreshTasks(Date date, TaskView taskView, TaskType taskType) {
+    public void refreshTasks(Date date, TaskView taskView, TaskType taskType,  int offset, int count, boolean clear) {
         switch (taskType) {
         case PERSONAL:
-            refreshPersonalTasks(date, taskView);
+            refreshPersonalTasks(date, taskView, offset, count, clear);
             break;
         default:
-            refreshTasksByType(date, taskView, taskType);
+            refreshTasksByType(date, taskView, taskType, offset, count, clear);
             break;
         }
     }
@@ -378,22 +401,25 @@ public class TasksListPresenter {
         return dateRange;
     }
 
-    public void refreshTasksByType(Date date, TaskView taskView, TaskType type) {
+    public void refreshTasksByType(Date date, TaskView taskView, TaskType type,  int offset, int count, boolean clear) {
         if (taskView.equals(TaskView.GRID)) {
-            this.refreshGrid(type);
+            this.refreshGrid(type,  offset,  count,  clear);
         } else {
             this.refreshCalendar(type, date, taskView);
         }
 
     }
 
-    private void refreshGrid(TaskType type){
+    private void refreshGrid(TaskType type, int offset, int count, final boolean clear){
+        final long currentTime = System.currentTimeMillis();
         taskServices.call(new RemoteCallback<List<TaskSummary>>() {
             @Override
             public void callback(List<TaskSummary> tasks) {
+                view.displayNotification("Tasks ("+tasks.size()+") retrieved in: "+((double)(System.currentTimeMillis()-currentTime)/1000)+"s");
                 allTaskSummaries = tasks;
-                filterTasks(view.getCurrentFilter());
+                filterTasks(view.getCurrentFilter(), clear);
                 view.getTaskListGrid().setFocus(true);
+                
             }
         }, new ErrorCallback<Message>() {
           @Override
@@ -402,19 +428,21 @@ public class TasksListPresenter {
               return true;
           }
       }).getTasksAssignedAsPotentialOwnerByExpirationDateOptional(identity.getName(), TaskUtils.getStatusByType(type),
-                null, LANGUAGE);
+                null, offset, count);
+        
     }
 
     private void refreshCalendar(TaskType type, Date date, TaskView taskView){
         DateRange dateRangeToShow = determineDateRangeForTaskViewBasedOnSpecifiedDate(date, taskView);
         Date fromDate = dateRangeToShow.getStartDate();
         int daysTotal = dateRangeToShow.getDaysInBetween() + 1;
-
+        final long currentTime = System.currentTimeMillis();
         taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
             @Override
             public void callback(Map<Day, List<TaskSummary>> tasks) {
+                view.displayNotification("Tasks ("+tasks.size()+") retrieved in: "+((double)(System.currentTimeMillis()-currentTime)/1000)+"s");
                 currentDayTasks = tasks;
-                filterTasks(view.getCurrentFilter());
+                filterTasks(view.getCurrentFilter(), false);
             }
         }, new ErrorCallback<Message>() {
               @Override
@@ -423,16 +451,18 @@ public class TasksListPresenter {
                   return true;
               }
           }).getTasksAssignedAsPotentialOwnerFromDateToDateByDays(identity.getName(), TaskUtils.getStatusByType(type),
-                fromDate, daysTotal, LANGUAGE);
+                fromDate, daysTotal);
     }
 
-    public void refreshPersonalTasks(Date date, TaskView taskView) {
+    public void refreshPersonalTasks(Date date, TaskView taskView, int offset, int count, final boolean clear) {
         if (taskView.equals(TaskView.GRID)) {
+            final long currentTime = System.currentTimeMillis();
             taskServices.call(new RemoteCallback<List<TaskSummary>>() {
                 @Override
                 public void callback(List<TaskSummary> tasks) {
+                    view.displayNotification("Tasks ("+tasks.size()+") retrieved in: "+((double)(System.currentTimeMillis()-currentTime)/1000)+"s");
                     allTaskSummaries = tasks;
-                    filterTasks(view.getCurrentFilter());
+                    filterTasks(view.getCurrentFilter(), clear);
 
                 }
             }, new ErrorCallback<Message>() {
@@ -441,19 +471,19 @@ public class TasksListPresenter {
                       ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                       return true;
                   }
-              }).getTasksOwnedByExpirationDateOptional(identity.getName(), TaskUtils.getStatusByType(TaskType.PERSONAL), null,
-                    LANGUAGE);
+              }).getTasksOwnedByExpirationDateOptional(identity.getName(), TaskUtils.getStatusByType(TaskType.PERSONAL), null, offset, count);
 
         } else {
             DateRange dateRangeToShow = determineDateRangeForTaskViewBasedOnSpecifiedDate(date, taskView);
             Date fromDate = dateRangeToShow.getStartDate();
             int daysTotal = dateRangeToShow.getDaysInBetween() + 1;
-
+            final long currentTime = System.currentTimeMillis();
             taskServices.call(new RemoteCallback<Map<Day, List<TaskSummary>>>() {
                 @Override
                 public void callback(Map<Day, List<TaskSummary>> tasks) {
+                    view.displayNotification("Tasks ("+tasks.size()+") retrieved in: "+((double)(System.currentTimeMillis()-currentTime)/1000)+"s");
                     currentDayTasks = tasks;
-                    filterTasks(view.getCurrentFilter());
+                    filterTasks(view.getCurrentFilter(), true);
                     view.getTaskListGrid().setFocus(true);
                 }
             }, new ErrorCallback<Message>() {
@@ -463,7 +493,7 @@ public class TasksListPresenter {
                       return true;
                   }
               }).getTasksOwnedFromDateToDateByDays(identity.getName(), TaskUtils.getStatusByType(TaskType.PERSONAL), fromDate,
-                    daysTotal, LANGUAGE);
+                    daysTotal);
         }
     }
 
@@ -485,7 +515,7 @@ public class TasksListPresenter {
         }).endMenu().newTopLevelMenu(constants.Refresh()).respondsWith(new Command() {
             @Override
             public void execute() {
-                refreshTasks(view.getCurrentDate(), view.getCurrentView(), view.getCurrentTaskType());
+                refreshTasks(view.getCurrentDate(), view.getCurrentView(), view.getCurrentTaskType(), 0, DataGridUtils.pageSize, true);
                 view.setCurrentFilter("");
                 view.displayNotification(constants.Tasks_Refreshed());
                 clearSearchEvent.fire(new ClearSearchEvent());
@@ -540,7 +570,8 @@ public class TasksListPresenter {
 
     public void onSearchEvent(@Observes final SearchEvent searchEvent) {
         view.setCurrentFilter(searchEvent.getFilter());
-        refreshTasks(view.getCurrentDate(), view.getCurrentView(), view.getCurrentTaskType());
+        refreshTasks(view.getCurrentDate(), view.getCurrentView(), view.getCurrentTaskType(), 
+                view.getPager().getCurrentPage() * DataGridUtils.pageSize, (DataGridUtils.pageSize * DataGridUtils.clientSidePages), true);
     }
 
     public void editPanelEvent( @Observes EditPanelEvent editPanelEvent ){

@@ -22,22 +22,22 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
-
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.jbpm.services.task.audit.commands.GetAuditEventsCommand;
 import org.jbpm.services.task.impl.factories.TaskFactory;
 import org.jbpm.services.task.impl.model.CommentImpl;
 import org.jbpm.services.task.impl.model.UserImpl;
+import org.jbpm.services.task.query.QueryFilterImpl;
 import org.jbpm.services.task.utils.ContentMarshallerHelper;
-import org.jbpm.services.task.audit.commands.GetAuditEventsCommand;
+import org.jbpm.services.task.utils.TaskFluent;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.kie.api.task.model.Content;
@@ -47,8 +47,8 @@ import org.kie.api.task.model.Status;
 import org.kie.api.task.model.Task;
 import org.kie.api.task.model.User;
 import org.kie.internal.task.api.InternalTaskService;
+import org.kie.internal.task.api.QueryFilter;
 import org.kie.internal.task.api.model.InternalComment;
-import org.kie.internal.task.api.model.InternalTask;
 import org.kie.internal.task.api.model.SubTasksStrategy;
 
 @Service
@@ -60,49 +60,53 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Override
     public List<TaskSummary> getTasksAssignedAsPotentialOwnerByExpirationDateOptional(String userId,
-            List<String> status, Date from, String language) { //@TODO: MUST ADD LANGUAGE FILTER
+            List<String> status, Date from, int offset, int count) { 
         List<Status> statuses = new ArrayList<Status>();
         for (String s : status) {
             statuses.add(Status.valueOf(s));
         }
         List<TaskSummary> taskSummaries = null;
         if (from != null) {
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("expirationDate", from);
+		QueryFilter qf = new QueryFilterImpl( "(t.taskData.expirationTime = :expirationDate or t.taskData.expirationTime is null)", 
+                            params, "order by t.id DESC", offset, count);
+                
             taskSummaries = TaskSummaryHelper.adaptCollection(
-                    taskService.getTasksAssignedAsPotentialOwnerByExpirationDateOptional(
-                            userId, statuses, from));
+                    taskService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf ));
         } else {
+            QueryFilter qf = new QueryFilterImpl(offset,count);
             taskSummaries = TaskSummaryHelper.adaptCollection(
-                    taskService.getTasksAssignedAsPotentialOwnerByStatus(userId, statuses, "en-UK"));
+                    taskService.getTasksAssignedAsPotentialOwner(userId,null, statuses, qf));
         }
-        setPotentionalOwners(taskSummaries);
+        //setPotentionalOwners(taskSummaries);
         return taskSummaries;
     }
 
-    private void setPotentionalOwners(List<TaskSummary> taskSummaries) {
-        //This is a hack we need to find a way to get the PotentialOwners in a performant way
-        List<Long> taskIds = new ArrayList<Long>(taskSummaries.size());
-        for (TaskSummary ts : taskSummaries) {
-            taskIds.add(ts.getId());
-        }
-        if (taskIds.size() > 0) {
-            Map<Long, List<String>> potentialOwnersForTaskIds = getPotentialOwnersForTaskIds(taskIds);
-            for (TaskSummary ts : taskSummaries) {
-                ts.setPotentialOwners(potentialOwnersForTaskIds.get(ts.getId()));
-            }
-        }
-    }
+//    private void setPotentionalOwners(List<TaskSummary> taskSummaries) {
+//        //This is a hack we need to find a way to get the PotentialOwners in a performant way
+//        List<Long> taskIds = new ArrayList<Long>(taskSummaries.size());
+//        for (TaskSummary ts : taskSummaries) {
+//            taskIds.add(ts.getId());
+//        }
+//        if (taskIds.size() > 0) {
+//            Map<Long, List<String>> potentialOwnersForTaskIds = getPotentialOwnersForTaskIds(taskIds);
+//            for (TaskSummary ts : taskSummaries) {
+//                ts.setPotentialOwners(potentialOwnersForTaskIds.get(ts.getId()));
+//            }
+//        }
+//    }
 
     @Override
-    public List<TaskSummary> getTasksOwnedByExpirationDateOptional(String userId, List<String> status, Date from,
-            String language) { //@TODO: MUST ADD LANGUAGE FILTER
+    public List<TaskSummary> getTasksOwnedByExpirationDateOptional(String userId, List<String> status, Date from, int offset, int count) { 
         List<Status> statuses = new ArrayList<Status>();
         for (String s : status) {
             statuses.add(Status.valueOf(s));
         }
         List<TaskSummary> taskSummaries = TaskSummaryHelper.adaptCollection(
-                taskService.getTasksOwnedByStatus(
-                        userId, statuses, "en-UK"));
-        setPotentionalOwners(taskSummaries);
+                taskService.getTasksOwned(
+                        userId, statuses, new QueryFilterImpl(offset, count)));
+//        setPotentionalOwners(taskSummaries);
         return taskSummaries;
     }
 
@@ -130,7 +134,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
      * Day adaptors
      */
     public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, List<String> strStatuses,
-            Date dateFrom, Date dateTo, String language) {
+            Date dateFrom, Date dateTo) {
         LocalDate dayFrom = new LocalDate(dateFrom);
         LocalDate dayTo = new LocalDate(dateTo);
 
@@ -139,9 +143,9 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         Map<LocalDate, List<TaskSummary>> tasksByDay = createDaysMapAndInitWithEmptyListForEachDay(dayFrom, nrOfDaysTotal);
 
         List<TaskSummary> taskSummaries = adaptTaskSummaryCollection(
-                taskService.getTasksOwnedByStatus(userId, convertStatuses(strStatuses), language));
+                taskService.getTasksOwned(userId, convertStatuses(strStatuses), new QueryFilterImpl(0, 0)));
 
-        setPotentionalOwners(taskSummaries);
+//        setPotentionalOwners(taskSummaries);
         fillDaysMapWithTasksBasedOnExpirationDate(tasksByDay, taskSummaries, today);
         return transformLocalDatesToDays(tasksByDay);
     }
@@ -199,14 +203,14 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Override
     public Map<Day, List<TaskSummary>> getTasksAssignedAsPotentialOwnerFromDateToDateByDays(String userId,
-            List<String> strStatuses, Date from, int nrOfDaysTotal, String language) {
+            List<String> strStatuses, Date from, int nrOfDaysTotal) {
         Date toDate = getEndDateBasedOnStartDateAndNumberOfDaysBetweenThem(from, nrOfDaysTotal);
         return getTasksAssignedAsPotentialOwnerFromDateToDateByDays(userId, strStatuses, from,
-                toDate, language);
+                toDate);
     }
 
     public Map<Day, List<TaskSummary>> getTasksAssignedAsPotentialOwnerFromDateToDateByDays(String userId,
-            List<String> strStatuses, Date dateFrom, Date dateTo, String language) {
+            List<String> strStatuses, Date dateFrom, Date dateTo) {
         LocalDate dayFrom = new LocalDate(dateFrom);
         LocalDate dayTo = new LocalDate(dateTo);
 
@@ -216,39 +220,40 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         Map<LocalDate, List<TaskSummary>> tasksByDay = createDaysMapAndInitWithEmptyListForEachDay(dayFrom, nrOfDaysTotal);
 
         List<TaskSummary> taskSummaries = adaptTaskSummaryCollection(
-                taskService.getTasksAssignedAsPotentialOwnerByStatus(userId, convertStatuses(strStatuses), language));
+                taskService.getTasksAssignedAsPotentialOwner(userId, null,convertStatuses(strStatuses), new QueryFilterImpl(0,0)));
 
-        setPotentionalOwners(taskSummaries);
+//        setPotentionalOwners(taskSummaries);
         fillDaysMapWithTasksBasedOnExpirationDate(tasksByDay, taskSummaries, today);
         return transformLocalDatesToDays(tasksByDay);
     }
 
     @Override
     public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, List<String> strStatuses, Date from,
-            int nrOfDaysTotal, String language) {
+            int nrOfDaysTotal) {
         Date toDate = getEndDateBasedOnStartDateAndNumberOfDaysBetweenThem(from, nrOfDaysTotal);
-        return getTasksOwnedFromDateToDateByDays(userId, strStatuses, from, toDate,
-                language);
+        return getTasksOwnedFromDateToDateByDays(userId, strStatuses, from, toDate);
     }
 
     private Date getEndDateBasedOnStartDateAndNumberOfDaysBetweenThem(Date from, int nrOfDaysTotal) {
         return new LocalDate(from.getTime()).plusDays(nrOfDaysTotal - 1).toDateMidnight().toDate();
     }
 
-    public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, Date from, Date to, String language) {
+    public Map<Day, List<TaskSummary>> getTasksOwnedFromDateToDateByDays(String userId, Date from, Date to) {
         List<String> statuses = new ArrayList<String>();
         statuses.add("InProgress");
         statuses.add("Reserved");
         statuses.add("Created");
-        return getTasksOwnedFromDateToDateByDays(userId, statuses, from, to, language);
+        return getTasksOwnedFromDateToDateByDays(userId, statuses, from, to);
     }
 
     /**
      * Group Operations
      */
-    public List<TaskSummary> getTasksAssignedByGroup(String userId, String groupId, String language) {
+    public List<TaskSummary> getTasksAssignedByGroup(String userId, String groupId) {
+        List<String> groupIds = new ArrayList<String>();
+        groupIds.add(groupId);
         List<org.kie.api.task.model.TaskSummary> tasksAssignedAsPotentialOwner = taskService.getTasksAssignedAsPotentialOwner(
-                userId, language);
+                userId, groupIds , null, new QueryFilterImpl(0, 0));
         List<org.kie.api.task.model.TaskSummary> taskForGroup = new ArrayList<org.kie.api.task.model.TaskSummary>();
         for (org.kie.api.task.model.TaskSummary ts : tasksAssignedAsPotentialOwner) {
             if (ts.getPotentialOwners().contains(groupId)) {
@@ -262,6 +267,34 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     public long addTask(String taskString, Map<String, Object> inputs, Map<String, Object> templateVars) {
         Task task = TaskFactory.evalTask(taskString, templateVars);
         return taskService.addTask(task, inputs);
+    }
+    
+    @Override
+    public long addQuickTask(
+                         final String taskName,
+                         int priority,
+                         Date dueDate, final List<String> users, List<String> groups, String identity, boolean start, boolean claim){
+        TaskFluent taskFluent = new TaskFluent().setName(taskName)
+                                                .setPriority(priority)
+                                                .setDueDate(dueDate);
+                
+        for(String user : users){
+            taskFluent.addPotentialUser(user);
+        }
+        for(String group : groups){
+            taskFluent.addPotentialGroup(group);
+        }
+        taskFluent.setAdminUser("Administrator");
+        taskFluent.setAdminGroup("Administrators");
+        long taskId = taskService.addTask(taskFluent.getTask(), new HashMap<String, Object>());
+        if(start){
+            taskService.start(taskId, identity);
+        }
+        if(claim){
+            taskService.claim(taskId, identity);
+        }
+        
+        return taskId;
     }
 
     @Override
@@ -388,19 +421,13 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
                     potOwnersString.add(e.getId());
                 }
             } 
-            return new TaskSummary(task.getId(), task.getTaskData().getProcessInstanceId(),
-                    ((task.getNames() != null && task
-                    .getNames().size() > 0)) ? task.getNames().get(0).getText() : "",
-                    ((task.getSubjects() != null && task
-                    .getSubjects().size() > 0)) ? task.getSubjects().get(0).getText() : "",
-                    ((task.getDescriptions() != null && task.getDescriptions().size() > 0)) ? task.getDescriptions().get(0)
-                    .getText() : "", task.getTaskData().getStatus().name(), task.getPriority(), task.getTaskData()
-                    .isSkipable(), (task.getTaskData().getActualOwner() != null) ? task.getTaskData().getActualOwner()
+            return new TaskSummary(task.getId(), task.getName(),
+                    task.getDescription(), task.getTaskData().getStatus().name(), task.getPriority(), (task.getTaskData().getActualOwner() != null) ? task.getTaskData().getActualOwner()
                     .getId() : "", (task.getTaskData().getCreatedBy() != null) ? task.getTaskData().getCreatedBy().getId()
                     : "", task.getTaskData().getCreatedOn(), task.getTaskData().getActivationTime(), task.getTaskData()
                     .getExpirationTime(), task.getTaskData().getProcessId(), task.getTaskData().getProcessSessionId(),
-                    ((InternalTask) task).getSubTaskStrategy().name(), (int) task.getTaskData().getParentId(),
-                    potOwnersString);
+                    task.getTaskData().getProcessInstanceId(), task.getTaskData().getDeploymentId()
+                    , (int) task.getTaskData().getParentId());
         }
         return null;
     }
