@@ -555,7 +555,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
 
     public List<TaskEventSummary> getAllTaskEvents(long taskId) {
-         return TaskEventSummaryHelper.adaptCollection(taskService.execute(new GetAuditEventsCommand(taskId,0,0)));
+         return TaskEventSummaryHelper.adaptCollection(taskService.execute(new GetAuditEventsCommand(taskId,new QueryFilterImpl(0,0))));
     }
 
     @Override
