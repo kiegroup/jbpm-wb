@@ -45,6 +45,7 @@
   <inherits name="org.jbpm.console.ng.bd.JbpmConsoleNGBusinessDomainClient"/>
   <inherits name="org.jbpm.console.ng.es.JbpmConsoleNGExecutorServiceClient"/>
   <inherits name="org.jbpm.console.ng.gc.JbpmConsoleNGGenericClient"/>
+  <inherits name="org.jbpm.console.ng.dm.JbpmConsoleNGDocumentsClient"/>
   
   <!-- asset mgmt -->
   
