@@ -139,12 +139,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-documents-client</artifactId>
-      <version>6.1.0-SNAPSHOT</version>
-    </dependency>
-
-    <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-asset-mgmt-client</artifactId>
         <version>${project.version}</version>
@@ -648,7 +642,6 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-asset-mgmt-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-asset-mgmt-client</compileSourcesArtifact>
-            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-documents-client</compileSourcesArtifact>
             
             <compileSourcesArtifact>org.jbpm:jbpm-designer-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-designer-client</compileSourcesArtifact>
