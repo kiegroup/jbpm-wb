@@ -12,6 +12,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceUnit;
 
+import org.guvnor.common.services.backend.metadata.attribute.OtherMetaView;
 import org.jbpm.kie.services.cdi.producer.UserGroupInfoProducer;
 import org.jbpm.shared.services.cdi.Selectable;
 import org.kie.api.task.TaskLifeCycleEventListener;
@@ -21,11 +22,19 @@ import org.uberfire.backend.server.IOWatchServiceNonDotImpl;
 import org.uberfire.backend.server.io.IOSecurityAuth;
 import org.uberfire.backend.server.io.IOSecurityAuthz;
 import org.uberfire.commons.cluster.ClusterServiceFactory;
+import org.uberfire.io.IOSearchService;
 import org.uberfire.io.IOService;
+import org.uberfire.io.attribute.DublinCoreView;
 import org.uberfire.io.impl.IOServiceDotFileImpl;
 import org.uberfire.io.impl.cluster.IOServiceClusterImpl;
+import org.uberfire.java.nio.base.version.VersionAttributeView;
+import org.uberfire.metadata.backend.lucene.LuceneConfig;
+import org.uberfire.metadata.io.IOSearchIndex;
+import org.uberfire.metadata.io.IOServiceIndexedImpl;
 import org.uberfire.security.auth.AuthenticationManager;
 import org.uberfire.security.authz.AuthorizationManager;
+import org.uberfire.security.impl.authz.RuntimeAuthorizationManager;
+import org.uberfire.security.server.cdi.SecurityFactory;
 import org.uberfire.security.impl.authz.RuntimeAuthorizationManager;
 import org.uberfire.security.server.cdi.SecurityFactory;
 import org.jbpm.services.task.lifecycle.listeners.BAMTaskEventListener;
@@ -53,17 +62,35 @@ public class ApplicationScopedProvider {
     private ClusterServiceFactory clusterServiceFactory;
 
     private IOService ioService;
+    private IOSearchService ioSearchService;
+
+    @Inject
+    @Named("luceneConfig")
+    private LuceneConfig config;
 
     @PostConstruct
     public void setup() {
         SecurityFactory.setAuthzManager( new RuntimeAuthorizationManager() );
+
+        final IOService service = new IOServiceIndexedImpl( watchService,
+                config.getIndexEngine(),
+                config.getIndexers(),
+                DublinCoreView.class,
+                VersionAttributeView.class,
+                OtherMetaView.class );
+
+
         if ( clusterServiceFactory == null ) {
-            ioService = new IOServiceDotFileImpl( watchService );
+            ioService = service;
         } else {
-            ioService = new IOServiceClusterImpl( new IOServiceDotFileImpl( watchService ), clusterServiceFactory, false );
+            ioService = new IOServiceClusterImpl( service,
+                    clusterServiceFactory,
+                    false );
         }
         ioService.setAuthenticationManager( authenticationManager );
         ioService.setAuthorizationManager( authorizationManager );
+        this.ioSearchService = new IOSearchIndex(config.getSearchIndex(), ioService);
+
     }
 
     @PreDestroy
@@ -107,6 +134,13 @@ public class ApplicationScopedProvider {
     public IOService ioService() {
         return ioService;
     }
+
+    @Produces
+    @Named("ioSearchStrategy")
+    public IOSearchService ioSearchService() {
+        return ioSearchService;
+    }
+
 
     @Produces
     @ApplicationScoped
