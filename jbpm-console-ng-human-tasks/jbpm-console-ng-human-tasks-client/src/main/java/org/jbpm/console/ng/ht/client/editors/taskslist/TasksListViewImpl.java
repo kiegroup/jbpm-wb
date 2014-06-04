@@ -55,10 +55,10 @@ import org.jbpm.console.ng.gc.client.experimental.pagination.JBPMSimplePager.Tex
 import static org.jbpm.console.ng.gc.client.list.base.PagerContainer.STYLE_PAGER;
 import org.jbpm.console.ng.gc.client.util.DataGridUtils;
 import org.jbpm.console.ng.gc.client.util.DataGridUtils.ActionsDataGrid;
-import org.jbpm.console.ng.ht.client.util.LiCalendarPicker;
+import org.jbpm.console.ng.gc.client.util.LiCalendarPicker;
 import org.jbpm.console.ng.ht.client.util.ResizableHeader;
-import org.jbpm.console.ng.ht.client.util.TaskUtils.TaskType;
-import org.jbpm.console.ng.ht.client.util.TaskUtils.TaskView;
+import org.jbpm.console.ng.gc.client.util.TaskUtils.TaskType;
+import org.jbpm.console.ng.gc.client.util.TaskUtils.TaskView;
 import org.jbpm.console.ng.ht.model.CalendarListContainer;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;

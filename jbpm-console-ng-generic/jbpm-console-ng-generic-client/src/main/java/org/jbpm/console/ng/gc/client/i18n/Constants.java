@@ -40,4 +40,12 @@ public interface Constants extends Messages {
     String No_Items_Found();
 
     String New_Item();
+
+    String Day();
+
+    String Week();
+
+    String Month();
+
+    String Today();
 }

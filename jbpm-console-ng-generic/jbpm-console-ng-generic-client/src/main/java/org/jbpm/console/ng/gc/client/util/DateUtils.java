@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ht.client.util;
+package org.jbpm.console.ng.gc.client.util;
 
 import java.util.Date;
 

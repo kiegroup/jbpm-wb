@@ -13,12 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.ht.client.util;
+package org.jbpm.console.ng.gc.client.util;
 
 import java.util.Date;
-
-import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.client.util.TaskUtils.TaskView;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ButtonGroup;
@@ -39,8 +36,9 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
-
+import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.CalendarListContainer;
+import org.jbpm.console.ng.gc.client.util.TaskUtils.TaskView;
 
 /**
  * Encapsulates set of components which are able to select day/week/month.

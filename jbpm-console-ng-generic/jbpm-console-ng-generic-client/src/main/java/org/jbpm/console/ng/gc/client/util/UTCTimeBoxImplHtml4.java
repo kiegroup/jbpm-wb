@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jbpm.console.ng.ht.client.util;
+package org.jbpm.console.ng.gc.client.util;
 
 import java.util.Date;
 
@@ -33,7 +33,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
-
 
 /**
  * Time is represented as the number of milliseconds after midnight

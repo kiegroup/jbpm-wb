@@ -32,8 +32,8 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.console.ng.gc.client.util.UTCDateBox;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.client.util.UTCDateBox;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
@@ -117,7 +117,7 @@ public class QuickNewTaskPresenter {
                          int priority,
                          boolean isAssignToMe,
                          long dueDate, long dueDateTime ) {
-        Date due = UTCDateBox.utc2date( dueDate + dueDateTime ); 
+        Date due = UTCDateBox.utc2date(dueDate + dueDateTime);
         
         if ( isAssignToMe && users != null && users.isEmpty() && groups != null 
                 && containsGroup(groups, identity.getRoles()) ) {

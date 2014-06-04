@@ -162,7 +162,7 @@ public class DataGridUtils {
     }
 
     public static void paintCalendarFromGrid(DataGrid<?> myListGrid) {
-        if (idTaskCalendar == null) {
+        if (idTaskCalendar == null && DataGridUtils.getIdRowSelected(myListGrid) != null) {
             idTaskCalendar = Long.valueOf(DataGridUtils.getIdRowSelected(myListGrid));
         }
     }

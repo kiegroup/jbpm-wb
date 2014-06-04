@@ -49,6 +49,8 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.client.util.ResizableHeader;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
+import org.jbpm.console.ng.gc.client.util.UTCDateBox;
+import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
@@ -67,7 +69,11 @@ public class QuickNewJobViewImpl extends Composite implements QuickNewJobPresent
 
     @Inject
     @DataField
-    public DateTimeBox jobDueDate;
+    public UTCDateBox jobDueDate;
+
+    @Inject
+    @DataField
+    public UTCTimeBox jobDueDateTime;
     
     @Inject
     @DataField
@@ -126,7 +132,12 @@ public class QuickNewJobViewImpl extends Composite implements QuickNewJobPresent
 
         initGridColumns();
 
-        jobDueDate.setValue( new Date() );
+        long now = System.currentTimeMillis();
+        jobDueDate.setEnabled(true);
+
+        jobDueDate.setValue( now  );
+
+        jobDueDateTime.setValue(UTCDateBox.date2utc(new Date()));
     }
 
     private void initGridColumns() {
@@ -198,8 +209,8 @@ public class QuickNewJobViewImpl extends Composite implements QuickNewJobPresent
 
     @EventHandler("createButton")
     public void createButton( ClickEvent e ) {
-        presenter.createJob( jobNameText.getText(), jobDueDate.getValue(), jobTypeText.getText(), dataTriesNumber.getValue(),
-                             dataProvider.getList() );
+        presenter.createJob( jobNameText.getText(), UTCDateBox.utc2date(jobDueDate.getValue() + jobDueDateTime.getValue()),
+                jobTypeText.getText(), dataTriesNumber.getValue(), dataProvider.getList() );
     }
 
     private class ActionHasCell implements HasCell<RequestParameterSummary, RequestParameterSummary> {

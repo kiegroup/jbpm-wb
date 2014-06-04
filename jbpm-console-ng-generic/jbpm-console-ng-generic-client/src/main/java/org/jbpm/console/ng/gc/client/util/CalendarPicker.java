@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ht.client.util;
+package org.jbpm.console.ng.gc.client.util;
 
 import java.util.Date;
-
-import org.jbpm.console.ng.ht.client.i18n.Constants;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.Heading;
@@ -37,6 +35,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
+import org.jbpm.console.ng.gc.client.i18n.Constants;
 
 /**
  * Encapsulates set of components which are able to select day/week/month. Contains also buttons for going to previous or next
