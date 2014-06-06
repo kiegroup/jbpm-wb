@@ -196,12 +196,11 @@ public class FormDisplayPresenter {
             return;
         }
         
-        isFormModelerForm = view.isFormModeler();
         if(loadForm){
             view.loadForm(form);
+            isFormModelerForm = view.isFormModeler();
+            formCtx = form;
         }
-
-        formCtx = form;
 
         taskServices.call( new RemoteCallback<TaskSummary>() {
             @Override
@@ -301,10 +300,10 @@ public class FormDisplayPresenter {
         formServices.call( new RemoteCallback<String>() {
             @Override
             public void callback( String form ) {
-                
-                isFormModelerForm = view.isFormModeler();
+
                 if(loadForm){
                     view.loadForm(form);
+                    isFormModelerForm = view.isFormModeler();
                     formCtx = form;
                 }
 
