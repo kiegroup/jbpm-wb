@@ -197,4 +197,8 @@ public interface Constants extends Messages {
 
     String Id();
 
+    String Logs();
+
+    String Get_Instance_Data();
+
 }

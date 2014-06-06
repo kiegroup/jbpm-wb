@@ -7,7 +7,7 @@ import java.util.List;
 
 public class DataService {
 
-    List<DataMockSummary> getData() {
+    public List<DataMockSummary> getData() {
         List<DataMockSummary> data = new ArrayList<DataMockSummary>();
         data.add( new DataMockSummary("p1-1", "process1", "depid1", "com.dummy", "type1"));
         data.add( new DataMockSummary("p1-2", "process1", "depid2", "com.dummy", "type2"));

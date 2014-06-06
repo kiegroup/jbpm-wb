@@ -22,16 +22,19 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.ht.model.AuditTaskSummary;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.services.task.audit.commands.GetAuditEventsCommand;
+import org.jbpm.services.task.audit.service.TaskAuditService;
 import org.jbpm.services.task.impl.factories.TaskFactory;
 import org.jbpm.services.task.impl.model.CommentImpl;
 import org.jbpm.services.task.impl.model.UserImpl;
@@ -57,7 +60,19 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Inject
     private InternalTaskService taskService;
+    
+    @Inject
+    private TaskAuditService taskAuditService;
 
+    public TaskServiceEntryPointImpl() {
+        
+    }
+
+    @PostConstruct
+    public void init(){
+        taskAuditService.setTaskService(taskService);
+    }
+    
     @Override
     public List<TaskSummary> getTasksAssignedAsPotentialOwnerByExpirationDateOptional(String userId,
             List<String> status, Date from, int offset, int count) { 
@@ -79,24 +94,9 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
             taskSummaries = TaskSummaryHelper.adaptCollection(
                     taskService.getTasksAssignedAsPotentialOwner(userId,null, statuses, qf));
         }
-        //setPotentionalOwners(taskSummaries);
         return taskSummaries;
     }
-
-//    private void setPotentionalOwners(List<TaskSummary> taskSummaries) {
-//        //This is a hack we need to find a way to get the PotentialOwners in a performant way
-//        List<Long> taskIds = new ArrayList<Long>(taskSummaries.size());
-//        for (TaskSummary ts : taskSummaries) {
-//            taskIds.add(ts.getId());
-//        }
-//        if (taskIds.size() > 0) {
-//            Map<Long, List<String>> potentialOwnersForTaskIds = getPotentialOwnersForTaskIds(taskIds);
-//            for (TaskSummary ts : taskSummaries) {
-//                ts.setPotentialOwners(potentialOwnersForTaskIds.get(ts.getId()));
-//            }
-//        }
-//    }
-
+    
     @Override
     public List<TaskSummary> getTasksOwnedByExpirationDateOptional(String userId, List<String> status, Date from, int offset, int count) { 
         List<Status> statuses = new ArrayList<Status>();
@@ -563,4 +563,24 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         return taskService.getTaskById(taskId) == null ? false : true;
     }
 
+    @Override
+    public List<TaskEventSummary> getAllTaskEvents(long taskId, String filter) {
+        return TaskEventSummaryHelper.adaptCollection(taskAuditService.getAllTaskEvents(taskId, new QueryFilterImpl(0,0)));
+    }
+
+    @Override
+    public List<TaskEventSummary> getAllTaskEventsByProcessInstanceId(long processInstanceId, String filter) {
+        return TaskEventSummaryHelper.adaptCollection(taskAuditService.getAllTaskEventsByProcessInstanceId(processInstanceId, new QueryFilterImpl(0,0)));
+    }
+
+    public List<AuditTaskSummary> getAllAuditTasks(String filter) {
+        return AuditTaskSummaryHelper.adaptCollection(taskAuditService.getAllAuditTasks(new QueryFilterImpl(0,0)));
+    }
+
+    public List<AuditTaskSummary> getAllAuditTasksByUser(String userId, String filter) {
+        return AuditTaskSummaryHelper.adaptCollection(taskAuditService.getAllAuditTasksByUser(userId, new QueryFilterImpl(0,0)));
+    }
+
+    
+    
 }

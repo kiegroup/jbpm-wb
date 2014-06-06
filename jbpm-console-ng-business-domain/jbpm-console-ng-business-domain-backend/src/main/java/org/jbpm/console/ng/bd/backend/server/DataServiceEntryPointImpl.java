@@ -16,18 +16,20 @@
 
 package org.jbpm.console.ng.bd.backend.server;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.bd.model.RuntimeLogSummary;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.backend.server.TaskDefHelper;
 import org.jbpm.console.ng.ht.model.TaskDefSummary;
+import org.jbpm.console.ng.ht.model.TaskEventSummary;
+import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.pr.backend.server.NodeInstanceHelper;
 import org.jbpm.console.ng.pr.backend.server.ProcessHelper;
 import org.jbpm.console.ng.pr.backend.server.ProcessInstanceHelper;
@@ -51,11 +53,19 @@ import org.jbpm.kie.services.impl.model.ProcessInstanceDesc;
 public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
 
     @Inject
-    RuntimeDataService dataService;
-
+    private RuntimeDataService dataService;
+    
     @Inject
-    BPMN2DataService bpmn2Service;
+    private TaskServiceEntryPoint taskService;
+    
+    @Inject
+    private BPMN2DataService bpmn2Service;
 
+    public DataServiceEntryPointImpl() {
+    }
+
+   
+    
     @Override
     public Map<String, String> getServiceTasks(String processId){
         return bpmn2Service.getAllServiceTasks(processId);
@@ -207,4 +217,35 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
         return bpmn2Service.getTaskOutputMappings(processId, taskName);
     }
 
+  @Override
+  public Collection<RuntimeLogSummary> getAllRuntimeLogs(long processInstanceId) {
+      List<NodeInstanceSummary> processInstanceHistory = (List<NodeInstanceSummary>)getProcessInstanceHistory(processInstanceId);
+      List<TaskEventSummary> allTaskEventsByProcessInstanceId = taskService.getAllTaskEventsByProcessInstanceId(processInstanceId, "");
+      List<RuntimeLogSummary> logs = new ArrayList<RuntimeLogSummary>(processInstanceHistory.size() + allTaskEventsByProcessInstanceId.size());
+      
+      for(int i = processInstanceHistory.size() - 1 ; i >= 0; i--){
+        NodeInstanceSummary nis = processInstanceHistory.get(i);
+        
+        if(nis.getType().equals("HumanTaskNode")){
+          logs.add(new RuntimeLogSummary(nis.getId(), nis.getTimestamp(), nis.getNodeName() + "("+nis.getType()+")", "System"));
+          for(TaskEventSummary te : allTaskEventsByProcessInstanceId){
+            if(te.getWorkItemId() != null && nis.getId() == te.getWorkItemId()){
+              if(te.getType().equals("ADDED")){
+                logs.add(new RuntimeLogSummary(te.getId(), te.getLogTime().toString(), te.getUserId() + "->" +te.getType(), "System"));
+              }else{
+                logs.add(new RuntimeLogSummary(te.getId(), te.getLogTime().toString(), te.getUserId() + "->" +te.getType(), "Human"));
+              }
+            }
+          }
+        }else if(nis.getType().equals("StartNode")){
+          logs.add(new RuntimeLogSummary(nis.getId(), nis.getTimestamp(), nis.getNodeName() + "("+nis.getType()+")", "Human"));
+        }else {
+          logs.add(new RuntimeLogSummary(nis.getId(), nis.getTimestamp(), nis.getNodeName() + "("+nis.getType()+")", "System"));
+        }
+        
+      }
+      return logs;
+  }
+    /** Logs */
+    
 }

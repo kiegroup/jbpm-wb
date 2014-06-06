@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.console.ng.bd.model.RuntimeLogSummary;
 import org.jbpm.console.ng.ht.model.TaskDefSummary;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
@@ -82,5 +83,9 @@ public interface DataServiceEntryPoint {
     Map<String, String> getTaskInputMappings(String processId, String taskName);
 
     Map<String, String> getTaskOutputMappings(String processId, String taskName);
+    
+    /* Logs */
+    
+    Collection<RuntimeLogSummary> getAllRuntimeLogs(long processInstanceId);
 
 }

@@ -23,69 +23,79 @@ import org.jboss.errai.common.client.api.annotations.Portable;
  *
  * @author salaboy
  */
-
 @Portable
 public class TaskEventSummary implements Serializable {
-    private Long id;
-    private Long taskId;
-    private String type;
-    private String userId;
-    private Date logTime;
 
-    public TaskEventSummary() {
-    }
+  private Long id;
+  private Long taskId;
+  private String type;
+  private String userId;
+  private Date logTime;
+  private Long workItemId;
 
-    public TaskEventSummary(Long id, Long taskId, String type, String userId, Date logTime) {
-        this.id = id;
-        this.taskId = taskId;
-        this.type = type;
-        this.userId = userId;
-        this.logTime = logTime;
-    }
+  public TaskEventSummary() {
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public TaskEventSummary(Long id, Long taskId, String type, String userId, Long workItemId, Date logTime) {
+    this.id = id;
+    this.taskId = taskId;
+    this.type = type;
+    this.userId = userId;
+    this.logTime = logTime;
+    this.workItemId = workItemId;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public Long getTaskId() {
-        return taskId;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
+  public Long getTaskId() {
+    return taskId;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public void setTaskId(Long taskId) {
+    this.taskId = taskId;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public String getUserId() {
-        return userId;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
+  public String getUserId() {
+    return userId;
+  }
 
-    public Date getLogTime() {
-        return logTime;
-    }
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
 
-    public void setLogTime(Date logTime) {
-        this.logTime = logTime;
-    }
+  public Date getLogTime() {
+    return logTime;
+  }
 
-    @Override
-    public String toString() {
-        return "TaskEventSummary{" + "id=" + id + ", taskId=" + taskId + ", type=" + type + ", userId=" + userId + ", logTime=" + logTime + '}';
-    }
-    
+  public void setLogTime(Date logTime) {
+    this.logTime = logTime;
+  }
+
+  public Long getWorkItemId() {
+    return workItemId;
+  }
+
+  public void setWorkItemId(Long workItemId) {
+    this.workItemId = workItemId;
+  }
+
+  @Override
+  public String toString() {
+    return "TaskEventSummary{" + "id=" + id + ", taskId=" + taskId + ", type=" + type + ", userId=" + userId + ", logTime=" + logTime + ", workItemId=" + workItemId + '}';
+  }
+
 }

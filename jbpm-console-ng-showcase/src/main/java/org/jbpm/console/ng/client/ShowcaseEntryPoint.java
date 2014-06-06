@@ -164,7 +164,7 @@ public class ShowcaseEntryPoint {
     }
     
     private List<? extends MenuItem> getExperimentalViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
+        final List<MenuItem> result = new ArrayList<MenuItem>( 4 );
 
         result.add( MenuFactory.newSimpleItem( constants.Pagination_For_Tables()).respondsWith( new Command() {
             @Override
@@ -180,6 +180,16 @@ public class ShowcaseEntryPoint {
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
+     
+        
+        
+         result.add( MenuFactory.newSimpleItem( constants.Logs() ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "Logs" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+        
         return result;
     }
 

@@ -21,10 +21,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.console.ng.ht.model.AuditTaskSummary;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
+
 
 @Remote
 public interface TaskServiceEntryPoint {
@@ -138,5 +140,13 @@ public interface TaskServiceEntryPoint {
      * @return
      */
     Boolean existInDatabase(long taskId);
+    
+    List<TaskEventSummary> getAllTaskEvents(long taskId, String filter);
+
+    List<TaskEventSummary> getAllTaskEventsByProcessInstanceId(long processInstanceId, String filter);
+
+    List<AuditTaskSummary> getAllAuditTasks(String filter) ;
+
+    List<AuditTaskSummary> getAllAuditTasksByUser(String userId, String filter);
 
 }
