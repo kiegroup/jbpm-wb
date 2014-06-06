@@ -193,7 +193,7 @@ public abstract class ActionsCellTaskList extends Composite {
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
 //                    if (value.getPotentialOwners() != null && !value.getPotentialOwners().isEmpty()
-                    if (value.getActualOwner().equals(identity.getName())
+                    if (value.getActualOwner() != null && value.getActualOwner().equals(identity.getName())
                             && (value.getStatus().equals("Reserved") || value.getStatus().equals("InProgress"))) {
                         AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.claimGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
