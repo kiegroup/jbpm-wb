@@ -41,7 +41,8 @@
     <module>jbpm-console-ng-bpm-home</module>
     <module>jbpm-console-ng-dashboard</module>
     <module>jbpm-console-ng-asset-mgmt</module>
-    <module>jbpm-console-ng-generic</module>	
+    <module>jbpm-console-ng-generic</module>
+    <module>jbpm-console-ng-documents</module>	
     <module>jbpm-console-ng-showcase</module>
   </modules>
 
