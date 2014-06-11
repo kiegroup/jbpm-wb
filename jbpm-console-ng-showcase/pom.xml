@@ -144,6 +144,15 @@
     </dependency>
 
     <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-documents-backend</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-documents-api</artifactId>
+    </dependency>
+    <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-asset-mgmt-client</artifactId>
     </dependency>
