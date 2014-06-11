@@ -145,12 +145,12 @@ public class ApplicationScopedProvider {
     @Produces
     @ApplicationScoped
     public TaskLifeCycleEventListener produceBAMListener() {
-        return new BAMTaskEventListener(true);
+        return new BAMTaskEventListener();
     }
 
     @Produces
     @ApplicationScoped
     public TaskLifeCycleEventListener produceTaskAuditListener() {
-        return new JPATaskLifeCycleEventListener(true);
+        return new JPATaskLifeCycleEventListener();
     }
 }
