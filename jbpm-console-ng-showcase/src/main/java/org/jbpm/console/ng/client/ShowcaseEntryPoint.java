@@ -180,10 +180,17 @@ public class ShowcaseEntryPoint {
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
+<<<<<<< HEAD
         result.add( MenuFactory.newSimpleItem( "Documents" ).respondsWith( new Command() {
             @Override
             public void execute() {
                 placeManager.goTo( new DefaultPlaceRequest( "Documents Perspective" ) );
+=======
+         result.add( MenuFactory.newSimpleItem( "Documents" ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "Nicolas" ) );
+>>>>>>> 72c2b164792719bc9c7c712cbb3bbe8929e1412a
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
