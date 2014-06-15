@@ -143,6 +143,11 @@
       <artifactId>jbpm-console-ng-documents-client</artifactId>
     </dependency>
 
+	<dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-documents-backend</artifactId>
+    </dependency>
+    
     <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-asset-mgmt-client</artifactId>
@@ -645,6 +650,7 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-asset-mgmt-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-asset-mgmt-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-documents-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-documents-client</compileSourcesArtifact>
             
             <compileSourcesArtifact>org.jbpm:jbpm-designer-api</compileSourcesArtifact>

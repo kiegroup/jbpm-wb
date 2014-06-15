@@ -183,7 +183,7 @@ public class ShowcaseEntryPoint {
         result.add( MenuFactory.newSimpleItem( "Documents" ).respondsWith( new Command() {
             @Override
             public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Nicolas" ) );
+                placeManager.goTo( new DefaultPlaceRequest( "Documents Perspective" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
