@@ -36,8 +36,8 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
+import org.jbpm.console.ng.ga.model.CalendarListContainer;
 import org.jbpm.console.ng.gc.client.i18n.Constants;
-import org.jbpm.console.ng.ht.model.CalendarListContainer;
 import org.jbpm.console.ng.gc.client.util.TaskUtils.TaskView;
 
 /**

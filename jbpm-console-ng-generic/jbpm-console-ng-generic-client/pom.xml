@@ -30,11 +30,10 @@
   <name>jBPM Console NG - Generic Client</name>
 
   <dependencies>
-    <dependency>
+     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
+      <artifactId>jbpm-console-ng-generic-api</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-client-api</artifactId>

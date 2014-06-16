@@ -15,351 +15,261 @@
  */
 package org.jbpm.console.ng.bd.client.editors.deployment.list;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
-
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.bd.client.i18n.Constants;
-import org.jbpm.console.ng.bd.client.resources.BusinessDomainImages;
-import org.jbpm.console.ng.bd.client.util.ResizableHeader;
-import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
-import org.jbpm.console.ng.bd.model.events.DeployedUnitChangedEvent;
-import org.jbpm.console.ng.gc.client.list.base.BaseViewImpl;
-import org.jbpm.console.ng.gc.client.util.DataGridUtils;
-import org.uberfire.client.common.BusyPopup;
-
+import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.view.client.SelectionChangeEvent;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.bd.client.i18n.Constants;
+import org.jbpm.console.ng.bd.client.resources.BusinessDomainImages;
+import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
+import org.jbpm.console.ng.bd.model.events.DeployedUnitChangedEvent;
+import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+import org.uberfire.client.common.BusyPopup;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
 @Templated(value = "DeploymentUnitsListViewImpl.html")
-public class DeploymentUnitsListViewImpl extends BaseViewImpl<KModuleDeploymentUnitSummary, DeploymentUnitsListPresenter>
+public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploymentUnitSummary, DeploymentUnitsListPresenter>
         implements DeploymentUnitsListPresenter.DeploymentUnitsListView {
 
-    private static final String DEPLOYMENT_CONFIRM = "Are you sure that you want to undeploy the deployment unit?";
+  private Constants constants = GWT.create(Constants.class);
 
-    private static final String ALL_DEPLOYMENT_CONFIRM = "Are you sure that you want to undeploy all the deployments selected?";
+  private BusinessDomainImages images = GWT.create(BusinessDomainImages.class);
 
-    private Constants constants = GWT.create(Constants.class);
+  @Override
+  public void init(final DeploymentUnitsListPresenter presenter) {
+    /* this is generic */
+    super.init(presenter);
+    /* end this is generic*/
+    /* this is specifc of the table */
+    Button newUnitButton = new Button();
+    newUnitButton.setIcon(IconType.PLUS);
+    newUnitButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        placeManager.goTo(new DefaultPlaceRequest("New Deployment"));
+      }
+    });
+    listGrid.getToolbar().add(newUnitButton);
 
-    private BusinessDomainImages images = GWT.create(BusinessDomainImages.class);
+  }
 
-    @Override
-    public void init(final DeploymentUnitsListPresenter presenter) {
-        DELETE_ACTION_IMAGE = images.undeployGridIcon();
-        MSJ_NO_ITEMS_FOUND = constants.No_Deployment_Units_Available();
-        initializeComponents(presenter, presenter.getDataProvider(), GridSelectionModel.MULTI);
-    }
+  public ExtendedPagedTable<KModuleDeploymentUnitSummary> getListGrid() {
+    return listGrid;
+  }
 
-    @Override
-    public void initGridColumns() {
-        idColumn();
-        groupIdColumn();
-        artifactIdColumn();
-        versionColumn();
-        kbaseColumn();
-        ksessionColumn();
-        strategyColumn();
-        actionsColumn();
-    }
+  public void initColumns() {
+    idColumn();
+    groupIdColumn();
+    artifactIdColumn();
+    versionColumn();
+    kbaseColumn();
+    ksessionColumn();
+    strategyColumn();
+    actionsColumn();
+  }
 
-    private void idColumn() {
-        Column<KModuleDeploymentUnitSummary, String> unitIdColumn = new Column<KModuleDeploymentUnitSummary, String>(
-                new TextCell()) {
+  private void idColumn() {
+    Column<KModuleDeploymentUnitSummary, String> unitIdColumn = new Column<KModuleDeploymentUnitSummary, String>(
+            new TextCell()) {
 
-            @Override
-            public void render(Cell.Context context, KModuleDeploymentUnitSummary unit, SafeHtmlBuilder sb) {
-                String title = unit.getId();
-                sb.append(DataGridUtils.createDivStart(title));
-                super.render(context, unit, sb);
-                sb.append(DataGridUtils.createDivEnd());
-            }
+              @Override
+              public String getValue(KModuleDeploymentUnitSummary unit) {
+                return unit.getId();
+              }
+            };
+    unitIdColumn.setSortable(true);
+    listGrid.addColumn(unitIdColumn, constants.Deployment());
 
-            @Override
-            public String getValue(KModuleDeploymentUnitSummary unit) {
-                return DataGridUtils.trimToColumnWidth(listGrid, this, unit.getId());
-            }
-        };
-        unitIdColumn.setSortable(true);
-        sortHandler.setComparator(unitIdColumn, new Comparator<KModuleDeploymentUnitSummary>() {
-            @Override
-            public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
-                return o1.getId().compareTo(o2.getId());
-            }
-        });
-        listGrid.addColumn(unitIdColumn, new ResizableHeader(constants.Deployment(), 100, listGrid, unitIdColumn));
-        listGrid.setColumnWidth(unitIdColumn, "300px");
-    }
+  }
 
-    private void groupIdColumn() {
-        Column<KModuleDeploymentUnitSummary, String> groupIdColumn = new Column<KModuleDeploymentUnitSummary, String>(
-                new TextCell()) {
+  private void groupIdColumn() {
+    Column<KModuleDeploymentUnitSummary, String> groupIdColumn = new Column<KModuleDeploymentUnitSummary, String>(
+            new TextCell()) {
 
-            @Override
-            public void render(Cell.Context context, KModuleDeploymentUnitSummary unit, SafeHtmlBuilder sb) {
-                String title = unit.getGroupId();
-                sb.append(DataGridUtils.createDivStart(title));
-                super.render(context, unit, sb);
-                sb.append(DataGridUtils.createDivEnd());
-            }
+              @Override
+              public String getValue(KModuleDeploymentUnitSummary unit) {
+                return unit.getGroupId();
+              }
+            };
+    groupIdColumn.setSortable(true);
 
-            @Override
-            public String getValue(KModuleDeploymentUnitSummary unit) {
-                return DataGridUtils.trimToColumnWidth(listGrid, this, unit.getGroupId());
-            }
-        };
-        groupIdColumn.setSortable(true);
-        sortHandler.setComparator(groupIdColumn, new Comparator<KModuleDeploymentUnitSummary>() {
-            @Override
-            public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
-                return o1.getGroupId().compareTo(o2.getGroupId());
-            }
-        });
-        listGrid.addColumn(groupIdColumn, new ResizableHeader(constants.GroupID(), 100, listGrid, groupIdColumn));
-    }
+    listGrid.addColumn(groupIdColumn, constants.GroupID());
+  }
 
-    private void artifactIdColumn() {
-        Column<KModuleDeploymentUnitSummary, String> artifactIdColumn = new Column<KModuleDeploymentUnitSummary, String>(
-                new TextCell()) {
+  private void artifactIdColumn() {
+    Column<KModuleDeploymentUnitSummary, String> artifactIdColumn = new Column<KModuleDeploymentUnitSummary, String>(
+            new TextCell()) {
 
-            @Override
-            public void render(Cell.Context context, KModuleDeploymentUnitSummary unit, SafeHtmlBuilder sb) {
-                String title = unit.getArtifactId();
-                sb.append(DataGridUtils.createDivStart(title));
-                super.render(context, unit, sb);
-                sb.append(DataGridUtils.createDivEnd());
-            }
+              @Override
+              public String getValue(KModuleDeploymentUnitSummary unit) {
+                return unit.getArtifactId();
+              }
+            };
+    artifactIdColumn.setSortable(true);
 
-            @Override
-            public String getValue(KModuleDeploymentUnitSummary unit) {
-                return DataGridUtils.trimToColumnWidth(listGrid, this, unit.getArtifactId());
-            }
-        };
-        artifactIdColumn.setSortable(true);
-        sortHandler.setComparator(artifactIdColumn, new Comparator<KModuleDeploymentUnitSummary>() {
-            @Override
-            public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
-                return o1.getArtifactId().compareTo(o2.getArtifactId());
-            }
-        });
-        listGrid.addColumn(artifactIdColumn, new ResizableHeader(constants.Artifact(), 100, listGrid, artifactIdColumn));
-    }
+    listGrid.addColumn(artifactIdColumn, constants.Artifact());
+  }
 
-    private void versionColumn() {
-        Column<KModuleDeploymentUnitSummary, String> versionColumn = new Column<KModuleDeploymentUnitSummary, String>(
-                new TextCell()) {
+  private void versionColumn() {
+    Column<KModuleDeploymentUnitSummary, String> versionColumn = new Column<KModuleDeploymentUnitSummary, String>(
+            new TextCell()) {
 
-            @Override
-            public void render(Cell.Context context, KModuleDeploymentUnitSummary unit, SafeHtmlBuilder sb) {
-                String title = unit.getVersion();
-                sb.append(DataGridUtils.createDivStart(title));
-                super.render(context, unit, sb);
-                sb.append(DataGridUtils.createDivEnd());
-            }
+              @Override
+              public String getValue(KModuleDeploymentUnitSummary unit) {
+                return unit.getVersion();
+              }
+            };
+    versionColumn.setSortable(true);
+    listGrid.addColumn(versionColumn, constants.Version());
 
-            @Override
-            public String getValue(KModuleDeploymentUnitSummary unit) {
-                return DataGridUtils.trimToColumnWidth(listGrid, this, unit.getVersion());
-            }
-        };
-        versionColumn.setSortable(true);
-        sortHandler.setComparator(versionColumn, new Comparator<KModuleDeploymentUnitSummary>() {
-            @Override
-            public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
-                return o1.getVersion().compareTo(o2.getVersion());
-            }
-        });
-        listGrid.addColumn(versionColumn, new ResizableHeader(constants.Version(), 50, listGrid, versionColumn));
-        listGrid.setColumnWidth(versionColumn, "75px");
-    }
+  }
 
-    private void kbaseColumn() {
-        Column<KModuleDeploymentUnitSummary, String> kbaseColumn = new Column<KModuleDeploymentUnitSummary, String>(
-                new TextCell()) {
+  private void kbaseColumn() {
+    Column<KModuleDeploymentUnitSummary, String> kbaseColumn = new Column<KModuleDeploymentUnitSummary, String>(
+            new TextCell()) {
 
-            @Override
-            public void render(Cell.Context context, KModuleDeploymentUnitSummary unit, SafeHtmlBuilder sb) {
-                String title = unit.getKbaseName();
-                sb.append(DataGridUtils.createDivStart(title, "DEFAULT"));
-                super.render(context, unit, sb);
-                sb.append(DataGridUtils.createDivEnd());
-            }
-
-            @Override
-            public String getValue(KModuleDeploymentUnitSummary unit) {
+              @Override
+              public String getValue(KModuleDeploymentUnitSummary unit) {
                 String kbaseName = unit.getKbaseName();
                 if (kbaseName.equals("")) {
-                    kbaseName = "DEFAULT";
+                  kbaseName = "DEFAULT";
                 }
-                return DataGridUtils.trimToColumnWidth(listGrid, this, kbaseName);
-            }
-        };
-        kbaseColumn.setSortable(true);
-        sortHandler.setComparator(kbaseColumn, new Comparator<KModuleDeploymentUnitSummary>() {
-            @Override
-            public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
-                return o1.getKbaseName().compareTo(o2.getKbaseName());
-            }
-        });
-        listGrid.addColumn(kbaseColumn, new ResizableHeader(constants.KieBaseName(), 75, listGrid, kbaseColumn));
-    }
+                return kbaseName;
+              }
+            };
+    kbaseColumn.setSortable(true);
 
-    private void ksessionColumn() {
-        Column<KModuleDeploymentUnitSummary, String> ksessionColumn = new Column<KModuleDeploymentUnitSummary, String>(
-                new TextCell()) {
+    listGrid.addColumn(kbaseColumn, constants.KieBaseName());
+  }
 
-            public void render(Cell.Context context, KModuleDeploymentUnitSummary unit, SafeHtmlBuilder sb) {
-                String title = unit.getKsessionName();
-                sb.append(DataGridUtils.createDivStart(title, "DEFAULT"));
-                super.render(context, unit, sb);
-                sb.append(DataGridUtils.createDivEnd());
-            }
+  private void ksessionColumn() {
+    Column<KModuleDeploymentUnitSummary, String> ksessionColumn = new Column<KModuleDeploymentUnitSummary, String>(
+            new TextCell()) {
 
-            @Override
-            public String getValue(KModuleDeploymentUnitSummary unit) {
+              @Override
+              public String getValue(KModuleDeploymentUnitSummary unit) {
                 String ksessionName = unit.getKsessionName();
                 if (ksessionName.equals("")) {
-                    ksessionName = "DEFAULT";
+                  ksessionName = "DEFAULT";
                 }
-                return DataGridUtils.trimToColumnWidth(listGrid, this, ksessionName);
-            }
-        };
-        ksessionColumn.setSortable(true);
-        sortHandler.setComparator(ksessionColumn, new Comparator<KModuleDeploymentUnitSummary>() {
-            @Override
-            public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
-                return o1.getKsessionName().compareTo(o2.getKsessionName());
-            }
-        });
-        listGrid.addColumn(ksessionColumn, new ResizableHeader(constants.KieSessionName(), 75, listGrid, ksessionColumn));
-    }
+                return ksessionName;
+              }
+            };
+    ksessionColumn.setSortable(true);
 
-    private void strategyColumn() {
-        Column<KModuleDeploymentUnitSummary, String> strategyColumn = new Column<KModuleDeploymentUnitSummary, String>(
-                new TextCell()) {
+    listGrid.addColumn(ksessionColumn, constants.KieSessionName());
+  }
 
-            public void render(Cell.Context context, KModuleDeploymentUnitSummary unit, SafeHtmlBuilder sb) {
-                String title = unit.getStrategy();
-                sb.append(DataGridUtils.createDivStart(title));
-                super.render(context, unit, sb);
-                sb.append(DataGridUtils.createDivEnd());
-            }
+  private void strategyColumn() {
+    Column<KModuleDeploymentUnitSummary, String> strategyColumn = new Column<KModuleDeploymentUnitSummary, String>(
+            new TextCell()) {
 
-            @Override
-            public String getValue(KModuleDeploymentUnitSummary unit) {
-                return DataGridUtils.trimToColumnWidth(listGrid, this, unit.getStrategy());
-            }
-        };
-        strategyColumn.setSortable(true);
-        sortHandler.setComparator(strategyColumn, new Comparator<KModuleDeploymentUnitSummary>() {
-            @Override
-            public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
-                return o1.getStrategy().compareTo(o2.getStrategy());
-            }
-        });
-        listGrid.addColumn(strategyColumn, new ResizableHeader(constants.Strategy(), 75, listGrid, strategyColumn));
-    }
+              @Override
+              public String getValue(KModuleDeploymentUnitSummary unit) {
+                return unit.getStrategy();
+              }
+            };
+    strategyColumn.setSortable(true);
 
-    private void actionsColumn() {
-        List<HasCell<KModuleDeploymentUnitSummary, ?>> cells = new LinkedList<HasCell<KModuleDeploymentUnitSummary, ?>>();
+    listGrid.addColumn(strategyColumn, constants.Strategy());
+  }
 
-        cells.add(new DeleteActionHasCell(constants.Undeploy(), new Delegate<KModuleDeploymentUnitSummary>() {
-            @Override
-            public void execute(KModuleDeploymentUnitSummary unit) {
-                if (itemsSelected != null && itemsSelected.size() > 1) {
-                    if (Window.confirm(ALL_DEPLOYMENT_CONFIRM)) {
-                        for (KModuleDeploymentUnitSummary item : itemsSelected) {
-                            // TODO it should call a new method with a List
-                            // param
-                            presenter.undeployUnit(item.getId(), item.getGroupId(), item.getArtifactId(), item.getVersion(),
-                                    item.getKbaseName(), item.getKsessionName());
-                        }
-                        setMultiSelectionModel();
-                    }
-                } else {
-                    if (Window.confirm(DEPLOYMENT_CONFIRM)) {
-                        presenter.undeployUnit(unit.getId(), unit.getGroupId(), unit.getArtifactId(), unit.getVersion(),
-                                unit.getKbaseName(), unit.getKsessionName());
-                    }
-                }
+  private void actionsColumn() {
+    List<HasCell<KModuleDeploymentUnitSummary, ?>> cells = new LinkedList<HasCell<KModuleDeploymentUnitSummary, ?>>();
 
-            }
-        }));
+    cells.add(new DeleteActionHasCell(constants.Undeploy(), new Delegate<KModuleDeploymentUnitSummary>() {
+      @Override
+      public void execute(KModuleDeploymentUnitSummary unit) {
 
-        CompositeCell<KModuleDeploymentUnitSummary> cell = new CompositeCell<KModuleDeploymentUnitSummary>(cells);
-        Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> actionsColumn = new Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary>(
-                cell) {
-            @Override
-            public KModuleDeploymentUnitSummary getValue(KModuleDeploymentUnitSummary object) {
-                return object;
-            }
-        };
-        listGrid.addColumn(actionsColumn, new ResizableHeader(constants.Actions(), listGrid, actionsColumn));
-        listGrid.setColumnWidth(actionsColumn, "70px");
-    }
-
-    public void refreshOnChangedUnit(@Observes DeployedUnitChangedEvent event) {
-        refreshItems();
-    }
-
-    @Override
-    public void showBusyIndicator(final String message) {
-        BusyPopup.showMessage(message);
-    }
-
-    @Override
-    public void hideBusyIndicator() {
-        BusyPopup.close();
-    }
-
-    @Override
-    public void refreshItems() {
-        presenter.refreshItems();
-    }
-
-    @Override
-    public void multiSelectionModelChange(SelectionChangeEvent event, Set<KModuleDeploymentUnitSummary> selectedKieSession) {
-        for (KModuleDeploymentUnitSummary unit : selectedKieSession) {
-            //
+        if (Window.confirm(constants.Undeploy_Question())) {
+          presenter.undeployUnit(unit.getId(), unit.getGroupId(), unit.getArtifactId(), unit.getVersion(),
+                  unit.getKbaseName(), unit.getKsessionName());
         }
+
+      }
+    }));
+
+    CompositeCell<KModuleDeploymentUnitSummary> cell = new CompositeCell<KModuleDeploymentUnitSummary>(cells);
+    Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> actionsColumn = new Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary>(
+            cell) {
+              @Override
+              public KModuleDeploymentUnitSummary getValue(KModuleDeploymentUnitSummary object) {
+                return object;
+              }
+            };
+    listGrid.addColumn(actionsColumn, constants.Actions());
+
+  }
+
+  public void refreshOnChangedUnit(@Observes DeployedUnitChangedEvent event) {
+    presenter.refreshGrid();
+  }
+
+  @Override
+  public void showBusyIndicator(final String message) {
+    BusyPopup.showMessage(message);
+  }
+
+  @Override
+  public void hideBusyIndicator() {
+    BusyPopup.close();
+  }
+
+  /* Is this generic enough ?*/
+  protected class DeleteActionHasCell implements HasCell<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> {
+
+    private ActionCell<KModuleDeploymentUnitSummary> cell;
+
+    public DeleteActionHasCell(final String text, ActionCell.Delegate<KModuleDeploymentUnitSummary> delegate) {
+      cell = new ActionCell<KModuleDeploymentUnitSummary>(text, delegate) {
+        @Override
+        public void render(Cell.Context context, KModuleDeploymentUnitSummary value, SafeHtmlBuilder sb) {
+          String title = constants.Undeploy();
+          AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.undeployGridIcon());
+          SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+          mysb.appendHtmlConstant("<span title='" + title + "' style='margin-right:5px;'>");
+          mysb.append(imageProto.getSafeHtml());
+          mysb.appendHtmlConstant("</span>");
+          sb.append(mysb.toSafeHtml());
+        }
+      };
+
     }
 
     @Override
-    public void simpleSelectionModelChange(SelectionChangeEvent event, KModuleDeploymentUnitSummary selectedItemSelectionModel) {
-        // TODO Auto-generated method stub
-
+    public Cell<KModuleDeploymentUnitSummary> getCell() {
+      return cell;
     }
 
     @Override
-    public void setGridEvents() {
-        // TODO Auto-generated method stub
+    public FieldUpdater<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> getFieldUpdater() {
+      return null;
     }
 
     @Override
-    public void initializeLeftButtons() {
-        // TODO Auto-generated method stub
+    public KModuleDeploymentUnitSummary getValue(KModuleDeploymentUnitSummary object) {
+      return object;
     }
+  }
 
-    @Override
-    public void initializeRightButtons() {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void addHandlerPager() {
-        // TODO Auto-generated method stub
-    }
 }

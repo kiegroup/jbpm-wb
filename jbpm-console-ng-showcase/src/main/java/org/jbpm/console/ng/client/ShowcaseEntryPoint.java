@@ -166,21 +166,14 @@ public class ShowcaseEntryPoint {
     private List<? extends MenuItem> getExperimentalViews() {
         final List<MenuItem> result = new ArrayList<MenuItem>( 4 );
 
-        result.add( MenuFactory.newSimpleItem( constants.Pagination_For_Tables()).respondsWith( new Command() {
+       
+         result.add( MenuFactory.newSimpleItem( "Grid Base Test" ).respondsWith( new Command() {
             @Override
             public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Experimental Paging" ) );
+                placeManager.goTo( new DefaultPlaceRequest( "Grid Base Test" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
-        result.add( MenuFactory.newSimpleItem( constants.Experimental_Grid() ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Grid Experimental" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
-
-     
         
         
          result.add( MenuFactory.newSimpleItem( constants.Logs() ).respondsWith( new Command() {

@@ -13,19 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.jbpm.console.ng.ga.model.events;
 
-package org.jbpm.console.ng.gc.client.list.base;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
-import com.google.gwt.user.client.ui.Composite;
+/**
+ * 
+ * @author salaboy
+ */
+@Portable
+public class SearchEvent {
+    private String filter;
 
-public abstract class BaseGenericCRUD extends Composite {
+    public SearchEvent(String filter) {
+        this.filter = filter;
+    }
 
-    protected abstract void createItem();
+    public SearchEvent() {
+    }
 
-    protected abstract void readItem(Long id);
+    public String getFilter() {
+        return filter;
+    }
 
-    protected abstract void updateItem(Long id);
-
-    protected abstract void deleteItem(Long id);
+    public void setFilter(String filter) {
+        this.filter = filter;
+    }
 
 }

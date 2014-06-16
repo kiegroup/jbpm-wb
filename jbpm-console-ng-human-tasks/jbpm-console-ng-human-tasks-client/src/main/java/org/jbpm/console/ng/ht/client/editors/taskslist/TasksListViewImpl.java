@@ -52,14 +52,13 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.gc.client.experimental.pagination.JBPMSimplePager;
 import org.jbpm.console.ng.gc.client.experimental.pagination.JBPMSimplePager.TextLocation;
-import static org.jbpm.console.ng.gc.client.list.base.PagerContainer.STYLE_PAGER;
 import org.jbpm.console.ng.gc.client.util.DataGridUtils;
 import org.jbpm.console.ng.gc.client.util.DataGridUtils.ActionsDataGrid;
 import org.jbpm.console.ng.gc.client.util.LiCalendarPicker;
 import org.jbpm.console.ng.ht.client.util.ResizableHeader;
 import org.jbpm.console.ng.gc.client.util.TaskUtils.TaskType;
 import org.jbpm.console.ng.gc.client.util.TaskUtils.TaskView;
-import org.jbpm.console.ng.ht.model.CalendarListContainer;
+import org.jbpm.console.ng.ga.model.CalendarListContainer;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
@@ -188,7 +187,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
         
         pager.setDisplay(myTaskListGrid);
         pager.setPageSize(DataGridUtils.pageSize);
-        pager.setStyleName(STYLE_PAGER);
+        //pager.setStyleName(STYLE_PAGER);
         pager.setDataProvider(presenter);
         tasksViewContainer.add(myTaskListGrid);
         myTaskListGrid.setEmptyTableWidget(new HTMLPanel(constants.No_Tasks_Found()));

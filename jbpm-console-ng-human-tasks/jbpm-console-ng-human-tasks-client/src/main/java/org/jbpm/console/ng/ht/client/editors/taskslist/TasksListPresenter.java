@@ -52,7 +52,7 @@ import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.EditPanelEvent;
-import org.jbpm.console.ng.ht.model.events.SearchEvent;
+import org.jbpm.console.ng.ga.model.events.SearchEvent;
 import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;

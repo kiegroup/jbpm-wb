@@ -30,6 +30,7 @@
   <name>jBPM Console NG - Generic</name>
   
   <modules>
+    <module>jbpm-console-ng-generic-api</module>
     <module>jbpm-console-ng-generic-client</module>
   </modules>
 </project>
