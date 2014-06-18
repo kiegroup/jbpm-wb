@@ -579,6 +579,32 @@
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs</artifactId>
     </dependency>
+     		<dependency>
+			<groupId>org.apache.chemistry.opencmis</groupId>
+			<artifactId>chemistry-opencmis-client-impl</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.chemistry.opencmis</groupId>
+					<artifactId>chemistry-opencmis-commons-impl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.chemistry.opencmis</groupId>
+					<artifactId>chemistry-opencmis-commons-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.chemistry.opencmis</groupId>
+			<artifactId>chemistry-opencmis-commons-impl</artifactId>
+		</dependency>
+        <dependency>
+    	  <groupId>org.apache.chemistry.opencmis</groupId>
+	      <artifactId>chemistry-opencmis-commons-api</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.chemistry.opencmis</groupId>
+        	<artifactId>chemistry-opencmis-client-bindings</artifactId>
+    	</dependency>
   </dependencies>
 
   <build>
@@ -666,6 +692,7 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-asset-mgmt-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-documents-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-documents-client</compileSourcesArtifact>
+             <compileSourcesArtifact>org.jbpm:jbpm-document</compileSourcesArtifact>
             
             <compileSourcesArtifact>org.jbpm:jbpm-designer-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-designer-client</compileSourcesArtifact>
