@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 JBoss by Red Hat.
+ * Copyright 2014 JBoss by Red Hat.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.ga.service;
 
-import java.util.List;
+package org.jbpm.console.ng.bd.service;
+
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.jbpm.console.ng.ga.model.QueryFilter;
+import org.jbpm.console.ng.ga.service.GenericServiceEntryPoint;
+import org.jbpm.console.ng.pr.model.ProcessSummary;
 
+/**
+ *
+ * @author salaboy
+ */
 @Remote
-public interface GenericServiceEntryPoint<T> {
-
-  List<T> getData(QueryFilter filter);
-
-  int getDataCount();
+public interface ProcessDefinitionService extends GenericServiceEntryPoint<ProcessSummary>{
+  
 }

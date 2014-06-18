@@ -98,11 +98,6 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
     }
 
     @Override
-    public Collection<ProcessSummary> getProcesses() {
-        return ProcessHelper.adaptCollection(dataService.getProcesses());
-    }
-
-    @Override
     public Collection<ProcessInstanceSummary> getProcessInstancesByProcessDefinition(String processDefId) {
         return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstancesByProcessDefinition(processDefId));
     }

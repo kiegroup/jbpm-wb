@@ -17,11 +17,14 @@ package org.jbpm.console.ng.gc.client.list.base;
 
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.Range;
 import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.event.Observes;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ga.model.events.SearchEvent;
+import org.uberfire.lifecycle.OnFocus;
+import org.uberfire.lifecycle.OnOpen;
 
 /**
  *
@@ -45,11 +48,24 @@ public abstract class AbstractListPresenter<T> {
   protected void onSearchEvent(@Observes SearchEvent searchEvent) {
     String filterString = searchEvent.getFilter();
     Map<String, Object> params = new HashMap<String, Object>();
-    params.put("name", filterString);
+    params.put("name", filterString.toLowerCase());
     currentFilter.setParams(params);
-    //TODO: I don't like this...
     HasData<T> next = dataProvider.getDataDisplays().iterator().next();
-    next.setVisibleRangeAndClearData(next.getVisibleRange(), true);
+    if(filterString.equals("")){
+      next.setVisibleRangeAndClearData(next.getVisibleRange(), true);
+    }else{
+      next.setVisibleRangeAndClearData(new Range(0, next.getVisibleRange().getLength()), true);
+    }
 
+  }
+
+  @OnOpen
+  public void onOpen() {
+    refreshGrid();
+  }
+
+  @OnFocus
+  public void onFocus() {
+    refreshGrid();
   }
 }

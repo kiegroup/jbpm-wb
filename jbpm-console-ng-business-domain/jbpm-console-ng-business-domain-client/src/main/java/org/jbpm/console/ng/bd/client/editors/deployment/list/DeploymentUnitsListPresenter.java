@@ -61,7 +61,6 @@ public class DeploymentUnitsListPresenter extends AbstractListPresenter<KModuleD
       protected void onRangeChanged(HasData<KModuleDeploymentUnitSummary> display) {
 
         final Range visibleRange = display.getVisibleRange();
-        // if (deploymentManagerService.getDataCount() > 0) { // I need to make it work when there is no data
         ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
         if(currentFilter == null){
           currentFilter = new PortableQueryFilter(visibleRange.getStart(),
@@ -72,11 +71,26 @@ public class DeploymentUnitsListPresenter extends AbstractListPresenter<KModuleD
                 (columnSortList.size() > 0) ? columnSortList.get(0)
                 .isAscending() : true);
         }
+        // If we are refreshing after a search action, we need to go back to offset 0
+        if(currentFilter.getParams() == null || currentFilter.getParams().isEmpty() 
+                || currentFilter.getParams().get("name") == null || currentFilter.getParams().get("name").equals("")){
+          currentFilter.setOffset(visibleRange.getStart());
+          currentFilter.setCount(visibleRange.getLength());
+        }else{
+          currentFilter.setOffset(0);
+          currentFilter.setCount(view.getListGrid().getPageSize());
+        }
+        
+        currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
+                .getColumn().getDataStoreName() : "");
+        currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
+                .isAscending() : true);
         deploymentManagerService.call(new RemoteCallback<List<KModuleDeploymentUnitSummary>>() {
           @Override
           public void callback(List<KModuleDeploymentUnitSummary> units) {
+            dataProvider.updateRowCount(units.size(), false);
             if (!units.isEmpty()) {
-              dataProvider.updateRowData(visibleRange.getStart(), units);
+              dataProvider.updateRowData(currentFilter.getOffset(), units);
             } else {
               dataProvider.updateRowData(0, units);
             }
@@ -92,8 +106,6 @@ public class DeploymentUnitsListPresenter extends AbstractListPresenter<KModuleD
         }).getData(currentFilter);
 
       }
-
-      // }
     };
   }
 
@@ -106,8 +118,7 @@ public class DeploymentUnitsListPresenter extends AbstractListPresenter<KModuleD
       public void callback(Void nothing) {
         view.hideBusyIndicator();
         view.displayNotification(" Kjar Undeployed " + group + ":" + artifact + ":" + version);
-        HasData<KModuleDeploymentUnitSummary> next = dataProvider.getDataDisplays().iterator().next();
-        next.setVisibleRangeAndClearData(next.getVisibleRange(), true);
+        refreshGrid();
       }
     }, new ErrorCallback<Message>() {
       @Override

@@ -16,6 +16,7 @@
 
 package org.jbpm.console.ng.gc.client.experimental.grid.base;
 
+import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
@@ -23,7 +24,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
  * @author salaboy
  */
 @Portable
-public class DataMockSummary {
+public class DataMockSummary implements Serializable{
    private String id;
    private String column1;
    private String column2;

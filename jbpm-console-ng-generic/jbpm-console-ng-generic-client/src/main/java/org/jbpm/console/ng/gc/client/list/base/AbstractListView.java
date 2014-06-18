@@ -26,8 +26,10 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+import org.uberfire.client.common.BusyPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.NotificationEvent;
 
 /**
@@ -36,17 +38,24 @@ import org.uberfire.workbench.events.NotificationEvent;
  */
 public abstract class AbstractListView<T, V extends AbstractListPresenter> extends Composite implements RequiresResize {
 
+  
+  
   @Inject
-  @DataField
-  public LayoutPanel listContainer;
-
-  public ExtendedPagedTable<T> listGrid;
+  public Identity identity;
 
   @Inject
   protected Event<NotificationEvent> notification;
 
+  @Inject
+  protected PlaceManager placeManager;
+  
   protected V presenter;
   
+  @Inject
+  @DataField
+  public LayoutPanel listContainer;
+  
+  public ExtendedPagedTable<T> listGrid;
   
   public interface ListView<T,V> extends UberView<V> {
 
@@ -59,10 +68,6 @@ public abstract class AbstractListView<T, V extends AbstractListPresenter> exten
     ExtendedPagedTable<T> getListGrid();
 
   }
-  
-
-  @Inject
-  protected PlaceManager placeManager;
 
   public void init(V presenter){
     this.presenter = presenter;
@@ -87,7 +92,9 @@ public abstract class AbstractListView<T, V extends AbstractListPresenter> exten
   public void displayNotification(String text) {
     notification.fire(new NotificationEvent(text));
   }
-
+  /*
+  * By default all the tables will have a refresh button
+  */
   public void initGenericToolBar() {
     Button refreshButton = new Button();
     refreshButton.setIcon(IconType.REFRESH);
@@ -100,6 +107,21 @@ public abstract class AbstractListView<T, V extends AbstractListPresenter> exten
     listGrid.getToolbar().add(refreshButton);
   }
   
-  public abstract void initColumns();
+  public ExtendedPagedTable<T> getListGrid() {
+    return listGrid;
+  }
 
+  public void showBusyIndicator(final String message) {
+    BusyPopup.showMessage(message);
+  }
+
+  public void hideBusyIndicator() {
+    BusyPopup.close();
+  }
+  
+  /*
+  * For each specific implementation define the 
+  *  DataGrid columns and how they must be initialized
+  */
+  public abstract void initColumns();
 }

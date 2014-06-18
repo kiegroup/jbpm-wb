@@ -201,33 +201,155 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
                 kdu.getArtifactId(), kdu.getVersion(), kdu.getKbaseName(), kdu.getKsessionName(), kdu.getStrategy().toString());
       if(filter.getParams() == null || filter.getParams().get("name") == null || ((String)filter.getParams().get("name")).isEmpty()){
         unitsIds.add(duSummary);
-      }else if(kdu.getIdentifier().contains((String)filter.getParams().get("name"))){
+      }else if(kdu.getIdentifier().toLowerCase().contains((String)filter.getParams().get("name"))){
         unitsIds.add(duSummary);
       }
     }
     
-    Collections.sort(unitsIds, new Comparator<KModuleDeploymentUnitSummary>() {
-
-      @Override
-      public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
-        if (o1 == o2) {
-          return 0;
-        }
-
-        // Compare the name columns.
-        int diff = -1;
-        if (o1 != null) {
-          diff = (o2 != null) ? o1.getName().compareTo(o2.getName()) : 1;
-        }
-        return filter.isAscending() ? diff : -diff;
-
-      }
-    });
-    if(!unitsIds.isEmpty() && unitsIds.size() > (filter.getCount() - filter.getOffset())){
-      return unitsIds.subList(filter.getOffset(), filter.getCount());
+    sort(unitsIds, filter);
+    
+    if(!unitsIds.isEmpty() && unitsIds.size() > (filter.getCount() + filter.getOffset())){
+      return new ArrayList<KModuleDeploymentUnitSummary>(unitsIds.subList(filter.getOffset(), filter.getOffset() + filter.getCount()));
     }else{
-      return unitsIds;
+      return new ArrayList<KModuleDeploymentUnitSummary>(unitsIds.subList(filter.getOffset(), unitsIds.size()));
     }
+  }
+  
+  private void sort(List<KModuleDeploymentUnitSummary> unitsIds, final QueryFilter filter){
+    if(filter.getOrderBy().equals("Deployment")){
+      Collections.sort(unitsIds, new Comparator<KModuleDeploymentUnitSummary>() {
+
+        @Override
+        public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
+          if (o1 == o2) {
+            return 0;
+          }
+
+          // Compare the name columns.
+          int diff = -1;
+          if (o1 != null) {
+            diff = (o2 != null) ? o1.getId().compareTo(o2.getId()) : 1;
+          }
+          return filter.isAscending() ? diff : -diff;
+
+        }
+      });
+    }else if(filter.getOrderBy().equals("Artifact")){
+      Collections.sort(unitsIds, new Comparator<KModuleDeploymentUnitSummary>() {
+
+        @Override
+        public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
+          if (o1 == o2) {
+            return 0;
+          }
+
+          // Compare the name columns.
+          int diff = -1;
+          if (o1 != null) {
+            diff = (o2 != null) ? o1.getArtifactId().compareTo(o2.getArtifactId()) : 1;
+          }
+          return filter.isAscending() ? diff : -diff;
+
+        }
+      });
+    
+    }else if(filter.getOrderBy().equals("Group ID")){
+      Collections.sort(unitsIds, new Comparator<KModuleDeploymentUnitSummary>() {
+
+        @Override
+        public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
+          if (o1 == o2) {
+            return 0;
+          }
+
+          // Compare the name columns.
+          int diff = -1;
+          if (o1 != null) {
+            diff = (o2 != null) ? o1.getGroupId().compareTo(o2.getGroupId()) : 1;
+          }
+          return filter.isAscending() ? diff : -diff;
+
+        }
+      });
+    
+    }else if(filter.getOrderBy().equals("Version")){
+      Collections.sort(unitsIds, new Comparator<KModuleDeploymentUnitSummary>() {
+
+        @Override
+        public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
+          if (o1 == o2) {
+            return 0;
+          }
+
+          // Compare the name columns.
+          int diff = -1;
+          if (o1 != null) {
+            diff = (o2 != null) ? o1.getVersion().compareTo(o2.getVersion()) : 1;
+          }
+          return filter.isAscending() ? diff : -diff;
+
+        }
+      });
+    
+    }else if(filter.getOrderBy().equals("Kie Base Name")){
+      Collections.sort(unitsIds, new Comparator<KModuleDeploymentUnitSummary>() {
+
+        @Override
+        public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
+          if (o1 == o2) {
+            return 0;
+          }
+
+          // Compare the name columns.
+          int diff = -1;
+          if (o1 != null) {
+            diff = (o2 != null) ? o1.getKbaseName().compareTo(o2.getKbaseName()) : 1;
+          }
+          return filter.isAscending() ? diff : -diff;
+
+        }
+      });
+    
+    }else if(filter.getOrderBy().equals("Kie Session Name")){
+      Collections.sort(unitsIds, new Comparator<KModuleDeploymentUnitSummary>() {
+
+        @Override
+        public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
+          if (o1 == o2) {
+            return 0;
+          }
+
+          // Compare the name columns.
+          int diff = -1;
+          if (o1 != null) {
+            diff = (o2 != null) ? o1.getKsessionName().compareTo(o2.getKsessionName()) : 1;
+          }
+          return filter.isAscending() ? diff : -diff;
+
+        }
+      });
+    
+    }else if(filter.getOrderBy().equals("Runtime strategy")){
+      Collections.sort(unitsIds, new Comparator<KModuleDeploymentUnitSummary>() {
+
+        @Override
+        public int compare(KModuleDeploymentUnitSummary o1, KModuleDeploymentUnitSummary o2) {
+          if (o1 == o2) {
+            return 0;
+          }
+
+          // Compare the name columns.
+          int diff = -1;
+          if (o1 != null) {
+            diff = (o2 != null) ? o1.getStrategy().compareTo(o2.getStrategy()) : 1;
+          }
+          return filter.isAscending() ? diff : -diff;
+
+        }
+      });
+    
+    }
+  
   }
 
   /**

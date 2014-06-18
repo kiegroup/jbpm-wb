@@ -42,8 +42,6 @@ public interface DataServiceEntryPoint {
 
     ProcessSummary getProcessById(String deploymentId, String processId);
 
-    Collection<ProcessSummary> getProcesses();
-
     Collection<ProcessInstanceSummary> getProcessInstancesByProcessDefinition(String processDefId);
 
     Collection<NodeInstanceSummary> getProcessInstanceHistory(long processInstanceId);

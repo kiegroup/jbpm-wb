@@ -42,8 +42,6 @@ import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.client.resources.BusinessDomainImages;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 import org.jbpm.console.ng.bd.model.events.DeployedUnitChangedEvent;
-import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
-import org.uberfire.client.common.BusyPopup;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
@@ -57,10 +55,9 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
   @Override
   public void init(final DeploymentUnitsListPresenter presenter) {
-    /* this is generic */
+    
     super.init(presenter);
-    /* end this is generic*/
-    /* this is specifc of the table */
+    
     Button newUnitButton = new Button();
     newUnitButton.setIcon(IconType.PLUS);
     newUnitButton.addClickHandler(new ClickHandler() {
@@ -73,10 +70,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
   }
 
-  public ExtendedPagedTable<KModuleDeploymentUnitSummary> getListGrid() {
-    return listGrid;
-  }
-
+  @Override
   public void initColumns() {
     idColumn();
     groupIdColumn();
@@ -225,15 +219,6 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
     presenter.refreshGrid();
   }
 
-  @Override
-  public void showBusyIndicator(final String message) {
-    BusyPopup.showMessage(message);
-  }
-
-  @Override
-  public void hideBusyIndicator() {
-    BusyPopup.close();
-  }
 
   /* Is this generic enough ?*/
   protected class DeleteActionHasCell implements HasCell<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> {
