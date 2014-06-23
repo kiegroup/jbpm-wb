@@ -218,7 +218,7 @@ public class ProcessInstanceDetailsPresenter {
         dataServices.call(new RemoteCallback<ProcessSummary>() {
             @Override
             public void callback(ProcessSummary process) {
-                view.getProcessDefinitionIdText().setText(process.getId());
+                view.getProcessDefinitionIdText().setText(process.getProcessDefId());
                 view.getProcessNameText().setText(process.getName());
                 view.getProcessVersionText().setText(process.getVersion());
             }
@@ -295,16 +295,16 @@ public class ProcessInstanceDetailsPresenter {
                             public void callback(Path processPath) {
                                 view.setProcessAssetPath(processPath);
                                 if (processSelected != null) {
-                                    changeStyleRow(processSelected.getId(), processSelected.getProcessName(), processSelected.getProcessVersion(),
+                                    changeStyleRow(processSelected.getProcessInstanceId(), processSelected.getProcessName(), processSelected.getProcessVersion(),
                                             processSelected.getStartTime());
                                 }
                             }
                         }).get(process.getOriginalPath());
                     } else {
-                        view.setProcessAssetPath(new DummyProcessPath(process.getId()));
+                        view.setProcessAssetPath(new DummyProcessPath(process.getProcessDefId()));
                     }
                     if (processSelected != null) {
-                        changeStyleRow(processSelected.getId(), processSelected.getProcessName(), processSelected.getProcessVersion(),
+                        changeStyleRow(processSelected.getProcessInstanceId(), processSelected.getProcessName(), processSelected.getProcessVersion(),
                                 processSelected.getStartTime());
                     }
                 } else {

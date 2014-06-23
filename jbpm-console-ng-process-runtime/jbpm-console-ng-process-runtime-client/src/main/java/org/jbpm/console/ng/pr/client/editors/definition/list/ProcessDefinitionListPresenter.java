@@ -27,17 +27,17 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
-import org.jbpm.console.ng.bd.service.ProcessDefinitionService;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
+import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.paging.PageResponse;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Definition List")
@@ -74,7 +74,7 @@ public class ProcessDefinitionListPresenter extends AbstractListPresenter<Proces
         }
         // If we are refreshing after a search action, we need to go back to offset 0
         if(currentFilter.getParams() == null || currentFilter.getParams().isEmpty() 
-                || currentFilter.getParams().get("name") == null || currentFilter.getParams().get("name").equals("")){
+                || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")){
           currentFilter.setOffset(visibleRange.getStart());
           currentFilter.setCount(visibleRange.getLength());
         }else{
@@ -87,15 +87,13 @@ public class ProcessDefinitionListPresenter extends AbstractListPresenter<Proces
         currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
                 .isAscending() : true);
         
-        processDefinitionService.call(new RemoteCallback<List<ProcessSummary>>() {
+        processDefinitionService.call(new RemoteCallback<PageResponse<ProcessSummary>>() {
           @Override
-          public void callback(List<ProcessSummary> items) {
-            dataProvider.updateRowCount(items.size(), false);
-            if (!items.isEmpty()) {
-              dataProvider.updateRowData(currentFilter.getOffset(), items);
-            } else {
-              dataProvider.updateRowData(0, items);
-            }
+          public void callback(PageResponse<ProcessSummary> response) {
+            dataProvider.updateRowCount( response.getTotalRowSize(),
+                                        response.isTotalRowSizeExact() );
+            dataProvider.updateRowData( response.getStartRowIndex(),
+                                       response.getPageRowList() );
           }
         }, new ErrorCallback<Message>() {
           @Override

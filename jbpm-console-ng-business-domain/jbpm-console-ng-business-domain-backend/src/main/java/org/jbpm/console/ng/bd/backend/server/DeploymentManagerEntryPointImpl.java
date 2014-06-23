@@ -41,6 +41,7 @@ import org.uberfire.backend.deployment.DeploymentConfigService;
 import org.uberfire.backend.server.config.Added;
 import org.uberfire.backend.server.config.Removed;
 import org.uberfire.backend.server.deployment.DeploymentConfigChangedEvent;
+import org.uberfire.paging.PageResponse;
 
 @Service
 @ApplicationScoped
@@ -191,28 +192,35 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
   }
 
   @Override
-  public List<KModuleDeploymentUnitSummary> getData(final QueryFilter filter) {
-
+  public PageResponse<KModuleDeploymentUnitSummary> getData(final QueryFilter filter) {
+    PageResponse<KModuleDeploymentUnitSummary> response = new PageResponse<KModuleDeploymentUnitSummary>();
     Collection<DeployedUnit> deployedUnits = deploymentService.getDeployedUnits();
     List<KModuleDeploymentUnitSummary> unitsIds = new ArrayList<KModuleDeploymentUnitSummary>(deployedUnits.size());
     for (DeployedUnit du : deployedUnits) {
       KModuleDeploymentUnit kdu = (KModuleDeploymentUnit) du.getDeploymentUnit();
       KModuleDeploymentUnitSummary duSummary = new KModuleDeploymentUnitSummary(kdu.getIdentifier(), kdu.getGroupId(),
                 kdu.getArtifactId(), kdu.getVersion(), kdu.getKbaseName(), kdu.getKsessionName(), kdu.getStrategy().toString());
-      if(filter.getParams() == null || filter.getParams().get("name") == null || ((String)filter.getParams().get("name")).isEmpty()){
+      if(filter.getParams() == null || filter.getParams().get("textSearch") == null || ((String)filter.getParams().get("textSearch")).isEmpty()){
         unitsIds.add(duSummary);
-      }else if(kdu.getIdentifier().toLowerCase().contains((String)filter.getParams().get("name"))){
+      }else if(kdu.getIdentifier().toLowerCase().contains((String)filter.getParams().get("textSearch"))){
         unitsIds.add(duSummary);
       }
     }
     
     sort(unitsIds, filter);
-    
+    response.setStartRowIndex(filter.getOffset());
+    response.setTotalRowSize(unitsIds.size());
+    response.setTotalRowSizeExact(true);
     if(!unitsIds.isEmpty() && unitsIds.size() > (filter.getCount() + filter.getOffset())){
-      return new ArrayList<KModuleDeploymentUnitSummary>(unitsIds.subList(filter.getOffset(), filter.getOffset() + filter.getCount()));
+      response.setPageRowList(new ArrayList<KModuleDeploymentUnitSummary>(unitsIds.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
+      response.setLastPage(false);
+      
     }else{
-      return new ArrayList<KModuleDeploymentUnitSummary>(unitsIds.subList(filter.getOffset(), unitsIds.size()));
+      response.setPageRowList(new ArrayList<KModuleDeploymentUnitSummary>(unitsIds.subList(filter.getOffset(), unitsIds.size())));
+      response.setLastPage(true);
+      
     }
+    return response;
   }
   
   private void sort(List<KModuleDeploymentUnitSummary> unitsIds, final QueryFilter filter){
@@ -440,10 +448,6 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
     deploy((DeploymentUnit) event.getDeploymentUnit());
   }
 
-  @Override
-  public int getDataCount() {
-      return deploymentService.getDeployedUnits().size();
-  }
 
   
 

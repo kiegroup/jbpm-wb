@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ht.model;
+package org.jbpm.console.ng.ga.model;
 
 import java.io.Serializable;
+import org.uberfire.paging.AbstractPageRow;
 
-public class GenericSummary implements Serializable {
+public class GenericSummary extends AbstractPageRow implements Serializable {
 
     private static final long serialVersionUID = -8709434225517887911L;
 

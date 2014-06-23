@@ -19,7 +19,7 @@ package org.jbpm.console.ng.bd.model;
 import java.io.Serializable;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jbpm.console.ng.ht.model.GenericSummary;
+import org.jbpm.console.ng.ga.model.GenericSummary;
 
 @Portable
 public class DeploymentUnitSummary extends GenericSummary implements Serializable {

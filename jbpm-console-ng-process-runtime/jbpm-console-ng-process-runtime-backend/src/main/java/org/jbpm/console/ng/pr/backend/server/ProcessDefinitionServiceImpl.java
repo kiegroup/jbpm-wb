@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.bd.backend.server;
+package org.jbpm.console.ng.pr.backend.server;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,12 +23,12 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.bd.service.ProcessDefinitionService;
 import org.jbpm.console.ng.ga.model.QueryFilter;
-import org.jbpm.console.ng.pr.backend.server.ProcessHelper;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
+import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
 import org.jbpm.kie.services.api.RuntimeDataService;
 import org.jbpm.kie.services.impl.model.ProcessAssetDesc;
+import org.uberfire.paging.PageResponse;
 
 /**
  *
@@ -42,23 +42,34 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
   private RuntimeDataService dataService;
 
   @Override
-  public List<ProcessSummary> getData(final QueryFilter filter) {
+  public PageResponse<ProcessSummary> getData(final QueryFilter filter) {
+    PageResponse<ProcessSummary> response = new PageResponse<ProcessSummary>();
     Collection<ProcessAssetDesc> processDefs = dataService.getProcesses();
     List<ProcessSummary> processDefsSums = new ArrayList<ProcessSummary>(processDefs.size());
     for (ProcessAssetDesc pd : processDefs) {
 
-      if (filter.getParams() == null || filter.getParams().get("name") == null || ((String) filter.getParams().get("name")).isEmpty()) {
+      if (filter.getParams() == null || filter.getParams().get("textSearch") == null || ((String) filter.getParams().get("textSearch")).isEmpty()) {
         processDefsSums.add(ProcessHelper.adapt(pd));
-      } else if (pd.getName().toLowerCase().contains((String) filter.getParams().get("name"))) {
+      } else if (pd.getName().toLowerCase().contains((String) filter.getParams().get("textSearch"))) {
         processDefsSums.add(ProcessHelper.adapt(pd));
       }
     }
-
+    sort(processDefsSums,filter);
+    response.setStartRowIndex(filter.getOffset());
+    response.setTotalRowSize(processDefsSums.size());
+    response.setTotalRowSizeExact(true);
+    
     if (!processDefsSums.isEmpty() && processDefsSums.size() > (filter.getCount() + filter.getOffset())) {
-      return new ArrayList<ProcessSummary>(processDefsSums.subList(filter.getOffset(), filter.getOffset() + filter.getCount()));
+      response.setPageRowList(new ArrayList<ProcessSummary>(processDefsSums.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
+      response.setLastPage(false);
+      
+      
     } else {
-      return new ArrayList<ProcessSummary>(processDefsSums.subList(filter.getOffset(), processDefsSums.size()));
+      response.setPageRowList(new ArrayList<ProcessSummary>(processDefsSums.subList(filter.getOffset(), processDefsSums.size())));
+      response.setLastPage(true);
+      
     }
+    return response;
 
   }
 
@@ -100,11 +111,6 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
         }
       });
     }
-  }
-
-  @Override
-  public int getDataCount() {
-    return dataService.getProcesses().size();
   }
 
 }

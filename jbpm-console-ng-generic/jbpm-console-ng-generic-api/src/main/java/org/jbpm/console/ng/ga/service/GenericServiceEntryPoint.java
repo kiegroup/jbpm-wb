@@ -15,14 +15,15 @@
  */
 package org.jbpm.console.ng.ga.service;
 
-import java.util.List;
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.ga.model.QueryFilter;
+import org.uberfire.paging.AbstractPageRow;
+import org.uberfire.paging.PageResponse;
 
 @Remote
-public interface GenericServiceEntryPoint<T> {
+public interface GenericServiceEntryPoint<T extends AbstractPageRow> {
 
-  List<T> getData(QueryFilter filter);
+  PageResponse<T> getData(QueryFilter filter);
 
-  int getDataCount();
+  
 }

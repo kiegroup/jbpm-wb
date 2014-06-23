@@ -15,9 +15,7 @@
  */
 package org.jbpm.console.ng.gc.client.experimental.grid.base;
 
-import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
-import com.google.gwt.user.cellview.client.ColumnSortList;
 import org.uberfire.client.tables.PagedTable;
 
 /**
@@ -48,6 +46,11 @@ public class ExtendedPagedTable<T> extends PagedTable<T> {
     return dataGrid.getKeyboardSelectedRow();
   }
 
+  public int getColumnCount() {
+    return dataGrid.getColumnCount();
+  }
+
+  
   
   
 }

@@ -19,7 +19,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import org.jbpm.console.ng.ga.model.events.SearchEvent;
-import org.jbpm.console.ng.pr.model.events.ProcessDefinitionsSearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
 import org.uberfire.client.annotations.Perspective;

@@ -33,6 +33,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnFocus;
 import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.paging.PageResponse;
 
 @Dependent
 @WorkbenchScreen(identifier = "Grid Base Test")
@@ -45,23 +46,19 @@ public class GridBasePresenter {
     void showBusyIndicator(String message);
 
     void hideBusyIndicator();
-    
+
     ExtendedPagedTable<DataMockSummary> getListGrid();
   }
-
 
   private Constants constants = GWT.create(Constants.class);
 
   private AsyncDataProvider<DataMockSummary> dataProvider;
-
 
   @Inject
   private GridBaseListView view;
 
   @Inject
   private DataService dataServices;
-
-  
 
   @WorkbenchPartTitle
   public String getTitle() {
@@ -78,46 +75,41 @@ public class GridBasePresenter {
 
       @Override
       protected void onRangeChanged(HasData<DataMockSummary> display) {
-        
+
         Range visibleRange = display.getVisibleRange();
-        if(dataServices.getDataCount() > 0){
-            QueryFilter filter = new PortableQueryFilter(visibleRange.getStart(), 
-                                                          visibleRange.getLength(), 
-                                                          false, "", 
-                                                          view.getListGrid().getColumnSortList().get(0)
-                                                                    .getColumn().getDataStoreName(), 
-                                                          view.getListGrid().getColumnSortList().get(0)
-                                                                    .isAscending());
-            dataProvider.updateRowData(visibleRange.getStart(), dataServices.getData(filter));
-        }
-        
+
+        QueryFilter filter = new PortableQueryFilter(visibleRange.getStart(),
+                visibleRange.getLength(),
+                false, "",
+                view.getListGrid().getColumnSortList().get(0)
+                .getColumn().getDataStoreName(),
+                view.getListGrid().getColumnSortList().get(0)
+                .isAscending());
+        PageResponse<DataMockSummary> response = dataServices.getData(filter);
+        dataProvider.updateRowCount(response.getTotalRowSize(),
+                response.isTotalRowSizeExact());
+        dataProvider.updateRowData(response.getStartRowIndex(),
+                response.getPageRowList());
+
       }
     };
-    
+
   }
-  
-  public void addDataDisplay(final HasData<DataMockSummary> display ){
-     dataProvider.addDataDisplay(display);
-  
+
+  public void addDataDisplay(final HasData<DataMockSummary> display) {
+    dataProvider.addDataDisplay(display);
+
   }
-  
-  public void createData(){
+
+  public void createData() {
     dataServices.createData();
   }
 
   public void refreshList() {
-    QueryFilter filter = new PortableQueryFilter(0, 
-                                                          10, // Page size 
-                                                          false, "", 
-                                                          view.getListGrid().getColumnSortList().get(0)
-                                                                    .getColumn().getDataStoreName(), 
-                                                          view.getListGrid().getColumnSortList().get(0)
-                                                                    .isAscending());
-    dataProvider.updateRowData(0, dataServices.getData(filter));
-    
-     
-  }
+    HasData<DataMockSummary> next = dataProvider.getDataDisplays().iterator().next();
+    next.setVisibleRangeAndClearData(next.getVisibleRange(), true);
 
+  }
 
   public AsyncDataProvider<DataMockSummary> getDataProvider() {
     return dataProvider;
@@ -133,5 +125,4 @@ public class GridBasePresenter {
     refreshList();
   }
 
-  
 }

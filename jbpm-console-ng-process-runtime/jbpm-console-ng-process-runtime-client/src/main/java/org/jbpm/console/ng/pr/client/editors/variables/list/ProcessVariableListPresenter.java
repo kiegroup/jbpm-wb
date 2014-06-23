@@ -138,7 +138,7 @@ public class ProcessVariableListPresenter {
             @Override
             public void callback(ProcessSummary process) {
                 
-                view.getProcessDefinitionIdText().setText(process.getId());
+                view.getProcessDefinitionIdText().setText(process.getProcessDefId());
                 view.getProcessNameText().setText(process.getName());
             }
         }, new ErrorCallback<Message>() {

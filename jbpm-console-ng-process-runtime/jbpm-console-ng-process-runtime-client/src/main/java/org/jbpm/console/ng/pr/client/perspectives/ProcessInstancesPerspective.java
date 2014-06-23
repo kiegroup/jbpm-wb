@@ -32,6 +32,7 @@ import org.uberfire.workbench.model.PanelType;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
+import org.jbpm.console.ng.ga.model.events.SearchEvent;
 
 @ApplicationScoped
 @WorkbenchPerspective(identifier = "Process Instances", isDefault = false)
@@ -41,7 +42,7 @@ public class ProcessInstancesPerspective {
     private ContextualSearch contextualSearch;
     
     @Inject
-    private Event<ProcessInstancesSearchEvent> searchEvents;
+    private Event<SearchEvent> searchEvents;
     
     @Inject
     private Event<SetSearchTextEvent> setSearchTextEvents;
@@ -65,7 +66,7 @@ public class ProcessInstancesPerspective {
         contextualSearch.setSearchBehavior(new SearchBehavior() {
             @Override
             public void execute(String searchFilter) {
-                searchEvents.fire(new ProcessInstancesSearchEvent(searchFilter));
+                searchEvents.fire(new SearchEvent(searchFilter));
             }
 
             

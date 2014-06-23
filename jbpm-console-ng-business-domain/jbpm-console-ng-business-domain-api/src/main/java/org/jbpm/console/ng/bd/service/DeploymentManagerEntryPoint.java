@@ -16,23 +16,15 @@
 
 package org.jbpm.console.ng.bd.service;
 
-import java.util.List;
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.bd.model.DeploymentUnitSummary;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
-import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ga.service.GenericServiceEntryPoint;
 
 
 @Remote
 public interface DeploymentManagerEntryPoint extends GenericServiceEntryPoint<KModuleDeploymentUnitSummary>{
   
-    @Override
-    List<KModuleDeploymentUnitSummary> getData(QueryFilter filter);
-    
-    @Override
-    int getDataCount();
-    
     void redeploy();
 
     void deploy(DeploymentUnitSummary unit);

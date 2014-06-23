@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ga.service.GenericServiceEntryPoint;
+import org.uberfire.paging.PageResponse;
 
 
 
@@ -32,7 +33,8 @@ public class DataService implements GenericServiceEntryPoint<DataMockSummary>{
   }
   
   @Override
-  public List<DataMockSummary> getData(final QueryFilter filter){
+  public PageResponse<DataMockSummary> getData(final QueryFilter filter){
+    PageResponse<DataMockSummary> response = new PageResponse<DataMockSummary>();
     if(filter.getOrderBy().equals("ID")){
         Collections.sort(data, new Comparator<DataMockSummary>() {
                 public int compare(DataMockSummary o1, DataMockSummary o2) {
@@ -109,13 +111,13 @@ public class DataService implements GenericServiceEntryPoint<DataMockSummary>{
                 }
               });
     }
+    response.setStartRowIndex(filter.getOffset());
+    response.setTotalRowSize(data.size());
+    response.setLastPage(false);
+    response.setPageRowList(data.subList(filter.getOffset(), filter.getCount()));
     
-    return data.subList(filter.getOffset(), filter.getCount());
+    return response;
   }
   
-  @Override
-  public int getDataCount(){
-    return data.size();
-  }
-
+  
 }

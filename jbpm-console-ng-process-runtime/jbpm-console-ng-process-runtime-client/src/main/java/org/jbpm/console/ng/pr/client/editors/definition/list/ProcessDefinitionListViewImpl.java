@@ -82,16 +82,16 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         }
         if (status == PlaceStatus.CLOSE) {
           placeManager.goTo("Process Definition Details");
-          processDefSelected.fire(new ProcessDefSelectionEvent(process.getId(), process.getDeploymentId()));
+          processDefSelected.fire(new ProcessDefSelectionEvent(process.getProcessDefId(), process.getDeploymentId()));
         } else if (status == PlaceStatus.OPEN ) {
-          processDefSelected.fire(new ProcessDefSelectionEvent(process.getId(), process.getDeploymentId()));
+          processDefSelected.fire(new ProcessDefSelectionEvent(process.getProcessDefId(), process.getDeploymentId()));
         }
         
       }
     });
 
     listGrid.setSelectionModel(selectionModel);
-
+    listGrid.setEmptyTableCaption(constants.No_Process_Definitions_Found());
   }
   
   @Override
@@ -133,7 +133,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
       @Override
       public void execute(ProcessSummary process) {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display Popup");
-        placeRequestImpl.addParameter("processId", process.getId());
+        placeRequestImpl.addParameter("processId", process.getProcessDefId());
         placeRequestImpl.addParameter("domainId", process.getDeploymentId());
         placeRequestImpl.addParameter("processName", process.getName());
         placeManager.goTo(placeRequestImpl);
@@ -151,7 +151,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         }
         if (status == PlaceStatus.CLOSE || selectedItem != process) {
           placeManager.goTo("Process Definition Details");
-          processDefSelected.fire(new ProcessDefSelectionEvent(process.getId(), process.getDeploymentId()));
+          processDefSelected.fire(new ProcessDefSelectionEvent(process.getProcessDefId(), process.getDeploymentId()));
         } else if (status == PlaceStatus.OPEN && selectedItem == process) {
           placeManager.closePlace(new DefaultPlaceRequest("Process Definition Details"));
         }

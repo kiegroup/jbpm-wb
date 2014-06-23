@@ -16,15 +16,15 @@
 
 package org.jbpm.console.ng.gc.client.experimental.grid.base;
 
-import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jbpm.console.ng.ga.model.GenericSummary;
 
 /**
  *
  * @author salaboy
  */
 @Portable
-public class DataMockSummary implements Serializable{
+public class DataMockSummary extends GenericSummary{
    private String id;
    private String column1;
    private String column2;

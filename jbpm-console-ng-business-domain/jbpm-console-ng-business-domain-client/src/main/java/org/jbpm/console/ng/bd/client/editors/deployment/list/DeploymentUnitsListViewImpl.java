@@ -67,7 +67,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
       }
     });
     listGrid.getToolbar().add(newUnitButton);
-
+    listGrid.setEmptyTableCaption(constants.No_Deployment_Units_Available());
   }
 
   @Override

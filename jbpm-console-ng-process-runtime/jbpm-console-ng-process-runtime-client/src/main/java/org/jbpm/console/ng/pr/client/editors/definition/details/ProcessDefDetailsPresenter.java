@@ -264,7 +264,7 @@ public class ProcessDefDetailsPresenter {
                             }
                         } ).get( process.getOriginalPath() );
                     } else {
-                        view.setProcessAssetPath( new DummyProcessPath( process.getId() ) );
+                        view.setProcessAssetPath( new DummyProcessPath( process.getProcessDefId() ) );
                     }
                     changeStyleRow(process.getName(), process.getVersion());
                 } else {

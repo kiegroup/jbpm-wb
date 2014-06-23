@@ -159,7 +159,7 @@ public class TaskDetailsPresenter {
                 
                 placeManager.goTo("Process Instances");
                 processInstanceSelected.fire(new ProcessInstancesWithDetailsRequestEvent(processInstance.getDeploymentId(),
-                                processInstance.getId(), processInstance.getProcessId()));
+                                processInstance.getProcessInstanceId(), processInstance.getProcessId()));
             }
         }, new ErrorCallback<Message>() {
               @Override

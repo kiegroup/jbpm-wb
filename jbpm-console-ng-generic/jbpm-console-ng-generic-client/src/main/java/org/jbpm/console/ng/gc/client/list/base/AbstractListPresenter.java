@@ -21,8 +21,10 @@ import com.google.gwt.view.client.Range;
 import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ga.model.events.SearchEvent;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.lifecycle.OnFocus;
 import org.uberfire.lifecycle.OnOpen;
 
@@ -35,7 +37,10 @@ public abstract class AbstractListPresenter<T> {
   protected AsyncDataProvider<T> dataProvider;
 
   protected QueryFilter currentFilter;
-
+  
+  @Inject
+  protected PlaceManager placeManager;
+  
   public void addDataDisplay(final HasData<T> display) {
     dataProvider.addDataDisplay(display);
   }
@@ -48,7 +53,7 @@ public abstract class AbstractListPresenter<T> {
   protected void onSearchEvent(@Observes SearchEvent searchEvent) {
     String filterString = searchEvent.getFilter();
     Map<String, Object> params = new HashMap<String, Object>();
-    params.put("name", filterString.toLowerCase());
+    params.put("textSearch", filterString.toLowerCase());
     currentFilter.setParams(params);
     HasData<T> next = dataProvider.getDataDisplays().iterator().next();
     if(filterString.equals("")){

@@ -15,410 +15,314 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.list;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.Range;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import javax.annotation.PostConstruct;
+import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-
-import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
-import java.util.Set;
-import javax.enterprise.event.Event;
-
 import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
-import org.jbpm.console.ng.pr.model.events.ProcessInstancesSearchEvent;
+import org.jbpm.console.ng.ga.model.PortableQueryFilter;
+import org.jbpm.console.ng.gc.client.list.base.AbstractListPresenter;
+import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
+import org.jbpm.console.ng.pr.service.ProcessInstanceService;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
-import org.uberfire.client.common.popups.errors.ErrorPopup;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnFocus;
-import org.uberfire.lifecycle.OnStartup;
-import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.mvp.Command;
+import org.uberfire.lifecycle.OnFocus;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.security.Identity;
-import org.uberfire.workbench.model.menu.MenuFactory;
-import org.uberfire.workbench.model.menu.MenuItem;
-import org.uberfire.workbench.model.menu.Menus;
+import org.uberfire.paging.PageResponse;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance List")
-public class ProcessInstanceListPresenter {
+public class ProcessInstanceListPresenter extends AbstractListPresenter<ProcessInstanceSummary> {
 
-    public interface ProcessInstanceListView extends UberView<ProcessInstanceListPresenter> {
+  public interface ProcessInstanceListView extends ListView<ProcessInstanceSummary, ProcessInstanceListPresenter> {
 
-        void displayNotification(String text);
+  }
 
-        DataGrid<ProcessInstanceSummary> getDataGrid();
+  @Inject
+  private ProcessInstanceListView view;
 
-        String getCurrentFilter();
+  @Inject
+  private Caller<ProcessInstanceService> processInstanceService;
+  @Inject
+  private Caller<KieSessionEntryPoint> kieSessionServices;
 
-        void setCurrentFilter(String filter);
+  private PlaceRequest place;
 
-        NavLink getShowAllLink();
+  private String currentProcessDefinition;
 
-        NavLink getShowCompletedLink();
+  private List<Integer> currentActiveStates;
 
-        NavLink getShowAbortedLink();
+  private String initiator;
 
-        NavLink getShowRelatedToMeLink();
+  private Constants constants = GWT.create(Constants.class);
 
-        DataGrid<ProcessInstanceSummary> getProcessInstanceListGrid();
+  public ProcessInstanceListPresenter() {
+    dataProvider = new AsyncDataProvider<ProcessInstanceSummary>() {
 
-        Set<ProcessInstanceSummary> getSelectedProcessInstances();
-    }
-    @Inject
-    private PlaceManager placeManager;
-    private String currentProcessDefinition;
-    private PlaceRequest place;
-    private Menus menus;
-    @Inject
-    private Identity identity;
-    @Inject
-    private ProcessInstanceListView view;
-    @Inject
-    private Caller<DataServiceEntryPoint> dataServices;
-    @Inject
-    private Caller<KieSessionEntryPoint> kieSessionServices;
-    private ListDataProvider<ProcessInstanceSummary> dataProvider = new ListDataProvider<ProcessInstanceSummary>();
-    private Constants constants = GWT.create(Constants.class);
-    private List<ProcessInstanceSummary> currentProcessInstances;
-    @Inject
-    private Event<ClearSearchEvent> clearSearchEvent;
+      @Override
+      protected void onRangeChanged(HasData<ProcessInstanceSummary> display) {
 
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.Process_Instances();
-    }
-
-    @WorkbenchPartView
-    public UberView<ProcessInstanceListPresenter> getView() {
-        return view;
-    }
-
-    public ProcessInstanceListPresenter() {
-        makeMenuBar();
-    }
-
-    @PostConstruct
-    public void init() {
-    }
-
-    public void filterProcessList(String filter) {
-        if (filter.equals("")) {
-            if (currentProcessInstances != null) {
-                dataProvider.getList().clear();
-                dataProvider.getList().addAll(new ArrayList<ProcessInstanceSummary>(currentProcessInstances));
-                dataProvider.refresh();
-
-            }
+        final Range visibleRange = display.getVisibleRange();
+        ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+        if (currentFilter == null) {
+          currentFilter = new PortableQueryFilter(visibleRange.getStart(),
+                  visibleRange.getLength(),
+                  false, "",
+                  (columnSortList.size() > 0) ? columnSortList.get(0)
+                  .getColumn().getDataStoreName() : "",
+                  (columnSortList.size() > 0) ? columnSortList.get(0)
+                  .isAscending() : true);
+        }
+        // If we are refreshing after a search action, we need to go back to offset 0
+        if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
+                || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")) {
+          currentFilter.setOffset(visibleRange.getStart());
+          currentFilter.setCount(visibleRange.getLength());
         } else {
-            if (currentProcessInstances != null) {
-                List<ProcessInstanceSummary> processes = new ArrayList<ProcessInstanceSummary>(currentProcessInstances);
-                List<ProcessInstanceSummary> filteredProcesses = new ArrayList<ProcessInstanceSummary>();
-                for (ProcessInstanceSummary ps : processes) {
-                    if (ps.getProcessName().toLowerCase().contains(filter.toLowerCase())
-                            || ps.getInitiator().toLowerCase().contains(filter.toLowerCase())) {
-                        filteredProcesses.add(ps);
-                    }
-                }
-                dataProvider.getList().clear();
-                dataProvider.getList().addAll(filteredProcesses);
-                dataProvider.refresh();
-            }
+          currentFilter.setOffset(0);
+          currentFilter.setCount(view.getListGrid().getPageSize());
         }
+        //Applying screen specific filters
+        if (currentFilter.getParams() == null) {
+          currentFilter.setParams(new HashMap<String, Object>());
+        }
+        currentFilter.getParams().put("states", currentActiveStates);
+        currentFilter.getParams().put("initiator", initiator);
+        currentFilter.getParams().put("currentProcessDefinition", currentProcessDefinition);
 
-    }
+        currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
+                .getColumn().getDataStoreName() : "");
+        currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
+                .isAscending() : true);
 
-    public void refreshActiveProcessList() {
-        List<Integer> states = new ArrayList<Integer>();
-        states.add(ProcessInstance.STATE_ACTIVE);
-        dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
-            @Override
-            public void callback(List<ProcessInstanceSummary> processInstances) {
-                currentProcessInstances = processInstances;
-                filterProcessList(view.getCurrentFilter());
-            }
-        }, new ErrorCallback<Message>() {
-              @Override
-              public boolean error( Message message, Throwable throwable ) {
-                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                  return true;
-              }
-          }).getProcessInstances(states, "", null);
-    }
-
-    public void refreshRelatedToMeProcessList() {
-        List<Integer> states = new ArrayList<Integer>();
-        states.add(ProcessInstance.STATE_ACTIVE);
-        dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
-            @Override
-            public void callback(List<ProcessInstanceSummary> processInstances) {
-                currentProcessInstances = processInstances;
-                filterProcessList(view.getCurrentFilter());
-            }
+        processInstanceService.call(new RemoteCallback<PageResponse<ProcessInstanceSummary>>() {
+          @Override
+          public void callback(PageResponse<ProcessInstanceSummary> response) {
+            dataProvider.updateRowCount( response.getTotalRowSize(),
+                                        response.isTotalRowSizeExact() );
+            dataProvider.updateRowData( response.getStartRowIndex(),
+                                       response.getPageRowList() );
+          }
         }, new ErrorCallback<Message>() {
           @Override
-          public boolean error( Message message, Throwable throwable ) {
-              ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-              return true;
+          public boolean error(Message message, Throwable throwable) {
+            view.hideBusyIndicator();
+            view.displayNotification("Error: Getting Process Definitions: " + message);
+            GWT.log(throwable.toString());
+            return true;
           }
-      }).getProcessInstances(states, "", identity.getName());
-    }
+        }).getData(currentFilter); //.getProcessInstances();
 
-    public void refreshAbortedProcessList() {
-        List<Integer> states = new ArrayList<Integer>();
-        states.add(ProcessInstance.STATE_ABORTED);
-        dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
-            @Override
-            public void callback(List<ProcessInstanceSummary> processInstances) {
-                currentProcessInstances = processInstances;
-                filterProcessList(view.getCurrentFilter());
-            }
-        }, new ErrorCallback<Message>() {
-          @Override
-          public boolean error( Message message, Throwable throwable ) {
-              ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-              return true;
-          }
-      }).getProcessInstances(states, "", null);
-    }
+      }
+    };
+  }
 
-    public void refreshCompletedProcessList() {
-        List<Integer> states = new ArrayList<Integer>();
-        states.add(ProcessInstance.STATE_COMPLETED);
-        dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
-            @Override
-            public void callback(List<ProcessInstanceSummary> processInstances) {
-                currentProcessInstances = processInstances;
-                filterProcessList(view.getCurrentFilter());
-            }
-        }, new ErrorCallback<Message>() {
-              @Override
-              public boolean error( Message message, Throwable throwable ) {
-                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                  return true;
-              }
-          }).getProcessInstances(states, "", null);
-    }
+  public void refreshActiveProcessList() {
+    currentActiveStates = new ArrayList<Integer>();
+    currentActiveStates.add(ProcessInstance.STATE_ACTIVE);
+    refreshGrid();
 
-    public void newInstanceCreated(@Observes NewProcessInstanceEvent pi) {
+  }
+
+  public void refreshRelatedToMeProcessList(String identity) {
+    currentActiveStates = new ArrayList<Integer>();
+    currentActiveStates.add(ProcessInstance.STATE_ACTIVE);
+    initiator = identity;
+    refreshGrid();
+  }
+
+  public void refreshAbortedProcessList() {
+    currentActiveStates = new ArrayList<Integer>();
+    currentActiveStates.add(ProcessInstance.STATE_ABORTED);
+    refreshGrid();
+
+  }
+
+  public void refreshCompletedProcessList() {
+    currentActiveStates = new ArrayList<Integer>();
+    currentActiveStates.add(ProcessInstance.STATE_COMPLETED);
+    refreshGrid();
+
+  }
+
+  public void newInstanceCreated(@Observes NewProcessInstanceEvent pi) {
+    refreshActiveProcessList();
+  }
+
+  @OnStartup
+  public void onStartup(final PlaceRequest place) {
+    this.place = place;
+  }
+
+  @OnFocus
+  public void onFocus() {
+    refreshActiveProcessList();
+  }
+
+  @OnOpen
+  public void onOpen() {
+    this.currentProcessDefinition = place.getParameter("processName", "");
+    refreshActiveProcessList();
+  }
+
+  public void abortProcessInstance(long processInstanceId) {
+    kieSessionServices.call(new RemoteCallback<Void>() {
+      @Override
+      public void callback(Void v) {
         refreshActiveProcessList();
-    }
-    
 
-    public void addDataDisplay(HasData<ProcessInstanceSummary> display) {
-        dataProvider.addDataDisplay(display);
-    }
+      }
+    }, new ErrorCallback<Message>() {
+      @Override
+      public boolean error(Message message, Throwable throwable) {
+        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        return true;
+      }
+    }).abortProcessInstance(processInstanceId);
+  }
 
-    public ListDataProvider<ProcessInstanceSummary> getDataProvider() {
-        return dataProvider;
-    }
-
-    public void refreshData() {
-        dataProvider.refresh();
-    }
-
-    @OnStartup
-    public void onStartup(final PlaceRequest place) {
-        this.place = place;
-    }
-
-    @OnFocus
-    public void onFocus() {
+  public void abortProcessInstance(List<Long> processInstanceIds) {
+    kieSessionServices.call(new RemoteCallback<Void>() {
+      @Override
+      public void callback(Void v) {
         refreshActiveProcessList();
-    }
 
-    @OnOpen
-    public void onOpen() {
-        this.currentProcessDefinition = place.getParameter("processName", "");
-        view.setCurrentFilter(currentProcessDefinition);
+      }
+    }, new ErrorCallback<Message>() {
+      @Override
+      public boolean error(Message message, Throwable throwable) {
+        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        return true;
+      }
+    }).abortProcessInstances(processInstanceIds);
+  }
+
+  public void suspendProcessInstance(String processDefId,
+          long processInstanceId) {
+    kieSessionServices.call(new RemoteCallback<Void>() {
+      @Override
+      public void callback(Void v) {
         refreshActiveProcessList();
-    }
 
-    public void abortProcessInstance(long processInstanceId) {
-        kieSessionServices.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void v) {
-                refreshActiveProcessList();
+      }
+    }, new ErrorCallback<Message>() {
+      @Override
+      public boolean error(Message message, Throwable throwable) {
+        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        return true;
+      }
+    }).suspendProcessInstance(processInstanceId);
+  }
 
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message, Throwable throwable ) {
-                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                return true;
-            }
-        }).abortProcessInstance(processInstanceId);
-    }
+  public void bulkSignal(Set<ProcessInstanceSummary> processInstances) {
+    StringBuilder processIdsParam = new StringBuilder();
+    if (processInstances != null) {
 
-    public void abortProcessInstance(List<Long> processInstanceIds) {
-        kieSessionServices.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void v) {
-                refreshActiveProcessList();
-
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message, Throwable throwable ) {
-                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                return true;
-            }
-        }).abortProcessInstances(processInstanceIds);
-    }
-
-    public void suspendProcessInstance(String processDefId,
-            long processInstanceId) {
-        kieSessionServices.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void v) {
-                refreshActiveProcessList();
-
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message, Throwable throwable ) {
-                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                return true;
-            }
-        }).suspendProcessInstance(processInstanceId);
-    }
-
-    public void onSearch(@Observes final ProcessInstancesSearchEvent searchFilter) {
-        view.setCurrentFilter(searchFilter.getFilter());
-        String relatedToMe = identity.getName();
-        List<Integer> states = new ArrayList<Integer>();
-        
-         if(view.getShowAllLink().getStyleName().equals("active")){
-            states.add(ProcessInstance.STATE_ACTIVE);
-        }else if(view.getShowRelatedToMeLink().getStyleName().equals("active")){
-            states.add(ProcessInstance.STATE_ACTIVE);
-        }else if(view.getShowCompletedLink().getStyleName().equals("active")){
-            states.add(ProcessInstance.STATE_COMPLETED);
-        }else if(view.getShowAbortedLink().getStyleName().equals("active")){
-            states.add(ProcessInstance.STATE_ABORTED);
+      for (ProcessInstanceSummary selected : processInstances) {
+        if (selected.getState() != ProcessInstance.STATE_ACTIVE) {
+          view.displayNotification(constants.Signaling_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
+                  + ")");
+          continue;
         }
-        
-        dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
-            @Override
-            public void callback(List<ProcessInstanceSummary> processInstances) {
-                currentProcessInstances = processInstances;
-                filterProcessList(view.getCurrentFilter());
-            }
-        }, new ErrorCallback<Message>() {
-              @Override
-              public boolean error( Message message, Throwable throwable ) {
-                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                  return true;
-              }
-          }).getProcessInstances(states, "", relatedToMe);
+        processIdsParam.append(selected.getId() + ",");
+//   ??                     view.getProcessInstanceListGrid().getSelectionModel().setSelected(selected, false);
+      }
+      // remove last ,
+      if (processIdsParam.length() > 0) {
+        processIdsParam.deleteCharAt(processIdsParam.length() - 1);
+      }
+    } else {
+      processIdsParam.append("-1");
     }
+    PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Signal Process Popup");
+    placeRequestImpl.addParameter("processInstanceId", processIdsParam.toString());
 
-    @WorkbenchMenu
-    public Menus getMenus() {
-        return menus;
+    placeManager.goTo(placeRequestImpl);
+    view.displayNotification(constants.Signaling_Process_Instance());
+
+  }
+
+  public void bulkAbort(Set<ProcessInstanceSummary> processInstances) {
+    if (processInstances != null) {
+      if (Window.confirm("Are you sure that you want to abort the selected process instances?")) {
+        List<Long> ids = new ArrayList<Long>();
+        for (ProcessInstanceSummary selected : processInstances) {
+          if (selected.getState() != ProcessInstance.STATE_ACTIVE) {
+            view.displayNotification(constants.Aborting_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
+                    + ")");
+            continue;
+          }
+          ids.add(selected.getProcessInstanceId());
+
+          //??    view.getProcessInstanceListGrid().getSelectionModel().setSelected(selected, false);
+          view.displayNotification(constants.Aborting_Process_Instance() + "(id=" + selected.getId() + ")");
+        }
+        abortProcessInstance(ids);
+
+      }
     }
+  }
 
-    private void makeMenuBar() {
-        menus = MenuFactory
-                .newTopLevelMenu(constants.Bulk_Actions())
-                .withItems(getBulkActions())
-                .endMenu()
-                .newTopLevelMenu(constants.Refresh())
-                .respondsWith(new Command() {
-                    @Override
-                    public void execute() {
-                        view.getShowAllLink().setStyleName("active");
-                        view.getShowCompletedLink().setStyleName("");
-                        view.getShowAbortedLink().setStyleName("");
-                        view.getShowRelatedToMeLink().setStyleName("");
-                        refreshActiveProcessList();
-                        clearSearchEvent.fire(new ClearSearchEvent());
-                        view.setCurrentFilter("");
-                        view.displayNotification(constants.Process_Instances_Refreshed());
-                    }
-                })
-                .endMenu().build();
+//  public void onSearch(@Observes final ProcessInstancesSearchEvent searchFilter) {
+//    view.setCurrentFilter(searchFilter.getFilter());
+//    String relatedToMe = identity.getName();
+//    List<Integer> states = new ArrayList<Integer>();
+//
+//    if (view.getShowAllLink().getStyleName().equals("active")) {
+//      states.add(ProcessInstance.STATE_ACTIVE);
+//    } else if (view.getShowRelatedToMeLink().getStyleName().equals("active")) {
+//      states.add(ProcessInstance.STATE_ACTIVE);
+//    } else if (view.getShowCompletedLink().getStyleName().equals("active")) {
+//      states.add(ProcessInstance.STATE_COMPLETED);
+//    } else if (view.getShowAbortedLink().getStyleName().equals("active")) {
+//      states.add(ProcessInstance.STATE_ABORTED);
+//    }
+//
+//    dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+//      @Override
+//      public void callback(List<ProcessInstanceSummary> processInstances) {
+//        currentProcessInstances = processInstances;
+//        filterProcessList(view.getCurrentFilter());
+//      }
+//    }, new ErrorCallback<Message>() {
+//      @Override
+//      public boolean error(Message message, Throwable throwable) {
+//        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+//        return true;
+//      }
+//    }).getProcessInstances(states, "", relatedToMe);
+//  }
 
-    }
+  @WorkbenchPartTitle
+  public String getTitle() {
+    return constants.Process_Instances();
+  }
 
-    private List<? extends MenuItem> getBulkActions() {
-        List<MenuItem> bulkActions = new ArrayList<MenuItem>(2);
-        bulkActions.add(MenuFactory.newSimpleItem(constants.Bulk_Signal()).respondsWith(new Command() {
-            @Override
-            public void execute() {
-                StringBuffer processIdsParam = new StringBuffer();
-                if (view.getSelectedProcessInstances() != null) {
-
-                    for (ProcessInstanceSummary selected : view.getSelectedProcessInstances()) {
-                        if (selected.getState() != ProcessInstance.STATE_ACTIVE) {
-                            view.displayNotification(constants.Signaling_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
-                                    + ")");
-                            continue;
-                        }
-                        processIdsParam.append(selected.getId() + ",");
-                        view.getProcessInstanceListGrid().getSelectionModel().setSelected(selected, false);
-                    }
-                    // remove last ,
-                    if (processIdsParam.length() > 0) {
-                        processIdsParam.deleteCharAt(processIdsParam.length() - 1);
-                    }
-                } else {
-                    processIdsParam.append("-1");
-                }
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Signal Process Popup");
-                placeRequestImpl.addParameter("processInstanceId", processIdsParam.toString());
-
-                placeManager.goTo(placeRequestImpl);
-                view.displayNotification(constants.Signaling_Process_Instance());
-            }
-        }).endMenu().build().getItems().get(0));
-
-        bulkActions.add(MenuFactory.newSimpleItem(constants.Bulk_Abort()).respondsWith(new Command() {
-            @Override
-            public void execute() {
-                if (view.getSelectedProcessInstances() != null) {
-                    if (Window.confirm("Are you sure that you want to abort the selected process instances?")) {
-                        List<Long> ids = new ArrayList<Long>();
-                        for (ProcessInstanceSummary selected : view.getSelectedProcessInstances()) {
-                            if (selected.getState() != ProcessInstance.STATE_ACTIVE) {
-                                view.displayNotification(constants.Aborting_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
-                                        + ")");
-                                continue;
-                            }
-                            ids.add(selected.getId());
-
-                            view.getProcessInstanceListGrid().getSelectionModel().setSelected(selected, false);
-                            view.displayNotification(constants.Aborting_Process_Instance() + "(id=" + selected.getId() + ")");
-                        }
-                        abortProcessInstance(ids);
-
-                    }
-                }
-            }
-        }).endMenu().build().getItems().get(0));
-
-        return bulkActions;
-    }
+  @WorkbenchPartView
+  public UberView<ProcessInstanceListPresenter> getView() {
+    return view;
+  }
 }

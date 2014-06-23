@@ -21,7 +21,6 @@ import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
-import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.messaging.Message;
@@ -37,6 +36,7 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.paging.PageResponse;
 
 @Dependent
 @WorkbenchScreen(identifier = "Deployments List")
@@ -73,7 +73,7 @@ public class DeploymentUnitsListPresenter extends AbstractListPresenter<KModuleD
         }
         // If we are refreshing after a search action, we need to go back to offset 0
         if(currentFilter.getParams() == null || currentFilter.getParams().isEmpty() 
-                || currentFilter.getParams().get("name") == null || currentFilter.getParams().get("name").equals("")){
+                || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")){
           currentFilter.setOffset(visibleRange.getStart());
           currentFilter.setCount(visibleRange.getLength());
         }else{
@@ -85,15 +85,13 @@ public class DeploymentUnitsListPresenter extends AbstractListPresenter<KModuleD
                 .getColumn().getDataStoreName() : "");
         currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
                 .isAscending() : true);
-        deploymentManagerService.call(new RemoteCallback<List<KModuleDeploymentUnitSummary>>() {
+        deploymentManagerService.call(new RemoteCallback<PageResponse<KModuleDeploymentUnitSummary>>() {
           @Override
-          public void callback(List<KModuleDeploymentUnitSummary> units) {
-            dataProvider.updateRowCount(units.size(), false);
-            if (!units.isEmpty()) {
-              dataProvider.updateRowData(currentFilter.getOffset(), units);
-            } else {
-              dataProvider.updateRowData(0, units);
-            }
+          public void callback(PageResponse<KModuleDeploymentUnitSummary> response) {
+            dataProvider.updateRowCount( response.getTotalRowSize(),
+                                        response.isTotalRowSizeExact() );
+            dataProvider.updateRowData( response.getStartRowIndex(),
+                                       response.getPageRowList() );
           }
         }, new ErrorCallback<Message>() {
           @Override
