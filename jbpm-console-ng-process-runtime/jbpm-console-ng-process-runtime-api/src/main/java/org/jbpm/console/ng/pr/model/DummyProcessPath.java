@@ -34,11 +34,6 @@ public class DummyProcessPath implements Path {
     }
 
     @Override
-    public FileSystem getFileSystem() {
-        return null;
-    }
-
-    @Override
     public String getFileName() {
         return fileName + ".bpmn2";
     }
