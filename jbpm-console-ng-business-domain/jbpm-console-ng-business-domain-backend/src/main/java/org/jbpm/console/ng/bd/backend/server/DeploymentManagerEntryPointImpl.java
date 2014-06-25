@@ -15,12 +15,17 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Named;
+
 import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 import org.guvnor.common.services.project.builder.service.PostBuildHandler;
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
+import org.guvnor.structure.backend.config.Added;
+import org.guvnor.structure.backend.config.Removed;
+import org.guvnor.structure.backend.deployment.DeploymentConfigChangedEvent;
+import org.guvnor.structure.deployment.DeploymentConfigService;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.bd.exception.DeploymentException;
 import org.jbpm.console.ng.bd.model.DeploymentUnitSummary;
@@ -37,10 +42,6 @@ import org.kie.internal.deployment.DeploymentService;
 import org.kie.internal.deployment.DeploymentUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uberfire.backend.deployment.DeploymentConfigService;
-import org.uberfire.backend.server.config.Added;
-import org.uberfire.backend.server.config.Removed;
-import org.uberfire.backend.server.deployment.DeploymentConfigChangedEvent;
 import org.uberfire.paging.PageResponse;
 
 @Service

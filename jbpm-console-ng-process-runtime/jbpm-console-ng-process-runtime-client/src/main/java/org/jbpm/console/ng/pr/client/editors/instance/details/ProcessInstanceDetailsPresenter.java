@@ -50,7 +50,7 @@ import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.DefaultPosition;
 
-import org.uberfire.client.common.popups.errors.ErrorPopup;
+import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchMenu;

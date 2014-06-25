@@ -28,7 +28,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.uberfire.client.common.popups.errors.ErrorPopup;
+import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;

@@ -49,7 +49,7 @@ import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
-import org.uberfire.client.common.popups.errors.ErrorPopup;
+import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;

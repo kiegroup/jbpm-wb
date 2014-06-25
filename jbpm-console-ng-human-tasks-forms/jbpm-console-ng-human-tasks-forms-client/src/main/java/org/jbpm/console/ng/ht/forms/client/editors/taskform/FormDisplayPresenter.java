@@ -56,7 +56,7 @@ import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.common.popups.errors.ErrorPopup;
+import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityManager;

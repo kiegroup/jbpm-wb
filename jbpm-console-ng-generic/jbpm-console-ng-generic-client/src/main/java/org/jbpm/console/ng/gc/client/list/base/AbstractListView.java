@@ -26,7 +26,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
-import org.uberfire.client.common.BusyPopup;
+import org.kie.uberfire.client.common.BusyPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.security.Identity;

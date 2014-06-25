@@ -38,7 +38,7 @@ import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.common.popups.errors.ErrorPopup;
+import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnOpen;

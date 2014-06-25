@@ -16,7 +16,7 @@
 package org.jbpm.console.ng.gc.client.experimental.grid.base;
 
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
-import org.uberfire.client.tables.PagedTable;
+import org.kie.uberfire.client.tables.PagedTable;
 
 /**
  *

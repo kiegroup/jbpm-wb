@@ -24,7 +24,6 @@ import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
 
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ import org.jbpm.console.ng.pr.model.events.ProcessDefStyleEvent;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.DefaultPosition;
-import org.uberfire.client.common.popups.errors.ErrorPopup;
+import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchMenu;

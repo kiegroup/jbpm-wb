@@ -37,7 +37,7 @@ import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
-import org.uberfire.client.common.popups.errors.ErrorPopup;
+import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -49,7 +49,6 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.security.Role;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
-import org.uberfire.lifecycle.OnClose;
 
 @Dependent
 @WorkbenchPopup(identifier = "Quick New Task")

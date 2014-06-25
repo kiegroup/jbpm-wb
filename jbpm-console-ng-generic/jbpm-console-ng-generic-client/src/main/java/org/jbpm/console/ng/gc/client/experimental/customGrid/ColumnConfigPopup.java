@@ -12,7 +12,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.uberfire.client.common.popups.footers.ModalFooterOKButton;
+import org.kie.uberfire.client.common.popups.footers.ModalFooterOKButton;
 
 import java.util.Map;
 
