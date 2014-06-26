@@ -510,6 +510,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
             public void execute(TaskSummary task) {
                 currentAction = ActionsDataGrid.CLAIM;
                 presenter.claimTasks(Lists.newArrayList(task.getId()), identity.getName());
+                refreshTasks();
             }
         }));
 
@@ -518,6 +519,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
             public void execute(TaskSummary task) {
                 currentAction = ActionsDataGrid.RELEASE;
                 presenter.releaseTasks(Lists.newArrayList(task.getId()), identity.getName());
+                refreshTasks();
             }
         }));
 
@@ -527,6 +529,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
                 currentAction = ActionsDataGrid.START;
                 DataGridUtils.currentIdSelected = task.getId();
                 presenter.startTasks(Lists.newArrayList(task.getId()), identity.getName());
+                refreshTasks();
             }
         }));
 
