@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import org.jbpm.console.ng.ga.model.DataMockSummary;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ga.service.GenericServiceEntryPoint;
 import org.uberfire.paging.PageResponse;
