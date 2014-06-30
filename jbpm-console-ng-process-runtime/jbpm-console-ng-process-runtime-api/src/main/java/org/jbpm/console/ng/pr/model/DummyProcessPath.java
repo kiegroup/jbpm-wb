@@ -18,7 +18,6 @@ package org.jbpm.console.ng.pr.model;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.uberfire.backend.vfs.Path;
-import org.uberfire.backend.vfs.FileSystem;
 
 @Portable
 public class DummyProcessPath implements Path {

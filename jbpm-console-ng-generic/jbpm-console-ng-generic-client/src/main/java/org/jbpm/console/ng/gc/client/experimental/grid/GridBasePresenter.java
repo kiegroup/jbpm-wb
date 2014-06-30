@@ -22,7 +22,7 @@ import com.google.gwt.view.client.Range;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import org.jbpm.console.ng.ga.model.QueryFilter;
-import org.jbpm.console.ng.gc.client.experimental.grid.base.DataMockSummary;
+import org.jbpm.console.ng.ga.model.DataMockSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.DataService;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;

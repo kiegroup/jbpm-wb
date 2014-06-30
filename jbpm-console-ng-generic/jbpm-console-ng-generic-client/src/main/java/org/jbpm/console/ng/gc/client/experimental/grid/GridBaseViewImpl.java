@@ -32,11 +32,12 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.gc.client.experimental.grid.base.DataMockSummary;
+import org.jbpm.console.ng.ga.model.DataMockSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 
 import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.uberfire.client.common.BusyPopup;
+
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
 
