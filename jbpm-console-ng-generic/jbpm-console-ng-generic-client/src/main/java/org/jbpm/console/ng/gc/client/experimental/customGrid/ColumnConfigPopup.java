@@ -12,9 +12,10 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.kie.uberfire.client.common.popups.footers.ModalFooterOKButton;
 
 import java.util.Map;
+import org.kie.uberfire.client.common.popups.footers.ModalFooterOKButton;
+
 
 public class ColumnConfigPopup extends Modal {
 
