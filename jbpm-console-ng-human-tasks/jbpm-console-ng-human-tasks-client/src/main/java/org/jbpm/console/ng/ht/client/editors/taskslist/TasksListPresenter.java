@@ -314,7 +314,12 @@ public class TasksListPresenter implements GenericDataProvider<TaskSummary>{
             @Override
             public void callback(List<TaskSummary> tasks) {
                 view.displayNotification("Task(s) Released");
-                DataGridUtils.currentIdSelected = Long.valueOf(DataGridUtils.getIdRowSelected(view.getTaskListGrid()));
+                String idRowSelected = DataGridUtils.getIdRowSelected(view.getTaskListGrid());
+                Long idSelected = 0L;
+                if(idRowSelected != null){
+                  idSelected = Long.valueOf(idRowSelected);
+                }
+                DataGridUtils.currentIdSelected = idSelected;
                 view.refreshTasks();
             }
         }, new ErrorCallback<Message>() {
@@ -347,7 +352,13 @@ public class TasksListPresenter implements GenericDataProvider<TaskSummary>{
             @Override
             public void callback(List<TaskSummary> tasks) {
                 view.displayNotification("Task(s) Claimed");
-                DataGridUtils.currentIdSelected = Long.valueOf(DataGridUtils.getIdRowSelected(view.getTaskListGrid()));
+                String idRowSelected = DataGridUtils.getIdRowSelected(view.getTaskListGrid());
+                Long idSelected = 0L;
+                if(idRowSelected != null){
+                  idSelected = Long.valueOf(idRowSelected);
+                }
+                DataGridUtils.currentIdSelected = idSelected;
+                
                 view.refreshTasks();
 
             }

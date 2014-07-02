@@ -549,7 +549,11 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
             public void execute(TaskSummary task) {
                 currentAction = ActionsDataGrid.DETAILS;
                 PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
-                Long idSelected = Long.valueOf(DataGridUtils.getIdRowSelected(myTaskListGrid));
+                String idRowSelected = DataGridUtils.getIdRowSelected(myTaskListGrid);
+                Long idSelected = 0L;
+                if(idRowSelected != null){
+                   idSelected = Long.valueOf(idRowSelected);
+                }
                 DataGridUtils.currentIdSelected = task.getId();
                 if(status == PlaceStatus.CLOSE || !Long.valueOf(task.getId()).equals(idSelected)){
                     placeManager.goTo("Task Details Multi");
