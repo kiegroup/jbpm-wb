@@ -307,11 +307,13 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
     private void initGridColumns() {
         this.idColumn();
         this.nameColumn();
+        this.descriptionColumn();
         this.priorityColumn();
         this.statusColumn();
         this.onDateColumn();
         this.dueDateColumn();
         this.actionsColumn();
+       
         DataGridUtils.setHideOnAllColumns(myTaskListGrid);
     }
 
@@ -407,6 +409,22 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
         };
         taskNameColumn.setSortable(true);
         myTaskListGrid.addColumn(taskNameColumn, new ResizableHeader(constants.Task(), myTaskListGrid, taskNameColumn));
+        sortHandler.setComparator(taskNameColumn, new Comparator<TaskSummary>() {
+            @Override
+            public int compare(TaskSummary o1, TaskSummary o2) {
+                return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+            }
+        });
+    }
+    private void descriptionColumn() {
+        Column<TaskSummary, String> taskNameColumn = new Column<TaskSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(TaskSummary object) {
+                return object.getDescription();
+            }
+        };
+        taskNameColumn.setSortable(true);
+        myTaskListGrid.addColumn(taskNameColumn, new ResizableHeader(constants.Task_Description(), myTaskListGrid, taskNameColumn));
         sortHandler.setComparator(taskNameColumn, new Comparator<TaskSummary>() {
             @Override
             public int compare(TaskSummary o1, TaskSummary o2) {
