@@ -39,10 +39,13 @@ import org.uberfire.security.impl.authz.RuntimeAuthorizationManager;
 import org.uberfire.security.server.cdi.SecurityFactory;
 import org.jbpm.services.task.lifecycle.listeners.BAMTaskEventListener;
 import org.jbpm.services.task.audit.JPATaskLifeCycleEventListener;
+import org.uberfire.commons.services.cdi.Startup;
+import org.uberfire.commons.services.cdi.StartupType;
 
 /**
  * This class should contain all ApplicationScoped producers required by the application.
  */
+@Startup(StartupType.BOOTSTRAP)
 @ApplicationScoped
 public class ApplicationScopedProvider {
 
@@ -74,7 +77,6 @@ public class ApplicationScopedProvider {
 
         final IOService service = new IOServiceIndexedImpl( watchService,
                 config.getIndexEngine(),
-                config.getIndexers(),
                 DublinCoreView.class,
                 VersionAttributeView.class,
                 OtherMetaView.class );
