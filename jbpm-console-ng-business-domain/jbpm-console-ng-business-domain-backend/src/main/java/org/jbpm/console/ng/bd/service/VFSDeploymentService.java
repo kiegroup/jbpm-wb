@@ -1,6 +1,5 @@
 package org.jbpm.console.ng.bd.service;
 
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
@@ -11,17 +10,15 @@ import org.jbpm.console.ng.bd.api.FileService;
 import org.jbpm.console.ng.bd.api.VFSDeploymentUnit;
 import org.jbpm.console.ng.bd.api.Vfs;
 import org.jbpm.kie.services.api.IdentityProvider;
-import org.jbpm.kie.services.api.bpmn2.BPMN2DataService;
 import org.jbpm.kie.services.impl.AbstractDeploymentService;
 import org.jbpm.kie.services.impl.DeployedUnitImpl;
-import org.jbpm.kie.services.impl.audit.ServicesAwareAuditEventBuilder;
 import org.jbpm.kie.services.impl.model.ProcessAssetDesc;
-import org.jbpm.process.audit.AbstractAuditLogger;
 import org.jbpm.process.audit.event.AuditEventBuilder;
 import org.jbpm.runtime.manager.impl.RuntimeEnvironmentBuilder;
-import org.jbpm.runtime.manager.impl.cdi.InjectableRegisterableItemsFactory;
+import org.jbpm.services.api.DefinitionService;
+import org.jbpm.services.api.model.DeploymentUnit;
+import org.jbpm.services.cdi.impl.manager.InjectableRegisterableItemsFactory;
 import org.kie.api.io.ResourceType;
-import org.kie.internal.deployment.DeploymentUnit;
 import org.kie.internal.io.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +39,7 @@ public class VFSDeploymentService extends AbstractDeploymentService {
     @Inject
     private IdentityProvider identityProvider; 
     @Inject
-    private BPMN2DataService bpmn2Service;
+    private DefinitionService bpmn2Service;
 
     private FileService fs;
 
@@ -86,7 +83,7 @@ public class VFSDeploymentService extends AbstractDeploymentService {
             try {
                 processString = new String(getFs().loadFile(p));
                 builder.addAsset(ResourceFactory.newByteArrayResource(processString.getBytes()), ResourceType.BPMN2);
-                ProcessAssetDesc process = bpmn2Service.findProcessId(processString, null);
+                ProcessAssetDesc process = (ProcessAssetDesc) bpmn2Service.buildProcessDefinition("unknown", processString, null, false);
                 process.setOriginalPath(p.toUri().toString());
                 process.setDeploymentId(vfsUnit.getIdentifier());
                 deployedUnit.addAssetLocation(process.getId(), process);
@@ -138,11 +135,11 @@ public class VFSDeploymentService extends AbstractDeploymentService {
         this.identityProvider = identityProvider;
     }
 
-    public BPMN2DataService getBpmn2Service() {
+    public DefinitionService getBpmn2Service() {
         return bpmn2Service;
     }
 
-    public void setBpmn2Service(BPMN2DataService bpmn2Service) {
+    public void setBpmn2Service(DefinitionService bpmn2Service) {
         this.bpmn2Service = bpmn2Service;
     }
 

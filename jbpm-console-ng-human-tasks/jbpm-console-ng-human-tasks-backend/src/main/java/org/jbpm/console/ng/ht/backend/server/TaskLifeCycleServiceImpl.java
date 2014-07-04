@@ -21,6 +21,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
+import org.jbpm.services.api.UserTaskService;
 import org.kie.internal.task.api.InternalTaskService;
 
 /**
@@ -32,7 +33,7 @@ import org.kie.internal.task.api.InternalTaskService;
 public class TaskLifeCycleServiceImpl implements TaskLifeCycleService {
 
   @Inject
-  private InternalTaskService taskService;
+  private UserTaskService taskService;
 
 
   public TaskLifeCycleServiceImpl() {

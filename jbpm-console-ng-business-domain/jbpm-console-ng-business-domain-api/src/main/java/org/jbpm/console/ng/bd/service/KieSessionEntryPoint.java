@@ -26,7 +26,7 @@ public interface KieSessionEntryPoint {
 
     long startProcess(String domainId, String processId);
 
-    long startProcess(String domainId, String processId, Map<String, String> params);
+    long startProcess(String domainId, String processId, Map<String, Object> params);
 
     void abortProcessInstance(long processInstanceId);
     

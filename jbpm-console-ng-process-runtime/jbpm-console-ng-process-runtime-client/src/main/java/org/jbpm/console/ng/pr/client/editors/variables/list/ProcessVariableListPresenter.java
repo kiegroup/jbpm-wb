@@ -93,6 +93,8 @@ public class ProcessVariableListPresenter {
     private String processInstanceId = "";
     
     private String processDefId = "";
+
+    private String deploymentId = "";
     
     public ProcessVariableListPresenter() {
         makeMenuBar();
@@ -115,7 +117,7 @@ public class ProcessVariableListPresenter {
         return view;
     }
     
-    public void refreshVariableListData(final String processId,
+    public void refreshVariableListData(final String deploymentId, final String processId,
             final String processDefId) {
         
         dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
@@ -146,7 +148,7 @@ public class ProcessVariableListPresenter {
                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                   return true;
               }
-          }).getProcessDesc(processDefId);
+          }).getProcessDesc( deploymentId, processDefId);
         loadVariables(processId, processDefId);
         
     }
@@ -172,9 +174,10 @@ public class ProcessVariableListPresenter {
     public void onOpen() {
         this.processInstanceId = place.getParameter("processInstanceId", "");
         this.processDefId = place.getParameter("processDefId", "");
+        this.deploymentId = place.getParameter("deploymentId", "");
         view.getProcessInstanceIdText().setText(processInstanceId);
         view.getProcessNameText().setText(processDefId);
-        refreshVariableListData(processInstanceId, processDefId);
+        refreshVariableListData(deploymentId, processInstanceId, processDefId);
     }
     
     public void loadVariables(final String processId,

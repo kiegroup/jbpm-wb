@@ -39,6 +39,7 @@ public class LuceneConfigProducer {
 
     @PostConstruct
     public void setup() {
+
         final Map<String, Analyzer> analyzers = getAnalyzers();
         this.config = new LuceneConfigBuilder().withInMemoryMetaModelStore()
                 .usingAnalyzers( analyzers )

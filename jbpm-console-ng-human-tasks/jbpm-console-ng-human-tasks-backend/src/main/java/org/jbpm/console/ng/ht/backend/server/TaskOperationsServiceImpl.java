@@ -23,6 +23,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
+import org.jbpm.services.api.RuntimeDataService;
+import org.jbpm.services.api.UserTaskService;
 import org.jbpm.services.task.utils.TaskFluent;
 import org.kie.internal.task.api.InternalTaskService;
 
@@ -34,8 +36,14 @@ import org.kie.internal.task.api.InternalTaskService;
 @ApplicationScoped
 public class TaskOperationsServiceImpl implements TaskOperationsService{
   @Inject
-  private InternalTaskService taskService;
-  
+  private InternalTaskService internalTaskService;
+
+  @Inject
+  private UserTaskService taskService;
+
+  @Inject
+  private RuntimeDataService runtimeDataService;
+
   @Override
   public long addQuickTask(
                          final String taskName,
@@ -53,7 +61,7 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
         }
         taskFluent.setAdminUser("Administrator");
         taskFluent.setAdminGroup("Administrators");
-        long taskId = taskService.addTask(taskFluent.getTask(), new HashMap<String, Object>());
+        long taskId = internalTaskService.addTask(taskFluent.getTask(), new HashMap<String, Object>());
         if(start){
             taskService.start(taskId, identity);
         }
@@ -69,7 +77,7 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
             Date dueDate) {
         taskService.setPriority(taskId, priority);
         if(taskDescription != null){
-          taskService.setDescriptions(taskId, TaskI18NHelper.adaptI18NList(taskDescription));
+          taskService.setDescription(taskId, taskDescription.get(0));
         }
         if(dueDate != null){
           taskService.setExpirationDate(taskId, dueDate);

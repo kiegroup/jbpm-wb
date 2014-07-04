@@ -205,8 +205,7 @@ public class TaskDetailsPresenter {
                       ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                       return true;
                   }
-              }).updateTask(currentTaskId, priority, descriptions,
-                    dueDate);
+              }).updateTask(currentTaskId, priority, descriptions, dueDate);
 
         }
 

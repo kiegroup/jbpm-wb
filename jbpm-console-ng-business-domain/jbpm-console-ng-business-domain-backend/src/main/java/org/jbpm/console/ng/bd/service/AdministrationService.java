@@ -2,8 +2,8 @@ package org.jbpm.console.ng.bd.service;
 
 import java.util.Set;
 
-import org.kie.internal.deployment.DeploymentService;
-import org.kie.internal.deployment.DeploymentUnit;
+import org.jbpm.services.api.DeploymentService;
+import org.jbpm.services.api.model.DeploymentUnit;
 
 public interface AdministrationService {
 

@@ -25,6 +25,7 @@ import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
+import org.jbpm.services.api.RuntimeDataService;
 import org.jbpm.services.task.query.QueryFilterImpl;
 import org.kie.api.task.model.OrganizationalEntity;
 import org.kie.api.task.model.Status;
@@ -42,6 +43,9 @@ public class TaskQueryServiceImpl implements TaskQueryService {
 
   @Inject
   private InternalTaskService taskService;
+
+  @Inject
+  private RuntimeDataService runtimeDataService;
 
 
   public TaskQueryServiceImpl() {
@@ -66,7 +70,7 @@ public class TaskQueryServiceImpl implements TaskQueryService {
     org.kie.internal.task.api.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1, 
                                                                     filter.getOrderBy(), filter.isAscending());
     List<TaskSummary> taskSummaries = TaskSummaryHelper.adaptCollection(
-            taskService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf));
+            runtimeDataService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf));
 
     response.setStartRowIndex(filter.getOffset());
     response.setTotalRowSize(taskSummaries.size() - 1);

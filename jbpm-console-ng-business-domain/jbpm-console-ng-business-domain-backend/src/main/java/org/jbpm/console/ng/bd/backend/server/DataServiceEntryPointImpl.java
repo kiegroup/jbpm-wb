@@ -38,9 +38,9 @@ import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.VariableSummary;
-import org.jbpm.kie.services.api.RuntimeDataService;
-import org.jbpm.kie.services.api.bpmn2.BPMN2DataService;
-import org.jbpm.kie.services.impl.model.ProcessInstanceDesc;
+import org.jbpm.services.api.DefinitionService;
+import org.jbpm.services.api.RuntimeDataService;
+import org.jbpm.services.api.model.ProcessInstanceDesc;
 
 /**
  * This Service combines the Data and BPMN2 services.
@@ -59,7 +59,7 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
     private TaskServiceEntryPoint taskService;
     
     @Inject
-    private BPMN2DataService bpmn2Service;
+    private DefinitionService bpmn2Service;
 
     public DataServiceEntryPointImpl() {
     }
@@ -67,8 +67,8 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
    
     
     @Override
-    public Map<String, String> getServiceTasks(String processId){
-        return bpmn2Service.getAllServiceTasks(processId);
+    public Map<String, String> getServiceTasks(String deploymentId, String processId){
+        return bpmn2Service.getServiceTasks(deploymentId, processId);
     }
     
     
@@ -105,15 +105,21 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
     @Override
     public Collection<NodeInstanceSummary> getProcessInstanceHistory(long processInstanceId) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistory(piDesc.getDeploymentId(),
-                processInstanceId));
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistoryByType(piDesc.getDeploymentId(),
+                processInstanceId, RuntimeDataService.EntryType.START));
     }
 
     @Override
     public Collection<NodeInstanceSummary> getProcessInstanceHistory(long processInstanceId, boolean completed) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistory(piDesc.getDeploymentId(),
-                processInstanceId, completed));
+        if (completed) {
+            return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistoryByType(piDesc.getDeploymentId(),
+                    processInstanceId, RuntimeDataService.EntryType.END));
+        }  else {
+            return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistoryByType(piDesc.getDeploymentId(),
+                    processInstanceId, RuntimeDataService.EntryType.START));
+        }
+
     }
 
     @Override
@@ -126,7 +132,7 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
     @Override
     public Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(long processInstanceId) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceActiveNodes(piDesc.getDeploymentId(),
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistoryActive(piDesc.getDeploymentId(),
                 processInstanceId));
     }
 
@@ -146,7 +152,7 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
     @Override
     public Collection<NodeInstanceSummary> getProcessInstanceCompletedNodes(long processInstanceId) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceCompletedNodes(piDesc.getDeploymentId(),
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistoryCompleted(piDesc.getDeploymentId(),
                 processInstanceId));
 
     }
@@ -161,55 +167,47 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
      */
 
     @Override
-    public Collection<String> getReusableSubProcesses(String processId) {
-        return bpmn2Service.getReusableSubProcesses(processId);
+    public Collection<String> getReusableSubProcesses(String deploymentId, String processId) {
+        return bpmn2Service.getReusableSubProcesses(deploymentId, processId);
+    }
+
+
+    @Override
+    public Map<String, String> getRequiredInputData(String deploymentId, String processId) {
+        return bpmn2Service.getProcessVariables(deploymentId, processId);
     }
 
     @Override
-    public List<String> getAssociatedDomainObjects(String processId) {
-        return bpmn2Service.getAssociatedDomainObjects(processId);
+    public Collection<TaskDefSummary> getAllTasksDef(String deploymentId, String processId) {
+        return TaskDefHelper.adaptCollection(bpmn2Service.getTasksDefinitions(deploymentId, processId));
     }
 
     @Override
-    public Map<String, String> getRequiredInputData(String processId) {
-        return bpmn2Service.getProcessData(processId);
+    public Map<String, Collection<String>> getAssociatedEntities(String deploymentId, String processId) {
+        return bpmn2Service.getAssociatedEntities(deploymentId, processId);
     }
 
     @Override
-    public List<String> getAssociatedForms(String processId) {
-        return bpmn2Service.getAssociatedForms(processId);
-    }
-
-    @Override
-    public Collection<TaskDefSummary> getAllTasksDef(String processId) {
-        return TaskDefHelper.adaptCollection(bpmn2Service.getAllTasksDef(processId));
-    }
-
-    @Override
-    public Map<String, String> getAssociatedEntities(String processId) {
-        return bpmn2Service.getAssociatedEntities(processId);
-    }
-
-    @Override
-    public ProcessSummary getProcessDesc(String processId) {
-        return ProcessHelper.adapt(bpmn2Service.getProcessDesc(processId));
+    public ProcessSummary getProcessDesc(String deploymentId, String processId) {
+        return ProcessHelper.adapt(bpmn2Service.getProcessDefinition(deploymentId, processId));
     }
 
     @Override
     public Collection<VariableSummary> getVariablesCurrentState(long processInstanceId, String processId) {
-        Map<String, String> properties = new HashMap<String, String>(bpmn2Service.getProcessData(processId));
+        ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
+        Map<String, String> properties = new HashMap<String, String>(bpmn2Service.getProcessVariables(piDesc.getDeploymentId(), processId));
         return VariableHelper.adaptCollection(dataService.getVariablesCurrentState(processInstanceId), properties,
                 processInstanceId);
     }
 
     @Override
-    public Map<String, String> getTaskInputMappings(String processId, String taskName) {
-        return bpmn2Service.getTaskInputMappings(processId, taskName);
+    public Map<String, String> getTaskInputMappings(String deploymentId, String processId, String taskName) {
+        return bpmn2Service.getTaskInputMappings(deploymentId, processId, taskName);
     }
 
     @Override
-    public Map<String, String> getTaskOutputMappings(String processId, String taskName) {
-        return bpmn2Service.getTaskOutputMappings(processId, taskName);
+    public Map<String, String> getTaskOutputMappings(String deploymentId, String processId, String taskName) {
+        return bpmn2Service.getTaskOutputMappings(deploymentId, processId, taskName);
     }
 
   @Override

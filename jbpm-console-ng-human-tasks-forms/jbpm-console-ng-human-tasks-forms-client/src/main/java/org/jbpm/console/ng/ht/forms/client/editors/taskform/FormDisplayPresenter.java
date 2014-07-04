@@ -332,7 +332,7 @@ public class FormDisplayPresenter {
                         wrapperFlowPanel.add( startButton );
                         view.getOptionsDiv().add( wrapperFlowPanel );
                     }
-                } ).getProcessDesc(currentProcessId);
+                } ).getProcessDesc(currentDomainId, currentProcessId);
             }
         }, getUnexpectedErrorCallback()).getFormDisplayProcess(currentDomainId, currentProcessId);
 
@@ -406,7 +406,7 @@ public class FormDisplayPresenter {
     }
 
     public void completeTask(String values) {
-        final Map<String, String> params = getUrlParameters(values);
+        final Map<String, Object> params = getUrlParameters(values);
         final Map<String, Object> objParams = new HashMap<String, Object>(params);
         taskServices.call(getCompleteTaskRemoteCallback(), getUnexpectedErrorCallback()).complete(currentTaskId, identity.getName(), objParams);
 
@@ -468,7 +468,7 @@ public class FormDisplayPresenter {
     }
 
     public void saveTaskState(String values) {
-        final Map<String, String> params = getUrlParameters(values);
+        final Map<String, Object> params = getUrlParameters(values);
         taskServices.call(getSaveTaskStateCallback(), getUnexpectedErrorCallback()).saveContent(currentTaskId, params);
     }
 
@@ -582,7 +582,7 @@ public class FormDisplayPresenter {
     }
 
     public void startProcess(String values) {
-        final Map<String, String> params = getUrlParameters(values);
+        final Map<String, Object> params = getUrlParameters(values);
 
         sessionServices.call(getStartProcessCallback(), getUnexpectedErrorCallback()).startProcess(currentDomainId, currentProcessId, params);
 
@@ -618,8 +618,8 @@ public class FormDisplayPresenter {
         };
     }-*/;
 
-    public static Map<String, String> getUrlParameters(String values) {
-        Map<String, String> params = new HashMap<String, String>();
+    public static Map<String, Object> getUrlParameters(String values) {
+        Map<String, Object> params = new HashMap<String, Object>();
         for (String param : values.split("&")) {
             String pair[] = param.split("=");
             String key = pair[0];

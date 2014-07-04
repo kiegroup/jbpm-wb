@@ -25,8 +25,8 @@ import org.guvnor.structure.deployment.DeploymentConfig;
 import org.guvnor.structure.deployment.DeploymentConfigService;
 import org.jbpm.console.ng.bd.api.Vfs;
 import org.jbpm.console.ng.bd.service.DeploymentUnitProvider;
-import org.jbpm.kie.services.api.Kjar;
-import org.kie.internal.deployment.DeploymentUnit;
+import org.jbpm.services.api.model.DeploymentUnit;
+import org.jbpm.services.cdi.Kjar;
 
 @ApplicationScoped
 @Vfs

@@ -176,11 +176,11 @@ public class ProcessDefDetailsPresenter {
                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                return true;
            }
-       } ).getAllTasksDef( processId );
+       } ).getAllTasksDef( deploymentId, processId );
 
-        dataServices.call( new RemoteCallback<Map<String, String>>() {
+        dataServices.call( new RemoteCallback<Map<String, Collection<String>>>() {
             @Override
-            public void callback( Map<String, String> entities ) {
+            public void callback( Map<String, Collection<String>> entities ) {
                 view.getUsersGroupsListBox().setText("");
                 SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
                 if(entities.keySet().isEmpty()){
@@ -189,7 +189,14 @@ public class ProcessDefDetailsPresenter {
                     view.getUsersGroupsListBox().setHTML(safeHtmlBuilder.toSafeHtml());
                 }else{
                     for ( String key : entities.keySet() ) {
-                        safeHtmlBuilder.appendEscapedLines(entities.get( key ) + " - " + key +"\n");
+                        StringBuffer names = new StringBuffer();
+                        Collection<String> entityNames = entities.get( key );
+                        if (entityNames != null) {
+                            for (String entity : entityNames) {
+                                names.append("'" + entity + "' ");
+                            }
+                        }
+                        safeHtmlBuilder.appendEscapedLines(names + " - " + key +"\n");
                     }
                     view.getUsersGroupsListBox().setHTML(safeHtmlBuilder.toSafeHtml());
                 }
@@ -201,7 +208,7 @@ public class ProcessDefDetailsPresenter {
                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                return true;
            }
-       } ).getAssociatedEntities( processId );
+       } ).getAssociatedEntities(deploymentId, processId);
 
         dataServices.call( new RemoteCallback<Map<String, String>>() {
             @Override
@@ -226,7 +233,7 @@ public class ProcessDefDetailsPresenter {
                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                return true;
            }
-       } ).getRequiredInputData( processId );
+       } ).getRequiredInputData( deploymentId, processId );
 
         dataServices.call( new RemoteCallback<Collection<String>>() {
             @Override
@@ -251,7 +258,7 @@ public class ProcessDefDetailsPresenter {
                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                return true;
            }
-       } ).getReusableSubProcesses( processId );
+       } ).getReusableSubProcesses( deploymentId, processId );
 
         processDefService.call( new RemoteCallback<ProcessSummary>() {
             @Override
@@ -307,7 +314,7 @@ public class ProcessDefDetailsPresenter {
                    ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                    return true;
                }
-           } ).getServiceTasks( processId );
+           } ).getServiceTasks( deploymentId, processId );
         
         
     }

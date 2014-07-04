@@ -24,16 +24,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.jbpm.kie.services.impl.model.VariableStateDesc;
 import org.jbpm.console.ng.pr.model.VariableSummary;
+import org.jbpm.services.api.model.VariableDesc;
 
 public class VariableHelper {
 
     private static final List<String> excludedVariables = Arrays.asList(new String[] { "processId" });
 
-    public static Collection<VariableSummary> adaptCollection(Collection<VariableStateDesc> variables) {
+    public static Collection<VariableSummary> adaptCollection(Collection<VariableDesc> variables) {
         List<VariableSummary> variablesSummary = new ArrayList<VariableSummary>();
-        for (VariableStateDesc v : variables) {
+        for (VariableDesc v : variables) {
 
             variablesSummary.add(new VariableSummary(v.getVariableId(), v.getVariableInstanceId(), v.getProcessInstanceId(), v
                     .getOldValue(), v.getNewValue(), v.getDataTimeStamp().getTime(), ""));
@@ -43,10 +43,10 @@ public class VariableHelper {
         return variablesSummary;
     }
 
-    public static Collection<VariableSummary> adaptCollection(Collection<VariableStateDesc> variables,
+    public static Collection<VariableSummary> adaptCollection(Collection<VariableDesc> variables,
             Map<String, String> properties, long processInstanceId) {
         List<VariableSummary> variablesSummary = new ArrayList<VariableSummary>();
-        for (VariableStateDesc v : variables) {
+        for (VariableDesc v : variables) {
             if (excludedVariables.contains(v.getVariableId())) {
                 continue;
             }
@@ -64,7 +64,7 @@ public class VariableHelper {
         return variablesSummary;
     }
 
-    public static VariableSummary adapt(VariableStateDesc v) {
+    public static VariableSummary adapt(VariableDesc v) {
         return new VariableSummary(v.getVariableId(), v.getVariableInstanceId(), v.getProcessInstanceId(), v.getOldValue(),
                 v.getNewValue(), v.getDataTimeStamp().getTime(), "");
     }

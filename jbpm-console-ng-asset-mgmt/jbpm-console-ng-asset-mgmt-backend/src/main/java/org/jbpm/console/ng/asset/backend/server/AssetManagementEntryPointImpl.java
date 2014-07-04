@@ -44,7 +44,7 @@ public class AssetManagementEntryPointImpl implements AssetManagementEntryPoint 
 
     @Override
     public void configureRepository(String repository, String devBranch, String releaseBranch, String version){
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put("RepositoryName", repository);
         params.put("DevBranchName", devBranch);
         params.put("RelBranchName", releaseBranch);
@@ -54,19 +54,19 @@ public class AssetManagementEntryPointImpl implements AssetManagementEntryPoint 
 
     @Override
     public void buildProject(String repository, String branch, String project, String userName, String password, String serverURL, Boolean deployToRuntime) {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put("ProjectURI", repository+"/"+project);
         params.put("BranchName", branch);
-	params.put("Username", userName);
-	params.put("Password", password);
-	params.put("ExecServerURL", serverURL);
-	params.put("DeployToRuntime", deployToRuntime.toString());
+	    params.put("Username", userName);
+	    params.put("Password", password);
+	    params.put("ExecServerURL", serverURL);
+	    params.put("DeployToRuntime", deployToRuntime.toString());
         sessionServices.startProcess("org.kie.management:asset-management-kmodule:1.0.0-SNAPSHOT","asset-management-kmodule.BuildProject", params);
     }
 
     @Override
-    public void promoteChanges(String repository, String sourceBranch, String destBranch) { 
-        Map<String, String> params = new HashMap<String, String>();
+    public void promoteChanges(String repository, String sourceBranch, String destBranch) {
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put("GitRepositoryName", repository);
         params.put("SourceBranchName", sourceBranch);
         params.put("TargetBranchName", destBranch);

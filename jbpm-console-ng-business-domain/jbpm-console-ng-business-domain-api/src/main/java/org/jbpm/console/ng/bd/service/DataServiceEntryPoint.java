@@ -30,7 +30,7 @@ import org.jbpm.console.ng.pr.model.VariableSummary;
 @Remote
 public interface DataServiceEntryPoint {
 
-    Map<String, String> getServiceTasks(String processId);
+    Map<String, String> getServiceTasks(String deploymentId, String processId);
     
     Collection<ProcessInstanceSummary> getProcessInstances();
 
@@ -62,25 +62,21 @@ public interface DataServiceEntryPoint {
      * BPMN2
      */
 
-    Collection<String> getReusableSubProcesses(String processId);
+    Collection<String> getReusableSubProcesses(String deploymentId, String processId);
 
-    List<String> getAssociatedDomainObjects(String processId);
+    Map<String, String> getRequiredInputData(String deploymentId, String processId);
 
-    Map<String, String> getRequiredInputData(String processId);
+    Collection<TaskDefSummary> getAllTasksDef(String deploymentId, String processId);
 
-    List<String> getAssociatedForms(String processId);
+    Map<String, Collection<String>> getAssociatedEntities(String deploymentId, String processId);
 
-    Collection<TaskDefSummary> getAllTasksDef(String processId);
-
-    Map<String, String> getAssociatedEntities(String processId);
-
-    ProcessSummary getProcessDesc(String processId);
+    ProcessSummary getProcessDesc(String deploymentId, String processId);
 
     Collection<VariableSummary> getVariablesCurrentState(long processInstanceId, String processId);
 
-    Map<String, String> getTaskInputMappings(String processId, String taskName);
+    Map<String, String> getTaskInputMappings(String deploymentId, String processId, String taskName);
 
-    Map<String, String> getTaskOutputMappings(String processId, String taskName);
+    Map<String, String> getTaskOutputMappings(String deploymentId, String processId, String taskName);
     
     /* Logs */
     

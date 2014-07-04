@@ -22,7 +22,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
 import org.jbpm.kie.services.impl.form.FormProvider;
-import org.jbpm.kie.services.impl.model.ProcessAssetDesc;
+import org.jbpm.services.api.model.ProcessDefinition;
 import org.kie.api.task.model.Task;
 
 /**
@@ -41,7 +41,7 @@ public class PlaceManagerFormProvider implements FormProvider {
     }
 
     @Override
-    public String render(String name, ProcessAssetDesc process, Map<String, Object> renderContext) {
+    public String render(String name, ProcessDefinition process, Map<String, Object> renderContext) {
         Map<String, String> params = new HashMap<String, String>(renderContext.size());
         for (String key : renderContext.keySet()) {
             if (!(renderContext.get(key) instanceof Task) && !key.equals("marshallerContext")) {
@@ -57,7 +57,7 @@ public class PlaceManagerFormProvider implements FormProvider {
     }
 
     @Override
-    public String render(String name, Task task, ProcessAssetDesc process, Map<String, Object> renderContext) {
+    public String render(String name, Task task, ProcessDefinition process, Map<String, Object> renderContext) {
         Map<String, String> params = new HashMap<String, String>(renderContext.size());
         for (String key : renderContext.keySet()) {
             if (!(renderContext.get(key) instanceof Task) && !key.equals("marshallerContext")) {

@@ -21,20 +21,23 @@ import java.util.Collection;
 import java.util.List;
 
 import org.jbpm.console.ng.ht.model.TaskDefSummary;
+import org.jbpm.services.api.model.UserTaskDefinition;
 import org.kie.internal.task.api.model.TaskDef;
 
 public class TaskDefHelper {
-    public static Collection<TaskDefSummary> adaptCollection(Collection<? extends TaskDef> tasks) {
+    public static Collection<TaskDefSummary> adaptCollection(Collection<? extends UserTaskDefinition> tasks) {
         List<TaskDefSummary> tasksdefSummary = new ArrayList<TaskDefSummary>();
-        for (TaskDef t : tasks) {
-            tasksdefSummary.add(new TaskDefSummary(t.getId(), t.getName()));
+        int counter = 0;
+        for (UserTaskDefinition t : tasks) {
+            tasksdefSummary.add(new TaskDefSummary(counter, t.getName()));
+            counter++;
         }
 
         return tasksdefSummary;
     }
 
-    public static TaskDefSummary adapt(TaskDef t) {
-        return new TaskDefSummary(t.getId(), t.getName());
+    public static TaskDefSummary adapt(UserTaskDefinition t) {
+        return new TaskDefSummary(0, t.getName());
     }
 
 }
