@@ -72,6 +72,7 @@
           <exclude>WEB-INF/lib/guvnor-inbox-client-*.jar</exclude>
           <exclude>WEB-INF/lib/guvnor-m2repo-editor-client-*.jar</exclude>
           <exclude>WEB-INF/lib/guvnor-workingset-client-*.jar</exclude>
+          <exclude>WEB-INF/lib/guvnor-message-console-client-*.jar</exclude>
 
           <!-- GWT Client Related -->
           <exclude>WEB-INF/lib/gwt-user-*.jar</exclude>
