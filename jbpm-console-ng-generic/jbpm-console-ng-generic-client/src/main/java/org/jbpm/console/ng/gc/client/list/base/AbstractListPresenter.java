@@ -15,18 +15,25 @@
  */
 package org.jbpm.console.ng.gc.client.list.base;
 
+
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import java.util.HashMap;
 import java.util.Map;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ga.model.events.SearchEvent;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
+import org.uberfire.lifecycle.OnClose;
 import org.uberfire.lifecycle.OnFocus;
 import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.security.Identity;
 
 /**
  *
@@ -39,8 +46,16 @@ public abstract class AbstractListPresenter<T> {
   protected QueryFilter currentFilter;
   
   @Inject
+  protected Identity identity;
+
+  @Inject
   protected PlaceManager placeManager;
   
+  protected PlaceRequest place;
+  
+  @Inject
+  protected Event<BeforeClosePlaceEvent> beforeCloseEvent;
+
   public void addDataDisplay(final HasData<T> display) {
     dataProvider.addDataDisplay(display);
   }
@@ -56,9 +71,9 @@ public abstract class AbstractListPresenter<T> {
     params.put("textSearch", filterString.toLowerCase());
     currentFilter.setParams(params);
     HasData<T> next = dataProvider.getDataDisplays().iterator().next();
-    if(filterString.equals("")){
+    if (filterString.equals("")) {
       next.setVisibleRangeAndClearData(next.getVisibleRange(), true);
-    }else{
+    } else {
       next.setVisibleRangeAndClearData(new Range(0, next.getVisibleRange().getLength()), true);
     }
 
@@ -73,4 +88,15 @@ public abstract class AbstractListPresenter<T> {
   public void onFocus() {
     refreshGrid();
   }
+
+  @OnStartup
+  public void onStartup(final PlaceRequest place) {
+    this.place = place;
+  }
+  
+  @OnClose
+  public void onClose() {
+    beforeCloseEvent.fire(new BeforeClosePlaceEvent(place));
+  }
+  
 }

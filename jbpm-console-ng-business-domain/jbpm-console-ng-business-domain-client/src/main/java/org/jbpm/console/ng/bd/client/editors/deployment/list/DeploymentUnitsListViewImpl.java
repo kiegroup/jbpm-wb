@@ -32,8 +32,10 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
@@ -55,8 +57,10 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
   @Override
   public void init(final DeploymentUnitsListPresenter presenter) {
-    
-    super.init(presenter);
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("bannedColumns",constants.Deployment()+","+constants.Actions());
+    params.put("initColumns",constants.Deployment()+","+constants.Strategy()+","+constants.Actions());
+    super.init(presenter, params);
     
     Button newUnitButton = new Button();
     newUnitButton.setIcon(IconType.PLUS);
@@ -66,7 +70,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
         placeManager.goTo(new DefaultPlaceRequest("New Deployment"));
       }
     });
-    listGrid.getToolbar().add(newUnitButton);
+    listGrid.getLeftToolbar().add(newUnitButton);
     listGrid.setEmptyTableCaption(constants.No_Deployment_Units_Available());
   }
 

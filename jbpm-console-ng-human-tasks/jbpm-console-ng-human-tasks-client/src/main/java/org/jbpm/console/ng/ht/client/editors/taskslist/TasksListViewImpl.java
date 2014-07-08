@@ -350,8 +350,8 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
                     TaskSummary task = selectionModel.getSelectedObject();
                     if (task != null) {
                         placeManager.goTo("Task Details Multi");
-                        taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
-                        DataGridUtils.currentIdSelected = task.getId();
+                        taskSelected.fire(new TaskSelectionEvent(task.getTaskId(), task.getName()));
+                        DataGridUtils.currentIdSelected = task.getTaskId();
                     }
                 }
                 currentAction = null;
@@ -375,7 +375,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
     private void onMouseOverGrid(final CellPreviewEvent<TaskSummary> event) {
         TaskSummary task = event.getValue();
         if (task.getDescription() != null) {
-            DataGridUtils.setTooltip(myTaskListGrid, event.getValue().getId(), event.getColumn(), task.getDescription());
+            DataGridUtils.setTooltip(myTaskListGrid, event.getValue().getTaskId(), event.getColumn(), task.getDescription());
         }
     }
 
@@ -383,7 +383,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
         Column<TaskSummary, Number> taskIdColumn = new Column<TaskSummary, Number>(new NumberCell()) {
             @Override
             public Number getValue(TaskSummary object) {
-                return object.getId();
+                return object.getTaskId();
             }
         };
         taskIdColumn.setSortable(true);
@@ -392,7 +392,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
         sortHandler.setComparator(taskIdColumn, new Comparator<TaskSummary>() {
             @Override
             public int compare(TaskSummary o1, TaskSummary o2) {
-                return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
+                return Long.valueOf(o1.getTaskId()).compareTo(Long.valueOf(o2.getTaskId()));
             }
         });
     }
@@ -509,7 +509,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
             @Override
             public void execute(TaskSummary task) {
                 currentAction = ActionsDataGrid.CLAIM;
-                presenter.claimTasks(Lists.newArrayList(task.getId()), identity.getName());
+                presenter.claimTasks(Lists.newArrayList(task.getTaskId()), identity.getName());
                 refreshTasks();
             }
         }));
@@ -518,7 +518,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
             @Override
             public void execute(TaskSummary task) {
                 currentAction = ActionsDataGrid.RELEASE;
-                presenter.releaseTasks(Lists.newArrayList(task.getId()), identity.getName());
+                presenter.releaseTasks(Lists.newArrayList(task.getTaskId()), identity.getName());
                 refreshTasks();
             }
         }));
@@ -527,8 +527,8 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
             @Override
             public void execute(TaskSummary task) {
                 currentAction = ActionsDataGrid.START;
-                DataGridUtils.currentIdSelected = task.getId();
-                presenter.startTasks(Lists.newArrayList(task.getId()), identity.getName());
+                DataGridUtils.currentIdSelected = task.getTaskId();
+                presenter.startTasks(Lists.newArrayList(task.getTaskId()), identity.getName());
                 refreshTasks();
             }
         }));
@@ -537,9 +537,9 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
             @Override
             public void execute(TaskSummary task) {
                 currentAction = ActionsDataGrid.COMPLETE;
-                DataGridUtils.currentIdSelected = task.getId();
+                DataGridUtils.currentIdSelected = task.getTaskId();
                 placeManager.goTo("Task Details Multi");
-                taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName(), "Form Display"));
+                taskSelected.fire(new TaskSelectionEvent(task.getTaskId(), task.getName(), "Form Display"));
             }
         }));
 
@@ -554,11 +554,11 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
                   idSelected = Long.valueOf(idRowSelected);
                 }
                 
-                DataGridUtils.currentIdSelected = task.getId();
-                if(status == PlaceStatus.CLOSE || !Long.valueOf(task.getId()).equals(idSelected)){
+                DataGridUtils.currentIdSelected = task.getTaskId();
+                if(status == PlaceStatus.CLOSE || !Long.valueOf(task.getTaskId()).equals(idSelected)){
                     placeManager.goTo("Task Details Multi");
-                    taskSelected.fire(new TaskSelectionEvent(task.getId(), task.getName()));
-                }else if( status == PlaceStatus.OPEN || Long.valueOf(task.getId()).equals(idSelected)){
+                    taskSelected.fire(new TaskSelectionEvent(task.getTaskId(), task.getName()));
+                }else if( status == PlaceStatus.OPEN || Long.valueOf(task.getTaskId()).equals(idSelected)){
                     presenter.closeEditPanel();
                 }
             }

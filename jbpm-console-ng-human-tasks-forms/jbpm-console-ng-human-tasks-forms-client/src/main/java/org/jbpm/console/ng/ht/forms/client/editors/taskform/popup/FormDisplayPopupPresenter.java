@@ -251,8 +251,8 @@ public class FormDisplayPopupPresenter {
                 wrapperFlowPanel.setStyleName( "wrapper" );
                 view.getOptionsDiv().add( wrapperFlowPanel );
                 if (task == null) return;
-                view.getNameText().setText( task.getName() );
-                view.getTaskIdText().setText( String.valueOf( task.getId() ) );
+                view.getNameText().setText( task.getTaskName() );
+                view.getTaskIdText().setText( String.valueOf( task.getTaskId() ) );
                 if ( task.getStatus().equals( "Reserved" ) ) {
                     FocusPanel startFlowPanel = new FocusPanel();
                     startFlowPanel.setStyleName( "option-button start" );

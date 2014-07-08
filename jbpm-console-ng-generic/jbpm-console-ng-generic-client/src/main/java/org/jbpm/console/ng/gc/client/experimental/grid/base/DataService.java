@@ -1,5 +1,6 @@
 package org.jbpm.console.ng.gc.client.experimental.grid.base;
 
+import org.jbpm.console.ng.ga.model.DataMockSummary;
 import com.google.gwt.i18n.client.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;

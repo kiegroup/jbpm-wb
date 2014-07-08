@@ -19,12 +19,16 @@ import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
+import java.util.HashMap;
+import java.util.Map;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.kie.uberfire.client.common.BusyPopup;
 import org.uberfire.client.mvp.PlaceManager;
@@ -35,11 +39,12 @@ import org.uberfire.workbench.events.NotificationEvent;
 /**
  *
  * @author salaboy
+ * @param <T>
+ * @param <V>
  */
-public abstract class AbstractListView<T, V extends AbstractListPresenter> extends Composite implements RequiresResize {
+public abstract class AbstractListView<T extends GenericSummary, V extends AbstractListPresenter> 
+                                        extends Composite implements RequiresResize {
 
-  
-  
   @Inject
   public Identity identity;
 
@@ -55,9 +60,11 @@ public abstract class AbstractListView<T, V extends AbstractListPresenter> exten
   @DataField
   public LayoutPanel listContainer;
   
-  public ExtendedPagedTable<T> listGrid;
+  protected ExtendedPagedTable<T> listGrid;
+
   
-  public interface ListView<T,V> extends UberView<V> {
+  
+  public interface ListView<T extends GenericSummary,V> extends UberView<V> {
 
     void showBusyIndicator(String message);
 
@@ -69,18 +76,21 @@ public abstract class AbstractListView<T, V extends AbstractListPresenter> exten
 
   }
 
-  public void init(V presenter){
+  public void init(V presenter, Map<String, String> params){
     this.presenter = presenter;
     listContainer.clear();
-    listGrid = new ExtendedPagedTable<T>(10);
+    
+    listGrid = new ExtendedPagedTable<T>(10, params);
 
     presenter.addDataDisplay(listGrid);
     listContainer.add(listGrid);
 
     initColumns();
     initGenericToolBar();
-
+    
   }
+  
+
   
   @Override
   public void onResize() {
@@ -104,7 +114,7 @@ public abstract class AbstractListView<T, V extends AbstractListPresenter> exten
         presenter.refreshGrid();
       }
     });
-    listGrid.getToolbar().add(refreshButton);
+    listGrid.getRightToolbar().add(refreshButton);
   }
   
   public ExtendedPagedTable<T> getListGrid() {

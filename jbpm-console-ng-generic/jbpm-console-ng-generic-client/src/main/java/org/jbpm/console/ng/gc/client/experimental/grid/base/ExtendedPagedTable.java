@@ -15,27 +15,54 @@
  */
 package org.jbpm.console.ng.gc.client.experimental.grid.base;
 
+import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
+
+import com.google.gwt.view.client.ProvidesKey;
+import java.util.Map;
+import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.kie.uberfire.client.tables.PagedTable;
 
 /**
  *
  * @author salaboy
  */
-public class ExtendedPagedTable<T> extends PagedTable<T> {
+public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> {
 
   // it is rgb because datagrid returns this kind of info
   private static final String BG_ROW_SELECTED = "rgb(229, 241, 255)";
-  
-  public ExtendedPagedTable(int pageSize) {
-    super(pageSize);
+
+
+  public ExtendedPagedTable(int pageSize, Map<String, String> params) {
+    super(pageSize, new ProvidesKey<T>() {
+
+      @Override
+      public Object getKey(T item) {
+        return (item == null) ? null : item.getId();
+      }
+    }, params);
+
     dataGrid.addColumnSortHandler(new AsyncHandler(dataGrid));
+
   }
+
+ 
   
-  public void paint(int row){
-    for(int i = 0; i < dataGrid.getRowElement(row).getCells().getLength(); i++){
+
+  public void paintRow(int row) {
+    for (int i = 0; i < dataGrid.getRowElement(row).getCells().getLength(); i++) {
       dataGrid.getRowElement(row).getCells().getItem(i).getStyle().setBackgroundColor(BG_ROW_SELECTED);
     }
+  }
+
+  public void clearRow(int row) {
+    for (int i = 0; i < dataGrid.getRowElement(row).getCells().getLength(); i++) {
+      dataGrid.getRowElement(row).getCells().getItem(i).getStyle().clearBackgroundColor();
+    }
+  }
+
+  public void setTooltip(int row, int column, String description) {
+    dataGrid.getRowElement(row).getCells().getItem(column).setTitle(description);
   }
 
   public int getKeyboardSelectedColumn() {
@@ -50,7 +77,8 @@ public class ExtendedPagedTable<T> extends PagedTable<T> {
     return dataGrid.getColumnCount();
   }
 
-  
-  
-  
+  public void removeColumn(Column<T, ?> col) {
+    dataGrid.removeColumn(col);
+  }
+
 }

@@ -20,7 +20,6 @@ import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
-import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.messaging.Message;

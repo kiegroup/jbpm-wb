@@ -28,8 +28,10 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -64,7 +66,9 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
 
   @Override
   public void init(final ProcessDefinitionListPresenter presenter) {
-    super.init(presenter);
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("bannedColumns",constants.Name()+","+constants.Actions());
+    super.init(presenter, params);
 
     // Add a selection model so we can select cells.
     final SingleSelectionModel<ProcessSummary> selectionModel = new SingleSelectionModel<ProcessSummary>();
@@ -73,7 +77,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
       public void onSelectionChange(SelectionChangeEvent event) {
         ProcessSummary process = selectionModel.getSelectedObject();
         
-        listGrid.paint(listGrid.getKeyboardSelectedRow());
+        listGrid.paintRow(listGrid.getKeyboardSelectedRow());
         
         PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details"));
         PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Definition Details"));
@@ -107,7 +111,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     Column<ProcessSummary, String> processNameColumn = new Column<ProcessSummary, String>(new TextCell()) {
       @Override
       public String getValue(ProcessSummary object) {
-        return object.getName();
+        return object.getProcessDefName();
       }
     };
     processNameColumn.setSortable(true);
@@ -135,7 +139,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display Popup");
         placeRequestImpl.addParameter("processId", process.getProcessDefId());
         placeRequestImpl.addParameter("domainId", process.getDeploymentId());
-        placeRequestImpl.addParameter("processName", process.getName());
+        placeRequestImpl.addParameter("processName", process.getProcessDefName());
         placeManager.goTo(placeRequestImpl);
       }
     }));
@@ -143,7 +147,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     cells.add(new DetailsActionHasCell("Details", new Delegate<ProcessSummary>() {
       @Override
       public void execute(ProcessSummary process) {
-        listGrid.paint(listGrid.getKeyboardSelectedRow());
+        listGrid.paintRow(listGrid.getKeyboardSelectedRow());
         PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Definition Details"));
         PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details"));
         if (instanceDetailsStatus == PlaceStatus.OPEN) {

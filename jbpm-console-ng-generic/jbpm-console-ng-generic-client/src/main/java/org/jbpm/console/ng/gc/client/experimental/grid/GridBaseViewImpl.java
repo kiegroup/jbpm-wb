@@ -70,7 +70,7 @@ public class GridBaseViewImpl extends Composite
     public void init(final GridBasePresenter presenter) {
         this.presenter = presenter;
         listContainer.clear();
-        listGrid = new ExtendedPagedTable<DataMockSummary>(10);
+        listGrid = new ExtendedPagedTable<DataMockSummary>(10, null);
         
         presenter.addDataDisplay(listGrid);
         listContainer.add(listGrid);

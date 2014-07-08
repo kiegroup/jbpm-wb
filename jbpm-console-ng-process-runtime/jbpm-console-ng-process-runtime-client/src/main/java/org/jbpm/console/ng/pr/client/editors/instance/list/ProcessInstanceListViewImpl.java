@@ -45,8 +45,10 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -97,7 +99,10 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
 
   @Override
   public void init(final ProcessInstanceListPresenter presenter) {
-    super.init(presenter);
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("bannedColumns",constants.Id()+","+constants.Name()+","+constants.Actions());
+    params.put("initColumns",constants.Id()+","+constants.Name()+","+constants.Version()+","+constants.Actions());
+    super.init(presenter, params);
 
     initBulkActionsDropDown();
     initFiltersBar();
@@ -110,7 +115,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
       public void onSelectionChange(SelectionChangeEvent event) {
 
         selectedProcessInstances = selectionModel.getSelectedSet();
-        listGrid.paint(listGrid.getKeyboardSelectedRow());
+        listGrid.paintRow(listGrid.getKeyboardSelectedRow());
 
       }
     });
@@ -163,7 +168,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
         }
 
         if (BrowserEvents.FOCUS.equalsIgnoreCase(event.getNativeEvent().getType())) {
-          listGrid.paint(listGrid.getKeyboardSelectedRow());
+          listGrid.paintRow(listGrid.getKeyboardSelectedRow());
         }
 
       }
@@ -194,7 +199,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
 
     bulkActions.add(bulkAbortNavLink);
     bulkActions.add(bulkSignalNavLink);
-    listGrid.getToolbar().add(bulkActions);
+    listGrid.getLeftToolbar().add(bulkActions);
   }
 
   private void initFiltersBar() {
@@ -269,7 +274,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
             abortedFilterButton, relatedToMeFilterButton);
 
     filtersBar.add(filtersButtonGroup);
-    listGrid.getToolbar().add(filtersBar);
+    listGrid.getCenterToolbar().add(filtersBar);
   }
 
   private void initProcessInstanceIdColumn() {
@@ -277,7 +282,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     Column<ProcessInstanceSummary, String> processInstanceIdColumn = new Column<ProcessInstanceSummary, String>(new TextCell()) {
       @Override
       public String getValue(ProcessInstanceSummary object) {
-        return String.valueOf(object.getId());
+        return String.valueOf(object.getProcessInstanceId());
       }
     };
     processInstanceIdColumn.setSortable(true);
@@ -389,7 +394,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
 
         PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details"));
 
-        listGrid.paint(listGrid.getKeyboardSelectedRow());
+        listGrid.paintRow(listGrid.getKeyboardSelectedRow());
 
         if (status == PlaceStatus.CLOSE || selectedItem != processInstance) {
           placeManager.goTo("Process Instance Details");

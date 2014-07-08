@@ -130,7 +130,7 @@ public class TaskListDayBox extends Composite implements RequiresResize {
                 fmt = DateTimeFormat.getFormat("hh:mm a");
                 hour = fmt.format(ts.getExpirationTime());
             }
-            taskListBox.add(new TaskBox(placeManager, presenter, taskSelection, identity, ts.getId(), ts.getName(), ts.getActualOwner(), ts.getStatus(), ts.getPriority(), hour, taskCalendarEvent, idTaskSelected));
+            taskListBox.add(new TaskBox(placeManager, presenter, taskSelection, identity, ts.getTaskId(), ts.getTaskName(), ts.getActualOwner(), ts.getStatus(), ts.getPriority(), hour, taskCalendarEvent, idTaskSelected));
         }
     }
 

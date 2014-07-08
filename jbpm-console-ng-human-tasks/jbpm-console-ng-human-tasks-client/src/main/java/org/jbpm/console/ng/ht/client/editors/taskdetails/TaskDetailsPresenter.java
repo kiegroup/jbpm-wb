@@ -257,7 +257,7 @@ public class TaskDetailsPresenter {
                     i++;
                 }
 
-                changeStyleRow(details.getId());
+                changeStyleRow(details.getTaskId());
 
             }
         }, new ErrorCallback<Message>() {
