@@ -112,7 +112,6 @@ public class ShowcaseEntryPoint {
                 result.add( MenuFactory.newSimpleItem( constants.Role() +": " + role.getName() ).endMenu().build().getItems().get( 0 ) );
             }
         }
-
         result.add(MenuFactory.newSimpleItem(constants.LogOut()).respondsWith(new Command() {
                     @Override
                     public void execute() {
@@ -222,12 +221,6 @@ public class ShowcaseEntryPoint {
             }
         } ).endMenu().build().getItems().get( 0 ) );
         
-        result.add( MenuFactory.newSimpleItem( "Grid" ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Grid Tasks" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
 
         return result;
     }
