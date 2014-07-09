@@ -113,13 +113,6 @@ public class ShowcaseEntryPoint {
             }
         }
 
-        result.add( MenuFactory.newSimpleItem( constants.Users() ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Identity" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
-
         result.add(MenuFactory.newSimpleItem(constants.LogOut()).respondsWith(new Command() {
                     @Override
                     public void execute() {
