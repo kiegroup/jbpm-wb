@@ -24,7 +24,7 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ht.model.TaskSummary;
-import org.jbpm.console.ng.ht.service.TaskService;
+import org.jbpm.console.ng.ht.service.TaskQueryService;
 import org.jbpm.services.task.query.QueryFilterImpl;
 import org.kie.api.task.model.Status;
 import org.kie.internal.task.api.InternalTaskService;
@@ -36,13 +36,13 @@ import org.uberfire.paging.PageResponse;
  */
 @Service
 @ApplicationScoped
-public class TaskServiceImpl implements TaskService {
+public class TaskQueryServiceImpl implements TaskQueryService {
 
   @Inject
   private InternalTaskService taskService;
 
 
-  public TaskServiceImpl() {
+  public TaskQueryServiceImpl() {
   }
  
 
@@ -61,7 +61,8 @@ public class TaskServiceImpl implements TaskService {
       statuses.add(Status.valueOf(s));
     }
     
-    org.kie.internal.task.api.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1);
+    org.kie.internal.task.api.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1, 
+                                                                    filter.getOrderBy(), filter.isAscending());
     List<TaskSummary> taskSummaries = TaskSummaryHelper.adaptCollection(
             taskService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf));
 
@@ -83,36 +84,6 @@ public class TaskServiceImpl implements TaskService {
 
     }
     return response;
-  }
-
-  @Override
-  public void start(long taskId, String user) {
-    taskService.start(taskId, user);
-  }
-
-  @Override
-  public void complete(long taskId, String user, Map<String, Object> params) {
-    taskService.complete(taskId, user, params);
-  }
-
-  @Override
-  public void claim(long taskId, String user) {
-    taskService.claim(taskId, user);
-  }
-
-  @Override
-  public void release(long taskId, String user) {
-    taskService.release(taskId, user);
-  }
-
-  @Override
-  public void forward(long taskId, String userId, String targetEntityId) {
-    taskService.forward(taskId, userId, targetEntityId);
-  }
-
-  @Override
-  public void delegate(long taskId, String userId, String targetEntityId) {
-    taskService.delegate(taskId, userId, targetEntityId);
   }
 
 }

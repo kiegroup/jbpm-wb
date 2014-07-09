@@ -20,20 +20,31 @@ import com.github.gwtbootstrap.client.ui.ButtonGroup;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
+import com.google.gwt.cell.client.ActionCell;
+import com.google.gwt.cell.client.Cell;
+import com.google.gwt.cell.client.CompositeCell;
+import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.view.client.CellPreviewEvent;
+import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -47,7 +58,6 @@ import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
@@ -62,7 +72,6 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
   @Inject
   private Event<TaskSelectionEvent> taskSelected;
 
-
   private Button activeFilterButton;
 
   private Button personalFilterButton;
@@ -70,36 +79,40 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
   private Button groupFilterButton;
 
   private Button allFilterButton;
-  
+
   private NoSelectionModel<TaskSummary> selectionModel;
-  
+
   private TaskSummary selectedItem;
-  
-  private int selectedRow;
+
+  private int selectedRow = -1;
+
+  private Column actionsColumn;
 
   @Override
   public void init(final TasksListGridPresenter presenter) {
     Map<String, String> params = new HashMap<String, String>();
-    params.put("bannedColumns",constants.Task());
-    params.put("initColumns",constants.Task()+","+constants.Created_On());
+    params.put("bannedColumns", constants.Task());
+    params.put("initColumns", constants.Task() + "," + constants.Description());
     super.init(presenter, params);
-    
-    
+
     listGrid.setEmptyTableCaption(constants.No_Tasks_Found());
     selectionModel = new NoSelectionModel<TaskSummary>();
     selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
       @Override
       public void onSelectionChange(SelectionChangeEvent event) {
         boolean close = false;
-        if(listGrid.getKeyboardSelectedRow() != selectedRow){
-          
+        if(selectedRow == -1){
+          selectedRow = listGrid.getKeyboardSelectedRow();
+          listGrid.paintRow(selectedRow);
+        }else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
+
           listGrid.clearRow(selectedRow);
           selectedRow = listGrid.getKeyboardSelectedRow();
           listGrid.paintRow(selectedRow);
-        }else{
+        } else {
           close = true;
         }
-        
+
         selectedItem = selectionModel.getLastSelectedObject();
 
         PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
@@ -112,11 +125,31 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
         } else if (status == PlaceStatus.OPEN && close) {
           placeManager.closePlace("Task Details Multi");
         }
-        
+
       }
     });
 
-    listGrid.setSelectionModel(selectionModel);
+    DefaultSelectionEventManager<TaskSummary> noActionColumnManager = DefaultSelectionEventManager
+                                        .createCustomManager(new DefaultSelectionEventManager.EventTranslator<TaskSummary>() {
+
+      @Override
+      public boolean clearCurrentSelection(CellPreviewEvent<TaskSummary> event) {
+        return false;
+      }
+
+      @Override
+      public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<TaskSummary> event) {
+        NativeEvent nativeEvent = event.getNativeEvent();
+        if (BrowserEvents.CLICK.equals(nativeEvent.getType())) {
+          // Ignore if the event didn't occur in the correct column.
+          if (listGrid.getColumnIndex(actionsColumn) == event.getColumn()) {
+            return DefaultSelectionEventManager.SelectAction.IGNORE;
+          }
+        }
+        return DefaultSelectionEventManager.SelectAction.DEFAULT;
+      }
+    });
+    listGrid.setSelectionModel(selectionModel, noActionColumnManager);
 
     initExtraButtons();
     initFiltersBar();
@@ -192,12 +225,11 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
     filtersBar.add(filterLabel);
     ButtonGroup filtersButtonGroup = new ButtonGroup(activeFilterButton, personalFilterButton,
             groupFilterButton, allFilterButton);
-    
+
     filtersBar.add(filtersButtonGroup);
 
     listGrid.getCenterToolbar().add(filtersBar);
 
-   
   }
 
   private void initExtraButtons() {
@@ -218,30 +250,37 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
   public void initColumns() {
     initCellPreview();
     Column taskIdColumn = initTaskIdColumn();
-    
+
     listGrid.addColumn(taskIdColumn, constants.Id());
-    
+
     Column taskNameColumn = initTaskNameColumn();
-    
+
     listGrid.addColumn(taskNameColumn, constants.Task());
     
+    Column descriptionColumn = initTaskDescriptionColumn();
+
+    listGrid.addColumn(descriptionColumn, constants.Description());
+
     Column taskPriorityColumn = initTaskPriorityColumn();
-    
+
     listGrid.addColumn(taskPriorityColumn, constants.Priority());
-    
+
     Column statusColumn = initTaskStatusColumn();
-    
+
     listGrid.addColumn(statusColumn, constants.Status());
-    
-    
+
     Column createdOnDateColumn = initTaskCreatedOnColumn();
-    
+
     listGrid.addColumn(createdOnDateColumn, constants.Created_On());
-    
+
     Column dueDateColumn = initTaskDueColumn();
-    
+
     listGrid.addColumn(dueDateColumn, constants.Due_On());
-  //  initActionsColumn();
+    
+    
+
+    actionsColumn = initActionsColumn();
+    listGrid.addColumn(actionsColumn, constants.Actions());
   }
 
   private void initCellPreview() {
@@ -250,7 +289,6 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
       @Override
       public void onCellPreview(final CellPreviewEvent<TaskSummary> event) {
 
-        
         if (BrowserEvents.MOUSEOVER.equalsIgnoreCase(event.getNativeEvent().getType())) {
           onMouseOverGrid(event);
         }
@@ -262,7 +300,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
 
   private void onMouseOverGrid(final CellPreviewEvent<TaskSummary> event) {
     TaskSummary task = event.getValue();
-    
+
     if (task.getDescription() != null) {
       listGrid.setTooltip(listGrid.getKeyboardSelectedRow(), event.getColumn(), task.getDescription());
     }
@@ -285,6 +323,17 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
       @Override
       public String getValue(TaskSummary object) {
         return object.getTaskName();
+      }
+    };
+    taskNameColumn.setSortable(true);
+    return taskNameColumn;
+  }
+  
+  private Column initTaskDescriptionColumn() {
+    Column<TaskSummary, String> taskNameColumn = new Column<TaskSummary, String>(new TextCell()) {
+      @Override
+      public String getValue(TaskSummary object) {
+        return object.getDescription();
       }
     };
     taskNameColumn.setSortable(true);
@@ -349,16 +398,48 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
 
   }
 
- 
+  public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
+    presenter.refreshGrid();
+  }
 
-  public void changeRowSelected(@Observes TaskStyleEvent taskStyleEvent) {
-//    if (taskStyleEvent.getTaskEventId() != null && this.getCurrentView() == TaskView.GRID) {
-//      DataGridUtils.paintRowSelected(myTaskListGrid, String.valueOf(taskStyleEvent.getTaskEventId()));
-//    }
-//    if (currentTaskType.equals(TaskType.ALL)) {
-//      DataGridUtils.paintRowsCompleted(myTaskListGrid);
-//    }
-//    currentAction = null;
+  private Column initActionsColumn() {
+    List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
+    cells.add(new ClaimActionHasCell(constants.Claim(), new ActionCell.Delegate<TaskSummary>() {
+      @Override
+      public void execute(TaskSummary task) {
+
+        presenter.claimTask(task.getTaskId(), identity.getName());
+        taskSelected.fire(new TaskSelectionEvent(task.getTaskId(), task.getTaskName()));
+        listGrid.refresh();
+      }
+    }));
+
+    cells.add(new ReleaseActionHasCell(constants.Release(), new ActionCell.Delegate<TaskSummary>() {
+      @Override
+      public void execute(TaskSummary task) {
+
+        presenter.releaseTask(task.getTaskId(), identity.getName());
+        taskSelected.fire(new TaskSelectionEvent(task.getTaskId(), task.getTaskName()));
+        listGrid.refresh();
+      }
+    }));
+
+    cells.add(new CompleteActionHasCell(constants.Complete(), new ActionCell.Delegate<TaskSummary>() {
+      @Override
+      public void execute(TaskSummary task) {
+        placeManager.goTo("Task Details Multi");
+        taskSelected.fire(new TaskSelectionEvent(task.getTaskId(), task.getName(), "Form Display"));
+      }
+    }));
+
+    CompositeCell<TaskSummary> cell = new CompositeCell<TaskSummary>(cells);
+    Column<TaskSummary, TaskSummary> actionsColumn = new Column<TaskSummary, TaskSummary>(cell) {
+      @Override
+      public TaskSummary getValue(TaskSummary object) {
+        return object;
+      }
+    };
+    return actionsColumn;
 
   }
 
@@ -367,17 +448,121 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
     PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
     if (status == PlaceStatus.OPEN) {
       taskSelected.fire(new TaskSelectionEvent(newTask.getNewTaskId(), newTask.getNewTaskName()));
-    }else{
+    } else {
       placeManager.goTo("Task Details Multi");
       taskSelected.fire(new TaskSelectionEvent(newTask.getNewTaskId(), newTask.getNewTaskName()));
     }
-    
+
     selectionModel.setSelected(new TaskSummary(newTask.getNewTaskId(), newTask.getNewTaskName()), true);
   }
 
-  public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
-    presenter.refreshGrid();
+  protected class CompleteActionHasCell implements HasCell<TaskSummary, TaskSummary> {
+
+    private ActionCell<TaskSummary> cell;
+
+    public CompleteActionHasCell(String text, ActionCell.Delegate<TaskSummary> delegate) {
+      cell = new ActionCell<TaskSummary>(text, delegate) {
+        @Override
+        public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
+          if (value.getActualOwner() != null && value.getStatus().equals("InProgress")) {
+            AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.completeGridIcon());
+            SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+            mysb.appendHtmlConstant("<span title='" + constants.Complete() + "' style='margin-right:5px;'>");
+            mysb.append(imageProto.getSafeHtml());
+            mysb.appendHtmlConstant("</span>");
+            sb.append(mysb.toSafeHtml());
+          }
+        }
+      };
+    }
+
+    @Override
+    public Cell<TaskSummary> getCell() {
+      return cell;
+    }
+
+    @Override
+    public FieldUpdater<TaskSummary, TaskSummary> getFieldUpdater() {
+      return null;
+    }
+
+    @Override
+    public TaskSummary getValue(TaskSummary object) {
+      return object;
+    }
   }
 
-  
+  protected class ClaimActionHasCell implements HasCell<TaskSummary, TaskSummary> {
+
+    private ActionCell<TaskSummary> cell;
+
+    public ClaimActionHasCell(String text, ActionCell.Delegate<TaskSummary> delegate) {
+      cell = new ActionCell<TaskSummary>(text, delegate) {
+        @Override
+        public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
+          if (value.getStatus().equals("Ready")) {
+            AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.releaseGridIcon());
+            SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+            mysb.appendHtmlConstant("<span title='" + constants.Claim() + "' style='margin-right:5px;'>");
+            mysb.append(imageProto.getSafeHtml());
+            mysb.appendHtmlConstant("</span>");
+            sb.append(mysb.toSafeHtml());
+          }
+        }
+      };
+    }
+
+    @Override
+    public Cell<TaskSummary> getCell() {
+      return cell;
+    }
+
+    @Override
+    public FieldUpdater<TaskSummary, TaskSummary> getFieldUpdater() {
+      return null;
+    }
+
+    @Override
+    public TaskSummary getValue(TaskSummary object) {
+      return object;
+    }
+  }
+
+  protected class ReleaseActionHasCell implements HasCell<TaskSummary, TaskSummary> {
+
+    private ActionCell<TaskSummary> cell;
+
+    public ReleaseActionHasCell(String text, ActionCell.Delegate<TaskSummary> delegate) {
+      cell = new ActionCell<TaskSummary>(text, delegate) {
+        @Override
+        public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
+          if (value.getActualOwner() != null && value.getActualOwner().equals(identity.getName())
+                  && (value.getStatus().equals("Reserved") || value.getStatus().equals("InProgress"))) {
+            AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.claimGridIcon());
+            SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+            mysb.appendHtmlConstant("<span title='" + constants.Release() + "' style='margin-right:5px;'>");
+            mysb.append(imageProto.getSafeHtml());
+            mysb.appendHtmlConstant("</span>");
+            sb.append(mysb.toSafeHtml());
+          }
+        }
+      };
+    }
+
+    @Override
+    public Cell<TaskSummary> getCell() {
+      return cell;
+    }
+
+    @Override
+    public FieldUpdater<TaskSummary, TaskSummary> getFieldUpdater() {
+      return null;
+    }
+
+    @Override
+    public TaskSummary getValue(TaskSummary object) {
+      return object;
+    }
+  }
+
 }
