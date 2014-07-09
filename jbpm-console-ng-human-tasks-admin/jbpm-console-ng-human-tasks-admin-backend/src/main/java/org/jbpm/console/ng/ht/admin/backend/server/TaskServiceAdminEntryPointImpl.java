@@ -45,14 +45,14 @@ public class TaskServiceAdminEntryPointImpl implements TaskServiceAdminEntryPoin
     @Override
     public void generateMockTasks(String userName, int amountOfTasks) {
         for (int i = 0; i < amountOfTasks; i++) {
-           
-            Task task = new TaskFluent().setName("Task #" + i + " - name ")
-                                        .setDescription(" Task #" + i + " - description")
-                                        .addPotentialUser(userName)
-                                        .setAdminUser("Administrator")
-                                        .setAdminGroup("Administrators")
-                                        .getTask();
-            taskService.addTask(task, new HashMap<String, Object>());
+          Task task = new TaskFluent().setName("Task #" + i + " - name ")
+                                      .setDescription(" Task #" + i + " - description")
+                                      .addPotentialUser(userName)
+                                      .setAdminUser("Administrator")
+                                      .setAdminGroup("Administrators")
+                                      .getTask();
+          long addTask = taskService.addTask(task, new HashMap<String, Object>());
+          taskService.start(addTask, userName);
         }
     }
     
