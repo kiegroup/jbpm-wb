@@ -56,6 +56,7 @@ import org.jbpm.runtime.manager.impl.deploy.DeploymentDescriptorManager;
 import org.kie.internal.deployment.DeploymentService;
 import org.kie.internal.deployment.DeploymentUnit;
 import org.kie.internal.runtime.conf.DeploymentDescriptor;
+import org.kie.workbench.common.services.shared.project.KieProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
@@ -256,7 +257,7 @@ public class AdministrationServiceImpl implements AdministrationService {
     }
 
     public void createDeploymentDescriptor(@Observes NewProjectEvent newProjectEvent) {
-        Project project = newProjectEvent.getProject();
+        KieProject project = (KieProject) newProjectEvent.getProject();
         URI projectRootURI =  URI.create(project.getRootPath().toURI());
         String repositoryAlias = projectRootURI.getHost();
         String metaInfPath = Paths.convert(project.getKModuleXMLPath()).getParent().toUri().toString();
