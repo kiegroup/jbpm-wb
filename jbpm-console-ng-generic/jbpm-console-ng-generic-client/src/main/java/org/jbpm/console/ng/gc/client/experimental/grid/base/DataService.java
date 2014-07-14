@@ -120,6 +120,11 @@ public class DataService implements GenericServiceEntryPoint<DataMockSummary>{
     
     return response;
   }
+
+  @Override
+  public DataMockSummary getItem(Object id) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
   
   
 }

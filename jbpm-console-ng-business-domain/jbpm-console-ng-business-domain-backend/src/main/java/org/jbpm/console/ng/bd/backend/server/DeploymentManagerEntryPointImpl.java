@@ -449,6 +449,11 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
     deploy((DeploymentUnit) event.getDeploymentUnit());
   }
 
+  @Override
+  public KModuleDeploymentUnitSummary getItem(Object id) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
 
   
 

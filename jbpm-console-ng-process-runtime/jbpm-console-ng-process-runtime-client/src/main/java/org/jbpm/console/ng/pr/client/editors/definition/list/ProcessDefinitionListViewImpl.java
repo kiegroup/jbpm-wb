@@ -23,11 +23,15 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.view.client.CellPreviewEvent;
+import com.google.gwt.view.client.DefaultSelectionEventManager;
+import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import com.google.gwt.view.client.SingleSelectionModel;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,6 +67,10 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
   private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
 
   private ProcessSummary selectedItem;
+  
+  private Column actionsColumn;
+  
+  private int selectedRow = -1;
 
   @Override
   public void init(final ProcessDefinitionListPresenter presenter) {
@@ -70,31 +78,71 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     params.put("bannedColumns",constants.Name()+","+constants.Actions());
     super.init(presenter, params);
 
-    // Add a selection model so we can select cells.
-    final SingleSelectionModel<ProcessSummary> selectionModel = new SingleSelectionModel<ProcessSummary>();
+    
+    final NoSelectionModel<ProcessSummary> selectionModel = new NoSelectionModel<ProcessSummary>();
     selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
       @Override
       public void onSelectionChange(SelectionChangeEvent event) {
-        ProcessSummary process = selectionModel.getSelectedObject();
         
-        listGrid.paintRow(listGrid.getKeyboardSelectedRow());
+        
+        boolean close = false;
+        if(selectedRow == -1){
+          selectedRow = listGrid.getKeyboardSelectedRow();
+          listGrid.paintRow(selectedRow);
+        }else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
+
+          listGrid.clearRow(selectedRow);
+          selectedRow = listGrid.getKeyboardSelectedRow();
+          listGrid.paintRow(selectedRow);
+        } else {
+          close = true;
+        }
+
+        selectedItem = selectionModel.getLastSelectedObject();
+
         
         PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details"));
         PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Definition Details"));
+        
         if (instanceDetailsStatus == PlaceStatus.OPEN) {
           placeManager.closePlace("Process Instance Details");
         }
         if (status == PlaceStatus.CLOSE) {
           placeManager.goTo("Process Definition Details");
-          processDefSelected.fire(new ProcessDefSelectionEvent(process.getProcessDefId(), process.getDeploymentId()));
-        } else if (status == PlaceStatus.OPEN ) {
-          processDefSelected.fire(new ProcessDefSelectionEvent(process.getProcessDefId(), process.getDeploymentId()));
+          processDefSelected.fire(new ProcessDefSelectionEvent(selectedItem.getProcessDefId(), selectedItem.getDeploymentId()));
+        } else if (status == PlaceStatus.OPEN && !close) {
+          processDefSelected.fire(new ProcessDefSelectionEvent(selectedItem.getProcessDefId(), selectedItem.getDeploymentId()));
+        } else if (status == PlaceStatus.OPEN && close ) {
+          placeManager.closePlace("Process Definition Details");
         }
         
       }
     });
+    
+    DefaultSelectionEventManager<ProcessSummary> noActionColumnManager = DefaultSelectionEventManager
+                                        .createCustomManager(new DefaultSelectionEventManager.EventTranslator<ProcessSummary>() {
 
-    listGrid.setSelectionModel(selectionModel);
+      @Override
+      public boolean clearCurrentSelection(CellPreviewEvent<ProcessSummary> event) {
+        return false;
+      }
+
+      @Override
+      public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<ProcessSummary> event) {
+        NativeEvent nativeEvent = event.getNativeEvent();
+        if (BrowserEvents.CLICK.equals(nativeEvent.getType())) {
+          // Ignore if the event didn't occur in the correct column.
+          if (listGrid.getColumnIndex(actionsColumn) == event.getColumn()) {
+            return DefaultSelectionEventManager.SelectAction.IGNORE;
+          }
+        }
+        return DefaultSelectionEventManager.SelectAction.DEFAULT;
+      }
+
+     
+    });
+
+    listGrid.setSelectionModel(selectionModel, noActionColumnManager);
     listGrid.setEmptyTableCaption(constants.No_Process_Definitions_Found());
   }
   
@@ -102,8 +150,8 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
   public void initColumns() {
     initProcessNameColumn();
     initVersionColumn();
-    initActionsColumn();
-
+    actionsColumn = initActionsColumn();
+    listGrid.addColumn(actionsColumn, constants.Actions());
   }
 
   private void initProcessNameColumn() {
@@ -129,7 +177,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     listGrid.addColumn(versionColumn, constants.Version());
   }
 
-  private void initActionsColumn() {
+  private Column initActionsColumn() {
     // actions (icons)
     List<HasCell<ProcessSummary, ?>> cells = new LinkedList<HasCell<ProcessSummary, ?>>();
 
@@ -144,24 +192,24 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
       }
     }));
 
-    cells.add(new DetailsActionHasCell("Details", new Delegate<ProcessSummary>() {
-      @Override
-      public void execute(ProcessSummary process) {
-        listGrid.paintRow(listGrid.getKeyboardSelectedRow());
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Definition Details"));
-        PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details"));
-        if (instanceDetailsStatus == PlaceStatus.OPEN) {
-          placeManager.closePlace("Process Instance Details");
-        }
-        if (status == PlaceStatus.CLOSE || selectedItem != process) {
-          placeManager.goTo("Process Definition Details");
-          processDefSelected.fire(new ProcessDefSelectionEvent(process.getProcessDefId(), process.getDeploymentId()));
-        } else if (status == PlaceStatus.OPEN && selectedItem == process) {
-          placeManager.closePlace(new DefaultPlaceRequest("Process Definition Details"));
-        }
-        selectedItem = process;
-      }
-    }));
+//    cells.add(new DetailsActionHasCell("Details", new Delegate<ProcessSummary>() {
+//      @Override
+//      public void execute(ProcessSummary process) {
+//        listGrid.paintRow(listGrid.getKeyboardSelectedRow());
+//        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Definition Details"));
+//        PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details"));
+//        if (instanceDetailsStatus == PlaceStatus.OPEN) {
+//          placeManager.closePlace("Process Instance Details");
+//        }
+//        if (status == PlaceStatus.CLOSE || selectedItem != process) {
+//          placeManager.goTo("Process Definition Details");
+//          processDefSelected.fire(new ProcessDefSelectionEvent(process.getProcessDefId(), process.getDeploymentId()));
+//        } else if (status == PlaceStatus.OPEN && selectedItem == process) {
+//          placeManager.closePlace(new DefaultPlaceRequest("Process Definition Details"));
+//        }
+//        selectedItem = process;
+//      }
+//    }));
 
     CompositeCell<ProcessSummary> cell = new CompositeCell<ProcessSummary>(cells);
     Column<ProcessSummary, ProcessSummary> actionsColumn = new Column<ProcessSummary, ProcessSummary>(cell) {
@@ -170,7 +218,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         return object;
       }
     };
-    listGrid.addColumn(actionsColumn, constants.Actions());
+    return actionsColumn;
   }
   
   public void refreshNewProcessInstance(@Observes NewProcessInstanceEvent newProcessInstance) {

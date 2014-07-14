@@ -237,7 +237,7 @@ public class ProcessInstanceListPresenter extends AbstractListPresenter<ProcessI
     }).suspendProcessInstance(processInstanceId);
   }
 
-  public void bulkSignal(Set<ProcessInstanceSummary> processInstances) {
+  public void bulkSignal(List<ProcessInstanceSummary> processInstances) {
     StringBuilder processIdsParam = new StringBuilder();
     if (processInstances != null) {
 
@@ -248,7 +248,6 @@ public class ProcessInstanceListPresenter extends AbstractListPresenter<ProcessI
           continue;
         }
         processIdsParam.append(selected.getId() + ",");
-//   ??                     view.getProcessInstanceListGrid().getSelectionModel().setSelected(selected, false);
       }
       // remove last ,
       if (processIdsParam.length() > 0) {
@@ -265,7 +264,7 @@ public class ProcessInstanceListPresenter extends AbstractListPresenter<ProcessI
 
   }
 
-  public void bulkAbort(Set<ProcessInstanceSummary> processInstances) {
+  public void bulkAbort(List<ProcessInstanceSummary> processInstances) {
     if (processInstances != null) {
       if (Window.confirm("Are you sure that you want to abort the selected process instances?")) {
         List<Long> ids = new ArrayList<Long>();
@@ -277,7 +276,6 @@ public class ProcessInstanceListPresenter extends AbstractListPresenter<ProcessI
           }
           ids.add(selected.getProcessInstanceId());
 
-          //??    view.getProcessInstanceListGrid().getSelectionModel().setSelected(selected, false);
           view.displayNotification(constants.Aborting_Process_Instance() + "(id=" + selected.getId() + ")");
         }
         abortProcessInstance(ids);

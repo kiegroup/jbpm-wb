@@ -16,7 +16,8 @@
 
 package org.jbpm.console.ng.ht.service;
 
-import java.util.Map;
+import java.util.Date;
+import java.util.List;
 import org.jboss.errai.bus.server.annotations.Remote;
 
 
@@ -27,12 +28,11 @@ import org.jboss.errai.bus.server.annotations.Remote;
 @Remote
 public interface TaskOperationsService{
   
-  void complete(long taskId, String user, Map<String, Object> params);
+  public long addQuickTask(
+                         final String taskName,
+                         int priority,
+                         Date dueDate, final List<String> users, List<String> groups, String identity, boolean start, boolean claim);
   
-  void claim(long taskId, String user);
-  
-  void release(long taskId, String user);
-    
-  void delegate(long taskId, String userId, String targetEntityId);
+  public void updateTask(long taskId, int priority, List<String> taskDescription, Date dueDate);
   
 }

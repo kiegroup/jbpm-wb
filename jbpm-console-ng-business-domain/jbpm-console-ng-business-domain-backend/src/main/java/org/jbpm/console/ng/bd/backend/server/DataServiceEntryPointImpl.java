@@ -226,9 +226,9 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
           for(TaskEventSummary te : allTaskEventsByProcessInstanceId){
             if(te.getWorkItemId() != null && nis.getId() == te.getWorkItemId()){
               if(te.getType().equals("ADDED")){
-                logs.add(new RuntimeLogSummary(te.getId(), te.getLogTime().toString(), te.getUserId() + "->" +te.getType(), "System"));
+                logs.add(new RuntimeLogSummary(te.getTaskId(), te.getLogTime().toString(), te.getUserId() + "->" +te.getType(), "System"));
               }else{
-                logs.add(new RuntimeLogSummary(te.getId(), te.getLogTime().toString(), te.getUserId() + "->" +te.getType(), "Human"));
+                logs.add(new RuntimeLogSummary(te.getTaskId(), te.getLogTime().toString(), te.getUserId() + "->" +te.getType(), "Human"));
               }
             }
           }

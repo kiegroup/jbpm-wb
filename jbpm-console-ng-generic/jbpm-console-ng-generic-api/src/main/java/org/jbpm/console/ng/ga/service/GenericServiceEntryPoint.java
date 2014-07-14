@@ -22,8 +22,14 @@ import org.uberfire.paging.PageResponse;
 
 @Remote
 public interface GenericServiceEntryPoint<T extends AbstractPageRow> {
-
+  /* 
+   * Get Paged, Sorted and Filtered Data
+  */
   PageResponse<T> getData(QueryFilter filter);
-
+  /* 
+   * Get One Item By Id
+  */
+  T getItem(Object id);
+  
   
 }

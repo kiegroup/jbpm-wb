@@ -18,9 +18,7 @@ package org.jbpm.console.ng.ht.backend.server;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -153,6 +151,11 @@ public class TaskCalendarServiceImpl implements TaskCalendarService {
     SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE dd");
     Date dayDate = localDate.toDateTimeAtStartOfDay().toDate();
     return new Day(dayDate, dayFormat.format(dayDate));
+  }
+
+  @Override
+  public TasksPerDaySummary getItem(Object id) {
+    return null;
   }
   
   

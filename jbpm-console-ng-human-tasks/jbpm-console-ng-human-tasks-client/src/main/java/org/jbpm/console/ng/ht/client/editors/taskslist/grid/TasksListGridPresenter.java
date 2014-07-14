@@ -35,7 +35,7 @@ import org.jbpm.console.ng.gc.client.util.TaskUtils;
 import org.jbpm.console.ng.gc.client.util.TaskUtils.TaskType;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
-import org.jbpm.console.ng.ht.service.TaskOperationsService;
+import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
 
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -63,7 +63,7 @@ public class TasksListGridPresenter extends AbstractListPresenter<TaskSummary> {
   private Caller<TaskQueryService> taskQueryService;
 
   @Inject
-  private Caller<TaskOperationsService> taskOperationsService;
+  private Caller<TaskLifeCycleService> taskOperationsService;
 
   private Map<String, Object> filterParams = new HashMap<String, Object>();
 

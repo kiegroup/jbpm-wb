@@ -26,7 +26,9 @@ import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
 import org.jbpm.services.task.query.QueryFilterImpl;
+import org.kie.api.task.model.OrganizationalEntity;
 import org.kie.api.task.model.Status;
+import org.kie.api.task.model.Task;
 import org.kie.internal.task.api.InternalTaskService;
 import org.uberfire.paging.PageResponse;
 
@@ -84,6 +86,29 @@ public class TaskQueryServiceImpl implements TaskQueryService {
 
     }
     return response;
+  }
+
+  @Override
+  public TaskSummary getItem(Object id) {
+    Task task = taskService.getTaskById((Long)id);
+        if (task != null) {
+            List<OrganizationalEntity> potentialOwners = task.getPeopleAssignments().getPotentialOwners();
+            List<String> potOwnersString = null;
+            if (potentialOwners != null) {
+                potOwnersString = new ArrayList<String>(potentialOwners.size());
+                for (OrganizationalEntity e : potentialOwners) {
+                    potOwnersString.add(e.getId());
+                }
+            } 
+            return new TaskSummary(task.getId(), task.getName(),
+                    task.getDescription(), task.getTaskData().getStatus().name(), task.getPriority(), (task.getTaskData().getActualOwner() != null) ? task.getTaskData().getActualOwner()
+                    .getId() : "", (task.getTaskData().getCreatedBy() != null) ? task.getTaskData().getCreatedBy().getId()
+                    : "", task.getTaskData().getCreatedOn(), task.getTaskData().getActivationTime(), task.getTaskData()
+                    .getExpirationTime(), task.getTaskData().getProcessId(), task.getTaskData().getProcessSessionId(),
+                    task.getTaskData().getProcessInstanceId(), task.getTaskData().getDeploymentId()
+                    , (int) task.getTaskData().getParentId());
+        }
+        return null;
   }
 
 }

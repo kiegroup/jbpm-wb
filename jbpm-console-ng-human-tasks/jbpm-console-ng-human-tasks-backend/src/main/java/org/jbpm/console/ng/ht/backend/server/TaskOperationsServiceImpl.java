@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jbpm.console.ng.ht.backend.server;
 
-
-import java.util.Map;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
+import org.jbpm.services.task.utils.TaskFluent;
 import org.kie.internal.task.api.InternalTaskService;
 
 /**
@@ -29,35 +33,45 @@ import org.kie.internal.task.api.InternalTaskService;
  */
 @Service
 @ApplicationScoped
-public class TaskOperationsServiceImpl implements TaskOperationsService {
-
+public class TaskOperationsServiceImpl implements TaskOperationsService{
   @Inject
   private InternalTaskService taskService;
-
-
-  public TaskOperationsServiceImpl() {
-  }
- 
+  
+  @Override
+  public long addQuickTask(
+                         final String taskName,
+                         int priority,
+                         Date dueDate, final List<String> users, List<String> groups, String identity, boolean start, boolean claim){
+        TaskFluent taskFluent = new TaskFluent().setName(taskName)
+                                                .setPriority(priority)
+                                                .setDueDate(dueDate);
+                
+        for(String user : users){
+            taskFluent.addPotentialUser(user);
+        }
+        for(String group : groups){
+            taskFluent.addPotentialGroup(group);
+        }
+        taskFluent.setAdminUser("Administrator");
+        taskFluent.setAdminGroup("Administrators");
+        long taskId = taskService.addTask(taskFluent.getTask(), new HashMap<String, Object>());
+        if(start){
+            taskService.start(taskId, identity);
+        }
+        if(claim){
+            taskService.claim(taskId, identity);
+        }
+        
+        return taskId;
+    }
 
   @Override
-  public void complete(long taskId, String user, Map<String, Object> params) {
-    taskService.complete(taskId, user, params);
+  public void updateTask(long taskId, int priority, List<String> taskDescription,
+            Date dueDate) {
+        taskService.setPriority(taskId, priority);
+        taskService.setDescriptions(taskId, TaskI18NHelper.adaptI18NList(taskDescription));
+        taskService.setExpirationDate(taskId, dueDate);
   }
-
-  @Override
-  public void claim(long taskId, String user) {
-    taskService.claim(taskId, user);
-    taskService.start(taskId, user);
-  }
-
-  @Override
-  public void release(long taskId, String user) {
-    taskService.release(taskId, user);
-  }
-
-  @Override
-  public void delegate(long taskId, String userId, String targetEntityId) {
-    taskService.delegate(taskId, userId, targetEntityId);
-  }
-
+  
+  
 }

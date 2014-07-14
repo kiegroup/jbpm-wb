@@ -32,6 +32,9 @@ import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -42,14 +45,14 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
-import com.google.gwt.view.client.MultiSelectionModel;
+import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -89,14 +92,18 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
   private Button relatedToMeFilterButton;
 
   private ProcessInstanceSummary selectedItem;
+  
+  private int selectedRow = -1;
+  
+  private List<ProcessInstanceSummary> selectedProcessInstances = new ArrayList<ProcessInstanceSummary>();
 
-  private Set<ProcessInstanceSummary> selectedProcessInstances;
+  
 
   @Inject
   private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
 
-  final MultiSelectionModel<ProcessInstanceSummary> selectionModel = new MultiSelectionModel<ProcessInstanceSummary>();
-
+  private Column actionsColumn;
+  
   @Override
   public void init(final ProcessInstanceListPresenter presenter) {
     Map<String, String> params = new HashMap<String, String>();
@@ -109,25 +116,90 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
 
     listGrid.setEmptyTableCaption(constants.No_Process_Instances_Found());
 
-    // Add a selection model so we can select cells.
+    final NoSelectionModel<ProcessInstanceSummary> selectionModel = new NoSelectionModel<ProcessInstanceSummary>();
     selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
       @Override
       public void onSelectionChange(SelectionChangeEvent event) {
+        
+        
+        boolean close = false;
+        if(selectedRow == -1){
+          selectedRow = listGrid.getKeyboardSelectedRow();
+          listGrid.paintRow(selectedRow);
+        }else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
 
-        selectedProcessInstances = selectionModel.getSelectedSet();
-        listGrid.paintRow(listGrid.getKeyboardSelectedRow());
+          listGrid.clearRow(selectedRow);
+          selectedRow = listGrid.getKeyboardSelectedRow();
+          listGrid.paintRow(selectedRow);
+        } else {
+          close = true;
+        }
 
+        selectedItem = selectionModel.getLastSelectedObject();
+        
+        
+        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details"));
+        
+        
+        if (status == PlaceStatus.CLOSE) {
+          placeManager.goTo("Process Instance Details");
+          processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedItem.getDeploymentId(),
+                                        selectedItem.getProcessInstanceId(), selectedItem.getProcessId()));
+        } else if (status == PlaceStatus.OPEN && !close) {
+          processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedItem.getDeploymentId(),
+                                        selectedItem.getProcessInstanceId(), selectedItem.getProcessId()));
+        } else if (status == PlaceStatus.OPEN && close ) {
+          placeManager.closePlace("Process Instance Details");
+        }
+        
       }
     });
+    
+    DefaultSelectionEventManager<ProcessInstanceSummary> noActionColumnManager = DefaultSelectionEventManager
+                                        .createCustomManager(new DefaultSelectionEventManager.EventTranslator<ProcessInstanceSummary>() {
 
-    listGrid.setSelectionModel(selectionModel,
-            DefaultSelectionEventManager.<ProcessInstanceSummary>createCheckboxManager());
+      @Override
+      public boolean clearCurrentSelection(CellPreviewEvent<ProcessInstanceSummary> event) {
+        return false;
+      }
+
+      @Override
+      public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<ProcessInstanceSummary> event) {
+        NativeEvent nativeEvent = event.getNativeEvent();
+        if (BrowserEvents.CLICK.equals(nativeEvent.getType())) {
+          // Ignore if the event didn't occur in the correct column.
+          if (listGrid.getColumnIndex(actionsColumn) == event.getColumn()) {
+            return DefaultSelectionEventManager.SelectAction.IGNORE;
+          }
+          //Extension for checkboxes
+          Element target = nativeEvent.getEventTarget().cast();
+          if ("input".equals(target.getTagName().toLowerCase())) {
+            final InputElement input = target.cast();
+            if ("checkbox".equals(input.getType().toLowerCase())) {
+              // Synchronize the checkbox with the current selection state.
+              if(!selectedProcessInstances.contains(event.getValue())){
+                selectedProcessInstances.add(event.getValue());
+                input.setChecked(true);
+              }else{
+                input.setChecked(false);
+              }
+              return DefaultSelectionEventManager.SelectAction.IGNORE;
+            }
+          }
+        }
+        
+        return DefaultSelectionEventManager.SelectAction.DEFAULT;
+      }
+
+     
+    });
+
+    listGrid.setSelectionModel(selectionModel, noActionColumnManager);
 
   }
 
   @Override
   public void initColumns() {
-    initCellPreview();
     initChecksColumn();
     initProcessInstanceIdColumn();
     initProcessNameColumn();
@@ -135,46 +207,11 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     initProcessVersionColumn();
     initProcessStateColumn();
     initStartDateColumn();
-    initActionsColumn();
-
+    actionsColumn = initActionsColumn();
+    listGrid.addColumn(actionsColumn, constants.Actions());
   }
 
-  private void initCellPreview() {
-    listGrid.addCellPreviewHandler(new CellPreviewEvent.Handler<ProcessInstanceSummary>() {
-
-      @Override
-      public void onCellPreview(final CellPreviewEvent<ProcessInstanceSummary> event) {
-
-        ProcessInstanceSummary processInstance = null;
-        if (BrowserEvents.CLICK.equalsIgnoreCase(event.getNativeEvent().getType())) {
-          int column = event.getColumn();
-          int columnCount = listGrid.getColumnCount();
-          if (column != columnCount - 1) {
-
-            processInstance = event.getValue();
-
-
-            PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details"));
-            if (status == PlaceStatus.CLOSE) {
-              placeManager.goTo("Process Instance Details");
-              processInstanceSelected.fire(new ProcessInstanceSelectionEvent(processInstance.getDeploymentId(),
-                      processInstance.getProcessInstanceId(), processInstance.getProcessId()));
-            } else if (status == PlaceStatus.OPEN) {
-              processInstanceSelected.fire(new ProcessInstanceSelectionEvent(processInstance.getDeploymentId(),
-                      processInstance.getProcessInstanceId(), processInstance.getProcessId()));
-            }
-
-          }
-        }
-
-        if (BrowserEvents.FOCUS.equalsIgnoreCase(event.getNativeEvent().getType())) {
-          listGrid.paintRow(listGrid.getKeyboardSelectedRow());
-        }
-
-      }
-    });
-
-  }
+ 
 
   private void initBulkActionsDropDown() {
     SplitDropdownButton bulkActions = new SplitDropdownButton();
@@ -185,6 +222,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
       @Override
       public void onClick(ClickEvent event) {
         presenter.bulkAbort(selectedProcessInstances);
+        selectedProcessInstances.clear();
       }
     });
 
@@ -194,6 +232,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
       @Override
       public void onClick(ClickEvent event) {
         presenter.bulkSignal(selectedProcessInstances);
+        selectedProcessInstances.clear();
       }
     });
 
@@ -385,27 +424,27 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
 
   }
 
-  private void initActionsColumn() {
+  private Column initActionsColumn() {
     List<HasCell<ProcessInstanceSummary, ?>> cells = new LinkedList<HasCell<ProcessInstanceSummary, ?>>();
 
-    cells.add(new DetailsActionHasCell("Details", new Delegate<ProcessInstanceSummary>() {
-      @Override
-      public void execute(ProcessInstanceSummary processInstance) {
-
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details"));
-
-        listGrid.paintRow(listGrid.getKeyboardSelectedRow());
-
-        if (status == PlaceStatus.CLOSE || selectedItem != processInstance) {
-          placeManager.goTo("Process Instance Details");
-          processInstanceSelected.fire(new ProcessInstanceSelectionEvent(processInstance.getDeploymentId(),
-                  processInstance.getProcessInstanceId(), processInstance.getProcessId()));
-        } else if (status == PlaceStatus.OPEN && selectedItem == processInstance) {
-          placeManager.closePlace(new DefaultPlaceRequest("Process Instance Details"));
-        }
-        selectedItem = processInstance;
-      }
-    }));
+//    cells.add(new DetailsActionHasCell("Details", new Delegate<ProcessInstanceSummary>() {
+//      @Override
+//      public void execute(ProcessInstanceSummary processInstance) {
+//
+//        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details"));
+//
+//        listGrid.paintRow(listGrid.getKeyboardSelectedRow());
+//
+//        if (status == PlaceStatus.CLOSE || selectedItem != processInstance) {
+//          placeManager.goTo("Process Instance Details");
+//          processInstanceSelected.fire(new ProcessInstanceSelectionEvent(processInstance.getDeploymentId(),
+//                  processInstance.getProcessInstanceId(), processInstance.getProcessId()));
+//        } else if (status == PlaceStatus.OPEN && selectedItem == processInstance) {
+//          placeManager.closePlace(new DefaultPlaceRequest("Process Instance Details"));
+//        }
+//        selectedItem = processInstance;
+//      }
+//    }));
 
     cells.add(new SignalActionHasCell("Singal", new Delegate<ProcessInstanceSummary>() {
       @Override
@@ -435,7 +474,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
                 return object;
               }
             };
-    listGrid.addColumn(actionsColumn, constants.Actions());
+    return actionsColumn;
 
   }
 
@@ -448,7 +487,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
               @Override
               public Boolean getValue(ProcessInstanceSummary object) {
                 // Get the value from the selection model.
-                return selectionModel.isSelected(object);
+                return selectedProcessInstances.contains(object);
               }
             };
     listGrid.addColumn(checkColumn, "");

@@ -15,18 +15,18 @@
  */
 package org.jbpm.console.ng.ht.model;
 
-import java.io.Serializable;
 import java.util.Date;
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jbpm.console.ng.ga.model.GenericSummary;
 
 /**
  *
  * @author salaboy
  */
 @Portable
-public class TaskEventSummary implements Serializable {
+public class TaskEventSummary extends GenericSummary {
 
-  private Long id;
+  private Long eventId;
   private Long taskId;
   private String type;
   private String userId;
@@ -36,8 +36,10 @@ public class TaskEventSummary implements Serializable {
   public TaskEventSummary() {
   }
 
-  public TaskEventSummary(Long id, Long taskId, String type, String userId, Long workItemId, Date logTime) {
-    this.id = id;
+  public TaskEventSummary(Long eventId, Long taskId, String type, String userId, Long workItemId, Date logTime) {
+    this.id = eventId;
+    this.name = taskId + type;
+    this.eventId = eventId;
     this.taskId = taskId;
     this.type = type;
     this.userId = userId;
@@ -45,57 +47,33 @@ public class TaskEventSummary implements Serializable {
     this.workItemId = workItemId;
   }
 
-  public Long getId() {
-    return id;
+  public Long getEventId() {
+    return eventId;
   }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
+  
   public Long getTaskId() {
     return taskId;
-  }
-
-  public void setTaskId(Long taskId) {
-    this.taskId = taskId;
   }
 
   public String getType() {
     return type;
   }
 
-  public void setType(String type) {
-    this.type = type;
-  }
-
   public String getUserId() {
     return userId;
-  }
-
-  public void setUserId(String userId) {
-    this.userId = userId;
   }
 
   public Date getLogTime() {
     return logTime;
   }
 
-  public void setLogTime(Date logTime) {
-    this.logTime = logTime;
-  }
-
   public Long getWorkItemId() {
     return workItemId;
   }
 
-  public void setWorkItemId(Long workItemId) {
-    this.workItemId = workItemId;
-  }
-
   @Override
   public String toString() {
-    return "TaskEventSummary{" + "id=" + id + ", taskId=" + taskId + ", type=" + type + ", userId=" + userId + ", logTime=" + logTime + ", workItemId=" + workItemId + '}';
+    return "TaskEventSummary{" + "eventId=" + eventId + ", taskId=" + taskId + ", type=" + type + ", userId=" + userId + ", logTime=" + logTime + ", workItemId=" + workItemId + '}';
   }
 
 }
