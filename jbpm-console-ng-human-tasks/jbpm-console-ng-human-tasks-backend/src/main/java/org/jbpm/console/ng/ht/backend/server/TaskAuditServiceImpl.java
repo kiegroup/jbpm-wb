@@ -23,6 +23,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ga.model.QueryFilter;
+import org.jbpm.console.ng.ht.model.TaskEventKey;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.service.TaskAuditService;
 import org.jbpm.services.task.query.QueryFilterImpl;
@@ -94,7 +95,7 @@ public class TaskAuditServiceImpl implements TaskAuditService {
   }
 
   @Override
-  public TaskEventSummary getItem(Object id) {
+  public TaskEventSummary getItem(TaskEventKey key) {
         return null;
   }
 

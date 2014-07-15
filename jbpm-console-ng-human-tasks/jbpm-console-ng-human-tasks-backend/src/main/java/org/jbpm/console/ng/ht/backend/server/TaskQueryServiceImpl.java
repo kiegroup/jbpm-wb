@@ -18,11 +18,11 @@ package org.jbpm.console.ng.ht.backend.server;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ga.model.QueryFilter;
+import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
 import org.jbpm.services.task.query.QueryFilterImpl;
@@ -89,8 +89,8 @@ public class TaskQueryServiceImpl implements TaskQueryService {
   }
 
   @Override
-  public TaskSummary getItem(Object id) {
-    Task task = taskService.getTaskById((Long)id);
+  public TaskSummary getItem(TaskKey key) {
+    Task task = taskService.getTaskById(key.getTaskId());
         if (task != null) {
             List<OrganizationalEntity> potentialOwners = task.getPeopleAssignments().getPotentialOwners();
             List<String> potOwnersString = null;

@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ht.model.Day;
+import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.TasksPerDaySummary;
 import org.jbpm.console.ng.ht.service.TaskCalendarService;
@@ -154,7 +155,7 @@ public class TaskCalendarServiceImpl implements TaskCalendarService {
   }
 
   @Override
-  public TasksPerDaySummary getItem(Object id) {
+  public TasksPerDaySummary getItem(TaskKey key) {
     return null;
   }
   

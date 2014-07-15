@@ -19,11 +19,12 @@ package org.jbpm.console.ng.bd.service;
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.bd.model.DeploymentUnitSummary;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
+import org.jbpm.console.ng.bd.model.KModuleKey;
 import org.jbpm.console.ng.ga.service.GenericServiceEntryPoint;
 
 
 @Remote
-public interface DeploymentManagerEntryPoint extends GenericServiceEntryPoint<KModuleDeploymentUnitSummary>{
+public interface DeploymentManagerEntryPoint extends GenericServiceEntryPoint<KModuleKey, KModuleDeploymentUnitSummary>{
   
     void redeploy();
 

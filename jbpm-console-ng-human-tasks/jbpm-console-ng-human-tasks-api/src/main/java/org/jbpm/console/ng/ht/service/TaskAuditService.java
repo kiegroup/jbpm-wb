@@ -18,6 +18,7 @@ package org.jbpm.console.ng.ht.service;
 
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.ga.service.GenericServiceEntryPoint;
+import org.jbpm.console.ng.ht.model.TaskEventKey;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 
 
@@ -26,7 +27,7 @@ import org.jbpm.console.ng.ht.model.TaskEventSummary;
  * @author salaboy
  */
 @Remote
-public interface TaskAuditService extends GenericServiceEntryPoint<TaskEventSummary>{
+public interface TaskAuditService extends GenericServiceEntryPoint<TaskEventKey, TaskEventSummary>{
  
   
 }

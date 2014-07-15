@@ -30,6 +30,7 @@ import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.bd.exception.DeploymentException;
 import org.jbpm.console.ng.bd.model.DeploymentUnitSummary;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
+import org.jbpm.console.ng.bd.model.KModuleKey;
 import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
 import org.jbpm.console.ng.bd.service.Initializable;
 import org.jbpm.console.ng.ga.model.QueryFilter;
@@ -450,7 +451,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
   }
 
   @Override
-  public KModuleDeploymentUnitSummary getItem(Object id) {
+  public KModuleDeploymentUnitSummary getItem(KModuleKey key) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 

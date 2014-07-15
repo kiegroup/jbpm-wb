@@ -38,9 +38,11 @@ import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.model.TaskDefSummary;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.DummyProcessPath;
+import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessDefStyleEvent;
+import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.DefaultPosition;
@@ -53,7 +55,6 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.widgets.split.WorkbenchSplitLayoutPanel;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -63,7 +64,7 @@ import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
-@WorkbenchScreen(identifier = "Process Definition Details")
+@WorkbenchScreen(identifier = "Process Definition Details", preferredWidth = 500)
 public class ProcessDefDetailsPresenter {
 
     private PlaceRequest place;
@@ -112,6 +113,9 @@ public class ProcessDefDetailsPresenter {
 
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
+    
+    @Inject
+    private Caller<ProcessDefinitionService> processDefService;
 
     @Inject
     private Caller<VFSService> fileServices;
@@ -249,7 +253,7 @@ public class ProcessDefDetailsPresenter {
            }
        } ).getReusableSubProcesses( processId );
 
-        dataServices.call( new RemoteCallback<ProcessSummary>() {
+        processDefService.call( new RemoteCallback<ProcessSummary>() {
             @Override
             public void callback( ProcessSummary process ) {
                 if (process != null) {
@@ -278,7 +282,7 @@ public class ProcessDefDetailsPresenter {
                    ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                    return true;
                }
-           } ).getProcessById( deploymentId, processId );
+           } ).getItem( new ProcessDefinitionKey(deploymentId, processId) );
         
         dataServices.call( new RemoteCallback<Map<String, String>>() {
             @Override
@@ -310,9 +314,7 @@ public class ProcessDefDetailsPresenter {
 
     @OnOpen
     public void onOpen() {
-        WorkbenchSplitLayoutPanel splitPanel = (WorkbenchSplitLayoutPanel)view.asWidget().getParent().getParent().getParent().getParent()
-                                            .getParent().getParent().getParent().getParent().getParent().getParent().getParent();
-        splitPanel.setWidgetMinSize(splitPanel.getWidget(0), 500);
+        
     }
     
     public void onProcessDefSelectionEvent(@Observes ProcessDefSelectionEvent event){

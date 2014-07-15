@@ -18,6 +18,7 @@ package org.jbpm.console.ng.ht.service;
 
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.ga.service.GenericServiceEntryPoint;
+import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TasksPerDaySummary;
 
 
@@ -27,7 +28,7 @@ import org.jbpm.console.ng.ht.model.TasksPerDaySummary;
  * @author salaboy
  */
 @Remote
-public interface TaskCalendarService extends GenericServiceEntryPoint<TasksPerDaySummary>{
+public interface TaskCalendarService extends GenericServiceEntryPoint<TaskKey, TasksPerDaySummary>{
 
   
 }

@@ -24,6 +24,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ga.model.QueryFilter;
+import org.jbpm.console.ng.ga.service.ItemKey;
+import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
 import org.jbpm.kie.services.api.RuntimeDataService;
@@ -114,8 +116,9 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
   }
 
   @Override
-  public ProcessSummary getItem(Object id) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  public ProcessSummary getItem(ProcessDefinitionKey key) {
+    return ProcessHelper.adapt(dataService.getProcessesByDeploymentIdProcessId(key.getDeploymentId(), key.getProcessId()));
   }
+
 
 }

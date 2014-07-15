@@ -43,6 +43,7 @@ import org.jbpm.console.ng.gc.client.util.UTCDateBox;
 import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
+import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
@@ -204,7 +205,7 @@ public class TaskDetailsPresenter {
                       ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                       return true;
                   }
-              }).updateTask(currentTaskId, Integer.valueOf(priority), descriptions,
+              }).updateTask(currentTaskId, priority, descriptions,
                     dueDate);
 
         }
@@ -272,7 +273,7 @@ public class TaskDetailsPresenter {
               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
               return true;
           }
-      }).getItem(currentTaskId);
+      }).getItem(new TaskKey(currentTaskId));
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("taskId", currentTaskId);
         QueryFilter filter = new PortableQueryFilter(0, 0, false, "", "", false, "", params);

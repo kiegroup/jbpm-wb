@@ -15,44 +15,40 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.details;
 
-import java.util.List;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
-
 import com.google.gwt.view.client.ProvidesKey;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
-
+import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.DummyProcessPath;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
+import org.jbpm.console.ng.pr.model.ProcessInstanceKey;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.VariableSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceStyleEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
+import org.jbpm.console.ng.pr.service.ProcessInstanceService;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.DefaultPosition;
-
-import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -60,7 +56,8 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.split.WorkbenchSplitLayoutPanel;
-
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -129,6 +126,9 @@ public class ProcessInstanceDetailsPresenter {
 
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
+    
+    @Inject
+    private Caller<ProcessInstanceService> processInstanceService;
 
     @Inject
     private Event<ProcessInstanceStyleEvent> processInstanceStyleEvent;
@@ -230,7 +230,7 @@ public class ProcessInstanceDetailsPresenter {
               }
           }).getProcessDesc(processDefId);
 
-        dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
+        processInstanceService.call(new RemoteCallback<ProcessInstanceSummary>() {
             @Override
             public void callback(ProcessInstanceSummary process) {
                 view.getProcessDeploymentText().setText(process.getDeploymentId());
@@ -269,7 +269,7 @@ public class ProcessInstanceDetailsPresenter {
                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                   return true;
               }
-          }).getProcessInstanceById(Long.parseLong(processId));
+          }).getItem(new ProcessInstanceKey(Long.parseLong(processId)));
 
         dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override

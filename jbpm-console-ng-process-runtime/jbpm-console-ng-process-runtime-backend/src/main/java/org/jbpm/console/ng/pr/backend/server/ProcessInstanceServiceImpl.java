@@ -25,6 +25,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ga.model.QueryFilter;
+import org.jbpm.console.ng.ga.service.ItemKey;
+import org.jbpm.console.ng.pr.model.ProcessInstanceKey;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.service.ProcessInstanceService;
 import org.jbpm.kie.services.api.RuntimeDataService;
@@ -122,8 +124,12 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService{
   }
 
   @Override
-  public ProcessInstanceSummary getItem(Object id) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  public ProcessInstanceSummary getItem(ProcessInstanceKey key) {
+    return ProcessInstanceHelper.adapt(dataService.getProcessInstanceById(key.getProcessInstanceId()));
   }
+
+  
+
+ 
   
 }
