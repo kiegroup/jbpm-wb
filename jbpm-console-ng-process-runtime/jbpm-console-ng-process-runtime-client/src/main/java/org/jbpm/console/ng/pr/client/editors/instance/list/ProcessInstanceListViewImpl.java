@@ -181,6 +181,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
                 selectedProcessInstances.add(event.getValue());
                 input.setChecked(true);
               }else{
+                selectedProcessInstances.remove(event.getValue());
                 input.setChecked(false);
               }
               return DefaultSelectionEventManager.SelectAction.IGNORE;
@@ -223,6 +224,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
       public void onClick(ClickEvent event) {
         presenter.bulkAbort(selectedProcessInstances);
         selectedProcessInstances.clear();
+        listGrid.redraw();
       }
     });
 
@@ -233,6 +235,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
       public void onClick(ClickEvent event) {
         presenter.bulkSignal(selectedProcessInstances);
         selectedProcessInstances.clear();
+        listGrid.redraw();
       }
     });
 

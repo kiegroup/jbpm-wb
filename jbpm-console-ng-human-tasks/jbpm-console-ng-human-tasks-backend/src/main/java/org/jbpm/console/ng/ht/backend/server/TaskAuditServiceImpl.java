@@ -18,6 +18,7 @@ package org.jbpm.console.ng.ht.backend.server;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -25,6 +26,7 @@ import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.service.TaskAuditService;
 import org.jbpm.services.task.query.QueryFilterImpl;
+import org.kie.internal.task.api.InternalTaskService;
 import org.uberfire.paging.PageResponse;
 
 /**
@@ -37,11 +39,18 @@ public class TaskAuditServiceImpl implements TaskAuditService {
 
   @Inject
   private org.jbpm.services.task.audit.service.TaskAuditService taskAuditService;
+  
+  @Inject
+  private InternalTaskService taskService;
 
 
   public TaskAuditServiceImpl() {
   }
- 
+  
+  @PostConstruct
+  private void init(){
+    taskAuditService.setTaskService(taskService);
+  }
 
   @Override
   public PageResponse<TaskEventSummary> getData(QueryFilter filter) {
@@ -52,21 +61,27 @@ public class TaskAuditServiceImpl implements TaskAuditService {
       taskId = (Long) filter.getParams().get("taskId");
 
     }
-   
+    int filterCount = 0;
+    if(filter.getCount() != 0){
+      filterCount = filter.getCount() + 1;
+    }
     
-    org.kie.internal.task.api.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1, 
+    org.kie.internal.task.api.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filterCount, 
                                                                     filter.getOrderBy(), filter.isAscending());
     List<TaskEventSummary> taskEventSummaries = TaskEventSummaryHelper.adaptCollection(taskAuditService.getAllTaskEvents( taskId, qf));
 
     response.setStartRowIndex(filter.getOffset());
-    response.setTotalRowSize(taskEventSummaries.size() - 1);
-    if(taskEventSummaries.size() > filter.getCount()){
+    if(filter.getCount() != 0){
+      response.setTotalRowSize(taskEventSummaries.size() - 1);
+    }
+    if(taskEventSummaries.size() > filter.getCount() && filter.getCount() != 0){
       response.setTotalRowSizeExact(false);
     }else{
       response.setTotalRowSizeExact(true);
     }
 
-    if (!taskEventSummaries.isEmpty() && taskEventSummaries.size() > (filter.getCount() + filter.getOffset())) {
+    if (!taskEventSummaries.isEmpty() && filter.getCount() != 0 
+            && taskEventSummaries.size() > (filter.getCount() + filter.getOffset())) {
       response.setPageRowList(new ArrayList<TaskEventSummary>(taskEventSummaries.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
       response.setLastPage(false);
 

@@ -22,7 +22,6 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.jbpm.services.task.utils.TaskFluent;
 import org.kie.internal.task.api.InternalTaskService;

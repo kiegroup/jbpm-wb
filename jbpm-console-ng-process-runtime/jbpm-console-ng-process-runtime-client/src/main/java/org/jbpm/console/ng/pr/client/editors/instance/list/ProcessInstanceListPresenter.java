@@ -134,7 +134,7 @@ public class ProcessInstanceListPresenter extends AbstractListPresenter<ProcessI
             GWT.log(throwable.toString());
             return true;
           }
-        }).getData(currentFilter); //.getProcessInstances();
+        }).getData(currentFilter); 
 
       }
     };
