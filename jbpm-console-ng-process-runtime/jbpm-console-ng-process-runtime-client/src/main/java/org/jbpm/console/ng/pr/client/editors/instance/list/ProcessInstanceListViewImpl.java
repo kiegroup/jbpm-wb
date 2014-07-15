@@ -430,26 +430,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
   private Column initActionsColumn() {
     List<HasCell<ProcessInstanceSummary, ?>> cells = new LinkedList<HasCell<ProcessInstanceSummary, ?>>();
 
-//    cells.add(new DetailsActionHasCell("Details", new Delegate<ProcessInstanceSummary>() {
-//      @Override
-//      public void execute(ProcessInstanceSummary processInstance) {
-//
-//        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details"));
-//
-//        listGrid.paintRow(listGrid.getKeyboardSelectedRow());
-//
-//        if (status == PlaceStatus.CLOSE || selectedItem != processInstance) {
-//          placeManager.goTo("Process Instance Details");
-//          processInstanceSelected.fire(new ProcessInstanceSelectionEvent(processInstance.getDeploymentId(),
-//                  processInstance.getProcessInstanceId(), processInstance.getProcessId()));
-//        } else if (status == PlaceStatus.OPEN && selectedItem == processInstance) {
-//          placeManager.closePlace(new DefaultPlaceRequest("Process Instance Details"));
-//        }
-//        selectedItem = processInstance;
-//      }
-//    }));
-
-    cells.add(new SignalActionHasCell("Singal", new Delegate<ProcessInstanceSummary>() {
+    cells.add(new SignalActionHasCell(constants.Signal(), new Delegate<ProcessInstanceSummary>() {
       @Override
       public void execute(ProcessInstanceSummary processInstance) {
 
@@ -460,7 +441,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
       }
     }));
 
-    cells.add(new AbortActionHasCell("Abort", new Delegate<ProcessInstanceSummary>() {
+    cells.add(new AbortActionHasCell(constants.Abort(), new Delegate<ProcessInstanceSummary>() {
       @Override
       public void execute(ProcessInstanceSummary processInstance) {
         if (Window.confirm("Are you sure that you want to abort the process instance?")) {

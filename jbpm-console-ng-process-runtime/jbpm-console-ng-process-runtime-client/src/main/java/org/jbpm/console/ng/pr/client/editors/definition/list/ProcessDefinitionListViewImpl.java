@@ -192,25 +192,6 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
       }
     }));
 
-//    cells.add(new DetailsActionHasCell("Details", new Delegate<ProcessSummary>() {
-//      @Override
-//      public void execute(ProcessSummary process) {
-//        listGrid.paintRow(listGrid.getKeyboardSelectedRow());
-//        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Definition Details"));
-//        PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details"));
-//        if (instanceDetailsStatus == PlaceStatus.OPEN) {
-//          placeManager.closePlace("Process Instance Details");
-//        }
-//        if (status == PlaceStatus.CLOSE || selectedItem != process) {
-//          placeManager.goTo("Process Definition Details");
-//          processDefSelected.fire(new ProcessDefSelectionEvent(process.getProcessDefId(), process.getDeploymentId()));
-//        } else if (status == PlaceStatus.OPEN && selectedItem == process) {
-//          placeManager.closePlace(new DefaultPlaceRequest("Process Definition Details"));
-//        }
-//        selectedItem = process;
-//      }
-//    }));
-
     CompositeCell<ProcessSummary> cell = new CompositeCell<ProcessSummary>(cells);
     Column<ProcessSummary, ProcessSummary> actionsColumn = new Column<ProcessSummary, ProcessSummary>(cell) {
       @Override
