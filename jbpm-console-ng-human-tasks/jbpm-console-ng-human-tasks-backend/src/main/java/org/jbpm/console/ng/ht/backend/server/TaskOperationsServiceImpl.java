@@ -68,8 +68,12 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
   public void updateTask(long taskId, int priority, List<String> taskDescription,
             Date dueDate) {
         taskService.setPriority(taskId, priority);
-        taskService.setDescriptions(taskId, TaskI18NHelper.adaptI18NList(taskDescription));
-        taskService.setExpirationDate(taskId, dueDate);
+        if(taskDescription != null){
+          taskService.setDescriptions(taskId, TaskI18NHelper.adaptI18NList(taskDescription));
+        }
+        if(dueDate != null){
+          taskService.setExpirationDate(taskId, dueDate);
+        }
   }
   
   

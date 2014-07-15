@@ -65,19 +65,19 @@
 
 
 .priority.five {
-    background-color: #ffaa00;
+    background-color: #ffaa00 !important;
 }
 .priority.four {
-    background-color: #ffbf40;
+    background-color: #ffbf40 !important;
 }
 .priority.three {
-    background-color: #ffd47f;
+    background-color: #ffd47f !important;
 }
 .priority.two {
-    background-color: #ffeabf;
+    background-color: #ffeabf !important;
 }
 .priority.one {
-    background-color: #fff7e6;
+    background-color: #fff7e6 !important;
 }
 .priority span {
     opacity: .3;
@@ -564,3 +564,30 @@
 .taskCalendarSelected .task-name div, .taskCalendarSelected .gwt-Label{
 	color: #777;
 } 
+
+
+.completed td {
+	background: #EFBDBD !important;
+ 
+}
+
+.five td  {
+    background: #ffaa00 !important;
+    
+}
+.four td {
+    background: #ffbf40 !important;
+    
+}
+.three td {
+    background: #ffd47f !important;
+    
+}
+.two td {
+    background: #ffeabf !important;
+    
+}
+.one td {
+    background-color: #fff7e6 !important;
+ 
+}

@@ -35,6 +35,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.view.client.CellPreviewEvent;
@@ -151,6 +152,30 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
     });
     listGrid.setSelectionModel(selectionModel, noActionColumnManager);
 
+    listGrid.setRowStyles(new RowStyles<TaskSummary>() {
+
+      @Override
+      public String getStyleNames(TaskSummary row, int rowIndex) {
+        if(row.getStatus().equals("InProgress")){
+           if(row.getPriority() == 5){
+             return "five";
+           } else if(row.getPriority() == 4){
+             return "four";
+           } else if(row.getPriority() == 3){
+             return "three";
+           } else if(row.getPriority() == 2){
+             return "two";
+           } else if(row.getPriority() == 1){
+             return "one";
+           } else if(row.getPriority() == 0){
+             return "one";
+           } 
+        }else if(row.getStatus().equals("Completed")){
+          return "completed";
+        }
+        return null;
+      }
+    });
     initExtraButtons();
     initFiltersBar();
   }
