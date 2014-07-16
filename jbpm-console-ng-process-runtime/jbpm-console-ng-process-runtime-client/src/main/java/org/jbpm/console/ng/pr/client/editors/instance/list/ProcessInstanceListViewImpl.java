@@ -90,10 +90,6 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
   private Button abortedFilterButton;
 
   private Button relatedToMeFilterButton;
-
-  private ProcessInstanceSummary selectedItem;
-  
-  private int selectedRow = -1;
   
   private List<ProcessInstanceSummary> selectedProcessInstances = new ArrayList<ProcessInstanceSummary>();
 
@@ -116,7 +112,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
 
     listGrid.setEmptyTableCaption(constants.No_Process_Instances_Found());
 
-    final NoSelectionModel<ProcessInstanceSummary> selectionModel = new NoSelectionModel<ProcessInstanceSummary>();
+    selectionModel = new NoSelectionModel<ProcessInstanceSummary>();
     selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
       @Override
       public void onSelectionChange(SelectionChangeEvent event) {
@@ -155,7 +151,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
       }
     });
     
-    DefaultSelectionEventManager<ProcessInstanceSummary> noActionColumnManager = DefaultSelectionEventManager
+    noActionColumnManager = DefaultSelectionEventManager
                                         .createCustomManager(new DefaultSelectionEventManager.EventTranslator<ProcessInstanceSummary>() {
 
       @Override

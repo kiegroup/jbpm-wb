@@ -66,11 +66,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
   @Inject
   private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
 
-  private ProcessSummary selectedItem;
-  
-  private Column actionsColumn;
-  
-  private int selectedRow = -1;
+
 
   @Override
   public void init(final ProcessDefinitionListPresenter presenter) {
@@ -79,7 +75,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     super.init(presenter, params);
 
     
-    final NoSelectionModel<ProcessSummary> selectionModel = new NoSelectionModel<ProcessSummary>();
+    selectionModel = new NoSelectionModel<ProcessSummary>();
     selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
       @Override
       public void onSelectionChange(SelectionChangeEvent event) {
@@ -119,7 +115,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
       }
     });
     
-    DefaultSelectionEventManager<ProcessSummary> noActionColumnManager = DefaultSelectionEventManager
+    noActionColumnManager = DefaultSelectionEventManager
                                         .createCustomManager(new DefaultSelectionEventManager.EventTranslator<ProcessSummary>() {
 
       @Override

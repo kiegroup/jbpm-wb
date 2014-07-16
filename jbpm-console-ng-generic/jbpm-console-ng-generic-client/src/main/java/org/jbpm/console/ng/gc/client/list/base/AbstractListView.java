@@ -23,6 +23,8 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.gwt.view.client.DefaultSelectionEventManager;
+import com.google.gwt.view.client.NoSelectionModel;
 import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.event.Event;
@@ -61,8 +63,16 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
   public LayoutPanel listContainer;
   
   protected ExtendedPagedTable<T> listGrid;
-
   
+  protected NoSelectionModel<T> selectionModel;
+
+  protected T selectedItem;
+
+  protected int selectedRow = -1;
+
+  protected Column actionsColumn;
+  
+  protected DefaultSelectionEventManager<T> noActionColumnManager;
   
   public interface ListView<T extends GenericSummary,V> extends UberView<V> {
 

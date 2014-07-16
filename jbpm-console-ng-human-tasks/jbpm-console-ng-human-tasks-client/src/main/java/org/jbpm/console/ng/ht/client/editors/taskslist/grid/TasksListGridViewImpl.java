@@ -81,13 +81,6 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
 
   private Button allFilterButton;
 
-  private NoSelectionModel<TaskSummary> selectionModel;
-
-  private TaskSummary selectedItem;
-
-  private int selectedRow = -1;
-
-  private Column actionsColumn;
 
   @Override
   public void init(final TasksListGridPresenter presenter) {
@@ -130,7 +123,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
       }
     });
 
-    DefaultSelectionEventManager<TaskSummary> noActionColumnManager = DefaultSelectionEventManager
+    noActionColumnManager = DefaultSelectionEventManager
                                         .createCustomManager(new DefaultSelectionEventManager.EventTranslator<TaskSummary>() {
 
       @Override

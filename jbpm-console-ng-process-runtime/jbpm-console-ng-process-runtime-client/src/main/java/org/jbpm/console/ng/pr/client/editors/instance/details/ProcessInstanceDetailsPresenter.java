@@ -55,7 +55,6 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.widgets.split.WorkbenchSplitLayoutPanel;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
@@ -67,7 +66,7 @@ import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
-@WorkbenchScreen(identifier = "Process Instance Details")
+@WorkbenchScreen(identifier = "Process Instance Details", preferredWidth = 500)
 public class ProcessInstanceDetailsPresenter {
 
     private Constants constants = GWT.create(Constants.class);
@@ -339,9 +338,7 @@ public class ProcessInstanceDetailsPresenter {
 
     @OnOpen
     public void onOpen() {
-        WorkbenchSplitLayoutPanel splitPanel = (WorkbenchSplitLayoutPanel) view.asWidget().getParent().getParent().getParent().getParent()
-                .getParent().getParent().getParent().getParent().getParent().getParent().getParent();
-        splitPanel.setWidgetMinSize(splitPanel.getWidget(0), 500);
+       
     }
 
     public void onProcessInstanceSelectionEvent(@Observes ProcessInstanceSelectionEvent event) {

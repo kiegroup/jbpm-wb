@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.bd.client.editors.deployment.list;
 
-import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.cell.client.ActionCell;
@@ -26,17 +25,22 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.view.client.CellPreviewEvent;
+import com.google.gwt.view.client.DefaultSelectionEventManager;
+import com.google.gwt.view.client.NoSelectionModel;
+import com.google.gwt.view.client.SelectionChangeEvent;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -44,6 +48,7 @@ import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.client.resources.BusinessDomainImages;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 import org.jbpm.console.ng.bd.model.events.DeployedUnitChangedEvent;
+import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
@@ -54,6 +59,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
   private Constants constants = GWT.create(Constants.class);
 
   private BusinessDomainImages images = GWT.create(BusinessDomainImages.class);
+  
+  
 
   @Override
   public void init(final DeploymentUnitsListPresenter presenter) {
@@ -61,6 +68,49 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
     params.put("bannedColumns",constants.Deployment()+","+constants.Actions());
     params.put("initColumns",constants.Deployment()+","+constants.Strategy()+","+constants.Actions());
     super.init(presenter, params);
+    selectionModel = new NoSelectionModel<KModuleDeploymentUnitSummary>();
+    selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+      @Override
+      public void onSelectionChange(SelectionChangeEvent event) {
+        boolean close = false;
+        if(selectedRow == -1){
+          selectedRow = listGrid.getKeyboardSelectedRow();
+          listGrid.paintRow(selectedRow);
+        }else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
+
+          listGrid.clearRow(selectedRow);
+          selectedRow = listGrid.getKeyboardSelectedRow();
+          listGrid.paintRow(selectedRow);
+        } else {
+          close = true;
+        }
+
+        selectedItem = selectionModel.getLastSelectedObject();
+
+      }
+    });
+    
+     noActionColumnManager = DefaultSelectionEventManager
+                                        .createCustomManager(new DefaultSelectionEventManager.EventTranslator<KModuleDeploymentUnitSummary>() {
+
+      @Override
+      public boolean clearCurrentSelection(CellPreviewEvent<KModuleDeploymentUnitSummary> event) {
+        return false;
+      }
+
+      @Override
+      public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<KModuleDeploymentUnitSummary> event) {
+        NativeEvent nativeEvent = event.getNativeEvent();
+        if (BrowserEvents.CLICK.equals(nativeEvent.getType())) {
+          // Ignore if the event didn't occur in the correct column.
+          if (listGrid.getColumnIndex(actionsColumn) == event.getColumn()) {
+            return DefaultSelectionEventManager.SelectAction.IGNORE;
+          }
+        }
+        return DefaultSelectionEventManager.SelectAction.DEFAULT;
+      }
+    });
+    listGrid.setSelectionModel(selectionModel, noActionColumnManager);
     
     Button newUnitButton = new Button();
     newUnitButton.setIcon(IconType.PLUS);
@@ -70,6 +120,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
         placeManager.goTo(new DefaultPlaceRequest("New Deployment"));
       }
     });
+    
     listGrid.getLeftToolbar().add(newUnitButton);
     listGrid.setEmptyTableCaption(constants.No_Deployment_Units_Available());
   }
@@ -208,7 +259,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
     }));
 
     CompositeCell<KModuleDeploymentUnitSummary> cell = new CompositeCell<KModuleDeploymentUnitSummary>(cells);
-    Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> actionsColumn = new Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary>(
+    actionsColumn = new Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary>(
             cell) {
               @Override
               public KModuleDeploymentUnitSummary getValue(KModuleDeploymentUnitSummary object) {
