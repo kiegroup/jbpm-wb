@@ -20,16 +20,14 @@ import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
-import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.kie.uberfire.client.common.BusyPopup;
@@ -44,8 +42,8 @@ import org.uberfire.workbench.events.NotificationEvent;
  * @param <T>
  * @param <V>
  */
-public abstract class AbstractListView<T extends GenericSummary, V extends AbstractListPresenter> 
-                                        extends Composite implements RequiresResize {
+public abstract class AbstractListView<T extends GenericSummary, V extends AbstractListPresenter>
+        extends Composite implements RequiresResize {
 
   @Inject
   public Identity identity;
@@ -55,15 +53,22 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
 
   @Inject
   protected PlaceManager placeManager;
-  
+
   protected V presenter;
-  
-  @Inject
-  @DataField
-  public LayoutPanel listContainer;
-  
+
   protected ExtendedPagedTable<T> listGrid;
-  
+
+  protected RowStyles<T> selectedStyles = new RowStyles<T>() {
+
+    @Override
+    public String getStyleNames(T row, int rowIndex) {
+      if (rowIndex == selectedRow) {
+        return "selected";
+      }
+      return null;
+    }
+  };
+
   protected NoSelectionModel<T> selectionModel;
 
   protected T selectedItem;
@@ -71,10 +76,10 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
   protected int selectedRow = -1;
 
   protected Column actionsColumn;
-  
+
   protected DefaultSelectionEventManager<T> noActionColumnManager;
-  
-  public interface ListView<T extends GenericSummary,V> extends UberView<V> {
+
+  public interface ListView<T extends GenericSummary, V> extends UberView<V> {
 
     void showBusyIndicator(String message);
 
@@ -86,35 +91,30 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
 
   }
 
-  public void init(V presenter, Map<String, String> params){
+  public void init(V presenter, Map<String, String> params) {
     this.presenter = presenter;
-    listContainer.clear();
-    
-    listGrid = new ExtendedPagedTable<T>(10, params);
 
+    listGrid = new ExtendedPagedTable<T>(10, params);
+    initWidget(listGrid);
     presenter.addDataDisplay(listGrid);
-    listContainer.add(listGrid);
 
     initColumns();
     initGenericToolBar();
-    
-  }
-  
 
-  
+  }
+
   @Override
   public void onResize() {
-    if ((getParent().getOffsetHeight() - 120) > 0) {
-      listContainer.setHeight(getParent().getOffsetHeight() - 120 + "px");
-    }
+
   }
 
   public void displayNotification(String text) {
     notification.fire(new NotificationEvent(text));
   }
   /*
-  * By default all the tables will have a refresh button
-  */
+   * By default all the tables will have a refresh button
+   */
+
   public void initGenericToolBar() {
     Button refreshButton = new Button();
     refreshButton.setIcon(IconType.REFRESH);
@@ -126,7 +126,7 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
     });
     listGrid.getRightToolbar().add(refreshButton);
   }
-  
+
   public ExtendedPagedTable<T> getListGrid() {
     return listGrid;
   }
@@ -138,10 +138,10 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
   public void hideBusyIndicator() {
     BusyPopup.close();
   }
-  
+
   /*
-  * For each specific implementation define the 
-  *  DataGrid columns and how they must be initialized
-  */
+   * For each specific implementation define the 
+   *  DataGrid columns and how they must be initialized
+   */
   public abstract void initColumns();
 }

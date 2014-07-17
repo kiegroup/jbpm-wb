@@ -30,9 +30,11 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
@@ -43,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.client.resources.BusinessDomainImages;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
@@ -52,10 +53,15 @@ import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
-@Templated(value = "DeploymentUnitsListViewImpl.html")
+
 public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploymentUnitSummary, DeploymentUnitsListPresenter>
         implements DeploymentUnitsListPresenter.DeploymentUnitsListView {
 
+    interface Binder
+          extends
+          UiBinder<Widget, DeploymentUnitsListViewImpl> {
+
+  }
   private Constants constants = GWT.create(Constants.class);
 
   private BusinessDomainImages images = GWT.create(BusinessDomainImages.class);
@@ -74,13 +80,14 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
       public void onSelectionChange(SelectionChangeEvent event) {
         boolean close = false;
         if(selectedRow == -1){
+          listGrid.setRowStyles(selectedStyles);
           selectedRow = listGrid.getKeyboardSelectedRow();
-          listGrid.paintRow(selectedRow);
+          listGrid.redraw();
         }else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
 
-          listGrid.clearRow(selectedRow);
+          listGrid.setRowStyles(selectedStyles);
           selectedRow = listGrid.getKeyboardSelectedRow();
-          listGrid.paintRow(selectedRow);
+          listGrid.redraw();
         } else {
           close = true;
         }
@@ -123,6 +130,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
     
     listGrid.getLeftToolbar().add(newUnitButton);
     listGrid.setEmptyTableCaption(constants.No_Deployment_Units_Available());
+    listGrid.setRowStyles(selectedStyles);
   }
 
   @Override

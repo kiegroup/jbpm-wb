@@ -15,8 +15,11 @@
  */
 package org.jbpm.console.ng.gc.client.experimental.grid.base;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
+import com.google.gwt.user.client.ui.Widget;
 
 import com.google.gwt.view.client.ProvidesKey;
 import java.util.Map;
@@ -29,9 +32,13 @@ import org.kie.uberfire.client.tables.PagedTable;
  */
 public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> {
 
-  // it is rgb because datagrid returns this kind of info
-  private static final String BG_ROW_SELECTED = "rgb(229, 241, 255)";
+  interface Binder
+          extends
+          UiBinder<Widget, ExtendedPagedTable> {
 
+  }
+
+  private static Binder uiBinder = GWT.create(Binder.class);
 
   public ExtendedPagedTable(int pageSize, Map<String, String> params) {
     super(pageSize, new ProvidesKey<T>() {
@@ -44,21 +51,6 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
 
     dataGrid.addColumnSortHandler(new AsyncHandler(dataGrid));
 
-  }
-
- 
-  
-
-  public void paintRow(int row) {
-    for (int i = 0; i < dataGrid.getRowElement(row).getCells().getLength(); i++) {
-      dataGrid.getRowElement(row).getCells().getItem(i).getStyle().setBackgroundColor(BG_ROW_SELECTED);
-    }
-  }
-
-  public void clearRow(int row) {
-    for (int i = 0; i < dataGrid.getRowElement(row).getCells().getLength(); i++) {
-      dataGrid.getRowElement(row).getCells().getItem(i).getStyle().clearBackgroundColor();
-    }
   }
 
   public void setTooltip(int row, int column, String description) {

@@ -565,6 +565,9 @@
 	color: #777;
 } 
 
+.selected td {
+	background: #66CCFF !important;
+}
 
 .completed td {
 	background: #EFBDBD !important;

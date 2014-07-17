@@ -39,10 +39,12 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
@@ -57,7 +59,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
@@ -72,9 +73,16 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
-@Templated(value = "ProcessInstanceListViewImpl.html")
+
 public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanceSummary, ProcessInstanceListPresenter>
         implements ProcessInstanceListPresenter.ProcessInstanceListView {
+  
+    interface Binder
+          extends
+          UiBinder<Widget, ProcessInstanceListViewImpl> {
+
+  }
+  private static Binder uiBinder = GWT.create(Binder.class);
 
   private Constants constants = GWT.create(Constants.class);
   private ProcessRuntimeImages images = GWT.create(ProcessRuntimeImages.class);
@@ -120,13 +128,14 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
         
         boolean close = false;
         if(selectedRow == -1){
+          listGrid.setRowStyles(selectedStyles);
           selectedRow = listGrid.getKeyboardSelectedRow();
-          listGrid.paintRow(selectedRow);
+          listGrid.redraw();
+          
         }else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
-
-          listGrid.clearRow(selectedRow);
+          listGrid.setRowStyles(selectedStyles);
           selectedRow = listGrid.getKeyboardSelectedRow();
-          listGrid.paintRow(selectedRow);
+          listGrid.redraw();
         } else {
           close = true;
         }
@@ -190,9 +199,9 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
 
      
     });
-
+    
     listGrid.setSelectionModel(selectionModel, noActionColumnManager);
-
+    listGrid.setRowStyles(selectedStyles);
   }
 
   @Override

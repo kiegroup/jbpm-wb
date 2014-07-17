@@ -34,10 +34,12 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
@@ -51,7 +53,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
@@ -63,9 +64,15 @@ import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
-@Templated(value = "TasksListGridViewImpl.html")
 public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksListGridPresenter>
         implements TasksListGridPresenter.TaskListView {
+
+  interface Binder
+          extends
+          UiBinder<Widget, TasksListGridViewImpl> {
+
+  }
+  private static Binder uiBinder = GWT.create(Binder.class);
 
   private final Constants constants = GWT.create(Constants.class);
   private final HumanTasksImages images = GWT.create(HumanTasksImages.class);
@@ -81,7 +88,6 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
 
   private Button allFilterButton;
 
-
   @Override
   public void init(final TasksListGridPresenter presenter) {
     Map<String, String> params = new HashMap<String, String>();
@@ -89,20 +95,49 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
     params.put("initColumns", constants.Task() + "," + constants.Description());
     super.init(presenter, params);
 
+    selectedStyles = new RowStyles<TaskSummary>() {
+
+      @Override
+      public String getStyleNames(TaskSummary row, int rowIndex) {
+        if (rowIndex == selectedRow) {
+          return "selected";
+        } else {
+          if (row.getStatus().equals("InProgress")) {
+            if (row.getPriority() == 5) {
+              return "five";
+            } else if (row.getPriority() == 4) {
+              return "four";
+            } else if (row.getPriority() == 3) {
+              return "three";
+            } else if (row.getPriority() == 2) {
+              return "two";
+            } else if (row.getPriority() == 1) {
+              return "one";
+            }
+          } else if (row.getStatus().equals("Completed")) {
+            return "completed";
+          }
+
+        }
+        return null;
+      }
+    };
+
     listGrid.setEmptyTableCaption(constants.No_Tasks_Found());
     selectionModel = new NoSelectionModel<TaskSummary>();
     selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
       @Override
       public void onSelectionChange(SelectionChangeEvent event) {
         boolean close = false;
-        if(selectedRow == -1){
+        if (selectedRow == -1) {
           selectedRow = listGrid.getKeyboardSelectedRow();
-          listGrid.paintRow(selectedRow);
-        }else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
+          listGrid.setRowStyles(selectedStyles);
+          listGrid.redraw();
 
-          listGrid.clearRow(selectedRow);
+        } else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
+          listGrid.setRowStyles(selectedStyles);
           selectedRow = listGrid.getKeyboardSelectedRow();
-          listGrid.paintRow(selectedRow);
+          listGrid.redraw();
         } else {
           close = true;
         }
@@ -124,51 +159,28 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
     });
 
     noActionColumnManager = DefaultSelectionEventManager
-                                        .createCustomManager(new DefaultSelectionEventManager.EventTranslator<TaskSummary>() {
+            .createCustomManager(new DefaultSelectionEventManager.EventTranslator<TaskSummary>() {
 
-      @Override
-      public boolean clearCurrentSelection(CellPreviewEvent<TaskSummary> event) {
-        return false;
-      }
+              @Override
+              public boolean clearCurrentSelection(CellPreviewEvent<TaskSummary> event) {
+                return false;
+              }
 
-      @Override
-      public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<TaskSummary> event) {
-        NativeEvent nativeEvent = event.getNativeEvent();
-        if (BrowserEvents.CLICK.equals(nativeEvent.getType())) {
-          // Ignore if the event didn't occur in the correct column.
-          if (listGrid.getColumnIndex(actionsColumn) == event.getColumn()) {
-            return DefaultSelectionEventManager.SelectAction.IGNORE;
-          }
-        }
-        return DefaultSelectionEventManager.SelectAction.DEFAULT;
-      }
-    });
+              @Override
+              public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<TaskSummary> event) {
+                NativeEvent nativeEvent = event.getNativeEvent();
+                if (BrowserEvents.CLICK.equals(nativeEvent.getType())) {
+                  // Ignore if the event didn't occur in the correct column.
+                  if (listGrid.getColumnIndex(actionsColumn) == event.getColumn()) {
+                    return DefaultSelectionEventManager.SelectAction.IGNORE;
+                  }
+                }
+                return DefaultSelectionEventManager.SelectAction.DEFAULT;
+              }
+            });
     listGrid.setSelectionModel(selectionModel, noActionColumnManager);
 
-    listGrid.setRowStyles(new RowStyles<TaskSummary>() {
-
-      @Override
-      public String getStyleNames(TaskSummary row, int rowIndex) {
-        if(row.getStatus().equals("InProgress")){
-           if(row.getPriority() == 5){
-             return "five";
-           } else if(row.getPriority() == 4){
-             return "four";
-           } else if(row.getPriority() == 3){
-             return "three";
-           } else if(row.getPriority() == 2){
-             return "two";
-           } else if(row.getPriority() == 1){
-             return "one";
-           } else if(row.getPriority() == 0){
-             return "one";
-           } 
-        }else if(row.getStatus().equals("Completed")){
-          return "completed";
-        }
-        return null;
-      }
-    });
+    listGrid.setRowStyles(selectedStyles);
     initExtraButtons();
     initFiltersBar();
   }
@@ -274,7 +286,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
     Column taskNameColumn = initTaskNameColumn();
 
     listGrid.addColumn(taskNameColumn, constants.Task());
-    
+
     Column descriptionColumn = initTaskDescriptionColumn();
 
     listGrid.addColumn(descriptionColumn, constants.Description());
@@ -294,8 +306,6 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
     Column dueDateColumn = initTaskDueColumn();
 
     listGrid.addColumn(dueDateColumn, constants.Due_On());
-    
-    
 
     actionsColumn = initActionsColumn();
     listGrid.addColumn(actionsColumn, constants.Actions());
@@ -346,7 +356,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
     taskNameColumn.setSortable(true);
     return taskNameColumn;
   }
-  
+
   private Column initTaskDescriptionColumn() {
     Column<TaskSummary, String> taskNameColumn = new Column<TaskSummary, String>(new TextCell()) {
       @Override
