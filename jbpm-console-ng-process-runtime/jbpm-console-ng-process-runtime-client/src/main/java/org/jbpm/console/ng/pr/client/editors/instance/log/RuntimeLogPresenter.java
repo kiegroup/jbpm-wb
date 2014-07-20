@@ -15,10 +15,12 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.log;
 
+import com.github.gwtbootstrap.client.ui.Label;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.view.client.ProvidesKey;
+import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -29,11 +31,15 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.model.RuntimeLogSummary;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
+import org.jbpm.console.ng.pr.client.util.LogUtils.LogType;
+import org.jbpm.console.ng.pr.client.util.LogUtils.LogOrder;
+import org.jbpm.console.ng.pr.client.util.LogUtils;
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.VariableSummary;
+import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnOpen;
@@ -54,7 +60,10 @@ public class RuntimeLogPresenter {
         void displayNotification(String text);
 
         HTML getLogTextArea();
-
+        
+        Label getProcessInstanceStatusText();
+                
+        Label getProcessInstanceNameText();
     }
 
     @Inject
@@ -89,36 +98,69 @@ public class RuntimeLogPresenter {
         return view;
     }
 
-    public void refreshProcessInstanceData(final Long processInstanceId) {
-      
-
-        dataServices.call(new RemoteCallback<List<RuntimeLogSummary>>() {
+    public void refreshProcessInstanceData(final Long processInstanceId, final LogOrder logOrder, final LogType logType) {
+        
+        view.getProcessInstanceNameText().setText("");
+        view.getProcessInstanceStatusText().setText("");
+        view.getLogTextArea().setText("");
+        
+        dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
             @Override
-            public void callback(List<RuntimeLogSummary> logs) {
-                view.getLogTextArea().setText("");
-                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                for (RuntimeLogSummary rls : logs) {
-                    
-                        safeHtmlBuilder.appendEscapedLines(rls.getTime() + ": " + rls.getLogLine() + " - " + rls.getType() + "\n");
-                   
-                    
-                }
-                view.getLogTextArea().setHTML(safeHtmlBuilder.toSafeHtml());
+            public void callback(ProcessInstanceSummary instanceSummary) {                
+                view.getProcessInstanceNameText().setText(instanceSummary.getProcessName());
+                view.getProcessInstanceStatusText().setText(LogUtils.getInstanceStatus(instanceSummary.getState()));                
             }
         }, new ErrorCallback<Message>() {
-              @Override
-              public boolean error( Message message, Throwable throwable ) {
-                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                  return true;
-              }
-          }).getAllRuntimeLogs(processInstanceId);
+            @Override
+            public boolean error( Message message, Throwable throwable ) {
+                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                return true;
+            }
+        }).getProcessInstanceById(processInstanceId);
+        
+        if(LogType.TECHNICAL.equals(logType)){
+            dataServices.call(new RemoteCallback<List<RuntimeLogSummary>>() {
+                @Override
+                public void callback(List<RuntimeLogSummary> logs) {                    
+                    SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
 
-      
-        
-        
+                    if(logOrder == LogOrder.DESC)
+                        Collections.reverse(logs);
+
+                    for (RuntimeLogSummary rls : logs) {           
+                        safeHtmlBuilder.appendEscapedLines(rls.getTime() + ": " + rls.getLogLine() + " - " + rls.getType() + "\n");                            
+                    }
+                    view.getLogTextArea().setHTML(safeHtmlBuilder.toSafeHtml());
+                }
+            }, new ErrorCallback<Message>() {
+                @Override
+                public boolean error( Message message, Throwable throwable ) {                    
+                    ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                    return true;
+                }
+            }).getAllRuntimeLogs(processInstanceId);
+        }else{
+            dataServices.call(new RemoteCallback<List<RuntimeLogSummary>>() {
+                @Override
+                public void callback(List<RuntimeLogSummary> logs) {
+                    SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+                    if(logOrder == LogOrder.DESC)
+                        Collections.reverse(logs);
+
+                    for (RuntimeLogSummary rls : logs) {                       
+                        safeHtmlBuilder.appendEscapedLines(rls.getTime() + ": " + rls.getLogLine() + "\n");                            
+                    }
+                    view.getLogTextArea().setHTML(safeHtmlBuilder.toSafeHtml());
+                }
+            }, new ErrorCallback<Message>() {
+                @Override
+                public boolean error( Message message, Throwable throwable ) {                    
+                    ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                    return true;
+                }
+            }).getBusinessLogs(processInstanceId);
+        }        
     }
-
-
 
     @OnStartup
     public void onStartup(final PlaceRequest place) {
