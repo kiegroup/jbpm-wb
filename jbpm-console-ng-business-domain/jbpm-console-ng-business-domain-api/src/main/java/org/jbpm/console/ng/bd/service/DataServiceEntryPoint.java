@@ -85,5 +85,7 @@ public interface DataServiceEntryPoint {
     /* Logs */
     
     Collection<RuntimeLogSummary> getAllRuntimeLogs(long processInstanceId);
+    
+    Collection<RuntimeLogSummary> getBusinessLogs(long processInstanceId);
 
 }
