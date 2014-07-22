@@ -335,6 +335,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     processInstanceIdColumn.setSortable(true);
 
     listGrid.addColumn(processInstanceIdColumn, constants.Id());
+    processInstanceIdColumn.setDataStoreName("ProcessInstanceId");
   }
 
   private void initProcessNameColumn() {
@@ -348,6 +349,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     processNameColumn.setSortable(true);
 
     listGrid.addColumn(processNameColumn, constants.Name());
+    processNameColumn.setDataStoreName("ProcessName");
   }
 
   private void initInitiatorColumn() {
@@ -361,6 +363,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     processInitiatorColumn.setSortable(true);
 
     listGrid.addColumn(processInitiatorColumn, constants.Initiator());
+    processInitiatorColumn.setDataStoreName("Initiator");
   }
 
   private void initProcessVersionColumn() {
@@ -374,6 +377,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     processVersionColumn.setSortable(true);
 
     listGrid.addColumn(processVersionColumn, constants.Version());
+    processVersionColumn.setDataStoreName("ProcessVersion");
 
   }
 
@@ -410,6 +414,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     processStateColumn.setSortable(true);
 
     listGrid.addColumn(processStateColumn, constants.State());
+    processStateColumn.setDataStoreName("Status");
 
   }
 
@@ -428,8 +433,9 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     };
     startTimeColumn.setSortable(true);
 
-    listGrid.addColumn(startTimeColumn, constants.Start_Date());
 
+    listGrid.addColumn(startTimeColumn, constants.Start_Date());
+    startTimeColumn.setDataStoreName("StartDate");
   }
 
   private Column initActionsColumn() {

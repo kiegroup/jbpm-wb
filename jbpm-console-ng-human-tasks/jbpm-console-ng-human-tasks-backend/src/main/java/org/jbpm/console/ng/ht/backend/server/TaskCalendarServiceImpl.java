@@ -80,7 +80,7 @@ public class TaskCalendarServiceImpl implements TaskCalendarService {
       statuses.add(Status.valueOf(s));
     }
 
-    org.kie.internal.task.api.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1);
+    org.kie.internal.query.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1);
     List<TaskSummary> taskSummaries = null;
     if(!ownedFilter){        
       taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf));

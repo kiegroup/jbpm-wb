@@ -276,40 +276,47 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
 
   }
 
-  @Override
-  public void initColumns() {
-    initCellPreview();
-    Column taskIdColumn = initTaskIdColumn();
+    @Override
+    public void initColumns() {
+        initCellPreview();
+        Column taskIdColumn = initTaskIdColumn();
 
-    listGrid.addColumn(taskIdColumn, constants.Id());
+        listGrid.addColumn(taskIdColumn, constants.Id());
+        taskIdColumn.setDataStoreName("Id");
 
-    Column taskNameColumn = initTaskNameColumn();
+        Column taskNameColumn = initTaskNameColumn();
 
-    listGrid.addColumn(taskNameColumn, constants.Task());
+        listGrid.addColumn(taskNameColumn, constants.Task());
+        taskNameColumn.setDataStoreName("Task");
 
-    Column descriptionColumn = initTaskDescriptionColumn();
+        Column descriptionColumn = initTaskDescriptionColumn();
 
-    listGrid.addColumn(descriptionColumn, constants.Description());
+        listGrid.addColumn(descriptionColumn, constants.Description());
+        descriptionColumn.setDataStoreName("Description");
 
-    Column taskPriorityColumn = initTaskPriorityColumn();
+        Column taskPriorityColumn = initTaskPriorityColumn();
 
-    listGrid.addColumn(taskPriorityColumn, constants.Priority());
+        listGrid.addColumn(taskPriorityColumn, constants.Priority());
+        taskPriorityColumn.setDataStoreName("Priority");
 
-    Column statusColumn = initTaskStatusColumn();
+        Column statusColumn = initTaskStatusColumn();
 
-    listGrid.addColumn(statusColumn, constants.Status());
+        listGrid.addColumn(statusColumn, constants.Status());
+        statusColumn.setDataStoreName("Status");
 
-    Column createdOnDateColumn = initTaskCreatedOnColumn();
+        Column createdOnDateColumn = initTaskCreatedOnColumn();
 
-    listGrid.addColumn(createdOnDateColumn, constants.Created_On());
+        listGrid.addColumn(createdOnDateColumn, constants.Created_On());
+        createdOnDateColumn.setDataStoreName("CreatedOn");
 
-    Column dueDateColumn = initTaskDueColumn();
+        Column dueDateColumn = initTaskDueColumn();
 
-    listGrid.addColumn(dueDateColumn, constants.Due_On());
+        listGrid.addColumn(dueDateColumn, constants.Due_On());
+        dueDateColumn.setDataStoreName("DueOn");
 
-    actionsColumn = initActionsColumn();
-    listGrid.addColumn(actionsColumn, constants.Actions());
-  }
+        actionsColumn = initActionsColumn();
+        listGrid.addColumn(actionsColumn, constants.Actions());
+    }
 
   private void initCellPreview() {
     listGrid.addCellPreviewHandler(new CellPreviewEvent.Handler<TaskSummary>() {

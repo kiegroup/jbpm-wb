@@ -67,7 +67,7 @@ public class TaskAuditServiceImpl implements TaskAuditService {
       filterCount = filter.getCount() + 1;
     }
     
-    org.kie.internal.task.api.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filterCount, 
+    org.kie.internal.query.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filterCount,
                                                                     filter.getOrderBy(), filter.isAscending());
     List<TaskEventSummary> taskEventSummaries = TaskEventSummaryHelper.adaptCollection(taskAuditService.getAllTaskEvents( taskId, qf));
 

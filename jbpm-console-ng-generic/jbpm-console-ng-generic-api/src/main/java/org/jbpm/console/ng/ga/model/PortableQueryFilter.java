@@ -64,12 +64,12 @@ public class PortableQueryFilter implements QueryFilter, Serializable{
   
   
   @Override
-  public int getOffset() {
+  public Integer getOffset() {
     return offset;
   }
 
   @Override
-  public int getCount() {
+  public Integer getCount() {
     return count;
   }
 
@@ -99,17 +99,17 @@ public class PortableQueryFilter implements QueryFilter, Serializable{
   }
 
   @Override
-  public boolean isAscending() {
+  public Boolean isAscending() {
     return isAscending;
   }
 
   @Override
-  public void setOffset(int offset) {
+  public void setOffset(Integer offset) {
     this.offset = offset;
   }
 
   @Override
-  public void setCount(int count) {
+  public void setCount(Integer count) {
     this.count = count;
   }
 
@@ -129,7 +129,7 @@ public class PortableQueryFilter implements QueryFilter, Serializable{
   }
 
   @Override
-  public void setIsAscending(boolean isAscending) {
+  public void setIsAscending(Boolean isAscending) {
     this.isAscending = isAscending;
   }
 

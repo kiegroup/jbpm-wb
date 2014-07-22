@@ -48,7 +48,7 @@ import org.kie.api.task.model.Status;
 import org.kie.api.task.model.Task;
 import org.kie.api.task.model.User;
 import org.kie.internal.task.api.InternalTaskService;
-import org.kie.internal.task.api.QueryFilter;
+import org.kie.internal.query.QueryFilter;
 
 @Service
 @ApplicationScoped

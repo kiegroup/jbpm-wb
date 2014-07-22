@@ -97,7 +97,7 @@ public class AdministrationServiceImpl implements AdministrationService {
     @Any
     private Instance<DeploymentUnitProvider<DeploymentUnit>> deploymentUnitProviders;
 
-    private String deploymentServiceType;
+    private String deploymentServiceType = "kjar";
 
     /**
      * This flag is necessary to let dependent services know when the deployments have been bootstrapped.

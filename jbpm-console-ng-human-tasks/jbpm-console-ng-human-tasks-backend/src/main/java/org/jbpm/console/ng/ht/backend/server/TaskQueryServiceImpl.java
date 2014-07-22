@@ -67,7 +67,7 @@ public class TaskQueryServiceImpl implements TaskQueryService {
       statuses.add(Status.valueOf(s));
     }
     
-    org.kie.internal.task.api.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1, 
+    org.kie.internal.query.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1,
                                                                     filter.getOrderBy(), filter.isAscending());
     List<TaskSummary> taskSummaries = TaskSummaryHelper.adaptCollection(
             runtimeDataService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf));

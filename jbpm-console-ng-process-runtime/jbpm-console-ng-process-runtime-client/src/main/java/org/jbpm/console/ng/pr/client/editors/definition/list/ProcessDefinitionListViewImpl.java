@@ -168,6 +168,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     };
     processNameColumn.setSortable(true);
     listGrid.addColumn(processNameColumn, constants.Name());
+    processNameColumn.setDataStoreName("ProcessName");
   }
 
   private void initVersionColumn() {
@@ -179,6 +180,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     };
     versionColumn.setSortable(true);
     listGrid.addColumn(versionColumn, constants.Version());
+    versionColumn.setDataStoreName("ProcessVersion");
   }
 
   private Column initActionsColumn() {
