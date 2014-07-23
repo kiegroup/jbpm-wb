@@ -102,7 +102,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
         if (rowIndex == selectedRow) {
           return "selected";
         } else {
-          if (row.getStatus().equals("InProgress")) {
+          if (row.getStatus().equals("InProgress") || row.getStatus().equals("Ready")) {
             if (row.getPriority() == 5) {
               return "five";
             } else if (row.getPriority() == 4) {

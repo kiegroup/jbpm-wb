@@ -38,6 +38,7 @@ import org.uberfire.security.Identity;
 /**
  *
  * @author salaboy
+ * @param <T> data type for the AsyncDataProvider
  */
 public abstract class AbstractListPresenter<T> {
 
