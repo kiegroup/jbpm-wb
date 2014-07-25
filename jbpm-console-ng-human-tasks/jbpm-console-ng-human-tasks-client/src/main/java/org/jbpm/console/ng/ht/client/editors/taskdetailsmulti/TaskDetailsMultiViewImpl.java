@@ -57,6 +57,21 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
         presenter.closeDetails();
       }
     });
+    tabPanel.addRefreshHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        int selectedIndex = tabPanel.getSelectedIndex();
+        if (selectedIndex == 0) {
+          presenter.goToTaskFormTab();
+        } else if (selectedIndex == 1) {
+          presenter.goToTaskDetailsTab();
+        } else if (selectedIndex == 2) {
+          presenter.goToTaskAssignmentsTab();
+        } else if (selectedIndex == 3) {
+          presenter.goToTaskCommentsTab();
+        }
+      }
+    });
 
     tabPanel.addSelectionHandler(new SelectionHandler<Integer>() {
 

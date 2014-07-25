@@ -45,7 +45,7 @@ public class ProcessDefinitionsPerspective {
     
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_LIST);
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_SIMPLE);
         p.setName( "Process Definitions" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Process Definition List" ) ) );
         p.setTransient( true );

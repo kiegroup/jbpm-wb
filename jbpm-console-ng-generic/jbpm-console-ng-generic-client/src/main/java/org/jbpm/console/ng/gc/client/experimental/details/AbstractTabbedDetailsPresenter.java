@@ -18,7 +18,7 @@ package org.jbpm.console.ng.gc.client.experimental.details;
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
-import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
+import org.uberfire.client.mvp.AbstractWorkbenchActivity;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.lifecycle.OnClose;
@@ -41,10 +41,10 @@ public abstract class AbstractTabbedDetailsPresenter {
 
   protected PlaceRequest place;
   
-  protected Map<String, AbstractWorkbenchScreenActivity> activitiesMap = 
-                                new HashMap<String, AbstractWorkbenchScreenActivity>();
+  protected Map<String, AbstractWorkbenchActivity> activitiesMap = 
+                                new HashMap<String, AbstractWorkbenchActivity>();
 
-  protected long selectedItemId = 0;
+  protected String selectedItemId = "";
 
   protected String selectedItemName = "";
 
@@ -73,5 +73,10 @@ public abstract class AbstractTabbedDetailsPresenter {
     }
     activitiesMap.clear();
   }
+
+  public void closeDetails() {
+    placeManager.closePlace(place);
+  }
+
 
 }

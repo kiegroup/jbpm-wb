@@ -29,22 +29,31 @@
     height: 32px;
     }
     .leftHeader {
-      float: left;
-      text-align: left
+    float: left;
+    text-align: left
     }
     .rightHeader {
-      float: right;
-      text-align: right;
+    float: right;
+    text-align: right;
     }
     
   </ui:style>
 
   <g:FlowPanel addStyleNames="{style.dataGridContainer}">
     <g:HorizontalPanel ui:field="headerContainer" width="100%" addStyleNames="{style.horizontalContainer}">
-       <g:cell width="90%">
+      <g:cell width="60%">
         <g:FlowPanel width="100%"  ui:field="leftHeader" addStyleNames="{style.leftHeader}"></g:FlowPanel> 
       </g:cell>
-      
+      <g:cell width="30%">
+        <g:FlowPanel width="100%"  ui:field="rightToolbar" addStyleNames="{style.rightHeader}">
+          <b:ButtonGroup ui:field="optionsButtonGroup">
+            <b:Button ui:field="newInstanceButton" size="MINI" icon="PLAY"/>
+            <b:DropdownButton ui:field="optionsDropdown" size="MINI">
+              <b:NavLink ui:field="viewProcessInstancesNavLink"></b:NavLink>
+            </b:DropdownButton>
+          </b:ButtonGroup>
+        </g:FlowPanel>
+      </g:cell>
       <g:cell width="10%">
         <g:FlowPanel width="100%"  ui:field="rightHeader" addStyleNames="{style.rightHeader}">
           <b:Button ui:field="refreshButton" size="MINI" icon="REFRESH"/>

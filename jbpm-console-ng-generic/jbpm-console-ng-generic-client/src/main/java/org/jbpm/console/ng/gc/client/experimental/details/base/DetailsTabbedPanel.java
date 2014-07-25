@@ -16,10 +16,7 @@
 package org.jbpm.console.ng.gc.client.experimental.details.base;
 
 import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -31,9 +28,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
-import java.util.HashMap;
-import java.util.Map;
-import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
 
 /**
  *
@@ -59,14 +53,20 @@ public class DetailsTabbedPanel extends Composite {
   public FlowPanel rightHeader;
   
   @UiField
+  public FlowPanel rightToolbar;
+  
+  @UiField
   public FlowPanel leftHeader;
   
   @UiField
   public Button closeButton;
 
+  @UiField
+  public Button refreshButton;
 
   public DetailsTabbedPanel() {
     initWidget(makeWidget());
+    
   }
 
   public void addTab(String placeToGo, String label) {
@@ -102,6 +102,10 @@ public class DetailsTabbedPanel extends Composite {
   public HandlerRegistration addCloseHandler(ClickHandler handler) {
     return closeButton.addClickHandler(handler);
   }
+  
+  public HandlerRegistration addRefreshHandler(ClickHandler handler) {
+    return refreshButton.addClickHandler(handler);
+  }
 
   public void selectTab(int index) {
     tabsContainer.selectTab(index, false);
@@ -111,7 +115,14 @@ public class DetailsTabbedPanel extends Composite {
   public void setHeight(String height) {
     tabsContainer.setHeight(height);
   }
-  
-  
 
+  public int getSelectedIndex() {
+    return tabsContainer.getSelectedIndex();
+  }
+
+  public FlowPanel getRightToolbar() {
+    return rightToolbar;
+  }
+  
+  
 }

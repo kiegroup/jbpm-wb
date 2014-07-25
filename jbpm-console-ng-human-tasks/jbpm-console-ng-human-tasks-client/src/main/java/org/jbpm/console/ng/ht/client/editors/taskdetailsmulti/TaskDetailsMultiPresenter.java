@@ -31,6 +31,8 @@ import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.AbstractWorkbenchActivity;
+import org.uberfire.client.mvp.AbstractWorkbenchEditorActivity;
 import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.UberView;
@@ -44,9 +46,9 @@ import org.uberfire.workbench.model.Position;
 public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
 
   public interface TaskDetailsMultiView
-                    extends TabbedDetailsView<TaskDetailsMultiPresenter>  {
+          extends TabbedDetailsView<TaskDetailsMultiPresenter> {
   }
-  
+
   @Inject
   public TaskDetailsMultiView view;
 
@@ -67,7 +69,7 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
   }
 
   @Override
-  public void selectDefaultTab(){
+  public void selectDefaultTab() {
     goToTaskFormTab();
   }
 
@@ -75,7 +77,7 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
   public String getTitle() {
     return constants.Details();
   }
-  
+
   @OnStartup
   public void onStartup(final PlaceRequest place) {
     super.onStartup(place);
@@ -83,7 +85,7 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
   }
 
   public void onTaskSelectionEvent(@Observes TaskSelectionEvent event) {
-    selectedItemId = event.getTaskId();
+    selectedItemId = String.valueOf(event.getTaskId());
     selectedItemName = event.getTaskName();
     view.getHeaderPanel().clear();
     view.getHeaderPanel().add(new HTMLPanel(SafeHtmlUtils.htmlEscape(String.valueOf(selectedItemId) + " - " + selectedItemName)));
@@ -93,75 +95,83 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
   }
 
   public void goToTaskDetailsTab() {
-    if (place != null) {
+    if (place != null && !selectedItemId.equals("")) {
       String placeToGo = "Task Details";
       ((HTMLPanel) view.getTabPanel().getWidget(1)).clear();
       DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
       //Set Parameters here: 
-      defaultPlaceRequest.addParameter("taskId", String.valueOf(selectedItemId));
+      defaultPlaceRequest.addParameter("taskId", selectedItemId);
       defaultPlaceRequest.addParameter("taskName", selectedItemName);
 
-      AbstractWorkbenchScreenActivity activity = null;
+      AbstractWorkbenchActivity activity = null;
       if (activitiesMap.get(placeToGo) == null) {
         Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = ((AbstractWorkbenchScreenActivity) activities.iterator().next());
+        activity = (AbstractWorkbenchActivity) activities.iterator().next();
 
       } else {
         activity = activitiesMap.get(placeToGo);
       }
       IsWidget widget = activity.getWidget();
       activity.launch(place, null);
-      activity.onStartup(defaultPlaceRequest);
+      if (activity instanceof AbstractWorkbenchScreenActivity) {
+        ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
+      } else if (activity instanceof AbstractWorkbenchScreenActivity) {
+        ((AbstractWorkbenchScreenActivity) activity).onStartup(place);
+      }
       ((HTMLPanel) view.getTabPanel().getWidget(1)).add(widget);
       activity.onOpen();
     }
   }
 
   public void goToTaskFormTab() {
-    if (place != null) {
+    if (place != null && !selectedItemId.equals("")) {
       String placeToGo = "Form Display";
       ((HTMLPanel) view.getTabPanel().getWidget(0)).clear();
       DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
       //Set Parameters here: 
-      defaultPlaceRequest.addParameter("taskId", String.valueOf(selectedItemId));
+      defaultPlaceRequest.addParameter("taskId", selectedItemId);
       defaultPlaceRequest.addParameter("taskName", selectedItemName);
 
-      AbstractWorkbenchScreenActivity activity = null;
+      AbstractWorkbenchActivity activity = null;
       if (activitiesMap.get(placeToGo) == null) {
         Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = ((AbstractWorkbenchScreenActivity) activities.iterator().next());
+        activity = ((AbstractWorkbenchActivity) activities.iterator().next());
 
       } else {
         activity = activitiesMap.get(placeToGo);
       }
       IsWidget widget = activity.getWidget();
       activity.launch(place, null);
-      activity.onStartup(defaultPlaceRequest);
+      if (activity instanceof AbstractWorkbenchScreenActivity) {
+        ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
+      } else if (activity instanceof AbstractWorkbenchScreenActivity) {
+        ((AbstractWorkbenchScreenActivity) activity).onStartup(place);
+      }
       ((HTMLPanel) view.getTabPanel().getWidget(0)).add(widget);
       activity.onOpen();
     }
   }
 
   public void goToTaskAssignmentsTab() {
-    if (place != null) {
+    if (place != null && !selectedItemId.equals("")) {
       String placeToGo = "Task Assignments";
       ((HTMLPanel) view.getTabPanel().getWidget(2)).clear();
       DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
       //Set Parameters here: 
-      defaultPlaceRequest.addParameter("taskId", String.valueOf(selectedItemId));
+      defaultPlaceRequest.addParameter("taskId", selectedItemId);
       defaultPlaceRequest.addParameter("taskName", selectedItemName);
 
-      AbstractWorkbenchScreenActivity activity = null;
+      AbstractWorkbenchActivity activity = null;
       if (activitiesMap.get(placeToGo) == null) {
         Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = ((AbstractWorkbenchScreenActivity) activities.iterator().next());
+        activity = (AbstractWorkbenchActivity) activities.iterator().next();
 
       } else {
         activity = activitiesMap.get(placeToGo);
       }
       IsWidget widget = activity.getWidget();
       activity.launch(place, null);
-      activity.onStartup(defaultPlaceRequest);
+      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
       ((HTMLPanel) view.getTabPanel().getWidget(2)).add(widget);
       activity.onOpen();
     }
@@ -173,27 +183,24 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
       ((HTMLPanel) view.getTabPanel().getWidget(3)).clear();
       DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
       //Set Parameters here: 
-      defaultPlaceRequest.addParameter("taskId", String.valueOf(selectedItemId));
+      defaultPlaceRequest.addParameter("taskId", selectedItemId);
       defaultPlaceRequest.addParameter("taskName", selectedItemName);
 
-      AbstractWorkbenchScreenActivity activity = null;
+      AbstractWorkbenchActivity activity = null;
       if (activitiesMap.get(placeToGo) == null) {
         Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = ((AbstractWorkbenchScreenActivity) activities.iterator().next());
+        activity = (AbstractWorkbenchActivity) activities.iterator().next();
 
       } else {
         activity = activitiesMap.get(placeToGo);
       }
       IsWidget widget = activity.getWidget();
       activity.launch(place, null);
-      activity.onStartup(defaultPlaceRequest);
+      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
+      
       ((HTMLPanel) view.getTabPanel().getWidget(3)).add(widget);
       activity.onOpen();
     }
-  }
-
-  public void closeDetails() {
-    placeManager.closePlace(place);
   }
 
 }

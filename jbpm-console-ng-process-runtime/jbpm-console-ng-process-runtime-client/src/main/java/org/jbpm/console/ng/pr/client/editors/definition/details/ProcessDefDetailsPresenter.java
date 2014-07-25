@@ -100,8 +100,10 @@ public class ProcessDefDetailsPresenter {
         String getEncodedProcessSource();
     }
     
-    private Menus menus;
+    private String currentProcessDefId = "";
+    private String currentDeploymentId = "";
     
+ 
     @Inject
     private PlaceManager placeManager;
 
@@ -123,7 +125,7 @@ public class ProcessDefDetailsPresenter {
     private Constants constants = GWT.create( Constants.class );
 
     public ProcessDefDetailsPresenter() {
-        makeMenuBar();
+     
     }
     
     @DefaultPosition
@@ -321,80 +323,19 @@ public class ProcessDefDetailsPresenter {
 
     @OnOpen
     public void onOpen() {
+      
+      this.currentProcessDefId = place.getParameter("processDefId", "");
+      this.currentDeploymentId = place.getParameter("deploymentId", "");
+        view.getProcessIdText().setText( currentProcessDefId );
         
+        view.getDeploymentIdText().setText( currentDeploymentId );
+        refreshProcessDef( currentDeploymentId, currentProcessDefId );
     }
     
-    public void onProcessDefSelectionEvent(@Observes ProcessDefSelectionEvent event){
-        
-        view.getProcessIdText().setText( event.getProcessId() );
-        
-        view.getDeploymentIdText().setText( event.getDeploymentId() );
-
-        refreshProcessDef( event.getDeploymentId(), event.getProcessId() );
-    }
+   
     
-    @WorkbenchMenu
-    public Menus getMenus() {
-        return menus;
-    }
+  
     
-    private void makeMenuBar() {
-        menus = MenuFactory
-                .newTopLevelMenu( constants.New_Instance()).respondsWith(new Command() {
-                        @Override
-                        public void execute() {
-                            PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display Popup" );
-                            placeRequestImpl.addParameter( "processId", view.getProcessIdText().getText() );
-                            placeRequestImpl.addParameter( "domainId", view.getDeploymentIdText().getText() );
-                            placeRequestImpl.addParameter( "processName", view.getProcessNameText().getText() );
-                            placeManager.goTo( placeRequestImpl );
-                        }
-                     }).endMenu()
-                .newTopLevelMenu( constants.Options())
-                .withItems(getOptions())
-                .endMenu()
-                .newTopLevelMenu( constants.Refresh() )
-                .respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        refreshProcessDef( view.getDeploymentIdText().getText(), view.getProcessNameText().getText() );
-                        view.displayNotification( constants.Process_Definition_Details_Refreshed() );
-                    }
-                } )
-                .endMenu().build();
-
-    }
-    private List<MenuItem> getOptions(){
-        List<MenuItem> menuItems = new ArrayList<MenuItem>(2);
-        
-        menuItems.add( MenuFactory.newSimpleItem( constants.View_Process_Model()).respondsWith( new Command() {
-            @Override
-            public void execute() {   
-                    PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Designer" );
-
-                   // if ( view.getEncodedProcessSource() != null ) {
-                        placeRequestImpl.addParameter( "readOnly", "true" );
-                        //placeRequestImpl.addParameter( "encodedProcessSource", view.getEncodedProcessSource() );
-                        placeRequestImpl.addParameter("processId", view.getProcessIdText().getText());
-                        placeRequestImpl.addParameter("deploymentId", view.getDeploymentIdText().getText());
-                        
-                    //}
-                    placeManager.goTo( view.getProcessAssetPath(), placeRequestImpl );
-                }        
-        } ).endMenu().build().getItems().get( 0 ) );
-        
-        menuItems.add( MenuFactory.newSimpleItem( constants.View_Process_Instances()).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instances" );
-                placeRequestImpl.addParameter( "processName", view.getProcessNameText().getText() );
-                placeManager.goTo( placeRequestImpl );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
-        
-        
-        return menuItems;
     
-    }
 
 }

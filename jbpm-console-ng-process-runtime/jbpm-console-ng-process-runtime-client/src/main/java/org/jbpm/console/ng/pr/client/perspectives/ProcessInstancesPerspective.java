@@ -51,7 +51,7 @@ public class ProcessInstancesPerspective {
     
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_LIST);
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_SIMPLE);
         p.setName( "Process Instances" );
         DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Process Instance List" );
         defaultPlaceRequest.addParameter("processName", currentProcessDefinition);
