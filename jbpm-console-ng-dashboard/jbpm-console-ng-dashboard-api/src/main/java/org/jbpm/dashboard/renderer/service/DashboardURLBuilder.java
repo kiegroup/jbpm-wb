@@ -49,11 +49,13 @@ public class DashboardURLBuilder {
             if (!preffix.endsWith(SLASH)) result.append(SLASH);
             String localeName = localeInfo.getLocaleName();
             if (GWT_DEFAULT_LOCALE.equals(localeName)) localeName = DASHBUILDER_DEFAULT_LOCALE;
-            result. append(localeName);
+            result.append(localeName);
         }
 
         if (suffix != null) {
-            if (!result.toString().endsWith(SLASH)) result.append(SLASH);
+            if (!result.toString().endsWith(SLASH) && !suffix.startsWith(SLASH)) {
+                result.append(SLASH);
+            }
             result.append(suffix);
         }
 
