@@ -104,11 +104,11 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         selectedItem = selectionModel.getLastSelectedObject();
 
         
-        PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details"));
+        PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details Multi"));
         PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Details Multi"));
         
         if (instanceDetailsStatus == PlaceStatus.OPEN) {
-          placeManager.closePlace("Process Instance Details");
+          placeManager.closePlace("Process Instance Details Multi");
         }
         if (status == PlaceStatus.CLOSE) {
           placeManager.goTo("Process Details Multi");
@@ -213,7 +213,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     if (definitionDetailsStatus == PlaceStatus.OPEN) {
       placeManager.closePlace("Process Details Multi");
     }
-    placeManager.goTo("Process Instance Details");
+    placeManager.goTo("Process Instance Details Multi");
     processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getDeploymentId(),
             newProcessInstance.getNewProcessInstanceId(),
             newProcessInstance.getNewProcessDefId()));

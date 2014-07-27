@@ -235,15 +235,6 @@ public class ProcessDefDetailsMultiPresenter extends AbstractTabbedDetailsPresen
     }
   }
 
-  public void viewProcessModel() {
-    PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Designer");
-
-    placeRequestImpl.addParameter("readOnly", "true");
-
-    placeRequestImpl.addParameter("processId", selectedItemName);
-    placeRequestImpl.addParameter("deploymentId", selectedItemId);
-
-  }
 
   public void viewProcessInstances() {
     PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Instances");

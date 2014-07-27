@@ -75,6 +75,9 @@ public class ProcessInstanceDetailsPresenter {
 
     @Inject
     private Caller<KieSessionEntryPoint> kieSessionServices;
+    private String currentDeploymentId;
+    private String currentProcessInstanceId;
+    private String currentProcessDefId;
 
     public interface ProcessInstanceDetailsView extends UberView<ProcessInstanceDetailsPresenter> {
 
@@ -336,19 +339,19 @@ public class ProcessInstanceDetailsPresenter {
         this.place = place;
     }
 
-    @OnOpen
-    public void onOpen() {
-       
-    }
+   @OnOpen
+  public void onOpen() {
+    this.currentDeploymentId = place.getParameter("deploymentId", "");
+    this.currentProcessInstanceId = place.getParameter("processInstanceId", "");
+    this.currentProcessDefId = place.getParameter("processDefId", "");
 
-    public void onProcessInstanceSelectionEvent(@Observes ProcessInstanceSelectionEvent event) {
-        view.getProcessInstanceIdText().setText(String.valueOf(event.getProcessInstanceId()));
+    view.getProcessInstanceIdText().setText(currentProcessInstanceId);
+    view.getProcessNameText().setText(currentProcessDefId);
 
-        view.getProcessNameText().setText(event.getProcessDefId());
+    refreshProcessInstanceData(currentDeploymentId, currentProcessInstanceId, currentProcessDefId);
+  }
 
-        refreshProcessInstanceData(event.getDeploymentId(), String.valueOf(event.getProcessInstanceId()), event.getProcessDefId());
-
-    }
+  
 
     @WorkbenchMenu
     public Menus getMenus() {
