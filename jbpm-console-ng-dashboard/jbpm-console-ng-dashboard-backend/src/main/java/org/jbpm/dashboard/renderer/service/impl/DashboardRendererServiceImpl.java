@@ -1,5 +1,6 @@
 package org.jbpm.dashboard.renderer.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.dashboard.renderer.service.DashboardRendererService;
 import org.jbpm.dashboard.renderer.service.ConnectionStatus;
@@ -50,12 +51,17 @@ public class DashboardRendererServiceImpl implements DashboardRendererService {
         // Add the target URL
         results.add(anUrl);
 
-        // Add the "localhost" version
         try {
+            // Get the dashbuilder address (defaults to localhost).
+            String bindAddress = System.getProperty("dashbuilder.bind.address");
+            if (StringUtils.isBlank(bindAddress)) {
+                bindAddress = InetAddress.getLocalHost().getHostAddress();
+            }
+
+            // Add the bind address
             String host = new URL(anUrl).getHost();
-            String localHost = InetAddress.getLocalHost().getHostAddress();
-            if (!host.equals(localHost)) {
-                results.add(anUrl.replace(host, localHost));
+            if (!host.equals(bindAddress)) {
+                results.add(anUrl.replace(host, bindAddress));
             }
         } catch (Exception e) {
             e.printStackTrace();
