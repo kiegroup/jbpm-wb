@@ -49,6 +49,7 @@ import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
@@ -571,7 +572,7 @@ public class FormDisplayPresenter {
             @Override
             public void callback(Long processInstanceId) {
                 view.displayNotification("Process Id: " + processInstanceId + " started!");
-                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(currentDomainId, processInstanceId, currentProcessId));
+                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(currentDomainId, processInstanceId,"", currentProcessId, 1));
                 close();
             }
         };

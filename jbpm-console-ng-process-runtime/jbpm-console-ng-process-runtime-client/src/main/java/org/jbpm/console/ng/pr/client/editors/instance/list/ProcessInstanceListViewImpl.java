@@ -64,7 +64,6 @@ import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
-import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.mvp.PlaceStatus;
@@ -73,7 +72,6 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
-
 public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanceSummary, ProcessInstanceListPresenter>
         implements ProcessInstanceListPresenter.ProcessInstanceListView {
   
@@ -100,8 +98,6 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
   private Button relatedToMeFilterButton;
   
   private List<ProcessInstanceSummary> selectedProcessInstances = new ArrayList<ProcessInstanceSummary>();
-
-  
 
   @Inject
   private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
@@ -149,10 +145,12 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
         if (status == PlaceStatus.CLOSE) {
           placeManager.goTo("Process Instance Details Multi");
           processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedItem.getDeploymentId(),
-                                        selectedItem.getProcessInstanceId(), selectedItem.getProcessId()));
+                                        selectedItem.getProcessInstanceId(), selectedItem.getProcessId(), 
+                                        selectedItem.getProcessName(), selectedItem.getState()));
         } else if (status == PlaceStatus.OPEN && !close) {
           processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedItem.getDeploymentId(),
-                                        selectedItem.getProcessInstanceId(), selectedItem.getProcessId()));
+                                        selectedItem.getProcessInstanceId(), selectedItem.getProcessId(), 
+                                        selectedItem.getProcessName(), selectedItem.getState()));
         } else if (status == PlaceStatus.OPEN && close ) {
           placeManager.closePlace("Process Instance Details Multi");
         }
@@ -492,7 +490,9 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
 
   public void onProcessInstanceSelectionEvent(@Observes ProcessInstancesWithDetailsRequestEvent event) {
     placeManager.goTo("Process Instance Details");
-    processInstanceSelected.fire(new ProcessInstanceSelectionEvent(event.getDeploymentId(), event.getProcessInstanceId(), event.getProcessDefId()));
+    processInstanceSelected.fire(new ProcessInstanceSelectionEvent(event.getDeploymentId(), 
+                    event.getProcessInstanceId(), event.getProcessDefId(), 
+                    event.getProcessDefName(), event.getProcessInstanceStatus()));
   }
 
   

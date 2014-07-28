@@ -37,7 +37,7 @@ import org.jbpm.console.ng.pr.backend.server.VariableHelper;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
-import org.jbpm.console.ng.pr.model.VariableSummary;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.services.api.DefinitionService;
 import org.jbpm.services.api.RuntimeDataService;
 import org.jbpm.services.api.model.ProcessInstanceDesc;
@@ -169,7 +169,7 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
     }
 
     @Override
-    public Collection<VariableSummary> getVariableHistory(long processInstanceId, String variableId) {
+    public Collection<ProcessVariableSummary> getVariableHistory(long processInstanceId, String variableId) {
         // TODO make use of paging properly as it's currently limiting to 100
         return VariableHelper.adaptCollection(dataService.getVariableHistory(processInstanceId, variableId, new QueryContextImpl(0, 100)));
     }
@@ -205,7 +205,7 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
     }
 
     @Override
-    public Collection<VariableSummary> getVariablesCurrentState(long processInstanceId, String processId) {
+    public Collection<ProcessVariableSummary> getVariablesCurrentState(long processInstanceId, String processId) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
         Map<String, String> properties = new HashMap<String, String>(bpmn2Service.getProcessVariables(piDesc.getDeploymentId(), processId));
         return VariableHelper.adaptCollection(dataService.getVariablesCurrentState(processInstanceId), properties,

@@ -25,7 +25,7 @@ import org.jbpm.console.ng.ht.model.TaskDefSummary;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
-import org.jbpm.console.ng.pr.model.VariableSummary;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 
 @Remote
 public interface DataServiceEntryPoint {
@@ -56,7 +56,7 @@ public interface DataServiceEntryPoint {
 
     Collection<NodeInstanceSummary> getProcessInstanceCompletedNodes(long processInstanceId);
 
-    Collection<VariableSummary> getVariableHistory(long processInstanceId, String variableId);
+    Collection<ProcessVariableSummary> getVariableHistory(long processInstanceId, String variableId);
 
     /*
      * BPMN2
@@ -72,7 +72,7 @@ public interface DataServiceEntryPoint {
 
     ProcessSummary getProcessDesc(String deploymentId, String processId);
 
-    Collection<VariableSummary> getVariablesCurrentState(long processInstanceId, String processId);
+    Collection<ProcessVariableSummary> getVariablesCurrentState(long processInstanceId, String processId);
 
     Map<String, String> getTaskInputMappings(String deploymentId, String processId, String taskName);
 

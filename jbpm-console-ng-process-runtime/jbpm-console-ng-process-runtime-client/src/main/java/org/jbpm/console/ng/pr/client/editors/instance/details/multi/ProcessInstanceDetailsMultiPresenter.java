@@ -38,6 +38,7 @@ import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.DummyProcessPath;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
+import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.backend.vfs.impl.ObservablePathImpl;
 import org.uberfire.client.annotations.DefaultPosition;
@@ -49,6 +50,7 @@ import org.uberfire.client.mvp.AbstractWorkbenchEditorActivity;
 import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.lifecycle.OnClose;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -75,6 +77,10 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
   private Caller<DataServiceEntryPoint> dataServices;
 
   private String selectedDeploymentId = "";
+
+  private int selectedProcessInstanceStatus = 0;
+  
+  private String selectedProcessDefName = "";
 
   public ProcessInstanceDetailsMultiPresenter() {
 
@@ -110,11 +116,31 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
     selectedItemId = String.valueOf(event.getProcessInstanceId());
     selectedItemName = event.getProcessDefId();
     selectedDeploymentId = event.getDeploymentId();
+    selectedProcessInstanceStatus = event.getProcessInstanceStatus();
+    selectedProcessDefName = event.getProcessDefName();
     view.getHeaderPanel().clear();
-    view.getHeaderPanel().add(new HTMLPanel(SafeHtmlUtils.htmlEscape(String.valueOf(selectedItemId) + " - " + selectedItemName)));
+    
+    view.getHeaderPanel().add(new HTMLPanel(SafeHtmlUtils.htmlEscape(String.valueOf(selectedItemId) + " - " 
+                    + selectedProcessDefName + " (" + getProcessStatusString(selectedProcessInstanceStatus) + ")")));
     view.getTabPanel().selectTab(0);
     selectDefaultTab();
 
+  }
+  
+  private String getProcessStatusString(int processStatus){
+    String processStatusString = "";
+    if(selectedProcessInstanceStatus == ProcessInstance.STATE_ACTIVE){
+      processStatusString = "ACTIVE";
+    }else if(selectedProcessInstanceStatus == ProcessInstance.STATE_ABORTED){
+      processStatusString = "ABORTED";
+    }else if(selectedProcessInstanceStatus == ProcessInstance.STATE_COMPLETED){
+      processStatusString = "COMPLETED";
+    } else if(selectedProcessInstanceStatus == ProcessInstance.STATE_PENDING){
+      processStatusString = "PENDING";
+    }else if(selectedProcessInstanceStatus == ProcessInstance.STATE_SUSPENDED){
+      processStatusString = "SUSPENDED";
+    }
+    return processStatusString;
   }
 
   public void goToProcessInstanceDetailsTab() {
@@ -177,16 +203,16 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
               completedNodeParam.deleteCharAt(completedNodeParam.length() - 1);
               DummyProcessPath dummyProcessPath = new DummyProcessPath(selectedItemName);
               PathPlaceRequest defaultPlaceRequest = new PathPlaceRequest(dummyProcessPath);
-            
+
               defaultPlaceRequest.addParameter("activeNodes", nodeParam.toString());
               defaultPlaceRequest.addParameter("completedNodes", completedNodeParam.toString());
               defaultPlaceRequest.addParameter("readOnly", "true");
               defaultPlaceRequest.addParameter("processId", selectedItemName);
               defaultPlaceRequest.addParameter("deploymentId", selectedDeploymentId);
-              
+
               ((HTMLPanel) view.getTabPanel().getWidget(1)).clear();
-              
-               AbstractWorkbenchActivity activity = null;
+
+              AbstractWorkbenchActivity activity = null;
 
               if (activitiesMap.get(selectedItemName) == null) {
                 Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
@@ -199,11 +225,10 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
               if (activity instanceof AbstractWorkbenchScreenActivity) {
                 ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
               } else if (activity instanceof AbstractWorkbenchEditorActivity) {
-                ((AbstractWorkbenchEditorActivity) activity).onStartup(new ObservablePathImpl().wrap(dummyProcessPath),defaultPlaceRequest);
+                ((AbstractWorkbenchEditorActivity) activity).onStartup(new ObservablePathImpl().wrap(dummyProcessPath), defaultPlaceRequest);
               }
               ((HTMLPanel) view.getTabPanel().getWidget(1)).add(widget);
               activity.onOpen();
-              
 
             }
           }, new ErrorCallback<Message>() {
@@ -222,40 +247,6 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
           return true;
         }
       }).getProcessInstanceActiveNodes(Long.parseLong(selectedItemId));
-//      if (view.getProcessAssetPath() == null) {
-//                            view.displayNotification("Process definition not found, most likely it's not deployed");
-//                            return;
-//                        }
-//                        StringBuffer nodeParam = new StringBuffer();
-//                        for (NodeInstanceSummary activeNode : view.getActiveNodes()) {
-//                            nodeParam.append(activeNode.getNodeUniqueName() + ",");
-//                        }
-//                        if (nodeParam.length() > 0) {
-//                            nodeParam.deleteCharAt(nodeParam.length() - 1);
-//                        }
-//
-//                        StringBuffer completedNodeParam = new StringBuffer();
-//                        for (NodeInstanceSummary completedNode : view.getCompletedNodes()) {
-//                            if (completedNode.isCompleted()) {
-//                                // insert outgoing sequence flow and node as this is for on entry event
-//                                completedNodeParam.append(completedNode.getNodeUniqueName() + ",");
-//                                completedNodeParam.append(completedNode.getConnection() + ",");
-//                            } else if (completedNode.getConnection() != null) {
-//                                // insert only incoming sequence flow as node id was already inserted
-//                                completedNodeParam.append(completedNode.getConnection() + ",");
-//                            }
-//
-//                        }
-//                        completedNodeParam.deleteCharAt(completedNodeParam.length() - 1);
-//
-//                        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Designer");
-//                        placeRequestImpl.addParameter("activeNodes", nodeParam.toString());
-//                        placeRequestImpl.addParameter("completedNodes", completedNodeParam.toString());
-//                        placeRequestImpl.addParameter("readOnly", "true");
-//                        placeRequestImpl.addParameter("processId", view.getProcessDefinitionIdText().getText());
-//                        placeRequestImpl.addParameter("deploymentId", view.getProcessDeploymentText().getText());
-
-//                        placeManager.goTo(view.getProcessAssetPath(), placeRequestImpl);
     }
   }
 
@@ -269,6 +260,7 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
       defaultPlaceRequest.addParameter("processInstanceId", selectedItemId);
       defaultPlaceRequest.addParameter("processDefId", selectedItemName);
       defaultPlaceRequest.addParameter("deploymentId", selectedDeploymentId);
+      defaultPlaceRequest.addParameter("processInstanceStatus", String.valueOf(selectedProcessInstanceStatus));
 
       AbstractWorkbenchActivity activity = null;
       if (activitiesMap.get(placeToGo) == null) {
@@ -317,5 +309,10 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
         }
       }).abortProcessInstance(processInstanceId);
     }
+  }
+
+  @OnClose
+  public void onClose() {
+    super.onClose();
   }
 }

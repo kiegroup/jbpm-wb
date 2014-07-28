@@ -39,7 +39,7 @@ import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceKey;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
-import org.jbpm.console.ng.pr.model.VariableSummary;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceStyleEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
@@ -151,9 +151,9 @@ public class ProcessInstanceDetailsPresenter {
         makeMenuBar();
     }
 
-    public static final ProvidesKey<VariableSummary> KEY_PROVIDER = new ProvidesKey<VariableSummary>() {
+    public static final ProvidesKey<ProcessVariableSummary> KEY_PROVIDER = new ProvidesKey<ProcessVariableSummary>() {
         @Override
-        public Object getKey(VariableSummary item) {
+        public Object getKey(ProcessVariableSummary item) {
             return item == null ? null : item.getVariableId();
         }
     };

@@ -29,7 +29,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.model.RuntimeLogSummary;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.model.VariableSummary;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -72,9 +72,9 @@ public class RuntimeLogPresenter {
        
     }
 
-    public static final ProvidesKey<VariableSummary> KEY_PROVIDER = new ProvidesKey<VariableSummary>() {
+    public static final ProvidesKey<ProcessVariableSummary> KEY_PROVIDER = new ProvidesKey<ProcessVariableSummary>() {
         @Override
-        public Object getKey(VariableSummary item) {
+        public Object getKey(ProcessVariableSummary item) {
             return item == null ? null : item.getVariableId();
         }
     };

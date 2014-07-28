@@ -216,7 +216,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     placeManager.goTo("Process Instance Details Multi");
     processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getDeploymentId(),
             newProcessInstance.getNewProcessInstanceId(),
-            newProcessInstance.getNewProcessDefId()));
+            newProcessInstance.getNewProcessDefId(), newProcessInstance.getProcessDefName(), newProcessInstance.getNewProcessInstanceStatus()));
 
   }
 
