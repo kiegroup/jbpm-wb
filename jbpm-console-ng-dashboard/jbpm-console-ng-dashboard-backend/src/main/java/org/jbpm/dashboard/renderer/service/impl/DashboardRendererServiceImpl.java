@@ -52,20 +52,36 @@ public class DashboardRendererServiceImpl implements DashboardRendererService {
         results.add(anUrl);
 
         try {
-            // Get the dashbuilder address (defaults to localhost).
+            // Get the new address (defaults to localhost).
             String bindAddress = System.getProperty("dashbuilder.bind.address");
+            String bindPort = System.getProperty("dashbuilder.bind.port");
             if (StringUtils.isBlank(bindAddress)) {
                 bindAddress = InetAddress.getLocalHost().getHostAddress();
             }
 
-            // Add the bind address
-            String host = new URL(anUrl).getHost();
+            URL url = new URL(anUrl);
+            String host = url.getHost();
+            int port = url.getPort();
+            String newUrl = anUrl;
             if (!host.equals(bindAddress)) {
-                results.add(anUrl.replace(host, bindAddress));
+                newUrl = newUrl.replace(host, bindAddress);
+            }
+            if (!StringUtils.isBlank(bindPort) && port != Integer.parseInt(bindPort)) {
+                newUrl = newUrl.replace(Integer.toString(port), bindPort);
+            }
+            if (!anUrl.equals(newUrl)) {
+                results.add(newUrl);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return results;
+    }
+
+    public static void main(String[] args) {
+        DashboardRendererServiceImpl s = new DashboardRendererServiceImpl();
+        for (String s1 : s.explodeUrl("http://localhost:8080/dashbuilder/workspace")) {
+            System.out.println(s1);
+        }
     }
 }
