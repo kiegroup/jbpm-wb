@@ -53,6 +53,11 @@
       <g:cell width="33%">
         <g:FlowPanel width="100%"  ui:field="rightToolbar" addStyleNames="{style.rightToolBar}">
           <b:Button ui:field="columnPickerButton" toggle="true" icon="LIST_UL"/>
+          <b:DropdownButton ui:field="layoutOptionsButton" icon="TASKS">
+            <b:NavLink ui:field="saveLayoutNavLink"></b:NavLink>
+            <b:NavLink ui:field="restoreLayoutNavLink"></b:NavLink>
+            <b:NavLink ui:field="resetLayoutNavLink"></b:NavLink>
+          </b:DropdownButton>
         </g:FlowPanel>
       </g:cell>
     </g:HorizontalPanel>

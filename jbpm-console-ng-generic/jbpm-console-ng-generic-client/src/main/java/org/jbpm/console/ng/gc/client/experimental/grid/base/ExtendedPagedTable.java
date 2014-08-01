@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import com.google.gwt.view.client.ProvidesKey;
 import java.util.Map;
+import org.guvnor.common.services.shared.preferences.GridGlobalPreferences;
 import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.kie.uberfire.client.tables.PagedTable;
 
@@ -40,14 +41,14 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
 
   private static Binder uiBinder = GWT.create(Binder.class);
 
-  public ExtendedPagedTable(int pageSize, Map<String, String> params) {
+  public ExtendedPagedTable(int pageSize, GridGlobalPreferences gridPreferences) {
     super(pageSize, new ProvidesKey<T>() {
 
       @Override
       public Object getKey(T item) {
         return (item == null) ? null : item.getId();
       }
-    }, params);
+    }, gridPreferences);
 
     dataGrid.addColumnSortHandler(new AsyncHandler(dataGrid));
 

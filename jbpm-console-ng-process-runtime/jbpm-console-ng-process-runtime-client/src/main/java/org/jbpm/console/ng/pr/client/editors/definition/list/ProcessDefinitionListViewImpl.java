@@ -34,6 +34,7 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,6 +43,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import org.guvnor.common.services.shared.preferences.GridGlobalPreferences;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
@@ -76,9 +78,15 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
 
   @Override
   public void init(final ProcessDefinitionListPresenter presenter) {
-    Map<String, String> params = new HashMap<String, String>();
-    params.put("bannedColumns",constants.Name()+","+constants.Actions());
-    super.init(presenter, params);
+    
+    List<String> bannedColumns = new ArrayList<String>();
+    bannedColumns.add(constants.Name());
+    bannedColumns.add(constants.Actions());
+    List<String> initColumns = new ArrayList<String>();
+    initColumns.add(constants.Name());
+    initColumns.add(constants.Version());
+    initColumns.add(constants.Actions());
+    super.init(presenter, new GridGlobalPreferences("ProcessDefinitionsGrid", initColumns, bannedColumns));
 
     
     selectionModel = new NoSelectionModel<ProcessSummary>();
