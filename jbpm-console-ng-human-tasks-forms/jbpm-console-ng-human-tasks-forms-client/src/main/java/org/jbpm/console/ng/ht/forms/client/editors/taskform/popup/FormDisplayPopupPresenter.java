@@ -363,7 +363,7 @@ public class FormDisplayPopupPresenter {
                         wrapperFlowPanel.add( startFlowPanel );
                         view.getOptionsDiv().add( wrapperFlowPanel );
                     }
-                } ).getProcessDesc(idProcess);
+                } ).getProcessDesc(deploymentId, idProcess);
             }
         }).getFormDisplayProcess(deploymentId, idProcess);
         this.currentTitle = idProcess;
@@ -413,7 +413,7 @@ public class FormDisplayPopupPresenter {
     }
 
     public void completeTask(String values) {
-        final Map<String, String> params = getUrlParameters(values);
+        final Map<String, Object> params = getUrlParameters(values);
         final Map<String, Object> objParams = new HashMap<String, Object>(params);
         taskServices.call(new RemoteCallback<Void>() {
             @Override
@@ -428,11 +428,11 @@ public class FormDisplayPopupPresenter {
                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                   return true;
               }
-          }).complete(Long.parseLong(params.get("taskId")), identity.getName(), objParams);
+          }).complete(Long.parseLong((String)params.get("taskId")), identity.getName(), objParams);
 
     }
 
-    public void saveTaskState(final Long taskId, final Map<String, String> values) {
+    public void saveTaskState(final Long taskId, final Map<String, Object> values) {
         taskServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long contentId) {
@@ -449,7 +449,7 @@ public class FormDisplayPopupPresenter {
     }
 
     public void saveTaskState(String values) {
-        final Map<String, String> params = getUrlParameters(values);
+        final Map<String, Object> params = getUrlParameters(values);
         taskServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long contentId) {
@@ -498,7 +498,7 @@ public class FormDisplayPopupPresenter {
     }
 
     public void startTask( String values ) {
-        final Map<String, String> params = getUrlParameters( values );
+        final Map<String, Object> params = getUrlParameters( values );
         taskServices.call( new RemoteCallback<Void>() {
             @Override
             public void callback( Void nothing ) {
@@ -579,7 +579,7 @@ public class FormDisplayPopupPresenter {
             @Override
             public void callback(Long processInstanceId) {
                 view.displayNotification("Process Id: " + processInstanceId + " started!");
-                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(view.getDomainId(), processInstanceId, view.getProcessId()));
+                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(view.getDomainId(), processInstanceId, view.getProcessId(),  view.getNameText().getText(), 1));
                 close();
                
             }
@@ -594,13 +594,13 @@ public class FormDisplayPopupPresenter {
     }
 
     public void startProcess(String values) {
-        final Map<String, String> params = getUrlParameters(values);
+        final Map<String, Object> params = getUrlParameters(values);
 
         sessionServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long processInstanceId) {
                 view.displayNotification("Process Id: " + processInstanceId + " started!");
-                 newProcessInstanceEvent.fire(new NewProcessInstanceEvent(view.getDomainId(), processInstanceId, view.getProcessId()));
+                 newProcessInstanceEvent.fire(new NewProcessInstanceEvent(view.getDomainId(), processInstanceId, view.getProcessId(), view.getNameText().getText(), 1));
                 close();
                 
             }
@@ -650,8 +650,8 @@ public class FormDisplayPopupPresenter {
         };
     }-*/;
 
-    public static Map<String, String> getUrlParameters(String values) {
-        Map<String, String> params = new HashMap<String, String>();
+    public static Map<String, Object> getUrlParameters(String values) {
+        Map<String, Object> params = new HashMap<String, Object>();
         for (String param : values.split("&")) {
             String pair[] = param.split("=");
             String key = pair[0];

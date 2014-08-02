@@ -35,12 +35,13 @@ import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
 import org.jbpm.console.ng.bd.service.Initializable;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.kie.services.impl.KModuleDeploymentUnit;
-import org.jbpm.kie.services.impl.event.Deploy;
-import org.jbpm.kie.services.impl.event.DeploymentEvent;
-import org.jbpm.kie.services.impl.event.Undeploy;
-import org.kie.internal.deployment.DeployedUnit;
-import org.kie.internal.deployment.DeploymentService;
-import org.kie.internal.deployment.DeploymentUnit;
+import org.jbpm.services.api.DeploymentEvent;
+import org.jbpm.services.api.DeploymentService;
+import org.jbpm.services.api.model.DeployedUnit;
+import org.jbpm.services.api.model.DeploymentUnit;
+import org.jbpm.services.cdi.Deploy;
+import org.jbpm.services.cdi.Undeploy;
+import org.kie.internal.runtime.conf.RuntimeStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.paging.PageResponse;
@@ -404,7 +405,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
       KModuleDeploymentUnitSummary unit = new KModuleDeploymentUnitSummary("",
               buildResults.getGAV().getGroupId(),
               buildResults.getGAV().getArtifactId(),
-              buildResults.getGAV().getVersion(), "", "", DeploymentUnit.RuntimeStrategy.SINGLETON.toString());
+              buildResults.getGAV().getVersion(), "", "", RuntimeStrategy.SINGLETON.toString());
 
       undeploy(unit);
       deploy(unit);

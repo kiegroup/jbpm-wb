@@ -97,7 +97,7 @@ public class StandaloneFormDisplayPresenter extends FormDisplayPresenter {
             public void callback(Long processInstanceId) {
                 String notification = "Process Id: " + processInstanceId + " started!";
                 view.displayNotification(notification);
-                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(currentDomainId, processInstanceId, currentProcessId));
+                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(currentDomainId, processInstanceId, currentProcessId,"", 1));
                 close();
                 notifyOpener(SUCCESS_CODE, notification);
             }

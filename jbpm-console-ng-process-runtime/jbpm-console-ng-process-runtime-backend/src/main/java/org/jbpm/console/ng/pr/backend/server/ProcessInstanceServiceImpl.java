@@ -23,113 +23,76 @@ import java.util.Comparator;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ga.service.ItemKey;
 import org.jbpm.console.ng.pr.model.ProcessInstanceKey;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.service.ProcessInstanceService;
-import org.jbpm.kie.services.api.RuntimeDataService;
-import org.jbpm.kie.services.impl.model.ProcessInstanceDesc;
+import org.jbpm.services.api.RuntimeDataService;
+import org.jbpm.services.api.model.ProcessInstanceDesc;
+import org.jbpm.services.task.query.QueryFilterImpl;
+import org.kie.internal.query.QueryContext;
 import org.uberfire.paging.PageResponse;
 
 /**
- *
  * @author salaboy
  */
 @Service
 @ApplicationScoped
-public class ProcessInstanceServiceImpl implements ProcessInstanceService{
+public class ProcessInstanceServiceImpl implements ProcessInstanceService {
 
-  
-  @Inject
-  private RuntimeDataService dataService;
-  
-  @Override
-  public PageResponse<ProcessInstanceSummary> getData(QueryFilter filter) {
-    PageResponse<ProcessInstanceSummary> response = new PageResponse<ProcessInstanceSummary>();
-    List<Integer> states = null;
-    String initiator = "";
-    if (filter.getParams() != null){
-      states = (List<Integer>) filter.getParams().get("states");
-      initiator = (String) filter.getParams().get("initiator");
-    } 
-    Collection<ProcessInstanceDesc> processInstances = dataService.getProcessInstances(states, initiator);
-    List<ProcessInstanceSummary> processInstancesSums = new ArrayList<ProcessInstanceSummary>(processInstances.size());
-    for (ProcessInstanceDesc pi : processInstances) {
+    @Inject
+    private RuntimeDataService dataService;
 
-      if (filter.getParams().get("textSearch") == null || ((String) filter.getParams().get("textSearch")).isEmpty()) {
-        processInstancesSums.add(ProcessInstanceHelper.adapt(pi));
-      } else if (pi.getProcessName().toLowerCase().contains((String) filter.getParams().get("textSearch"))) {
-        processInstancesSums.add(ProcessInstanceHelper.adapt(pi));
-      }
-    }
-    sort(processInstancesSums,filter);
-    
-    response.setStartRowIndex(filter.getOffset());
-    response.setTotalRowSize(processInstancesSums.size());
-    response.setTotalRowSizeExact(true);
-    
-    if (!processInstancesSums.isEmpty() && processInstancesSums.size() > (filter.getCount() + filter.getOffset())) {
-      response.setPageRowList(new ArrayList<ProcessInstanceSummary>(processInstancesSums.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
-      response.setLastPage(false);
-      
-    } else {
-      response.setPageRowList(new ArrayList<ProcessInstanceSummary>(processInstancesSums.subList(filter.getOffset(), processInstancesSums.size())));
-      response.setLastPage(true);
-      
-    }
-    return response;
+    @Override
+    public PageResponse<ProcessInstanceSummary> getData(QueryFilter filter) {
+        PageResponse<ProcessInstanceSummary> response = new PageResponse<ProcessInstanceSummary>();
+        List<Integer> states = null;
+        String initiator = "";
+        if (filter.getParams() != null) {
+            states = (List<Integer>) filter.getParams().get("states");
+            initiator = (String) filter.getParams().get("initiator");
+        }
+        // append 1 to the count to check if there are further pages
+        org.kie.internal.query.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1,
+                filter.getOrderBy(), filter.isAscending());
+        Collection<ProcessInstanceDesc> processInstances = dataService.getProcessInstances(states, initiator, qf);
+        List<ProcessInstanceSummary> processInstancesSums = new ArrayList<ProcessInstanceSummary>(processInstances.size());
+        for (ProcessInstanceDesc pi : processInstances) {
 
-  }
+            if (filter.getParams().get("textSearch") == null || ((String) filter.getParams().get("textSearch")).isEmpty()) {
+                processInstancesSums.add(ProcessInstanceHelper.adapt(pi));
+            } else if (pi.getProcessName().toLowerCase().contains((String) filter.getParams().get("textSearch"))) {
+                processInstancesSums.add(ProcessInstanceHelper.adapt(pi));
+            }
+        }
 
-  private void sort(List<ProcessInstanceSummary> processInstancesSums, final QueryFilter filter) {
-    if (filter.getOrderBy().equals("Name")) {
-      Collections.sort(processInstancesSums, new Comparator<ProcessInstanceSummary>() {
+        response.setStartRowIndex(filter.getOffset());
+        response.setTotalRowSize(processInstancesSums.size()-1);
+        if(processInstancesSums.size() > filter.getCount()){
+            response.setTotalRowSizeExact(false);
+        } else{
+            response.setTotalRowSizeExact(true);
+        }
 
-        @Override
-        public int compare(ProcessInstanceSummary o1, ProcessInstanceSummary o2) {
-          if (o1 == o2) {
-            return 0;
-          }
+        if (!processInstancesSums.isEmpty() && processInstancesSums.size() > (filter.getCount() + filter.getOffset())) {
+            response.setPageRowList(new ArrayList<ProcessInstanceSummary>(processInstancesSums.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
+            response.setLastPage(false);
 
-          // Compare the name columns.
-          int diff = -1;
-          if (o1 != null) {
-            diff = (o2 != null) ? o1.getProcessName().compareTo(o2.getProcessName()) : 1;
-          }
-          return filter.isAscending() ? diff : -diff;
+        } else {
+            response.setPageRowList(new ArrayList<ProcessInstanceSummary>(processInstancesSums));
+            response.setLastPage(true);
 
         }
-      });
-    }else if(filter.getOrderBy().equals("Version")){
-      Collections.sort(processInstancesSums, new Comparator<ProcessInstanceSummary>() {
+        return response;
 
-        @Override
-        public int compare(ProcessInstanceSummary o1, ProcessInstanceSummary o2) {
-          if (o1 == o2) {
-            return 0;
-          }
-
-          // Compare the name columns.
-          int diff = -1;
-          if (o1 != null) {
-            diff = (o2 != null) ? o1.getProcessVersion().compareTo(o2.getProcessVersion()) : 1;
-          }
-          return filter.isAscending() ? diff : -diff;
-
-        }
-      });
     }
-  }
 
-  @Override
-  public ProcessInstanceSummary getItem(ProcessInstanceKey key) {
-    return ProcessInstanceHelper.adapt(dataService.getProcessInstanceById(key.getProcessInstanceId()));
-  }
+    @Override
+    public ProcessInstanceSummary getItem(ProcessInstanceKey key) {
+        return ProcessInstanceHelper.adapt(dataService.getProcessInstanceById(key.getProcessInstanceId()));
+    }
 
-  
-
- 
-  
 }

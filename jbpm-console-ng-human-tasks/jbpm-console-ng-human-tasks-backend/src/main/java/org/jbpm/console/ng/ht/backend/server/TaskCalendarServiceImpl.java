@@ -28,6 +28,7 @@ import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.TasksPerDaySummary;
 import org.jbpm.console.ng.ht.service.TaskCalendarService;
+import org.jbpm.services.api.RuntimeDataService;
 import org.jbpm.services.task.query.QueryFilterImpl;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -43,8 +44,9 @@ import org.uberfire.paging.PageResponse;
 @ApplicationScoped
 public class TaskCalendarServiceImpl implements TaskCalendarService {
 
+
   @Inject
-  private InternalTaskService taskService;
+  private RuntimeDataService runtimeDataService;
 
   public TaskCalendarServiceImpl() {
   }
@@ -78,12 +80,12 @@ public class TaskCalendarServiceImpl implements TaskCalendarService {
       statuses.add(Status.valueOf(s));
     }
 
-    org.kie.internal.task.api.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1);
+    org.kie.internal.query.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1);
     List<TaskSummary> taskSummaries = null;
     if(!ownedFilter){        
-      taskSummaries = TaskSummaryHelper.adaptCollection(taskService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf));
+      taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf));
     }else{
-      taskSummaries = TaskSummaryHelper.adaptCollection(taskService.getTasksOwned(userId, statuses, qf));
+      taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksOwnedByStatus(userId, statuses, qf));
     }
 
     LocalDate dayFrom = new LocalDate(dateFrom);

@@ -102,7 +102,7 @@ public class ProcessDefinitionListPresenter extends AbstractListPresenter<Proces
             GWT.log(throwable.toString());
             return true;
           }
-        }).getData(currentFilter); //.getProcesses();
+        }).getData(currentFilter); 
 
       }
     };

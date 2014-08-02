@@ -39,7 +39,7 @@ import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceKey;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
-import org.jbpm.console.ng.pr.model.VariableSummary;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceStyleEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
@@ -75,6 +75,9 @@ public class ProcessInstanceDetailsPresenter {
 
     @Inject
     private Caller<KieSessionEntryPoint> kieSessionServices;
+    private String currentDeploymentId;
+    private String currentProcessInstanceId;
+    private String currentProcessDefId;
 
     public interface ProcessInstanceDetailsView extends UberView<ProcessInstanceDetailsPresenter> {
 
@@ -148,9 +151,9 @@ public class ProcessInstanceDetailsPresenter {
         makeMenuBar();
     }
 
-    public static final ProvidesKey<VariableSummary> KEY_PROVIDER = new ProvidesKey<VariableSummary>() {
+    public static final ProvidesKey<ProcessVariableSummary> KEY_PROVIDER = new ProvidesKey<ProcessVariableSummary>() {
         @Override
-        public Object getKey(VariableSummary item) {
+        public Object getKey(ProcessVariableSummary item) {
             return item == null ? null : item.getVariableId();
         }
     };
@@ -227,7 +230,7 @@ public class ProcessInstanceDetailsPresenter {
                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                   return true;
               }
-          }).getProcessDesc(processDefId);
+          }).getProcessDesc(deploymentId, processDefId);
 
         processInstanceService.call(new RemoteCallback<ProcessInstanceSummary>() {
             @Override
@@ -336,19 +339,19 @@ public class ProcessInstanceDetailsPresenter {
         this.place = place;
     }
 
-    @OnOpen
-    public void onOpen() {
-       
-    }
+   @OnOpen
+  public void onOpen() {
+    this.currentDeploymentId = place.getParameter("deploymentId", "");
+    this.currentProcessInstanceId = place.getParameter("processInstanceId", "");
+    this.currentProcessDefId = place.getParameter("processDefId", "");
 
-    public void onProcessInstanceSelectionEvent(@Observes ProcessInstanceSelectionEvent event) {
-        view.getProcessInstanceIdText().setText(String.valueOf(event.getProcessInstanceId()));
+    view.getProcessInstanceIdText().setText(currentProcessInstanceId);
+    view.getProcessNameText().setText(currentProcessDefId);
 
-        view.getProcessNameText().setText(event.getProcessDefId());
+    refreshProcessInstanceData(currentDeploymentId, currentProcessInstanceId, currentProcessDefId);
+  }
 
-        refreshProcessInstanceData(event.getDeploymentId(), String.valueOf(event.getProcessInstanceId()), event.getProcessDefId());
-
-    }
+  
 
     @WorkbenchMenu
     public Menus getMenus() {
@@ -468,6 +471,7 @@ public class ProcessInstanceDetailsPresenter {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Variables List");
                 placeRequestImpl.addParameter("processInstanceId", view.getProcessInstanceIdText().getText());
                 placeRequestImpl.addParameter("processDefId", view.getProcessDefinitionIdText().getText());
+                placeRequestImpl.addParameter("deploymentId", view.getProcessDeploymentText().getText());
                 placeManager.goTo(placeRequestImpl);
             }
         }).endMenu().build().getItems().get(0));

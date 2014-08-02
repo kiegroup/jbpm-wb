@@ -64,7 +64,6 @@ import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
-import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.mvp.PlaceStatus;
@@ -73,7 +72,6 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
-
 public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanceSummary, ProcessInstanceListPresenter>
         implements ProcessInstanceListPresenter.ProcessInstanceListView {
   
@@ -100,8 +98,6 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
   private Button relatedToMeFilterButton;
   
   private List<ProcessInstanceSummary> selectedProcessInstances = new ArrayList<ProcessInstanceSummary>();
-
-  
 
   @Inject
   private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
@@ -143,18 +139,20 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
         selectedItem = selectionModel.getLastSelectedObject();
         
         
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details"));
+        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details Multi"));
         
         
         if (status == PlaceStatus.CLOSE) {
-          placeManager.goTo("Process Instance Details");
+          placeManager.goTo("Process Instance Details Multi");
           processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedItem.getDeploymentId(),
-                                        selectedItem.getProcessInstanceId(), selectedItem.getProcessId()));
+                                        selectedItem.getProcessInstanceId(), selectedItem.getProcessId(), 
+                                        selectedItem.getProcessName(), selectedItem.getState()));
         } else if (status == PlaceStatus.OPEN && !close) {
           processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedItem.getDeploymentId(),
-                                        selectedItem.getProcessInstanceId(), selectedItem.getProcessId()));
+                                        selectedItem.getProcessInstanceId(), selectedItem.getProcessId(), 
+                                        selectedItem.getProcessName(), selectedItem.getState()));
         } else if (status == PlaceStatus.OPEN && close ) {
-          placeManager.closePlace("Process Instance Details");
+          placeManager.closePlace("Process Instance Details Multi");
         }
         
       }
@@ -335,6 +333,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     processInstanceIdColumn.setSortable(true);
 
     listGrid.addColumn(processInstanceIdColumn, constants.Id());
+    processInstanceIdColumn.setDataStoreName("ProcessInstanceId");
   }
 
   private void initProcessNameColumn() {
@@ -348,6 +347,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     processNameColumn.setSortable(true);
 
     listGrid.addColumn(processNameColumn, constants.Name());
+    processNameColumn.setDataStoreName("ProcessName");
   }
 
   private void initInitiatorColumn() {
@@ -361,6 +361,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     processInitiatorColumn.setSortable(true);
 
     listGrid.addColumn(processInitiatorColumn, constants.Initiator());
+    processInitiatorColumn.setDataStoreName("Initiator");
   }
 
   private void initProcessVersionColumn() {
@@ -374,6 +375,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     processVersionColumn.setSortable(true);
 
     listGrid.addColumn(processVersionColumn, constants.Version());
+    processVersionColumn.setDataStoreName("ProcessVersion");
 
   }
 
@@ -410,6 +412,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     processStateColumn.setSortable(true);
 
     listGrid.addColumn(processStateColumn, constants.State());
+    processStateColumn.setDataStoreName("Status");
 
   }
 
@@ -428,8 +431,9 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     };
     startTimeColumn.setSortable(true);
 
-    listGrid.addColumn(startTimeColumn, constants.Start_Date());
 
+    listGrid.addColumn(startTimeColumn, constants.Start_Date());
+    startTimeColumn.setDataStoreName("StartDate");
   }
 
   private Column initActionsColumn() {
@@ -483,67 +487,15 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
 
   }
 
-  public void refreshProcessInstanceListOnUpdates(@Observes ProcessInstancesUpdateEvent event) {
-//        if(showAllLink.getStyleName().equals("active")){
-//            presenter.refreshActiveProcessList();
-//        }else if(showRelatedToMeLink.getStyleName().equals("active")){
-//            presenter.refreshRelatedToMeProcessList();
-//        }else if(showCompletedLink.getStyleName().equals("active")){
-//            presenter.refreshCompletedProcessList();
-//        }else if(showAbortedLink.getStyleName().equals("active")){
-//            presenter.refreshAbortedProcessList();
-//        }
-  }
 
   public void onProcessInstanceSelectionEvent(@Observes ProcessInstancesWithDetailsRequestEvent event) {
     placeManager.goTo("Process Instance Details");
-    processInstanceSelected.fire(new ProcessInstanceSelectionEvent(event.getDeploymentId(), event.getProcessInstanceId(), event.getProcessDefId()));
+    processInstanceSelected.fire(new ProcessInstanceSelectionEvent(event.getDeploymentId(), 
+                    event.getProcessInstanceId(), event.getProcessDefId(), 
+                    event.getProcessDefName(), event.getProcessInstanceStatus()));
   }
 
-//    public void changeRowSelected(@Observes ProcessInstanceStyleEvent processInstanceStyleEvent) {
-//        if (processInstanceStyleEvent.getProcessInstanceId() != null) {
-//            DataGridUtils.paintInstanceRowSelected(processInstanceListGrid,
-//                    processInstanceStyleEvent.getProcessInstanceId());
-//            processInstanceListGrid.setFocus(true);
-//        }
-//    }
-  private class DetailsActionHasCell implements HasCell<ProcessInstanceSummary, ProcessInstanceSummary> {
-
-    private ActionCell<ProcessInstanceSummary> cell;
-
-    public DetailsActionHasCell(String text,
-            Delegate<ProcessInstanceSummary> delegate) {
-      cell = new ActionCell<ProcessInstanceSummary>(text, delegate) {
-        @Override
-        public void render(Cell.Context context,
-                ProcessInstanceSummary value,
-                SafeHtmlBuilder sb) {
-          AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.detailsGridIcon());
-          SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-          mysb.appendHtmlConstant("<span title='" + constants.Details() + "' style='margin-right:5px;'>");
-          mysb.append(imageProto.getSafeHtml());
-          mysb.appendHtmlConstant("</span>");
-          sb.append(mysb.toSafeHtml());
-
-        }
-      };
-    }
-
-    @Override
-    public Cell<ProcessInstanceSummary> getCell() {
-      return cell;
-    }
-
-    @Override
-    public FieldUpdater<ProcessInstanceSummary, ProcessInstanceSummary> getFieldUpdater() {
-      return null;
-    }
-
-    @Override
-    public ProcessInstanceSummary getValue(ProcessInstanceSummary object) {
-      return object;
-    }
-  }
+  
 
   private class AbortActionHasCell implements HasCell<ProcessInstanceSummary, ProcessInstanceSummary> {
 

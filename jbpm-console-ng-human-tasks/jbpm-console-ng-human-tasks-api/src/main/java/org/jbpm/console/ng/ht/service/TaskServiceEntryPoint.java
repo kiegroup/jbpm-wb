@@ -88,31 +88,15 @@ public interface TaskServiceEntryPoint {
 
     void setExpirationDate(long taskId, Date date);
 
-    void setDescriptions(long taskId, List<String> descriptions);
-
-    void setSkipable(long taskId, boolean skipable);
-
-    void setSubTaskStrategy(long taskId, String strategy);
-
-    int getPriority(long taskId);
-
-    Date getExpirationDate(long taskId);
-
-    List<String> getDescriptions(long taskId);
-
-    boolean isSkipable(long taskId);
-
-    String getSubTaskStrategy(long taskId);
+    void setDescriptions(long taskId, String description);
 
     TaskSummary getTaskDetails(long taskId);
 
-    long saveContent(long taskId, Map<String, String> values);
+    long saveContent(long taskId, Map<String, Object> values);
 
-    Map<String, String> getContentListById(long contentId);
+    Map<String, Object> getTaskOutputContentByTaskId(long taskId);
 
-    Map<String, String> getTaskOutputContentByTaskId(long taskId);
-
-    Map<String, String> getContentListByTaskId(long taskId);
+    Map<String, Object> getContentListByTaskId(long taskId);
 
     long addComment(long taskId, String text, String addedBy, Date addedOn);
 
@@ -120,9 +104,9 @@ public interface TaskServiceEntryPoint {
 
     List<CommentSummary> getAllCommentsByTaskId(long taskId);
 
-    CommentSummary getCommentById(long commentId);
+    CommentSummary getCommentById(long taskId, long commentId);
 
-    void updateSimpleTaskDetails(long taskId, List<String> taskNames, int priority, List<String> taskDescription,
+    void updateSimpleTaskDetails(long taskId, String taskName, int priority, String taskDescription,
     // String subTaskStrategy,
             Date dueDate);
     
@@ -131,8 +115,6 @@ public interface TaskServiceEntryPoint {
     
     
     //Audit Methods
-    List<TaskEventSummary> getAllTaskEvents(long taskId);
-    
     /**
      * false: when the task was deleted in data base (it happens when the process is finished)
      * 

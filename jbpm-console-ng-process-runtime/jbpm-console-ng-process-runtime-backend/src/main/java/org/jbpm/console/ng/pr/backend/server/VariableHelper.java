@@ -24,18 +24,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.jbpm.kie.services.impl.model.VariableStateDesc;
-import org.jbpm.console.ng.pr.model.VariableSummary;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
+import org.jbpm.services.api.model.VariableDesc;
 
 public class VariableHelper {
 
     private static final List<String> excludedVariables = Arrays.asList(new String[] { "processId" });
 
-    public static Collection<VariableSummary> adaptCollection(Collection<VariableStateDesc> variables) {
-        List<VariableSummary> variablesSummary = new ArrayList<VariableSummary>();
-        for (VariableStateDesc v : variables) {
+    public static Collection<ProcessVariableSummary> adaptCollection(Collection<VariableDesc> variables) {
+        List<ProcessVariableSummary> variablesSummary = new ArrayList<ProcessVariableSummary>();
+        for (VariableDesc v : variables) {
 
-            variablesSummary.add(new VariableSummary(v.getVariableId(), v.getVariableInstanceId(), v.getProcessInstanceId(), v
+            variablesSummary.add(new ProcessVariableSummary(v.getVariableId(), v.getVariableInstanceId(), v.getProcessInstanceId(), v
                     .getOldValue(), v.getNewValue(), v.getDataTimeStamp().getTime(), ""));
 
         }
@@ -43,29 +43,29 @@ public class VariableHelper {
         return variablesSummary;
     }
 
-    public static Collection<VariableSummary> adaptCollection(Collection<VariableStateDesc> variables,
+    public static Collection<ProcessVariableSummary> adaptCollection(Collection<VariableDesc> variables,
             Map<String, String> properties, long processInstanceId) {
-        List<VariableSummary> variablesSummary = new ArrayList<VariableSummary>();
-        for (VariableStateDesc v : variables) {
+        List<ProcessVariableSummary> variablesSummary = new ArrayList<ProcessVariableSummary>();
+        for (VariableDesc v : variables) {
             if (excludedVariables.contains(v.getVariableId())) {
                 continue;
             }
             String type = properties.remove(v.getVariableId());
-            variablesSummary.add(new VariableSummary(v.getVariableId(), v.getVariableInstanceId(), v.getProcessInstanceId(), v
+            variablesSummary.add(new ProcessVariableSummary(v.getVariableId(), v.getVariableInstanceId(), v.getProcessInstanceId(), v
                     .getOldValue(), v.getNewValue(), v.getDataTimeStamp().getTime(), type));
 
         }
         if (!properties.isEmpty()) {
             for (Entry<String, String> entry : properties.entrySet()) {
-                variablesSummary.add(new VariableSummary(entry.getKey(), "", processInstanceId, "", "", new Date().getTime(), entry.getValue()));
+                variablesSummary.add(new ProcessVariableSummary(entry.getKey(), "", processInstanceId, "", "", new Date().getTime(), entry.getValue()));
             }
         }
 
         return variablesSummary;
     }
 
-    public static VariableSummary adapt(VariableStateDesc v) {
-        return new VariableSummary(v.getVariableId(), v.getVariableInstanceId(), v.getProcessInstanceId(), v.getOldValue(),
+    public static ProcessVariableSummary adapt(VariableDesc v) {
+        return new ProcessVariableSummary(v.getVariableId(), v.getVariableInstanceId(), v.getProcessInstanceId(), v.getOldValue(),
                 v.getNewValue(), v.getDataTimeStamp().getTime(), "");
     }
 

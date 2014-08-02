@@ -24,10 +24,10 @@ import java.util.Map;
  */
 
 public interface QueryFilter  {
-    int getOffset();
-    void setOffset(int offset);
-    int getCount();
-    void setCount(int count);
+    Integer getOffset();
+    void setOffset(Integer offset);
+    Integer getCount();
+    void setCount(Integer count);
     boolean isSingleResult();
     void setIsSingleResult(boolean isSingleResult);
     String getLanguage();
@@ -38,7 +38,7 @@ public interface QueryFilter  {
     void setFilterParams(String filterParams);
     Map<String, Object> getParams();
     void setParams(Map<String, Object> params);
-    boolean isAscending();
-    void setIsAscending(boolean isAscending);
-    
+    Boolean isAscending();
+    void setIsAscending(Boolean isAscending);
+
 }

@@ -170,7 +170,7 @@ public class TaskDetailsPresenter {
                 
                 placeManager.goTo("Process Instances");
                 processInstanceSelected.fire(new ProcessInstancesWithDetailsRequestEvent(processInstance.getDeploymentId(),
-                                processInstance.getProcessInstanceId(), processInstance.getProcessId()));
+                                processInstance.getProcessInstanceId(), processInstance.getProcessId(), processInstance.getProcessName(), processInstance.getState()));
             }
         }, new ErrorCallback<Message>() {
               @Override
@@ -205,8 +205,7 @@ public class TaskDetailsPresenter {
                       ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                       return true;
                   }
-              }).updateTask(currentTaskId, priority, descriptions,
-                    dueDate);
+              }).updateTask(currentTaskId, priority, descriptions, dueDate);
 
         }
 

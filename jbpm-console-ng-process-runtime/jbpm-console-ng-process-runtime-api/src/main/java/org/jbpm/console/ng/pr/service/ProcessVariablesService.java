@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 JBoss by Red Hat.
+ * Copyright 2014 JBoss by Red Hat.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.bd.backend.server;
+package org.jbpm.console.ng.pr.service;
 
-import org.jbpm.console.ng.bd.model.KieSessionSummary;
-import org.kie.api.runtime.KieSession;
+import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.console.ng.ga.service.GenericServiceEntryPoint;
+import org.jbpm.console.ng.pr.model.ProcessVariableKey;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 
-public class KieSessionHelper {
-    public static KieSessionSummary adapt(KieSession ksession) {
-        KieSessionSummary ksessionSummary = new KieSessionSummary(ksession.getId());
-
-        return ksessionSummary;
-    }
-
+/**
+ *
+ * @author salaboy
+ */
+@Remote
+public interface ProcessVariablesService extends GenericServiceEntryPoint<ProcessVariableKey, ProcessVariableSummary>{
+    
 }

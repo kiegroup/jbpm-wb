@@ -104,19 +104,19 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         selectedItem = selectionModel.getLastSelectedObject();
 
         
-        PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details"));
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Definition Details"));
+        PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details Multi"));
+        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Details Multi"));
         
         if (instanceDetailsStatus == PlaceStatus.OPEN) {
-          placeManager.closePlace("Process Instance Details");
+          placeManager.closePlace("Process Instance Details Multi");
         }
         if (status == PlaceStatus.CLOSE) {
-          placeManager.goTo("Process Definition Details");
+          placeManager.goTo("Process Details Multi");
           processDefSelected.fire(new ProcessDefSelectionEvent(selectedItem.getProcessDefId(), selectedItem.getDeploymentId()));
         } else if (status == PlaceStatus.OPEN && !close) {
           processDefSelected.fire(new ProcessDefSelectionEvent(selectedItem.getProcessDefId(), selectedItem.getDeploymentId()));
         } else if (status == PlaceStatus.OPEN && close ) {
-          placeManager.closePlace("Process Definition Details");
+          placeManager.closePlace("Process Details Multi");
         }
         
       }
@@ -168,6 +168,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     };
     processNameColumn.setSortable(true);
     listGrid.addColumn(processNameColumn, constants.Name());
+    processNameColumn.setDataStoreName("ProcessName");
   }
 
   private void initVersionColumn() {
@@ -179,6 +180,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     };
     versionColumn.setSortable(true);
     listGrid.addColumn(versionColumn, constants.Version());
+    versionColumn.setDataStoreName("ProcessVersion");
   }
 
   private Column initActionsColumn() {
@@ -207,14 +209,14 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
   }
   
   public void refreshNewProcessInstance(@Observes NewProcessInstanceEvent newProcessInstance) {
-    PlaceStatus definitionDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest("Process Definition Details"));
+    PlaceStatus definitionDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest("Process Details Multi"));
     if (definitionDetailsStatus == PlaceStatus.OPEN) {
-      placeManager.closePlace("Process Definition Details");
+      placeManager.closePlace("Process Details Multi");
     }
-    placeManager.goTo("Process Instance Details");
+    placeManager.goTo("Process Instance Details Multi");
     processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getDeploymentId(),
             newProcessInstance.getNewProcessInstanceId(),
-            newProcessInstance.getNewProcessDefId()));
+            newProcessInstance.getNewProcessDefId(), newProcessInstance.getProcessDefName(), newProcessInstance.getNewProcessInstanceStatus()));
 
   }
 
@@ -259,42 +261,6 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     }
   }
 
-  private class DetailsActionHasCell implements HasCell<ProcessSummary, ProcessSummary> {
-
-    private ActionCell<ProcessSummary> cell;
-
-    public DetailsActionHasCell(String text,
-            Delegate<ProcessSummary> delegate) {
-      cell = new ActionCell<ProcessSummary>(text, delegate) {
-        @Override
-        public void render(Cell.Context context,
-                ProcessSummary value,
-                SafeHtmlBuilder sb) {
-
-          AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.detailsGridIcon());
-          SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-          mysb.appendHtmlConstant("<span title='" + constants.Details() + "' style='margin-right:5px;'>");
-          mysb.append(imageProto.getSafeHtml());
-          mysb.appendHtmlConstant("</span>");
-          sb.append(mysb.toSafeHtml());
-        }
-      };
-    }
-
-    @Override
-    public Cell<ProcessSummary> getCell() {
-      return cell;
-    }
-
-    @Override
-    public FieldUpdater<ProcessSummary, ProcessSummary> getFieldUpdater() {
-      return null;
-    }
-
-    @Override
-    public ProcessSummary getValue(ProcessSummary object) {
-      return object;
-    }
-  }
+  
 
 }

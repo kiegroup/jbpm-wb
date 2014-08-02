@@ -25,7 +25,7 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.view.client.Range;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
-import org.jbpm.console.ng.pr.model.VariableSummary;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 
 public class DataGridUtils {
 
@@ -141,7 +141,7 @@ public class DataGridUtils {
         return processStartDate;
     }
     
-     public static void setTooltip(DataGrid<VariableSummary> varListGrid, String idCurrentRow, int column,
+     public static void setTooltip(DataGrid<ProcessVariableSummary> varListGrid, String idCurrentRow, int column,
             String newValue, String oldValue) {
         for (int i = 0; i < getCurrentRowCount(varListGrid); i++) {
             if (varListGrid.getRowElement(i).getCells().getItem(0).getInnerText().equals(newValue.substring(0, 20) + "...")) {
@@ -151,7 +151,7 @@ public class DataGridUtils {
         }
     }
 
-     private static int getCurrentRowCount(DataGrid<VariableSummary> varListGrid) {
+     private static int getCurrentRowCount(DataGrid<ProcessVariableSummary> varListGrid) {
         int rowCount = 0;
         for (int i = 0; i < DataGridUtils.pageSize; i++) {
             try {

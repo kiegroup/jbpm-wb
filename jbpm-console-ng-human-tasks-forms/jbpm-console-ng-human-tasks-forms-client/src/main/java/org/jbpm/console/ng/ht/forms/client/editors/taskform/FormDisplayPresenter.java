@@ -49,6 +49,7 @@ import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
@@ -332,7 +333,7 @@ public class FormDisplayPresenter {
                         wrapperFlowPanel.add( startButton );
                         view.getOptionsDiv().add( wrapperFlowPanel );
                     }
-                } ).getProcessDesc(currentProcessId);
+                } ).getProcessDesc(currentDomainId, currentProcessId);
             }
         }, getUnexpectedErrorCallback()).getFormDisplayProcess(currentDomainId, currentProcessId);
 
@@ -406,7 +407,7 @@ public class FormDisplayPresenter {
     }
 
     public void completeTask(String values) {
-        final Map<String, String> params = getUrlParameters(values);
+        final Map<String, Object> params = getUrlParameters(values);
         final Map<String, Object> objParams = new HashMap<String, Object>(params);
         taskServices.call(getCompleteTaskRemoteCallback(), getUnexpectedErrorCallback()).complete(currentTaskId, identity.getName(), objParams);
 
@@ -468,7 +469,7 @@ public class FormDisplayPresenter {
     }
 
     public void saveTaskState(String values) {
-        final Map<String, String> params = getUrlParameters(values);
+        final Map<String, Object> params = getUrlParameters(values);
         taskServices.call(getSaveTaskStateCallback(), getUnexpectedErrorCallback()).saveContent(currentTaskId, params);
     }
 
@@ -571,7 +572,7 @@ public class FormDisplayPresenter {
             @Override
             public void callback(Long processInstanceId) {
                 view.displayNotification("Process Id: " + processInstanceId + " started!");
-                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(currentDomainId, processInstanceId, currentProcessId));
+                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(currentDomainId, processInstanceId,"", currentProcessId, 1));
                 close();
             }
         };
@@ -582,7 +583,7 @@ public class FormDisplayPresenter {
     }
 
     public void startProcess(String values) {
-        final Map<String, String> params = getUrlParameters(values);
+        final Map<String, Object> params = getUrlParameters(values);
 
         sessionServices.call(getStartProcessCallback(), getUnexpectedErrorCallback()).startProcess(currentDomainId, currentProcessId, params);
 
@@ -618,8 +619,8 @@ public class FormDisplayPresenter {
         };
     }-*/;
 
-    public static Map<String, String> getUrlParameters(String values) {
-        Map<String, String> params = new HashMap<String, String>();
+    public static Map<String, Object> getUrlParameters(String values) {
+        Map<String, Object> params = new HashMap<String, Object>();
         for (String param : values.split("&")) {
             String pair[] = param.split("=");
             String key = pair[0];

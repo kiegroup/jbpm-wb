@@ -41,7 +41,6 @@
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-internal</artifactId>
-      <type>jar</type>
     </dependency>
   </dependencies>
 

@@ -22,103 +22,71 @@ import java.util.Comparator;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ga.service.ItemKey;
 import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
-import org.jbpm.kie.services.api.RuntimeDataService;
-import org.jbpm.kie.services.impl.model.ProcessAssetDesc;
+
+import org.jbpm.services.api.RuntimeDataService;
+import org.jbpm.services.api.model.ProcessDefinition;
+import org.jbpm.services.task.query.QueryFilterImpl;
+import org.kie.internal.query.QueryContext;
 import org.uberfire.paging.PageResponse;
 
 /**
- *
  * @author salaboy
  */
 @Service
 @ApplicationScoped
 public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
 
-  @Inject
-  private RuntimeDataService dataService;
+    @Inject
+    private RuntimeDataService dataService;
 
-  @Override
-  public PageResponse<ProcessSummary> getData(final QueryFilter filter) {
-    PageResponse<ProcessSummary> response = new PageResponse<ProcessSummary>();
-    Collection<ProcessAssetDesc> processDefs = dataService.getProcesses();
-    List<ProcessSummary> processDefsSums = new ArrayList<ProcessSummary>(processDefs.size());
-    for (ProcessAssetDesc pd : processDefs) {
+    @Override
+    public PageResponse<ProcessSummary> getData(final QueryFilter filter) {
+        PageResponse<ProcessSummary> response = new PageResponse<ProcessSummary>();
+        // append 1 to the count to check if there are further pages
+        org.kie.internal.query.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount()+1,
+                filter.getOrderBy(), filter.isAscending());
+        Collection<ProcessDefinition> processDefs = dataService.getProcesses(qf);
+        List<ProcessSummary> processDefsSums = new ArrayList<ProcessSummary>(processDefs.size());
+        for (ProcessDefinition pd : processDefs) {
 
-      if (filter.getParams() == null || filter.getParams().get("textSearch") == null || ((String) filter.getParams().get("textSearch")).isEmpty()) {
-        processDefsSums.add(ProcessHelper.adapt(pd));
-      } else if (pd.getName().toLowerCase().contains((String) filter.getParams().get("textSearch"))) {
-        processDefsSums.add(ProcessHelper.adapt(pd));
-      }
-    }
-    sort(processDefsSums,filter);
-    response.setStartRowIndex(filter.getOffset());
-    response.setTotalRowSize(processDefsSums.size());
-    response.setTotalRowSizeExact(true);
-    
-    if (!processDefsSums.isEmpty() && processDefsSums.size() > (filter.getCount() + filter.getOffset())) {
-      response.setPageRowList(new ArrayList<ProcessSummary>(processDefsSums.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
-      response.setLastPage(false);
-      
-      
-    } else {
-      response.setPageRowList(new ArrayList<ProcessSummary>(processDefsSums.subList(filter.getOffset(), processDefsSums.size())));
-      response.setLastPage(true);
-      
-    }
-    return response;
+            if (filter.getParams() == null || filter.getParams().get("textSearch") == null || ((String) filter.getParams().get("textSearch")).isEmpty()) {
+                processDefsSums.add(ProcessHelper.adapt(pd));
+            } else if (pd.getName().toLowerCase().contains((String) filter.getParams().get("textSearch"))) {
+                processDefsSums.add(ProcessHelper.adapt(pd));
+            }
+        }
+        response.setStartRowIndex(filter.getOffset());
+        response.setTotalRowSize(processDefsSums.size()-1);
+        if(processDefsSums.size() > filter.getCount()){
+            response.setTotalRowSizeExact(false);
+        } else{
+            response.setTotalRowSizeExact(true);
+        }
+        response.setPageRowList(processDefsSums);
 
-  }
+        if (!processDefsSums.isEmpty() && processDefsSums.size() > (filter.getCount() + filter.getOffset())) {
+            response.setPageRowList(new ArrayList<ProcessSummary>(processDefsSums.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
+            response.setLastPage(false);
 
-  private void sort(List<ProcessSummary> processDefsSums, final QueryFilter filter) {
-    if (filter.getOrderBy().equals("Name")) {
-      Collections.sort(processDefsSums, new Comparator<ProcessSummary>() {
-
-        @Override
-        public int compare(ProcessSummary o1, ProcessSummary o2) {
-          if (o1 == o2) {
-            return 0;
-          }
-
-          // Compare the name columns.
-          int diff = -1;
-          if (o1 != null) {
-            diff = (o2 != null) ? o1.getName().compareTo(o2.getName()) : 1;
-          }
-          return filter.isAscending() ? diff : -diff;
+        } else {
+            response.setPageRowList(new ArrayList<ProcessSummary>(processDefsSums));
+            response.setLastPage(true);
 
         }
-      });
-    }else if(filter.getOrderBy().equals("Version")){
-      Collections.sort(processDefsSums, new Comparator<ProcessSummary>() {
+        return response;
 
-        @Override
-        public int compare(ProcessSummary o1, ProcessSummary o2) {
-          if (o1 == o2) {
-            return 0;
-          }
-
-          // Compare the name columns.
-          int diff = -1;
-          if (o1 != null) {
-            diff = (o2 != null) ? o1.getVersion().compareTo(o2.getVersion()) : 1;
-          }
-          return filter.isAscending() ? diff : -diff;
-
-        }
-      });
     }
-  }
 
-  @Override
-  public ProcessSummary getItem(ProcessDefinitionKey key) {
-    return ProcessHelper.adapt(dataService.getProcessesByDeploymentIdProcessId(key.getDeploymentId(), key.getProcessId()));
-  }
-
+    @Override
+    public ProcessSummary getItem(ProcessDefinitionKey key) {
+        return ProcessHelper.adapt(dataService.getProcessesByDeploymentIdProcessId(key.getDeploymentId(), key.getProcessId()));
+    }
 
 }

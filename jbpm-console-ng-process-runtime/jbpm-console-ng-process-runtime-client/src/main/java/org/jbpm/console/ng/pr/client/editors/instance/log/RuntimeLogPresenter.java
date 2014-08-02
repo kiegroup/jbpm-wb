@@ -35,8 +35,8 @@ import org.jbpm.console.ng.pr.client.util.LogUtils.LogType;
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogOrder;
 import org.jbpm.console.ng.pr.client.util.LogUtils;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
-import org.jbpm.console.ng.pr.model.VariableSummary;
 import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -81,9 +81,9 @@ public class RuntimeLogPresenter {
        
     }
 
-    public static final ProvidesKey<VariableSummary> KEY_PROVIDER = new ProvidesKey<VariableSummary>() {
+    public static final ProvidesKey<ProcessVariableSummary> KEY_PROVIDER = new ProvidesKey<ProcessVariableSummary>() {
         @Override
-        public Object getKey(VariableSummary item) {
+        public Object getKey(ProcessVariableSummary item) {
             return item == null ? null : item.getVariableId();
         }
     };

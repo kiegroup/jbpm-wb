@@ -68,7 +68,6 @@ public class ProcessInstanceListPresenter extends AbstractListPresenter<ProcessI
   @Inject
   private Caller<KieSessionEntryPoint> kieSessionServices;
 
-  private PlaceRequest place;
 
   private String currentProcessDefinition;
 

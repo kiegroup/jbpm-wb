@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.pr.client.editors.definition.details;
 
 import java.util.Collection;
@@ -67,327 +66,266 @@ import org.uberfire.workbench.model.menu.Menus;
 @WorkbenchScreen(identifier = "Process Definition Details", preferredWidth = 500)
 public class ProcessDefDetailsPresenter {
 
-    private PlaceRequest place;
+  private PlaceRequest place;
 
-    public interface ProcessDefDetailsView extends UberView<ProcessDefDetailsPresenter> {
+  public interface ProcessDefDetailsView extends UberView<ProcessDefDetailsPresenter> {
 
-        void displayNotification( String text );
+    void displayNotification(String text);
 
-        HTML getNroOfHumanTasksText();
+    HTML getNroOfHumanTasksText();
 
-        HTML getProcessNameText();
-        
-        HTML getProcessIdText();
+    HTML getProcessNameText();
 
-        HTML getHumanTasksListBox();
+    HTML getProcessIdText();
 
-        HTML getUsersGroupsListBox();
+    HTML getHumanTasksListBox();
 
-        HTML getProcessDataListBox();
-        
-        HTML getProcessServicesListBox();
+    HTML getUsersGroupsListBox();
 
-        HTML getSubprocessListBox();
+    HTML getProcessDataListBox();
 
-        HTML getDeploymentIdText();
+    HTML getProcessServicesListBox();
 
-        void setProcessAssetPath( Path processAssetPath );
+    HTML getSubprocessListBox();
 
-        void setEncodedProcessSource( String encodedProcessSource );
-        
-        Path getProcessAssetPath();
-        
-        String getEncodedProcessSource();
-    }
-    
-    private Menus menus;
-    
-    @Inject
-    private PlaceManager placeManager;
+    HTML getDeploymentIdText();
 
-    @Inject
-    private ProcessDefDetailsView view;
-    
-    @Inject
-    private Event<ProcessDefStyleEvent> processDefStyleEvent;
+    void setProcessAssetPath(Path processAssetPath);
 
-    @Inject
-    private Caller<DataServiceEntryPoint> dataServices;
-    
-    @Inject
-    private Caller<ProcessDefinitionService> processDefService;
+    void setEncodedProcessSource(String encodedProcessSource);
 
-    @Inject
-    private Caller<VFSService> fileServices;
+    Path getProcessAssetPath();
 
-    private Constants constants = GWT.create( Constants.class );
+    String getEncodedProcessSource();
+  }
 
-    public ProcessDefDetailsPresenter() {
-        makeMenuBar();
-    }
-    
-    @DefaultPosition
-    public Position getPosition(){
-        return Position.EAST;
-    }
-    
+  private String currentProcessDefId = "";
+  private String currentDeploymentId = "";
 
-    @OnStartup
-    public void onStartup( final PlaceRequest place ) {
-        this.place = place;
-    }
+  @Inject
+  private PlaceManager placeManager;
 
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.Definition_Details();
-    }
+  @Inject
+  private ProcessDefDetailsView view;
 
-    @WorkbenchPartView
-    public UberView<ProcessDefDetailsPresenter> getView() {
-        return view;
-    }
-    
-    private void changeStyleRow( String processDefName, String processDefVersion ){
-        processDefStyleEvent.fire( new ProcessDefStyleEvent( processDefName, processDefVersion ) );
-    }
+  @Inject
+  private Event<ProcessDefStyleEvent> processDefStyleEvent;
 
-    public void refreshProcessDef( final String deploymentId, final String processId ) {
-        dataServices.call( new RemoteCallback<List<TaskDefSummary>>() {
-            @Override
-            public void callback( List<TaskDefSummary> tasks ) {
-                view.getNroOfHumanTasksText().setText( String.valueOf( tasks.size() ) );
-                view.getHumanTasksListBox().setText("");
-                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                if(tasks.isEmpty()){
-                    safeHtmlBuilder.appendEscapedLines("No User Tasks defined in this process");
-                    view.getHumanTasksListBox().setStyleName("muted");
-                    view.getHumanTasksListBox().setHTML(safeHtmlBuilder.toSafeHtml());
-                }else{
-                    for ( TaskDefSummary t : tasks ) {
-                       safeHtmlBuilder.appendEscapedLines(t.getName() +"\n" );
-                    }
-                    view.getHumanTasksListBox().setHTML(safeHtmlBuilder.toSafeHtml());
-                }
-                
+  @Inject
+  private Caller<DataServiceEntryPoint> dataServices;
+
+  @Inject
+  private Caller<ProcessDefinitionService> processDefService;
+
+  @Inject
+  private Caller<VFSService> fileServices;
+
+  private Constants constants = GWT.create(Constants.class);
+
+  public ProcessDefDetailsPresenter() {
+
+  }
+
+  @DefaultPosition
+  public Position getPosition() {
+    return Position.EAST;
+  }
+
+  @OnStartup
+  public void onStartup(final PlaceRequest place) {
+    this.place = place;
+  }
+
+  @WorkbenchPartTitle
+  public String getTitle() {
+    return constants.Definition_Details();
+  }
+
+  @WorkbenchPartView
+  public UberView<ProcessDefDetailsPresenter> getView() {
+    return view;
+  }
+
+  private void changeStyleRow(String processDefName, String processDefVersion) {
+    processDefStyleEvent.fire(new ProcessDefStyleEvent(processDefName, processDefVersion));
+  }
+
+  public void refreshProcessDef(final String deploymentId, final String processId) {
+    dataServices.call(new RemoteCallback<List<TaskDefSummary>>() {
+      @Override
+      public void callback(List<TaskDefSummary> tasks) {
+        view.getNroOfHumanTasksText().setText(String.valueOf(tasks.size()));
+        view.getHumanTasksListBox().setText("");
+        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+        if (tasks.isEmpty()) {
+          safeHtmlBuilder.appendEscapedLines("No User Tasks defined in this process");
+          view.getHumanTasksListBox().setStyleName("muted");
+          view.getHumanTasksListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+        } else {
+          for (TaskDefSummary t : tasks) {
+            safeHtmlBuilder.appendEscapedLines(t.getName() + "\n");
+          }
+          view.getHumanTasksListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+        }
+
+      }
+    }, new ErrorCallback<Message>() {
+      @Override
+      public boolean error(Message message, Throwable throwable) {
+        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        return true;
+      }
+    }).getAllTasksDef(deploymentId, processId);
+
+    dataServices.call(new RemoteCallback<Map<String, Collection<String>>>() {
+      @Override
+      public void callback(Map<String, Collection<String>> entities) {
+        view.getUsersGroupsListBox().setText("");
+        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+        if (entities.keySet().isEmpty()) {
+          safeHtmlBuilder.appendEscapedLines("No user or group used in this process");
+          view.getUsersGroupsListBox().setStyleName("muted");
+          view.getUsersGroupsListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+        } else {
+          for (String key : entities.keySet()) {
+            StringBuffer names = new StringBuffer();
+            Collection<String> entityNames = entities.get(key);
+            if (entityNames != null) {
+              for (String entity : entityNames) {
+                names.append("'" + entity + "' ");
+              }
             }
-        }, new ErrorCallback<Message>() {
-           @Override
-           public boolean error( Message message, Throwable throwable ) {
-               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-               return true;
-           }
-       } ).getAllTasksDef( processId );
+            safeHtmlBuilder.appendEscapedLines(names + " - " + key + "\n");
+          }
+          view.getUsersGroupsListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+        }
 
-        dataServices.call( new RemoteCallback<Map<String, String>>() {
-            @Override
-            public void callback( Map<String, String> entities ) {
-                view.getUsersGroupsListBox().setText("");
-                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                if(entities.keySet().isEmpty()){
-                    safeHtmlBuilder.appendEscapedLines("No user or group used in this process");
-                    view.getUsersGroupsListBox().setStyleName("muted");
-                    view.getUsersGroupsListBox().setHTML(safeHtmlBuilder.toSafeHtml());
-                }else{
-                    for ( String key : entities.keySet() ) {
-                        safeHtmlBuilder.appendEscapedLines(entities.get( key ) + " - " + key +"\n");
-                    }
-                    view.getUsersGroupsListBox().setHTML(safeHtmlBuilder.toSafeHtml());
-                }
-                
-            }
-        }, new ErrorCallback<Message>() {
-           @Override
-           public boolean error( Message message, Throwable throwable ) {
-               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-               return true;
-           }
-       } ).getAssociatedEntities( processId );
+      }
+    }, new ErrorCallback<Message>() {
+      @Override
+      public boolean error(Message message, Throwable throwable) {
+        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        return true;
+      }
+    }).getAssociatedEntities(deploymentId, processId);
 
-        dataServices.call( new RemoteCallback<Map<String, String>>() {
-            @Override
-            public void callback( Map<String, String> inputs ) {
-                view.getProcessDataListBox().setText("");
-                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                if(inputs.keySet().isEmpty()){
-                    safeHtmlBuilder.appendEscapedLines("No process variables defined for this process");
-                    view.getProcessDataListBox().setStyleName("muted");
-                    view.getProcessDataListBox().setHTML(safeHtmlBuilder.toSafeHtml());
-                }else{
-                    for ( String key : inputs.keySet() ) {
-                        safeHtmlBuilder.appendEscapedLines(key + " - " + inputs.get( key ) +"\n");
-                    }
-                    view.getProcessDataListBox().setHTML(safeHtmlBuilder.toSafeHtml());
-                }
-                
-            }
-        }, new ErrorCallback<Message>() {
-           @Override
-           public boolean error( Message message, Throwable throwable ) {
-               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-               return true;
-           }
-       } ).getRequiredInputData( processId );
+    dataServices.call(new RemoteCallback<Map<String, String>>() {
+      @Override
+      public void callback(Map<String, String> inputs) {
+        view.getProcessDataListBox().setText("");
+        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+        if (inputs.keySet().isEmpty()) {
+          safeHtmlBuilder.appendEscapedLines("No process variables defined for this process");
+          view.getProcessDataListBox().setStyleName("muted");
+          view.getProcessDataListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+        } else {
+          for (String key : inputs.keySet()) {
+            safeHtmlBuilder.appendEscapedLines(key + " - " + inputs.get(key) + "\n");
+          }
+          view.getProcessDataListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+        }
 
-        dataServices.call( new RemoteCallback<Collection<String>>() {
-            @Override
-            public void callback( Collection<String> subprocesses ) {
-                view.getSubprocessListBox().setText("");
-                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                if(subprocesses.isEmpty()){
-                    safeHtmlBuilder.appendEscapedLines("No subproceses required by this process");
-                    view.getSubprocessListBox().setStyleName("muted");
-                    view.getSubprocessListBox().setHTML(safeHtmlBuilder.toSafeHtml());
-                }else{
-                    for ( String key : subprocesses ) {
-                        safeHtmlBuilder.appendEscapedLines(key + "\n");
-                    }
-                    view.getSubprocessListBox().setHTML(safeHtmlBuilder.toSafeHtml());
-                }
-                
-            }
-        }, new ErrorCallback<Message>() {
-           @Override
-           public boolean error( Message message, Throwable throwable ) {
-               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-               return true;
-           }
-       } ).getReusableSubProcesses( processId );
+      }
+    }, new ErrorCallback<Message>() {
+      @Override
+      public boolean error(Message message, Throwable throwable) {
+        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        return true;
+      }
+    }).getRequiredInputData(deploymentId, processId);
 
-        processDefService.call( new RemoteCallback<ProcessSummary>() {
-            @Override
-            public void callback( ProcessSummary process ) {
-                if (process != null) {
-                    view.setEncodedProcessSource( process.getEncodedProcessSource() );
-                    view.getProcessNameText().setText(process.getName());
-                    if ( process.getOriginalPath() != null ) {
-                        fileServices.call( new RemoteCallback<Path>() {
-                            @Override
-                            public void callback( Path processPath ) {
-                                view.setProcessAssetPath( processPath );
-                            }
-                        } ).get( process.getOriginalPath() );
-                    } else {
-                        view.setProcessAssetPath( new DummyProcessPath( process.getProcessDefId() ) );
-                    }
-                    changeStyleRow(process.getName(), process.getVersion());
-                } else {
-                    // set to null to ensure it's clear state
-                    view.setEncodedProcessSource(null);
-                    view.setProcessAssetPath(null);
-                }
-            }
-        }, new ErrorCallback<Message>() {
-               @Override
-               public boolean error( Message message, Throwable throwable ) {
-                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                   return true;
-               }
-           } ).getItem( new ProcessDefinitionKey(deploymentId, processId) );
-        
-        dataServices.call( new RemoteCallback<Map<String, String>>() {
-            @Override
-            public void callback( Map<String, String> services ) {
-                view.getProcessServicesListBox().setText("");
-                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                if(services.keySet().isEmpty()){
-                    safeHtmlBuilder.appendEscaped("No services required for this process");
-                    view.getProcessServicesListBox().setStyleName("muted");
-                    view.getProcessServicesListBox().setHTML(safeHtmlBuilder.toSafeHtml());
-                }else{
-                    for ( String key : services.keySet() ) {
-                        safeHtmlBuilder.appendEscapedLines(key + " - " + services.get( key ) +"\n");
-                    }
-                    view.getProcessServicesListBox().setHTML(safeHtmlBuilder.toSafeHtml());
-                }
-                
-            }
-        }, new ErrorCallback<Message>() {
-               @Override
-               public boolean error( Message message, Throwable throwable ) {
-                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                   return true;
-               }
-           } ).getServiceTasks( processId );
-        
-        
-    }
+    dataServices.call(new RemoteCallback<Collection<String>>() {
+      @Override
+      public void callback(Collection<String> subprocesses) {
+        view.getSubprocessListBox().setText("");
+        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+        if (subprocesses.isEmpty()) {
+          safeHtmlBuilder.appendEscapedLines("No subproceses required by this process");
+          view.getSubprocessListBox().setStyleName("muted");
+          view.getSubprocessListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+        } else {
+          for (String key : subprocesses) {
+            safeHtmlBuilder.appendEscapedLines(key + "\n");
+          }
+          view.getSubprocessListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+        }
 
-    @OnOpen
-    public void onOpen() {
-        
-    }
-    
-    public void onProcessDefSelectionEvent(@Observes ProcessDefSelectionEvent event){
-        
-        view.getProcessIdText().setText( event.getProcessId() );
-        
-        view.getDeploymentIdText().setText( event.getDeploymentId() );
+      }
+    }, new ErrorCallback<Message>() {
+      @Override
+      public boolean error(Message message, Throwable throwable) {
+        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        return true;
+      }
+    }).getReusableSubProcesses(deploymentId, processId);
 
-        refreshProcessDef( event.getDeploymentId(), event.getProcessId() );
-    }
-    
-    @WorkbenchMenu
-    public Menus getMenus() {
-        return menus;
-    }
-    
-    private void makeMenuBar() {
-        menus = MenuFactory
-                .newTopLevelMenu( constants.New_Instance()).respondsWith(new Command() {
-                        @Override
-                        public void execute() {
-                            PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Form Display Popup" );
-                            placeRequestImpl.addParameter( "processId", view.getProcessIdText().getText() );
-                            placeRequestImpl.addParameter( "domainId", view.getDeploymentIdText().getText() );
-                            placeRequestImpl.addParameter( "processName", view.getProcessNameText().getText() );
-                            placeManager.goTo( placeRequestImpl );
-                        }
-                     }).endMenu()
-                .newTopLevelMenu( constants.Options())
-                .withItems(getOptions())
-                .endMenu()
-                .newTopLevelMenu( constants.Refresh() )
-                .respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        refreshProcessDef( view.getDeploymentIdText().getText(), view.getProcessNameText().getText() );
-                        view.displayNotification( constants.Process_Definition_Details_Refreshed() );
-                    }
-                } )
-                .endMenu().build();
+    processDefService.call(new RemoteCallback<ProcessSummary>() {
+      @Override
+      public void callback(ProcessSummary process) {
+        if (process != null) {
+          view.setEncodedProcessSource(process.getEncodedProcessSource());
+          view.getProcessNameText().setText(process.getName());
+          if (process.getOriginalPath() != null) {
+            fileServices.call(new RemoteCallback<Path>() {
+              @Override
+              public void callback(Path processPath) {
+                view.setProcessAssetPath(processPath);
+              }
+            }).get(process.getOriginalPath());
+          } else {
+            view.setProcessAssetPath(new DummyProcessPath(process.getProcessDefId()));
+          }
+          changeStyleRow(process.getName(), process.getVersion());
+        } else {
+          // set to null to ensure it's clear state
+          view.setEncodedProcessSource(null);
+          view.setProcessAssetPath(null);
+        }
+      }
+    }, new ErrorCallback<Message>() {
+      @Override
+      public boolean error(Message message, Throwable throwable) {
+        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        return true;
+      }
+    }).getItem(new ProcessDefinitionKey(deploymentId, processId));
 
-    }
-    private List<MenuItem> getOptions(){
-        List<MenuItem> menuItems = new ArrayList<MenuItem>(2);
-        
-        menuItems.add( MenuFactory.newSimpleItem( constants.View_Process_Model()).respondsWith( new Command() {
-            @Override
-            public void execute() {   
-                    PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Designer" );
+    dataServices.call(new RemoteCallback<Map<String, String>>() {
+      @Override
+      public void callback(Map<String, String> services) {
+        view.getProcessServicesListBox().setText("");
+        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+        if (services.keySet().isEmpty()) {
+          safeHtmlBuilder.appendEscaped("No services required for this process");
+          view.getProcessServicesListBox().setStyleName("muted");
+          view.getProcessServicesListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+        } else {
+          for (String key : services.keySet()) {
+            safeHtmlBuilder.appendEscapedLines(key + " - " + services.get(key) + "\n");
+          }
+          view.getProcessServicesListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+        }
 
-                   // if ( view.getEncodedProcessSource() != null ) {
-                        placeRequestImpl.addParameter( "readOnly", "true" );
-                        //placeRequestImpl.addParameter( "encodedProcessSource", view.getEncodedProcessSource() );
-                        placeRequestImpl.addParameter("processId", view.getProcessIdText().getText());
-                        placeRequestImpl.addParameter("deploymentId", view.getDeploymentIdText().getText());
-                        
-                    //}
-                    placeManager.goTo( view.getProcessAssetPath(), placeRequestImpl );
-                }        
-        } ).endMenu().build().getItems().get( 0 ) );
-        
-        menuItems.add( MenuFactory.newSimpleItem( constants.View_Process_Instances()).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instances" );
-                placeRequestImpl.addParameter( "processName", view.getProcessNameText().getText() );
-                placeManager.goTo( placeRequestImpl );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
-        
-        
-        return menuItems;
-    
-    }
+      }
+    }, new ErrorCallback<Message>() {
+      @Override
+      public boolean error(Message message, Throwable throwable) {
+        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        return true;
+      }
+    }).getServiceTasks(deploymentId, processId);
+
+  }
+
+  @OnOpen
+  public void onOpen() {
+
+    this.currentProcessDefId = place.getParameter("processDefId", "");
+    this.currentDeploymentId = place.getParameter("deploymentId", "");
+    view.getProcessIdText().setText(currentProcessDefId);
+
+    view.getDeploymentIdText().setText(currentDeploymentId);
+    refreshProcessDef(currentDeploymentId, currentProcessDefId);
+  }
 
 }

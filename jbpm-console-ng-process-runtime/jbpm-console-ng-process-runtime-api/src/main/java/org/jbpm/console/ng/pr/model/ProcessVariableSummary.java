@@ -16,11 +16,11 @@
 
 package org.jbpm.console.ng.pr.model;
 
-import java.io.Serializable;
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jbpm.console.ng.ga.model.GenericSummary;
 
 @Portable
-public class VariableSummary implements Serializable {
+public class ProcessVariableSummary extends GenericSummary {
 
     private String variableId;
     private String variableInstanceId;
@@ -30,9 +30,10 @@ public class VariableSummary implements Serializable {
     private long timestamp;
     private String type;
 
-    public VariableSummary(String variableId, String variableInstanceId, long processInstanceId, String oldValue,
+    public ProcessVariableSummary(String variableId, String variableInstanceId, long processInstanceId, String oldValue,
             String newValue, long timestamp, String type) {
-
+        this.id = variableId;
+        this.name = variableId;
         this.variableId = variableId;
         this.variableInstanceId = variableInstanceId;
         this.processInstanceId = processInstanceId;
@@ -42,7 +43,7 @@ public class VariableSummary implements Serializable {
         this.type = type;
     }
 
-    public VariableSummary() {
+    public ProcessVariableSummary() {
     }
 
     public String getVariableId() {

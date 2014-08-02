@@ -13,67 +13,82 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.ht.client.editors.taskdetailsmulti;
 
-import com.github.gwtbootstrap.client.ui.Heading;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.user.client.ui.Widget;
+import javax.enterprise.context.Dependent;
+import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
-@Templated(value = "TaskDetailsMultiViewImpl.html")
-public class TaskDetailsMultiViewImpl extends Composite implements TaskDetailsMultiPresenter.TaskDetailsMultiView {
+public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDetailsMultiPresenter>
+                                      implements TaskDetailsMultiPresenter.TaskDetailsMultiView{
 
-    private TaskDetailsMultiPresenter presenter;
+  interface Binder
+          extends
+          UiBinder<Widget, TaskDetailsMultiViewImpl> {
 
-    
-    @DataField
-    public Heading taskIdAndName = new Heading(4);
+  }
+  private static Binder uiBinder = GWT.create(Binder.class);
 
-   
+  private Constants constants = GWT.create(Constants.class);
 
-    
-    @DataField
-    public HTMLPanel content = new HTMLPanel("");
-    
-  
-    @Inject
-    private Event<NotificationEvent> notification;
+  @Override
+  public void init(final TaskDetailsMultiPresenter presenter) {
+    super.init(presenter);
+  }
 
-    private Constants constants = GWT.create( Constants.class );
+  @Override
+  public void initTabs() {
+    tabPanel.addTab("Form Display", constants.Work());
+    tabPanel.addTab("Task Details", constants.Details());
+    tabPanel.addTab("Task Assignments", constants.Assignments());
+    tabPanel.addTab("Task Comments", constants.Comments());
+    tabPanel.setHeight("600px");
+    tabPanel.addCloseHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        presenter.closeDetails();
+      }
+    });
+    tabPanel.addRefreshHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        int selectedIndex = tabPanel.getSelectedIndex();
+        if (selectedIndex == 0) {
+          presenter.goToTaskFormTab();
+        } else if (selectedIndex == 1) {
+          presenter.goToTaskDetailsTab();
+        } else if (selectedIndex == 2) {
+          presenter.goToTaskAssignmentsTab();
+        } else if (selectedIndex == 3) {
+          presenter.goToTaskCommentsTab();
+        }
+      }
+    });
 
-    @Override
-    public void init( TaskDetailsMultiPresenter presenter ) {
-        this.presenter = presenter;
+    tabPanel.addSelectionHandler(new SelectionHandler<Integer>() {
 
-    }
+      @Override
+      public void onSelection(SelectionEvent<Integer> event) {
+        if (event.getSelectedItem() == 0) {
+          presenter.goToTaskFormTab();
+        } else if (event.getSelectedItem() == 1) {
+          presenter.goToTaskDetailsTab();
+        } else if (event.getSelectedItem() == 2) {
+          presenter.goToTaskAssignmentsTab();
+        } else if (event.getSelectedItem() == 3) {
+          presenter.goToTaskCommentsTab();
+        }
+      }
+    });
 
-
-    @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
-    }
-
-    
-
-    public HTMLPanel getContent() {
-        return content;
-    }
-
-    public Heading getTaskIdAndName() {
-        return taskIdAndName;
-    }
-
-    
-    
+  }
 
 }

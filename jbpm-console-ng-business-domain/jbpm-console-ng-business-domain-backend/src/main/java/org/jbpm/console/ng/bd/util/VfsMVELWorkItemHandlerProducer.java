@@ -12,9 +12,10 @@ import org.jbpm.console.ng.bd.api.FileService;
 import org.jbpm.console.ng.bd.api.VFSDeploymentUnit;
 import org.jbpm.console.ng.bd.api.Vfs;
 import org.jbpm.runtime.manager.api.WorkItemHandlerProducer;
+import org.jbpm.services.api.DeploymentService;
+import org.jbpm.services.api.model.DeployedUnit;
 import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.internal.deployment.DeployedUnit;
-import org.kie.internal.deployment.DeploymentService;
+
 import org.uberfire.java.nio.file.Path;
 
 public class VfsMVELWorkItemHandlerProducer implements WorkItemHandlerProducer {

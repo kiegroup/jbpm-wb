@@ -49,10 +49,10 @@ import org.jbpm.console.ng.bd.service.AdministrationService;
 import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
 import org.jbpm.console.ng.bd.service.DeploymentUnitProvider;
 import org.jbpm.console.ng.bd.service.Initializable;
-import org.jbpm.kie.services.api.Kjar;
 import org.jbpm.runtime.manager.impl.deploy.DeploymentDescriptorManager;
-import org.kie.internal.deployment.DeploymentService;
-import org.kie.internal.deployment.DeploymentUnit;
+import org.jbpm.services.api.DeploymentService;
+import org.jbpm.services.api.model.DeploymentUnit;
+import org.jbpm.services.cdi.Kjar;
 import org.kie.internal.runtime.conf.DeploymentDescriptor;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
@@ -97,7 +97,7 @@ public class AdministrationServiceImpl implements AdministrationService {
     @Any
     private Instance<DeploymentUnitProvider<DeploymentUnit>> deploymentUnitProviders;
 
-    private String deploymentServiceType;
+    private String deploymentServiceType = "kjar";
 
     /**
      * This flag is necessary to let dependent services know when the deployments have been bootstrapped.
