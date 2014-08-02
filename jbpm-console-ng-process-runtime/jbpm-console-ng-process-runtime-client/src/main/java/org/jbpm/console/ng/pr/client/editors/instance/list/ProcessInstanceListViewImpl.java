@@ -59,6 +59,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import org.guvnor.common.services.shared.preferences.GridGlobalPreferences;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
@@ -74,8 +75,8 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 @Dependent
 public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanceSummary, ProcessInstanceListPresenter>
         implements ProcessInstanceListPresenter.ProcessInstanceListView {
-  
-    interface Binder
+
+  interface Binder
           extends
           UiBinder<Widget, ProcessInstanceListViewImpl> {
 
@@ -96,20 +97,27 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
   private Button abortedFilterButton;
 
   private Button relatedToMeFilterButton;
-  
+
   private List<ProcessInstanceSummary> selectedProcessInstances = new ArrayList<ProcessInstanceSummary>();
 
   @Inject
   private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
 
   private Column actionsColumn;
-  
+
   @Override
   public void init(final ProcessInstanceListPresenter presenter) {
-    Map<String, String> params = new HashMap<String, String>();
-    params.put("bannedColumns",constants.Id()+","+constants.Name()+","+constants.Actions());
-    params.put("initColumns",constants.Id()+","+constants.Name()+","+constants.Version()+","+constants.Actions());
-    super.init(presenter, params);
+    List<String> bannedColumns = new ArrayList<String>();
+    bannedColumns.add(constants.Id());
+    bannedColumns.add(constants.Name());
+    bannedColumns.add(constants.Actions());
+    List<String> initColumns = new ArrayList<String>();
+    initColumns.add(constants.Id());
+    initColumns.add(constants.Name());
+    initColumns.add(constants.Version());
+    initColumns.add(constants.Actions());
+
+    super.init(presenter, new GridGlobalPreferences("ProcessInstancesGrid", initColumns, bannedColumns));
 
     initBulkActionsDropDown();
     initFiltersBar();
@@ -120,15 +128,14 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
       @Override
       public void onSelectionChange(SelectionChangeEvent event) {
-        
-        
+
         boolean close = false;
-        if(selectedRow == -1){
+        if (selectedRow == -1) {
           listGrid.setRowStyles(selectedStyles);
           selectedRow = listGrid.getKeyboardSelectedRow();
           listGrid.redraw();
-          
-        }else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
+
+        } else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
           listGrid.setRowStyles(selectedStyles);
           selectedRow = listGrid.getKeyboardSelectedRow();
           listGrid.redraw();
@@ -137,67 +144,64 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
         }
 
         selectedItem = selectionModel.getLastSelectedObject();
-        
-        
+
         PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details Multi"));
-        
-        
+
         if (status == PlaceStatus.CLOSE) {
           placeManager.goTo("Process Instance Details Multi");
           processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedItem.getDeploymentId(),
-                                        selectedItem.getProcessInstanceId(), selectedItem.getProcessId(), 
-                                        selectedItem.getProcessName(), selectedItem.getState()));
+                  selectedItem.getProcessInstanceId(), selectedItem.getProcessId(),
+                  selectedItem.getProcessName(), selectedItem.getState()));
         } else if (status == PlaceStatus.OPEN && !close) {
           processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedItem.getDeploymentId(),
-                                        selectedItem.getProcessInstanceId(), selectedItem.getProcessId(), 
-                                        selectedItem.getProcessName(), selectedItem.getState()));
-        } else if (status == PlaceStatus.OPEN && close ) {
+                  selectedItem.getProcessInstanceId(), selectedItem.getProcessId(),
+                  selectedItem.getProcessName(), selectedItem.getState()));
+        } else if (status == PlaceStatus.OPEN && close) {
           placeManager.closePlace("Process Instance Details Multi");
         }
-        
+
       }
     });
-    
+
     noActionColumnManager = DefaultSelectionEventManager
-                                        .createCustomManager(new DefaultSelectionEventManager.EventTranslator<ProcessInstanceSummary>() {
+            .createCustomManager(new DefaultSelectionEventManager.EventTranslator<ProcessInstanceSummary>() {
 
-      @Override
-      public boolean clearCurrentSelection(CellPreviewEvent<ProcessInstanceSummary> event) {
-        return false;
-      }
-
-      @Override
-      public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<ProcessInstanceSummary> event) {
-        NativeEvent nativeEvent = event.getNativeEvent();
-        if (BrowserEvents.CLICK.equals(nativeEvent.getType())) {
-          // Ignore if the event didn't occur in the correct column.
-          if (listGrid.getColumnIndex(actionsColumn) == event.getColumn()) {
-            return DefaultSelectionEventManager.SelectAction.IGNORE;
-          }
-          //Extension for checkboxes
-          Element target = nativeEvent.getEventTarget().cast();
-          if ("input".equals(target.getTagName().toLowerCase())) {
-            final InputElement input = target.cast();
-            if ("checkbox".equals(input.getType().toLowerCase())) {
-              // Synchronize the checkbox with the current selection state.
-              if(!selectedProcessInstances.contains(event.getValue())){
-                selectedProcessInstances.add(event.getValue());
-                input.setChecked(true);
-              }else{
-                selectedProcessInstances.remove(event.getValue());
-                input.setChecked(false);
+              @Override
+              public boolean clearCurrentSelection(CellPreviewEvent<ProcessInstanceSummary> event) {
+                return false;
               }
-              return DefaultSelectionEventManager.SelectAction.IGNORE;
-            }
-          }
-        }
-        
-        return DefaultSelectionEventManager.SelectAction.DEFAULT;
-      }
 
-     
-    });
-    
+              @Override
+              public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<ProcessInstanceSummary> event) {
+                NativeEvent nativeEvent = event.getNativeEvent();
+                if (BrowserEvents.CLICK.equals(nativeEvent.getType())) {
+                  // Ignore if the event didn't occur in the correct column.
+                  if (listGrid.getColumnIndex(actionsColumn) == event.getColumn()) {
+                    return DefaultSelectionEventManager.SelectAction.IGNORE;
+                  }
+                  //Extension for checkboxes
+                  Element target = nativeEvent.getEventTarget().cast();
+                  if ("input".equals(target.getTagName().toLowerCase())) {
+                    final InputElement input = target.cast();
+                    if ("checkbox".equals(input.getType().toLowerCase())) {
+                      // Synchronize the checkbox with the current selection state.
+                      if (!selectedProcessInstances.contains(event.getValue())) {
+                        selectedProcessInstances.add(event.getValue());
+                        input.setChecked(true);
+                      } else {
+                        selectedProcessInstances.remove(event.getValue());
+                        input.setChecked(false);
+                      }
+                      return DefaultSelectionEventManager.SelectAction.IGNORE;
+                    }
+                  }
+                }
+
+                return DefaultSelectionEventManager.SelectAction.DEFAULT;
+              }
+
+            });
+
     listGrid.setSelectionModel(selectionModel, noActionColumnManager);
     listGrid.setRowStyles(selectedStyles);
   }
@@ -214,8 +218,6 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     actionsColumn = initActionsColumn();
     listGrid.addColumn(actionsColumn, constants.Actions());
   }
-
- 
 
   private void initBulkActionsDropDown() {
     SplitDropdownButton bulkActions = new SplitDropdownButton();
@@ -431,7 +433,6 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     };
     startTimeColumn.setSortable(true);
 
-
     listGrid.addColumn(startTimeColumn, constants.Start_Date());
     startTimeColumn.setDataStoreName("StartDate");
   }
@@ -487,15 +488,12 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
 
   }
 
-
   public void onProcessInstanceSelectionEvent(@Observes ProcessInstancesWithDetailsRequestEvent event) {
     placeManager.goTo("Process Instance Details");
-    processInstanceSelected.fire(new ProcessInstanceSelectionEvent(event.getDeploymentId(), 
-                    event.getProcessInstanceId(), event.getProcessDefId(), 
-                    event.getProcessDefName(), event.getProcessInstanceStatus()));
+    processInstanceSelected.fire(new ProcessInstanceSelectionEvent(event.getDeploymentId(),
+            event.getProcessInstanceId(), event.getProcessDefId(),
+            event.getProcessDefName(), event.getProcessInstanceStatus()));
   }
-
-  
 
   private class AbortActionHasCell implements HasCell<ProcessInstanceSummary, ProcessInstanceSummary> {
 

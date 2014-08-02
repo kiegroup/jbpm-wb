@@ -39,12 +39,14 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
+import org.guvnor.common.services.shared.preferences.GridGlobalPreferences;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.client.resources.BusinessDomainImages;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
@@ -70,10 +72,19 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
   @Override
   public void init(final DeploymentUnitsListPresenter presenter) {
-    Map<String, String> params = new HashMap<String, String>();
-    params.put("bannedColumns",constants.Deployment()+","+constants.Actions());
-    params.put("initColumns",constants.Deployment()+","+constants.Strategy()+","+constants.Actions());
-    super.init(presenter, params);
+    
+    List<String> bannedColumns = new ArrayList<String>();
+    
+    bannedColumns.add(constants.Deployment());
+    bannedColumns.add(constants.Actions());
+    List<String> initColumns = new ArrayList<String>();
+    initColumns.add(constants.Deployment());
+    initColumns.add(constants.Strategy());
+    initColumns.add(constants.Actions());
+
+    super.init(presenter, new GridGlobalPreferences("DeploymentUnitsGrid", initColumns, bannedColumns));
+   
+    
     selectionModel = new NoSelectionModel<KModuleDeploymentUnitSummary>();
     selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
       @Override

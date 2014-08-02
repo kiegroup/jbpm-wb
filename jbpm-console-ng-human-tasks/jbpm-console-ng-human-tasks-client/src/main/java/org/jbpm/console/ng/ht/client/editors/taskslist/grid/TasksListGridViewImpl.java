@@ -44,15 +44,15 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import org.guvnor.common.services.shared.preferences.GridGlobalPreferences;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
@@ -87,13 +87,16 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
   private Button groupFilterButton;
 
   private Button allFilterButton;
+  
 
   @Override
   public void init(final TasksListGridPresenter presenter) {
-    Map<String, String> params = new HashMap<String, String>();
-    params.put("bannedColumns", constants.Task());
-    params.put("initColumns", constants.Task() + "," + constants.Description());
-    super.init(presenter, params);
+    List<String> bannedColumns = new ArrayList<String>();
+    bannedColumns.add(constants.Task());
+    List<String> initColumns = new ArrayList<String>();
+    initColumns.add(constants.Task());
+    initColumns.add(constants.Description());
+    super.init(presenter, new GridGlobalPreferences("TaskListGrid", initColumns, bannedColumns));
 
     selectedStyles = new RowStyles<TaskSummary>() {
 
@@ -122,7 +125,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
         return null;
       }
     };
-
+    
     listGrid.setEmptyTableCaption(constants.No_Tasks_Found());
     selectionModel = new NoSelectionModel<TaskSummary>();
     selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {

@@ -28,6 +28,11 @@ import com.google.gwt.view.client.NoSelectionModel;
 import java.util.Map;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import org.guvnor.common.services.shared.preferences.GridGlobalPreferences;
+import org.guvnor.common.services.shared.preferences.UserDataGridPreferencesService;
+import org.guvnor.common.services.shared.preferences.GridPreferencesStore;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.kie.uberfire.client.common.BusyPopup;
@@ -53,6 +58,9 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
 
   @Inject
   protected PlaceManager placeManager;
+  
+  @Inject
+  private Caller<UserDataGridPreferencesService> preferencesService;
 
   protected V presenter;
 
@@ -91,15 +99,26 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
 
   }
 
-  public void init(V presenter, Map<String, String> params) {
+  public void init(V presenter, final GridGlobalPreferences preferences) {
     this.presenter = presenter;
 
-    listGrid = new ExtendedPagedTable<T>(10, params);
+    listGrid = new ExtendedPagedTable<T>(10, preferences);
     initWidget(listGrid);
     presenter.addDataDisplay(listGrid);
+    preferencesService.call(new RemoteCallback<GridPreferencesStore>() {
 
-    initColumns();
-    initGenericToolBar();
+          @Override
+          public void callback(GridPreferencesStore preferencesStore) {
+            listGrid.setPreferencesService(preferencesService);
+            if(preferencesStore == null){
+              listGrid.setGridPreferencesStore(new GridPreferencesStore(preferences));
+            }else{
+              listGrid.setGridPreferencesStore(preferencesStore);
+            }
+            initColumns();
+            initGenericToolBar();
+          }
+        }).loadGridPreferences(preferences.getKey());
 
   }
 

@@ -39,9 +39,11 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import org.guvnor.common.services.shared.preferences.GridGlobalPreferences;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
@@ -70,10 +72,17 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
 
   @Override
   public void init(final ProcessVariableListPresenter presenter) {
-    Map<String, String> params = new HashMap<String, String>();
-    params.put("bannedColumns", constants.Name() + "," + constants.Value() + "," + constants.Actions());
-    params.put("initColumns", constants.Name() + "," + constants.Value() + "," + constants.Actions());
-    super.init(presenter, params);
+    List<String> bannedColumns = new ArrayList<String>();
+    
+    bannedColumns.add(constants.Name());
+    bannedColumns.add(constants.Value());
+    bannedColumns.add(constants.Actions());
+    List<String> initColumns = new ArrayList<String>();
+    initColumns.add(constants.Name());
+    initColumns.add(constants.Value());
+    initColumns.add(constants.Actions());
+
+    super.init(presenter, new GridGlobalPreferences("ProcessVariablesGrid", initColumns, bannedColumns));
 
     listGrid.setEmptyTableCaption(constants.No_Variables_Available());
 
