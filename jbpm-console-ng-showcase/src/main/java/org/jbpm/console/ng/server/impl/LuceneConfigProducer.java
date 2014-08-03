@@ -48,7 +48,6 @@ public class LuceneConfigProducer {
         final Set<Indexer> indexers = getIndexers();
         final Map<String, Analyzer> analyzers = getAnalyzers();
         this.config = new LuceneConfigBuilder().withInMemoryMetaModelStore()
-                .usingIndexers( indexers )
                 .usingAnalyzers( analyzers )
                 .useDirectoryBasedIndex()
                 .useNIODirectory()
