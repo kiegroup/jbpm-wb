@@ -22,10 +22,9 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.google.gwt.view.client.ProvidesKey;
-import java.util.Map;
-import org.guvnor.common.services.shared.preferences.GridGlobalPreferences;
 import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.kie.uberfire.client.tables.PagedTable;
+import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
 
 /**
  *

@@ -52,7 +52,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import org.guvnor.common.services.shared.preferences.GridGlobalPreferences;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
@@ -62,6 +61,7 @@ import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
 
 @Dependent
 public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksListGridPresenter>
