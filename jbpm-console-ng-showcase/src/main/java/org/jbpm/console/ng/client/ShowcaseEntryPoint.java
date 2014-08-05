@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import javax.inject.Inject;
 
 import com.google.gwt.animation.client.Animation;
@@ -31,13 +32,17 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jbpm.console.ng.client.i18n.Constants;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
-
+import org.kie.workbench.common.services.security.KieWorkbenchACL;
+import org.kie.workbench.common.services.security.KieWorkbenchPolicy;
+import org.kie.workbench.common.services.shared.security.KieWorkbenchSecurityService;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
@@ -70,11 +75,22 @@ public class ShowcaseEntryPoint {
 
     @Inject
     public Identity identity;
+    
+    @Inject
+    private KieWorkbenchACL kieACL;
 
+    @Inject
+    private Caller<KieWorkbenchSecurityService> kieSecurityService;
     @AfterInitialization
     public void startApp() {
-        setupMenu();
-        hideLoadingPopup();
+        kieSecurityService.call(new RemoteCallback<String>() {
+            public void callback(final String str) {
+                KieWorkbenchPolicy policy = new KieWorkbenchPolicy(str);
+                kieACL.activatePolicy(policy);
+                setupMenu();
+                hideLoadingPopup();
+            }
+        }).loadPolicy();
     }
 
 
