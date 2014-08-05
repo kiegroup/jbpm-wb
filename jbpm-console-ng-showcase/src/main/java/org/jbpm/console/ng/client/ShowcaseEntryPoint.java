@@ -31,13 +31,17 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jbpm.console.ng.client.i18n.Constants;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
-
+import org.kie.workbench.common.services.security.KieWorkbenchACL;
+import org.kie.workbench.common.services.security.KieWorkbenchPolicy;
+import org.kie.workbench.common.services.shared.security.KieWorkbenchSecurityService;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
@@ -71,35 +75,46 @@ public class ShowcaseEntryPoint {
     @Inject
     public Identity identity;
 
+    @Inject
+    private KieWorkbenchACL kieACL;
+
+    @Inject
+    private Caller<KieWorkbenchSecurityService> kieSecurityService;
+
     @AfterInitialization
     public void startApp() {
-        setupMenu();
-        hideLoadingPopup();
+        kieSecurityService.call( new RemoteCallback<String>() {
+            public void callback( final String str ) {
+                KieWorkbenchPolicy policy = new KieWorkbenchPolicy( str );
+                kieACL.activatePolicy( policy );
+                setupMenu();
+                hideLoadingPopup();
+            }
+        } ).loadPolicy();
     }
-
 
     private void setupMenu() {
 
         final AbstractWorkbenchPerspectiveActivity defaultPerspective = getDefaultPerspectiveActivity();
         final Menus menus = MenuFactory
                 .newTopLevelMenu( constants.Home() ).respondsWith( new Command() {
-                        @Override
-                        public void execute() {
-                            if ( defaultPerspective != null ) {
-                                placeManager.goTo( new DefaultPlaceRequest( defaultPerspective.getIdentifier() ) );
-                            } else {
-                                Window.alert( "Default perspective not found." );
-                            }
+                    @Override
+                    public void execute() {
+                        if ( defaultPerspective != null ) {
+                            placeManager.goTo( new DefaultPlaceRequest( defaultPerspective.getIdentifier() ) );
+                        } else {
+                            Window.alert( "Default perspective not found." );
                         }
-                    } ).endMenu()
+                    }
+                } ).endMenu()
                 .newTopLevelMenu( constants.Authoring() ).withItems( getAuthoringViews() ).endMenu()
                 .newTopLevelMenu( constants.Deploy() ).withItems( getDeploymentViews() ).endMenu()
                 .newTopLevelMenu( constants.Process_Management() ).withItems( getProcessMGMTViews() ).endMenu()
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu()
                 .newTopLevelMenu( constants.Dashboards() ).withItems( getDashboardsViews() ).endMenu()
                 .newTopLevelMenu( constants.Experimental() ).withItems( getExperimentalViews() ).endMenu()
-                .newTopLevelMenu( constants.User()+": "+identity.getName() ).position(MenuPosition.RIGHT).withItems( getRoles() ).endMenu()
-                
+                .newTopLevelMenu( constants.User() + ": " + identity.getName() ).position( MenuPosition.RIGHT ).withItems( getRoles() ).endMenu()
+
                 .build();
 
         menubar.addMenus( menus );
@@ -108,16 +123,16 @@ public class ShowcaseEntryPoint {
     private List<? extends MenuItem> getRoles() {
         final List<MenuItem> result = new ArrayList<MenuItem>( identity.getRoles().size() );
         for ( final Role role : identity.getRoles() ) {
-            if(!role.getName().equals("IS_REMEMBER_ME")){
-                result.add( MenuFactory.newSimpleItem( constants.Role() +": " + role.getName() ).endMenu().build().getItems().get( 0 ) );
+            if ( !role.getName().equals( "IS_REMEMBER_ME" ) ) {
+                result.add( MenuFactory.newSimpleItem( constants.Role() + ": " + role.getName() ).endMenu().build().getItems().get( 0 ) );
             }
         }
-        result.add(MenuFactory.newSimpleItem(constants.LogOut()).respondsWith(new Command() {
-                    @Override
-                    public void execute() {
-                        redirect( GWT.getModuleBaseURL() + "uf_logout" );
-                    }
-                }).endMenu().build().getItems().get(0));
+        result.add( MenuFactory.newSimpleItem( constants.LogOut() ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                redirect( GWT.getModuleBaseURL() + "uf_logout" );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
         return result;
     }
 
@@ -153,27 +168,24 @@ public class ShowcaseEntryPoint {
 
         return result;
     }
-    
+
     private List<? extends MenuItem> getExperimentalViews() {
         final List<MenuItem> result = new ArrayList<MenuItem>( 4 );
 
-       
-         result.add( MenuFactory.newSimpleItem( "Grid Base Test" ).respondsWith( new Command() {
+        result.add( MenuFactory.newSimpleItem( "Grid Base Test" ).respondsWith( new Command() {
             @Override
             public void execute() {
                 placeManager.goTo( new DefaultPlaceRequest( "Grid Base Test" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
-        
-        
-         result.add( MenuFactory.newSimpleItem( constants.Logs() ).respondsWith( new Command() {
+        result.add( MenuFactory.newSimpleItem( constants.Logs() ).respondsWith( new Command() {
             @Override
             public void execute() {
                 placeManager.goTo( new DefaultPlaceRequest( "Logs" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
-        
+
         return result;
     }
 
@@ -193,7 +205,7 @@ public class ShowcaseEntryPoint {
                 placeManager.goTo( new DefaultPlaceRequest( "Jobs" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
-        
+
         result.add( MenuFactory.newSimpleItem( constants.Asset_Management() ).respondsWith( new Command() {
             @Override
             public void execute() {
@@ -220,7 +232,6 @@ public class ShowcaseEntryPoint {
                 placeManager.goTo( new DefaultPlaceRequest( "Tasks Admin" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
-        
 
         return result;
     }
@@ -231,11 +242,11 @@ public class ShowcaseEntryPoint {
 
             @Override
             public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest("DashboardPerspective") );
+                placeManager.goTo( new DefaultPlaceRequest( "DashboardPerspective" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
-        final String dashbuilderURL = DashboardURLBuilder.getDashboardURL("/dashbuilder/workspace", null, LocaleInfo.getCurrentLocale().getLocaleName());
+        final String dashbuilderURL = DashboardURLBuilder.getDashboardURL( "/dashbuilder/workspace", null, LocaleInfo.getCurrentLocale().getLocaleName() );
         result.add( MenuFactory.newSimpleItem( constants.Business_Dashboard() ).respondsWith( new Command() {
             @Override
             public void execute() {
@@ -243,11 +254,8 @@ public class ShowcaseEntryPoint {
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
-
         return result;
     }
-
-
 
     private AbstractWorkbenchPerspectiveActivity getDefaultPerspectiveActivity() {
         AbstractWorkbenchPerspectiveActivity defaultPerspective = null;
