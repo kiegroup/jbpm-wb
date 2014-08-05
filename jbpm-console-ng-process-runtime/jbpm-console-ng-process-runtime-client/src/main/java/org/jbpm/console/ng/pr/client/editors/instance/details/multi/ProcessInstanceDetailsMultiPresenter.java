@@ -171,84 +171,6 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
     }
   }
 
-  public void goToProcessInstanceModelTab() {
-    if (place != null && !selectedItemId.equals("")) {
-
-      dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
-        @Override
-        public void callback(List<NodeInstanceSummary> activeNodes) {
-          final StringBuffer nodeParam = new StringBuffer();
-          for (NodeInstanceSummary activeNode : activeNodes) {
-            nodeParam.append(activeNode.getNodeUniqueName() + ",");
-          }
-          if (nodeParam.length() > 0) {
-            nodeParam.deleteCharAt(nodeParam.length() - 1);
-          }
-
-          dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
-            @Override
-            public void callback(List<NodeInstanceSummary> completedNodes) {
-              StringBuffer completedNodeParam = new StringBuffer();
-              for (NodeInstanceSummary completedNode : completedNodes) {
-                if (completedNode.isCompleted()) {
-                  // insert outgoing sequence flow and node as this is for on entry event
-                  completedNodeParam.append(completedNode.getNodeUniqueName() + ",");
-                  completedNodeParam.append(completedNode.getConnection() + ",");
-                } else if (completedNode.getConnection() != null) {
-                  // insert only incoming sequence flow as node id was already inserted
-                  completedNodeParam.append(completedNode.getConnection() + ",");
-                }
-
-              }
-              completedNodeParam.deleteCharAt(completedNodeParam.length() - 1);
-              DummyProcessPath dummyProcessPath = new DummyProcessPath(selectedItemName);
-              PathPlaceRequest defaultPlaceRequest = new PathPlaceRequest(dummyProcessPath);
-
-              defaultPlaceRequest.addParameter("activeNodes", nodeParam.toString());
-              defaultPlaceRequest.addParameter("completedNodes", completedNodeParam.toString());
-              defaultPlaceRequest.addParameter("readOnly", "true");
-              defaultPlaceRequest.addParameter("processId", selectedItemName);
-              defaultPlaceRequest.addParameter("deploymentId", selectedDeploymentId);
-
-              ((HTMLPanel) view.getTabPanel().getWidget(1)).clear();
-
-              AbstractWorkbenchActivity activity = null;
-
-              if (activitiesMap.get(selectedItemName) == null) {
-                Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-                activity = (AbstractWorkbenchActivity) activities.iterator().next();
-              } else {
-                activity = activitiesMap.get(selectedItemName);
-              }
-              IsWidget widget = activity.getWidget();
-              activity.launch(place, null);
-              if (activity instanceof AbstractWorkbenchScreenActivity) {
-                ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
-              } else if (activity instanceof AbstractWorkbenchEditorActivity) {
-                ((AbstractWorkbenchEditorActivity) activity).onStartup(new ObservablePathImpl().wrap(dummyProcessPath), defaultPlaceRequest);
-              }
-              ((HTMLPanel) view.getTabPanel().getWidget(1)).add(widget);
-              activity.onOpen();
-
-            }
-          }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error(Message message, Throwable throwable) {
-              ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-              return true;
-            }
-          }).getProcessInstanceCompletedNodes(Long.parseLong(selectedItemId));
-
-        }
-      }, new ErrorCallback<Message>() {
-        @Override
-        public boolean error(Message message, Throwable throwable) {
-          ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-          return true;
-        }
-      }).getProcessInstanceActiveNodes(Long.parseLong(selectedItemId));
-    }
-  }
 
   public void goToProcessInstanceVariables() {
 
@@ -308,6 +230,68 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
           return true;
         }
       }).abortProcessInstance(processInstanceId);
+    }
+  }
+  
+  public void goToProcessInstanceModelPopup() {
+    if (place != null && !selectedItemId.equals("")) {
+      dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
+        @Override
+        public void callback(List<NodeInstanceSummary> activeNodes) {
+          final StringBuffer nodeParam = new StringBuffer();
+          for (NodeInstanceSummary activeNode : activeNodes) {
+            nodeParam.append(activeNode.getNodeUniqueName() + ",");
+          }
+          if (nodeParam.length() > 0) {
+            nodeParam.deleteCharAt(nodeParam.length() - 1);
+          }
+
+          dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
+            @Override
+            public void callback(List<NodeInstanceSummary> completedNodes) {
+              StringBuffer completedNodeParam = new StringBuffer();
+              for (NodeInstanceSummary completedNode : completedNodes) {
+                if (completedNode.isCompleted()) {
+                  // insert outgoing sequence flow and node as this is for on entry event
+                  completedNodeParam.append(completedNode.getNodeUniqueName() + ",");
+                  completedNodeParam.append(completedNode.getConnection() + ",");
+                } else if (completedNode.getConnection() != null) {
+                  // insert only incoming sequence flow as node id was already inserted
+                  completedNodeParam.append(completedNode.getConnection() + ",");
+                }
+
+              }
+              completedNodeParam.deleteCharAt(completedNodeParam.length() - 1);
+              DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest("Process Diagram Popup");
+
+              defaultPlaceRequest.addParameter("activeNodes", nodeParam.toString());
+              defaultPlaceRequest.addParameter("completedNodes", completedNodeParam.toString());
+              defaultPlaceRequest.addParameter("readOnly", "true");
+              defaultPlaceRequest.addParameter("processId", selectedItemName);
+              defaultPlaceRequest.addParameter("deploymentId", selectedDeploymentId);
+
+               
+              placeManager.goTo(defaultPlaceRequest);
+
+                    }
+                  }, new ErrorCallback<Message>() {
+                    @Override
+                    public boolean error(Message message, Throwable throwable) {
+                      ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                      return true;
+                    }
+                  }).getProcessInstanceCompletedNodes(Long.parseLong(selectedItemId));
+
+                }
+              }, new ErrorCallback<Message>() {
+                @Override
+                public boolean error(Message message, Throwable throwable) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+                }
+              }).getProcessInstanceActiveNodes(Long.parseLong(selectedItemId));
+
+      
     }
   }
 

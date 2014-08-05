@@ -55,6 +55,9 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
 
   @UiField
   public ButtonGroup optionsButtonGroup;
+  
+  @UiField
+  public NavLink viewProcessModelNavLink;
 
   @Override
   public void init(final ProcessInstanceDetailsMultiPresenter presenter) {
@@ -67,8 +70,6 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
   public void initTabs() {
 
     tabPanel.addTab("Instance Details", constants.Process_Instance_Details());
-
-    tabPanel.addTab("Process Model", constants.Process_Model());
 
     tabPanel.addTab("Process Variables", constants.Process_Variables());
 
@@ -86,8 +87,6 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
         if (selectedIndex == 0) {
           presenter.goToProcessInstanceDetailsTab();
         } else if (selectedIndex == 1) {
-          presenter.goToProcessInstanceModelTab();
-        } else if (selectedIndex == 2) {
           presenter.goToProcessInstanceVariables();
         }
       }
@@ -100,8 +99,6 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
         if (event.getSelectedItem() == 0) {
           presenter.goToProcessInstanceDetailsTab();
         } else if (event.getSelectedItem() == 1) {
-          presenter.goToProcessInstanceModelTab();
-        } else if (event.getSelectedItem() == 2) {
           presenter.goToProcessInstanceVariables();
         }
       }
@@ -128,6 +125,15 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
       @Override
       public void onClick(ClickEvent event) {
         presenter.abortProcessInstance();
+      }
+    });
+    
+    viewProcessModelNavLink.setText(constants.View_Process_Model());
+    viewProcessModelNavLink.addClickHandler(new ClickHandler() {
+
+      @Override
+      public void onClick(ClickEvent event) {
+        presenter.goToProcessInstanceModelPopup();
       }
     });
 

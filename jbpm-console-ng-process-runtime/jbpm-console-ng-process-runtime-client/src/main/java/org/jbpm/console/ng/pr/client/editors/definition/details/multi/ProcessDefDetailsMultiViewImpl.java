@@ -54,6 +54,9 @@ public class ProcessDefDetailsMultiViewImpl extends AbstractTabbedDetailsView<Pr
   public NavLink viewProcessInstancesNavLink;
   
   @UiField
+  public NavLink viewProcessModelNavLink;
+  
+  @UiField
   public ButtonGroup optionsButtonGroup;
 
   @Override
@@ -67,9 +70,7 @@ public class ProcessDefDetailsMultiViewImpl extends AbstractTabbedDetailsView<Pr
   public void initTabs() {
 
     tabPanel.addTab("Definition Details", constants.Definition_Details());
-    
-    tabPanel.addTab("Process Model", constants.Process_Model());
-
+ 
     tabPanel.setHeight("600px");
     tabPanel.addCloseHandler(new ClickHandler() {
       @Override
@@ -83,9 +84,6 @@ public class ProcessDefDetailsMultiViewImpl extends AbstractTabbedDetailsView<Pr
         int selectedIndex = tabPanel.getSelectedIndex();
         if (selectedIndex == 0) {
           presenter.goToProcessDefDetailsTab();
-        }else
-        if (selectedIndex == 1) {
-          presenter.goToProcessDefModelTab();
         }
       }
     });
@@ -96,9 +94,7 @@ public class ProcessDefDetailsMultiViewImpl extends AbstractTabbedDetailsView<Pr
       public void onSelection(SelectionEvent<Integer> event) {
         if (event.getSelectedItem() == 0) {
           presenter.goToProcessDefDetailsTab();
-        } else if (event.getSelectedItem() == 1){
-          presenter.goToProcessDefModelTab();
-        }
+        } 
       }
     });
     
@@ -115,8 +111,14 @@ public class ProcessDefDetailsMultiViewImpl extends AbstractTabbedDetailsView<Pr
     });
     optionsDropdown.setText(constants.Options());
     
-   
-   
+    viewProcessModelNavLink.setText(constants.View_Process_Model());
+    viewProcessModelNavLink.addClickHandler(new ClickHandler() {
+
+      @Override
+      public void onClick(ClickEvent event) {
+        presenter.goToProcessDefModelPopup();
+      }
+    });
     viewProcessInstancesNavLink.setText(constants.View_Process_Instances());
     viewProcessInstancesNavLink.addClickHandler(new ClickHandler() {
 
