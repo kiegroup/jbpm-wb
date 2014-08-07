@@ -28,7 +28,7 @@ import org.uberfire.security.auth.AuthenticationManager;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.security.impl.authz.RuntimeAuthorizationManager;
 import org.uberfire.security.server.cdi.SecurityFactory;
-import org.jbpm.services.task.lifecycle.listeners.BAMTaskEventListener;
+import org.jbpm.services.task.audit.lifecycle.listeners.BAMTaskEventListener;
 import org.jbpm.services.task.audit.JPATaskLifeCycleEventListener;
 
 /**
