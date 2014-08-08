@@ -68,11 +68,11 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
     List<String> bannedColumns = new ArrayList<String>();
     
     bannedColumns.add(constants.Name());
-    bannedColumns.add(constants.Value());
     bannedColumns.add(constants.Actions());
     List<String> initColumns = new ArrayList<String>();
     initColumns.add(constants.Name());
-    initColumns.add(constants.Value());
+    initColumns.add(constants.Last_Modified());
+    initColumns.add(constants.Size());
     initColumns.add(constants.Actions());
 
     super.init(presenter, new GridGlobalPreferences("DocumentGrid", initColumns, bannedColumns));
@@ -132,8 +132,8 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
   @Override
   public void initColumns() {
     initDocumentIdColumn();
-    initDocumentNameColumn();
-//    initDocumentLinkColumn();
+    initDocumentLastModifiedColumn();
+    initDocumentSizeColumn();
     
     actionsColumn = initActionsColumn();
     listGrid.addColumn(actionsColumn, constants.Actions());
@@ -153,17 +153,31 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
 
   }
 
-  private void initDocumentNameColumn() {
+  private void initDocumentLastModifiedColumn() {
     // Value.
-    Column<DocumentSummary, String> nameColumn = new Column<DocumentSummary, String>(new TextCell()) {
+    Column<DocumentSummary, String> lastModifiedColumn = new Column<DocumentSummary, String>(new TextCell()) {
 
       @Override
       public String getValue(DocumentSummary object) {
-        return object.getDocumentName();
+        return object.getDocumentLastModified().toString();
       }
     };
-    nameColumn.setSortable(true);
-    listGrid.addColumn(nameColumn, constants.Name());
+    lastModifiedColumn.setSortable(true);
+    listGrid.addColumn(lastModifiedColumn, constants.Last_Modification());
+
+  }
+  
+  private void initDocumentSizeColumn() {
+    // Value.
+    Column<DocumentSummary, String> sizeColumn = new Column<DocumentSummary, String>(new TextCell()) {
+
+      @Override
+      public String getValue(DocumentSummary object) {
+        return object.getDocumentLastModified().toString();
+      }
+    };
+    sizeColumn.setSortable(true);
+    listGrid.addColumn(sizeColumn, constants.Size());
 
   }
 
@@ -174,12 +188,12 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
 
       @Override
       public String getValue(DocumentSummary object) {
-        return object.getDocumentPath();
+        return String.valueOf(object.getDocumentSize());
       }
     };
     pathColumn.setSortable(true);
 
-    listGrid.addColumn(pathColumn, constants.Details());
+    listGrid.addColumn(pathColumn, constants.Value());
 
   }
 
@@ -192,7 +206,7 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
     cells.add(new AccessDocumentActionHasCell("Access Document", new Delegate<DocumentSummary>() {
       @Override
       public void execute(DocumentSummary document) {
-        GWT.log("Accessing document: "+document.getDocumentPath());
+        GWT.log("Accessing document: "+document.getDocumentLink());
       }
     }));
 

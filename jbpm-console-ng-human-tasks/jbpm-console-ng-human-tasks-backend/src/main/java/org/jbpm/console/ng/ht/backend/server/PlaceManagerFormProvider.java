@@ -34,7 +34,7 @@ public class PlaceManagerFormProvider implements FormProvider {
 
     @Inject
     private Event<RenderFormEvent> renderForm;
-
+    
     @Override
     public int getPriority() {
         return 0;

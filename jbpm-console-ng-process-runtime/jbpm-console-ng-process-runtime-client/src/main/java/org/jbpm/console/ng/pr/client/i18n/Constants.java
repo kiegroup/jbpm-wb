@@ -205,4 +205,8 @@ public interface Constants extends Messages {
 
     String Documents();
 
+    String Last_Modified();
+
+    String Size();
+
 }

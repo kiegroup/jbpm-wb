@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.pr.model;
 
+import java.util.Date;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.console.ng.ga.model.GenericSummary;
 
@@ -24,34 +25,34 @@ import org.jbpm.console.ng.ga.model.GenericSummary;
  */
 @Portable
 public class DocumentSummary extends GenericSummary {
+
   private String documentId;
-  private String documentName;
-  private String documentPath;
+  private Date documentLastModified;
+  private Long documentSize;
   private String documentLink;
 
   public DocumentSummary() {
   }
 
-  
-  public DocumentSummary(String documentId, String documentName, String documentPath, String documentLink) {
+  public DocumentSummary(String documentId, Date documentLastModified, Long documentSize, String documentLink) {
     this.id = documentId;
-    this.name = documentName;
+    this.name = documentId;
     this.documentId = documentId;
-    this.documentName = documentName;
-    this.documentPath = documentPath;
+    this.documentLastModified = documentLastModified;
+    this.documentSize = documentSize;
     this.documentLink = documentLink;
   }
 
   public String getDocumentId() {
     return documentId;
   }
-  
-  public String getDocumentName() {
-    return documentName;
+
+  public Date getDocumentLastModified() {
+    return documentLastModified;
   }
 
-  public String getDocumentPath() {
-    return documentPath;
+  public Long getDocumentSize() {
+    return documentSize;
   }
 
   public String getDocumentLink() {

@@ -29,7 +29,9 @@ import org.jbpm.console.ng.pr.model.DocumentKey;
 import org.jbpm.console.ng.pr.model.DocumentSummary;
 import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.console.ng.pr.service.DocumentsService;
+import org.jbpm.document.Document;
 import org.jbpm.services.api.DefinitionService;
+import org.jbpm.services.api.ProcessService;
 import org.jbpm.services.api.RuntimeDataService;
 import org.jbpm.services.task.query.QueryFilterImpl;
 import org.uberfire.paging.PageResponse;
@@ -46,6 +48,10 @@ public class DocumentsServiceImpl implements DocumentsService {
 
   @Inject
   private DefinitionService bpmn2Service;
+  
+  @Inject
+  private ProcessService processService;
+  
 
   @Override
   public PageResponse<DocumentSummary> getData(QueryFilter filter) {
@@ -69,7 +75,10 @@ public class DocumentsServiceImpl implements DocumentsService {
     List<DocumentSummary> documents = new ArrayList<DocumentSummary>();
     for (ProcessVariableSummary pv : processVariables) {
       if(pv.getType().equals("org.jbpm.document.Document")){
-        documents.add(new DocumentSummary(pv.getName(), pv.getName(), pv.getName(), pv.getName()));
+        Document document = (Document)processService.getProcessInstanceVariable(processInstanceId, pv.getName());
+        if(document != null){
+          documents.add(new DocumentSummary(document.getName(), document.getLastModified(), document.getSize(), document.getLink()));
+        }
       }
     }
 
