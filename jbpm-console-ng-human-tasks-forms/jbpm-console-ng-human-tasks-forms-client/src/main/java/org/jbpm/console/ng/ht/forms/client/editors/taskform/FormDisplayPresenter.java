@@ -40,7 +40,6 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
-import org.jbpm.console.ng.ht.forms.model.events.FormRenderedEvent;
 import org.jbpm.console.ng.ht.forms.service.FormModelerProcessStarterEntryPoint;
 import org.jbpm.console.ng.ht.forms.service.FormServiceEntryPoint;
 import org.jbpm.console.ng.ht.model.TaskSummary;
@@ -49,7 +48,6 @@ import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
-import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
@@ -100,8 +98,6 @@ public class FormDisplayPresenter {
     @Inject
     protected Caller<TaskServiceEntryPoint> taskServices;
 
-    @Inject
-    private Event<FormRenderedEvent> formRendered;
 
     @Inject
     protected Event<TaskRefreshedEvent> taskRefreshed;
