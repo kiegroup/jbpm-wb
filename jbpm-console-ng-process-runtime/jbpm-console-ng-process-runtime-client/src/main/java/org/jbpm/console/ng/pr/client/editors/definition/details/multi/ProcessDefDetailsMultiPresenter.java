@@ -121,10 +121,12 @@ public class ProcessDefDetailsMultiPresenter extends AbstractTabbedDetailsPresen
   }
 
   public void createNewProcessInstance() {
-    PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display Popup");
-    placeRequestImpl.addParameter("processId", selectedItemName);
-    placeRequestImpl.addParameter("domainId", selectedItemId);
-    placeRequestImpl.addParameter("processName", selectedItemName);
+    PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Generic Popup");
+    placeRequestImpl.addParameter("placeToGo", "Generic Form Display");
+    placeRequestImpl.addParameter("key", selectedItemName);
+    placeRequestImpl.addParameter("name", selectedItemName);
+    placeRequestImpl.addParameter("type", "screen");
+    placeRequestImpl.addParameter("params", "processId,"+selectedItemName+",domainId,"+selectedItemId+",processName,"+selectedItemName);
     placeManager.goTo(placeRequestImpl);
   }
 

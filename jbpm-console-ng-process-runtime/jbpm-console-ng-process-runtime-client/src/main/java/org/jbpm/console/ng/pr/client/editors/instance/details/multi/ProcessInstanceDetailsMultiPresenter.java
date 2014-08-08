@@ -35,7 +35,7 @@ import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsPresenter;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView.TabbedDetailsView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.model.DummyProcessPath;
+import org.jbpm.console.ng.ga.model.process.DummyProcessPath;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.kie.api.runtime.process.ProcessInstance;
@@ -176,13 +176,44 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
 
     if (place != null && !selectedItemId.equals("")) {
       String placeToGo = "Process Variables List";
-      ((HTMLPanel) view.getTabPanel().getWidget(2)).clear();
+      ((HTMLPanel) view.getTabPanel().getWidget(1)).clear();
       DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
       //Set Parameters here: 
       defaultPlaceRequest.addParameter("processInstanceId", selectedItemId);
       defaultPlaceRequest.addParameter("processDefId", selectedItemName);
       defaultPlaceRequest.addParameter("deploymentId", selectedDeploymentId);
       defaultPlaceRequest.addParameter("processInstanceStatus", String.valueOf(selectedProcessInstanceStatus));
+
+      AbstractWorkbenchActivity activity = null;
+      if (activitiesMap.get(placeToGo) == null) {
+        Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
+        activity = ((AbstractWorkbenchScreenActivity) activities.iterator().next());
+
+      } else {
+        activity = activitiesMap.get(placeToGo);
+      }
+      IsWidget widget = activity.getWidget();
+      activity.launch(place, null);
+
+      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
+
+      ((HTMLPanel) view.getTabPanel().getWidget(1)).add(widget);
+      activity.onOpen();
+    }
+
+  }
+  
+  public void goToProcessDocuments() {
+
+    if (place != null && !selectedItemId.equals("")) {
+      String placeToGo = "Document List";
+      ((HTMLPanel) view.getTabPanel().getWidget(2)).clear();
+      DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
+      //Set Parameters here: 
+      defaultPlaceRequest.addParameter("processInstanceId", selectedItemId);
+      defaultPlaceRequest.addParameter("processDefId", selectedItemName);
+      defaultPlaceRequest.addParameter("deploymentId", selectedDeploymentId);
+      
 
       AbstractWorkbenchActivity activity = null;
       if (activitiesMap.get(placeToGo) == null) {

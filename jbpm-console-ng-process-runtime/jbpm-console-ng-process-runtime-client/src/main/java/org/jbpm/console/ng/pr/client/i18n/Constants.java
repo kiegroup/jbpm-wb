@@ -200,5 +200,9 @@ public interface Constants extends Messages {
     String Logs();
 
     String Get_Instance_Data();
+    
+    String No_Documents_Available();
+
+    String Documents();
 
 }

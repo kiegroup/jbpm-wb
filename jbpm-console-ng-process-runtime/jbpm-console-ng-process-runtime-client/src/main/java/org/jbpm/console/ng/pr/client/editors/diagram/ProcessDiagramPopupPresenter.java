@@ -27,7 +27,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.model.DummyProcessPath;
+import org.jbpm.console.ng.ga.model.process.DummyProcessPath;
 import org.kie.uberfire.client.common.MultiPageEditorView;
 import org.kie.uberfire.client.common.Page;
 import org.uberfire.backend.vfs.impl.ObservablePathImpl;
@@ -46,6 +46,7 @@ import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.PathPlaceRequest;
 import org.uberfire.security.Identity;
+import com.github.gwtbootstrap.client.ui.Modal;
 
 @Dependent
 @WorkbenchPopup(identifier = "Process Diagram Popup")
@@ -101,10 +102,11 @@ public class ProcessDiagramPopupPresenter {
     final String processId = place.getParameter("processId", "");
     final String activeNodes = place.getParameter("activeNodes", "");
     final String completedNodes = place.getParameter("completedNodes", "");
-    ((com.github.gwtbootstrap.client.ui.Modal)view.getContainer().getParent().getParent().getParent().getParent()).setWidth("1000px");
-    ((com.github.gwtbootstrap.client.ui.Modal)view.getContainer().getParent().getParent().getParent().getParent()).setHeight("600px");
-    ((com.github.gwtbootstrap.client.ui.Modal)view.getContainer().getParent().getParent().getParent().getParent()).getElement().getStyle().setMarginLeft(-500, Style.Unit.PX);
-    ((com.github.gwtbootstrap.client.ui.Modal)view.getContainer().getParent().getParent().getParent().getParent()).getElement().getStyle().setMarginTop(-300, Style.Unit.PX);
+    Modal designerView = ((com.github.gwtbootstrap.client.ui.Modal)view.getContainer().getParent().getParent().getParent().getParent());
+    designerView.setWidth("1000px");
+    designerView.setHeight("600px");
+    designerView.getElement().getStyle().setMarginLeft(-500, Style.Unit.PX);
+    designerView.getElement().getStyle().setMarginTop(-300, Style.Unit.PX);
     renderDesigner(deploymentId, processId, activeNodes, completedNodes);
 
   }
@@ -140,7 +142,8 @@ public class ProcessDiagramPopupPresenter {
     
     Widget asWidget = ((MultiPageEditorView)widget.asWidget()).getTabContent().asWidget();
     
-    Widget widget1 = ((com.github.gwtbootstrap.client.ui.TabPane)((com.google.gwt.user.client.ui.ComplexPanel)asWidget).getWidget(0)).getWidget(0);
+    Widget widget1 = ((com.github.gwtbootstrap.client.ui.TabPane)
+            ((com.google.gwt.user.client.ui.ComplexPanel)asWidget).getWidget(0)).getWidget(0);
     
     Widget widget2 = ((com.google.gwt.user.client.ui.ComplexPanel)widget1).getWidget(0);
     Widget widget3 = ((Page.PageView)widget2).getSp().getWidget();

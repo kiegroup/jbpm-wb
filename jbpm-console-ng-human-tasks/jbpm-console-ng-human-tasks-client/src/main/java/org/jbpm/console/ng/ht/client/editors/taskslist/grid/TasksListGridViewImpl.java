@@ -151,9 +151,9 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
 
         if (status == PlaceStatus.CLOSE) {
           placeManager.goTo("Task Details Multi");
-          taskSelected.fire(new TaskSelectionEvent(selectedItem.getTaskId(), selectedItem.getTaskName(), "Form Display"));
+          taskSelected.fire(new TaskSelectionEvent(selectedItem.getTaskId(), selectedItem.getTaskName(), "Generic Form Display"));
         } else if (status == PlaceStatus.OPEN && !close) {
-          taskSelected.fire(new TaskSelectionEvent(selectedItem.getTaskId(), selectedItem.getTaskName(), "Form Display"));
+          taskSelected.fire(new TaskSelectionEvent(selectedItem.getTaskId(), selectedItem.getTaskName(), "Generic Form Display"));
         } else if (status == PlaceStatus.OPEN && close) {
           placeManager.closePlace("Task Details Multi");
         }
@@ -466,7 +466,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
       @Override
       public void execute(TaskSummary task) {
         placeManager.goTo("Task Details Multi");
-        taskSelected.fire(new TaskSelectionEvent(task.getTaskId(), task.getName(), "Form Display"));
+        taskSelected.fire(new TaskSelectionEvent(task.getTaskId(), task.getName(), "Generic Form Display"));
       }
     }));
 

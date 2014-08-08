@@ -196,10 +196,12 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     cells.add(new StartActionHasCell("Start process", new Delegate<ProcessSummary>() {
       @Override
       public void execute(ProcessSummary process) {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display Popup");
-        placeRequestImpl.addParameter("processId", process.getProcessDefId());
-        placeRequestImpl.addParameter("domainId", process.getDeploymentId());
-        placeRequestImpl.addParameter("processName", process.getProcessDefName());
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Generic Popup");
+        placeRequestImpl.addParameter("placeToGo", "Generic Form Display");
+        placeRequestImpl.addParameter("key", process.getProcessDefId());
+        placeRequestImpl.addParameter("name", process.getProcessDefName());
+        placeRequestImpl.addParameter("type", "screen");
+        placeRequestImpl.addParameter("params", "processId,"+process.getProcessDefId()+",domainId,"+process.getDeploymentId()+",processName,"+process.getProcessDefName());
         placeManager.goTo(placeRequestImpl);
       }
     }));
