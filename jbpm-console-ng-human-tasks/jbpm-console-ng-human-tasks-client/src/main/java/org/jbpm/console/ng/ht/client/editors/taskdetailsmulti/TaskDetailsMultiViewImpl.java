@@ -46,7 +46,7 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
 
   @Override
   public void initTabs() {
-    tabPanel.addTab("Form Display", constants.Work());
+    tabPanel.addTab("Generic Form Display", constants.Work());
     tabPanel.addTab("Task Details", constants.Details());
     tabPanel.addTab("Task Assignments", constants.Assignments());
     tabPanel.addTab("Task Comments", constants.Comments());

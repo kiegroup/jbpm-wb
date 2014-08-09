@@ -169,6 +169,11 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-workitems-editor-backend</artifactId>
     </dependency>
+    
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-document</artifactId>
+    </dependency>
 
     <!-- jBPM Designer -->
     <dependency>
@@ -214,6 +219,17 @@
       <groupId>org.kie.uberfire</groupId>
       <artifactId>kie-uberfire-metadata-backend-lucene</artifactId>
     </dependency>
+    
+    <dependency>
+      <groupId>org.kie.uberfire</groupId>
+      <artifactId>kie-uberfire-widgets-commons</artifactId>
+    </dependency>
+ 
+    <dependency>
+      <groupId>org.kie.uberfire</groupId>
+      <artifactId>kie-uberfire-widgets-service-backend</artifactId>
+    </dependency>
+ 
 
     <!-- UberFire -->
     <dependency>
@@ -558,10 +574,6 @@
       <artifactId>jboss-jstl-api_1.2_spec</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs</artifactId>
-    </dependency>
   </dependencies>
 
   <build>
@@ -618,6 +630,7 @@
 
             <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-client</compileSourcesArtifact>
+            
 
             <!-- UberFire -->
             <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>

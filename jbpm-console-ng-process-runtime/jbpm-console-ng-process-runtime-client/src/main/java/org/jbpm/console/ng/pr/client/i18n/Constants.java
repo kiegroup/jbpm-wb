@@ -201,6 +201,13 @@ public interface Constants extends Messages {
 
     String Get_Instance_Data();
     
+    String No_Documents_Available();
+
+    String Documents();
+
+    String Last_Modified();
+
+    String Size();
     String Technical_Log();
     
     String Business_Log();

@@ -30,7 +30,6 @@ import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.console.ng.pr.service.ProcessVariablesService;
 import org.jbpm.services.api.DefinitionService;
 import org.jbpm.services.api.RuntimeDataService;
-import org.jbpm.services.api.model.ProcessInstanceDesc;
 import org.jbpm.services.task.query.QueryFilterImpl;
 import org.uberfire.paging.PageResponse;
 

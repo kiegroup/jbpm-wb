@@ -50,6 +50,7 @@
             <b:Button ui:field="newInstanceButton" size="MINI" icon="PLAY"/>
             <b:DropdownButton ui:field="optionsDropdown" size="MINI">
               <b:NavLink ui:field="viewProcessInstancesNavLink"></b:NavLink>
+              <b:NavLink ui:field="viewProcessModelNavLink"></b:NavLink>
             </b:DropdownButton>
           </b:ButtonGroup>
         </g:FlowPanel>

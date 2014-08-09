@@ -32,7 +32,6 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.AbstractWorkbenchActivity;
-import org.uberfire.client.mvp.AbstractWorkbenchEditorActivity;
 import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.UberView;
@@ -113,11 +112,7 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
       }
       IsWidget widget = activity.getWidget();
       activity.launch(place, null);
-      if (activity instanceof AbstractWorkbenchScreenActivity) {
-        ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
-      } else if (activity instanceof AbstractWorkbenchScreenActivity) {
-        ((AbstractWorkbenchScreenActivity) activity).onStartup(place);
-      }
+      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
       ((HTMLPanel) view.getTabPanel().getWidget(1)).add(widget);
       activity.onOpen();
     }
@@ -125,7 +120,7 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
 
   public void goToTaskFormTab() {
     if (place != null && !selectedItemId.equals("")) {
-      String placeToGo = "Form Display";
+      String placeToGo = "Generic Form Display";
       ((HTMLPanel) view.getTabPanel().getWidget(0)).clear();
       DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
       //Set Parameters here: 
@@ -142,11 +137,7 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
       }
       IsWidget widget = activity.getWidget();
       activity.launch(place, null);
-      if (activity instanceof AbstractWorkbenchScreenActivity) {
-        ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
-      } else if (activity instanceof AbstractWorkbenchScreenActivity) {
-        ((AbstractWorkbenchScreenActivity) activity).onStartup(place);
-      }
+      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
       ((HTMLPanel) view.getTabPanel().getWidget(0)).add(widget);
       activity.onOpen();
     }
@@ -197,7 +188,6 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
       IsWidget widget = activity.getWidget();
       activity.launch(place, null);
       ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
-      
       ((HTMLPanel) view.getTabPanel().getWidget(3)).add(widget);
       activity.onOpen();
     }

@@ -24,5 +24,8 @@
 
   <source path="model"/>
   <source path="service"/>
+  <source path="api"/>
+  <source path="ht"/>
+  <source path="process"/>
 
 </module>

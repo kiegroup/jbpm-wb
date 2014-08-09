@@ -50,6 +50,7 @@
             <b:DropdownButton ui:field="optionsDropdown" size="MINI">
               <b:NavLink ui:field="signalProcessInstancesNavLink"></b:NavLink>
               <b:NavLink ui:field="abortProcessInstancesNavLink"></b:NavLink>
+              <b:NavLink ui:field="viewProcessModelNavLink"></b:NavLink>
             </b:DropdownButton>
           </b:ButtonGroup>
         </g:FlowPanel>

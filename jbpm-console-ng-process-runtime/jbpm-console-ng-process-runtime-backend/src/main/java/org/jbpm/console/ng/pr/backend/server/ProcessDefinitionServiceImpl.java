@@ -17,15 +17,12 @@ package org.jbpm.console.ng.pr.backend.server;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ga.model.QueryFilter;
-import org.jbpm.console.ng.ga.service.ItemKey;
 import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
@@ -33,7 +30,6 @@ import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
 import org.jbpm.services.api.RuntimeDataService;
 import org.jbpm.services.api.model.ProcessDefinition;
 import org.jbpm.services.task.query.QueryFilterImpl;
-import org.kie.internal.query.QueryContext;
 import org.uberfire.paging.PageResponse;
 
 /**

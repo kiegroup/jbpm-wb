@@ -35,15 +35,13 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import org.guvnor.common.services.shared.preferences.GridGlobalPreferences;
+import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
@@ -198,10 +196,12 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     cells.add(new StartActionHasCell("Start process", new Delegate<ProcessSummary>() {
       @Override
       public void execute(ProcessSummary process) {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Form Display Popup");
-        placeRequestImpl.addParameter("processId", process.getProcessDefId());
-        placeRequestImpl.addParameter("domainId", process.getDeploymentId());
-        placeRequestImpl.addParameter("processName", process.getProcessDefName());
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Generic Popup");
+        placeRequestImpl.addParameter("placeToGo", "Generic Form Display");
+        placeRequestImpl.addParameter("key", process.getProcessDefId());
+        placeRequestImpl.addParameter("name", process.getProcessDefName());
+        placeRequestImpl.addParameter("type", "screen");
+        placeRequestImpl.addParameter("params", "processId,"+process.getProcessDefId()+",domainId,"+process.getDeploymentId()+",processName,"+process.getProcessDefName());
         placeManager.goTo(placeRequestImpl);
       }
     }));
