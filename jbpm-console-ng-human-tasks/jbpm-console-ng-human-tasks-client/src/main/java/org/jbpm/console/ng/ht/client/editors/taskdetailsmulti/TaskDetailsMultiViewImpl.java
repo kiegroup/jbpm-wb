@@ -50,6 +50,7 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
     tabPanel.addTab("Task Details", constants.Details());
     tabPanel.addTab("Task Assignments", constants.Assignments());
     tabPanel.addTab("Task Comments", constants.Comments());
+    tabPanel.addTab("Task Logs", constants.Logs());
     tabPanel.setHeight("600px");
     tabPanel.addCloseHandler(new ClickHandler() {
       @Override
@@ -69,7 +70,10 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
           presenter.goToTaskAssignmentsTab();
         } else if (selectedIndex == 3) {
           presenter.goToTaskCommentsTab();
+        } else if (selectedIndex == 4) {
+          presenter.goToTaskLogsTab();
         }
+                
       }
     });
 
@@ -85,6 +89,8 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
           presenter.goToTaskAssignmentsTab();
         } else if (event.getSelectedItem() == 3) {
           presenter.goToTaskCommentsTab();
+        } else if (event.getSelectedItem() == 4) {
+          presenter.goToTaskLogsTab();
         }
       }
     });
