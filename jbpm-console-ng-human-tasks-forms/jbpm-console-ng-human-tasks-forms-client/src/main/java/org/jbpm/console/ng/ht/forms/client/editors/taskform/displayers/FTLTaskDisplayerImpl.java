@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
+import com.google.gwt.user.client.ui.HTMLPanel;
 import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
@@ -30,6 +31,7 @@ public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
   protected void initDisplayer() {
     publish(this);
     publishGetFormValues();
+    formContainer.add(new HTMLPanel(formContent));
   }
 
   @Override

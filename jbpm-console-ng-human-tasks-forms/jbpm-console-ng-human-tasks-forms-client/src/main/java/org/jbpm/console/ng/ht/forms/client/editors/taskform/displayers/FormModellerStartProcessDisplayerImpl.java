@@ -44,12 +44,7 @@ import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 @Dependent
 public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessFormDisplayer {
 
-  protected Constants constants = GWT.create(Constants.class);
-
   private static final String ACTION_START_PROCESS = "startProcess";
-
-  @Inject
-  private Caller<DataServiceEntryPoint> dataServices;
 
   @Inject
   private FormRendererWidget formRenderer;
@@ -61,39 +56,6 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
   private Caller<FormModelerProcessStarterEntryPoint> renderContextServices;
 
   protected String action;
-
-  @Override
-  public void init(ProcessDefinitionKey key, String formContent) {
-    this.deploymentId = key.getDeploymentId();
-    this.processDefId = key.getProcessId();
-    this.formContent = formContent;
-    container.add(formContainer);
-    container.add(buttonsContainer);
-
-    dataServices.call(new RemoteCallback<ProcessSummary>() {
-      @Override
-      public void callback(ProcessSummary summary) {
-        FormModellerStartProcessDisplayerImpl.this.processName = summary.getProcessDefName();
-        FocusPanel wrapperFlowPanel = new FocusPanel();
-        wrapperFlowPanel.setStyleName("wrapper form-actions");
-
-        ClickHandler start = new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-            startProcessFromDisplayer();
-          }
-        };
-
-        Button startButton = new Button();
-        startButton.setText(constants.Start());
-        startButton.addClickHandler(start);
-
-        wrapperFlowPanel.add(startButton);
-        buttonsContainer.add(wrapperFlowPanel);
-        initDisplayer();
-      }
-    }).getProcessDesc(deploymentId, processDefId);
-  }
 
   protected void initDisplayer() {
     formRenderer.loadContext(formContent);

@@ -19,6 +19,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.FlowPanel;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -155,6 +157,19 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
         formServices.call(new RemoteCallback<String>() {
           @Override
           public void callback(String form) {
+            Collections.sort(taskDisplayers, new Comparator<HumanTaskFormDisplayer>() {
+
+              @Override
+              public int compare(HumanTaskFormDisplayer o1, HumanTaskFormDisplayer o2) {
+                if(o1.getPriority() < o2.getPriority()){
+                  return -1;
+                }else if(o1.getPriority() > o2.getPriority()){
+                  return 1;
+                }else{
+                  return 0;
+                }
+              }
+            });
             for (HumanTaskFormDisplayer d : taskDisplayers) {
               if (d.supportsContent(form)) {
                 d.init(new TaskKey(currentTaskId), form);
@@ -172,6 +187,19 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
         formServices.call(new RemoteCallback<String>() {
           @Override
           public void callback(String form) {
+            Collections.sort(processDisplayers, new Comparator<StartProcessFormDisplayer>() {
+
+              @Override
+              public int compare(StartProcessFormDisplayer o1, StartProcessFormDisplayer o2) {
+                if(o1.getPriority() < o2.getPriority()){
+                  return -1;
+                }else if(o1.getPriority() > o2.getPriority()){
+                  return 1;
+                }else{
+                  return 0;
+                }
+              }
+            });
             for (StartProcessFormDisplayer d : processDisplayers) {
               if (d.supportsContent(form)) {
                 d.init(new ProcessDefinitionKey(currentDeploymentId, currentProcessId), form);

@@ -15,7 +15,12 @@
  */
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +31,13 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.ht.forms.api.FormRefreshCallback;
+import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
 import org.jbpm.console.ng.ht.forms.process.api.StartProcessFormDisplayer;
+import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
+import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.uberfire.client.workbench.widgets.common.ErrorPopup;
 
@@ -38,6 +47,8 @@ import org.uberfire.client.workbench.widgets.common.ErrorPopup;
  */
 public abstract class AbstractStartProcessFormDisplayer implements StartProcessFormDisplayer {
 
+  protected Constants constants = GWT.create(Constants.class);
+  
   final protected FlowPanel container = new FlowPanel();
   final protected FlowPanel buttonsContainer = new FlowPanel();
   final protected VerticalPanel formContainer = new VerticalPanel();
@@ -50,10 +61,48 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
   protected String processName;
   
   @Inject
+  private Caller<DataServiceEntryPoint> dataServices;
+  
+  @Inject
   protected Event<NewProcessInstanceEvent> newProcessInstanceEvent;
 
   @Inject
   private Caller<KieSessionEntryPoint> sessionServices;
+  
+   @Override
+  public void init(ProcessDefinitionKey key, String formContent) {
+    this.deploymentId = key.getDeploymentId();
+    this.processDefId = key.getProcessId();
+    this.formContent = formContent;
+    container.add(formContainer);
+    container.add(buttonsContainer);
+
+    dataServices.call(new RemoteCallback<ProcessSummary>() {
+      @Override
+      public void callback(ProcessSummary summary) {
+        processName = summary.getProcessDefName();
+        FocusPanel wrapperFlowPanel = new FocusPanel();
+        wrapperFlowPanel.setStyleName("wrapper form-actions");
+
+        ClickHandler start = new ClickHandler() {
+          @Override
+          public void onClick(ClickEvent event) {
+            startProcessFromDisplayer();
+          }
+        };
+
+        Button startButton = new Button();
+        startButton.setText(constants.Start());
+        startButton.addClickHandler(start);
+
+        wrapperFlowPanel.add(startButton);
+        buttonsContainer.add(wrapperFlowPanel);
+        initDisplayer();
+      }
+    }).getProcessDesc(deploymentId, processDefId);
+  }
+  
+  protected abstract void startProcessFromDisplayer();
 
   protected abstract void initDisplayer();
   
