@@ -70,8 +70,6 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
           presenter.goToTaskAssignmentsTab();
         } else if (selectedIndex == 3) {
           presenter.goToTaskCommentsTab();
-        } else if (selectedIndex == 4) {
-          presenter.goToTaskLogsTab();
         }
                 
       }
@@ -89,8 +87,6 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
           presenter.goToTaskAssignmentsTab();
         } else if (event.getSelectedItem() == 3) {
           presenter.goToTaskCommentsTab();
-        } else if (event.getSelectedItem() == 4) {
-          presenter.goToTaskLogsTab();
         }
       }
     });

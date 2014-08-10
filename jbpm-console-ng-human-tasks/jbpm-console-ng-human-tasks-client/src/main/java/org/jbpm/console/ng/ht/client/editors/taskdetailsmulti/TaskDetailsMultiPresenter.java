@@ -192,31 +192,5 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
       activity.onOpen();
     }
   }
-  
-  public void goToTaskLogsTab() {
-    if (place != null && !selectedItemId.equals("")) {
-      String placeToGo = "Task Logs";
-      ((HTMLPanel) view.getTabPanel().getWidget(4)).clear();
-      DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
-      //Set Parameters here: 
-      defaultPlaceRequest.addParameter("taskId", selectedItemId);
-      defaultPlaceRequest.addParameter("taskName", selectedItemName);
-
-      AbstractWorkbenchActivity activity = null;
-      if (activitiesMap.get(placeToGo) == null) {
-        Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = (AbstractWorkbenchActivity) activities.iterator().next();
-
-      } else {
-        activity = activitiesMap.get(placeToGo);
-      }
-      IsWidget widget = activity.getWidget();
-      activity.launch(place, null);
-      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
-      
-      ((HTMLPanel) view.getTabPanel().getWidget(4)).add(widget);
-      activity.onOpen();
-    }
-  }
 
 }
