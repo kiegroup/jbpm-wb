@@ -54,10 +54,7 @@ public class RuntimeLogPresenter {
 
     private PlaceRequest place;
     
-    private String currentDeploymentId;
     private String currentProcessInstanceId;
-    private String currentProcessDefId;
-
 
     public interface RuntimeLogView extends UberView<RuntimeLogPresenter> {
 
@@ -173,10 +170,7 @@ public class RuntimeLogPresenter {
 
     @OnOpen
     public void onOpen() {
-        
-        this.currentDeploymentId = place.getParameter("deploymentId", "");
         this.currentProcessInstanceId = place.getParameter("processInstanceId", "");
-        this.currentProcessDefId = place.getParameter("processDefId", "");
         
         refreshProcessInstanceData(LogOrder.ASC, LogType.BUSINESS);       
     }
