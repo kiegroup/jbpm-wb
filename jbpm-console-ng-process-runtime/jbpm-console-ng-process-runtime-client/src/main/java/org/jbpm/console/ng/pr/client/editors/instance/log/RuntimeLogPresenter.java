@@ -47,12 +47,16 @@ import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 
 @Dependent
-@WorkbenchScreen(identifier = "Logs")
+@WorkbenchScreen(identifier = "Process Instance Logs")
 public class RuntimeLogPresenter {
 
     private Constants constants = GWT.create(Constants.class);
 
     private PlaceRequest place;
+    
+    private String currentDeploymentId;
+    private String currentProcessInstanceId;
+    private String currentProcessDefId;
 
 
     public interface RuntimeLogView extends UberView<RuntimeLogPresenter> {
@@ -98,7 +102,7 @@ public class RuntimeLogPresenter {
         return view;
     }
 
-    public void refreshProcessInstanceData(final Long processInstanceId, final LogOrder logOrder, final LogType logType) {
+    public void refreshProcessInstanceData(final LogOrder logOrder, final LogType logType) {
         
         view.getProcessInstanceNameText().setText("");
         view.getProcessInstanceStatusText().setText("");
@@ -116,7 +120,7 @@ public class RuntimeLogPresenter {
                 ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                 return true;
             }
-        }).getProcessInstanceById(processInstanceId);
+        }).getProcessInstanceById(Long.valueOf(currentProcessInstanceId));
         
         if(LogType.TECHNICAL.equals(logType)){
             dataServices.call(new RemoteCallback<List<RuntimeLogSummary>>() {
@@ -138,7 +142,7 @@ public class RuntimeLogPresenter {
                     ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                     return true;
                 }
-            }).getAllRuntimeLogs(processInstanceId);
+            }).getAllRuntimeLogs(Long.valueOf(currentProcessInstanceId));
         }else{
             dataServices.call(new RemoteCallback<List<RuntimeLogSummary>>() {
                 @Override
@@ -158,7 +162,7 @@ public class RuntimeLogPresenter {
                     ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                     return true;
                 }
-            }).getBusinessLogs(processInstanceId);
+            }).getBusinessLogs(Long.valueOf(currentProcessInstanceId));
         }        
     }
 
@@ -169,7 +173,12 @@ public class RuntimeLogPresenter {
 
     @OnOpen
     public void onOpen() {
-       
+        
+        this.currentDeploymentId = place.getParameter("deploymentId", "");
+        this.currentProcessInstanceId = place.getParameter("processInstanceId", "");
+        this.currentProcessDefId = place.getParameter("processDefId", "");
+        
+        refreshProcessInstanceData(LogOrder.ASC, LogType.BUSINESS);       
     }
 
     

@@ -73,6 +73,8 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
     tabPanel.addTab("Process Variables", constants.Process_Variables());
 
     tabPanel.addTab("Documents", "Documents");
+    
+    tabPanel.addTab("Process Logs", constants.Logs());
 
     tabPanel.setHeight("600px");
     tabPanel.addCloseHandler(new ClickHandler() {
@@ -91,6 +93,8 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
           presenter.goToProcessInstanceVariables();
         } else if (selectedIndex == 2) {
           presenter.goToProcessDocuments();
+        } else if (selectedIndex == 3) {
+          presenter.goToProcessInstanceLogsTab();
         }
       }
     });
@@ -105,6 +109,8 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
           presenter.goToProcessInstanceVariables();
         } else if (event.getSelectedItem() == 2) {
           presenter.goToProcessDocuments();
+        } else if (event.getSelectedItem() == 3) {
+          presenter.goToProcessInstanceLogsTab();
         }
       }
     });

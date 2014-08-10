@@ -47,15 +47,7 @@ public class RuntimeLogViewImpl extends Composite
     private RuntimeLogPresenter presenter;
     private LogOrder logOrder = LogOrder.ASC;
     private LogType logType = LogType.BUSINESS;
-    
-    @Inject
-    @DataField
-    public TextBox processInstanceIdBox;
-
-    @Inject
-    @DataField
-    public Label processInstanceIdLabel;
-    
+        
     @Inject
     @DataField
     public Label processInstanceNameLabel;
@@ -102,11 +94,6 @@ public class RuntimeLogViewImpl extends Composite
 
     @Inject
     private PlaceManager placeManager;
-    
-    @Inject
-    @DataField
-    public Button getInstanceDataButton;
-
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -118,9 +105,7 @@ public class RuntimeLogViewImpl extends Composite
     @Override
     public void init( final RuntimeLogPresenter presenter ) {
         this.presenter = presenter;
-        logTextLabel.setText( constants.Process_Instance_Log() );
-        getInstanceDataButton.setText(constants.Get_Instance_Data());
-        processInstanceIdLabel.setText(constants.Process_Instance_ID());
+        logTextLabel.setText( constants.Process_Instance_Log() );        
         processInstanceNameLabel.setText(constants.Process_Instance_Name());        
         processInstanceStatusLabel.setText(constants.Process_Instance_State());        
         
@@ -137,7 +122,7 @@ public class RuntimeLogViewImpl extends Composite
             @Override
             public void onClick(ClickEvent event) {
                 setActiveLogTypeButton(logType);
-                getInstanceData(event);
+                getInstanceData();
             }
         });
     }
@@ -149,14 +134,13 @@ public class RuntimeLogViewImpl extends Composite
             @Override
             public void onClick(ClickEvent event) {
                 setActiveLogOrderButton(logOrder);
-                getInstanceData(event);
+                getInstanceData();
             }
         });
     }
 
-    @EventHandler(value = "getInstanceDataButton")
-    public void getInstanceData(ClickEvent e){
-        presenter.refreshProcessInstanceData(Long.valueOf(processInstanceIdBox.getText()), logOrder, logType);
+    public void getInstanceData(){
+        presenter.refreshProcessInstanceData(logOrder, logType);
     }
     
     @Override
