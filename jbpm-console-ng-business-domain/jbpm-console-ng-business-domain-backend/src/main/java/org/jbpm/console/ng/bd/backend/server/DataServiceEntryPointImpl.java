@@ -255,7 +255,8 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
               }else if(nis.getType().equals("EndNode")){
                 logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(dateFormat.parse(nis.getTimestamp())), "Process '" + processInstanceData.getProcessName() + "' was completed", "System"));
               }
-          } catch (ParseException e) {            
+          } catch (ParseException e) {
+              logger.error("Can't create date from string using 'dd/MMM/yy HH:mm:ss' format!");
               throw new RuntimeException("Can't create date from string using 'dd/MMM/yy HH:mm:ss' format!",
                       e);
           }
@@ -291,7 +292,8 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
               }else {
                 logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(dateFormat.parse(nis.getTimestamp())), nis.getNodeName() + "("+nis.getType()+")", "System"));
               }
-          } catch (ParseException e) {            
+          } catch (ParseException e) {
+              logger.error("Can't create date from string using 'dd/MMM/yy HH:mm:ss' format!");
               throw new RuntimeException("Can't create date from string using 'dd/MMM/yy HH:mm:ss' format!",
                       e);
           }
