@@ -2,12 +2,23 @@
 
     <div class="row-fluid">
         <div class="form-horizontal">
+            
+            <div class="btn-group">
+                <button class="btn btn-small active" data-field="showBusinessLogButton"></button>                          
+                <button class="btn btn-small" data-field="showTechnicalLogButton"></button>                       
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-small active" data-field="showAscLogButton"></button>                          
+                <button class="btn btn-small" data-field="showDescLogButton"></button>                         
+            </div>
 
             <div class="control-group">
-                <label class="control-label" for="processInstanceIdBox" data-field="processInstanceIdLabel"></label>
-                <div class="controls">
-                    <input type="text" name="processInstanceIdBox" id="processInstanceIdBox" data-field="processInstanceIdBox" value="" />
-                </div>
+                <strong><label class="control-label" for="processInstanceNameText" data-field="processInstanceNameLabel"></label></strong>
+                <label class="control-label" id="processInstanceNameText" data-field="processInstanceNameText"></label>
+            </div>
+            <div class="control-group">
+                <strong><label class="control-label" for="processInstanceStatusText" data-field="processInstanceStatusLabel"></label></strong>
+                <label class="control-label" id="processInstanceStatusText" data-field="processInstanceStatusText"></label>
             </div>
             <div class="control-group">
                 <strong><label class="control-label" for="logTextArea" data-field="logTextLabel"></label></strong>
@@ -15,19 +26,6 @@
                     <label data-field="logTextArea" />
                 </div>
             </div>
-
-
-
         </div>
-
-        <div class="form-horizontal">
-            <fieldset>
-                <div class="form-actions">
-                    <button class="btn btn-primary" data-field="getInstanceDataButton" id="getInstanceDataButton"></button>
-                </div>
-            </fieldset>
-
-        </div>
-
     </div>
 </div>

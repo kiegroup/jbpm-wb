@@ -208,5 +208,14 @@ public interface Constants extends Messages {
     String Last_Modified();
 
     String Size();
+    String Technical_Log();
+    
+    String Business_Log();
+    
+    String Desc_Log_Order();
+    
+    String Asc_Log_Order();
+    
+    String Process_Instance_Name();
 
 }

@@ -16,6 +16,8 @@
 
 package org.jbpm.console.ng.bd.backend.server;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,6 +39,9 @@ import org.jbpm.console.ng.pr.backend.server.VariableHelper;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
+import org.ocpsoft.prettytime.PrettyTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.services.api.DefinitionService;
 import org.jbpm.services.api.RuntimeDataService;
@@ -53,6 +58,7 @@ import org.jbpm.services.api.model.QueryContextImpl;
 @ApplicationScoped
 public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
 
+    private static final Logger logger = LoggerFactory.getLogger(DataServiceEntryPointImpl.class);
     @Inject
     private RuntimeDataService dataService;
     
@@ -222,34 +228,78 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
         return bpmn2Service.getTaskOutputMappings(deploymentId, processId, taskName);
     }
 
+    @Override
+    public Collection<RuntimeLogSummary> getBusinessLogs(long processInstanceId) {
+        ProcessInstanceSummary processInstanceData = getProcessInstanceById(processInstanceId);
+        List<NodeInstanceSummary> processInstanceHistory = (List<NodeInstanceSummary>)getProcessInstanceHistory(processInstanceId);
+        List<TaskEventSummary> allTaskEventsByProcessInstanceId = taskService.getAllTaskEventsByProcessInstanceId(processInstanceId, "");
+        List<RuntimeLogSummary> logs = new ArrayList<RuntimeLogSummary>(processInstanceHistory.size() + allTaskEventsByProcessInstanceId.size());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MMM/yy HH:mm:ss");
+        PrettyTime prettyDateFormatter = new PrettyTime();
+
+        for(int i = processInstanceHistory.size() - 1 ; i >= 0; i--){
+          NodeInstanceSummary nis = processInstanceHistory.get(i);
+          try{            
+              if(nis.getType().equals("HumanTaskNode")){
+                logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(dateFormat.parse(nis.getTimestamp())), "Task '" + nis.getNodeName() + "' was created", "System"));              
+                for(TaskEventSummary te : allTaskEventsByProcessInstanceId){
+                  if(te.getWorkItemId() != null && nis.getId() == te.getWorkItemId()){
+                    if(te.getType().equals("CLAIMED") || te.getType().equals("RELEASED") || te.getType().equals("COMPLETED")){
+                      logs.add(new RuntimeLogSummary(nis.getId(), "- " + prettyDateFormatter.format(te.getLogTime()), "Task '" + nis.getNodeName() + 
+                              "' was " + te.getType().toLowerCase() + " by user " + te.getUserId(), "Human"));
+                    }
+                  }
+                }
+              }else if(nis.getType().equals("StartNode")){
+                logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(dateFormat.parse(nis.getTimestamp())), "Process '" + processInstanceData.getProcessName() + "' was created", "Human"));
+              }else if(nis.getType().equals("EndNode")){
+                logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(dateFormat.parse(nis.getTimestamp())), "Process '" + processInstanceData.getProcessName() + "' was completed", "System"));
+              }
+          } catch (ParseException e) {
+              logger.error("Can't create date from string using 'dd/MMM/yy HH:mm:ss' format!");
+              throw new RuntimeException("Can't create date from string using 'dd/MMM/yy HH:mm:ss' format!",
+                      e);
+          }
+
+        }
+        return logs;
+    }
+
   @Override
   public Collection<RuntimeLogSummary> getAllRuntimeLogs(long processInstanceId) {
-      List<NodeInstanceSummary> processInstanceHistory = (List<NodeInstanceSummary>)getProcessInstanceHistory(processInstanceId);
-      List<TaskEventSummary> allTaskEventsByProcessInstanceId = taskService.getAllTaskEventsByProcessInstanceId(processInstanceId, "");
-      List<RuntimeLogSummary> logs = new ArrayList<RuntimeLogSummary>(processInstanceHistory.size() + allTaskEventsByProcessInstanceId.size());
-      
-      for(int i = processInstanceHistory.size() - 1 ; i >= 0; i--){
-        NodeInstanceSummary nis = processInstanceHistory.get(i);
-        
-        if(nis.getType().equals("HumanTaskNode")){
-          logs.add(new RuntimeLogSummary(nis.getId(), nis.getTimestamp(), nis.getNodeName() + "("+nis.getType()+")", "System"));
-          for(TaskEventSummary te : allTaskEventsByProcessInstanceId){
-            if(te.getWorkItemId() != null && nis.getId() == te.getWorkItemId()){
-              if(te.getType().equals("ADDED")){
-                logs.add(new RuntimeLogSummary(te.getTaskId(), te.getLogTime().toString(), te.getUserId() + "->" +te.getType(), "System"));
-              }else{
-                logs.add(new RuntimeLogSummary(te.getTaskId(), te.getLogTime().toString(), te.getUserId() + "->" +te.getType(), "Human"));
+        List<NodeInstanceSummary> processInstanceHistory = (List<NodeInstanceSummary>)getProcessInstanceHistory(processInstanceId);
+        List<TaskEventSummary> allTaskEventsByProcessInstanceId = taskService.getAllTaskEventsByProcessInstanceId(processInstanceId, "");
+        List<RuntimeLogSummary> logs = new ArrayList<RuntimeLogSummary>(processInstanceHistory.size() + allTaskEventsByProcessInstanceId.size());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MMM/yy HH:mm:ss");
+        PrettyTime prettyDateFormatter = new PrettyTime();
+
+        for(int i = processInstanceHistory.size() - 1 ; i >= 0; i--){
+          NodeInstanceSummary nis = processInstanceHistory.get(i);
+          try{
+              if(nis.getType().equals("HumanTaskNode")){
+                logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(dateFormat.parse(nis.getTimestamp())), nis.getNodeName() + "("+nis.getType()+")", "System"));              
+                for(TaskEventSummary te : allTaskEventsByProcessInstanceId){
+                  if(te.getWorkItemId() != null && nis.getId() == te.getWorkItemId()){
+                    if(te.getType().equals("ADDED")){
+                      logs.add(new RuntimeLogSummary(nis.getId(), "- " + prettyDateFormatter.format(te.getLogTime()), te.getUserId() + "->" +te.getType(), "System"));
+                    }else{
+                      logs.add(new RuntimeLogSummary(nis.getId(), "- " + prettyDateFormatter.format(te.getLogTime()), te.getUserId() + "->" +te.getType(), "Human"));
+                    }                  
+                  }
+                }
+              }else if(nis.getType().equals("StartNode")){
+                logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(dateFormat.parse(nis.getTimestamp())), nis.getNodeName() + "("+nis.getType()+")", "Human"));
+              }else {
+                logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(dateFormat.parse(nis.getTimestamp())), nis.getNodeName() + "("+nis.getType()+")", "System"));
               }
-            }
+          } catch (ParseException e) {
+              logger.error("Can't create date from string using 'dd/MMM/yy HH:mm:ss' format!");
+              throw new RuntimeException("Can't create date from string using 'dd/MMM/yy HH:mm:ss' format!",
+                      e);
           }
-        }else if(nis.getType().equals("StartNode")){
-          logs.add(new RuntimeLogSummary(nis.getId(), nis.getTimestamp(), nis.getNodeName() + "("+nis.getType()+")", "Human"));
-        }else {
-          logs.add(new RuntimeLogSummary(nis.getId(), nis.getTimestamp(), nis.getNodeName() + "("+nis.getType()+")", "System"));
+
         }
-        
-      }
-      return logs;
+        return logs;
   }
     /** Logs */
     

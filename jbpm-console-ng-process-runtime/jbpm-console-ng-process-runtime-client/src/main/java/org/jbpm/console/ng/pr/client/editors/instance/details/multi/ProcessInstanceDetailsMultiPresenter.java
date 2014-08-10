@@ -325,6 +325,32 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
       
     }
   }
+  
+    public void goToProcessInstanceLogsTab() {
+    if (place != null && !selectedItemId.equals("")) {
+      String placeToGo = "Process Instance Logs";
+      ((HTMLPanel) view.getTabPanel().getWidget(3)).clear();
+      DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
+      //Set Parameters here: 
+      defaultPlaceRequest.addParameter("processInstanceId", selectedItemId);
+
+      AbstractWorkbenchActivity activity = null;
+      if (activitiesMap.get(placeToGo) == null) {
+        Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
+        activity = ((AbstractWorkbenchScreenActivity) activities.iterator().next());
+
+      } else {
+        activity = activitiesMap.get(placeToGo);
+      }
+      IsWidget widget = activity.getWidget();
+      activity.launch(place, null);
+
+      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
+
+      ((HTMLPanel) view.getTabPanel().getWidget(3)).add(widget);
+      activity.onOpen();
+    }
+  }
 
   @OnClose
   public void onClose() {

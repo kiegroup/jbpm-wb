@@ -17,21 +17,22 @@
 package org.jbpm.console.ng.pr.client.editors.instance.log;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
+import org.jbpm.console.ng.pr.client.util.LogUtils.LogOrder;
+import org.jbpm.console.ng.pr.client.util.LogUtils.LogType;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -42,15 +43,24 @@ public class RuntimeLogViewImpl extends Composite
                                 implements RuntimeLogPresenter.RuntimeLogView {
 
     private RuntimeLogPresenter presenter;
-
+    private LogOrder logOrder = LogOrder.ASC;
+    private LogType logType = LogType.BUSINESS;
+        
+    @Inject
+    @DataField
+    public Label processInstanceNameLabel;
+        
+    @Inject
+    @DataField
+    public Label processInstanceNameText;
     
     @Inject
     @DataField
-    public TextBox processInstanceIdBox;
-
+    public Label processInstanceStatusLabel;
+        
     @Inject
     @DataField
-    public Label processInstanceIdLabel;
+    public Label processInstanceStatusText;
     
     
     @Inject
@@ -61,18 +71,27 @@ public class RuntimeLogViewImpl extends Composite
     @DataField
     public Label logTextLabel;
     
-   
-
+    @Inject
+    @DataField
+    public Button showBusinessLogButton;
+    
+    @Inject
+    @DataField
+    public Button showTechnicalLogButton;
+    
+    @Inject
+    @DataField
+    public Button showAscLogButton;
+    
+    @Inject
+    @DataField
+    public Button showDescLogButton;
+     
     @Inject
     private Identity identity;
 
     @Inject
     private PlaceManager placeManager;
-    
-    @Inject
-    @DataField
-    public Button getInstanceDataButton;
-
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -84,20 +103,57 @@ public class RuntimeLogViewImpl extends Composite
     @Override
     public void init( final RuntimeLogPresenter presenter ) {
         this.presenter = presenter;
-        logTextLabel.setText( constants.Process_Instance_Log() );
-        getInstanceDataButton.setText(constants.Get_Instance_Data());
-        processInstanceIdLabel.setText(constants.Process_Instance_ID());
-
+        logTextLabel.setText( constants.Process_Instance_Log() );        
+        processInstanceNameLabel.setText(constants.Process_Instance_Name());        
+        processInstanceStatusLabel.setText(constants.Process_Instance_State());        
+        
+        this.setFilters(showBusinessLogButton, constants.Business_Log(), LogType.BUSINESS);
+        this.setFilters(showTechnicalLogButton, constants.Technical_Log(), LogType.TECHNICAL);
+        this.setOrder(showAscLogButton, constants.Asc_Log_Order(), LogOrder.ASC);
+        this.setOrder(showDescLogButton, constants.Desc_Log_Order(), LogOrder.DESC);
+    }
+    
+    private void setFilters(Button button, String description, final LogType logType) {
+        button.setSize(ButtonSize.SMALL);
+        button.setText(description);
+        button.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                setActiveLogTypeButton(logType);
+                getInstanceData();
+            }
+        });
+    }
+    
+    private void setOrder(Button button, String description, final LogOrder logOrder) {
+        button.setSize(ButtonSize.SMALL);
+        button.setText(description);
+        button.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                setActiveLogOrderButton(logOrder);
+                getInstanceData();
+            }
+        });
     }
 
-    @EventHandler(value = "getInstanceDataButton")
-    public void getInstanceData(ClickEvent e){
-        presenter.refreshProcessInstanceData(Long.valueOf(processInstanceIdBox.getText()));
+    public void getInstanceData(){
+        presenter.refreshProcessInstanceData(logOrder, logType);
     }
     
     @Override
     public HTML getLogTextArea() {
         return logTextArea;
+    }
+    
+    @Override
+    public Label getProcessInstanceStatusText() {
+        return processInstanceStatusText;
+    }
+    
+    @Override
+    public Label getProcessInstanceNameText() {
+        return processInstanceNameText;
     }
 
     @Override
@@ -105,7 +161,32 @@ public class RuntimeLogViewImpl extends Composite
         notification.fire( new NotificationEvent( text ) );
     }
 
-
+    public void setActiveLogTypeButton(LogType logType) {
+        showBusinessLogButton.setStyleName("btn btn-small");
+        showTechnicalLogButton.setStyleName("btn btn-small");
+        this.logType = logType;
+        switch (logType) {
+            case TECHNICAL:
+                showTechnicalLogButton.setStyleName(showTechnicalLogButton.getStyleName() + " active");                
+                break;
+            case BUSINESS:
+                showBusinessLogButton.setStyleName(showBusinessLogButton.getStyleName() + " active");
+                break;
+        }            
+    }
     
+    public void setActiveLogOrderButton(LogOrder logOrder) {
+        showAscLogButton.setStyleName("btn btn-small");
+        showDescLogButton.setStyleName("btn btn-small");
+        this.logOrder = logOrder;
+        switch (logOrder) {
+            case ASC:
+                showAscLogButton.setStyleName(showAscLogButton.getStyleName() + " active");                
+                break;
+            case DESC:
+                showDescLogButton.setStyleName(showDescLogButton.getStyleName() + " active");                
+                break;
+        }
+    }
     
 }
