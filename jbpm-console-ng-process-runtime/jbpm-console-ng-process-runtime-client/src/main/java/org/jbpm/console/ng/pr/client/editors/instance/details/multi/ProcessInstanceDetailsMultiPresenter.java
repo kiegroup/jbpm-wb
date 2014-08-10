@@ -333,8 +333,6 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
       DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
       //Set Parameters here: 
       defaultPlaceRequest.addParameter("processInstanceId", selectedItemId);
-      defaultPlaceRequest.addParameter("processDefId", selectedItemName);
-      defaultPlaceRequest.addParameter("deploymentId", selectedDeploymentId);
 
       AbstractWorkbenchActivity activity = null;
       if (activitiesMap.get(placeToGo) == null) {
