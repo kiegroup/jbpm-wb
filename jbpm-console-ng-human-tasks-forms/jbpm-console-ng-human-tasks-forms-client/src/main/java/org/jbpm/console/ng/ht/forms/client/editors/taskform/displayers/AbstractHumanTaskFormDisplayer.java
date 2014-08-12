@@ -272,6 +272,7 @@ public abstract class AbstractHumanTaskFormDisplayer extends Composite implement
           public void callback(Boolean response) {
             if (!response) {
               //editPanelEvent.fire(new EditPanelEvent(taskId));
+              close();
             }
             refresh();
           }
@@ -301,6 +302,14 @@ public abstract class AbstractHumanTaskFormDisplayer extends Composite implement
       callback.refresh();
     }
   }
+
+  @Override
+  public void close() {
+    for(FormRefreshCallback callback : refreshCallbacks){
+      callback.close();
+    }
+  }
+  
   
   
 

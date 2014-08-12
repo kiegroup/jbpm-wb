@@ -79,6 +79,8 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
 
   @Inject
   protected SyncBeanManager iocManager;
+  
+  private GenericFormDisplayer selectedDisplayer;
 
   public interface GenericFormDisplayView extends UberView<GenericFormDisplayPresenter> {
 
@@ -140,6 +142,8 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
 
   @Override
   public void close() {
+    
+    
     if(!placeOnClose.equals("none")){
       placeManager.closePlace(place);
       placeManager.forceClosePlace(placeOnClose);

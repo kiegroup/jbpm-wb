@@ -74,6 +74,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     this.deploymentId = key.getDeploymentId();
     this.processDefId = key.getProcessId();
     this.formContent = formContent;
+    
     container.add(formContainer);
     container.add(buttonsContainer);
 
@@ -106,7 +107,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
 
   protected abstract void initDisplayer();
   
-  public abstract void close();
+  
 
   @Override
   public void addFormRefreshCallback(FormRefreshCallback callback) {

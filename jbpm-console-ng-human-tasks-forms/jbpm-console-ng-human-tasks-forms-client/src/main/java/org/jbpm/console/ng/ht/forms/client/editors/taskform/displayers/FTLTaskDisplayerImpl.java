@@ -90,7 +90,7 @@ public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
   public void complete(String values) {
     final Map<String, Object> params = getUrlParameters(values);
     complete(params);
-
+    close();
   }
 
   public void saveState(String values) {

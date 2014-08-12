@@ -15,24 +15,15 @@
  */
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FocusPanel;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.forms.api.FormRefreshCallback;
-import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
 import org.jbpm.console.ng.ht.forms.service.FormModelerProcessStarterEntryPoint;
-import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
-import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
@@ -84,6 +75,7 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
     return container;
   }
 
+  @Override
   public void close() {
     renderContextServices.call(new RemoteCallback<Void>() {
       @Override

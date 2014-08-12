@@ -34,4 +34,6 @@ public interface GenericFormDisplayer<T extends ItemKey> {
   void addFormRefreshCallback(FormRefreshCallback callback);
   
   int getPriority();
+  
+  void close();
 }
