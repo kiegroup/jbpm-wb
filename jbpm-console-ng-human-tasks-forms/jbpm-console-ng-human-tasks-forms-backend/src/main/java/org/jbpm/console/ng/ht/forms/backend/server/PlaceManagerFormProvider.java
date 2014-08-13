@@ -46,9 +46,6 @@ public class PlaceManagerFormProvider implements FormProvider {
   @PostConstruct
   public void init() {
     this.allActivities = pmas.getAllActivities();
-    for (String a : allActivities) {
-      System.out.println("Activity inside provider: " + a);
-    }
   }
 
   @Override
