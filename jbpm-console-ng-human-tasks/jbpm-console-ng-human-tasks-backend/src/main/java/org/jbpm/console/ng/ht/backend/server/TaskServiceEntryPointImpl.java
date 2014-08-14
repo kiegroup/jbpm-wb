@@ -22,42 +22,59 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.ht.model.AuditTaskSummary;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
-import org.jbpm.services.task.audit.commands.GetAuditEventsCommand;
+import org.jbpm.services.api.RuntimeDataService;
+import org.jbpm.services.api.UserTaskService;
+import org.jbpm.services.task.audit.service.TaskAuditService;
 import org.jbpm.services.task.impl.factories.TaskFactory;
-import org.jbpm.services.task.impl.model.CommentImpl;
-import org.jbpm.services.task.impl.model.UserImpl;
 import org.jbpm.services.task.query.QueryFilterImpl;
-import org.jbpm.services.task.utils.ContentMarshallerHelper;
 import org.jbpm.services.task.utils.TaskFluent;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
-import org.kie.api.task.model.Content;
 import org.kie.api.task.model.Group;
 import org.kie.api.task.model.OrganizationalEntity;
 import org.kie.api.task.model.Status;
 import org.kie.api.task.model.Task;
 import org.kie.api.task.model.User;
 import org.kie.internal.task.api.InternalTaskService;
-import org.kie.internal.task.api.QueryFilter;
-import org.kie.internal.task.api.model.InternalComment;
-import org.kie.internal.task.api.model.SubTasksStrategy;
+import org.kie.internal.query.QueryFilter;
 
 @Service
 @ApplicationScoped
 public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Inject
-    private InternalTaskService taskService;
+    private InternalTaskService internalTaskService;
 
+    @Inject
+    private UserTaskService taskService;
+
+    @Inject
+    private RuntimeDataService runtimeDataService;
+    
+    @Inject
+    private TaskAuditService taskAuditService;
+
+    public TaskServiceEntryPointImpl() {
+        
+    }
+
+    @PostConstruct
+    public void init(){
+        taskAuditService.setTaskService(internalTaskService);
+    }
+    
     @Override
     public List<TaskSummary> getTasksAssignedAsPotentialOwnerByExpirationDateOptional(String userId,
             List<String> status, Date from, int offset, int count) { 
@@ -73,30 +90,15 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
                             params, "order by t.id DESC", offset, count);
                 
             taskSummaries = TaskSummaryHelper.adaptCollection(
-                    taskService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf ));
+                    runtimeDataService.getTasksAssignedAsPotentialOwnerByStatus(userId, statuses, qf));
         } else {
             QueryFilter qf = new QueryFilterImpl(offset,count);
             taskSummaries = TaskSummaryHelper.adaptCollection(
-                    taskService.getTasksAssignedAsPotentialOwner(userId,null, statuses, qf));
+                    runtimeDataService.getTasksAssignedAsPotentialOwnerByStatus(userId, statuses, qf));
         }
-        //setPotentionalOwners(taskSummaries);
         return taskSummaries;
     }
-
-//    private void setPotentionalOwners(List<TaskSummary> taskSummaries) {
-//        //This is a hack we need to find a way to get the PotentialOwners in a performant way
-//        List<Long> taskIds = new ArrayList<Long>(taskSummaries.size());
-//        for (TaskSummary ts : taskSummaries) {
-//            taskIds.add(ts.getId());
-//        }
-//        if (taskIds.size() > 0) {
-//            Map<Long, List<String>> potentialOwnersForTaskIds = getPotentialOwnersForTaskIds(taskIds);
-//            for (TaskSummary ts : taskSummaries) {
-//                ts.setPotentialOwners(potentialOwnersForTaskIds.get(ts.getId()));
-//            }
-//        }
-//    }
-
+    
     @Override
     public List<TaskSummary> getTasksOwnedByExpirationDateOptional(String userId, List<String> status, Date from, int offset, int count) { 
         List<Status> statuses = new ArrayList<Status>();
@@ -104,15 +106,14 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
             statuses.add(Status.valueOf(s));
         }
         List<TaskSummary> taskSummaries = TaskSummaryHelper.adaptCollection(
-                taskService.getTasksOwned(
-                        userId, statuses, new QueryFilterImpl(offset, count)));
+                runtimeDataService.getTasksOwnedByStatus(userId, statuses, new QueryFilterImpl(offset, count)));
 //        setPotentionalOwners(taskSummaries);
         return taskSummaries;
     }
 
     @Override
     public Map<Long, List<String>> getPotentialOwnersForTaskIds(List<Long> taskIds) {
-        Map<Long, List<OrganizationalEntity>> potentialOwnersForTaskIds = taskService.getPotentialOwnersForTaskIds(
+        Map<Long, List<OrganizationalEntity>> potentialOwnersForTaskIds = internalTaskService.getPotentialOwnersForTaskIds(
                 taskIds);
         Map<Long, List<String>> potentialOwnersForTaskIdsSimple = new HashMap<Long, List<String>>();
         for (Long taskId : potentialOwnersForTaskIds.keySet()) {
@@ -143,7 +144,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         Map<LocalDate, List<TaskSummary>> tasksByDay = createDaysMapAndInitWithEmptyListForEachDay(dayFrom, nrOfDaysTotal);
 
         List<TaskSummary> taskSummaries = adaptTaskSummaryCollection(
-                taskService.getTasksOwned(userId, convertStatuses(strStatuses), new QueryFilterImpl(0, 0)));
+                runtimeDataService.getTasksOwnedByStatus(userId, convertStatuses(strStatuses), new QueryFilterImpl(0, 0)));
 
 //        setPotentionalOwners(taskSummaries);
         fillDaysMapWithTasksBasedOnExpirationDate(tasksByDay, taskSummaries, today);
@@ -220,7 +221,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         Map<LocalDate, List<TaskSummary>> tasksByDay = createDaysMapAndInitWithEmptyListForEachDay(dayFrom, nrOfDaysTotal);
 
         List<TaskSummary> taskSummaries = adaptTaskSummaryCollection(
-                taskService.getTasksAssignedAsPotentialOwner(userId, null,convertStatuses(strStatuses), new QueryFilterImpl(0,0)));
+                runtimeDataService.getTasksAssignedAsPotentialOwnerByStatus(userId, convertStatuses(strStatuses), new QueryFilterImpl(0, 0)));
 
 //        setPotentionalOwners(taskSummaries);
         fillDaysMapWithTasksBasedOnExpirationDate(tasksByDay, taskSummaries, today);
@@ -252,8 +253,8 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     public List<TaskSummary> getTasksAssignedByGroup(String userId, String groupId) {
         List<String> groupIds = new ArrayList<String>();
         groupIds.add(groupId);
-        List<org.kie.api.task.model.TaskSummary> tasksAssignedAsPotentialOwner = taskService.getTasksAssignedAsPotentialOwner(
-                userId, groupIds , null, new QueryFilterImpl(0, 0));
+        List<org.kie.api.task.model.TaskSummary> tasksAssignedAsPotentialOwner = runtimeDataService.getTasksAssignedAsPotentialOwner(
+                userId, groupIds, new QueryFilterImpl(0, 0));
         List<org.kie.api.task.model.TaskSummary> taskForGroup = new ArrayList<org.kie.api.task.model.TaskSummary>();
         for (org.kie.api.task.model.TaskSummary ts : tasksAssignedAsPotentialOwner) {
             if (ts.getPotentialOwners().contains(groupId)) {
@@ -266,7 +267,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     @Override
     public long addTask(String taskString, Map<String, Object> inputs, Map<String, Object> templateVars) {
         Task task = TaskFactory.evalTask(taskString, templateVars);
-        return taskService.addTask(task, inputs);
+        return internalTaskService.addTask(task, inputs);
     }
     
     @Override
@@ -286,7 +287,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         }
         taskFluent.setAdminUser("Administrator");
         taskFluent.setAdminGroup("Administrators");
-        long taskId = taskService.addTask(taskFluent.getTask(), new HashMap<String, Object>());
+        long taskId = internalTaskService.addTask(taskFluent.getTask(), new HashMap<String, Object>());
         if(start){
             taskService.start(taskId, identity);
         }
@@ -360,8 +361,8 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         taskService.setPriority(taskId, priority);
     }
 
-    public void setTaskNames(long taskId, List<String> taskNames) {
-        taskService.setTaskNames(taskId, TaskI18NHelper.adaptI18NList(taskNames));
+    public void setTaskNames(long taskId, String taskName) {
+        taskService.setName(taskId, taskName);
     }
 
     @Override
@@ -370,48 +371,14 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
 
     @Override
-    public void setDescriptions(long taskId, List<String> descriptions) {
-        taskService.setDescriptions(taskId, TaskI18NHelper.adaptI18NList(descriptions));
+    public void setDescriptions(long taskId, String description) {
+        taskService.setDescription(taskId, description);
     }
 
-    @Override
-    public void setSkipable(long taskId, boolean skipable) {
-        taskService.setSkipable(taskId, skipable);
-    }
-
-    @Override
-    public void setSubTaskStrategy(long taskId, String strategy) {
-        taskService.setSubTaskStrategy(taskId, SubTasksStrategy.valueOf(strategy));
-    }
-
-    @Override
-    public int getPriority(long taskId) {
-        return taskService.getPriority(taskId);
-    }
-
-    @Override
-    public Date getExpirationDate(long taskId) {
-        return taskService.getExpirationDate(taskId);
-    }
-
-    @Override
-    public List<String> getDescriptions(long taskId) {
-        return TaskI18NHelper.adaptStringList(taskService.getDescriptions(taskId));
-    }
-
-    @Override
-    public boolean isSkipable(long taskId) {
-        return taskService.isSkipable(taskId);
-    }
-
-    @Override
-    public String getSubTaskStrategy(long taskId) {
-        return taskService.getSubTaskStrategy(taskId).name();
-    }
 
     @Override
     public TaskSummary getTaskDetails(long taskId) {
-        Task task = taskService.getTaskById(taskId);
+        Task task = internalTaskService.getTaskById(taskId);
         if (task != null) {
             List<OrganizationalEntity> potentialOwners = task.getPeopleAssignments().getPotentialOwners();
             List<String> potOwnersString = null;
@@ -433,76 +400,42 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
 
     @Override
-    public long saveContent(long taskId, Map<String, String> values) {
+    public long saveContent(long taskId, Map<String, Object> values) {
         return addContent(taskId, (Map) values);
     }
 
-    public long addContent(long taskId, Content content) {
-        return taskService.addContent(taskId, content);
-    }
-
     public long addContent(long taskId, Map<String, Object> values) {
-        return taskService.addContent(taskId, values);
+        return taskService.saveContent(taskId, values);
     }
 
     public void deleteContent(long taskId, long contentId) {
         taskService.deleteContent(taskId, contentId);
     }
 
-    public List<Content> getAllContentByTaskId(long taskId) {
-        return taskService.getAllContentByTaskId(taskId);
-    }
+    @Override
+    public Map<String, Object> getContentListByTaskId(long taskId) {
 
-    public Content getContentById(long contentId) {
-        return taskService.getContentById(contentId);
+        Map<String, Object> inputContent = taskService.getTaskInputContentByTaskId(taskId);
+
+        if (inputContent == null) {
+            return new HashMap<String, Object>();
+        }
+        return inputContent;
     }
 
     @Override
-    public Map<String, String> getContentListById(long contentId) {
-        Content contentById = getContentById(contentId);
-        Object unmarshall = ContentMarshallerHelper.unmarshall(contentById.getContent(), null);
-        return (Map<String, String>) unmarshall;
-    }
-
-    @Override
-    public Map<String, String> getContentListByTaskId(long taskId) {
-        Task taskInstanceById = taskService.getTaskById(taskId);
-        long documentContentId = taskInstanceById.getTaskData().getDocumentContentId();
-        Content contentById = getContentById(documentContentId);
-        if (contentById == null) {
-            return new HashMap<String, String>();
+    public Map<String, Object> getTaskOutputContentByTaskId(long taskId) {
+        Map<String, Object> outputContent = taskService.getTaskOutputContentByTaskId(taskId);
+        if (outputContent == null) {
+            return new HashMap<String, Object>();
         }
-        Object unmarshall = ContentMarshallerHelper.unmarshall(contentById.getContent(), null);
-        if (unmarshall instanceof String) {
-            if (((String) unmarshall).equals("")) {
-                return new HashMap<String, String>();
-            }
-        }
-        return (Map<String, String>) unmarshall;
-    }
-
-    @Override
-    public Map<String, String> getTaskOutputContentByTaskId(long taskId) {
-        Task taskInstanceById = taskService.getTaskById(taskId);
-        long documentContentId = taskInstanceById.getTaskData().getOutputContentId();
-        if (documentContentId > 0) {
-            Content contentById = getContentById(documentContentId);
-            if (contentById == null) {
-                return new HashMap<String, String>();
-            }
-            Object unmarshall = ContentMarshallerHelper.unmarshall(contentById.getContent(), null);
-            return (Map<String, String>) unmarshall;
-        }
-        return new HashMap<String, String>();
+        return outputContent;
     }
 
     @Override
     public long addComment(long taskId, String text, String addedBy, Date addedOn) {
-        InternalComment comment = new CommentImpl();
-        comment.setText(text);
-        comment.setAddedAt(addedOn);
-        comment.setAddedBy(new UserImpl(addedBy));
-        return taskService.addComment(taskId, comment);
+
+        return taskService.addComment(taskId, text, addedBy, addedOn);
     }
 
     @Override
@@ -512,21 +445,21 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Override
     public List<CommentSummary> getAllCommentsByTaskId(long taskId) {
-        return CommentSummaryHelper.adaptCollection(taskService.getAllCommentsByTaskId(taskId));
+        return CommentSummaryHelper.adaptCollection(taskService.getCommentsByTaskId(taskId));
     }
 
     @Override
-    public CommentSummary getCommentById(long commentId) {
-        return CommentSummaryHelper.adapt(taskService.getCommentById(commentId));
+    public CommentSummary getCommentById(long taskId, long commentId) {
+        return CommentSummaryHelper.adapt(taskService.getCommentById(taskId, commentId));
     }
 
     @Override
-    public void updateSimpleTaskDetails(long taskId, List<String> taskNames, int priority, List<String> taskDescription,
+    public void updateSimpleTaskDetails(long taskId, String taskName, int priority, String taskDescription,
             // String subTaskStrategy,
             Date dueDate) {
         // TODO: update only the changed bits
         setPriority(taskId, priority);
-        setTaskNames(taskId, taskNames);
+        setTaskNames(taskId, taskName);
         setDescriptions(taskId, taskDescription);
         // setSubTaskStrategy(taskId, subTaskStrategy);
         setExpirationDate(taskId, dueDate);
@@ -554,13 +487,29 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         }
     }
 
-    public List<TaskEventSummary> getAllTaskEvents(long taskId) {
-         return TaskEventSummaryHelper.adaptCollection(taskService.execute(new GetAuditEventsCommand(taskId,new QueryFilterImpl(0,0))));
+    @Override
+    public Boolean existInDatabase(long taskId) {
+        return runtimeDataService.getTaskById(taskId) == null ? false : true;
     }
 
     @Override
-    public Boolean existInDatabase(long taskId) {
-        return taskService.getTaskById(taskId) == null ? false : true;
+    public List<TaskEventSummary> getAllTaskEvents(long taskId, String filter) {
+        return TaskEventSummaryHelper.adaptCollection(taskAuditService.getAllTaskEvents(taskId, new QueryFilterImpl(0,0)));
     }
 
+    @Override
+    public List<TaskEventSummary> getAllTaskEventsByProcessInstanceId(long processInstanceId, String filter) {
+        return TaskEventSummaryHelper.adaptCollection(taskAuditService.getAllTaskEventsByProcessInstanceId(processInstanceId, new QueryFilterImpl(0,0)));
+    }
+
+    public List<AuditTaskSummary> getAllAuditTasks(String filter) {
+        return AuditTaskSummaryHelper.adaptCollection(taskAuditService.getAllAuditTasks(new QueryFilterImpl(0,0)));
+    }
+
+    public List<AuditTaskSummary> getAllAuditTasksByUser(String userId, String filter) {
+        return AuditTaskSummaryHelper.adaptCollection(taskAuditService.getAllAuditTasksByUser(userId, new QueryFilterImpl(0,0)));
+    }
+
+    
+    
 }

@@ -18,17 +18,16 @@ package org.jbpm.console.ng.bd.backend.server.provider;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.guvnor.structure.repositories.Repository;
+import org.guvnor.structure.repositories.RepositoryService;
 import org.jbpm.console.ng.bd.api.VFSDeploymentUnit;
 import org.jbpm.console.ng.bd.api.Vfs;
 import org.jbpm.console.ng.bd.service.DeploymentUnitProvider;
-import org.kie.internal.deployment.DeploymentUnit;
-import org.uberfire.backend.repositories.Repository;
-import org.uberfire.backend.repositories.RepositoryService;
+import org.jbpm.services.api.model.DeploymentUnit;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.DirectoryStream;
 import org.uberfire.java.nio.file.Files;

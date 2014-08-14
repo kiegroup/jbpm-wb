@@ -21,11 +21,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import org.jbpm.kie.services.impl.model.NodeInstanceDesc;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
+import org.jbpm.services.api.model.NodeInstanceDesc;
 
 public class NodeInstanceHelper {
     public static Collection<NodeInstanceSummary> adaptCollection(Collection<NodeInstanceDesc> nodeInstances) {
+        List<NodeInstanceSummary> nodeInstancesSummary = new ArrayList<NodeInstanceSummary>();
+        for (NodeInstanceDesc ni : nodeInstances) {
+            nodeInstancesSummary.add(adapt(ni));
+        }
+
+        return nodeInstancesSummary;
+    }
+
+    public static Collection<NodeInstanceSummary> adaptCollectionFiltered(Collection<NodeInstanceDesc> nodeInstances) {
         List<NodeInstanceSummary> nodeInstancesSummary = new ArrayList<NodeInstanceSummary>();
         for (NodeInstanceDesc ni : nodeInstances) {
             nodeInstancesSummary.add(adapt(ni));

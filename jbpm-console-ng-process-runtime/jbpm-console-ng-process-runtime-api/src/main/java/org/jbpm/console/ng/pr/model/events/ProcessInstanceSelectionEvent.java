@@ -13,54 +13,91 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.pr.model.events;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class ProcessInstanceSelectionEvent {
-    private long processInstanceId;
-    private String processDefId;
-    private String deploymentId;
-    
 
-    public ProcessInstanceSelectionEvent() {
+  private Long processInstanceId;
+  private String processDefId;
+  private String deploymentId;
+  private Integer processInstanceStatus;
+  private String processDefName;
+
+  public ProcessInstanceSelectionEvent() {
+  }
+
+  public ProcessInstanceSelectionEvent(String deploymentId, Long processInstanceId, String processDefId, String processDefName, Integer processInstanceStatus) {
+    this.processInstanceId = processInstanceId;
+    this.processDefId = processDefId;
+    this.deploymentId = deploymentId;
+    this.processInstanceStatus = processInstanceStatus;
+    this.processDefName = processDefName;
+  }
+
+  public Long getProcessInstanceId() {
+    return processInstanceId;
+  }
+
+  public String getProcessDefId() {
+    return processDefId;
+  }
+
+  public String getDeploymentId() {
+    return deploymentId;
+  }
+
+  public Integer getProcessInstanceStatus() {
+    return processInstanceStatus;
+  }
+
+  public String getProcessDefName() {
+    return processDefName;
+  }
+
+  @Override
+  public String toString() {
+    return "ProcessInstanceSelectionEvent{" + "processInstanceId=" + processInstanceId + ", processDefId=" + processDefId + ", deploymentId=" + deploymentId + ", processInstanceStatus=" + processInstanceStatus + ", processDefName=" + processDefName + '}';
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 37 * hash + (this.processInstanceId != null ? this.processInstanceId.hashCode() : 0);
+    hash = 37 * hash + (this.processDefId != null ? this.processDefId.hashCode() : 0);
+    hash = 37 * hash + (this.deploymentId != null ? this.deploymentId.hashCode() : 0);
+    hash = 37 * hash + (this.processInstanceStatus != null ? this.processInstanceStatus.hashCode() : 0);
+    hash = 37 * hash + (this.processDefName != null ? this.processDefName.hashCode() : 0);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
     }
-
-    public ProcessInstanceSelectionEvent(String deploymentId, long processInstanceId, String processDefId) {
-        this.processInstanceId = processInstanceId;
-        this.processDefId = processDefId;
-        this.deploymentId = deploymentId;
+    if (getClass() != obj.getClass()) {
+      return false;
     }
-    
-
-    public long getProcessInstanceId() {
-        return processInstanceId;
+    final ProcessInstanceSelectionEvent other = (ProcessInstanceSelectionEvent) obj;
+    if (this.processInstanceId != other.processInstanceId && (this.processInstanceId == null || !this.processInstanceId.equals(other.processInstanceId))) {
+      return false;
     }
-
-    public void setProcessInstanceId(long processInstanceId) {
-        this.processInstanceId = processInstanceId;
+    if ((this.processDefId == null) ? (other.processDefId != null) : !this.processDefId.equals(other.processDefId)) {
+      return false;
     }
-
-    public String getProcessDefId() {
-        return processDefId;
+    if ((this.deploymentId == null) ? (other.deploymentId != null) : !this.deploymentId.equals(other.deploymentId)) {
+      return false;
     }
-
-    public void setProcessDefId(String processDefId) {
-        this.processDefId = processDefId;
+    if (this.processInstanceStatus != other.processInstanceStatus && (this.processInstanceStatus == null || !this.processInstanceStatus.equals(other.processInstanceStatus))) {
+      return false;
     }
-
-    public String getDeploymentId() {
-        return deploymentId;
+    if ((this.processDefName == null) ? (other.processDefName != null) : !this.processDefName.equals(other.processDefName)) {
+      return false;
     }
-
-    public void setDeploymentId(String deploymentId) {
-        this.deploymentId = deploymentId;
-    }
-
-
-
-
+    return true;
+  }
 
 }

@@ -197,4 +197,25 @@ public interface Constants extends Messages {
 
     String Id();
 
+    String Logs();
+
+    String Get_Instance_Data();
+    
+    String No_Documents_Available();
+
+    String Documents();
+
+    String Last_Modified();
+
+    String Size();
+    String Technical_Log();
+    
+    String Business_Log();
+    
+    String Desc_Log_Order();
+    
+    String Asc_Log_Order();
+    
+    String Process_Instance_Name();
+
 }

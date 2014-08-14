@@ -18,120 +18,133 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng</artifactId>
-        <version>6.1.0-SNAPSHOT</version>
-    </parent>
-    <artifactId>jbpm-console-ng-showcase</artifactId>
-    <packaging>war</packaging>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.jbpm</groupId>
+    <artifactId>jbpm-console-ng</artifactId>
+    <version>6.2.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>jbpm-console-ng-showcase</artifactId>
+  <packaging>war</packaging>
 
-    <name>jBPM Console NG - Showcase</name>
-    <description>jBPM Console NG - Showcase</description>
+  <name>jBPM Console NG - Showcase</name>
+  <description>jBPM Console NG - Showcase</description>
 
-    <dependencies>
-        <!-- Hack: ANT bundled with kie-ci needs to be excluded when running on Jetty -->
-        <!-- It is added back for other Application Servers in their respective assemblies -->
-        <dependency>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-ci</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.ant</groupId>
-                    <artifactId>ant</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+  <dependencies>
+    <!-- Hack: ANT bundled with kie-ci needs to be excluded when running on Jetty -->
+    <!-- It is added back for other Application Servers in their respective assemblies -->
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-ci</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.ant</groupId>
+          <artifactId>ant</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <scope>runtime</scope>
+    </dependency>
 
-        <!-- Manstis hackathon -->
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-wb-scorecard-xls-editor-client</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-services-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-kie-services</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-services-cdi</artifactId>
+    </dependency>
 
-        <!-- jBPM Console Panels -->
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
-        </dependency>
+    <!-- Manstis hackathon -->
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-wb-scorecard-xls-editor-client</artifactId>
+    </dependency>
+
+    <!-- jBPM Console Panels -->
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
+    </dependency>
 
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-human-tasks-backend</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jboss-transaction-api_1.1_spec</artifactId>
-                    <groupId>org.jboss.spec.javax.transaction</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-human-tasks-backend</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>jboss-transaction-api_1.1_spec</artifactId>
+          <groupId>org.jboss.spec.javax.transaction</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-human-tasks-admin-client</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-human-tasks-admin-client</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-human-tasks-admin-backend</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-human-tasks-admin-backend</artifactId>
+    </dependency>
 
-         <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-human-tasks-forms-client</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-human-tasks-forms-client</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-human-tasks-forms-backend</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-human-tasks-forms-backend</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-business-domain-client</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-business-domain-client</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-business-domain-backend</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-business-domain-backend</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-process-runtime-client</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-process-runtime-client</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-process-runtime-backend</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-process-runtime-backend</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-executor-service-client</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-executor-service-client</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-executor-service-backend</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-executor-service-backend</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-bpm-home-client</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-bpm-home-client</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -161,10 +174,10 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-asset-mgmt-client</artifactId>
     </dependency>
-    
+
     <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-asset-mgmt-backend</artifactId>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-asset-mgmt-backend</artifactId>
     </dependency>
     <dependency>
       <groupId>org.drools</groupId>
@@ -174,6 +187,11 @@
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-workitems-editor-backend</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-document</artifactId>
     </dependency>
 
     <dependency>
@@ -214,6 +232,28 @@
         </exclusion>
       </exclusions>
     </dependency>
+
+    <!-- UberFire Extension -->
+    <dependency>
+      <groupId>org.kie.uberfire</groupId>
+      <artifactId>kie-uberfire-metadata-commons-io</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.uberfire</groupId>
+      <artifactId>kie-uberfire-metadata-backend-lucene</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.kie.uberfire</groupId>
+      <artifactId>kie-uberfire-widgets-commons</artifactId>
+    </dependency>
+ 
+    <dependency>
+      <groupId>org.kie.uberfire</groupId>
+      <artifactId>kie-uberfire-widgets-service-backend</artifactId>
+    </dependency>
+ 
 
     <!-- UberFire -->
     <dependency>
@@ -287,28 +327,6 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
-    </dependency>
-    <!-- This must be placed above com.google.gwt:gwt-dev to override the
-      Jetty that is present there -->
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty-plus</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>geronimo-spec-jta</artifactId>
-          <groupId>geronimo-spec</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty-naming</artifactId>
     </dependency>
 
     <!-- Weld Modules -->
@@ -384,9 +402,15 @@
       <groupId>org.eclipse</groupId>
       <artifactId>org.eclipse.bpmn2</artifactId>
     </dependency>
+
+    <!-- REST -->
     <dependency>
       <groupId>org.kie.remote</groupId>
-      <artifactId>kie-services-remote</artifactId>
+      <artifactId>kie-remote-services</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs</artifactId>
     </dependency>
 
     <!-- Guvnor -->
@@ -425,6 +449,18 @@
     <dependency>
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-project-builder</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-message-console-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-message-console-backend</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-message-console-client</artifactId>
     </dependency>
 
     <!-- Kie Workbench -->
@@ -478,19 +514,6 @@
     <dependency>
       <groupId>org.kie.workbench.widgets</groupId>
       <artifactId>kie-wb-config-resource-widget</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.kie.workbench.screens</groupId>
-      <artifactId>kie-wb-common-message-console-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.workbench.screens</groupId>
-      <artifactId>kie-wb-common-message-console-backend</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.workbench.screens</groupId>
-      <artifactId>kie-wb-common-message-console-client</artifactId>
     </dependency>
 
     <!-- Dashboard -->
@@ -638,6 +661,8 @@
             <compileSourcesArtifact>org.guvnor:guvnor-workingset-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.guvnor:guvnor-services-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.guvnor:guvnor-project-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.guvnor:guvnor-message-console-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.guvnor:guvnor-message-console-client</compileSourcesArtifact>
 
             <!-- Common dependencies -->
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-project-editor-api</compileSourcesArtifact>
@@ -657,11 +682,9 @@
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-data-modeller-client</compileSourcesArtifact>
 
-            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-message-console-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-message-console-client</compileSourcesArtifact>
-
             <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-client</compileSourcesArtifact>
+            
 
             <!-- UberFire -->
             <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
@@ -671,8 +694,6 @@
             <compileSourcesArtifact>org.uberfire:uberfire-security-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-security-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-client-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.uberfire:uberfire-widgets-core-client</compileSourcesArtifact>
-            <compileSourcesArtifact>org.uberfire:uberfire-widgets-commons</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-backend</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-backend-api</compileSourcesArtifact>
@@ -692,7 +713,7 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-asset-mgmt-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-documents-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-documents-client</compileSourcesArtifact>
-             <compileSourcesArtifact>org.jbpm:jbpm-document</compileSourcesArtifact>
+            <compileSourcesArtifact>org.jbpm:jbpm-document</compileSourcesArtifact>
             
             <compileSourcesArtifact>org.jbpm:jbpm-designer-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-designer-client</compileSourcesArtifact>

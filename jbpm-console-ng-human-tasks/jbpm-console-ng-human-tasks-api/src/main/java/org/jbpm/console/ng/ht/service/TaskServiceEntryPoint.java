@@ -21,10 +21,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.console.ng.ht.model.AuditTaskSummary;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
+
 
 @Remote
 public interface TaskServiceEntryPoint {
@@ -86,31 +88,15 @@ public interface TaskServiceEntryPoint {
 
     void setExpirationDate(long taskId, Date date);
 
-    void setDescriptions(long taskId, List<String> descriptions);
-
-    void setSkipable(long taskId, boolean skipable);
-
-    void setSubTaskStrategy(long taskId, String strategy);
-
-    int getPriority(long taskId);
-
-    Date getExpirationDate(long taskId);
-
-    List<String> getDescriptions(long taskId);
-
-    boolean isSkipable(long taskId);
-
-    String getSubTaskStrategy(long taskId);
+    void setDescriptions(long taskId, String description);
 
     TaskSummary getTaskDetails(long taskId);
 
-    long saveContent(long taskId, Map<String, String> values);
+    long saveContent(long taskId, Map<String, Object> values);
 
-    Map<String, String> getContentListById(long contentId);
+    Map<String, Object> getTaskOutputContentByTaskId(long taskId);
 
-    Map<String, String> getTaskOutputContentByTaskId(long taskId);
-
-    Map<String, String> getContentListByTaskId(long taskId);
+    Map<String, Object> getContentListByTaskId(long taskId);
 
     long addComment(long taskId, String text, String addedBy, Date addedOn);
 
@@ -118,9 +104,9 @@ public interface TaskServiceEntryPoint {
 
     List<CommentSummary> getAllCommentsByTaskId(long taskId);
 
-    CommentSummary getCommentById(long commentId);
+    CommentSummary getCommentById(long taskId, long commentId);
 
-    void updateSimpleTaskDetails(long taskId, List<String> taskNames, int priority, List<String> taskDescription,
+    void updateSimpleTaskDetails(long taskId, String taskName, int priority, String taskDescription,
     // String subTaskStrategy,
             Date dueDate);
     
@@ -129,8 +115,6 @@ public interface TaskServiceEntryPoint {
     
     
     //Audit Methods
-    List<TaskEventSummary> getAllTaskEvents(long taskId);
-    
     /**
      * false: when the task was deleted in data base (it happens when the process is finished)
      * 
@@ -138,5 +122,13 @@ public interface TaskServiceEntryPoint {
      * @return
      */
     Boolean existInDatabase(long taskId);
+    
+    List<TaskEventSummary> getAllTaskEvents(long taskId, String filter);
+
+    List<TaskEventSummary> getAllTaskEventsByProcessInstanceId(long processInstanceId, String filter);
+
+    List<AuditTaskSummary> getAllAuditTasks(String filter) ;
+
+    List<AuditTaskSummary> getAllAuditTasksByUser(String userId, String filter);
 
 }

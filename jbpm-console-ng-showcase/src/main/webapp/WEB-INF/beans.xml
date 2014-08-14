@@ -23,6 +23,6 @@
                       http://jboss.org/schema/weld/beans http://jboss.org/schema/weld/beans_1_1.xsd">
 
   <alternatives>
-    <class>org.jbpm.kie.services.cdi.producer.DefaultUserGroupInfoProducer</class>
+    <class>org.jbpm.services.cdi.producer.DefaultUserGroupInfoProducer</class>
   </alternatives>
 </beans>

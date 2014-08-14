@@ -15,52 +15,48 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.details;
 
-import java.util.List;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
-
 import com.google.gwt.view.client.ProvidesKey;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
-
+import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.model.DummyProcessPath;
+import org.jbpm.console.ng.ga.model.process.DummyProcessPath;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
+import org.jbpm.console.ng.pr.model.ProcessInstanceKey;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
-import org.jbpm.console.ng.pr.model.VariableSummary;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceStyleEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
+import org.jbpm.console.ng.pr.service.ProcessInstanceService;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.DefaultPosition;
-
-import org.uberfire.client.common.popups.errors.ErrorPopup;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.widgets.split.WorkbenchSplitLayoutPanel;
-
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -70,7 +66,7 @@ import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
-@WorkbenchScreen(identifier = "Process Instance Details")
+@WorkbenchScreen(identifier = "Process Instance Details", preferredWidth = 500)
 public class ProcessInstanceDetailsPresenter {
 
     private Constants constants = GWT.create(Constants.class);
@@ -79,6 +75,9 @@ public class ProcessInstanceDetailsPresenter {
 
     @Inject
     private Caller<KieSessionEntryPoint> kieSessionServices;
+    private String currentDeploymentId;
+    private String currentProcessInstanceId;
+    private String currentProcessDefId;
 
     public interface ProcessInstanceDetailsView extends UberView<ProcessInstanceDetailsPresenter> {
 
@@ -129,6 +128,9 @@ public class ProcessInstanceDetailsPresenter {
 
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
+    
+    @Inject
+    private Caller<ProcessInstanceService> processInstanceService;
 
     @Inject
     private Event<ProcessInstanceStyleEvent> processInstanceStyleEvent;
@@ -149,9 +151,9 @@ public class ProcessInstanceDetailsPresenter {
         makeMenuBar();
     }
 
-    public static final ProvidesKey<VariableSummary> KEY_PROVIDER = new ProvidesKey<VariableSummary>() {
+    public static final ProvidesKey<ProcessVariableSummary> KEY_PROVIDER = new ProvidesKey<ProcessVariableSummary>() {
         @Override
-        public Object getKey(VariableSummary item) {
+        public Object getKey(ProcessVariableSummary item) {
             return item == null ? null : item.getVariableId();
         }
     };
@@ -218,7 +220,7 @@ public class ProcessInstanceDetailsPresenter {
         dataServices.call(new RemoteCallback<ProcessSummary>() {
             @Override
             public void callback(ProcessSummary process) {
-                view.getProcessDefinitionIdText().setText(process.getId());
+                view.getProcessDefinitionIdText().setText(process.getProcessDefId());
                 view.getProcessNameText().setText(process.getName());
                 view.getProcessVersionText().setText(process.getVersion());
             }
@@ -228,9 +230,9 @@ public class ProcessInstanceDetailsPresenter {
                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                   return true;
               }
-          }).getProcessDesc(processDefId);
+          }).getProcessDesc(deploymentId, processDefId);
 
-        dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
+        processInstanceService.call(new RemoteCallback<ProcessInstanceSummary>() {
             @Override
             public void callback(ProcessInstanceSummary process) {
                 view.getProcessDeploymentText().setText(process.getDeploymentId());
@@ -269,7 +271,7 @@ public class ProcessInstanceDetailsPresenter {
                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                   return true;
               }
-          }).getProcessInstanceById(Long.parseLong(processId));
+          }).getItem(new ProcessInstanceKey(Long.parseLong(processId)));
 
         dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
@@ -295,16 +297,16 @@ public class ProcessInstanceDetailsPresenter {
                             public void callback(Path processPath) {
                                 view.setProcessAssetPath(processPath);
                                 if (processSelected != null) {
-                                    changeStyleRow(processSelected.getId(), processSelected.getProcessName(), processSelected.getProcessVersion(),
+                                    changeStyleRow(processSelected.getProcessInstanceId(), processSelected.getProcessName(), processSelected.getProcessVersion(),
                                             processSelected.getStartTime());
                                 }
                             }
                         }).get(process.getOriginalPath());
                     } else {
-                        view.setProcessAssetPath(new DummyProcessPath(process.getId()));
+                        view.setProcessAssetPath(new DummyProcessPath(process.getProcessDefId()));
                     }
                     if (processSelected != null) {
-                        changeStyleRow(processSelected.getId(), processSelected.getProcessName(), processSelected.getProcessVersion(),
+                        changeStyleRow(processSelected.getProcessInstanceId(), processSelected.getProcessName(), processSelected.getProcessVersion(),
                                 processSelected.getStartTime());
                     }
                 } else {
@@ -337,21 +339,19 @@ public class ProcessInstanceDetailsPresenter {
         this.place = place;
     }
 
-    @OnOpen
-    public void onOpen() {
-        WorkbenchSplitLayoutPanel splitPanel = (WorkbenchSplitLayoutPanel) view.asWidget().getParent().getParent().getParent().getParent()
-                .getParent().getParent().getParent().getParent().getParent().getParent().getParent();
-        splitPanel.setWidgetMinSize(splitPanel.getWidget(0), 500);
-    }
+   @OnOpen
+  public void onOpen() {
+    this.currentDeploymentId = place.getParameter("deploymentId", "");
+    this.currentProcessInstanceId = place.getParameter("processInstanceId", "");
+    this.currentProcessDefId = place.getParameter("processDefId", "");
 
-    public void onProcessInstanceSelectionEvent(@Observes ProcessInstanceSelectionEvent event) {
-        view.getProcessInstanceIdText().setText(String.valueOf(event.getProcessInstanceId()));
+    view.getProcessInstanceIdText().setText(currentProcessInstanceId);
+    view.getProcessNameText().setText(currentProcessDefId);
 
-        view.getProcessNameText().setText(event.getProcessDefId());
+    refreshProcessInstanceData(currentDeploymentId, currentProcessInstanceId, currentProcessDefId);
+  }
 
-        refreshProcessInstanceData(event.getDeploymentId(), String.valueOf(event.getProcessInstanceId()), event.getProcessDefId());
-
-    }
+  
 
     @WorkbenchMenu
     public Menus getMenus() {
@@ -471,6 +471,7 @@ public class ProcessInstanceDetailsPresenter {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Variables List");
                 placeRequestImpl.addParameter("processInstanceId", view.getProcessInstanceIdText().getText());
                 placeRequestImpl.addParameter("processDefId", view.getProcessDefinitionIdText().getText());
+                placeRequestImpl.addParameter("deploymentId", view.getProcessDeploymentText().getText());
                 placeManager.goTo(placeRequestImpl);
             }
         }).endMenu().build().getItems().get(0));

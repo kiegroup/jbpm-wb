@@ -15,20 +15,16 @@
  */
 package org.jbpm.console.ng.ht.model;
 
-import java.io.Serializable;
 import java.util.Date;
-
+import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class TaskSummary implements Serializable {
+public class TaskSummary extends GenericSummary {
 
-    private static final long serialVersionUID = -506604206868228075L;
-
-    private Long id;
-    private String name;
+    private Long taskId;
+    private String taskName;
     private String description;
-    // Was Status
     private String status;
     private int priority;
 
@@ -44,12 +40,14 @@ public class TaskSummary implements Serializable {
 
     private Long parentId;
 
-    public TaskSummary(long id, String name, String description, String status,
+    public TaskSummary(long taskId, String taskName, String description, String status,
             int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
             Date expirationTime, String processId, int processSessionId, long processInstanceId, String deploymentId, long parentId) {
         super();
-        this.id = id;
-        this.name = name;
+        this.id = taskId;
+        this.name = taskName;
+        this.taskId = taskId;
+        this.taskName = taskName;
         this.description = description;
         this.status = status;
         this.priority = priority;
@@ -68,12 +66,19 @@ public class TaskSummary implements Serializable {
     public TaskSummary() {
     }
 
-    public long getId() {
-        return id;
+  public TaskSummary(Long taskId, String taskName) {
+    this.taskId = taskId;
+    this.taskName = taskName;
+  }
+    
+    
+
+    public Long getTaskId() {
+      return taskId;
     }
 
-    public String getName() {
-        return name;
+    public String getTaskName() {
+      return taskName;
     }
 
     public long getProcessInstanceId() {
@@ -130,7 +135,7 @@ public class TaskSummary implements Serializable {
 
     @Override
     public String toString() {
-        return "TaskSummary [id=" + id + ", name=" + name + ", description=" + description + ", deploymentId=" + deploymentId
+        return "TaskSummary [id=" + taskId + ", name=" + taskName + ", description=" + description + ", deploymentId=" + deploymentId
                 + ", status=" + status + ", priority=" + priority + ", parentId=" + parentId
                 + ", actualOwner=" + actualOwner + ", createdBy=" + createdBy + ", createdOn=" + createdOn
                 + ", activationTime=" + activationTime + ", expirationTime=" + expirationTime + ", processInstanceId="

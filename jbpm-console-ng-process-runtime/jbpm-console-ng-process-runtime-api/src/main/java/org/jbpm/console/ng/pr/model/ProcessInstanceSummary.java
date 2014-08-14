@@ -16,13 +16,13 @@
 
 package org.jbpm.console.ng.pr.model;
 
-import java.io.Serializable;
 import java.util.Date;
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jbpm.console.ng.ga.model.GenericSummary;
 
 @Portable
-public class ProcessInstanceSummary implements Serializable {
-    private long id;
+public class ProcessInstanceSummary extends GenericSummary {
+    private Long processInstanceId;
     private String processId;
     private String processName;
     private String processVersion;
@@ -31,10 +31,12 @@ public class ProcessInstanceSummary implements Serializable {
     private String deploymentId;
     private String initiator;
 
-    public ProcessInstanceSummary(long id, String processId, String deploymentId, String processName, String processVersion,
+    public ProcessInstanceSummary(long processInstanceId, String processId, String deploymentId, String processName, String processVersion,
             int state, Date startTime, String initiator) {
         super();
-        this.id = id;
+        this.id = processInstanceId;
+        this.name = processName;
+        this.processInstanceId = processInstanceId;
         this.processId = processId;
         this.processName = processName;
         this.deploymentId = deploymentId;
@@ -47,8 +49,8 @@ public class ProcessInstanceSummary implements Serializable {
     public ProcessInstanceSummary() {
     }
 
-    public long getId() {
-        return id;
+    public Long getProcessInstanceId() {
+      return processInstanceId;
     }
 
     public String getProcessId() {
@@ -63,8 +65,8 @@ public class ProcessInstanceSummary implements Serializable {
         return state;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setProcessInstanceId(Long processInstanceId) {
+      this.processInstanceId = processInstanceId;
     }
 
     public void setProcessId(String processId) {

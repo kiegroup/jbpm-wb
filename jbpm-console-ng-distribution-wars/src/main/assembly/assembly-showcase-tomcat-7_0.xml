@@ -19,7 +19,7 @@
   xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2
                       http://maven.apache.org/xsd/assembly-1.1.2.xsd">
 
-  <id>tomcat7.0</id>
+  <id>tomcat7</id>
   <formats>
     <format>war</format>
   </formats>
@@ -66,6 +66,13 @@
           <exclude>WEB-INF/lib/widgets-core-client-*.jar</exclude>
           <exclude>WEB-INF/lib/uberfire-workbench-*.jar</exclude>
           <exclude>WEB-INF/lib/security-client-*.jar</exclude>
+
+          <!-- Guvnor client related -->
+          <exclude>WEB-INF/lib/guvnor-structure-client-*.jar</exclude>
+          <exclude>WEB-INF/lib/guvnor-inbox-client-*.jar</exclude>
+          <exclude>WEB-INF/lib/guvnor-m2repo-editor-client-*.jar</exclude>
+          <exclude>WEB-INF/lib/guvnor-workingset-client-*.jar</exclude>
+          <exclude>WEB-INF/lib/guvnor-message-console-client-*.jar</exclude>
 
           <!-- GWT Client Related -->
           <exclude>WEB-INF/lib/gwt-user-*.jar</exclude>
