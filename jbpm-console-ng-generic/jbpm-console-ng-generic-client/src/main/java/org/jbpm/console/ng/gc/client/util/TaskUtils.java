@@ -22,9 +22,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 public class TaskUtils {
-
+    
     public static enum TaskType {
-        PERSONAL, ACTIVE, GROUP, ALL
+        PERSONAL, ACTIVE, GROUP, ALL, ADMIN
     }
 
     public static enum TaskView {
@@ -55,6 +55,9 @@ public class TaskUtils {
                     "Obsolete", "Completed");
             break;
         case PERSONAL:
+            status = ImmutableList.of("Ready", "InProgress", "Created", "Reserved");
+            break;
+        case ADMIN:
             status = ImmutableList.of("Ready", "InProgress", "Created", "Reserved");
             break;
         default:
