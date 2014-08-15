@@ -44,14 +44,19 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+
+import org.jbpm.console.ng.gc.client.util.TaskUtils;
+
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
@@ -88,7 +93,8 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
 
   private Button allFilterButton;
   
-
+  private Button adminFilterButton;
+  
   @Override
   public void init(final TasksListGridPresenter presenter) {
     List<String> bannedColumns = new ArrayList<String>();
@@ -206,6 +212,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
         personalFilterButton.setEnabled(true);
         groupFilterButton.setEnabled(true);
         allFilterButton.setEnabled(true);
+        adminFilterButton.setEnabled(true);
         presenter.refreshActiveTasks();
       }
     });
@@ -220,6 +227,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
         activeFilterButton.setEnabled(true);
         personalFilterButton.setEnabled(false);
         groupFilterButton.setEnabled(true);
+        adminFilterButton.setEnabled(true);
         allFilterButton.setEnabled(true);
         presenter.refreshPersonalTasks();
       }
@@ -235,6 +243,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
         activeFilterButton.setEnabled(true);
         personalFilterButton.setEnabled(true);
         groupFilterButton.setEnabled(false);
+        adminFilterButton.setEnabled(true);
         allFilterButton.setEnabled(true);
         presenter.refreshGroupTasks();
       }
@@ -250,14 +259,31 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
         activeFilterButton.setEnabled(true);
         personalFilterButton.setEnabled(true);
         groupFilterButton.setEnabled(true);
+        adminFilterButton.setEnabled(true);
         allFilterButton.setEnabled(false);
         presenter.refreshAllTasks();
       }
     });
 
+    adminFilterButton = new Button();
+    adminFilterButton.setIcon(IconType.FILTER);
+    adminFilterButton.setSize(ButtonSize.SMALL);
+    adminFilterButton.setText(constants.Task_Admin());
+    adminFilterButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        activeFilterButton.setEnabled(true);
+        personalFilterButton.setEnabled(true);
+        groupFilterButton.setEnabled(true);
+        allFilterButton.setEnabled(true);
+        adminFilterButton.setEnabled(false);
+        presenter.refreshAdminTasks();
+      }
+    });
+    
     filtersBar.add(filterLabel);
     ButtonGroup filtersButtonGroup = new ButtonGroup(activeFilterButton, personalFilterButton,
-            groupFilterButton, allFilterButton);
+            groupFilterButton, allFilterButton, adminFilterButton);
 
     filtersBar.add(filtersButtonGroup);
 

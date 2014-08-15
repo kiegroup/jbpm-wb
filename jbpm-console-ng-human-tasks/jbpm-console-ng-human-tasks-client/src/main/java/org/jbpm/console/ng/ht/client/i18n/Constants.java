@@ -166,4 +166,6 @@ public interface Constants extends Messages {
     String Show_Details();
 
     String Hide_Details();
+    
+    String Task_Admin();
 }
