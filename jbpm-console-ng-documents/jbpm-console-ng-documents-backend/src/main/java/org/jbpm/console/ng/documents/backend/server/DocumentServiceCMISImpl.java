@@ -43,6 +43,7 @@ public class DocumentServiceCMISImpl implements DocumentService {
 	private Session session;
 
 	@Override
+	@PostConstruct
 	public void init() {
 		parameters = new HashMap<String, String>();
 		String webServicesACLServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/ACLService?wsdl";
