@@ -42,8 +42,8 @@ public class DocumentServiceCMISImpl implements DocumentService {
 
 	private Session session;
 
-	@PostConstruct
-	private void init() {
+	@Override
+	public void init() {
 		parameters = new HashMap<String, String>();
 		String webServicesACLServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/ACLService?wsdl";
 		String webServicesDiscoveryServices = "http://localhost:8080/cmis/services/DiscoveryService?wsdl";
@@ -57,6 +57,7 @@ public class DocumentServiceCMISImpl implements DocumentService {
 		String repositoryID = "dms";
 		String user = "superuser";
 		String password = "superuser";
+
 
 		// user credentials
 		parameters.put(SessionParameter.USER, "superuser");
@@ -101,7 +102,6 @@ public class DocumentServiceCMISImpl implements DocumentService {
 		parameters.put(SessionParameter.WEBSERVICES_PORT_PROVIDER_CLASS,
 				SunRIPortProvider.class.getName());
 		this.parameters = parameters;
-
 		createSession();
 
 	}
@@ -260,9 +260,11 @@ public class DocumentServiceCMISImpl implements DocumentService {
 			ContentStream contentStream = new ContentStreamImpl(doc.getName(),
 					BigInteger.valueOf(doc.getContent().length),
 					MimeTypes.getMIMEType(doc.getName()), stream);
-			((Folder) session.getObjectByPath(doc.getPath())).createDocument(
+			Document createdDoc = ((Folder) session.getObjectByPath(doc.getPath())).createDocument(
 					properties, contentStream, VersioningState.NONE);
+			doc.setId(createdDoc.getId());
 		}
+		throw new IllegalStateException("Could not get CMIS session");
 	}
 
 	@Override

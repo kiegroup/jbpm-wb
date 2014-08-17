@@ -28,7 +28,10 @@ import org.jbpm.console.ng.dm.client.i18n.Constants;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
+<<<<<<< HEAD
 import org.uberfire.workbench.events.NotificationEvent.NotificationType;
+=======
+>>>>>>> 8263f9d4750445cdeebbdf2df5e28ac67f8f1e91
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.Label;
@@ -186,12 +189,17 @@ public class CMISConfigurationViewImpl extends Composite implements
 
 	@Override
 	public void displayNotification(String text) {
+<<<<<<< HEAD
 		displayNotification(text, NotificationType.INFO);
 	}
 	
 	@Override
 	public void displayNotification(String text, NotificationType type) {
 		notification.fire(new NotificationEvent(text,type));	
+=======
+		notification.fire(new NotificationEvent(text));
+
+>>>>>>> 8263f9d4750445cdeebbdf2df5e28ac67f8f1e91
 	}
 
 	@EventHandler("configureButton")
@@ -274,6 +282,9 @@ public class CMISConfigurationViewImpl extends Composite implements
 		return testButton;
 	}
 
+<<<<<<< HEAD
 	
 
+=======
+>>>>>>> 8263f9d4750445cdeebbdf2df5e28ac67f8f1e91
 }
