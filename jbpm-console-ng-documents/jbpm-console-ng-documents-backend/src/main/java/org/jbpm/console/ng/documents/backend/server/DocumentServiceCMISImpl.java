@@ -262,7 +262,9 @@ public class DocumentServiceCMISImpl implements DocumentService {
 					properties, contentStream, VersioningState.NONE);
 			doc.setId(createdDoc.getId());
 		}
-		throw new IllegalStateException("Could not get CMIS session");
+		else {
+			throw new IllegalStateException("Could not get CMIS session");
+		}
 	}
 
 	@Override

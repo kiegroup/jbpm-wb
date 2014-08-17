@@ -3,11 +3,13 @@ package org.jbpm.console.ng.documents.backend.server.marshalling;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.apache.commons.io.IOUtils;
 import org.drools.core.common.DroolsObjectInputStream;
 import org.jbpm.console.ng.dm.model.DocumentSummary;
 import org.jbpm.console.ng.documents.backend.server.DocumentService;
@@ -98,7 +100,9 @@ public class CMISDocumentMarshallingStrategy implements
 			document.setLastModified(new Date());
 			document.setSize(10);
 			document.setAttributes(new HashMap<String, String>());
-			document.setContent(storedDoc.getContent());
+			InputStream stream = this.documentService.getDocumentContent(objectId);
+			byte[] content = IOUtils.toByteArray(stream);
+			document.setContent(content);
 		} catch (Exception e) {
 			throw new RuntimeException(
 					"Cannot read document from storage service", e);
