@@ -55,8 +55,6 @@ public class DocumentServiceCMISImpl implements DocumentService {
 		String webServicesRepositoryServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/RepositoryService?wsdl";
 		String webServicesVersioningServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/VersioningService?wsdl";
 		String repositoryID = "dms";
-		String user = "superuser";
-		String password = "superuser";
 
 
 		// user credentials
