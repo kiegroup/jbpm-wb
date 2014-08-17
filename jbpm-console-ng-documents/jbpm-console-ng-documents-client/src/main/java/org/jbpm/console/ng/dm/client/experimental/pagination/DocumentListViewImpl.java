@@ -359,9 +359,14 @@ public class DocumentListViewImpl extends ActionsCellDocuments implements
 
 	@Override
 	public void updatePathLink() {
+		if (presenter.currentCMSContentSummary != null){
 		String path = presenter.currentCMSContentSummary.getPath();
 		if (path != null && !path.equals("")) { 
 			pathLink.setText(path);
+		} else
+		{
+			pathLink.setText("/");
+		}
 		} else
 		{
 			pathLink.setText("/");
