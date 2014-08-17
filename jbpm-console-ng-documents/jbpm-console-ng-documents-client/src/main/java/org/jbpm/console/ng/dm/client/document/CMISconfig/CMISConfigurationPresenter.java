@@ -43,10 +43,7 @@ import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
-<<<<<<< HEAD
 import org.uberfire.workbench.events.NotificationEvent.NotificationType;
-=======
->>>>>>> 8263f9d4750445cdeebbdf2df5e28ac67f8f1e91
 import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
@@ -90,11 +87,8 @@ public class CMISConfigurationPresenter {
 		TextBox getPasswordTextBox();
 
 		void displayNotification(String text);
-<<<<<<< HEAD
-		
+
 		void displayNotification(String text,NotificationType type);
-=======
->>>>>>> 8263f9d4750445cdeebbdf2df5e28ac67f8f1e91
 
 		Button getConfigureButton();
 		
@@ -205,11 +199,7 @@ public class CMISConfigurationPresenter {
 		dataServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long taskId) {
-<<<<<<< HEAD
                 view.displayNotification("Updated", NotificationType.SUCCESS);
-=======
-                view.displayNotification("Updated");
->>>>>>> 8263f9d4750445cdeebbdf2df5e28ac67f8f1e91
             }
         }, new ErrorCallback<Message>() {
             @Override
@@ -225,15 +215,9 @@ public class CMISConfigurationPresenter {
             @Override
             public void callback(Boolean result) {
                 if (result){
-<<<<<<< HEAD
                 	view.displayNotification("Connection Successfull", NotificationType.SUCCESS);
                 } else {
                 	view.displayNotification("Connection Failed", NotificationType.ERROR);
-=======
-                	view.displayNotification("Connection Successfull");
-                } else {
-                	view.displayNotification("Connection Failed");
->>>>>>> 8263f9d4750445cdeebbdf2df5e28ac67f8f1e91
                 }
                 
                 	

@@ -29,10 +29,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.dm.model.CMSContentSummary;
 import org.jbpm.console.ng.dm.model.events.DocumentDefSelectionEvent;
 import org.jbpm.console.ng.dm.model.events.DocumentRemoveSearchEvent;
-<<<<<<< HEAD
 import org.jbpm.console.ng.dm.model.events.DocumentsHomeSearchEvent;
-=======
->>>>>>> 8263f9d4750445cdeebbdf2df5e28ac67f8f1e91
 import org.jbpm.console.ng.dm.model.events.DocumentsListSearchEvent;
 import org.jbpm.console.ng.dm.model.events.DocumentsParentSearchEvent;
 import org.jbpm.console.ng.dm.model.events.NewDocumentEvent;
@@ -47,17 +44,13 @@ import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnFocus;
 import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
-import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.BrowserEvents;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 
@@ -78,11 +71,8 @@ public class DocumentListPresenter {
 		void showBusyIndicator(String message);
 
 		void hideBusyIndicator();
-<<<<<<< HEAD
 		
 		void updatePathLink();
-=======
->>>>>>> 8263f9d4750445cdeebbdf2df5e28ac67f8f1e91
 	}
 
 	private static String linkURL = "http://127.0.0.1:8888/documentview"; // TODO
@@ -127,17 +117,11 @@ public class DocumentListPresenter {
 	}
 
 	public void refreshDocumentList(String id) {
-<<<<<<< HEAD
 		view.showBusyIndicator("Loading...");
 		dataServices.call(new RemoteCallback<List<CMSContentSummary>>() {
 			@Override
 			public void callback(List<CMSContentSummary> documents) {
 				view.hideBusyIndicator();
-=======
-		dataServices.call(new RemoteCallback<List<CMSContentSummary>>() {
-			@Override
-			public void callback(List<CMSContentSummary> documents) {
->>>>>>> 8263f9d4750445cdeebbdf2df5e28ac67f8f1e91
 				currentDocuments = documents;
 				if (documents.size() > 0) {
 					CMSContentSummary first = documents.get(0);
@@ -145,10 +129,7 @@ public class DocumentListPresenter {
 						currentCMSContentSummary = first.getParent();
 					}
 				}
-<<<<<<< HEAD
 				view.updatePathLink();
-=======
->>>>>>> 8263f9d4750445cdeebbdf2df5e28ac67f8f1e91
 				filterProcessList(view.getCurrentFilter());
 			}
 		}).getDocuments(id);
@@ -256,14 +237,11 @@ public class DocumentListPresenter {
 			}
 		}
 	}
-<<<<<<< HEAD
 	
 	public void onDocumentsHomeSelectionEvent(
 			@Observes DocumentsHomeSearchEvent event) {
 		this.refreshDocumentList(null);
 	}
-=======
->>>>>>> 8263f9d4750445cdeebbdf2df5e28ac67f8f1e91
 
 	public void onDocumentRemoveEvent(@Observes DocumentRemoveSearchEvent event) {
 		this.dataServices.call(new RemoteCallback<Void>() {
