@@ -37,6 +37,7 @@ import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsV
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.ga.model.process.DummyProcessPath;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
@@ -121,26 +122,23 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
     view.getHeaderPanel().clear();
     
     view.getHeaderPanel().add(new HTMLPanel(SafeHtmlUtils.htmlEscape(String.valueOf(selectedItemId) + " - " 
-                    + selectedProcessDefName + " (" + getProcessStatusString(selectedProcessInstanceStatus) + ")")));
+                    + selectedProcessDefName )));
     view.getTabPanel().selectTab(0);
     selectDefaultTab();
 
   }
   
-  private String getProcessStatusString(int processStatus){
-    String processStatusString = "";
-    if(selectedProcessInstanceStatus == ProcessInstance.STATE_ACTIVE){
-      processStatusString = "ACTIVE";
-    }else if(selectedProcessInstanceStatus == ProcessInstance.STATE_ABORTED){
-      processStatusString = "ABORTED";
-    }else if(selectedProcessInstanceStatus == ProcessInstance.STATE_COMPLETED){
-      processStatusString = "COMPLETED";
-    } else if(selectedProcessInstanceStatus == ProcessInstance.STATE_PENDING){
-      processStatusString = "PENDING";
-    }else if(selectedProcessInstanceStatus == ProcessInstance.STATE_SUSPENDED){
-      processStatusString = "SUSPENDED";
+  public void refreshProcessInstanceDetails(){
+    int selectedIndex = view.getTabPanel().getSelectedIndex();
+    if (selectedIndex == 0) {
+      goToProcessInstanceDetailsTab();
+    } else if (selectedIndex == 1) {
+      goToProcessInstanceVariables();
+    } else if (selectedIndex == 2) {
+      goToProcessDocuments();
+    } else if (selectedIndex == 3) {
+      goToProcessInstanceLogsTab();
     }
-    return processStatusString;
   }
 
   public void goToProcessInstanceDetailsTab() {
@@ -242,26 +240,38 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
   }
 
   public void abortProcessInstance() {
-    if (Window.confirm("Are you sure that you want to abort the process instance?")) {
-      final long processInstanceId = Long.parseLong(selectedItemId);
-      kieSessionServices.call(new RemoteCallback<Void>() {
+    dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
         @Override
-        public void callback(Void v) {
-//                            refreshProcessInstanceData(view.getProcessDeploymentText().getText(),
-//                                    view.getProcessInstanceIdText().getText(),
-//                                    view.getProcessDefinitionIdText().getText());
-//                            processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(processInstanceId));
-//                            view.displayNotification(constants.Aborting_Process_Instance() + "(id=" + processInstanceId + ")");
-
+        public void callback(ProcessInstanceSummary processInstance) {
+            if(processInstance.getState() == ProcessInstance.STATE_ACTIVE ||
+                    processInstance.getState() == ProcessInstance.STATE_PENDING){
+                if (Window.confirm("Are you sure that you want to abort the process instance?")) {
+                    final long processInstanceId = Long.parseLong(selectedItemId);
+                    kieSessionServices.call(new RemoteCallback<Void>() {
+                      @Override
+                      public void callback(Void v) {
+                          refreshProcessInstanceDetails();
+                      }
+                    }, new ErrorCallback<Message>() {
+                      @Override
+                      public boolean error(Message message, Throwable throwable) {
+                        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                        return true;
+                      }
+                    }).abortProcessInstance(processInstanceId);
+                }
+            }
+            else{
+                Window.alert("Process instance needs to be active in order to be aborted");
+            }
         }
-      }, new ErrorCallback<Message>() {
-        @Override
-        public boolean error(Message message, Throwable throwable) {
-          ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-          return true;
-        }
-      }).abortProcessInstance(processInstanceId);
-    }
+    }, new ErrorCallback<Message>() {
+      @Override
+      public boolean error(Message message, Throwable throwable) {
+        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        return true;
+      }
+    }).getProcessInstanceById(Long.parseLong(selectedItemId));
   }
   
   public void goToProcessInstanceModelPopup() {

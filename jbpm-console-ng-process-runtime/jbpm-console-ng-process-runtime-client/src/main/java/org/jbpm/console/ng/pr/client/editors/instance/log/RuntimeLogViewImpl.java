@@ -46,23 +46,6 @@ public class RuntimeLogViewImpl extends Composite
     private RuntimeLogPresenter presenter;
     private LogOrder logOrder = LogOrder.ASC;
     private LogType logType = LogType.BUSINESS;
-        
-    @Inject
-    @DataField
-    public Label processInstanceNameLabel;
-        
-    @Inject
-    @DataField
-    public Label processInstanceNameText;
-    
-    @Inject
-    @DataField
-    public Label processInstanceStatusLabel;
-        
-    @Inject
-    @DataField
-    public Label processInstanceStatusText;
-    
     
     @Inject
     @DataField
@@ -104,9 +87,7 @@ public class RuntimeLogViewImpl extends Composite
     @Override
     public void init( final RuntimeLogPresenter presenter ) {
         this.presenter = presenter;
-        logTextLabel.setText( constants.Process_Instance_Log() );        
-        processInstanceNameLabel.setText(constants.Process_Instance_Name());        
-        processInstanceStatusLabel.setText(constants.Process_Instance_State());        
+        logTextLabel.setText( constants.Process_Instance_Log() );  
         
         this.setFilters(showBusinessLogButton, constants.Business_Log(), LogType.BUSINESS);
         this.setFilters(showTechnicalLogButton, constants.Technical_Log(), LogType.TECHNICAL);
@@ -145,16 +126,6 @@ public class RuntimeLogViewImpl extends Composite
     @Override
     public HTML getLogTextArea() {
         return logTextArea;
-    }
-    
-    @Override
-    public Label getProcessInstanceStatusText() {
-        return processInstanceStatusText;
-    }
-    
-    @Override
-    public Label getProcessInstanceNameText() {
-        return processInstanceNameText;
     }
 
     @Override

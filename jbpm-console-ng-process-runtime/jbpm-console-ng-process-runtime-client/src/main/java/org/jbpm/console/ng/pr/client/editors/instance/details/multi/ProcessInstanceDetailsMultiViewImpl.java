@@ -86,16 +86,7 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
     tabPanel.addRefreshHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        int selectedIndex = tabPanel.getSelectedIndex();
-        if (selectedIndex == 0) {
-          presenter.goToProcessInstanceDetailsTab();
-        } else if (selectedIndex == 1) {
-          presenter.goToProcessInstanceVariables();
-        } else if (selectedIndex == 2) {
-          presenter.goToProcessDocuments();
-        } else if (selectedIndex == 3) {
-          presenter.goToProcessInstanceLogsTab();
-        }
+          presenter.refreshProcessInstanceDetails();
       }
     });
 
