@@ -17,8 +17,10 @@ package org.jbpm.console.ng.pr.client.editors.instance.details;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.view.client.ProvidesKey;
 import java.util.ArrayList;
 import java.util.Date;
@@ -85,13 +87,7 @@ public class ProcessInstanceDetailsPresenter {
 
         HTML getCurrentActivitiesListBox();
 
-        HTML getLogTextArea();
-
-        HTML getProcessInstanceIdText();
-
         HTML getProcessDefinitionIdText();
-
-        HTML getProcessNameText();
 
         HTML getStateText();
 
@@ -171,31 +167,7 @@ public class ProcessInstanceDetailsPresenter {
     public void refreshProcessInstanceData(final String deploymentId, final String processId,
             final String processDefId) {
         processSelected = null;
-
-        dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
-            @Override
-            public void callback(List<NodeInstanceSummary> details) {
-                view.getLogTextArea().setText("");
-                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                for (NodeInstanceSummary nis : details) {
-                    if (!nis.getNodeName().equals("")) {
-                        safeHtmlBuilder.appendEscapedLines(nis.getTimestamp() + ": " + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType()
-                                + ") \n");
-
-                    } else {
-                        safeHtmlBuilder.appendEscapedLines(nis.getTimestamp() + ": " + nis.getId() + " - " + nis.getType() + "\n");
-                    }
-                }
-                view.getLogTextArea().setHTML(safeHtmlBuilder.toSafeHtml());
-            }
-        }, new ErrorCallback<Message>() {
-              @Override
-              public boolean error( Message message, Throwable throwable ) {
-                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                  return true;
-              }
-          }).getProcessInstanceHistory(Long.parseLong(processId));
-
+      
         view.getProcessDefinitionIdText().setText(processId);
         dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
@@ -221,8 +193,7 @@ public class ProcessInstanceDetailsPresenter {
             @Override
             public void callback(ProcessSummary process) {
                 view.getProcessDefinitionIdText().setText(process.getProcessDefId());
-                view.getProcessNameText().setText(process.getName());
-                view.getProcessVersionText().setText(process.getVersion());
+                view.getProcessVersionText().setText(process.getVersion());                
             }
         }, new ErrorCallback<Message>() {
               @Override
@@ -345,9 +316,6 @@ public class ProcessInstanceDetailsPresenter {
     this.currentProcessInstanceId = place.getParameter("processInstanceId", "");
     this.currentProcessDefId = place.getParameter("processDefId", "");
 
-    view.getProcessInstanceIdText().setText(currentProcessInstanceId);
-    view.getProcessNameText().setText(currentProcessDefId);
-
     refreshProcessInstanceData(currentDeploymentId, currentProcessInstanceId, currentProcessDefId);
   }
 
@@ -371,7 +339,7 @@ public class ProcessInstanceDetailsPresenter {
                     @Override
                     public void execute() {
                         refreshProcessInstanceData(view.getProcessDeploymentText().getText(),
-                                view.getProcessInstanceIdText().getText(),
+                                currentProcessInstanceId,
                                 view.getProcessDefinitionIdText().getText());
                         view.displayNotification(constants.Process_Instances_Details_Refreshed());
                     }
@@ -388,7 +356,7 @@ public class ProcessInstanceDetailsPresenter {
             public void execute() {
 
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Signal Process Popup");
-                placeRequestImpl.addParameter("processInstanceId", view.getProcessInstanceIdText().getText());
+                placeRequestImpl.addParameter("processInstanceId", currentProcessInstanceId);
                 placeManager.goTo(placeRequestImpl);
             }
         }).endMenu().build().getItems().get(0));
@@ -397,12 +365,12 @@ public class ProcessInstanceDetailsPresenter {
             @Override
             public void execute() {
                 if (Window.confirm("Are you sure that you want to abort the process instance?")) {
-                    final long processInstanceId = Long.parseLong(view.getProcessInstanceIdText().getText());
+                    final long processInstanceId = Long.parseLong(currentProcessInstanceId);
                     kieSessionServices.call(new RemoteCallback<Void>() {
                         @Override
                         public void callback(Void v) {
                             refreshProcessInstanceData(view.getProcessDeploymentText().getText(),
-                                    view.getProcessInstanceIdText().getText(),
+                                    currentProcessInstanceId,
                                     view.getProcessDefinitionIdText().getText());
                             processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(processInstanceId));
                             view.displayNotification(constants.Aborting_Process_Instance() + "(id=" + processInstanceId + ")");
@@ -469,7 +437,7 @@ public class ProcessInstanceDetailsPresenter {
             public void execute() {
 
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Process Variables List");
-                placeRequestImpl.addParameter("processInstanceId", view.getProcessInstanceIdText().getText());
+                placeRequestImpl.addParameter("processInstanceId", currentProcessInstanceId);
                 placeRequestImpl.addParameter("processDefId", view.getProcessDefinitionIdText().getText());
                 placeRequestImpl.addParameter("deploymentId", view.getProcessDeploymentText().getText());
                 placeManager.goTo(placeRequestImpl);
