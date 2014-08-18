@@ -730,7 +730,7 @@
 
           </compileSourcesArtifacts>
           <runTarget>org.jbpm.console.ng.jBPMShowcase/jBPM.html</runTarget>
-          <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m -Djetty.custom.sys.classes=bitronix;javax.transaction -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Dorg.kie.deployment.desc.location=https://raw.githubusercontent.com/calcacuervo/jbpm-playground/master/translations/src/main/resources/META-INF/kie-deployment-descriptor.xml</extraJvmArgs>
+          <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m -Djetty.custom.sys.classes=bitronix;javax.transaction -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true</extraJvmArgs>
           <soyc>false</soyc>
           <strict>false</strict>
           <server>org.jboss.errai.cdi.server.gwt.JettyLauncher</server>
