@@ -62,9 +62,6 @@ public class RuntimeLogPresenter {
 
         HTML getLogTextArea();
         
-        Label getProcessInstanceStatusText();
-                
-        Label getProcessInstanceNameText();
     }
 
     @Inject
@@ -101,23 +98,7 @@ public class RuntimeLogPresenter {
 
     public void refreshProcessInstanceData(final LogOrder logOrder, final LogType logType) {
         
-        view.getProcessInstanceNameText().setText("");
-        view.getProcessInstanceStatusText().setText("");
         view.getLogTextArea().setText("");
-        
-        dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
-            @Override
-            public void callback(ProcessInstanceSummary instanceSummary) {                
-                view.getProcessInstanceNameText().setText(instanceSummary.getProcessName());
-                view.getProcessInstanceStatusText().setText(LogUtils.getInstanceStatus(instanceSummary.getState()));                
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message, Throwable throwable ) {
-                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                return true;
-            }
-        }).getProcessInstanceById(Long.valueOf(currentProcessInstanceId));
         
         if(LogType.TECHNICAL.equals(logType)){
             dataServices.call(new RemoteCallback<List<RuntimeLogSummary>>() {

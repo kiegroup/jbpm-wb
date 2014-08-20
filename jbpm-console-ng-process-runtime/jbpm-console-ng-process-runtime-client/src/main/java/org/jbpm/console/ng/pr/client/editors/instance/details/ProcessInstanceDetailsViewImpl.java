@@ -46,19 +46,6 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     @Inject
     @DataField
     public HTML processDefinitionIdText;
-    
-    
-    @Inject
-    @DataField
-    public Label processInstanceIdLabel;
-    
-    @Inject
-    @DataField
-    public HTML processInstanceIdText;
-
-    @Inject
-    @DataField
-    public HTML processNameText;
 
     @Inject
     @DataField
@@ -78,15 +65,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
     @Inject
     @DataField
-    public HTML logTextArea;
-
-    @Inject
-    @DataField
     public Label processDefinitionIdLabel;
-
-    @Inject
-    @DataField
-    public Label processNameLabel;
 
     @Inject
     @DataField
@@ -103,10 +82,6 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     @Inject
     @DataField
     public Label currentActivitiesListLabel;
-
-    @Inject
-    @DataField
-    public Label logTextLabel;
 
     @Inject
     private Identity identity;
@@ -131,19 +106,12 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     @Override
     public void init( final ProcessInstanceDetailsPresenter presenter ) {
         this.presenter = presenter;
-        
-        
 
-        processNameLabel.setText( constants.Process_Definition_Name() );
         processDefinitionIdLabel.setText( constants.Process_Definition_Id() );
-        processInstanceIdLabel.setText(constants.Process_Instance_ID());
         processDeploymentLabel.setText( constants.Deployment_Name() );
         processVersionLabel.setText( constants.Process_Definition_Version() );
         stateLabel.setText( constants.Process_Instance_State() );
         currentActivitiesListLabel.setText( constants.Current_Activities() );
-        logTextLabel.setText( constants.Process_Instance_Log() );
-
-
     }
 
 
@@ -158,27 +126,9 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     }
 
     @Override
-    public HTML getLogTextArea() {
-        return logTextArea;
-    }
-
-    @Override
     public void displayNotification( String text ) {
         notification.fire( new NotificationEvent( text ) );
     }
-
-    @Override
-    public HTML getProcessNameText() {
-        return processNameText;
-    }
-
-    
-
-    @Override
-    public HTML getProcessInstanceIdText() {
-        return this.processInstanceIdText;
-    }
-
 
     @Override
     public void setProcessInstance( ProcessInstanceSummary processInstance ) {

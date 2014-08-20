@@ -18,8 +18,10 @@ package org.jbpm.console.ng.ht.backend.server;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ht.model.TaskKey;
@@ -32,7 +34,7 @@ import org.kie.api.task.model.Status;
 import org.kie.api.task.model.Task;
 import org.kie.internal.task.api.InternalTaskService;
 import org.uberfire.paging.PageResponse;
-
+import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.*;
 /**
  *
  * @author salaboy
@@ -57,9 +59,11 @@ public class TaskQueryServiceImpl implements TaskQueryService {
     PageResponse<TaskSummary> response = new PageResponse<TaskSummary>();
     List<String> statusesString = null;
     String userId = "";
+    String taskRole="";
     if (filter.getParams() != null) {
       userId = (String) filter.getParams().get("userId");
       statusesString = (List<String>) filter.getParams().get("statuses");
+      taskRole=(String) filter.getParams().get("taskRole");
 
     }
     List<Status> statuses = new ArrayList<Status>();
@@ -69,9 +73,13 @@ public class TaskQueryServiceImpl implements TaskQueryService {
     
     org.kie.internal.query.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1,
                                                                     filter.getOrderBy(), filter.isAscending());
-    List<TaskSummary> taskSummaries = TaskSummaryHelper.adaptCollection(
-            runtimeDataService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf));
-
+    List<TaskSummary> taskSummaries = new ArrayList<TaskSummary>();
+    if (TASK_ROLE_ADMINISTRATOR.equals(taskRole)){
+        taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsBusinessAdministrator(userId,qf));
+    }else{
+        taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf));
+    }
+    
     response.setStartRowIndex(filter.getOffset());
     response.setTotalRowSize(taskSummaries.size() - 1);
     if(taskSummaries.size() > filter.getCount()){

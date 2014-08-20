@@ -45,7 +45,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopup;
 import org.uberfire.paging.PageResponse;
-
+import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.*;
 @Dependent
 @WorkbenchScreen(identifier = "Tasks List")
 public class TasksListGridPresenter extends AbstractListPresenter<TaskSummary> {
@@ -98,7 +98,6 @@ public class TasksListGridPresenter extends AbstractListPresenter<TaskSummary> {
         }
         filterParams.put("statuses", TaskUtils.getStatusByType(currentStatusFilter));
         filterParams.put("userId", identity.getName());
-
         currentFilter.setParams(filterParams);
         currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
                 .getColumn().getDataStoreName() : "");
@@ -128,25 +127,35 @@ public class TasksListGridPresenter extends AbstractListPresenter<TaskSummary> {
   }
 
   public void refreshActiveTasks() {
+    filterParams.put("taskRole",TASK_ROLE_POTENTIALOWNER);
     currentStatusFilter = TaskUtils.TaskType.ACTIVE;
     refreshGrid();
   }
 
   public void refreshPersonalTasks() {
+    filterParams.put("taskRole",TASK_ROLE_POTENTIALOWNER);
     currentStatusFilter = TaskUtils.TaskType.PERSONAL;
     refreshGrid();
   }
 
   public void refreshGroupTasks() {
+    filterParams.put("taskRole",TASK_ROLE_POTENTIALOWNER);
     currentStatusFilter = TaskUtils.TaskType.GROUP;
     refreshGrid();
   }
 
   public void refreshAllTasks() {
+    filterParams.put("taskRole",TASK_ROLE_POTENTIALOWNER);
     currentStatusFilter = TaskUtils.TaskType.ALL;
     refreshGrid();
   }
 
+  public void refreshAdminTasks() {
+     filterParams.put("taskRole",TASK_ROLE_ADMINISTRATOR);
+     currentStatusFilter = TaskUtils.TaskType.ADMIN;
+     refreshGrid();
+    }
+  
   @WorkbenchPartTitle
   public String getTitle() {
     return constants.Tasks_List();
