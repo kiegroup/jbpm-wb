@@ -101,17 +101,20 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
 
   @PostConstruct
   private void init() {
-    Collection<IOCBeanDef<GenericFormDisplayer>> displayers = iocManager.lookupBeans(GenericFormDisplayer.class);
-    if (displayers != null) {
-      for (IOCBeanDef displayerDef : displayers) {
-        if (displayerDef.getInstance() instanceof HumanTaskFormDisplayer) {
+    Collection<IOCBeanDef<HumanTaskFormDisplayer>> taskDisplayersBeans = iocManager.lookupBeans(HumanTaskFormDisplayer.class);
+    if (taskDisplayersBeans != null) {
+      for (IOCBeanDef displayerDef : taskDisplayersBeans) {
           taskDisplayers.add((HumanTaskFormDisplayer) displayerDef.getInstance());
-        } else if (displayerDef.getInstance() instanceof StartProcessFormDisplayer) {
-          processDisplayers.add((StartProcessFormDisplayer) displayerDef.getInstance());
-        }
       }
+      
     }
-
+    Collection<IOCBeanDef<StartProcessFormDisplayer>> processDisplayersBeans = iocManager.lookupBeans(StartProcessFormDisplayer.class);
+    if (processDisplayersBeans != null) {
+      for (IOCBeanDef displayerDef : processDisplayersBeans) {
+          processDisplayers.add((StartProcessFormDisplayer) displayerDef.getInstance());
+      }
+      
+    }
   }
 
   @WorkbenchPartTitle
