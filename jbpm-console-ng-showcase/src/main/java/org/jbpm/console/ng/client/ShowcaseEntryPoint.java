@@ -15,13 +15,6 @@
  */
 package org.jbpm.console.ng.client;
 
-import com.google.gwt.animation.client.Animation;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.i18n.client.LocaleInfo;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.RootPanel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +22,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import javax.inject.Inject;
+
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
@@ -55,6 +50,14 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.MenuPosition;
 import org.uberfire.workbench.model.menu.Menus;
+
+import com.google.gwt.animation.client.Animation;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootPanel;
 
 @EntryPoint
 public class ShowcaseEntryPoint {
@@ -186,7 +189,9 @@ public class ShowcaseEntryPoint {
     }
 
     private List<? extends MenuItem> getExperimentalViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>( 4 );
+
+    	final List<MenuItem> result = new ArrayList<MenuItem>( 4 );
+
 
         result.add( MenuFactory.newSimpleItem( "Grid Base Test" ).respondsWith( new Command() {
             @Override
@@ -199,6 +204,13 @@ public class ShowcaseEntryPoint {
             @Override
             public void execute() {
                 placeManager.goTo( new DefaultPlaceRequest( "Logs" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+
+        result.add( MenuFactory.newSimpleItem( "Documents" ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "Documents Perspective" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
