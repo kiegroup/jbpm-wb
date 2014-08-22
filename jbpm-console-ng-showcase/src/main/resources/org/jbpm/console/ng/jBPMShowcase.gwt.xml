@@ -52,7 +52,7 @@
 
   <!-- asset mgmt -->
 
-  <inherits name="org.jbpm.console.ng.asset.JbpmConsoleNGAssetMgmtClient"/>
+  
 
   <!-- designer -->
   <inherits name="org.jbpm.designer.jBPMDesignerAPI"/>
