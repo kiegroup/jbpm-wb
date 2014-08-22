@@ -30,8 +30,6 @@
   <name>jBPM Console NG - Asset Management Panels</name>
 
   <modules>
-    <module>jbpm-console-ng-asset-mgmt-api</module>
-    <module>jbpm-console-ng-asset-mgmt-client</module>
     <module>jbpm-console-ng-asset-mgmt-backend</module>
   </modules>
 </project>

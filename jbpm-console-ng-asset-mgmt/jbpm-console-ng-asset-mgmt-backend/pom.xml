@@ -28,8 +28,8 @@
     <dependencies>
         <!-- Internal dependencies -->
         <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-asset-mgmt-api</artifactId>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-asset-mgmt-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kie</groupId>
