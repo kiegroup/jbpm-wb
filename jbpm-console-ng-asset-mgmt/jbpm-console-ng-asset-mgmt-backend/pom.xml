@@ -27,10 +27,10 @@
     <name>jBPM Console NG - Asset Management Backend</name>
     <dependencies>
         <!-- Internal dependencies -->
-        <dependency>
+        <!--dependency>
             <groupId>org.guvnor</groupId>
             <artifactId>guvnor-asset-mgmt-api</artifactId>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-api</artifactId>
