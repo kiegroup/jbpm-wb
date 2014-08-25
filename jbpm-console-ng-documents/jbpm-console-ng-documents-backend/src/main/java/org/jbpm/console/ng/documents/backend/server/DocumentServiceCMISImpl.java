@@ -20,6 +20,7 @@ import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.api.SessionFactory;
+import org.apache.chemistry.opencmis.client.bindings.spi.webservices.CXFPortProvider;
 import org.apache.chemistry.opencmis.client.bindings.spi.webservices.SunRIPortProvider;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
@@ -41,7 +42,7 @@ public class DocumentServiceCMISImpl implements DocumentService {
 	private Map<String, String> parameters;
 
 	private Session session;
-
+	
 	@Override
 	@PostConstruct
 	public void init() {
@@ -86,8 +87,18 @@ public class DocumentServiceCMISImpl implements DocumentService {
 		parameters.put(SessionParameter.REPOSITORY_ID, repositoryID);
 		parameters.put(SessionParameter.WEBSERVICES_PORT_PROVIDER_CLASS,
 				SunRIPortProvider.class.getName());
-
+		
 	}
+	
+//	private String getPortProvider(){
+//		if (provider instanceof com.sun.xml.ws.spi.ProviderImpl){
+//			return SunRIPortProvider.class.getName();
+//		} else if (provider instanceof org.apache.cxf.jaxws.spi.ProviderImpl){
+//			return CXFPortProvider.class.getName();
+//		}		
+//		
+//		return SunRIPortProvider.class.getName();
+//	}
 
 	@Override
 	public Map<String, String> getConfigurationParameters() {
@@ -102,11 +113,20 @@ public class DocumentServiceCMISImpl implements DocumentService {
 				SunRIPortProvider.class.getName());
 		this.parameters = parameters;
 		createSession();
+		if (session == null){
+			parameters.put(SessionParameter.BINDING_TYPE,
+					BindingType.WEBSERVICES.value());
+			parameters.put(SessionParameter.WEBSERVICES_PORT_PROVIDER_CLASS,
+					CXFPortProvider.class.getName());
+			this.parameters = parameters;
+			createSession();
+		}
 
 	}
 
 	private Session getSession() {
 		if (session == null) {
+			setConfigurationParameters(parameters);
 			session = createSession();
 		}
 		return session;
