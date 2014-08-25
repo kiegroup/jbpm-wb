@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 *.class
 
 # Mobile Tools for Java (J2ME)
@@ -16,7 +15,7 @@ hs_err_pid*
 .project
 .settings
 target/
-=======
+
 /**/target
 /local
 /src/main/gwt-unitCache/
@@ -36,4 +35,3 @@ target/
 
 # Repository wide ignore mac DS_Store files
 .DS_Store
->>>>>>> 8263f9d4750445cdeebbdf2df5e28ac67f8f1e91
