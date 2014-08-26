@@ -184,6 +184,11 @@ profile in pom.xml to use that. -->
     <servlet-name>TransformerServlet</servlet-name>
     <servlet-class>org.jbpm.designer.web.server.TransformerServlet</servlet-class>
   </servlet>
+    <servlet>
+    <display-name>DocumentView</display-name>
+    <servlet-name>DocumentViewServlet</servlet-name>
+    <servlet-class>org.jbpm.console.ng.documents.backend.server.DocumentViewServlet</servlet-class>
+  </servlet>
   <servlet>
     <display-name>AssetService</display-name>
     <servlet-name>AssetServiceServlet</servlet-name>
@@ -381,7 +386,10 @@ profile in pom.xml to use that. -->
     <servlet-name>StencilSetServiceServlet</servlet-name>
     <url-pattern>/stencilset/*</url-pattern>
   </servlet-mapping>
-
+  <servlet-mapping>
+    <servlet-name>DocumentViewServlet</servlet-name>
+    <url-pattern>/documentview/*</url-pattern>
+  </servlet-mapping>
     <!-- start form-modeler component -->
     <servlet>
         <servlet-name>Controller</servlet-name>
