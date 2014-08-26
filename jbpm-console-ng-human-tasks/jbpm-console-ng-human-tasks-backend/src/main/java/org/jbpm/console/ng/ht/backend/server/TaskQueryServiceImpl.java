@@ -75,7 +75,7 @@ public class TaskQueryServiceImpl implements TaskQueryService {
                                                                     filter.getOrderBy(), filter.isAscending());
     List<TaskSummary> taskSummaries = new ArrayList<TaskSummary>();
     if (TASK_ROLE_ADMINISTRATOR.equals(taskRole)){
-        taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsBusinessAdministrator(userId,qf));
+        taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsBusinessAdministrator(userId,qf),true);
     }else{
         taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf));
     }

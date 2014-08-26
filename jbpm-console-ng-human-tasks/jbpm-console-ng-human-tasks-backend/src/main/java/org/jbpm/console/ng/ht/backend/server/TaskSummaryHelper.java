@@ -23,14 +23,18 @@ import org.jbpm.console.ng.ht.model.TaskSummary;
 
 public class TaskSummaryHelper {
     public static List<TaskSummary> adaptCollection(List<org.kie.api.task.model.TaskSummary> taskSums) {
+        return adaptCollection(taskSums,false);
+    }
+    
+    public static List<TaskSummary> adaptCollection(List<org.kie.api.task.model.TaskSummary> taskSums,boolean isForAdmin) {
         List<TaskSummary> taskSummaries = new ArrayList<TaskSummary>(taskSums.size());
         for (org.kie.api.task.model.TaskSummary taskSum : taskSums) {
-            taskSummaries.add(adapt(taskSum));
+            taskSummaries.add(adapt(taskSum,isForAdmin));
         }
         return taskSummaries;
     }
     
-    public static TaskSummary adapt(org.kie.api.task.model.TaskSummary taskSum) {
+    public static TaskSummary adapt(org.kie.api.task.model.TaskSummary taskSum,boolean isForAdmin) {
         return new TaskSummary(
                     taskSum.getId(), 
                     taskSum.getName(),
@@ -46,8 +50,8 @@ public class TaskSummaryHelper {
                     taskSum.getProcessSessionId(),
                     taskSum.getProcessInstanceId(),
                     taskSum.getDeploymentId(), 
-                    taskSum.getParentId());
+                    taskSum.getParentId(),
+                    isForAdmin);
     
     }
-
 }

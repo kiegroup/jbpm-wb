@@ -124,5 +124,7 @@ public class DetailsTabbedPanel extends Composite {
     return rightToolbar;
   }
   
-  
+  public void clear(){
+      tabsContainer.clear();
+  }
 }
