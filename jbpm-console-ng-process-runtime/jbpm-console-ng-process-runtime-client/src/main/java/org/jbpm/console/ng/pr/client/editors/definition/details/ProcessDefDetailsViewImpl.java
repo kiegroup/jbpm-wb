@@ -130,18 +130,6 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
     @Override
     public void init( final ProcessDefDetailsPresenter presenter ) {
         this.presenter = presenter;
-        
-
-        this.subprocessListBox.addDoubleClickHandler( new DoubleClickHandler() {
-            @Override
-            public void onDoubleClick( DoubleClickEvent event ) {
-                ListBox source = (ListBox) event.getSource();
-                String processId = source.getValue( source.getSelectedIndex() );
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Definition Details" );
-                placeRequestImpl.addParameter( "processId", processId );
-                placeManager.goTo( placeRequestImpl );
-            }
-        } );
 
         processIdLabel.setText( constants.Process_Definition_Id() );
         processNameLabel.setText( constants.Process_Definition_Name() );
@@ -152,7 +140,6 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
         subprocessListLabel.setText( constants.SubProcesses() );
         processDataListLabel.setText( constants.Process_Variables() );
         processServicesListLabel.setText( constants.Services() );
-
     }
 
 
