@@ -74,7 +74,7 @@ public class DocumentsServiceImpl implements DocumentsService {
     
     List<DocumentSummary> documents = new ArrayList<DocumentSummary>();
     for (ProcessVariableSummary pv : processVariables) {
-      if("org.jbpm.document.Document".equals(pv.getType()){
+      if("org.jbpm.document.Document".equals(pv.getType())){
         Document document = (Document)processService.getProcessInstanceVariable(processInstanceId, pv.getName());
         if(document != null){
           documents.add(new DocumentSummary(document.getName(), document.getLastModified(), document.getSize(), document.getLink()));
