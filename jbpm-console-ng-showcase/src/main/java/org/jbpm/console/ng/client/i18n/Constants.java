@@ -82,5 +82,7 @@ public interface Constants extends Messages {
 
     String Asset_Management();
 
+    String Logs();
+
 
 }

@@ -17,12 +17,13 @@
 package org.jbpm.console.ng.pr.model;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jbpm.console.ng.ga.model.GenericSummary;
 
 @Portable
-public class ProcessSummary {
+public class ProcessSummary extends GenericSummary{
 
-    private String id;
-    private String name;
+    private String processDefId;
+    private String processDefName;
     private String packageName;
     private String type;
     private String version;
@@ -33,10 +34,12 @@ public class ProcessSummary {
     public ProcessSummary() {
     }
 
-    public ProcessSummary(String id, String name, String deploymentId, String packageName, String type, String version,
+    public ProcessSummary(String processDefId, String processDefName, String deploymentId, String packageName, String type, String version,
             String originalpath, String processSource) {
-        this.id = id;
-        this.name = name;
+        this.id = processDefId;    
+        this.name = processDefName;
+        this.processDefId = processDefId;
+        this.processDefName = processDefName;
         this.deploymentId = deploymentId;
         this.packageName = packageName;
         this.type = type;
@@ -45,20 +48,20 @@ public class ProcessSummary {
         this.encodedProcessSource = processSource;
     }
 
-    public String getId() {
-        return id;
+    public String getProcessDefId() {
+      return processDefId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setProcessDefId(String processDefId) {
+      this.processDefId = processDefId;
     }
 
-    public String getName() {
-        return name;
+    public String getProcessDefName() {
+      return processDefName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setProcessDefName(String processDefName) {
+      this.processDefName = processDefName;
     }
 
     public String getPackageName() {

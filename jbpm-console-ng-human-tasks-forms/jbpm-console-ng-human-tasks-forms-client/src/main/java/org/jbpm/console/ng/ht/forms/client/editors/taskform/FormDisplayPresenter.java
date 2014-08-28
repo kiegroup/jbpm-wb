@@ -40,14 +40,13 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
-import org.jbpm.console.ng.ht.model.TaskSummary;
-import org.jbpm.console.ng.ht.model.events.EditPanelEvent;
-import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
-import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
-import org.jbpm.console.ng.ht.forms.model.events.FormRenderedEvent;
 import org.jbpm.console.ng.ht.forms.service.FormModelerProcessStarterEntryPoint;
 import org.jbpm.console.ng.ht.forms.service.FormServiceEntryPoint;
+import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.ht.model.events.EditPanelEvent;
 import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
+import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
+import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
@@ -56,13 +55,13 @@ import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
+import org.uberfire.client.workbench.widgets.common.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
@@ -99,8 +98,6 @@ public class FormDisplayPresenter {
     @Inject
     protected Caller<TaskServiceEntryPoint> taskServices;
 
-    @Inject
-    private Event<FormRenderedEvent> formRendered;
 
     @Inject
     protected Event<TaskRefreshedEvent> taskRefreshed;
@@ -196,12 +193,11 @@ public class FormDisplayPresenter {
             return;
         }
         
-        isFormModelerForm = view.isFormModeler();
         if(loadForm){
             view.loadForm(form);
+            isFormModelerForm = view.isFormModeler();
+            formCtx = form;
         }
-
-        formCtx = form;
 
         taskServices.call( new RemoteCallback<TaskSummary>() {
             @Override
@@ -290,7 +286,7 @@ public class FormDisplayPresenter {
 
                     wrapperFlowPanel.add( completeButton );
                     view.getOptionsDiv().add( wrapperFlowPanel );
-                    taskStyleEvent.fire( new TaskStyleEvent( task.getId() ) );
+                    taskStyleEvent.fire( new TaskStyleEvent( task.getTaskId() ) );
                 }
             }
         }, getUnexpectedErrorCallback()).getTaskDetails(currentTaskId);
@@ -301,10 +297,10 @@ public class FormDisplayPresenter {
         formServices.call( new RemoteCallback<String>() {
             @Override
             public void callback( String form ) {
-                
-                isFormModelerForm = view.isFormModeler();
+
                 if(loadForm){
                     view.loadForm(form);
+                    isFormModelerForm = view.isFormModeler();
                     formCtx = form;
                 }
 
@@ -333,7 +329,7 @@ public class FormDisplayPresenter {
                         wrapperFlowPanel.add( startButton );
                         view.getOptionsDiv().add( wrapperFlowPanel );
                     }
-                } ).getProcessDesc(currentProcessId);
+                } ).getProcessDesc(currentDomainId, currentProcessId);
             }
         }, getUnexpectedErrorCallback()).getFormDisplayProcess(currentDomainId, currentProcessId);
 
@@ -407,7 +403,7 @@ public class FormDisplayPresenter {
     }
 
     public void completeTask(String values) {
-        final Map<String, String> params = getUrlParameters(values);
+        final Map<String, Object> params = getUrlParameters(values);
         final Map<String, Object> objParams = new HashMap<String, Object>(params);
         taskServices.call(getCompleteTaskRemoteCallback(), getUnexpectedErrorCallback()).complete(currentTaskId, identity.getName(), objParams);
 
@@ -469,7 +465,7 @@ public class FormDisplayPresenter {
     }
 
     public void saveTaskState(String values) {
-        final Map<String, String> params = getUrlParameters(values);
+        final Map<String, Object> params = getUrlParameters(values);
         taskServices.call(getSaveTaskStateCallback(), getUnexpectedErrorCallback()).saveContent(currentTaskId, params);
     }
 
@@ -572,7 +568,7 @@ public class FormDisplayPresenter {
             @Override
             public void callback(Long processInstanceId) {
                 view.displayNotification("Process Id: " + processInstanceId + " started!");
-                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(currentDomainId, processInstanceId, currentProcessId));
+                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(currentDomainId, processInstanceId,"", currentProcessId, 1));
                 close();
             }
         };
@@ -583,7 +579,7 @@ public class FormDisplayPresenter {
     }
 
     public void startProcess(String values) {
-        final Map<String, String> params = getUrlParameters(values);
+        final Map<String, Object> params = getUrlParameters(values);
 
         sessionServices.call(getStartProcessCallback(), getUnexpectedErrorCallback()).startProcess(currentDomainId, currentProcessId, params);
 
@@ -619,8 +615,8 @@ public class FormDisplayPresenter {
         };
     }-*/;
 
-    public static Map<String, String> getUrlParameters(String values) {
-        Map<String, String> params = new HashMap<String, String>();
+    public static Map<String, Object> getUrlParameters(String values) {
+        Map<String, Object> params = new HashMap<String, Object>();
         for (String param : values.split("&")) {
             String pair[] = param.split("=");
             String key = pair[0];

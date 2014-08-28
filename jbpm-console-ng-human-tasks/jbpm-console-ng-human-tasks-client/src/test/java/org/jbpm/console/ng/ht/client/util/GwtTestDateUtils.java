@@ -16,10 +16,12 @@
 
 package org.jbpm.console.ng.ht.client.util;
 
-import static org.jbpm.console.ng.ht.client.util.DateUtils.createDate;
+import static org.jbpm.console.ng.gc.client.util.DateUtils.createDate;
 
 import java.util.Date;
 
+import org.jbpm.console.ng.gc.client.util.DateRange;
+import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.junit.Test;
 
 import com.google.gwt.junit.client.GWTTestCase;

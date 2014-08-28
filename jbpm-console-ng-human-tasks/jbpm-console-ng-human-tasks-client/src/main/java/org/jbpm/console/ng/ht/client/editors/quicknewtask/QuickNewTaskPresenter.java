@@ -32,12 +32,12 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.console.ng.gc.client.util.UTCDateBox;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.client.util.UTCDateBox;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
-import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
-import org.uberfire.client.common.popups.errors.ErrorPopup;
+import org.jbpm.console.ng.ht.service.TaskOperationsService;
+import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -49,7 +49,6 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.security.Role;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
-import org.uberfire.lifecycle.OnClose;
 
 @Dependent
 @WorkbenchPopup(identifier = "Quick New Task")
@@ -73,7 +72,7 @@ public class QuickNewTaskPresenter {
     Identity identity;
 
     @Inject
-    Caller<TaskServiceEntryPoint> taskServices;
+    Caller<TaskOperationsService> taskOperationsService;
 
     @Inject
     private Event<BeforeClosePlaceEvent> closePlaceEvent;
@@ -117,12 +116,12 @@ public class QuickNewTaskPresenter {
                          int priority,
                          boolean isAssignToMe,
                          long dueDate, long dueDateTime ) {
-        Date due = UTCDateBox.utc2date( dueDate + dueDateTime ); 
+        Date due = UTCDateBox.utc2date(dueDate + dueDateTime);
         
         if ( isAssignToMe && users != null && users.isEmpty() && groups != null 
                 && containsGroup(groups, identity.getRoles()) ) {
             //System.out.println(" FIRST OPTION -> Groups were I'm Included  and I want to be autoassigned add/start/claim!!");
-            taskServices.call( new RemoteCallback<Long>() {
+            taskOperationsService.call( new RemoteCallback<Long>() {
                 @Override
                 public void callback( Long taskId ) {
                     refreshNewTask(taskId, taskName, "Task Created and Started (id = " + taskId + ")");
@@ -136,7 +135,7 @@ public class QuickNewTaskPresenter {
                } ).addQuickTask(taskName, priority, due, users, groups, identity.getName(), true, true);
         } else if ( !isAssignToMe && users != null && users.isEmpty() && groups != null 
                 && containsGroup(groups, identity.getRoles()) ) {
-            taskServices.call( new RemoteCallback<Long>() {
+            taskOperationsService.call( new RemoteCallback<Long>() {
                 @Override
                 public void callback( Long taskId ) {
                     refreshNewTask(taskId, taskName, "Task Created and Started (id = " + taskId + ")");
@@ -150,7 +149,7 @@ public class QuickNewTaskPresenter {
                    }
                } ).addQuickTask(taskName, priority, due, users, groups, identity.getName(), false, false);
         }  if (users != null && !users.isEmpty() && users.contains(identity.getName())) {
-            taskServices.call( new RemoteCallback<Long>() {
+            taskOperationsService.call( new RemoteCallback<Long>() {
                 @Override
                 public void callback( Long taskId ) {
                     refreshNewTask(taskId, taskName, "Task Created (id = " + taskId + ")");
@@ -164,7 +163,7 @@ public class QuickNewTaskPresenter {
                }
            } ).addQuickTask(taskName, priority, due, users, groups, identity.getName(), true, false);
         } else if (users != null && !users.isEmpty() && !users.contains(identity.getName())) {
-            taskServices.call( new RemoteCallback<Long>() {
+            taskOperationsService.call( new RemoteCallback<Long>() {
                 @Override
                 public void callback( Long taskId ) {
                     refreshNewTask(taskId, taskName, "Task Created (id = " + taskId + ")");
@@ -178,7 +177,7 @@ public class QuickNewTaskPresenter {
                }
            } ).addQuickTask(taskName, priority, due, users, groups, identity.getName(), false, false);
         }else if(groups != null && !groups.isEmpty() && !containsGroup(groups, identity.getRoles())){
-            taskServices.call( new RemoteCallback<Long>() {
+            taskOperationsService.call( new RemoteCallback<Long>() {
                 @Override
                 public void callback( Long taskId ) {
                     refreshNewTask(taskId, taskName, "Task Created (id = " + taskId + ")");

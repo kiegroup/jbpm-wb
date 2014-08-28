@@ -22,24 +22,25 @@ import java.util.List;
 
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.kie.services.impl.model.ProcessAssetDesc;
+import org.jbpm.services.api.model.ProcessDefinition;
 
 public class ProcessHelper {
-    public static Collection<ProcessSummary> adaptCollection(Collection<ProcessAssetDesc> processes) {
+    public static Collection<ProcessSummary> adaptCollection(Collection<ProcessDefinition> processes) {
         List<ProcessSummary> processesSummary = new ArrayList<ProcessSummary>();
-        for (ProcessAssetDesc p : processes) {
-            processesSummary.add(new ProcessSummary(p.getId(), p.getName(), p.getDeploymentId(), p.getPackageName(), p
-                    .getType(), p.getVersion(), p.getOriginalPath(), p.getEncodedProcessSource()));
+        for (ProcessDefinition p : processes) {
+            processesSummary.add(new ProcessSummary(p.getId(), p.getName(), ((ProcessAssetDesc)p).getDeploymentId(), p.getPackageName(), p
+                    .getType(), p.getVersion(), p.getOriginalPath(), ((ProcessAssetDesc)p).getEncodedProcessSource()));
         }
 
         return processesSummary;
     }
 
-    public static ProcessSummary adapt(ProcessAssetDesc p) {
+    public static ProcessSummary adapt(ProcessDefinition p) {
         if (p == null) {
             return null;
         }
-        return new ProcessSummary(p.getId(), p.getName(), p.getDeploymentId(), p.getPackageName(), p.getType(), p.getVersion(),
-                p.getOriginalPath(), p.getEncodedProcessSource());
+        return new ProcessSummary(p.getId(), p.getName(), ((ProcessAssetDesc)p).getDeploymentId(), p.getPackageName(), p.getType(), p.getVersion(),
+                p.getOriginalPath(), ((ProcessAssetDesc)p).getEncodedProcessSource());
     }
 
 }

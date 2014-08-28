@@ -13,209 +13,108 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.pr.client.editors.definition.list;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
-import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.Range;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
-import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
+import org.jbpm.console.ng.ga.model.PortableQueryFilter;
+import org.jbpm.console.ng.gc.client.list.base.AbstractListPresenter;
+import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
-import org.jbpm.console.ng.pr.model.events.ProcessDefinitionsSearchEvent;
-import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
-import org.uberfire.client.annotations.WorkbenchMenu;
+import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnFocus;
-import org.uberfire.mvp.Command;
-import org.uberfire.workbench.model.menu.MenuFactory;
-import org.uberfire.workbench.model.menu.Menus;
+import org.uberfire.paging.PageResponse;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Definition List")
-public class ProcessDefinitionListPresenter {
+public class ProcessDefinitionListPresenter extends AbstractListPresenter<ProcessSummary> {
 
-    public interface ProcessDefinitionListView extends UberView<ProcessDefinitionListPresenter> {
+  public interface ProcessDefinitionListView extends ListView<ProcessSummary, ProcessDefinitionListPresenter> {
 
-        void displayNotification( String text );
+  }
 
-        String getCurrentFilter();
+  @Inject
+  private ProcessDefinitionListView view;
 
-        void setCurrentFilter( String filter );
+  @Inject
+  private Caller<ProcessDefinitionService> processDefinitionService;
 
-        DataGrid<ProcessSummary> getDataGrid();
+  private Constants constants = GWT.create(Constants.class);
 
-        void showBusyIndicator( String message );
+  public ProcessDefinitionListPresenter() {
+    dataProvider = new AsyncDataProvider<ProcessSummary>() {
 
-        void hideBusyIndicator();
-    }
+      @Override
+      protected void onRangeChanged(HasData<ProcessSummary> display) {
 
-    private Menus menus;
-
-    @Inject
-    private ProcessDefinitionListView view;
-
-    @Inject
-    private Caller<DataServiceEntryPoint> dataServices;
-
-    @Inject
-    private Caller<DeploymentManagerEntryPoint> deploymentManager;
-
-    @Inject
-    private Event<ClearSearchEvent> clearSearchEvent;
-    
-
-    private ListDataProvider<ProcessSummary> dataProvider = new ListDataProvider<ProcessSummary>();
-
-    private Constants constants = GWT.create( Constants.class );
-
-    private List<ProcessSummary> currentProcesses;
-
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.Process_Definitions();
-    }
-
-    @WorkbenchPartView
-    public UberView<ProcessDefinitionListPresenter> getView() {
-        return view;
-    }
-
-    public ProcessDefinitionListPresenter() {
-        makeMenuBar();
-    }
-    
-    public void refreshProcessList() {
-        dataServices.call( new RemoteCallback<List<ProcessSummary>>() {
-            @Override
-            public void callback( List<ProcessSummary> processes ) {
-                currentProcesses = processes;
-                filterProcessList( view.getCurrentFilter() );
-                clearSearchEvent.fire( new ClearSearchEvent() );
-            }
-        } ).getProcesses();
-    }
-
-    public void filterProcessList( String filter ) {
-        if ( filter.equals( "" ) ) {
-            if ( currentProcesses != null ) {
-                dataProvider.getList().clear();
-                dataProvider.getList().addAll( new ArrayList<ProcessSummary>( currentProcesses ) );
-                dataProvider.refresh();
-
-            }
-        } else {
-            if ( currentProcesses != null ) {
-                List<ProcessSummary> processes = new ArrayList<ProcessSummary>( currentProcesses );
-                List<ProcessSummary> filteredProcesses = new ArrayList<ProcessSummary>();
-                for ( ProcessSummary ps : processes ) {
-                    if ( ps.getName().toLowerCase().contains( filter.toLowerCase() ) ) {
-                        filteredProcesses.add( ps );
-                    }
-                }
-                dataProvider.getList().clear();
-                dataProvider.getList().addAll( filteredProcesses );
-                dataProvider.refresh();
-            }
+        final Range visibleRange = display.getVisibleRange();
+        ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+        if (currentFilter == null) {
+          currentFilter = new PortableQueryFilter(visibleRange.getStart(),
+                  visibleRange.getLength(),
+                  false, "",
+                  (columnSortList.size() > 0) ? columnSortList.get(0)
+                  .getColumn().getDataStoreName() : "",
+                  (columnSortList.size() > 0) ? columnSortList.get(0)
+                  .isAscending() : true);
         }
+        // If we are refreshing after a search action, we need to go back to offset 0
+        if(currentFilter.getParams() == null || currentFilter.getParams().isEmpty() 
+                || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")){
+          currentFilter.setOffset(visibleRange.getStart());
+          currentFilter.setCount(visibleRange.getLength());
+        }else{
+          currentFilter.setOffset(0);
+          currentFilter.setCount(view.getListGrid().getPageSize());
+        }
+        
+        currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
+                .getColumn().getDataStoreName() : "");
+        currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
+                .isAscending() : true);
+        
+        processDefinitionService.call(new RemoteCallback<PageResponse<ProcessSummary>>() {
+          @Override
+          public void callback(PageResponse<ProcessSummary> response) {
+            dataProvider.updateRowCount( response.getTotalRowSize(),
+                                        response.isTotalRowSizeExact() );
+            dataProvider.updateRowData( response.getStartRowIndex(),
+                                       response.getPageRowList() );
+          }
+        }, new ErrorCallback<Message>() {
+          @Override
+          public boolean error(Message message, Throwable throwable) {
+            view.hideBusyIndicator();
+            view.displayNotification("Error: Getting Process Definitions: " + message);
+            GWT.log(throwable.toString());
+            return true;
+          }
+        }).getData(currentFilter); 
 
-    }
+      }
+    };
+  }
 
-    public void reloadRepository() {
+  @WorkbenchPartTitle
+  public String getTitle() {
+    return constants.Process_Definitions();
+  }
 
-        view.showBusyIndicator( constants.Please_Wait() );
-        deploymentManager.call( new RemoteCallback<Void>() {
-                                    @Override
-                                    public void callback( Void organizations ) {
-                                        refreshProcessList();
-                                        view.hideBusyIndicator();
-                                        view.displayNotification( constants.Processes_Refreshed_From_The_Repo() );
-                                    }
-                                }, new ErrorCallback<Message>() {
-
-                                    @Override
-                                    public boolean error( Message message,
-                                                          Throwable throwable ) {
-                                        view.hideBusyIndicator();
-                                        view.displayNotification( "Error: Process refreshed from repository failed" );
-                                        return true;
-                                    }
-                                }
-                              ).redeploy();
-
-    }
-
-    public void addDataDisplay( HasData<ProcessSummary> display ) {
-        dataProvider.addDataDisplay( display );
-    }
-
-    public ListDataProvider<ProcessSummary> getDataProvider() {
-        return dataProvider;
-    }
-
-    public void refreshData() {
-        dataProvider.refresh();
-    }
-
-    @OnOpen
-    public void onOpen() {
-        refreshProcessList();
-    }
-    
-    @OnFocus
-    public void onFocus() {
-        refreshProcessList();
-    }
-
-    public void onSearch( @Observes final ProcessDefinitionsSearchEvent searchFilter ) {
-        view.setCurrentFilter( searchFilter.getFilter() );
-        dataServices.call( new RemoteCallback<List<ProcessSummary>>() {
-            @Override
-            public void callback( List<ProcessSummary> processes ) {
-                currentProcesses = processes;
-                filterProcessList( view.getCurrentFilter() );
-            }
-        } ).getProcesses();
-    }
-
-    @WorkbenchMenu
-    public Menus getMenus() {
-        return menus;
-    }
-
-    private void makeMenuBar() {
-        menus = MenuFactory
-                .newTopLevelMenu( constants.Refresh() )
-                .respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        refreshProcessList();
-                        view.setCurrentFilter( "" );
-                        view.displayNotification( constants.Process_Definitions_Refreshed() );
-                    }
-                } )
-                .endMenu().
-                        build();
-
-    }
-    
-
-     
+  @WorkbenchPartView
+  public UberView<ProcessDefinitionListPresenter> getView() {
+    return view;
+  }
 }

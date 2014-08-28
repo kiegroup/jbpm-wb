@@ -47,4 +47,11 @@ public class UberFireIdentityProvider implements IdentityProvider, Serializable 
         return roles;
     }
 
+    @Override
+    public boolean hasRole(String role) {
+        if (request != null) {
+            return request.isUserInRole(role);
+        }
+        return false;
+    }
 }

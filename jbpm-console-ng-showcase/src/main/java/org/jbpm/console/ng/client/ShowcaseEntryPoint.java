@@ -22,23 +22,23 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import javax.inject.Inject;
 
-import com.google.gwt.animation.client.Animation;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.i18n.client.LocaleInfo;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.RootPanel;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jbpm.console.ng.client.i18n.Constants;
+import org.jbpm.console.ng.ht.forms.service.PlaceManagerActivityService;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
-import org.uberfire.client.UberFirePreferences;
+import org.kie.workbench.common.services.security.KieWorkbenchACL;
+import org.kie.workbench.common.services.security.KieWorkbenchPolicy;
+import org.kie.workbench.common.services.shared.security.KieWorkbenchSecurityService;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
+import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
@@ -50,6 +50,14 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.MenuPosition;
 import org.uberfire.workbench.model.menu.Menus;
+
+import com.google.gwt.animation.client.Animation;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootPanel;
 
 @EntryPoint
 public class ShowcaseEntryPoint {
@@ -71,36 +79,61 @@ public class ShowcaseEntryPoint {
     @Inject
     public Identity identity;
 
+    @Inject
+    private KieWorkbenchACL kieACL;
+
+    @Inject
+    private Caller<KieWorkbenchSecurityService> kieSecurityService;
+    
+    @Inject
+    private Caller<PlaceManagerActivityService> pmas;
+    
+    @Inject
+    private ActivityBeansCache activityBeansCache;
+
     @AfterInitialization
     public void startApp() {
-        UberFirePreferences.setProperty( "org.uberfire.client.workbench.widgets.listbar.context.disable", true );
-        setupMenu();
-        hideLoadingPopup();
-    }
+        kieSecurityService.call( new RemoteCallback<String>() {
+            public void callback( final String str ) {
+                KieWorkbenchPolicy policy = new KieWorkbenchPolicy( str );
+                kieACL.activatePolicy( policy );
+                setupMenu();
+                hideLoadingPopup();
+            }
+        } ).loadPolicy();
+        
+      List<String> allActivities = activityBeansCache.getActivitiesById();
+      pmas.call(new RemoteCallback<Void>(){
 
+          @Override
+          public void callback(Void response) {
+            
+          }
+        }).initActivities(allActivities);
+    }
 
     private void setupMenu() {
 
         final AbstractWorkbenchPerspectiveActivity defaultPerspective = getDefaultPerspectiveActivity();
         final Menus menus = MenuFactory
                 .newTopLevelMenu( constants.Home() ).respondsWith( new Command() {
-                        @Override
-                        public void execute() {
-                            if ( defaultPerspective != null ) {
-                                placeManager.goTo( new DefaultPlaceRequest( defaultPerspective.getIdentifier() ) );
-                            } else {
-                                Window.alert( "Default perspective not found." );
-                            }
+                    @Override
+                    public void execute() {
+                        if ( defaultPerspective != null ) {
+                            placeManager.goTo( new DefaultPlaceRequest( defaultPerspective.getIdentifier() ) );
+                        } else {
+                            Window.alert( "Default perspective not found." );
                         }
-                    } ).endMenu()
+                    }
+                } ).endMenu()
                 .newTopLevelMenu( constants.Authoring() ).withItems( getAuthoringViews() ).endMenu()
                 .newTopLevelMenu( constants.Deploy() ).withItems( getDeploymentViews() ).endMenu()
                 .newTopLevelMenu( constants.Process_Management() ).withItems( getProcessMGMTViews() ).endMenu()
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu()
                 .newTopLevelMenu( constants.Dashboards() ).withItems( getDashboardsViews() ).endMenu()
                 .newTopLevelMenu( constants.Experimental() ).withItems( getExperimentalViews() ).endMenu()
-                .newTopLevelMenu( constants.User()+": "+identity.getName() ).position(MenuPosition.RIGHT).withItems( getRoles() ).endMenu()
-                
+                .newTopLevelMenu( constants.User() + ": " + identity.getName() ).position( MenuPosition.RIGHT ).withItems( getRoles() ).endMenu()
+
                 .build();
 
         menubar.addMenus( menus );
@@ -109,24 +142,16 @@ public class ShowcaseEntryPoint {
     private List<? extends MenuItem> getRoles() {
         final List<MenuItem> result = new ArrayList<MenuItem>( identity.getRoles().size() );
         for ( final Role role : identity.getRoles() ) {
-            if(!role.getName().equals("IS_REMEMBER_ME")){
-                result.add( MenuFactory.newSimpleItem( constants.Role() +": " + role.getName() ).endMenu().build().getItems().get( 0 ) );
+            if ( !role.getName().equals( "IS_REMEMBER_ME" ) ) {
+                result.add( MenuFactory.newSimpleItem( constants.Role() + ": " + role.getName() ).endMenu().build().getItems().get( 0 ) );
             }
         }
-
-        result.add( MenuFactory.newSimpleItem( constants.Users() ).respondsWith( new Command() {
+        result.add( MenuFactory.newSimpleItem( constants.LogOut() ).respondsWith( new Command() {
             @Override
             public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Identity" ) );
+                redirect( GWT.getModuleBaseURL() + "uf_logout" );
             }
         } ).endMenu().build().getItems().get( 0 ) );
-
-        result.add(MenuFactory.newSimpleItem(constants.LogOut()).respondsWith(new Command() {
-                    @Override
-                    public void execute() {
-                        redirect( GWT.getModuleBaseURL() + "uf_logout" );
-                    }
-                }).endMenu().build().getItems().get(0));
         return result;
     }
 
@@ -162,21 +187,30 @@ public class ShowcaseEntryPoint {
 
         return result;
     }
-    
-    private List<? extends MenuItem> getExperimentalViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
 
-        result.add( MenuFactory.newSimpleItem( constants.Pagination_For_Tables()).respondsWith( new Command() {
+    private List<? extends MenuItem> getExperimentalViews() {
+
+    	final List<MenuItem> result = new ArrayList<MenuItem>( 4 );
+
+
+        result.add( MenuFactory.newSimpleItem( "Grid Base Test" ).respondsWith( new Command() {
             @Override
             public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Experimental Paging" ) );
+                placeManager.goTo( new DefaultPlaceRequest( "Grid Base Test" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
-        result.add( MenuFactory.newSimpleItem( constants.Experimental_Grid() ).respondsWith( new Command() {
+        result.add( MenuFactory.newSimpleItem( constants.Logs() ).respondsWith( new Command() {
             @Override
             public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Grid Experimental" ) );
+                placeManager.goTo( new DefaultPlaceRequest( "Logs" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+
+        result.add( MenuFactory.newSimpleItem( "Documents" ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "Documents Perspective" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
@@ -199,7 +233,7 @@ public class ShowcaseEntryPoint {
                 placeManager.goTo( new DefaultPlaceRequest( "Jobs" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
-        
+
         result.add( MenuFactory.newSimpleItem( constants.Asset_Management() ).respondsWith( new Command() {
             @Override
             public void execute() {
@@ -236,11 +270,11 @@ public class ShowcaseEntryPoint {
 
             @Override
             public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest("DashboardPerspective") );
+                placeManager.goTo( new DefaultPlaceRequest( "DashboardPerspective" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
-        final String dashbuilderURL = DashboardURLBuilder.getDashboardURL("/dashbuilder/workspace", null, LocaleInfo.getCurrentLocale().getLocaleName());
+        final String dashbuilderURL = DashboardURLBuilder.getDashboardURL( "/dashbuilder/workspace", null, LocaleInfo.getCurrentLocale().getLocaleName() );
         result.add( MenuFactory.newSimpleItem( constants.Business_Dashboard() ).respondsWith( new Command() {
             @Override
             public void execute() {
@@ -248,11 +282,8 @@ public class ShowcaseEntryPoint {
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
-
         return result;
     }
-
-
 
     private AbstractWorkbenchPerspectiveActivity getDefaultPerspectiveActivity() {
         AbstractWorkbenchPerspectiveActivity defaultPerspective = null;

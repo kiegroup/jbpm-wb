@@ -35,8 +35,8 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.model.VariableSummary;
-import org.uberfire.client.common.popups.errors.ErrorPopup;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
+import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -83,7 +83,7 @@ public class VariableHistoryPresenter {
 
     private PlaceRequest place;
 
-    private ListDataProvider<VariableSummary> dataProvider = new ListDataProvider<VariableSummary>();
+    private ListDataProvider<ProcessVariableSummary> dataProvider = new ListDataProvider<ProcessVariableSummary>();
 
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
@@ -139,9 +139,9 @@ public class VariableHistoryPresenter {
     }
 
     public void loadVariableHistory() {
-        dataServices.call( new RemoteCallback<List<VariableSummary>>() {
+        dataServices.call( new RemoteCallback<List<ProcessVariableSummary>>() {
             @Override
-            public void callback( List<VariableSummary> processInstances ) {
+            public void callback( List<ProcessVariableSummary> processInstances ) {
                 dataProvider.getList().clear();
                 dataProvider.getList().addAll( processInstances );
                 dataProvider.refresh();
@@ -155,11 +155,11 @@ public class VariableHistoryPresenter {
            } ).getVariableHistory( view.getProcessInstanceId(), view.getVariableId() );
     }
 
-    public void addDataDisplay( HasData<VariableSummary> display ) {
+    public void addDataDisplay( HasData<ProcessVariableSummary> display ) {
         dataProvider.addDataDisplay( display );
     }
 
-    public ListDataProvider<VariableSummary> getDataProvider() {
+    public ListDataProvider<ProcessVariableSummary> getDataProvider() {
         return dataProvider;
     }
 

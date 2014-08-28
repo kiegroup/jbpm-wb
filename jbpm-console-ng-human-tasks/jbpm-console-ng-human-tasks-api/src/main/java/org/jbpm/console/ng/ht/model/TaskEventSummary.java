@@ -15,77 +15,65 @@
  */
 package org.jbpm.console.ng.ht.model;
 
-import java.io.Serializable;
 import java.util.Date;
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jbpm.console.ng.ga.model.GenericSummary;
 
 /**
  *
  * @author salaboy
  */
-
 @Portable
-public class TaskEventSummary implements Serializable {
-    private Long id;
-    private Long taskId;
-    private String type;
-    private String userId;
-    private Date logTime;
+public class TaskEventSummary extends GenericSummary {
 
-    public TaskEventSummary() {
-    }
+  private Long eventId;
+  private Long taskId;
+  private String type;
+  private String userId;
+  private Date logTime;
+  private Long workItemId;
 
-    public TaskEventSummary(Long id, Long taskId, String type, String userId, Date logTime) {
-        this.id = id;
-        this.taskId = taskId;
-        this.type = type;
-        this.userId = userId;
-        this.logTime = logTime;
-    }
+  public TaskEventSummary() {
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public TaskEventSummary(Long eventId, Long taskId, String type, String userId, Long workItemId, Date logTime) {
+    this.id = eventId;
+    this.name = taskId + type;
+    this.eventId = eventId;
+    this.taskId = taskId;
+    this.type = type;
+    this.userId = userId;
+    this.logTime = logTime;
+    this.workItemId = workItemId;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public Long getEventId() {
+    return eventId;
+  }
+  
+  public Long getTaskId() {
+    return taskId;
+  }
 
-    public Long getTaskId() {
-        return taskId;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
+  public String getUserId() {
+    return userId;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public Date getLogTime() {
+    return logTime;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public Long getWorkItemId() {
+    return workItemId;
+  }
 
-    public String getUserId() {
-        return userId;
-    }
+  @Override
+  public String toString() {
+    return "TaskEventSummary{" + "eventId=" + eventId + ", taskId=" + taskId + ", type=" + type + ", userId=" + userId + ", logTime=" + logTime + ", workItemId=" + workItemId + '}';
+  }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public Date getLogTime() {
-        return logTime;
-    }
-
-    public void setLogTime(Date logTime) {
-        this.logTime = logTime;
-    }
-
-    @Override
-    public String toString() {
-        return "TaskEventSummary{" + "id=" + id + ", taskId=" + taskId + ", type=" + type + ", userId=" + userId + ", logTime=" + logTime + '}';
-    }
-    
 }

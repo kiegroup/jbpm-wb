@@ -18,8 +18,9 @@ package org.jbpm.console.ng.bd.util;
 
 import javax.inject.Inject;
 import org.jbpm.designer.service.BPMN2DataServices;
-import org.jbpm.kie.services.api.RuntimeDataService;
 import org.jbpm.kie.services.impl.model.ProcessAssetDesc;
+import org.jbpm.services.api.RuntimeDataService;
+import org.jbpm.services.api.model.ProcessDefinition;
 
 /**
  *
@@ -29,14 +30,14 @@ public class BPMN2DataServicesImpl implements BPMN2DataServices{
 
     
     @Inject
-    RuntimeDataService dataService;
+    private RuntimeDataService dataService;
 
     @Override
     public String getProcessSources(String deploymentId, String processId) {
-        ProcessAssetDesc processDesc = dataService.getProcessesByDeploymentIdProcessId(deploymentId, processId);
+        ProcessDefinition processDesc = dataService.getProcessesByDeploymentIdProcessId(deploymentId, processId);
         String encodedProcessSource = "";
         if(processDesc != null){
-           encodedProcessSource = processDesc.getEncodedProcessSource();
+           encodedProcessSource = ((ProcessAssetDesc)processDesc).getEncodedProcessSource();
         }
         return (encodedProcessSource == null)?"":encodedProcessSource;
     }

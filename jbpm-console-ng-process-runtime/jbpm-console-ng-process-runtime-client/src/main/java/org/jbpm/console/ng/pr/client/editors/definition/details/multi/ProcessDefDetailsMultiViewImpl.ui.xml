@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+~ Copyright 2014 JBoss Inc
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~      http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:uf="urn:import:org.kie.uberfire.client.tables">
+
+  <ui:style>
+    .dataGridContainer {
+    margin: 10px;
+    }
+
+    .horizontalContainer {
+    height: 32px;
+    }
+    .leftHeader {
+    float: left;
+    text-align: left
+    }
+    .rightHeader {
+    float: right;
+    text-align: right;
+    }
+    
+  </ui:style>
+
+  <g:FlowPanel addStyleNames="{style.dataGridContainer}">
+    <g:HorizontalPanel ui:field="headerContainer" width="100%" addStyleNames="{style.horizontalContainer}">
+      <g:cell width="60%">
+        <g:FlowPanel width="100%"  ui:field="leftHeader" addStyleNames="{style.leftHeader}"></g:FlowPanel> 
+      </g:cell>
+      <g:cell width="30%">
+        <g:FlowPanel width="100%"  ui:field="rightToolbar" addStyleNames="{style.rightHeader}">
+          <b:ButtonGroup ui:field="optionsButtonGroup">
+            <b:Button ui:field="newInstanceButton" size="MINI" icon="PLAY"/>
+            <b:DropdownButton ui:field="optionsDropdown" size="MINI">
+              <b:NavLink ui:field="viewProcessInstancesNavLink"></b:NavLink>
+              <b:NavLink ui:field="viewProcessModelNavLink"></b:NavLink>
+            </b:DropdownButton>
+          </b:ButtonGroup>
+        </g:FlowPanel>
+      </g:cell>
+      <g:cell width="10%">
+        <g:FlowPanel width="100%"  ui:field="rightHeader" addStyleNames="{style.rightHeader}">
+          <b:Button ui:field="refreshButton" size="MINI" icon="REFRESH"/>
+          <b:Button ui:field="closeButton" size="MINI" icon="REMOVE"/>
+        </g:FlowPanel>
+      </g:cell>
+    </g:HorizontalPanel>
+    <g:TabLayoutPanel ui:field="tabsContainer" barUnit="EM"  barHeight="3" >
+      
+    </g:TabLayoutPanel>
+    
+  </g:FlowPanel>
+
+</ui:UiBinder>

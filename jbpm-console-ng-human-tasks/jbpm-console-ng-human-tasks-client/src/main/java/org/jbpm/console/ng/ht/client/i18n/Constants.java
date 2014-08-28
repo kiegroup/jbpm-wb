@@ -33,12 +33,6 @@ public interface Constants extends Messages {
 
     String Tasks_List();
 
-    String Day();
-
-    String Week();
-
-    String Month();
-
     String Grid();
 
     String New_Task();
@@ -119,8 +113,6 @@ public interface Constants extends Messages {
 
     String Form();
 
-    String Today();
-
     String Advanced();
 
     String Refresh();
@@ -170,4 +162,10 @@ public interface Constants extends Messages {
     String Task_Log();
 
     String Provide_User_Or_Group();
+
+    String Show_Details();
+
+    String Hide_Details();
+    
+    String Task_Admin();
 }

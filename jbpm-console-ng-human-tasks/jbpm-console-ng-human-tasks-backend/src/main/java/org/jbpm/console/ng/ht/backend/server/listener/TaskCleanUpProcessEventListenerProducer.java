@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import org.jbpm.runtime.manager.api.EventListenerProducer;
+import org.kie.internal.runtime.manager.EventListenerProducer;
 import org.jbpm.runtime.manager.api.qualifiers.Process;
 import org.jbpm.services.task.admin.listener.TaskCleanUpProcessEventListener;
 import org.kie.api.task.TaskService;

@@ -35,9 +35,9 @@ import java.util.Date;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.gc.client.util.UTCDateBox;
+import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.client.util.UTCDateBox;
-import org.jbpm.console.ng.ht.client.util.UTCTimeBox;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
 

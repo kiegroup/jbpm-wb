@@ -24,9 +24,9 @@ import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jbpm.console.ng.bd.service.DeploymentUnitProvider;
-import org.jbpm.kie.services.api.Kjar;
+import org.jbpm.services.api.model.DeploymentUnit;
+import org.jbpm.services.cdi.Kjar;
 import org.jbpm.kie.services.impl.KModuleDeploymentUnit;
-import org.kie.internal.deployment.DeploymentUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -408,7 +408,7 @@ See http://www.w3.org/TR/SVG/intro.html#MIMEType. -->
       <url-pattern>/org.jbpm.console.ng.jBPMShowcase/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
-      <role-name>jbpm-console-user</role-name>
+      <role-name>user</role-name>
     </auth-constraint>
   </security-constraint>
 
@@ -418,7 +418,7 @@ See http://www.w3.org/TR/SVG/intro.html#MIMEType. -->
       <url-pattern>/rest/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
-      <role-name>jbpm-console-user</role-name>
+      <role-name>user</role-name>
     </auth-constraint>
   </security-constraint>
 
@@ -431,7 +431,7 @@ See http://www.w3.org/TR/SVG/intro.html#MIMEType. -->
   </login-config>
 
   <security-role>
-    <role-name>jbpm-console-user</role-name>
+    <role-name>user</role-name>
   </security-role>
 
   <error-page>

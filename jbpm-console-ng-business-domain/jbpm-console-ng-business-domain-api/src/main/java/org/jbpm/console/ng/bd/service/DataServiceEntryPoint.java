@@ -20,16 +20,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.console.ng.bd.model.RuntimeLogSummary;
 import org.jbpm.console.ng.ht.model.TaskDefSummary;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
-import org.jbpm.console.ng.pr.model.VariableSummary;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 
 @Remote
 public interface DataServiceEntryPoint {
 
-    Map<String, String> getServiceTasks(String processId);
+    Map<String, String> getServiceTasks(String deploymentId, String processId);
     
     Collection<ProcessInstanceSummary> getProcessInstances();
 
@@ -40,8 +41,6 @@ public interface DataServiceEntryPoint {
     ProcessInstanceSummary getProcessInstanceById(long processInstanceId);
 
     ProcessSummary getProcessById(String deploymentId, String processId);
-
-    Collection<ProcessSummary> getProcesses();
 
     Collection<ProcessInstanceSummary> getProcessInstancesByProcessDefinition(String processDefId);
 
@@ -57,30 +56,32 @@ public interface DataServiceEntryPoint {
 
     Collection<NodeInstanceSummary> getProcessInstanceCompletedNodes(long processInstanceId);
 
-    Collection<VariableSummary> getVariableHistory(long processInstanceId, String variableId);
+    Collection<ProcessVariableSummary> getVariableHistory(long processInstanceId, String variableId);
 
     /*
      * BPMN2
      */
 
-    Collection<String> getReusableSubProcesses(String processId);
+    Collection<String> getReusableSubProcesses(String deploymentId, String processId);
 
-    List<String> getAssociatedDomainObjects(String processId);
+    Map<String, String> getRequiredInputData(String deploymentId, String processId);
 
-    Map<String, String> getRequiredInputData(String processId);
+    Collection<TaskDefSummary> getAllTasksDef(String deploymentId, String processId);
 
-    List<String> getAssociatedForms(String processId);
+    Map<String, Collection<String>> getAssociatedEntities(String deploymentId, String processId);
 
-    Collection<TaskDefSummary> getAllTasksDef(String processId);
+    ProcessSummary getProcessDesc(String deploymentId, String processId);
 
-    Map<String, String> getAssociatedEntities(String processId);
+    Collection<ProcessVariableSummary> getVariablesCurrentState(long processInstanceId, String processId);
 
-    ProcessSummary getProcessDesc(String processId);
+    Map<String, String> getTaskInputMappings(String deploymentId, String processId, String taskName);
 
-    Collection<VariableSummary> getVariablesCurrentState(long processInstanceId, String processId);
-
-    Map<String, String> getTaskInputMappings(String processId, String taskName);
-
-    Map<String, String> getTaskOutputMappings(String processId, String taskName);
+    Map<String, String> getTaskOutputMappings(String deploymentId, String processId, String taskName);
+    
+    /* Logs */
+    
+    Collection<RuntimeLogSummary> getAllRuntimeLogs(long processInstanceId);
+    
+    Collection<RuntimeLogSummary> getBusinessLogs(long processInstanceId);
 
 }

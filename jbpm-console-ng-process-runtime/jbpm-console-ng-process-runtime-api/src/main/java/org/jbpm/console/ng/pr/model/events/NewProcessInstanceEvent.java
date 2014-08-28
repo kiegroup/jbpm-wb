@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.pr.model.events;
 
 import java.io.Serializable;
@@ -22,44 +21,87 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class NewProcessInstanceEvent implements Serializable {
-    
-    
-    private Long newProcessInstanceId;
-    
-    private String newProcessDefId;
-    private String deploymentId;
-    
-    
-    public NewProcessInstanceEvent(){
-    }
 
-    public NewProcessInstanceEvent(String deploymentId, Long newProcessInstanceId, String newProcessDefId) {
-        this.newProcessInstanceId = newProcessInstanceId;
-        this.newProcessDefId = newProcessDefId;
-        this.deploymentId = deploymentId;
-    }
+  private Long newProcessInstanceId;
 
-    public Long getNewProcessInstanceId() {
-        return newProcessInstanceId;
-    }
+  private String newProcessDefId;
+  private String deploymentId;
+  private Integer newProcessInstanceStatus;
+  private String processDefName;
 
-    public void setNewProcessInstanceId(Long newProcessInstanceId) {
-        this.newProcessInstanceId = newProcessInstanceId;
-    }
+  public NewProcessInstanceEvent() {
+  }
 
-    public String getNewProcessDefId() {
-        return newProcessDefId;
-    }
+  public NewProcessInstanceEvent(String deploymentId, Long newProcessInstanceId, String newProcessDefId, String processDefName,  Integer newProcessInstanceStatus) {
+    this.newProcessInstanceId = newProcessInstanceId;
+    this.newProcessDefId = newProcessDefId;
+    this.deploymentId = deploymentId;
+    this.newProcessInstanceStatus = newProcessInstanceStatus;
+    this.processDefName = processDefName;
+  }
 
-    public void setNewProcessDefId(String newProcessDefId) {
-        this.newProcessDefId = newProcessDefId;
-    }
+  public Long getNewProcessInstanceId() {
+    return newProcessInstanceId;
+  }
 
-    public String getDeploymentId() {
-        return deploymentId;
-    }
+  public String getNewProcessDefId() {
+    return newProcessDefId;
+  }
 
-    public void setDeploymentId(String deploymentId) {
-        this.deploymentId = deploymentId;
+  public String getDeploymentId() {
+    return deploymentId;
+  }
+
+  public Integer getNewProcessInstanceStatus() {
+    return newProcessInstanceStatus;
+  }
+
+  public String getProcessDefName() {
+    return processDefName;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 31 * hash + (this.newProcessInstanceId != null ? this.newProcessInstanceId.hashCode() : 0);
+    hash = 31 * hash + (this.newProcessDefId != null ? this.newProcessDefId.hashCode() : 0);
+    hash = 31 * hash + (this.deploymentId != null ? this.deploymentId.hashCode() : 0);
+    hash = 31 * hash + (this.newProcessInstanceStatus != null ? this.newProcessInstanceStatus.hashCode() : 0);
+    hash = 31 * hash + (this.processDefName != null ? this.processDefName.hashCode() : 0);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
     }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final NewProcessInstanceEvent other = (NewProcessInstanceEvent) obj;
+    if (this.newProcessInstanceId != other.newProcessInstanceId && (this.newProcessInstanceId == null || !this.newProcessInstanceId.equals(other.newProcessInstanceId))) {
+      return false;
+    }
+    if ((this.newProcessDefId == null) ? (other.newProcessDefId != null) : !this.newProcessDefId.equals(other.newProcessDefId)) {
+      return false;
+    }
+    if ((this.deploymentId == null) ? (other.deploymentId != null) : !this.deploymentId.equals(other.deploymentId)) {
+      return false;
+    }
+    if (this.newProcessInstanceStatus != other.newProcessInstanceStatus && (this.newProcessInstanceStatus == null || !this.newProcessInstanceStatus.equals(other.newProcessInstanceStatus))) {
+      return false;
+    }
+    if ((this.processDefName == null) ? (other.processDefName != null) : !this.processDefName.equals(other.processDefName)) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public String toString() {
+    return "NewProcessInstanceEvent{" + "newProcessInstanceId=" + newProcessInstanceId + ", newProcessDefId=" + newProcessDefId + ", deploymentId=" + deploymentId + ", newProcessInstanceStatus=" + newProcessInstanceStatus + ", processDefName=" + processDefName + '}';
+  }
+
+  
 }

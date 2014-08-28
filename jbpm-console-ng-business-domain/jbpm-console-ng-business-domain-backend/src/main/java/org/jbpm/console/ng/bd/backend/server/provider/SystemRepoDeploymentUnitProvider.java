@@ -18,22 +18,20 @@ package org.jbpm.console.ng.bd.backend.server.provider;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.guvnor.structure.deployment.DeploymentConfig;
+import org.guvnor.structure.deployment.DeploymentConfigService;
 import org.jbpm.console.ng.bd.api.Vfs;
 import org.jbpm.console.ng.bd.service.DeploymentUnitProvider;
-import org.jbpm.kie.services.api.Kjar;
-import org.kie.internal.deployment.DeploymentUnit;
-import org.uberfire.backend.deployment.DeploymentConfig;
-import org.uberfire.backend.deployment.DeploymentConfigService;
+import org.jbpm.services.api.model.DeploymentUnit;
+import org.jbpm.services.cdi.Kjar;
 
 @ApplicationScoped
 @Vfs
 @Kjar
 public class SystemRepoDeploymentUnitProvider implements DeploymentUnitProvider<DeploymentUnit> {
-
 
     @Inject
     private DeploymentConfigService deploymentConfigService;
@@ -42,9 +40,9 @@ public class SystemRepoDeploymentUnitProvider implements DeploymentUnitProvider<
     public Set<DeploymentUnit> getDeploymentUnits() {
         Set<DeploymentUnit> deploymentUnits = new HashSet<DeploymentUnit>();
         Collection<DeploymentConfig> deploymentConfigs = deploymentConfigService.getDeployments();
-        if (deploymentConfigs != null) {
-            for (DeploymentConfig config : deploymentConfigs) {
-                deploymentUnits.add((DeploymentUnit) config.getDeploymentUnit());
+        if ( deploymentConfigs != null ) {
+            for ( DeploymentConfig config : deploymentConfigs ) {
+                deploymentUnits.add( (DeploymentUnit) config.getDeploymentUnit() );
             }
         }
         return deploymentUnits;
