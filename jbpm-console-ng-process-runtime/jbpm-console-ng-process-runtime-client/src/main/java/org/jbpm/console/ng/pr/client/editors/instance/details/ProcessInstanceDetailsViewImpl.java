@@ -17,6 +17,7 @@
 package org.jbpm.console.ng.pr.client.editors.instance.details;
 
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -32,16 +33,12 @@ import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.uberfire.backend.vfs.Path;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "ProcessInstanceDetailsViewImpl.html")
 public class ProcessInstanceDetailsViewImpl extends Composite implements
                                                               ProcessInstanceDetailsPresenter.ProcessInstanceDetailsView {
-
-    private ProcessInstanceDetailsPresenter presenter;
 
     @Inject
     @DataField
@@ -84,13 +81,6 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     public Label currentActivitiesListLabel;
 
     @Inject
-    private Identity identity;
-
-    @Inject
-    private PlaceManager placeManager;
-
-
-    @Inject
     private Event<NotificationEvent> notification;
 
     private Constants constants = GWT.create( Constants.class );
@@ -103,10 +93,8 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
   
     
-    @Override
-    public void init( final ProcessInstanceDetailsPresenter presenter ) {
-        this.presenter = presenter;
-
+    @PostConstruct
+    public void init(  ) {
         processDefinitionIdLabel.setText( constants.Process_Definition_Id() );
         processDeploymentLabel.setText( constants.Deployment_Name() );
         processVersionLabel.setText( constants.Process_Definition_Version() );

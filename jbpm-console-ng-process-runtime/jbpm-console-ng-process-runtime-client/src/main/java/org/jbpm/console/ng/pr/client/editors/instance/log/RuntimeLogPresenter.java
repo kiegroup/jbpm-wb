@@ -15,57 +15,40 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.log;
 
-import com.github.gwtbootstrap.client.ui.Label;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.view.client.ProvidesKey;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.model.RuntimeLogSummary;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
-import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.client.util.LogUtils.LogType;
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogOrder;
-import org.jbpm.console.ng.pr.client.util.LogUtils;
-import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.pr.client.util.LogUtils.LogType;
+import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
-import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
-import org.uberfire.client.annotations.WorkbenchPartTitle;
-import org.uberfire.client.annotations.WorkbenchPartView;
-import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.UberView;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
-import org.uberfire.mvp.PlaceRequest;
 
 @Dependent
-@WorkbenchScreen(identifier = "Process Instance Logs")
 public class RuntimeLogPresenter {
 
-    private Constants constants = GWT.create(Constants.class);
-
-    private PlaceRequest place;
-    
     private String currentProcessInstanceId;
 
-    public interface RuntimeLogView extends UberView<RuntimeLogPresenter> {
+    public interface RuntimeLogView extends IsWidget {
 
-        void displayNotification(String text);
+        void init( final RuntimeLogPresenter presenter );
+
+        void displayNotification( final String text );
 
         HTML getLogTextArea();
-        
     }
-
-    @Inject
-    private PlaceManager placeManager;
 
     @Inject
     private RuntimeLogView view;
@@ -73,89 +56,72 @@ public class RuntimeLogPresenter {
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
 
-    
-
-    public RuntimeLogPresenter() {
-       
+    @PostConstruct
+    public void init() {
+        view.init( this );
     }
 
-    public static final ProvidesKey<ProcessVariableSummary> KEY_PROVIDER = new ProvidesKey<ProcessVariableSummary>() {
-        @Override
-        public Object getKey(ProcessVariableSummary item) {
-            return item == null ? null : item.getVariableId();
-        }
-    };
-
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.Logs();
-    }
-
-    @WorkbenchPartView
-    public UberView<RuntimeLogPresenter> getView() {
+    public IsWidget getWidget() {
         return view;
     }
 
-    public void refreshProcessInstanceData(final LogOrder logOrder, final LogType logType) {
-        
-        view.getLogTextArea().setText("");
-        
-        if(LogType.TECHNICAL.equals(logType)){
-            dataServices.call(new RemoteCallback<List<RuntimeLogSummary>>() {
+    public void refreshProcessInstanceData( final LogOrder logOrder,
+                                            final LogType logType ) {
+
+        view.getLogTextArea().setText( "" );
+
+        if ( LogType.TECHNICAL.equals( logType ) ) {
+            dataServices.call( new RemoteCallback<List<RuntimeLogSummary>>() {
                 @Override
-                public void callback(List<RuntimeLogSummary> logs) {                    
+                public void callback( List<RuntimeLogSummary> logs ) {
                     SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
 
-                    if(logOrder == LogOrder.DESC)
-                        Collections.reverse(logs);
-
-                    for (RuntimeLogSummary rls : logs) {           
-                        safeHtmlBuilder.appendEscapedLines(rls.getTime() + ": " + rls.getLogLine() + " - " + rls.getType() + "\n");                            
+                    if ( logOrder == LogOrder.DESC ) {
+                        Collections.reverse( logs );
                     }
-                    view.getLogTextArea().setHTML(safeHtmlBuilder.toSafeHtml());
+
+                    for ( RuntimeLogSummary rls : logs ) {
+                        safeHtmlBuilder.appendEscapedLines( rls.getTime() + ": " + rls.getLogLine() + " - " + rls.getType() + "\n" );
+                    }
+                    view.getLogTextArea().setHTML( safeHtmlBuilder.toSafeHtml() );
                 }
             }, new ErrorCallback<Message>() {
                 @Override
-                public boolean error( Message message, Throwable throwable ) {                    
-                    ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                public boolean error( Message message,
+                                      Throwable throwable ) {
+                    ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                     return true;
                 }
-            }).getAllRuntimeLogs(Long.valueOf(currentProcessInstanceId));
-        }else{
-            dataServices.call(new RemoteCallback<List<RuntimeLogSummary>>() {
+            } ).getAllRuntimeLogs( Long.valueOf( currentProcessInstanceId ) );
+        } else {
+            dataServices.call( new RemoteCallback<List<RuntimeLogSummary>>() {
                 @Override
-                public void callback(List<RuntimeLogSummary> logs) {
+                public void callback( List<RuntimeLogSummary> logs ) {
                     SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                    if(logOrder == LogOrder.DESC)
-                        Collections.reverse(logs);
-
-                    for (RuntimeLogSummary rls : logs) {                       
-                        safeHtmlBuilder.appendEscapedLines(rls.getTime() + ": " + rls.getLogLine() + "\n");                            
+                    if ( logOrder == LogOrder.DESC ) {
+                        Collections.reverse( logs );
                     }
-                    view.getLogTextArea().setHTML(safeHtmlBuilder.toSafeHtml());
+
+                    for ( RuntimeLogSummary rls : logs ) {
+                        safeHtmlBuilder.appendEscapedLines( rls.getTime() + ": " + rls.getLogLine() + "\n" );
+                    }
+                    view.getLogTextArea().setHTML( safeHtmlBuilder.toSafeHtml() );
                 }
             }, new ErrorCallback<Message>() {
                 @Override
-                public boolean error( Message message, Throwable throwable ) {                    
-                    ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                public boolean error( Message message,
+                                      Throwable throwable ) {
+                    ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                     return true;
                 }
-            }).getBusinessLogs(Long.valueOf(currentProcessInstanceId));
-        }        
+            } ).getBusinessLogs( Long.valueOf( currentProcessInstanceId ) );
+        }
     }
 
-    @OnStartup
-    public void onStartup(final PlaceRequest place) {
-        this.place = place;
+    public void onProcessInstanceSelectionEvent( @Observes final ProcessInstanceSelectionEvent event ) {
+        this.currentProcessInstanceId = String.valueOf( event.getProcessInstanceId() );
+
+        refreshProcessInstanceData( LogOrder.ASC, LogType.BUSINESS );
     }
 
-    @OnOpen
-    public void onOpen() {
-        this.currentProcessInstanceId = place.getParameter("processInstanceId", "");
-        
-        refreshProcessInstanceData(LogOrder.ASC, LogType.BUSINESS);       
-    }
-
-    
-    
 }

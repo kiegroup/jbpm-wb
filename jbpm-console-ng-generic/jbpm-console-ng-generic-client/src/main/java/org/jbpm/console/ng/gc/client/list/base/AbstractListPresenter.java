@@ -15,89 +15,48 @@
  */
 package org.jbpm.console.ng.gc.client.list.base;
 
+import java.util.HashMap;
+import java.util.Map;
+import javax.enterprise.event.Observes;
 
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
-import java.util.HashMap;
-import java.util.Map;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ga.model.events.SearchEvent;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
-import org.uberfire.lifecycle.OnClose;
-import org.uberfire.lifecycle.OnFocus;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.security.Identity;
 
 /**
- *
- * @author salaboy
  * @param <T> data type for the AsyncDataProvider
+ * @author salaboy
  */
 public abstract class AbstractListPresenter<T> {
 
-  protected AsyncDataProvider<T> dataProvider;
+    protected AsyncDataProvider<T> dataProvider;
 
-  protected QueryFilter currentFilter;
-  
-  @Inject
-  protected Identity identity;
+    protected QueryFilter currentFilter;
 
-  @Inject
-  protected PlaceManager placeManager;
-  
-  protected PlaceRequest place;
-  
-  @Inject
-  protected Event<BeforeClosePlaceEvent> beforeCloseEvent;
-
-  public void addDataDisplay(final HasData<T> display) {
-    dataProvider.addDataDisplay(display);
-  }
-
-  public void refreshGrid() {
-    HasData<T> next = dataProvider.getDataDisplays().iterator().next();
-    next.setVisibleRangeAndClearData(next.getVisibleRange(), true);
-  }
-
-  protected void onSearchEvent(@Observes SearchEvent searchEvent) {
-    String filterString = searchEvent.getFilter();
-    Map<String, Object> params = new HashMap<String, Object>();
-    params.put("textSearch", filterString.toLowerCase());
-    currentFilter.setParams(params);
-    HasData<T> next = dataProvider.getDataDisplays().iterator().next();
-    if (filterString.equals("")) {
-      next.setVisibleRangeAndClearData(next.getVisibleRange(), true);
-    } else {
-      next.setVisibleRangeAndClearData(new Range(0, next.getVisibleRange().getLength()), true);
+    public void addDataDisplay( final HasData<T> display ) {
+        dataProvider.addDataDisplay( display );
     }
 
-  }
+    public void refreshGrid() {
+        HasData<T> next = dataProvider.getDataDisplays().iterator().next();
+        next.setVisibleRangeAndClearData( next.getVisibleRange(), true );
+    }
 
-  @OnOpen
-  public void onOpen() {
-    refreshGrid();
-  }
+    protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
+        String filterString = searchEvent.getFilter();
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put( "textSearch", filterString.toLowerCase() );
+        if ( currentFilter != null ) {
+            currentFilter.setParams( params );
+        }
+        HasData<T> next = dataProvider.getDataDisplays().iterator().next();
+        if ( filterString.equals( "" ) ) {
+            next.setVisibleRangeAndClearData( next.getVisibleRange(), true );
+        } else {
+            next.setVisibleRangeAndClearData( new Range( 0, next.getVisibleRange().getLength() ), true );
+        }
 
-  @OnFocus
-  public void onFocus() {
-    refreshGrid();
-  }
-
-  @OnStartup
-  public void onStartup(final PlaceRequest place) {
-    this.place = place;
-  }
-  
-  @OnClose
-  public void onClose() {
-    beforeCloseEvent.fire(new BeforeClosePlaceEvent(place));
-  }
-  
+    }
 }

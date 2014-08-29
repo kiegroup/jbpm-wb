@@ -29,7 +29,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
-import org.jbpm.console.ng.gc.client.list.base.AbstractListPresenter;
+import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.util.TaskUtils;
 import org.jbpm.console.ng.gc.client.util.TaskUtils.TaskType;
@@ -48,7 +48,7 @@ import org.uberfire.paging.PageResponse;
 import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.*;
 @Dependent
 @WorkbenchScreen(identifier = "Tasks List")
-public class TasksListGridPresenter extends AbstractListPresenter<TaskSummary> {
+public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSummary> {
 
   public interface TaskListView extends ListView<TaskSummary, TasksListGridPresenter> {
 

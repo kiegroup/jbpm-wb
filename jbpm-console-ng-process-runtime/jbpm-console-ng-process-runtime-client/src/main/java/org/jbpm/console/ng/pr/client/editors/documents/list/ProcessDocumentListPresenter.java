@@ -15,140 +15,123 @@
  */
 package org.jbpm.console.ng.pr.client.editors.documents.list;
 
+import java.util.HashMap;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
-import java.util.HashMap;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListPresenter;
-import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
-import org.jbpm.console.ng.pr.client.i18n.Constants;
+import org.jbpm.console.ng.gc.client.list.base.AbstractListView.BasicListView;
 import org.jbpm.console.ng.pr.model.DocumentSummary;
+import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.service.DocumentsService;
-import org.uberfire.client.annotations.WorkbenchPartTitle;
-import org.uberfire.client.annotations.WorkbenchPartView;
-import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.UberView;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
-import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.paging.PageResponse;
 
 @Dependent
-@WorkbenchScreen(identifier = "Document List")
 public class ProcessDocumentListPresenter extends AbstractListPresenter<DocumentSummary> {
 
-  public interface ProcessDocumentListView extends ListView<DocumentSummary, ProcessDocumentListPresenter> {
+    public interface ProcessDocumentListView extends BasicListView<DocumentSummary> {
 
-  }
+        void init( final ProcessDocumentListPresenter presenter );
+    }
 
-  private Constants constants = GWT.create(Constants.class);
-  @Inject
-  private ProcessDocumentListView view;
+    @Inject
+    private ProcessDocumentListView view;
 
-  @Inject
-  private Caller<DocumentsService> documentsServices;
+    @Inject
+    private Caller<DocumentsService> documentsServices;
 
-   private String processInstanceId;
-  private String processDefId;
-  private String deploymentId;
-  private String documentId;
-  
+    private String processInstanceId;
+    private String processDefId;
+    private String deploymentId;
+    private String documentId;
 
-  public ProcessDocumentListPresenter() {
-    dataProvider = new AsyncDataProvider<DocumentSummary>() {
+    @PostConstruct
+    public void init() {
+        dataProvider = new AsyncDataProvider<DocumentSummary>() {
 
-      @Override
-      protected void onRangeChanged(HasData<DocumentSummary> display) {
-        if(processInstanceId != null && deploymentId != null){
-          final Range visibleRange = display.getVisibleRange();
-          ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-          if (currentFilter == null) {
-            currentFilter = new PortableQueryFilter(visibleRange.getStart(),
-                    visibleRange.getLength(),
-                    false, "",
-                    (columnSortList.size() > 0) ? columnSortList.get(0)
-                    .getColumn().getDataStoreName() : "",
-                    (columnSortList.size() > 0) ? columnSortList.get(0)
-                    .isAscending() : true);
-          }
-          // If we are refreshing after a search action, we need to go back to offset 0
-          if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
-                  || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")) {
-            currentFilter.setOffset(visibleRange.getStart());
-            currentFilter.setCount(visibleRange.getLength());
-          } else {
-            currentFilter.setOffset(0);
-            currentFilter.setCount(view.getListGrid().getPageSize());
-          }
-          //Applying screen specific filters
-          if (currentFilter.getParams() == null) {
-            currentFilter.setParams(new HashMap<String, Object>());
-          }
-          currentFilter.getParams().put("processInstanceId", processInstanceId);
-          currentFilter.getParams().put("processDefId", processDefId);
-          currentFilter.getParams().put("deploymentId", deploymentId);
-          
-
-          currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
-                  .getColumn().getDataStoreName() : "");
-          currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
-                  .isAscending() : true);
-
-          documentsServices.call(new RemoteCallback<PageResponse<DocumentSummary>>() {
             @Override
-            public void callback(PageResponse<DocumentSummary> response) {
-              dataProvider.updateRowCount(response.getTotalRowSize(),
-                      response.isTotalRowSizeExact());
-              dataProvider.updateRowData(response.getStartRowIndex(),
-                      response.getPageRowList());
+            protected void onRangeChanged( HasData<DocumentSummary> display ) {
+                if ( processInstanceId != null && deploymentId != null ) {
+                    final Range visibleRange = display.getVisibleRange();
+                    ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+                    if ( currentFilter == null ) {
+                        currentFilter = new PortableQueryFilter( visibleRange.getStart(),
+                                                                 visibleRange.getLength(),
+                                                                 false, "",
+                                                                 ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                                                                         .getColumn().getDataStoreName() : "",
+                                                                 ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                                                                         .isAscending() : true );
+                    }
+                    // If we are refreshing after a search action, we need to go back to offset 0
+                    if ( currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
+                            || currentFilter.getParams().get( "textSearch" ) == null || currentFilter.getParams().get( "textSearch" ).equals( "" ) ) {
+                        currentFilter.setOffset( visibleRange.getStart() );
+                        currentFilter.setCount( visibleRange.getLength() );
+                    } else {
+                        currentFilter.setOffset( 0 );
+                        currentFilter.setCount( view.getListGrid().getPageSize() );
+                    }
+                    //Applying screen specific filters
+                    if ( currentFilter.getParams() == null ) {
+                        currentFilter.setParams( new HashMap<String, Object>() );
+                    }
+                    currentFilter.getParams().put( "processInstanceId", processInstanceId );
+                    currentFilter.getParams().put( "processDefId", processDefId );
+                    currentFilter.getParams().put( "deploymentId", deploymentId );
+
+                    currentFilter.setOrderBy( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                            .getColumn().getDataStoreName() : "" );
+                    currentFilter.setIsAscending( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                            .isAscending() : true );
+
+                    documentsServices.call( new RemoteCallback<PageResponse<DocumentSummary>>() {
+                        @Override
+                        public void callback( PageResponse<DocumentSummary> response ) {
+                            dataProvider.updateRowCount( response.getTotalRowSize(),
+                                                         response.isTotalRowSizeExact() );
+                            dataProvider.updateRowData( response.getStartRowIndex(),
+                                                        response.getPageRowList() );
+                        }
+                    }, new ErrorCallback<Message>() {
+                        @Override
+                        public boolean error( Message message,
+                                              Throwable throwable ) {
+                            view.hideBusyIndicator();
+                            view.displayNotification( "Error: Getting Process Definitions: " + message );
+                            GWT.log( throwable.toString() );
+                            return true;
+                        }
+                    } ).getData( currentFilter );
+                }
+
             }
-          }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error(Message message, Throwable throwable) {
-              view.hideBusyIndicator();
-              view.displayNotification("Error: Getting Process Definitions: " + message);
-              GWT.log(throwable.toString());
-              return true;
-            }
-          }).getData(currentFilter);
-        }
+        };
+        view.init( this );
+    }
 
-      }
-    };
-  }
+    public IsWidget getWidget() {
+        return view;
+    }
 
-  @WorkbenchPartTitle
-  public String getTitle() {
-    return constants.Documents();
-  }
-
-  @WorkbenchPartView
-  public UberView<ProcessDocumentListPresenter> getView() {
-    return view;
-  }
-
-  @OnStartup
-  public void onStartup(final PlaceRequest place) {
-    super.onStartup(place);
-  }
-
-  @OnOpen
-  @Override
-  public void onOpen() {
-    this.processInstanceId = place.getParameter("processInstanceId", "");
-    this.processDefId = place.getParameter("processDefId", "");
-    this.deploymentId = place.getParameter("deploymentId", "");
-    refreshGrid();
-  }
-
+    public void onProcessInstanceSelectionEvent( @Observes final ProcessInstanceSelectionEvent event ) {
+        this.processInstanceId = String.valueOf( event.getProcessInstanceId() );
+        this.processDefId = event.getProcessDefId();
+        this.deploymentId = event.getDeploymentId();
+        refreshGrid();
+    }
 
 }
