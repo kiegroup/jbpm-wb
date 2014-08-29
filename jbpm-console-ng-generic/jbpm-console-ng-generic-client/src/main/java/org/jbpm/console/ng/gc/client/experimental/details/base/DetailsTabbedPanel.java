@@ -15,114 +15,69 @@
  */
 package org.jbpm.console.ng.gc.client.experimental.details.base;
 
-import com.github.gwtbootstrap.client.ui.Button;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- *
  * @author salaboy
  */
 public class DetailsTabbedPanel extends Composite {
 
-  interface Binder
-          extends
-          UiBinder<Widget, DetailsTabbedPanel> {
+    interface Binder
+            extends
+            UiBinder<Widget, DetailsTabbedPanel> {
 
-  }
+    }
 
-  private static Binder uiBinder = GWT.create(Binder.class);
+    private static Binder uiBinder = GWT.create( Binder.class );
 
-  @UiField
-  public TabLayoutPanel tabsContainer;
+    @UiField
+    public TabLayoutPanel tabsContainer;
 
-  @UiField
-  public HorizontalPanel headerContainer;
+    public DetailsTabbedPanel() {
+        initWidget( makeWidget() );
+    }
 
-  @UiField
-  public FlowPanel rightHeader;
-  
-  @UiField
-  public FlowPanel rightToolbar;
-  
-  @UiField
-  public FlowPanel leftHeader;
-  
-  @UiField
-  public Button closeButton;
+    public void addTab( String placeToGo,
+                        String label ) {
 
-  @UiField
-  public Button refreshButton;
+        HTMLPanel content = new HTMLPanel( "" );
+        tabsContainer.add( content, label );
+    }
 
-  public DetailsTabbedPanel() {
-    initWidget(makeWidget());
-    
-  }
+    public Widget getWidget( int index ) {
+        return tabsContainer.getWidget( index );
+    }
 
-  public void addTab(String placeToGo, String label) {
-    
-    HTMLPanel content = new HTMLPanel("");
-    tabsContainer.add(content, label);
-  }
+    public int getWidgetCount() {
+        return tabsContainer.getWidgetCount();
+    }
 
-  public Widget getWidget(int index) {
-    return tabsContainer.getWidget(index);
-  }
+    public HandlerRegistration addSelectionHandler( SelectionHandler<Integer> handler ) {
+        return tabsContainer.addSelectionHandler( handler );
+    }
 
-  public int getWidgetCount() {
-    return tabsContainer.getWidgetCount();
-  }
+    protected Widget makeWidget() {
+        return uiBinder.createAndBindUi( this );
+    }
 
-  public HandlerRegistration addSelectionHandler(SelectionHandler<Integer> handler) {
-    return tabsContainer.addSelectionHandler(handler);
-  }
+    public void selectTab( int index ) {
+        tabsContainer.selectTab( index, false );
+    }
 
-  public FlowPanel getHeaderContainer() {
-    return leftHeader;
-  }
+    @Override
+    public void setHeight( String height ) {
+        tabsContainer.setHeight( height );
+    }
 
-  protected Widget makeWidget() {
-    return uiBinder.createAndBindUi(this);
-  }
-
-  public void addHeader(Widget w) {
-    headerContainer.add(w);
-  }
-
-  public HandlerRegistration addCloseHandler(ClickHandler handler) {
-    return closeButton.addClickHandler(handler);
-  }
-  
-  public HandlerRegistration addRefreshHandler(ClickHandler handler) {
-    return refreshButton.addClickHandler(handler);
-  }
-
-  public void selectTab(int index) {
-    tabsContainer.selectTab(index, false);
-  }
-
-  @Override
-  public void setHeight(String height) {
-    tabsContainer.setHeight(height);
-  }
-
-  public int getSelectedIndex() {
-    return tabsContainer.getSelectedIndex();
-  }
-
-  public FlowPanel getRightToolbar() {
-    return rightToolbar;
-  }
-  
-  
+    public int getSelectedIndex() {
+        return tabsContainer.getSelectedIndex();
+    }
 }

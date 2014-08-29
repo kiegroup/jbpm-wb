@@ -66,31 +66,11 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
         tabPanel.addTab( "Task Assignments", Constants.INSTANCE.Assignments() );
         tabPanel.addTab( "Task Comments", Constants.INSTANCE.Comments() );
         tabPanel.setHeight( "600px" );
-        tabPanel.addCloseHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                presenter.closeDetails();
-            }
-        } );
 
         ( (HTMLPanel) tabPanel.getWidget( 0 ) ).add( genericFormDisplayPresenter.getView() );
         ( (HTMLPanel) tabPanel.getWidget( 1 ) ).add( taskDetailsPresenter.getView() );
         ( (HTMLPanel) tabPanel.getWidget( 2 ) ).add( taskAssignmentsPresenter.getView() );
         ( (HTMLPanel) tabPanel.getWidget( 3 ) ).add( taskCommentsPresenter.getView() );
-
-        tabPanel.addRefreshHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                int selectedIndex = tabPanel.getSelectedIndex();
-                if ( selectedIndex == 1 ) {
-                    taskDetailsPresenter.refreshTask();
-                } else if ( selectedIndex == 2 ) {
-                    taskAssignmentsPresenter.refreshTaskPotentialOwners();
-                } else if ( selectedIndex == 3 ) {
-                    taskCommentsPresenter.refreshComments();
-                }
-            }
-        } );
 
         tabPanel.addSelectionHandler( new SelectionHandler<Integer>() {
 

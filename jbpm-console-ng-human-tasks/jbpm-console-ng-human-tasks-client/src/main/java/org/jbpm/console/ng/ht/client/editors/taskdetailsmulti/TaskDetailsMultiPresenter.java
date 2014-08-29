@@ -122,7 +122,6 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
             public void execute() {
             }
         } );
-        view.getHeaderPanel().clear();
 
         changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( selectedItemId ) + " - " + selectedItemName ) );
 

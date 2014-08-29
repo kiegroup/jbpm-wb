@@ -100,7 +100,6 @@ public class ProcessDefDetailsMultiPresenter extends AbstractTabbedDetailsPresen
     public void onProcessSelectionEvent( @Observes final ProcessDefSelectionEvent event ) {
         selectedItemId = event.getDeploymentId();
         selectedItemName = event.getProcessId();
-        view.getHeaderPanel().clear();
 
         changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( selectedItemId ) + " - " + selectedItemName ) );
 

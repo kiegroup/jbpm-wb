@@ -16,50 +16,41 @@
 package org.jbpm.console.ng.gc.client.experimental.details;
 
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import org.jbpm.console.ng.gc.client.experimental.details.base.DetailsTabbedPanel;
 import org.uberfire.client.mvp.UberView;
 
 /**
- *
- * @author salaboy
  * @param <T> presenter extending AbstractTabbedDetailsPresenter
+ * @author salaboy
  */
 public abstract class AbstractTabbedDetailsView<T extends AbstractTabbedDetailsPresenter>
         extends Composite implements RequiresResize {
 
-  protected DetailsTabbedPanel tabPanel;
-  
-  protected T presenter;
+    protected DetailsTabbedPanel tabPanel;
 
-  public interface TabbedDetailsView<T> extends UberView<T> {
+    protected T presenter;
 
-    DetailsTabbedPanel getTabPanel();
+    public interface TabbedDetailsView<T> extends UberView<T> {
 
-    FlowPanel getHeaderPanel();
+        DetailsTabbedPanel getTabPanel();
+    }
 
-  }
+    public void init( final T presenter ) {
+        this.presenter = presenter;
+        tabPanel = new DetailsTabbedPanel();
+        initWidget( tabPanel );
+        initTabs();
+    }
 
-  public void init(final T presenter) {
-    this.presenter = presenter;
-    tabPanel = new DetailsTabbedPanel();
-    initWidget(tabPanel);
-    initTabs();
-  }
+    @Override
+    public void onResize() {
 
-  @Override
-  public void onResize() {
+    }
 
-  }
+    public abstract void initTabs();
 
-  public abstract void initTabs();
-
-  public DetailsTabbedPanel getTabPanel() {
-    return tabPanel;
-  }
-
-  public FlowPanel getHeaderPanel() {
-    return tabPanel.getHeaderContainer();
-  }
+    public DetailsTabbedPanel getTabPanel() {
+        return tabPanel;
+    }
 }

@@ -63,12 +63,6 @@ public class ProcessDefDetailsMultiViewImpl extends AbstractTabbedDetailsView<Pr
         tabPanel.addTab( "Definition Details", Constants.INSTANCE.Definition_Details() );
 
         tabPanel.setHeight( "600px" );
-        tabPanel.addCloseHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                presenter.closeDetails();
-            }
-        } );
     }
 
     @Override

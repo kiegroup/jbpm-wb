@@ -82,18 +82,6 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
         tabPanel.addTab( "Process Logs", Constants.INSTANCE.Logs() );
 
         tabPanel.setHeight( "600px" );
-        tabPanel.addCloseHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                presenter.closeDetails();
-            }
-        } );
-        tabPanel.addRefreshHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                presenter.refresh();
-            }
-        } );
 
         tabPanel.addSelectionHandler( new SelectionHandler<Integer>() {
 
