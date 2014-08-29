@@ -122,7 +122,6 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
         selectedDeploymentId = event.getDeploymentId();
         selectedProcessInstanceStatus = event.getProcessInstanceStatus();
         selectedProcessDefName = event.getProcessDefName();
-        view.getHeaderPanel().clear();
 
         changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( selectedItemId ) + " - " + selectedProcessDefName ) );
 

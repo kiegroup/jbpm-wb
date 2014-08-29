@@ -25,37 +25,9 @@
     margin: 10px;
     }
 
-    .horizontalContainer {
-    height: 32px;
-    }
-    .leftHeader {
-      float: left;
-      text-align: left
-    }
-    .rightHeader {
-      float: right;
-      text-align: right;
-    }
-    
   </ui:style>
 
   <g:FlowPanel addStyleNames="{style.dataGridContainer}">
-    <g:HorizontalPanel ui:field="headerContainer" width="100%" addStyleNames="{style.horizontalContainer}">
-       <g:cell width="60%">
-        <g:FlowPanel width="100%"  ui:field="leftHeader" addStyleNames="{style.leftHeader}"></g:FlowPanel> 
-      </g:cell>
-      <g:cell width="30%">
-        <g:FlowPanel width="100%"  ui:field="rightToolbar" addStyleNames="{style.rightHeader}">
-          
-        </g:FlowPanel>
-      </g:cell>
-      <g:cell width="10%">
-        <g:FlowPanel width="100%"  ui:field="rightHeader" addStyleNames="{style.rightHeader}">
-          <b:Button ui:field="refreshButton" size="MINI" icon="REFRESH"/>
-          <b:Button ui:field="closeButton" size="MINI" icon="REMOVE"/>
-        </g:FlowPanel>
-      </g:cell>
-    </g:HorizontalPanel>
     <g:TabLayoutPanel ui:field="tabsContainer" barUnit="EM"  barHeight="3" >
       
     </g:TabLayoutPanel>
