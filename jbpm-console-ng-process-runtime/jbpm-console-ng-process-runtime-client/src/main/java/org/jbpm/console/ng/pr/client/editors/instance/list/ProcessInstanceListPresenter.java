@@ -33,7 +33,7 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
-import org.jbpm.console.ng.gc.client.list.base.AbstractListPresenter;
+import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
@@ -54,7 +54,7 @@ import org.uberfire.paging.PageResponse;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance List")
-public class ProcessInstanceListPresenter extends AbstractListPresenter<ProcessInstanceSummary> {
+public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<ProcessInstanceSummary> {
 
   public interface ProcessInstanceListView extends ListView<ProcessInstanceSummary, ProcessInstanceListPresenter> {
 

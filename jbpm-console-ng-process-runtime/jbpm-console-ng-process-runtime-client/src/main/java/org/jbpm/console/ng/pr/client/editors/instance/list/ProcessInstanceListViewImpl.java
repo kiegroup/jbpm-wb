@@ -487,8 +487,8 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
   }
 
   public void onProcessInstanceSelectionEvent(@Observes ProcessInstancesWithDetailsRequestEvent event) {
-    placeManager.goTo("Process Instance Details");
-    processInstanceSelected.fire(new ProcessInstanceSelectionEvent(event.getDeploymentId(),
+      placeManager.goTo("Process Instance Details Multi");
+      processInstanceSelected.fire(new ProcessInstanceSelectionEvent(event.getDeploymentId(),
             event.getProcessInstanceId(), event.getProcessDefId(),
             event.getProcessDefName(), event.getProcessInstanceStatus()));
   }

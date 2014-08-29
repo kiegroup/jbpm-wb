@@ -15,134 +15,168 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.details.multi;
 
-import com.github.gwtbootstrap.client.ui.ButtonGroup;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
+import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.DropdownButton;
 import com.github.gwtbootstrap.client.ui.NavLink;
+import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
-import javax.enterprise.context.Dependent;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView;
+import org.jbpm.console.ng.pr.client.editors.documents.list.ProcessDocumentListPresenter;
+import org.jbpm.console.ng.pr.client.editors.instance.details.ProcessInstanceDetailsPresenter;
+import org.jbpm.console.ng.pr.client.editors.instance.log.RuntimeLogPresenter;
+import org.jbpm.console.ng.pr.client.editors.variables.list.ProcessVariableListPresenter;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
+
+import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.*;
 
 @Dependent
 public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsView<ProcessInstanceDetailsMultiPresenter>
         implements ProcessInstanceDetailsMultiPresenter.ProcessInstanceDetailsMultiView {
 
-  interface Binder
-          extends
-          UiBinder<Widget, ProcessInstanceDetailsMultiViewImpl> {
+    interface Binder
+            extends
+            UiBinder<Widget, ProcessInstanceDetailsMultiViewImpl> {
 
-  }
-  private static Binder uiBinder = GWT.create(Binder.class);
+    }
 
-  private Constants constants = GWT.create(Constants.class);
+    private static Binder uiBinder = GWT.create( Binder.class );
 
-  @UiField
-  public DropdownButton optionsDropdown;
+    @Inject
+    private ProcessInstanceDetailsPresenter detailsPresenter;
 
-  @UiField
-  public NavLink signalProcessInstancesNavLink;
+    @Inject
+    private ProcessVariableListPresenter variableListPresenter;
 
-  @UiField
-  public NavLink abortProcessInstancesNavLink;
+    @Inject
+    private ProcessDocumentListPresenter documentListPresenter;
 
-  @UiField
-  public ButtonGroup optionsButtonGroup;
+    @Inject
+    private RuntimeLogPresenter runtimeLogPresenter;
 
-  @UiField
-  public NavLink viewProcessModelNavLink;
+    @Override
+    public void init( final ProcessInstanceDetailsMultiPresenter presenter ) {
+        super.init( presenter );
+        uiBinder.createAndBindUi( this );
+    }
 
-  @Override
-  public void init(final ProcessInstanceDetailsMultiPresenter presenter) {
-    super.init(presenter);
-    uiBinder.createAndBindUi(this);
-    initToolBar();
-  }
+    @Override
+    public void initTabs() {
 
-  @Override
-  public void initTabs() {
+        tabPanel.addTab( "Instance Details", Constants.INSTANCE.Process_Instance_Details() );
 
-    tabPanel.addTab("Instance Details", constants.Process_Instance_Details());
+        tabPanel.addTab( "Process Variables", Constants.INSTANCE.Process_Variables() );
 
-    tabPanel.addTab("Process Variables", constants.Process_Variables());
+        tabPanel.addTab( "Documents", "Documents" );
 
-    tabPanel.addTab("Documents", "Documents");
-    
-    tabPanel.addTab("Process Logs", constants.Logs());
+        tabPanel.addTab( "Process Logs", Constants.INSTANCE.Logs() );
 
-    tabPanel.setHeight("600px");
-    tabPanel.addCloseHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        presenter.closeDetails();
-      }
-    });
-    tabPanel.addRefreshHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-          presenter.refreshProcessInstanceDetails();
-      }
-    });
+        tabPanel.setHeight( "600px" );
+        tabPanel.addCloseHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                presenter.closeDetails();
+            }
+        } );
+        tabPanel.addRefreshHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                presenter.refresh();
+            }
+        } );
 
-    tabPanel.addSelectionHandler(new SelectionHandler<Integer>() {
+        tabPanel.addSelectionHandler( new SelectionHandler<Integer>() {
 
-      @Override
-      public void onSelection(SelectionEvent<Integer> event) {
-        if (event.getSelectedItem() == 0) {
-          presenter.goToProcessInstanceDetailsTab();
-        } else if (event.getSelectedItem() == 1) {
-          presenter.goToProcessInstanceVariables();
-        } else if (event.getSelectedItem() == 2) {
-          presenter.goToProcessDocuments();
-        } else if (event.getSelectedItem() == 3) {
-          presenter.goToProcessInstanceLogsTab();
-        }
-      }
-    });
+            @Override
+            public void onSelection( SelectionEvent<Integer> event ) {
+                if ( event.getSelectedItem() == 1 ) {
+                    variableListPresenter.refreshGrid();
+                } else if ( event.getSelectedItem() == 2 ) {
+                    documentListPresenter.refreshGrid();
+                }
+            }
+        } );
 
-  }
+        ( (HTMLPanel) tabPanel.getWidget( 0 ) ).add( detailsPresenter.getWidget() );
+        ( (HTMLPanel) tabPanel.getWidget( 1 ) ).add( variableListPresenter.getWidget() );
+        ( (HTMLPanel) tabPanel.getWidget( 2 ) ).add( documentListPresenter.getWidget() );
+        ( (HTMLPanel) tabPanel.getWidget( 3 ) ).add( runtimeLogPresenter.getWidget() );
+    }
 
-  public void initToolBar() {
+    @Override
+    public IsWidget getOptionsButton() {
+        return new DropdownButton( Constants.INSTANCE.Options() ) {{
+            setSize( MINI );
+            setRightDropdown( true );
+            add( new NavLink( Constants.INSTANCE.Signal() ) {{
+                addClickHandler( new ClickHandler() {
+                    @Override
+                    public void onClick( ClickEvent event ) {
+                        presenter.signalProcessInstance();
+                    }
+                } );
+            }} );
 
-    optionsDropdown.setText(constants.Options());
+            add( new NavLink( Constants.INSTANCE.Abort() ) {{
+                addClickHandler( new ClickHandler() {
+                    @Override
+                    public void onClick( ClickEvent event ) {
+                        presenter.abortProcessInstance();
+                    }
+                } );
+            }} );
 
-    signalProcessInstancesNavLink.setText(constants.Signal());
-    signalProcessInstancesNavLink.addClickHandler(new ClickHandler() {
+            add( new NavLink( Constants.INSTANCE.View_Process_Model() ) {{
+                addClickHandler( new ClickHandler() {
+                    @Override
+                    public void onClick( ClickEvent event ) {
+                        presenter.goToProcessInstanceModelPopup();
+                    }
+                } );
+            }} );
+        }};
+    }
 
-      @Override
-      public void onClick(ClickEvent event) {
-        presenter.signalProcessInstance();
-      }
-    });
+    @Override
+    public IsWidget getRefreshButton() {
+        return new Button() {
+            {
+                setIcon( IconType.REFRESH );
+                setSize( MINI );
+                addClickHandler( new ClickHandler() {
+                    @Override
+                    public void onClick( ClickEvent event ) {
+                        presenter.refresh();
+                    }
+                } );
+            }
+        };
+    }
 
-    abortProcessInstancesNavLink.setText(constants.Abort());
-    abortProcessInstancesNavLink.addClickHandler(new ClickHandler() {
-
-      @Override
-      public void onClick(ClickEvent event) {
-        presenter.abortProcessInstance();
-      }
-    });
-
-    viewProcessModelNavLink.setText(constants.View_Process_Model());
-    viewProcessModelNavLink.addClickHandler(new ClickHandler() {
-
-      @Override
-      public void onClick(ClickEvent event) {
-        presenter.goToProcessInstanceModelPopup();
-      }
-    });
-
-    optionsDropdown.add(signalProcessInstancesNavLink);
-    optionsDropdown.add(abortProcessInstancesNavLink);
-    optionsButtonGroup.add(optionsDropdown);
-    tabPanel.getRightToolbar().add(optionsButtonGroup);
-  }
+    @Override
+    public IsWidget getCloseButton() {
+        return new Button() {
+            {
+                setIcon( IconType.REMOVE );
+                setSize( MINI );
+                addClickHandler( new ClickHandler() {
+                    @Override
+                    public void onClick( ClickEvent event ) {
+                        presenter.closeDetails();
+                    }
+                } );
+            }
+        };
+    }
 
 }

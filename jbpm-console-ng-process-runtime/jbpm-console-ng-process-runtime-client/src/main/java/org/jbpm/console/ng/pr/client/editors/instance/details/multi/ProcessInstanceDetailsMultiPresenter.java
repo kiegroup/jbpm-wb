@@ -15,17 +15,15 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.details.multi;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.IsWidget;
 import java.util.List;
-import java.util.Set;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -35,337 +33,266 @@ import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsPresenter;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView.TabbedDetailsView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.ga.model.process.DummyProcessPath;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
-import org.uberfire.backend.vfs.impl.ObservablePathImpl;
 import org.uberfire.client.annotations.DefaultPosition;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.AbstractWorkbenchActivity;
-import org.uberfire.client.mvp.AbstractWorkbenchEditorActivity;
-import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
-import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.lifecycle.OnClose;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.mvp.impl.PathPlaceRequest;
 import org.uberfire.workbench.model.Position;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.MenuItem;
+import org.uberfire.workbench.model.menu.Menus;
+import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance Details Multi", preferredWidth = 500)
 public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
 
-  public interface ProcessInstanceDetailsMultiView
-          extends TabbedDetailsView<ProcessInstanceDetailsMultiPresenter> {
-  }
+    public interface ProcessInstanceDetailsMultiView
+            extends TabbedDetailsView<ProcessInstanceDetailsMultiPresenter> {
 
-  @Inject
-  public ProcessInstanceDetailsMultiView view;
+        IsWidget getOptionsButton();
 
-  private Constants constants = GWT.create(Constants.class);
+        IsWidget getRefreshButton();
 
-  @Inject
-  private Caller<KieSessionEntryPoint> kieSessionServices;
-
-  @Inject
-  private Caller<DataServiceEntryPoint> dataServices;
-
-  private String selectedDeploymentId = "";
-
-  private int selectedProcessInstanceStatus = 0;
-  
-  private String selectedProcessDefName = "";
-
-  public ProcessInstanceDetailsMultiPresenter() {
-
-  }
-
-  @WorkbenchPartView
-  public UberView<ProcessInstanceDetailsMultiPresenter> getView() {
-    return view;
-  }
-
-  @DefaultPosition
-  public Position getPosition() {
-    return Position.EAST;
-  }
-
-  @Override
-  public void selectDefaultTab() {
-    goToProcessInstanceDetailsTab();
-  }
-
-  @WorkbenchPartTitle
-  public String getTitle() {
-    return constants.Details();
-  }
-
-  @OnStartup
-  public void onStartup(final PlaceRequest place) {
-    super.onStartup(place);
-    selectDefaultTab();
-  }
-
-  public void onProcessSelectionEvent(@Observes ProcessInstanceSelectionEvent event) {
-    selectedItemId = String.valueOf(event.getProcessInstanceId());
-    selectedItemName = event.getProcessDefId();
-    selectedDeploymentId = event.getDeploymentId();
-    selectedProcessInstanceStatus = event.getProcessInstanceStatus();
-    selectedProcessDefName = event.getProcessDefName();
-    view.getHeaderPanel().clear();
-    
-    view.getHeaderPanel().add(new HTMLPanel(SafeHtmlUtils.htmlEscape(String.valueOf(selectedItemId) + " - " 
-                    + selectedProcessDefName )));
-    view.getTabPanel().selectTab(0);
-    selectDefaultTab();
-
-  }
-  
-  public void refreshProcessInstanceDetails(){
-    int selectedIndex = view.getTabPanel().getSelectedIndex();
-    if (selectedIndex == 0) {
-      goToProcessInstanceDetailsTab();
-    } else if (selectedIndex == 1) {
-      goToProcessInstanceVariables();
-    } else if (selectedIndex == 2) {
-      goToProcessDocuments();
-    } else if (selectedIndex == 3) {
-      goToProcessInstanceLogsTab();
-    }
-  }
-
-  public void goToProcessInstanceDetailsTab() {
-    if (place != null && !selectedItemId.equals("")) {
-      String placeToGo = "Process Instance Details";
-      ((HTMLPanel) view.getTabPanel().getWidget(0)).clear();
-      DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
-      //Set Parameters here: 
-      defaultPlaceRequest.addParameter("processInstanceId", selectedItemId);
-      defaultPlaceRequest.addParameter("processDefId", selectedItemName);
-      defaultPlaceRequest.addParameter("deploymentId", selectedDeploymentId);
-
-      AbstractWorkbenchActivity activity = null;
-      if (activitiesMap.get(placeToGo) == null) {
-        Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = ((AbstractWorkbenchScreenActivity) activities.iterator().next());
-
-      } else {
-        activity = activitiesMap.get(placeToGo);
-      }
-      IsWidget widget = activity.getWidget();
-      activity.launch(place, null);
-
-      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
-
-      ((HTMLPanel) view.getTabPanel().getWidget(0)).add(widget);
-      activity.onOpen();
-    }
-  }
-
-
-  public void goToProcessInstanceVariables() {
-
-    if (place != null && !selectedItemId.equals("")) {
-      String placeToGo = "Process Variables List";
-      ((HTMLPanel) view.getTabPanel().getWidget(1)).clear();
-      DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
-      //Set Parameters here: 
-      defaultPlaceRequest.addParameter("processInstanceId", selectedItemId);
-      defaultPlaceRequest.addParameter("processDefId", selectedItemName);
-      defaultPlaceRequest.addParameter("deploymentId", selectedDeploymentId);
-      defaultPlaceRequest.addParameter("processInstanceStatus", String.valueOf(selectedProcessInstanceStatus));
-
-      AbstractWorkbenchActivity activity = null;
-      if (activitiesMap.get(placeToGo) == null) {
-        Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = ((AbstractWorkbenchScreenActivity) activities.iterator().next());
-
-      } else {
-        activity = activitiesMap.get(placeToGo);
-      }
-      IsWidget widget = activity.getWidget();
-      activity.launch(place, null);
-
-      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
-
-      ((HTMLPanel) view.getTabPanel().getWidget(1)).add(widget);
-      activity.onOpen();
+        IsWidget getCloseButton();
     }
 
-  }
-  
-  public void goToProcessDocuments() {
+    @Inject
+    public ProcessInstanceDetailsMultiView view;
 
-    if (place != null && !selectedItemId.equals("")) {
-      String placeToGo = "Document List";
-      ((HTMLPanel) view.getTabPanel().getWidget(2)).clear();
-      DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
-      //Set Parameters here: 
-      defaultPlaceRequest.addParameter("processInstanceId", selectedItemId);
-      defaultPlaceRequest.addParameter("processDefId", selectedItemName);
-      defaultPlaceRequest.addParameter("deploymentId", selectedDeploymentId);
-      
+    private Constants constants = GWT.create( Constants.class );
 
-      AbstractWorkbenchActivity activity = null;
-      if (activitiesMap.get(placeToGo) == null) {
-        Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = ((AbstractWorkbenchScreenActivity) activities.iterator().next());
+    @Inject
+    private Caller<KieSessionEntryPoint> kieSessionServices;
 
-      } else {
-        activity = activitiesMap.get(placeToGo);
-      }
-      IsWidget widget = activity.getWidget();
-      activity.launch(place, null);
+    @Inject
+    private Caller<DataServiceEntryPoint> dataServices;
 
-      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
+    @Inject
+    private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
 
-      ((HTMLPanel) view.getTabPanel().getWidget(2)).add(widget);
-      activity.onOpen();
+    @Inject
+    private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
+
+    private String selectedDeploymentId = "";
+
+    private int selectedProcessInstanceStatus = 0;
+
+    private String selectedProcessDefName = "";
+
+    @WorkbenchPartView
+    public UberView<ProcessInstanceDetailsMultiPresenter> getView() {
+        return view;
     }
 
-  }
+    @DefaultPosition
+    public Position getPosition() {
+        return Position.EAST;
+    }
 
-  public void signalProcessInstance() {
-    PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Signal Process Popup");
-    placeRequestImpl.addParameter("processInstanceId", selectedItemId);
-    placeManager.goTo(placeRequestImpl);
+    @Override
+    public void selectDefaultTab() {
+    }
 
-  }
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return constants.Details();
+    }
 
-  public void abortProcessInstance() {
-    dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
-        @Override
-        public void callback(ProcessInstanceSummary processInstance) {
-            if(processInstance.getState() == ProcessInstance.STATE_ACTIVE ||
-                    processInstance.getState() == ProcessInstance.STATE_PENDING){
-                if (Window.confirm("Are you sure that you want to abort the process instance?")) {
-                    final long processInstanceId = Long.parseLong(selectedItemId);
-                    kieSessionServices.call(new RemoteCallback<Void>() {
-                      @Override
-                      public void callback(Void v) {
-                          refreshProcessInstanceDetails();
-                      }
-                    }, new ErrorCallback<Message>() {
-                      @Override
-                      public boolean error(Message message, Throwable throwable) {
-                        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                        return true;
-                      }
-                    }).abortProcessInstance(processInstanceId);
-                }
-            }
-            else{
-                Window.alert("Process instance needs to be active in order to be aborted");
-            }
-        }
-    }, new ErrorCallback<Message>() {
-      @Override
-      public boolean error(Message message, Throwable throwable) {
-        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-        return true;
-      }
-    }).getProcessInstanceById(Long.parseLong(selectedItemId));
-  }
-  
-  public void goToProcessInstanceModelPopup() {
-    if (place != null && !selectedItemId.equals("")) {
-      dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
-        @Override
-        public void callback(List<NodeInstanceSummary> activeNodes) {
-          final StringBuffer nodeParam = new StringBuffer();
-          for (NodeInstanceSummary activeNode : activeNodes) {
-            nodeParam.append(activeNode.getNodeUniqueName() + ",");
-          }
-          if (nodeParam.length() > 0) {
-            nodeParam.deleteCharAt(nodeParam.length() - 1);
-          }
+    @OnStartup
+    public void onStartup( final PlaceRequest place ) {
+        super.onStartup( place );
+    }
 
-          dataServices.call(new RemoteCallback<List<NodeInstanceSummary>>() {
+    public void onProcessSelectionEvent( @Observes ProcessInstanceSelectionEvent event ) {
+        selectedItemId = String.valueOf( event.getProcessInstanceId() );
+        selectedItemName = event.getProcessDefId();
+        selectedDeploymentId = event.getDeploymentId();
+        selectedProcessInstanceStatus = event.getProcessInstanceStatus();
+        selectedProcessDefName = event.getProcessDefName();
+        view.getHeaderPanel().clear();
+
+        changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( selectedItemId ) + " - " + selectedProcessDefName ) );
+
+        view.getTabPanel().selectTab( 0 );
+    }
+
+    public void refresh() {
+        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedDeploymentId, Long.valueOf( selectedItemId ), selectedItemName, selectedProcessDefName, selectedProcessInstanceStatus ) );
+    }
+
+    public void signalProcessInstance() {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Signal Process Popup" );
+        placeRequestImpl.addParameter( "processInstanceId", selectedItemId );
+        placeManager.goTo( placeRequestImpl );
+
+    }
+
+    public void abortProcessInstance() {
+        dataServices.call( new RemoteCallback<ProcessInstanceSummary>() {
             @Override
-            public void callback(List<NodeInstanceSummary> completedNodes) {
-              StringBuffer completedNodeParam = new StringBuffer();
-              for (NodeInstanceSummary completedNode : completedNodes) {
-                if (completedNode.isCompleted()) {
-                  // insert outgoing sequence flow and node as this is for on entry event
-                  completedNodeParam.append(completedNode.getNodeUniqueName() + ",");
-                  completedNodeParam.append(completedNode.getConnection() + ",");
-                } else if (completedNode.getConnection() != null) {
-                  // insert only incoming sequence flow as node id was already inserted
-                  completedNodeParam.append(completedNode.getConnection() + ",");
-                }
-
-              }
-              completedNodeParam.deleteCharAt(completedNodeParam.length() - 1);
-              DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest("Process Diagram Popup");
-
-              defaultPlaceRequest.addParameter("activeNodes", nodeParam.toString());
-              defaultPlaceRequest.addParameter("completedNodes", completedNodeParam.toString());
-              defaultPlaceRequest.addParameter("readOnly", "true");
-              defaultPlaceRequest.addParameter("processId", selectedItemName);
-              defaultPlaceRequest.addParameter("deploymentId", selectedDeploymentId);
-
-               
-              placeManager.goTo(defaultPlaceRequest);
-
+            public void callback( ProcessInstanceSummary processInstance ) {
+                if ( processInstance.getState() == ProcessInstance.STATE_ACTIVE ||
+                        processInstance.getState() == ProcessInstance.STATE_PENDING ) {
+                    if ( Window.confirm( "Are you sure that you want to abort the process instance?" ) ) {
+                        final long processInstanceId = Long.parseLong( selectedItemId );
+                        kieSessionServices.call( new RemoteCallback<Void>() {
+                            @Override
+                            public void callback( Void v ) {
+                                refresh();
+                            }
+                        }, new ErrorCallback<Message>() {
+                            @Override
+                            public boolean error( Message message,
+                                                  Throwable throwable ) {
+                                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                                return true;
+                            }
+                        } ).abortProcessInstance( processInstanceId );
                     }
-                  }, new ErrorCallback<Message>() {
-                    @Override
-                    public boolean error(Message message, Throwable throwable) {
-                      ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                      return true;
-                    }
-                  }).getProcessInstanceCompletedNodes(Long.parseLong(selectedItemId));
-
+                } else {
+                    Window.alert( "Process instance needs to be active in order to be aborted" );
                 }
-              }, new ErrorCallback<Message>() {
+            }
+        }, new ErrorCallback<Message>() {
+            @Override
+            public boolean error( Message message,
+                                  Throwable throwable ) {
+                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                return true;
+            }
+        } ).getProcessInstanceById( Long.parseLong( selectedItemId ) );
+    }
+
+    public void goToProcessInstanceModelPopup() {
+        if ( place != null && !selectedItemId.equals( "" ) ) {
+            dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
                 @Override
-                public boolean error(Message message, Throwable throwable) {
-                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                  return true;
+                public void callback( List<NodeInstanceSummary> activeNodes ) {
+                    final StringBuffer nodeParam = new StringBuffer();
+                    for ( NodeInstanceSummary activeNode : activeNodes ) {
+                        nodeParam.append( activeNode.getNodeUniqueName() + "," );
+                    }
+                    if ( nodeParam.length() > 0 ) {
+                        nodeParam.deleteCharAt( nodeParam.length() - 1 );
+                    }
+
+                    dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
+                        @Override
+                        public void callback( List<NodeInstanceSummary> completedNodes ) {
+                            StringBuffer completedNodeParam = new StringBuffer();
+                            for ( NodeInstanceSummary completedNode : completedNodes ) {
+                                if ( completedNode.isCompleted() ) {
+                                    // insert outgoing sequence flow and node as this is for on entry event
+                                    completedNodeParam.append( completedNode.getNodeUniqueName() + "," );
+                                    completedNodeParam.append( completedNode.getConnection() + "," );
+                                } else if ( completedNode.getConnection() != null ) {
+                                    // insert only incoming sequence flow as node id was already inserted
+                                    completedNodeParam.append( completedNode.getConnection() + "," );
+                                }
+
+                            }
+                            completedNodeParam.deleteCharAt( completedNodeParam.length() - 1 );
+                            DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Process Diagram Popup" );
+
+                            defaultPlaceRequest.addParameter( "activeNodes", nodeParam.toString() );
+                            defaultPlaceRequest.addParameter( "completedNodes", completedNodeParam.toString() );
+                            defaultPlaceRequest.addParameter( "readOnly", "true" );
+                            defaultPlaceRequest.addParameter( "processId", selectedItemName );
+                            defaultPlaceRequest.addParameter( "deploymentId", selectedDeploymentId );
+
+                            placeManager.goTo( defaultPlaceRequest );
+
+                        }
+                    }, new ErrorCallback<Message>() {
+                        @Override
+                        public boolean error( Message message,
+                                              Throwable throwable ) {
+                            ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                            return true;
+                        }
+                    } ).getProcessInstanceCompletedNodes( Long.parseLong( selectedItemId ) );
+
                 }
-              }).getProcessInstanceActiveNodes(Long.parseLong(selectedItemId));
+            }, new ErrorCallback<Message>() {
+                @Override
+                public boolean error( Message message,
+                                      Throwable throwable ) {
+                    ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                    return true;
+                }
+            } ).getProcessInstanceActiveNodes( Long.parseLong( selectedItemId ) );
 
-      
+        }
     }
-  }
-  
-    public void goToProcessInstanceLogsTab() {
-    if (place != null && !selectedItemId.equals("")) {
-      String placeToGo = "Process Instance Logs";
-      ((HTMLPanel) view.getTabPanel().getWidget(3)).clear();
-      DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
-      //Set Parameters here: 
-      defaultPlaceRequest.addParameter("processInstanceId", selectedItemId);
-      defaultPlaceRequest.addParameter("processDefId", selectedItemName);
-      defaultPlaceRequest.addParameter("deploymentId", selectedDeploymentId);
 
-      AbstractWorkbenchActivity activity = null;
-      if (activitiesMap.get(placeToGo) == null) {
-        Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = ((AbstractWorkbenchScreenActivity) activities.iterator().next());
-
-      } else {
-        activity = activitiesMap.get(placeToGo);
-      }
-      IsWidget widget = activity.getWidget();
-      activity.launch(place, null);
-
-      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
-
-      ((HTMLPanel) view.getTabPanel().getWidget(3)).add(widget);
-      activity.onOpen();
+    @OnClose
+    public void onClose() {
+        super.onClose();
     }
-  }
 
-  @OnClose
-  public void onClose() {
-    super.onClose();
-  }
+    @WorkbenchMenu
+    public Menus buildMenu() {
+        return MenuFactory
+                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+                    @Override
+                    public void push( MenuFactory.CustomMenuBuilder element ) {
+                    }
+
+                    @Override
+                    public MenuItem build() {
+                        return new BaseMenuCustom<IsWidget>() {
+                            @Override
+                            public IsWidget build() {
+                                return view.getOptionsButton();
+                            }
+                        };
+                    }
+                } ).endMenu()
+
+                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+                    @Override
+                    public void push( MenuFactory.CustomMenuBuilder element ) {
+                    }
+
+                    @Override
+                    public MenuItem build() {
+                        return new BaseMenuCustom<IsWidget>() {
+                            @Override
+                            public IsWidget build() {
+                                return view.getRefreshButton();
+                            }
+                        };
+                    }
+                } ).endMenu()
+
+                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+                    @Override
+                    public void push( MenuFactory.CustomMenuBuilder element ) {
+                    }
+
+                    @Override
+                    public MenuItem build() {
+                        return new BaseMenuCustom<IsWidget>() {
+                            @Override
+                            public IsWidget build() {
+                                return view.getCloseButton();
+                            }
+                        };
+                    }
+                } ).endMenu().build();
+    }
+
 }

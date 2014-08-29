@@ -103,13 +103,7 @@ public class ShowcaseEntryPoint {
         } ).loadPolicy();
         
       List<String> allActivities = activityBeansCache.getActivitiesById();
-      pmas.call(new RemoteCallback<Void>(){
-
-          @Override
-          public void callback(Void response) {
-            
-          }
-        }).initActivities(allActivities);
+      pmas.call().initActivities(allActivities);
     }
 
     private void setupMenu() {

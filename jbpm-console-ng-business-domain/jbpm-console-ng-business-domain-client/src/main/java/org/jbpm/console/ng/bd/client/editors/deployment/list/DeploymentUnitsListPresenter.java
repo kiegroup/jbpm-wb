@@ -15,7 +15,7 @@
  */
 package org.jbpm.console.ng.bd.client.editors.deployment.list;
 
-import org.jbpm.console.ng.gc.client.list.base.AbstractListPresenter;
+import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.AsyncDataProvider;
@@ -40,7 +40,7 @@ import org.uberfire.paging.PageResponse;
 
 @Dependent
 @WorkbenchScreen(identifier = "Deployments List")
-public class DeploymentUnitsListPresenter extends AbstractListPresenter<KModuleDeploymentUnitSummary> {
+public class DeploymentUnitsListPresenter extends AbstractScreenListPresenter<KModuleDeploymentUnitSummary> {
 
   public interface DeploymentUnitsListView extends ListView<KModuleDeploymentUnitSummary,DeploymentUnitsListPresenter> {
 

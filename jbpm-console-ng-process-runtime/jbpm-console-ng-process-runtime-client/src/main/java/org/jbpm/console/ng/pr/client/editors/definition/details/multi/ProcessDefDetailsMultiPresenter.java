@@ -83,6 +83,7 @@ public class ProcessDefDetailsMultiPresenter extends AbstractTabbedDetailsPresen
         return Position.EAST;
     }
 
+    @Override
     public void selectDefaultTab() {
     }
 
@@ -96,7 +97,7 @@ public class ProcessDefDetailsMultiPresenter extends AbstractTabbedDetailsPresen
         super.onStartup( place );
     }
 
-    public void onProcessSelectionEvent( @Observes ProcessDefSelectionEvent event ) {
+    public void onProcessSelectionEvent( @Observes final ProcessDefSelectionEvent event ) {
         selectedItemId = event.getDeploymentId();
         selectedItemName = event.getProcessId();
         view.getHeaderPanel().clear();
