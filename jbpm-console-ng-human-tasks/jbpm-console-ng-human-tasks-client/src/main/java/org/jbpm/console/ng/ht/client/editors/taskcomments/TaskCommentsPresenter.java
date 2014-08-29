@@ -16,47 +16,37 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskcomments;
 
-import com.github.gwtbootstrap.client.ui.Button;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextArea;
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
-import javax.enterprise.event.Observes;
-
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
+import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
-import org.uberfire.client.annotations.WorkbenchPartTitle;
-import org.uberfire.client.annotations.WorkbenchPartView;
-import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.UberView;
-import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
-@WorkbenchScreen(identifier = "Task Comments")
 public class TaskCommentsPresenter {
 
-    public interface TaskCommentsView extends UberView<TaskCommentsPresenter> {
+    public interface TaskCommentsView extends IsWidget {
 
+        void init( TaskCommentsPresenter presenter );
 
         TextArea getNewTaskCommentTextArea();
 
@@ -65,60 +55,37 @@ public class TaskCommentsPresenter {
         DataGrid<CommentSummary> getDataGrid();
 
         SimplePager getPager();
-        
+
         void displayNotification( String text );
     }
 
     @Inject
-    private PlaceManager placeManager;
+    private TaskCommentsView view;
 
     @Inject
-    TaskCommentsView view;
+    private Identity identity;
 
-    @Inject
-    Identity identity;
-    
     private long currentTaskId = 0;
 
     @Inject
-    Caller<TaskServiceEntryPoint> taskServices;
-
-    private Constants constants = GWT.create( Constants.class );
-
-    @Inject
-    private Event<BeforeClosePlaceEvent> closePlaceEvent;
-
-    private PlaceRequest place;
+    private Caller<TaskServiceEntryPoint> taskServices;
 
     private ListDataProvider<CommentSummary> dataProvider = new ListDataProvider<CommentSummary>();
+
+    @PostConstruct
+    public void init() {
+        view.init( this );
+    }
+
+    public IsWidget getView() {
+        return view;
+    }
 
     public ListDataProvider<CommentSummary> getDataProvider() {
         return dataProvider;
     }
 
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.Comments();
-    }
-
-    @WorkbenchPartView
-    public UberView<TaskCommentsPresenter> getView() {
-        return view;
-    }
-
-    @OnStartup
-    public void onStartup( final PlaceRequest place ) {
-        this.place = place;
-    }
-
-    @OnOpen
-    public void onOpen() {
-        this.currentTaskId = Long.parseLong( place.getParameter( "taskId", "0" ).toString() );
-        refreshComments( );
-        view.getDataGrid().redraw();
-    }
-
-    public void refreshComments( ) {
+    public void refreshComments() {
         taskServices.call( new RemoteCallback<List<CommentSummary>>() {
 
             @Override
@@ -133,61 +100,66 @@ public class TaskCommentsPresenter {
                 view.getDataGrid().redraw();
             }
         }, new ErrorCallback<Message>() {
-               @Override
-               public boolean error( Message message, Throwable throwable ) {
-                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                   return true;
-               }
-           } ).getAllCommentsByTaskId( currentTaskId );
+            @Override
+            public boolean error( Message message,
+                                  Throwable throwable ) {
+                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                return true;
+            }
+        } ).getAllCommentsByTaskId( currentTaskId );
 
     }
 
-    public void addTaskComment( String text,
-                                Date addedOn ) {
+    public void addTaskComment( final String text,
+                                final Date addedOn ) {
         taskServices.call( new RemoteCallback<Long>() {
 
             @Override
             public void callback( Long response ) {
-                refreshComments( );
-                view.getNewTaskCommentTextArea().setText("");
+                refreshComments();
+                view.getNewTaskCommentTextArea().setText( "" );
             }
         }, new ErrorCallback<Message>() {
-               @Override
-               public boolean error( Message message, Throwable throwable ) {
-                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                   return true;
-               }
-           } ).addComment( currentTaskId, text, identity.getName(), addedOn );
+            @Override
+            public boolean error( Message message,
+                                  Throwable throwable ) {
+                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                return true;
+            }
+        } ).addComment( currentTaskId, text, identity.getName(), addedOn );
     }
-    
+
     public void removeTaskComment( long commentId ) {
         taskServices.call( new RemoteCallback<Long>() {
             @Override
             public void callback( Long response ) {
-                refreshComments( );
-                view.getNewTaskCommentTextArea().setText("");
-                view.displayNotification("Comment Deleted!");
+                refreshComments();
+                view.getNewTaskCommentTextArea().setText( "" );
+                view.displayNotification( "Comment Deleted!" );
             }
         }, new ErrorCallback<Message>() {
-               @Override
-               public boolean error( Message message, Throwable throwable ) {
-                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                   return true;
-               }
-           } ).deleteComment( currentTaskId, commentId );
+            @Override
+            public boolean error( Message message,
+                                  Throwable throwable ) {
+                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                return true;
+            }
+        } ).deleteComment( currentTaskId, commentId );
     }
 
-    public void addDataDisplay( HasData<CommentSummary> display ) {
+    public void addDataDisplay( final HasData<CommentSummary> display ) {
         dataProvider.addDataDisplay( display );
     }
 
-    public void close() {
-        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
+    public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
+        this.currentTaskId = event.getTaskId();
+        refreshComments();
+        view.getDataGrid().redraw();
     }
 
-    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event){
-        if(currentTaskId == event.getTaskId()){
-            refreshComments( );
+    public void onTaskRefreshedEvent( @Observes final TaskRefreshedEvent event ) {
+        if ( currentTaskId == event.getTaskId() ) {
+            refreshComments();
             view.getDataGrid().redraw();
         }
     }

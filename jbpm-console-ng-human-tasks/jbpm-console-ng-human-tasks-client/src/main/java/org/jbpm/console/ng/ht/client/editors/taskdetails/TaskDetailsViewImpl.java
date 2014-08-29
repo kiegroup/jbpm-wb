@@ -208,7 +208,6 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
 
     @EventHandler("pIDetailsButton")
     public void pIDetailsButton( ClickEvent e ) {
-        presenter.close();
         presenter.goToProcessInstanceDetails();
     }
 

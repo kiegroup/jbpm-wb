@@ -15,49 +15,38 @@
  */
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.generic;
 
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.workbench.events.NotificationEvent;
 
 /**
- *
  * @author salaboy
  */
 @Dependent
 @Templated(value = "GenericFormDisplayViewImpl.html")
 public class GenericFormDisplayView extends Composite implements GenericFormDisplayPresenter.GenericFormDisplayView {
-  
 
+    @Inject
+    private Event<NotificationEvent> notification;
 
-  private GenericFormDisplayPresenter presenter;
+    @Inject
+    @DataField
+    private FlowPanel formContainer;
 
-  @Inject
-  private Event<NotificationEvent> notification;
-  
-  @Inject
-  @DataField
-  private FlowPanel formContainer;
-  
+    @Override
+    public void displayNotification( final String text ) {
+        notification.fire( new NotificationEvent( text ) );
+    }
 
-  @Override
-  public void init(GenericFormDisplayPresenter presenter) {
-    this.presenter = presenter;
-  }
-  
-  
-
-  @Override
-  public void displayNotification(String text) {
-    notification.fire(new NotificationEvent(text));
-  }
-
-  @Override
-  public void render(FlowPanel content) {
-    formContainer.add(content);
-  }
+    @Override
+    public void render( final FlowPanel content ) {
+        formContainer.clear();
+        formContainer.add( content );
+    }
 }

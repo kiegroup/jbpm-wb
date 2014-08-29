@@ -15,80 +15,139 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskdetailsmulti;
 
-import com.google.gwt.core.client.GWT;
+import javax.enterprise.context.Dependent;
+
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
-import javax.enterprise.context.Dependent;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView;
+import org.jbpm.console.ng.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
+import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter;
+import org.jbpm.console.ng.ht.client.editors.taskdetails.TaskDetailsPresenter;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.forms.client.editors.taskform.generic.GenericFormDisplayPresenter;
+
+import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.*;
 
 @Dependent
 public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDetailsMultiPresenter>
-                                      implements TaskDetailsMultiPresenter.TaskDetailsMultiView{
+        implements TaskDetailsMultiPresenter.TaskDetailsMultiView {
 
-  interface Binder
-          extends
-          UiBinder<Widget, TaskDetailsMultiViewImpl> {
+    interface Binder
+            extends
+            UiBinder<Widget, TaskDetailsMultiViewImpl> {
 
-  }
-  private static Binder uiBinder = GWT.create(Binder.class);
+    }
 
-  private Constants constants = GWT.create(Constants.class);
+    private GenericFormDisplayPresenter genericFormDisplayPresenter;
 
-  @Override
-  public void init(final TaskDetailsMultiPresenter presenter) {
-    super.init(presenter);
-  }
+    private TaskDetailsPresenter taskDetailsPresenter;
 
-  @Override
-  public void initTabs() {
-    tabPanel.addTab("Generic Form Display", constants.Work());
-    tabPanel.addTab("Task Details", constants.Details());
-    tabPanel.addTab("Task Assignments", constants.Assignments());
-    tabPanel.addTab("Task Comments", constants.Comments());
-    tabPanel.setHeight("600px");
-    tabPanel.addCloseHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        presenter.closeDetails();
-      }
-    });
-    tabPanel.addRefreshHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        int selectedIndex = tabPanel.getSelectedIndex();
-        if (selectedIndex == 0) {
-          presenter.goToTaskFormTab();
-        } else if (selectedIndex == 1) {
-          presenter.goToTaskDetailsTab();
-        } else if (selectedIndex == 2) {
-          presenter.goToTaskAssignmentsTab();
-        } else if (selectedIndex == 3) {
-          presenter.goToTaskCommentsTab();
-        }
-      }
-    });
+    private TaskAssignmentsPresenter taskAssignmentsPresenter;
 
-    tabPanel.addSelectionHandler(new SelectionHandler<Integer>() {
+    private TaskCommentsPresenter taskCommentsPresenter;
 
-      @Override
-      public void onSelection(SelectionEvent<Integer> event) {
-        if (event.getSelectedItem() == 0) {
-          presenter.goToTaskFormTab();
-        } else if (event.getSelectedItem() == 1) {
-          presenter.goToTaskDetailsTab();
-        } else if (event.getSelectedItem() == 2) {
-          presenter.goToTaskAssignmentsTab();
-        } else if (event.getSelectedItem() == 3) {
-          presenter.goToTaskCommentsTab();
-        }
-      }
-    });
+    @Override
+    public void init( final TaskDetailsMultiPresenter presenter ) {
+        super.init( presenter );
+    }
 
-  }
+    @Override
+    public void initTabs() {
+        tabPanel.addTab( "Generic Form Display", Constants.INSTANCE.Work() );
+        tabPanel.addTab( "Task Details", Constants.INSTANCE.Details() );
+        tabPanel.addTab( "Task Assignments", Constants.INSTANCE.Assignments() );
+        tabPanel.addTab( "Task Comments", Constants.INSTANCE.Comments() );
+        tabPanel.setHeight( "600px" );
+        tabPanel.addCloseHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                presenter.closeDetails();
+            }
+        } );
+
+        ( (HTMLPanel) tabPanel.getWidget( 0 ) ).add( genericFormDisplayPresenter.getView() );
+        ( (HTMLPanel) tabPanel.getWidget( 1 ) ).add( taskDetailsPresenter.getView() );
+        ( (HTMLPanel) tabPanel.getWidget( 2 ) ).add( taskAssignmentsPresenter.getView() );
+        ( (HTMLPanel) tabPanel.getWidget( 3 ) ).add( taskCommentsPresenter.getView() );
+
+        tabPanel.addRefreshHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                int selectedIndex = tabPanel.getSelectedIndex();
+                if ( selectedIndex == 1 ) {
+                    taskDetailsPresenter.refreshTask();
+                } else if ( selectedIndex == 2 ) {
+                    taskAssignmentsPresenter.refreshTaskPotentialOwners();
+                } else if ( selectedIndex == 3 ) {
+                    taskCommentsPresenter.refreshComments();
+                }
+            }
+        } );
+
+        tabPanel.addSelectionHandler( new SelectionHandler<Integer>() {
+
+            @Override
+            public void onSelection( SelectionEvent<Integer> event ) {
+                if ( event.getSelectedItem() == 1 ) {
+                    taskDetailsPresenter.refreshTask();
+                } else if ( event.getSelectedItem() == 2 ) {
+                    taskAssignmentsPresenter.refreshTaskPotentialOwners();
+                } else if ( event.getSelectedItem() == 3 ) {
+                    taskCommentsPresenter.refreshComments();
+                }
+            }
+        } );
+    }
+
+    @Override
+    public Button getCloseButton() {
+        return new Button() {
+            {
+                setIcon( IconType.REMOVE );
+                setSize( MINI );
+                addClickHandler( new ClickHandler() {
+                    @Override
+                    public void onClick( ClickEvent event ) {
+                        presenter.closeDetails();
+                    }
+                } );
+            }
+        };
+    }
+
+    @Override
+    public void setupPresenters( final GenericFormDisplayPresenter genericFormDisplayPresenter,
+                                 final TaskDetailsPresenter taskDetailsPresenter,
+                                 final TaskAssignmentsPresenter taskAssignmentsPresenter,
+                                 final TaskCommentsPresenter taskCommentsPresenter ) {
+        this.genericFormDisplayPresenter = genericFormDisplayPresenter;
+        this.taskDetailsPresenter = taskDetailsPresenter;
+        this.taskAssignmentsPresenter = taskAssignmentsPresenter;
+        this.taskCommentsPresenter = taskCommentsPresenter;
+    }
+
+    @Override
+    public IsWidget getRefreshButton() {
+        return new Button() {
+            {
+                setIcon( IconType.REFRESH );
+                setSize( MINI );
+                addClickHandler( new ClickHandler() {
+                    @Override
+                    public void onClick( ClickEvent event ) {
+                        presenter.refresh();
+                    }
+                } );
+            }
+        };
+    }
 
 }

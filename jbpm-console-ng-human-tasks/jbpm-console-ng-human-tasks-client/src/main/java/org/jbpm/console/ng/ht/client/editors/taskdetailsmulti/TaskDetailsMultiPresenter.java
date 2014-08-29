@@ -15,182 +15,157 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskdetailsmulti;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.IsWidget;
-import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+
+import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsPresenter;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView.TabbedDetailsView;
+import org.jbpm.console.ng.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
+import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter;
+import org.jbpm.console.ng.ht.client.editors.taskdetails.TaskDetailsPresenter;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.forms.client.editors.taskform.generic.GenericFormDisplayPresenter;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.uberfire.client.annotations.DefaultPosition;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.AbstractWorkbenchActivity;
-import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
-import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.lifecycle.OnStartup;
+import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.Position;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.MenuItem;
+import org.uberfire.workbench.model.menu.Menus;
+import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @Dependent
 @WorkbenchScreen(identifier = "Task Details Multi", preferredWidth = 500)
 public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
 
-  public interface TaskDetailsMultiView
-          extends TabbedDetailsView<TaskDetailsMultiPresenter> {
-  }
+    public interface TaskDetailsMultiView
+            extends TabbedDetailsView<TaskDetailsMultiPresenter> {
 
-  @Inject
-  public TaskDetailsMultiView view;
+        void setupPresenters( final GenericFormDisplayPresenter genericFormDisplayPresenter,
+                              final TaskDetailsPresenter taskDetailsPresenter,
+                              final TaskAssignmentsPresenter taskAssignmentsPresenter,
+                              final TaskCommentsPresenter taskCommentsPresenter );
 
-  private Constants constants = GWT.create(Constants.class);
+        IsWidget getRefreshButton();
 
-  public TaskDetailsMultiPresenter() {
-
-  }
-
-  @WorkbenchPartView
-  public UberView<TaskDetailsMultiPresenter> getView() {
-    return view;
-  }
-
-  @DefaultPosition
-  public Position getPosition() {
-    return Position.EAST;
-  }
-
-  @Override
-  public void selectDefaultTab() {
-    goToTaskFormTab();
-  }
-
-  @WorkbenchPartTitle
-  public String getTitle() {
-    return constants.Details();
-  }
-
-  @OnStartup
-  public void onStartup(final PlaceRequest place) {
-    super.onStartup(place);
-    selectDefaultTab();
-  }
-
-  public void onTaskSelectionEvent(@Observes TaskSelectionEvent event) {
-    selectedItemId = String.valueOf(event.getTaskId());
-    selectedItemName = event.getTaskName();
-    view.getHeaderPanel().clear();
-    view.getHeaderPanel().add(new HTMLPanel(SafeHtmlUtils.htmlEscape(String.valueOf(selectedItemId) + " - " + selectedItemName)));
-    view.getTabPanel().selectTab(0);
-    selectDefaultTab();
-
-  }
-
-  public void goToTaskDetailsTab() {
-    if (place != null && !selectedItemId.equals("")) {
-      String placeToGo = "Task Details";
-      ((HTMLPanel) view.getTabPanel().getWidget(1)).clear();
-      DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
-      //Set Parameters here: 
-      defaultPlaceRequest.addParameter("taskId", selectedItemId);
-      defaultPlaceRequest.addParameter("taskName", selectedItemName);
-
-      AbstractWorkbenchActivity activity = null;
-      if (activitiesMap.get(placeToGo) == null) {
-        Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = (AbstractWorkbenchActivity) activities.iterator().next();
-
-      } else {
-        activity = activitiesMap.get(placeToGo);
-      }
-      IsWidget widget = activity.getWidget();
-      activity.launch(place, null);
-      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
-      ((HTMLPanel) view.getTabPanel().getWidget(1)).add(widget);
-      activity.onOpen();
+        IsWidget getCloseButton();
     }
-  }
 
-  public void goToTaskFormTab() {
-    if (place != null && !selectedItemId.equals("")) {
-      String placeToGo = "Generic Form Display";
-      ((HTMLPanel) view.getTabPanel().getWidget(0)).clear();
-      DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
-      //Set Parameters here: 
-      defaultPlaceRequest.addParameter("taskId", selectedItemId);
-      defaultPlaceRequest.addParameter("taskName", selectedItemName);
+    @Inject
+    private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
 
-      AbstractWorkbenchActivity activity = null;
-      if (activitiesMap.get(placeToGo) == null) {
-        Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = ((AbstractWorkbenchActivity) activities.iterator().next());
+    @Inject
+    private Event<TaskSelectionEvent> taskSelected;
 
-      } else {
-        activity = activitiesMap.get(placeToGo);
-      }
-      IsWidget widget = activity.getWidget();
-      activity.launch(place, null);
-      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
-      ((HTMLPanel) view.getTabPanel().getWidget(0)).add(widget);
-      activity.onOpen();
+    @Inject
+    private GenericFormDisplayPresenter genericFormDisplayPresenter;
+
+    @Inject
+    private TaskDetailsPresenter taskDetailsPresenter;
+
+    @Inject
+    private TaskAssignmentsPresenter taskAssignmentsPresenter;
+
+    @Inject
+    private TaskCommentsPresenter taskCommentsPresenter;
+
+    @Inject
+    private TaskDetailsMultiView view;
+
+    @PostConstruct
+    public void init() {
+        view.setupPresenters( genericFormDisplayPresenter, taskDetailsPresenter, taskAssignmentsPresenter, taskCommentsPresenter );
     }
-  }
 
-  public void goToTaskAssignmentsTab() {
-    if (place != null && !selectedItemId.equals("")) {
-      String placeToGo = "Task Assignments";
-      ((HTMLPanel) view.getTabPanel().getWidget(2)).clear();
-      DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
-      //Set Parameters here: 
-      defaultPlaceRequest.addParameter("taskId", selectedItemId);
-      defaultPlaceRequest.addParameter("taskName", selectedItemName);
-
-      AbstractWorkbenchActivity activity = null;
-      if (activitiesMap.get(placeToGo) == null) {
-        Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = (AbstractWorkbenchActivity) activities.iterator().next();
-
-      } else {
-        activity = activitiesMap.get(placeToGo);
-      }
-      IsWidget widget = activity.getWidget();
-      activity.launch(place, null);
-      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
-      ((HTMLPanel) view.getTabPanel().getWidget(2)).add(widget);
-      activity.onOpen();
+    @WorkbenchPartView
+    public UberView<TaskDetailsMultiPresenter> getView() {
+        return view;
     }
-  }
 
-  public void goToTaskCommentsTab() {
-    if (place != null) {
-      String placeToGo = "Task Comments";
-      ((HTMLPanel) view.getTabPanel().getWidget(3)).clear();
-      DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
-      //Set Parameters here: 
-      defaultPlaceRequest.addParameter("taskId", selectedItemId);
-      defaultPlaceRequest.addParameter("taskName", selectedItemName);
-
-      AbstractWorkbenchActivity activity = null;
-      if (activitiesMap.get(placeToGo) == null) {
-        Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = (AbstractWorkbenchActivity) activities.iterator().next();
-
-      } else {
-        activity = activitiesMap.get(placeToGo);
-      }
-      IsWidget widget = activity.getWidget();
-      activity.launch(place, null);
-      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
-      ((HTMLPanel) view.getTabPanel().getWidget(3)).add(widget);
-      activity.onOpen();
+    @DefaultPosition
+    public Position getPosition() {
+        return Position.EAST;
     }
-  }
 
+    @Override
+    public void selectDefaultTab() {
+    }
+
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return Constants.INSTANCE.Details();
+    }
+
+    @OnStartup
+    public void onStartup( final PlaceRequest place ) {
+        super.onStartup( place );
+        selectDefaultTab();
+    }
+
+    public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
+        selectedItemId = String.valueOf( event.getTaskId() );
+        selectedItemName = event.getTaskName();
+        genericFormDisplayPresenter.setup( event.getTaskId(), "none", "none", new Command() {
+            @Override
+            public void execute() {
+            }
+        } );
+        view.getHeaderPanel().clear();
+
+        changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( selectedItemId ) + " - " + selectedItemName ) );
+
+        view.getTabPanel().selectTab( 0 );
+    }
+
+    public void refresh() {
+        taskSelected.fire( new TaskSelectionEvent( Long.valueOf( selectedItemId ), selectedItemName, "Generic Form Display" ) );
+    }
+
+    @WorkbenchMenu
+    public Menus buildMenu() {
+        return MenuFactory
+                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+                    @Override
+                    public void push( MenuFactory.CustomMenuBuilder element ) {
+                    }
+
+                    @Override
+                    public MenuItem build() {
+                        return new BaseMenuCustom<IsWidget>() {
+                            @Override
+                            public IsWidget build() {
+                                return view.getRefreshButton();
+                            }
+                        };
+                    }
+                } ).endMenu()
+
+                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+                    @Override
+                    public void push( MenuFactory.CustomMenuBuilder element ) {
+                    }
+
+                    @Override
+                    public MenuItem build() {
+                        return new BaseMenuCustom<IsWidget>() {
+                            @Override
+                            public IsWidget build() {
+                                return view.getCloseButton();
+                            }
+                        };
+                    }
+                } ).endMenu().build();
+    }
 }
