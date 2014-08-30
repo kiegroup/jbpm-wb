@@ -65,6 +65,8 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
         void displayNotification( final String text );
 
         void render( final FlowPanel content );
+
+        void onReadyToRender( final Command command );
     }
 
     @PostConstruct
@@ -95,6 +97,20 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
         this.currentProcessId = currentProcessId;
         this.currentDeploymentId = currentDeploymentId;
         this.onClose = onClose;
+
+        refresh();
+    }
+
+    public void setup( final long currentTaskId,
+                       final String currentProcessId,
+                       final String currentDeploymentId,
+                       final Command onClose,
+                       final Command onReadyToRender ) {
+        this.currentTaskId = currentTaskId;
+        this.currentProcessId = currentProcessId;
+        this.currentDeploymentId = currentDeploymentId;
+        this.onClose = onClose;
+        view.onReadyToRender( onReadyToRender );
 
         refresh();
     }
