@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
 /**
@@ -39,6 +40,8 @@ public class GenericFormDisplayView extends Composite implements GenericFormDisp
     @DataField
     private FlowPanel formContainer;
 
+    private Command onReadyToRenderCommand;
+
     @Override
     public void displayNotification( final String text ) {
         notification.fire( new NotificationEvent( text ) );
@@ -48,5 +51,13 @@ public class GenericFormDisplayView extends Composite implements GenericFormDisp
     public void render( final FlowPanel content ) {
         formContainer.clear();
         formContainer.add( content );
+        if ( onReadyToRenderCommand != null ) {
+            onReadyToRenderCommand.execute();
+        }
+    }
+
+    @Override
+    public void onReadyToRender( final Command command ) {
+        this.onReadyToRenderCommand = command;
     }
 }

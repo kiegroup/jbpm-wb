@@ -15,20 +15,21 @@
  */
 package org.jbpm.console.ng.pr.client.editors.definition.list;
 
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
-import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
+import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
@@ -36,85 +37,97 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.paging.PageResponse;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Definition List")
 public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<ProcessSummary> {
 
-  public interface ProcessDefinitionListView extends ListView<ProcessSummary, ProcessDefinitionListPresenter> {
+    public interface ProcessDefinitionListView extends ListView<ProcessSummary, ProcessDefinitionListPresenter> {
 
-  }
+    }
 
-  @Inject
-  private ProcessDefinitionListView view;
+    @Inject
+    private ProcessDefinitionListView view;
 
-  @Inject
-  private Caller<ProcessDefinitionService> processDefinitionService;
+    @Inject
+    private Caller<ProcessDefinitionService> processDefinitionService;
 
-  private Constants constants = GWT.create(Constants.class);
+    private Constants constants = GWT.create( Constants.class );
 
-  public ProcessDefinitionListPresenter() {
-    dataProvider = new AsyncDataProvider<ProcessSummary>() {
+    public ProcessDefinitionListPresenter() {
+        dataProvider = new AsyncDataProvider<ProcessSummary>() {
 
-      @Override
-      protected void onRangeChanged(HasData<ProcessSummary> display) {
+            @Override
+            protected void onRangeChanged( HasData<ProcessSummary> display ) {
 
-        final Range visibleRange = display.getVisibleRange();
-        ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-        if (currentFilter == null) {
-          currentFilter = new PortableQueryFilter(visibleRange.getStart(),
-                  visibleRange.getLength(),
-                  false, "",
-                  (columnSortList.size() > 0) ? columnSortList.get(0)
-                  .getColumn().getDataStoreName() : "",
-                  (columnSortList.size() > 0) ? columnSortList.get(0)
-                  .isAscending() : true);
-        }
-        // If we are refreshing after a search action, we need to go back to offset 0
-        if(currentFilter.getParams() == null || currentFilter.getParams().isEmpty() 
-                || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")){
-          currentFilter.setOffset(visibleRange.getStart());
-          currentFilter.setCount(visibleRange.getLength());
-        }else{
-          currentFilter.setOffset(0);
-          currentFilter.setCount(view.getListGrid().getPageSize());
-        }
-        
-        currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
-                .getColumn().getDataStoreName() : "");
-        currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
-                .isAscending() : true);
-        
-        processDefinitionService.call(new RemoteCallback<PageResponse<ProcessSummary>>() {
-          @Override
-          public void callback(PageResponse<ProcessSummary> response) {
-            dataProvider.updateRowCount( response.getTotalRowSize(),
-                                        response.isTotalRowSizeExact() );
-            dataProvider.updateRowData( response.getStartRowIndex(),
-                                       response.getPageRowList() );
-          }
-        }, new ErrorCallback<Message>() {
-          @Override
-          public boolean error(Message message, Throwable throwable) {
-            view.hideBusyIndicator();
-            view.displayNotification("Error: Getting Process Definitions: " + message);
-            GWT.log(throwable.toString());
-            return true;
-          }
-        }).getData(currentFilter); 
+                final Range visibleRange = display.getVisibleRange();
+                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+                if ( currentFilter == null ) {
+                    currentFilter = new PortableQueryFilter( visibleRange.getStart(),
+                                                             visibleRange.getLength(),
+                                                             false, "",
+                                                             ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                                                                     .getColumn().getDataStoreName() : "",
+                                                             ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                                                                     .isAscending() : true );
+                }
+                // If we are refreshing after a search action, we need to go back to offset 0
+                if ( currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
+                        || currentFilter.getParams().get( "textSearch" ) == null || currentFilter.getParams().get( "textSearch" ).equals( "" ) ) {
+                    currentFilter.setOffset( visibleRange.getStart() );
+                    currentFilter.setCount( visibleRange.getLength() );
+                } else {
+                    currentFilter.setOffset( 0 );
+                    currentFilter.setCount( view.getListGrid().getPageSize() );
+                }
 
-      }
-    };
-  }
+                currentFilter.setOrderBy( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                        .getColumn().getDataStoreName() : "" );
+                currentFilter.setIsAscending( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                        .isAscending() : true );
 
-  @WorkbenchPartTitle
-  public String getTitle() {
-    return constants.Process_Definitions();
-  }
+                processDefinitionService.call( new RemoteCallback<PageResponse<ProcessSummary>>() {
+                    @Override
+                    public void callback( PageResponse<ProcessSummary> response ) {
+                        dataProvider.updateRowCount( response.getTotalRowSize(),
+                                                     response.isTotalRowSizeExact() );
+                        dataProvider.updateRowData( response.getStartRowIndex(),
+                                                    response.getPageRowList() );
+                    }
+                }, new ErrorCallback<Message>() {
+                    @Override
+                    public boolean error( Message message,
+                                          Throwable throwable ) {
+                        view.hideBusyIndicator();
+                        view.displayNotification( "Error: Getting Process Definitions: " + message );
+                        GWT.log( throwable.toString() );
+                        return true;
+                    }
+                } ).getData( currentFilter );
 
-  @WorkbenchPartView
-  public UberView<ProcessDefinitionListPresenter> getView() {
-    return view;
-  }
+            }
+        };
+    }
+
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return constants.Process_Definitions();
+    }
+
+    @WorkbenchPartView
+    public UberView<ProcessDefinitionListPresenter> getView() {
+        return view;
+    }
+
+    public void openGenericForm( final String processDefId,
+                                 final String deploymentId,
+                                 final String processDefName ) {
+        placeManager.goTo( new DefaultPlaceRequest( "Generic Form Display PopUp" )
+                                   .addParameter( "processId", processDefId )
+                                   .addParameter( "domainId", deploymentId )
+                                   .addParameter( "processName", processDefName ) );
+    }
+
 }
