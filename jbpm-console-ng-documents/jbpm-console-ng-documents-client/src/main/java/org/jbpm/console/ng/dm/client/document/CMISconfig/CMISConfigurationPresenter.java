@@ -129,7 +129,7 @@ public class CMISConfigurationPresenter {
 
 	@WorkbenchPartTitle
 	public String getTitle() {
-		return "Document Details";
+		return constants.ConfigurationPanel();
 	}
 
 	@WorkbenchPartView

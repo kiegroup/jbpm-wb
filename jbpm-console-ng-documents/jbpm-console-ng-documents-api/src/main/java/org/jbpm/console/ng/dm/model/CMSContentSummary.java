@@ -1,15 +1,12 @@
 package org.jbpm.console.ng.dm.model;
 
-public abstract class CMSContentSummary {
+import org.jbpm.console.ng.ga.model.GenericSummary;
 
-	private String name;
-	
+public abstract class CMSContentSummary extends GenericSummary{
+
 	private String path;
 	
-	private String id;
-	
 	private CMSContentSummary parent;
-	
 	
 	public CMSContentSummary(String name, String id, String path) {
 		super();
@@ -24,7 +21,7 @@ public abstract class CMSContentSummary {
 	public abstract ContentType getContentType();
 	
 	public String getId() {
-		return id;
+		return (String)id;
 	}
 	
 	public String getName() {

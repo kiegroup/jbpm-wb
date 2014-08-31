@@ -55,7 +55,7 @@ import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 
 @Dependent
-@WorkbenchScreen(identifier = "Documents Presenter")
+@WorkbenchScreen(identifier = "Documents Presenter Viejo")
 public class DocumentListPresenter {
 
 	public interface DocumentListView extends UberView<DocumentListPresenter> {
