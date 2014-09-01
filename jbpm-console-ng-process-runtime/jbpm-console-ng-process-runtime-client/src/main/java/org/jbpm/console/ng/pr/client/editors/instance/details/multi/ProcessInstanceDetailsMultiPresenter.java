@@ -32,6 +32,7 @@ import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsPresenter;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView.TabbedDetailsView;
+import org.jbpm.console.ng.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
@@ -201,18 +202,15 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
                                     // insert only incoming sequence flow as node id was already inserted
                                     completedNodeParam.append( completedNode.getConnection() + "," );
                                 }
-
                             }
                             completedNodeParam.deleteCharAt( completedNodeParam.length() - 1 );
-                            DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Process Diagram Popup" );
 
-                            defaultPlaceRequest.addParameter( "activeNodes", nodeParam.toString() );
-                            defaultPlaceRequest.addParameter( "completedNodes", completedNodeParam.toString() );
-                            defaultPlaceRequest.addParameter( "readOnly", "true" );
-                            defaultPlaceRequest.addParameter( "processId", selectedItemName );
-                            defaultPlaceRequest.addParameter( "deploymentId", selectedDeploymentId );
-
-                            placeManager.goTo( defaultPlaceRequest );
+                            placeManager.goTo( ProcessDiagramUtil.buildPlaceRequest( new DefaultPlaceRequest( "" )
+                                                                                             .addParameter( "activeNodes", nodeParam.toString() )
+                                                                                             .addParameter( "completedNodes", completedNodeParam.toString() )
+                                                                                             .addParameter( "readOnly", "true" )
+                                                                                             .addParameter( "processId", selectedItemName )
+                                                                                             .addParameter( "deploymentId", selectedDeploymentId ) ) );
 
                         }
                     }, new ErrorCallback<Message>() {
