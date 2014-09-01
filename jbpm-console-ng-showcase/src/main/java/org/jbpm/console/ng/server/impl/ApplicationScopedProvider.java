@@ -58,6 +58,9 @@ public class ApplicationScopedProvider {
 
     @PostConstruct
     public void setup() {
+        if ( System.getProperty( "org.kie.deployment.desc.location" ) == null ) {
+            System.setProperty( "org.kie.deployment.desc.location", "classpath:META-INF/kie-wb-deployment-descriptor.xml" );
+        }
         SecurityFactory.setAuthzManager( new RuntimeAuthorizationManager() );
 
         final IOService service = new IOServiceIndexedImpl( watchService,
