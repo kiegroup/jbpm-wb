@@ -24,6 +24,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsPresenter;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView.TabbedDetailsView;
+import org.jbpm.console.ng.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
 import org.uberfire.client.annotations.DefaultPosition;
@@ -115,14 +116,9 @@ public class ProcessDefDetailsMultiPresenter extends AbstractTabbedDetailsPresen
 
     public void goToProcessDefModelPopup() {
         if ( place != null && !selectedItemId.equals( "" ) ) {
-
-            DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Process Diagram Popup" );
-            //Set Parameters here: 
-
-            defaultPlaceRequest.addParameter( "processId", selectedItemName );
-            defaultPlaceRequest.addParameter( "deploymentId", selectedItemId );
-            placeManager.goTo( defaultPlaceRequest );
-
+            placeManager.goTo( ProcessDiagramUtil.buildPlaceRequest( new DefaultPlaceRequest( "" )
+                                                                             .addParameter( "processId", selectedItemName )
+                                                                             .addParameter( "deploymentId", selectedItemId ) ) );
         }
     }
 
