@@ -16,9 +16,12 @@
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
 import com.google.gwt.user.client.ui.HTMLPanel;
+import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.JSNIFormValuesReader;
+
 import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 /**
  *
@@ -26,11 +29,14 @@ import javax.enterprise.context.Dependent;
  */
 @Dependent
 public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
+  @Inject
+  private JSNIFormValuesReader jsniFormValuesReader;
 
   @Override
   protected void initDisplayer() {
     publish(this);
-    publishGetFormValues();
+    jsniFormValuesReader.publishGetFormValues();
+    formContainer.clear();
     formContainer.add(new HTMLPanel(formContent));
   }
 
@@ -41,60 +47,26 @@ public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
 
   // Set up the JS-callable signature as a global JS function.
   protected native void publish(FTLTaskDisplayerImpl td)/*-{
-   $wnd.complete = function (from) {
-   td.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.FTLTaskDisplayerImpl::complete(Ljava/lang/String;)(from);
-   }
-
-   $wnd.saveState = function (from) {
-   td.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.FTLTaskDisplayerImpl::saveState(Ljava/lang/String;)(from);
-   }
-
-   
-   }-*/;
-
-  protected native void publishGetFormValues() /*-{
-   $wnd.getFormValues = function (form) {
-   var params = '';
-
-   for (i = 0; i < form.elements.length; i++) {
-   var fieldName = form.elements[i].name;
-   var fieldValue = form.elements[i].value;
-   if (fieldName != '') {
-   params += fieldName + '=' + fieldValue + '&';
-   }
-   }
-   return params;
-   };
-   }-*/;
-
-  public static Map<String, Object> getUrlParameters(String values) {
-    Map<String, Object> params = new HashMap<String, Object>();
-    for (String param : values.split("&")) {
-      String pair[] = param.split("=");
-      String key = pair[0];
-      String value = "";
-      if (pair.length > 1) {
-        value = pair[1];
-      }
-      if (!key.startsWith("btn_")) {
-        params.put(key, value);
-      }
+    $wnd.complete = function (from) {
+      td.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.FTLTaskDisplayerImpl::complete(Ljava/lang/String;)(from);
     }
 
-    return params;
-  }
+    $wnd.saveState = function (from) {
+      td.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.FTLTaskDisplayerImpl::saveState(Ljava/lang/String;)(from);
+    }
+  }-*/;
   /*
    * This method is used by JSNI to get the values from the form
    */
 
   public void complete(String values) {
-    final Map<String, Object> params = getUrlParameters(values);
+    final Map<String, Object> params = jsniFormValuesReader.getUrlParameters(values);
     complete(params);
     close();
   }
 
   public void saveState(String values) {
-    final Map<String, Object> params = getUrlParameters(values);
+    final Map<String, Object> params = jsniFormValuesReader.getUrlParameters(values);
     saveState(params);
   }
 

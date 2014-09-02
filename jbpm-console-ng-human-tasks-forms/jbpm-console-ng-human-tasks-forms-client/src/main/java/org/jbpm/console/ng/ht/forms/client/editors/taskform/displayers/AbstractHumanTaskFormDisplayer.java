@@ -46,7 +46,7 @@ import org.uberfire.security.Identity;
  *
  * @author salaboy
  */
-public abstract class AbstractHumanTaskFormDisplayer extends Composite implements HumanTaskFormDisplayer {
+public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDisplayer {
 
   protected long taskId;
   protected String formContent;

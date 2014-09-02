@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.ht.forms.api.FormRefreshCallback;
+import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.JSNIFormValuesReader;
 
 /**
  *
@@ -33,6 +34,9 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
 
   @Inject
   private Caller<KieSessionEntryPoint> sessionServices;
+
+  @Inject
+  private JSNIFormValuesReader jsniFormValuesReader;
 
   @Override
   public boolean supportsContent(String content) {
@@ -47,7 +51,8 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
   @Override
   protected void initDisplayer() {
     publish(this);
-    publishGetFormValues();
+    jsniFormValuesReader.publishGetFormValues();
+    formContainer.clear();
     formContainer.add(new HTMLPanel(formContent));
   }
 
@@ -57,7 +62,7 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
    }-*/;
 
   public void startProcess(String values) {
-    final Map<String, Object> params = getUrlParameters(values);
+    final Map<String, Object> params = jsniFormValuesReader.getUrlParameters(values);
     sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
             .startProcess(deploymentId, processDefId, params);
   }
@@ -74,37 +79,4 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
       ftl.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.FTLStartProcessDisplayerImpl::startProcess(Ljava/lang/String;)(from);
     }
    }-*/;
-
-  protected native void publishGetFormValues() /*-{
-    $wnd.getFormValues = function (form) {
-      var params = '';
-
-      for (i = 0; i < form.elements.length; i++) {
-        var fieldName = form.elements[i].name;
-        var fieldValue = form.elements[i].value;
-        if (fieldName != '') {
-          params += fieldName + '=' + fieldValue + '&';
-        }
-      }
-      return params;
-    };
-   }-*/;
-
-  public static Map<String, Object> getUrlParameters(String values) {
-    Map<String, Object> params = new HashMap<String, Object>();
-    for (String param : values.split("&")) {
-      String pair[] = param.split("=");
-      String key = pair[0];
-      String value = "";
-      if (pair.length > 1) {
-        value = pair[1];
-      }
-      if (!key.startsWith("btn_")) {
-        params.put(key, value);
-      }
-    }
-
-    return params;
-  }
-  
 }

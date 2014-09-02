@@ -17,10 +17,17 @@
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
 import com.google.gwt.user.client.ui.IsWidget;
+
+import java.util.Map;
 import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+
+import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
+import org.jbpm.console.ng.ht.forms.api.FormRefreshCallback;
+import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.JSNIFormValuesReader;
 import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
 import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
 import org.uberfire.client.mvp.Activity;
@@ -32,22 +39,31 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
  * @author salaboy
  */
 @Dependent
-public class PlaceManagerStartProcessDisplayerImpl extends FTLStartProcessDisplayerImpl{
+public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessFormDisplayer {
   @Inject
   private ActivityManager activityManager;
-  
+
+  @Inject
+  private Caller<KieSessionEntryPoint> sessionServices;
+
+  @Inject
+  private JSNIFormValuesReader jsniFormValuesReader;
+
   private AbstractWorkbenchScreenActivity currentActivity;
 
   public PlaceManagerStartProcessDisplayerImpl() {
     
   }
-  
+    @Override
+  protected native void startProcessFromDisplayer() /*-{
+    $wnd.startProcess($wnd.getFormValues($doc.getElementById("form-data")));
+  }-*/;
+
   @Override
   protected void initDisplayer() {
     publish(this);
-    publishGetFormValues();
+    jsniFormValuesReader.publishGetFormValues();
   }
-
 
   @Override
   public boolean supportsContent(String content) {
@@ -80,9 +96,22 @@ public class PlaceManagerStartProcessDisplayerImpl extends FTLStartProcessDispla
   
   @Override
   public void close() {
-    super.close(); 
+    for (FormRefreshCallback callback : refreshCallbacks) {
+      callback.close();
+    }
     if(currentActivity != null){
       currentActivity.onClose();
     }
   }
+  public void startProcess(String values) {
+    final Map<String, Object> params = jsniFormValuesReader.getUrlParameters(values);
+    sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
+            .startProcess(deploymentId, processDefId, params);
+  }
+
+  protected native void publish(PlaceManagerStartProcessDisplayerImpl ftl)/*-{
+    $wnd.startProcess = function (from) {
+      ftl.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.PlaceManagerStartProcessDisplayerImpl::startProcess(Ljava/lang/String;)(from);
+    }
+  }-*/;
 }
