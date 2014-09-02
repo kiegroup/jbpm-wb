@@ -54,4 +54,16 @@ public interface Constants extends Messages {
     String DownloadButton();
     
     String DownloadButtonLabel();
+    
+    String DocumentsList();
+    
+    String No_Documents_Available();
+    
+    String Parent();
+    
+    String Home();
+    
+    String New();
+    
+    String ConfigurationPanel();
 }
