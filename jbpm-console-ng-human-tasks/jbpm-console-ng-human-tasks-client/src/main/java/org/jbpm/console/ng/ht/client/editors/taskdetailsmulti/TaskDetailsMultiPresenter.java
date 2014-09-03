@@ -15,18 +15,21 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskdetailsmulti;
 
+import java.util.Set;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
-import java.util.Set;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsPresenter;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView.TabbedDetailsView;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
+import org.jbpm.console.ng.ht.util.TaskRoleDefinition;
 import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -35,6 +38,7 @@ import org.uberfire.client.mvp.AbstractWorkbenchActivity;
 import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -46,6 +50,8 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
 
   public interface TaskDetailsMultiView
           extends TabbedDetailsView<TaskDetailsMultiPresenter> {
+       void initDefaultTabs();
+       void initTabsByAdmin();
   }
 
   @Inject
@@ -69,7 +75,7 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
 
   @Override
   public void selectDefaultTab() {
-    goToTaskFormTab();
+    goToTab("Form Display",0);
   }
 
   @WorkbenchPartTitle
@@ -80,117 +86,50 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
   @OnStartup
   public void onStartup(final PlaceRequest place) {
     super.onStartup(place);
+   
     selectDefaultTab();
   }
-
+  
   public void onTaskSelectionEvent(@Observes TaskSelectionEvent event) {
+      
     selectedItemId = String.valueOf(event.getTaskId());
     selectedItemName = event.getTaskName();
     view.getHeaderPanel().clear();
     view.getHeaderPanel().add(new HTMLPanel(SafeHtmlUtils.htmlEscape(String.valueOf(selectedItemId) + " - " + selectedItemName)));
+    view.getTabPanel().clear();
+    if("Task Admin".equals( event.getPlace() )){
+        view.initTabsByAdmin();
+    }else{
+        view.initDefaultTabs();
+    }
     view.getTabPanel().selectTab(0);
     selectDefaultTab();
 
   }
 
-  public void goToTaskDetailsTab() {
-    if (place != null && !selectedItemId.equals("")) {
-      String placeToGo = "Task Details";
-      ((HTMLPanel) view.getTabPanel().getWidget(1)).clear();
-      DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
-      //Set Parameters here: 
-      defaultPlaceRequest.addParameter("taskId", selectedItemId);
-      defaultPlaceRequest.addParameter("taskName", selectedItemName);
+  public void goToTab(String placeToGo, int tabNumber){
+      if (place != null && !selectedItemId.equals("")) {
+          ((HTMLPanel) view.getTabPanel().getWidget(tabNumber)).clear();
+          DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
+          //Set Parameters here: 
+          defaultPlaceRequest.addParameter("taskId", selectedItemId);
+          defaultPlaceRequest.addParameter("taskName", selectedItemName);
 
-      AbstractWorkbenchActivity activity = null;
-      if (activitiesMap.get(placeToGo) == null) {
-        Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = (AbstractWorkbenchActivity) activities.iterator().next();
+          AbstractWorkbenchActivity activity = null;
+          if (activitiesMap.get(placeToGo) == null) {
+            Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
+            activity = (AbstractWorkbenchActivity) activities.iterator().next();
 
-      } else {
-        activity = activitiesMap.get(placeToGo);
-      }
-      IsWidget widget = activity.getWidget();
-      activity.launch(place, null);
-      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
-      ((HTMLPanel) view.getTabPanel().getWidget(1)).add(widget);
-      activity.onOpen();
-    }
+          } else {
+            activity = activitiesMap.get(placeToGo);
+          }
+          IsWidget widget = activity.getWidget();
+          activity.launch(place, null);
+          ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
+          ((HTMLPanel) view.getTabPanel().getWidget(tabNumber)).add(widget);
+          activity.onOpen();
+        }
+
   }
-
-  public void goToTaskFormTab() {
-    if (place != null && !selectedItemId.equals("")) {
-      String placeToGo = "Generic Form Display";
-      ((HTMLPanel) view.getTabPanel().getWidget(0)).clear();
-      DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
-      //Set Parameters here: 
-      defaultPlaceRequest.addParameter("taskId", selectedItemId);
-      defaultPlaceRequest.addParameter("taskName", selectedItemName);
-
-      AbstractWorkbenchActivity activity = null;
-      if (activitiesMap.get(placeToGo) == null) {
-        Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = ((AbstractWorkbenchActivity) activities.iterator().next());
-
-      } else {
-        activity = activitiesMap.get(placeToGo);
-      }
-      IsWidget widget = activity.getWidget();
-      activity.launch(place, null);
-      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
-      ((HTMLPanel) view.getTabPanel().getWidget(0)).add(widget);
-      activity.onOpen();
-    }
-  }
-
-  public void goToTaskAssignmentsTab() {
-    if (place != null && !selectedItemId.equals("")) {
-      String placeToGo = "Task Assignments";
-      ((HTMLPanel) view.getTabPanel().getWidget(2)).clear();
-      DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
-      //Set Parameters here: 
-      defaultPlaceRequest.addParameter("taskId", selectedItemId);
-      defaultPlaceRequest.addParameter("taskName", selectedItemName);
-
-      AbstractWorkbenchActivity activity = null;
-      if (activitiesMap.get(placeToGo) == null) {
-        Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = (AbstractWorkbenchActivity) activities.iterator().next();
-
-      } else {
-        activity = activitiesMap.get(placeToGo);
-      }
-      IsWidget widget = activity.getWidget();
-      activity.launch(place, null);
-      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
-      ((HTMLPanel) view.getTabPanel().getWidget(2)).add(widget);
-      activity.onOpen();
-    }
-  }
-
-  public void goToTaskCommentsTab() {
-    if (place != null) {
-      String placeToGo = "Task Comments";
-      ((HTMLPanel) view.getTabPanel().getWidget(3)).clear();
-      DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(placeToGo);
-      //Set Parameters here: 
-      defaultPlaceRequest.addParameter("taskId", selectedItemId);
-      defaultPlaceRequest.addParameter("taskName", selectedItemName);
-
-      AbstractWorkbenchActivity activity = null;
-      if (activitiesMap.get(placeToGo) == null) {
-        Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-        activity = (AbstractWorkbenchActivity) activities.iterator().next();
-
-      } else {
-        activity = activitiesMap.get(placeToGo);
-      }
-      IsWidget widget = activity.getWidget();
-      activity.launch(place, null);
-      ((AbstractWorkbenchScreenActivity) activity).onStartup(defaultPlaceRequest);
-      ((HTMLPanel) view.getTabPanel().getWidget(3)).add(widget);
-      activity.onOpen();
-    }
-  }
-
+  
 }

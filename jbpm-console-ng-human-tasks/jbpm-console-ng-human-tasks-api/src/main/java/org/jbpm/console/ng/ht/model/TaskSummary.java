@@ -37,7 +37,7 @@ public class TaskSummary extends GenericSummary {
     private String processId;
     private int processSessionId;
     private String deploymentId;
-
+    private boolean isForAdmin;
     private Long parentId;
 
     public TaskSummary(long taskId, String taskName, String description, String status,
@@ -63,6 +63,29 @@ public class TaskSummary extends GenericSummary {
         this.parentId = parentId;
     }
 
+    public TaskSummary(long taskId, String taskName, String description, String status,
+            int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
+            Date expirationTime, String processId, int processSessionId, long processInstanceId, String deploymentId, long parentId,boolean isForAdmin) {
+         super();
+         this.id = taskId;
+         this.name = taskName;
+         this.taskId = taskId;
+         this.taskName = taskName;
+         this.description = description;
+         this.status = status;
+         this.priority = priority;
+         this.actualOwner = actualOwner;
+         this.createdBy = createdBy;
+         this.createdOn = createdOn;
+         this.activationTime = activationTime;
+         this.expirationTime = expirationTime;
+         this.processId = processId;
+         this.processSessionId = processSessionId;
+         this.processInstanceId = processInstanceId;
+         this.deploymentId = deploymentId;
+         this.parentId = parentId;
+         this.isForAdmin = isForAdmin;
+    }
     public TaskSummary() {
     }
 
@@ -133,13 +156,21 @@ public class TaskSummary extends GenericSummary {
         return deploymentId;
     }
 
+    public boolean isForAdmin() {
+        return isForAdmin;
+    }
+
+    public void setForAdmin(boolean isForAdmin) {
+        this.isForAdmin = isForAdmin;
+    }
+
     @Override
     public String toString() {
         return "TaskSummary [id=" + taskId + ", name=" + taskName + ", description=" + description + ", deploymentId=" + deploymentId
                 + ", status=" + status + ", priority=" + priority + ", parentId=" + parentId
                 + ", actualOwner=" + actualOwner + ", createdBy=" + createdBy + ", createdOn=" + createdOn
                 + ", activationTime=" + activationTime + ", expirationTime=" + expirationTime + ", processInstanceId="
-                + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + "]";
+                + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", isForAdmin="+ isForAdmin+ "]";
     }
 
 }

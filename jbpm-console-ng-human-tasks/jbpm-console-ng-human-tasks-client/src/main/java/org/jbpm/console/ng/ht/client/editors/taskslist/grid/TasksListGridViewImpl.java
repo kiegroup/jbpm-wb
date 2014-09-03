@@ -56,7 +56,6 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jbpm.console.ng.gc.client.util.TaskUtils;
-
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
@@ -67,7 +66,7 @@ import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
-
+import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.TASK_ROLE_ADMINISTRATOR;
 @Dependent
 public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksListGridPresenter>
         implements TasksListGridPresenter.TaskListView {
@@ -153,13 +152,17 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
 
         selectedItem = selectionModel.getLastSelectedObject();
 
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
-
+        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest("Task Details Multi");
+        PlaceStatus status = placeManager.getStatus(defaultPlaceRequest);
+        String place = "Form Display";
+        if(selectionModel.getLastSelectedObject().isForAdmin()==true){
+            place = "Task Admin";
+        }
         if (status == PlaceStatus.CLOSE) {
-          placeManager.goTo("Task Details Multi");
-          taskSelected.fire(new TaskSelectionEvent(selectedItem.getTaskId(), selectedItem.getTaskName(), "Generic Form Display"));
+          placeManager.goTo(defaultPlaceRequest);
+          taskSelected.fire(new TaskSelectionEvent(selectedItem.getTaskId(), selectedItem.getTaskName(), place));
         } else if (status == PlaceStatus.OPEN && !close) {
-          taskSelected.fire(new TaskSelectionEvent(selectedItem.getTaskId(), selectedItem.getTaskName(), "Generic Form Display"));
+          taskSelected.fire(new TaskSelectionEvent(selectedItem.getTaskId(), selectedItem.getTaskName(), place));
         } else if (status == PlaceStatus.OPEN && close) {
           placeManager.closePlace("Task Details Multi");
         }
@@ -214,6 +217,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
         allFilterButton.setEnabled(true);
         adminFilterButton.setEnabled(true);
         presenter.refreshActiveTasks();
+        closePlace("Task Details Multi");
       }
     });
 
@@ -230,6 +234,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
         adminFilterButton.setEnabled(true);
         allFilterButton.setEnabled(true);
         presenter.refreshPersonalTasks();
+        closePlace("Task Details Multi");
       }
     });
 
@@ -246,6 +251,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
         adminFilterButton.setEnabled(true);
         allFilterButton.setEnabled(true);
         presenter.refreshGroupTasks();
+        closePlace("Task Details Multi");
       }
     });
 
@@ -262,6 +268,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
         adminFilterButton.setEnabled(true);
         allFilterButton.setEnabled(false);
         presenter.refreshAllTasks();
+        closePlace("Task Details Multi");
       }
     });
 
@@ -278,6 +285,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
         allFilterButton.setEnabled(true);
         adminFilterButton.setEnabled(false);
         presenter.refreshAdminTasks();
+        closePlace("Task Details Multi");
       }
     });
     
@@ -628,5 +636,16 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
       return object;
     }
   }
-
+  
+  private PlaceStatus getPlaceStatus(String place){ 
+      DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(place);
+      PlaceStatus status = placeManager.getStatus(defaultPlaceRequest);
+      return status;
+  }
+  
+  private void closePlace(String place){
+      if(getPlaceStatus(place) == PlaceStatus.OPEN ){
+          placeManager.closePlace(place);
+      }
+  }
 }
