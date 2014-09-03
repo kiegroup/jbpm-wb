@@ -17,6 +17,12 @@ import java.util.ArrayList;
 @ApplicationScoped
 public class DashboardRendererServiceImpl implements DashboardRendererService {
 
+    /**
+     * Maximum amount of time (in milliseconds) a ping alive request to the dashbuilder remote URL may last.
+     * <p>The system property <i>dashbuilder.bind.timeout</i> can be used to set a custom value.</p>
+     */
+    public static int PING_TIMEOUT = 1000;
+
     @Override
     public ConnectionStatus getAppStatus(String theUrl) {
         ConnectionStatus connectionStatus = new ConnectionStatus();
@@ -30,7 +36,7 @@ public class DashboardRendererServiceImpl implements DashboardRendererService {
                 int status = pingUrl(anUrl);
                 connectionStatus.setStatus(status);
                 return connectionStatus;
-            } catch (Exception e){
+            } catch (Exception e) {
                 exc = e;
             }
         }
@@ -40,8 +46,15 @@ public class DashboardRendererServiceImpl implements DashboardRendererService {
     }
 
     protected int pingUrl(String anUrl) throws Exception {
+        int timeout = PING_TIMEOUT;
+        String bindTimeout = System.getProperty("dashbuilder.bind.timeout");
+        if (!StringUtils.isBlank(bindTimeout)) {
+            timeout = Integer.parseInt(bindTimeout);
+        }
+
         URL url = new URL(anUrl);
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setConnectTimeout(timeout);
         return urlConnection.getResponseCode();
     }
 
@@ -78,10 +91,4 @@ public class DashboardRendererServiceImpl implements DashboardRendererService {
         return results;
     }
 
-    public static void main(String[] args) {
-        DashboardRendererServiceImpl s = new DashboardRendererServiceImpl();
-        for (String s1 : s.explodeUrl("http://localhost:8080/dashbuilder/workspace")) {
-            System.out.println(s1);
-        }
-    }
 }
