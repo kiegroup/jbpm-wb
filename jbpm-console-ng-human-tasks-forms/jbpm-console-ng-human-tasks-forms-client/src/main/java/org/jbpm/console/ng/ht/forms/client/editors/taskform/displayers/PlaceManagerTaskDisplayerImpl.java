@@ -16,19 +16,13 @@
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.PlaceManagerFormActivitySearcher;
+import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
 
-import java.util.Map;
-import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-
-import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.JSNIFormValuesReader;
-import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
-import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
-import org.uberfire.client.mvp.Activity;
-import org.uberfire.client.mvp.ActivityManager;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import java.util.Map;
 
 /**
  *
@@ -38,12 +32,7 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
   
   @Inject
-  private ActivityManager activityManager;
-
-  @Inject
-  private JSNIFormValuesReader jsniFormValuesReader;
-  
-  private AbstractWorkbenchScreenActivity currentActivity;
+  private PlaceManagerFormActivitySearcher placeManagerFormActivitySearcher;
 
   public PlaceManagerTaskDisplayerImpl() {
   }
@@ -51,7 +40,7 @@ public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
   @Override
   protected void initDisplayer() {
     publish(this);
-    jsniFormValuesReader.publishGetFormValues();
+    jsniHelper.publishGetFormValues();
   }
 
   @Override
@@ -60,13 +49,13 @@ public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
   }
 
   public void complete(String values) {
-    Map<String, Object> params = jsniFormValuesReader.getUrlParameters(values);
+    Map<String, Object> params = jsniHelper.getUrlParameters(values);
     complete(params);
     close();
   }
 
   public void saveState(String values) {
-    Map<String, Object> params = jsniFormValuesReader.getUrlParameters(values);
+    Map<String, Object> params = jsniHelper.getUrlParameters(values);
     saveState(params);
   }
 
@@ -105,26 +94,19 @@ public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
     if (taskName == null || taskName.equals("")) {
       return;
     }
-    DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(taskName + " Form", event.getParams());
-    Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-    if (activities.isEmpty()) {
-      return;
-    }
-    currentActivity = ((AbstractWorkbenchScreenActivity) activities.iterator().next());
-    IsWidget widget = currentActivity.getWidget();
-    currentActivity.launch(defaultPlaceRequest, null);
-    currentActivity.onStartup(defaultPlaceRequest);
+
+    IsWidget widget = placeManagerFormActivitySearcher.findFormActivityWidget(taskName, event.getParams());
+
     formContainer.clear();
-    formContainer.add(widget);
-    currentActivity.onOpen();
+    if (widget != null) {
+      formContainer.add(widget);
+    }
   }
 
   @Override
   public void close() {
-    super.close(); 
-    if(currentActivity != null){
-      currentActivity.onClose();
-    }
+    super.close();
+    placeManagerFormActivitySearcher.closeFormActivity();
   }
 
   // Set up the JS-callable signature as a global JS function.

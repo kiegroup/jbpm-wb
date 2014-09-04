@@ -17,22 +17,15 @@
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
+import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.PlaceManagerFormActivitySearcher;
+import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
 
-import java.util.Map;
-import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-
-import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
-import org.jbpm.console.ng.ht.forms.api.FormRefreshCallback;
-import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.JSNIFormValuesReader;
-import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
-import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
-import org.uberfire.client.mvp.Activity;
-import org.uberfire.client.mvp.ActivityManager;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import java.util.Map;
 
 /**
  *
@@ -40,16 +33,12 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
  */
 @Dependent
 public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessFormDisplayer {
-  @Inject
-  private ActivityManager activityManager;
 
   @Inject
   private Caller<KieSessionEntryPoint> sessionServices;
 
   @Inject
-  private JSNIFormValuesReader jsniFormValuesReader;
-
-  private AbstractWorkbenchScreenActivity currentActivity;
+  private PlaceManagerFormActivitySearcher placeManagerFormActivitySearcher;
 
   public PlaceManagerStartProcessDisplayerImpl() {
     
@@ -62,7 +51,7 @@ public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessF
   @Override
   protected void initDisplayer() {
     publish(this);
-    jsniFormValuesReader.publishGetFormValues();
+    jsniHelper.publishGetFormValues();
   }
 
   @Override
@@ -80,31 +69,23 @@ public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessF
     if (processId == null || processId.equals("")) {
       return;
     }
-    DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(processId+" Form", event.getParams());
-    Set<Activity> activities = activityManager.getActivities(defaultPlaceRequest);
-    if (activities.isEmpty()) {
-      return;
-    }
-    currentActivity = ((AbstractWorkbenchScreenActivity) activities.iterator().next());
-    IsWidget widget = currentActivity.getWidget();
-    currentActivity.launch(defaultPlaceRequest, null);
-    currentActivity.onStartup(defaultPlaceRequest);
+
+    IsWidget widget = placeManagerFormActivitySearcher.findFormActivityWidget(processId, event.getParams());
+
     formContainer.clear();
-    formContainer.add(widget);
-    currentActivity.onOpen();
+    if (widget != null) {
+      formContainer.add(widget);
+    }
   }
   
   @Override
   public void close() {
-    for (FormRefreshCallback callback : refreshCallbacks) {
-      callback.close();
-    }
-    if(currentActivity != null){
-      currentActivity.onClose();
-    }
+    super.close();
+    placeManagerFormActivitySearcher.closeFormActivity();
   }
+
   public void startProcess(String values) {
-    final Map<String, Object> params = jsniFormValuesReader.getUrlParameters(values);
+    final Map<String, Object> params = jsniHelper.getUrlParameters(values);
     sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
             .startProcess(deploymentId, processDefId, params);
   }

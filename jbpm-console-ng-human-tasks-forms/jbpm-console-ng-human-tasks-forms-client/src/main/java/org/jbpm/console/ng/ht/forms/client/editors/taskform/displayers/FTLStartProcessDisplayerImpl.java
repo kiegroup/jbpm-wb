@@ -16,14 +16,12 @@
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
 import com.google.gwt.user.client.ui.HTMLPanel;
-import java.util.HashMap;
-import java.util.Map;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
-import org.jbpm.console.ng.ht.forms.api.FormRefreshCallback;
-import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.JSNIFormValuesReader;
+
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+import java.util.Map;
 
 /**
  *
@@ -34,9 +32,6 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
 
   @Inject
   private Caller<KieSessionEntryPoint> sessionServices;
-
-  @Inject
-  private JSNIFormValuesReader jsniFormValuesReader;
 
   @Override
   public boolean supportsContent(String content) {
@@ -51,7 +46,7 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
   @Override
   protected void initDisplayer() {
     publish(this);
-    jsniFormValuesReader.publishGetFormValues();
+    jsniHelper.publishGetFormValues();
     formContainer.clear();
     formContainer.add(new HTMLPanel(formContent));
   }
@@ -62,16 +57,9 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
    }-*/;
 
   public void startProcess(String values) {
-    final Map<String, Object> params = jsniFormValuesReader.getUrlParameters(values);
+    final Map<String, Object> params = jsniHelper.getUrlParameters(values);
     sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
             .startProcess(deploymentId, processDefId, params);
-  }
-
-  @Override
-  public void close() {
-    for (FormRefreshCallback callback : refreshCallbacks) {
-      callback.close();
-    }
   }
 
   protected native void publish(FTLStartProcessDisplayerImpl ftl)/*-{

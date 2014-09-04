@@ -44,6 +44,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
+import org.uberfire.lifecycle.OnClose;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
@@ -66,6 +67,8 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
   protected String currentProcessId;
 
   protected String currentDeploymentId;
+
+  protected String opener;
   
   protected String placeOnClose;
 
@@ -90,7 +93,7 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
   }
 
   @Inject
-  private GenericFormDisplayView view;
+  protected GenericFormDisplayView view;
 
   @Inject
   private Caller<FormServiceEntryPoint> formServices;
@@ -100,7 +103,7 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
   }
 
   @PostConstruct
-  private void init() {
+  protected void init() {
     Collection<IOCBeanDef<HumanTaskFormDisplayer>> taskDisplayersBeans = iocManager.lookupBeans(HumanTaskFormDisplayer.class);
     if (taskDisplayersBeans != null) {
       for (IOCBeanDef displayerDef : taskDisplayersBeans) {
@@ -132,6 +135,7 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
     currentTaskId = Long.parseLong(place.getParameter("taskId", "-1"));
     currentProcessId = place.getParameter("processId", "none");
     currentDeploymentId = place.getParameter("domainId", "none");
+    opener = place.getParameter("opener", null);
     placeOnClose = place.getParameter("onClose", "none");
     
     refresh();
@@ -145,17 +149,15 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
 
   @Override
   public void close() {
-    
-    
     if(!placeOnClose.equals("none")){
       placeManager.closePlace(place);
       placeManager.forceClosePlace(placeOnClose);
     }else{
       closePlaceEvent.fire(new BeforeClosePlaceEvent(GenericFormDisplayPresenter.this.place));
     }
+    processDisplayers.clear();
+    taskDisplayers.clear();
   }
-  
-  
 
   @Override
   public void refresh() {
@@ -179,7 +181,7 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
             });
             for (HumanTaskFormDisplayer d : taskDisplayers) {
               if (d.supportsContent(form)) {
-                d.init(new TaskKey(currentTaskId), form);
+                d.init(new TaskKey(currentTaskId), form, opener);
                 d.addFormRefreshCallback(GenericFormDisplayPresenter.this);
                 view.render(d.getContainer());
                 return;
@@ -209,7 +211,7 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
             });
             for (StartProcessFormDisplayer d : processDisplayers) {
               if (d.supportsContent(form)) {
-                d.init(new ProcessDefinitionKey(currentDeploymentId, currentProcessId), form);
+                d.init(new ProcessDefinitionKey(currentDeploymentId, currentProcessId), form, opener);
                 d.addFormRefreshCallback(GenericFormDisplayPresenter.this);
                 view.render(d.getContainer());
                 return;

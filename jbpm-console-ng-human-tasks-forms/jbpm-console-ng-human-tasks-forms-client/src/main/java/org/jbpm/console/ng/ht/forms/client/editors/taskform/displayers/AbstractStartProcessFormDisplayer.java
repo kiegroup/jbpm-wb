@@ -17,16 +17,12 @@ package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -34,6 +30,8 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.ht.forms.api.FormRefreshCallback;
+import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.ActionRequest;
+import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.JSNIHelper;
 import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
 import org.jbpm.console.ng.ht.forms.process.api.StartProcessFormDisplayer;
 import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
@@ -41,11 +39,18 @@ import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.uberfire.client.workbench.widgets.common.ErrorPopup;
 
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  *
  * @author salaboy
  */
 public abstract class AbstractStartProcessFormDisplayer implements StartProcessFormDisplayer {
+  public static final String ACTION_START_PROCESS = "startProcess";
 
   protected Constants constants = GWT.create(Constants.class);
   
@@ -59,6 +64,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
   protected String deploymentId;
   protected String processDefId;
   protected String processName;
+  protected String opener;
   
   @Inject
   private Caller<DataServiceEntryPoint> dataServices;
@@ -68,12 +74,16 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
 
   @Inject
   private Caller<KieSessionEntryPoint> sessionServices;
+
+  @Inject
+  protected JSNIHelper jsniHelper;
   
    @Override
-  public void init(ProcessDefinitionKey key, String formContent) {
+  public void init(ProcessDefinitionKey key, String formContent, String openerUrl) {
     this.deploymentId = key.getDeploymentId();
     this.processDefId = key.getProcessId();
     this.formContent = formContent;
+    this.opener = openerUrl;
     
     container.add(formContainer);
     container.add(buttonsContainer);
@@ -85,19 +95,25 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
         FocusPanel wrapperFlowPanel = new FocusPanel();
         wrapperFlowPanel.setStyleName("wrapper form-actions");
 
-        ClickHandler start = new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-            startProcessFromDisplayer();
-          }
-        };
+        buttonsContainer.clear();
 
-        Button startButton = new Button();
-        startButton.setText(constants.Start());
-        startButton.addClickHandler(start);
+        if (opener != null) {
+          injectEventListener(AbstractStartProcessFormDisplayer.this);
+        } else {
+          ClickHandler start = new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+              startProcessFromDisplayer();
+            }
+          };
 
-        wrapperFlowPanel.add(startButton);
-        buttonsContainer.add(wrapperFlowPanel);
+          Button startButton = new Button();
+          startButton.setText(constants.Start());
+          startButton.addClickHandler(start);
+
+          wrapperFlowPanel.add(startButton);
+          buttonsContainer.add(wrapperFlowPanel);
+        }
         initDisplayer();
       }
     }).getProcessDesc(deploymentId, processDefId);
@@ -118,7 +134,9 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     return new ErrorCallback<Message>() {
       @Override
       public boolean error(Message message, Throwable throwable) {
-        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        String notification = "Unexpected error encountered : " + throwable.getMessage();
+        ErrorPopup.showMessage(notification);
+        jsniHelper.notifyErrorMessage(opener, notification);
         return true;
       }
     };
@@ -139,11 +157,37 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     return new RemoteCallback<Long>() {
       @Override
       public void callback(Long processInstanceId) {
-
         newProcessInstanceEvent.fire(new NewProcessInstanceEvent(deploymentId, processInstanceId, processDefId, processName, 1));
+        jsniHelper.notifySuccessMessage(opener, "Process Id: " + processInstanceId + " started!");
         close();
-
       }
     };
   }
+
+  @Override
+  public void close() {
+    for (FormRefreshCallback callback : refreshCallbacks) {
+      callback.close();
+    }
+  }
+
+  protected void eventListener(String origin, String request) {
+    if (origin == null || !origin.endsWith("//" + opener)) return;
+
+    ActionRequest actionRequest = JsonUtils.safeEval(request);
+
+    if (ACTION_START_PROCESS.equals(actionRequest.getAction())) startProcessFromDisplayer();
+  }
+
+  private native void injectEventListener(AbstractStartProcessFormDisplayer fdp) /*-{
+      function postMessageListener(e) {
+          fdp.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.AbstractStartProcessFormDisplayer::eventListener(Ljava/lang/String;Ljava/lang/String;)(e.origin, e.data);
+      }
+
+      if ($wnd.addEventListener) {
+          $wnd.addEventListener("message", postMessageListener, false);
+      } else {
+          $wnd.attachEvent("onmessage", postMessageListener, false);
+      }
+  }-*/;
 }

@@ -16,17 +16,17 @@
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
 import com.google.gwt.user.client.ui.FlowPanel;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.ht.forms.api.FormRefreshCallback;
 import org.jbpm.console.ng.ht.forms.service.FormModelerProcessStarterEntryPoint;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 
 /**
  *
@@ -81,9 +81,7 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
       @Override
       public void callback(Void response) {
         formContent = null;
-        for (FormRefreshCallback callback : refreshCallbacks) {
-          callback.close();
-        }
+        FormModellerStartProcessDisplayerImpl.super.close();
       }
     }).clearContext(formContent);
   }

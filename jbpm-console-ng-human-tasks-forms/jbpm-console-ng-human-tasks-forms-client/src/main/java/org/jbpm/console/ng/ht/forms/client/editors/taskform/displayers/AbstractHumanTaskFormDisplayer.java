@@ -18,23 +18,20 @@ package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ht.forms.api.FormRefreshCallback;
-import org.jbpm.console.ng.ht.forms.ht.api.HumanTaskFormDisplayer;
+import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.ActionRequest;
+import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.JSNIHelper;
 import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
+import org.jbpm.console.ng.ht.forms.ht.api.HumanTaskFormDisplayer;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
@@ -42,20 +39,32 @@ import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.client.workbench.widgets.common.ErrorPopup;
 import org.uberfire.security.Identity;
 
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  *
  * @author salaboy
  */
 public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDisplayer {
+  public static final String ACTION_CLAIM_TASK = "claimTask";
+  public static final String ACTION_START_TASK = "startTask";
+  public static final String ACTION_RELEASE_TASK = "releaseTask";
+  public static final String ACTION_SAVE_TASK = "saveTask";
+  public static final String ACTION_COMPLETE_TASK = "completeTask";
 
   protected long taskId;
   protected String formContent;
+  protected String opener;
+  protected String taskName;
+
   final protected FlowPanel container = new FlowPanel();
   final protected FlowPanel buttonsContainer = new FlowPanel();
   final protected VerticalPanel formContainer = new VerticalPanel();
   protected Constants constants = GWT.create(Constants.class);
-  
-  
 
   @Inject
   protected Caller<TaskServiceEntryPoint> taskServices;
@@ -65,10 +74,13 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
 
   @Inject
   protected Identity identity;
+
+  @Inject
+  protected JSNIHelper jsniHelper;
   
   protected List<FormRefreshCallback> refreshCallbacks = new ArrayList<FormRefreshCallback>();
 
-  
+
   protected abstract void initDisplayer();
   
   protected abstract void completeFromDisplayer();
@@ -81,16 +93,14 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
   
   protected abstract void releaseFromDisplayer();
 
-  
-  
   @Override
-  public void init(TaskKey key, String formContent) {
+  public void init(TaskKey key, String formContent, String openerUrl) {
     this.taskId = key.getTaskId();
     this.formContent = formContent;
+    this.opener = openerUrl;
     container.add(formContainer);
     container.add(buttonsContainer);
-    
-    
+
     if (formContent == null || formContent.length() == 0) {
       return;
     }
@@ -98,95 +108,98 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
       @Override
       public void callback(final TaskSummary task) {
         buttonsContainer.clear();
-        FlowPanel wrapperFlowPanel = new FlowPanel();
-        wrapperFlowPanel.setStyleName("wrapper form-actions");
-        buttonsContainer.add(wrapperFlowPanel);
+        taskName = task.getTaskName();
 
         if (task == null) {
           return;
         }
 
-        if (task.getStatus().equals("Ready")) {
-          Button claimButton = new Button();
-          claimButton.setType(ButtonType.PRIMARY);
-          claimButton.setText(constants.Claim());
-          claimButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-              claimFromDisplayer();
-            }
-          });
-          wrapperFlowPanel.add(claimButton);
+        if (opener != null) {
+            injectEventListener(AbstractHumanTaskFormDisplayer.this);
+        } else {
+          FlowPanel wrapperFlowPanel = new FlowPanel();
+          wrapperFlowPanel.setStyleName("wrapper form-actions");
           buttonsContainer.add(wrapperFlowPanel);
-        }
 
-        if (task.getStatus().equals("Reserved") && task.getActualOwner().equals(identity.getName())) {
+          if (task.getStatus().equals("Ready")) {
+            Button claimButton = new Button();
+            claimButton.setType(ButtonType.PRIMARY);
+            claimButton.setText(constants.Claim());
+            claimButton.addClickHandler(new ClickHandler() {
+              @Override
+              public void onClick(ClickEvent event) {
+                claimFromDisplayer();
+              }
+            });
+            wrapperFlowPanel.add(claimButton);
+            buttonsContainer.add(wrapperFlowPanel);
+          }
 
-          Button releaseButton = new Button();
-          releaseButton.setText(constants.Release());
-          releaseButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-              releaseFromDisplayer();
-            }
-          });
-          wrapperFlowPanel.add(releaseButton);
+          if (task.getStatus().equals("Reserved") && task.getActualOwner().equals(identity.getName())) {
 
-          Button startButton = new Button();
-          startButton.setType(ButtonType.PRIMARY);
-          startButton.setText(constants.Start());
-          startButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-              startFromDisplayer();
-            }
-          });
-          wrapperFlowPanel.add(startButton);
+            Button releaseButton = new Button();
+            releaseButton.setText(constants.Release());
+            releaseButton.addClickHandler(new ClickHandler() {
+              @Override
+              public void onClick(ClickEvent event) {
+                releaseFromDisplayer();
+              }
+            });
+            wrapperFlowPanel.add(releaseButton);
 
-          buttonsContainer.add(wrapperFlowPanel);
-        } else if (task.getStatus().equals("InProgress") && task.getActualOwner().equals(identity.getName())) {
-          Button saveButton = new Button();
-          saveButton.setText(constants.Save());
-          saveButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-              saveStateFromDisplayer();
-              
-            }
-          });
-          wrapperFlowPanel.add(saveButton);
+            Button startButton = new Button();
+            startButton.setType(ButtonType.PRIMARY);
+            startButton.setText(constants.Start());
+            startButton.addClickHandler(new ClickHandler() {
+              @Override
+              public void onClick(ClickEvent event) {
+                startFromDisplayer();
+              }
+            });
+            wrapperFlowPanel.add(startButton);
 
-          Button releaseButton = new Button();
-          releaseButton.setText(constants.Release());
-          releaseButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-              releaseFromDisplayer();
-            }
-          });
-          wrapperFlowPanel.add(releaseButton);
+            buttonsContainer.add(wrapperFlowPanel);
+          } else if (task.getStatus().equals("InProgress") && task.getActualOwner().equals(identity.getName())) {
+            Button saveButton = new Button();
+            saveButton.setText(constants.Save());
+            saveButton.addClickHandler(new ClickHandler() {
+              @Override
+              public void onClick(ClickEvent event) {
+                saveStateFromDisplayer();
 
-          Button completeButton = new Button();
-          completeButton.setType(ButtonType.PRIMARY);
-          completeButton.setText(constants.Complete());
-          completeButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-              completeFromDisplayer();
-            }
-          });
+              }
+            });
+            wrapperFlowPanel.add(saveButton);
 
-          wrapperFlowPanel.add(completeButton);
-          buttonsContainer.add(wrapperFlowPanel);
-          
+            Button releaseButton = new Button();
+            releaseButton.setText(constants.Release());
+            releaseButton.addClickHandler(new ClickHandler() {
+              @Override
+              public void onClick(ClickEvent event) {
+                releaseFromDisplayer();
+              }
+            });
+            wrapperFlowPanel.add(releaseButton);
+
+            Button completeButton = new Button();
+            completeButton.setType(ButtonType.PRIMARY);
+            completeButton.setText(constants.Complete());
+            completeButton.addClickHandler(new ClickHandler() {
+              @Override
+              public void onClick(ClickEvent event) {
+                completeFromDisplayer();
+              }
+            });
+
+            wrapperFlowPanel.add(completeButton);
+            buttonsContainer.add(wrapperFlowPanel);
+
+          }
         }
         initDisplayer();
       }
     }, getUnexpectedErrorCallback()).getTaskDetails(taskId);
   }
-  
-  
-  
 
   @Override
   public void complete(Map<String, Object> params) {
@@ -224,6 +237,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
       @Override
       public void callback(Void nothing) {
         taskRefreshed.fire(new TaskRefreshedEvent(taskId));
+        jsniHelper.notifySuccessMessage(opener, "Task: " + taskId + " was started!");
         refresh();
       }
     };
@@ -234,6 +248,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
       @Override
       public void callback(Void nothing) {
         taskRefreshed.fire(new TaskRefreshedEvent(taskId));
+        jsniHelper.notifySuccessMessage(opener, "Task: " + taskId + " was claimed!");
         refresh();
       }
     };
@@ -244,6 +259,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
       @Override
       public void callback(Long contentId) {
         taskRefreshed.fire(new TaskRefreshedEvent(taskId));
+        jsniHelper.notifySuccessMessage(opener, "Task: " + taskId + " was saved!");
         refresh();
       }
     };
@@ -253,8 +269,8 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     return new RemoteCallback<Void>() {
       @Override
       public void callback(Void nothing) {
-
         taskRefreshed.fire(new TaskRefreshedEvent(taskId));
+        jsniHelper.notifySuccessMessage(opener, "Task: " + taskId + " was released!");
         refresh();
       }
     };
@@ -266,7 +282,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
       public void callback(Void nothing) {
         
         taskRefreshed.fire(new TaskRefreshedEvent(taskId));
-
+        jsniHelper.notifySuccessMessage(opener, "Task: " + taskId + " was completed!");
         taskServices.call(new RemoteCallback<Boolean>() {
           @Override
           public void callback(Boolean response) {
@@ -286,7 +302,9 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     return new ErrorCallback<Message>() {
       @Override
       public boolean error(Message message, Throwable throwable) {
-        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        String notification = "Unexpected error encountered : " + throwable.getMessage();
+        ErrorPopup.showMessage(notification);
+        jsniHelper.notifyErrorMessage(opener, notification);
         return true;
       }
     };
@@ -309,8 +327,28 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
       callback.close();
     }
   }
-  
-  
-  
 
+  protected void eventListener(String origin, String request) {
+    if (origin == null || !origin.endsWith("//" + opener)) return;
+
+    ActionRequest actionRequest = JsonUtils.safeEval(request);
+
+    if (ACTION_CLAIM_TASK.equals(actionRequest.getAction())) claimFromDisplayer();
+    else if (ACTION_START_TASK.equals(actionRequest.getAction())) startFromDisplayer();
+    else if (ACTION_RELEASE_TASK.equals(actionRequest.getAction())) releaseFromDisplayer();
+    else if (ACTION_SAVE_TASK.equals(actionRequest.getAction())) saveStateFromDisplayer();
+    else if (ACTION_COMPLETE_TASK.equals(actionRequest.getAction())) completeFromDisplayer();
+  }
+
+  private native void injectEventListener(AbstractHumanTaskFormDisplayer fdp) /*-{
+    function postMessageListener(e) {
+      fdp.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.AbstractHumanTaskFormDisplayer::eventListener(Ljava/lang/String;Ljava/lang/String;)(e.origin, e.data);
+    }
+
+    if ($wnd.addEventListener) {
+      $wnd.addEventListener("message", postMessageListener, false);
+    } else {
+      $wnd.attachEvent("onmessage", postMessageListener, false);
+    }
+  }-*/;
 }
