@@ -15,15 +15,6 @@
  */
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.generic;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
@@ -38,6 +29,14 @@ import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.uberfire.mvp.Command;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+import java.util.*;
+
+/**
+ * @author salaboy
+ */
 @Dependent
 public class GenericFormDisplayPresenter implements FormRefreshCallback {
 
@@ -58,11 +57,14 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
     private String currentProcessId;
 
     private String currentDeploymentId;
+
+    protected String opener;
+
     private Command onClose;
 
     public interface GenericFormDisplayView extends IsWidget {
 
-        void displayNotification( final String text );
+        void displayNotification(final String text);
 
         void render( final FlowPanel content );
 
@@ -74,17 +76,17 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
         taskDisplayers.clear();
         processDisplayers.clear();
 
-        final Collection<IOCBeanDef<HumanTaskFormDisplayer>> taskDisplayersBeans = iocManager.lookupBeans( HumanTaskFormDisplayer.class );
-        if ( taskDisplayersBeans != null ) {
-            for ( final IOCBeanDef displayerDef : taskDisplayersBeans ) {
-                taskDisplayers.add( (HumanTaskFormDisplayer) displayerDef.getInstance() );
+        final Collection<IOCBeanDef<HumanTaskFormDisplayer>> taskDisplayersBeans = iocManager.lookupBeans(HumanTaskFormDisplayer.class);
+        if (taskDisplayersBeans != null) {
+            for (final IOCBeanDef displayerDef : taskDisplayersBeans) {
+                taskDisplayers.add((HumanTaskFormDisplayer) displayerDef.getInstance());
             }
 
         }
-        final Collection<IOCBeanDef<StartProcessFormDisplayer>> processDisplayersBeans = iocManager.lookupBeans( StartProcessFormDisplayer.class );
-        if ( processDisplayersBeans != null ) {
-            for ( final IOCBeanDef displayerDef : processDisplayersBeans ) {
-                processDisplayers.add( (StartProcessFormDisplayer) displayerDef.getInstance() );
+        final Collection<IOCBeanDef<StartProcessFormDisplayer>> processDisplayersBeans = iocManager.lookupBeans(StartProcessFormDisplayer.class);
+        if (processDisplayersBeans != null) {
+            for (final IOCBeanDef displayerDef : processDisplayersBeans) {
+                processDisplayers.add((StartProcessFormDisplayer) displayerDef.getInstance());
             }
         }
     }
@@ -121,65 +123,64 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
 
     @Override
     public void refresh() {
-        if ( currentTaskId != -1 ) {
-            if ( !taskDisplayers.isEmpty() ) {
-                formServices.call( new RemoteCallback<String>() {
+        if (currentTaskId != -1) {
+            if (taskDisplayers != null) {
+                formServices.call(new RemoteCallback<String>() {
                     @Override
-                    public void callback( String form ) {
-                        Collections.sort( taskDisplayers, new Comparator<HumanTaskFormDisplayer>() {
+                    public void callback(String form) {
+                        Collections.sort(taskDisplayers, new Comparator<HumanTaskFormDisplayer>() {
 
                             @Override
-                            public int compare( HumanTaskFormDisplayer o1,
-                                                HumanTaskFormDisplayer o2 ) {
-                                if ( o1.getPriority() < o2.getPriority() ) {
+                            public int compare(HumanTaskFormDisplayer o1, HumanTaskFormDisplayer o2) {
+                                if (o1.getPriority() < o2.getPriority()) {
                                     return -1;
-                                } else if ( o1.getPriority() > o2.getPriority() ) {
+                                } else if (o1.getPriority() > o2.getPriority()) {
                                     return 1;
                                 } else {
                                     return 0;
                                 }
                             }
-                        } );
-                        for ( HumanTaskFormDisplayer d : taskDisplayers ) {
-                            if ( d.supportsContent( form ) ) {
-                                d.init( new TaskKey( currentTaskId ), form );
-                                d.addFormRefreshCallback( GenericFormDisplayPresenter.this );
-                                view.render( d.getContainer() );
+                        });
+                        for (HumanTaskFormDisplayer d : taskDisplayers) {
+                            if (d.supportsContent(form)) {
+                                d.init(new TaskKey(currentTaskId), form, opener);
+                                d.addFormRefreshCallback(GenericFormDisplayPresenter.this);
+                                view.render(d.getContainer());
                                 return;
                             }
                         }
                     }
-                } ).getFormDisplayTask( currentTaskId );
+                }).getFormDisplayTask(currentTaskId);
             }
-        } else if ( !currentProcessId.equals( "none" ) ) {
-            if ( !processDisplayers.isEmpty() ) {
-                formServices.call( new RemoteCallback<String>() {
+
+        } else if (!currentProcessId.equals("none")) {
+            if (processDisplayers != null) {
+                formServices.call(new RemoteCallback<String>() {
                     @Override
-                    public void callback( String form ) {
-                        Collections.sort( processDisplayers, new Comparator<StartProcessFormDisplayer>() {
+                    public void callback(String form) {
+                        Collections.sort(processDisplayers, new Comparator<StartProcessFormDisplayer>() {
 
                             @Override
-                            public int compare( StartProcessFormDisplayer o1,
-                                                StartProcessFormDisplayer o2 ) {
-                                if ( o1.getPriority() < o2.getPriority() ) {
+                            public int compare(StartProcessFormDisplayer o1, StartProcessFormDisplayer o2) {
+                                if (o1.getPriority() < o2.getPriority()) {
                                     return -1;
-                                } else if ( o1.getPriority() > o2.getPriority() ) {
+                                } else if (o1.getPriority() > o2.getPriority()) {
                                     return 1;
                                 } else {
                                     return 0;
                                 }
                             }
-                        } );
-                        for ( StartProcessFormDisplayer d : processDisplayers ) {
-                            if ( d.supportsContent( form ) ) {
-                                d.init( new ProcessDefinitionKey( currentDeploymentId, currentProcessId ), form );
-                                d.addFormRefreshCallback( GenericFormDisplayPresenter.this );
-                                view.render( d.getContainer() );
+                        });
+                        for (StartProcessFormDisplayer d : processDisplayers) {
+                            if (d.supportsContent(form)) {
+                                d.init(new ProcessDefinitionKey(currentDeploymentId, currentProcessId), form, opener);
+                                d.addFormRefreshCallback(GenericFormDisplayPresenter.this);
+                                view.render(d.getContainer());
                                 return;
                             }
                         }
                     }
-                } ).getFormDisplayProcess( currentDeploymentId, currentProcessId );
+                }).getFormDisplayProcess(currentDeploymentId, currentProcessId);
             }
 
         }
@@ -189,5 +190,4 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
     public void close() {
         onClose.execute();
     }
-
 }

@@ -25,9 +25,6 @@ import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
  */
 public interface StartProcessFormDisplayer extends GenericFormDisplayer<ProcessDefinitionKey> {
 
-  @Override
-  void init(ProcessDefinitionKey key, String content);
-
   void startProcess(Map<String, Object> params);
 
 }
