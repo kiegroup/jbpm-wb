@@ -26,7 +26,7 @@ import org.jbpm.console.ng.ht.model.TaskKey;
  */
 public interface HumanTaskFormDisplayer extends GenericFormDisplayer<TaskKey> {
   @Override
-  void init(TaskKey key, String content, String opener);
+  void init(TaskKey key, String content);
   
   void start();
   

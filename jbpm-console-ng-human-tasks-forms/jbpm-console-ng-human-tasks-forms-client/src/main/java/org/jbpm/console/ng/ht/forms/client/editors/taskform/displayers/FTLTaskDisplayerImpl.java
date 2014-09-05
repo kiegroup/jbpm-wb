@@ -16,9 +16,12 @@
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
 import com.google.gwt.user.client.ui.HTMLPanel;
+import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.JSNIFormValuesReader;
 
-import javax.enterprise.context.Dependent;
+import java.util.HashMap;
 import java.util.Map;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 /**
  *
@@ -26,11 +29,13 @@ import java.util.Map;
  */
 @Dependent
 public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
+  @Inject
+  private JSNIFormValuesReader jsniFormValuesReader;
 
   @Override
   protected void initDisplayer() {
     publish(this);
-    jsniHelper.publishGetFormValues();
+    jsniFormValuesReader.publishGetFormValues();
     formContainer.clear();
     formContainer.add(new HTMLPanel(formContent));
   }
@@ -55,13 +60,13 @@ public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
    */
 
   public void complete(String values) {
-    final Map<String, Object> params = jsniHelper.getUrlParameters(values);
+    final Map<String, Object> params = jsniFormValuesReader.getUrlParameters(values);
     complete(params);
     close();
   }
 
   public void saveState(String values) {
-    final Map<String, Object> params = jsniHelper.getUrlParameters(values);
+    final Map<String, Object> params = jsniFormValuesReader.getUrlParameters(values);
     saveState(params);
   }
 

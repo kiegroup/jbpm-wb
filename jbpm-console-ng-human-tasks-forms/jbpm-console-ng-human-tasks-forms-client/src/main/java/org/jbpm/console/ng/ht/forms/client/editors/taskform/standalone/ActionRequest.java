@@ -1,4 +1,4 @@
-package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util;
+package org.jbpm.console.ng.ht.forms.client.editors.taskform.standalone;
 
 import com.google.gwt.core.client.JavaScriptObject;
 

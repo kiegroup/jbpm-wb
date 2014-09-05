@@ -27,7 +27,7 @@ import org.jbpm.console.ng.ga.service.ItemKey;
 public interface GenericFormDisplayer<T extends ItemKey> {
   boolean supportsContent(String content);
   
-  void init(T key, String content, String opener);
+  void init(T key, String content);
   
   FlowPanel getContainer();
   

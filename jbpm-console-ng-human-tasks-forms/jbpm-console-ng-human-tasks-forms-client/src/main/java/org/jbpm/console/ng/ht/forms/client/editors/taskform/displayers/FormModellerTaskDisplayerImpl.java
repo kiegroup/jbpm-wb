@@ -15,15 +15,14 @@
  */
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ht.forms.service.FormModelerProcessStarterEntryPoint;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 
 /**
  *
