@@ -25,15 +25,15 @@ import org.jbpm.console.ng.ga.service.ItemKey;
  * @param <T>
  */
 public interface GenericFormDisplayer<T extends ItemKey> {
-  boolean supportsContent(String content);
-  
-  void init(T key, String content);
-  
-  FlowPanel getContainer();
-  
-  void addFormRefreshCallback(FormRefreshCallback callback);
-  
-  int getPriority();
-  
-  void close();
+    boolean supportsContent(String content);
+
+    void init(T key, String content, String opener);
+
+    FlowPanel getContainer();
+
+    void addFormRefreshCallback(FormRefreshCallback callback);
+
+    int getPriority();
+
+    void close();
 }

@@ -20,11 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
  * @author pefernan
  */
 @Dependent
-public class JSNIFormValuesReader {
+public class JSNIHelper {
     public native void publishGetFormValues() /*-{
         $wnd.getFormValues = function (form) {
             var params = '';
@@ -56,4 +55,17 @@ public class JSNIFormValuesReader {
 
         return params;
     }
+
+    public void notifyErrorMessage(String opener, String message) {
+        if (opener != null) notifyOpener("error", message);
+    }
+
+    public void notifySuccessMessage(String opener, String message) {
+        if (opener != null) notifyOpener("success", message);
+    }
+
+    protected native void notifyOpener(String status, String message) /*-{
+        var response = '{"status":"' + status + '", "message":"' + message + '"}'
+        $wnd.top.postMessage(response, $wnd.location.href);
+    }-*/;
 }

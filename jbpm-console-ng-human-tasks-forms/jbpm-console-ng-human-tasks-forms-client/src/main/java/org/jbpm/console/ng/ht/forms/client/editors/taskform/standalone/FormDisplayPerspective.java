@@ -52,7 +52,7 @@ public class FormDisplayPerspective {
         perspective.setName("FormDisplayPerspective");
         perspective.setTransient(true);
 
-        DefaultPlaceRequest request = new DefaultPlaceRequest("StandaloneFormDisplay");
+        DefaultPlaceRequest request = new DefaultPlaceRequest("Generic Form Display");
 
         Map<String, List<String>> parameterMap = Window.Location.getParameterMap();
         String taskId = "-1";

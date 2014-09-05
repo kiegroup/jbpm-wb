@@ -13,27 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util;
 
-package org.jbpm.console.ng.ht.forms.ht.api;
+import com.google.gwt.core.client.JavaScriptObject;
 
-import java.util.Map;
-import org.jbpm.console.ng.ht.forms.api.GenericFormDisplayer;
-import org.jbpm.console.ng.ht.model.TaskKey;
+public class ActionRequest extends JavaScriptObject {
 
-/**
- *
- * @author salaboy
- */
-public interface HumanTaskFormDisplayer extends GenericFormDisplayer<TaskKey> {
-  
-  void start();
-  
-  void complete( Map<String, Object> params);
-  
-  void claim();
-  
-  void release();
-  
-  void saveState(Map<String, Object> state);
-  
+    protected ActionRequest() {
+    }
+
+    public final native String getAction() /*-{
+        return this.action;
+    }-*/;
+
+    public final native String getTaskId() /*-{
+        return this.taskId;
+    }-*/;
+
+    public final native String getProcessId() /*-{
+        return this.processId;
+    }-*/;
+
+    public final native String getDomainId() /*-{
+        return this.domainId;
+    }-*/;
+
 }
