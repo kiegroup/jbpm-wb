@@ -16,6 +16,7 @@
 
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
@@ -84,15 +85,15 @@ public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessF
         placeManagerFormActivitySearcher.closeFormActivity();
     }
 
-    public void startProcess(String values) {
-        final Map<String, Object> params = jsniHelper.getUrlParameters(values);
+    public void startProcess(JavaScriptObject values) {
+        final Map<String, Object> params = jsniHelper.getParameters(values);
         sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
                 .startProcess(deploymentId, processDefId, params);
     }
 
     protected native void publish(PlaceManagerStartProcessDisplayerImpl ftl)/*-{
         $wnd.startProcess = function (from) {
-            ftl.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.PlaceManagerStartProcessDisplayerImpl::startProcess(Ljava/lang/String;)(from);
+            ftl.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.PlaceManagerStartProcessDisplayerImpl::startProcess(Lcom/google/gwt/core/client/JavaScriptObject;)(from);
         }
     }-*/;
 }

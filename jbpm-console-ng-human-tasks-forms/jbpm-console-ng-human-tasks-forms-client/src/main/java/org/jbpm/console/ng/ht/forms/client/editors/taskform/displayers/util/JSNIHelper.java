@@ -15,6 +15,9 @@
  */
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util;
 
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.json.client.JSONObject;
+
 import javax.enterprise.context.Dependent;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,33 +29,26 @@ import java.util.Map;
 public class JSNIHelper {
     public native void publishGetFormValues() /*-{
         $wnd.getFormValues = function (form) {
-            var params = '';
-
+            var result = new Object()
             for (i = 0; i < form.elements.length; i++) {
                 var fieldName = form.elements[i].name;
                 var fieldValue = form.elements[i].value;
                 if (fieldName != '') {
-                    params += fieldName + '=' + fieldValue + '&';
+                    result[fieldName] = fieldValue;
                 }
             }
-            return params;
+            return result;
         };
     }-*/;
 
-    public Map<String, Object> getUrlParameters(String values) {
+    public Map<String, Object> getParameters(JavaScriptObject values) {
+        JSONObject jsonObject = new JSONObject(values);
         Map<String, Object> params = new HashMap<String, Object>();
-        for (String param : values.split("&")) {
-            String pair[] = param.split("=");
-            String key = pair[0];
-            String value = "";
-            if (pair.length > 1) {
-                value = pair[1];
-            }
+        for (String key : jsonObject.keySet()) {
             if (!key.startsWith("btn_")) {
-                params.put(key, value);
+                params.put(key, jsonObject.get(key).isString().stringValue());
             }
         }
-
         return params;
     }
 

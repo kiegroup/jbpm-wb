@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.PlaceManagerFormActivitySearcher;
 import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
@@ -48,14 +49,14 @@ public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
         return content.contains("handledByPlaceManagerFormProvider");
     }
 
-    public void complete(String values) {
-        Map<String, Object> params = jsniHelper.getUrlParameters(values);
+    public void complete(JavaScriptObject values) {
+        Map<String, Object> params = jsniHelper.getParameters(values);
         complete(params);
         close();
     }
 
-    public void saveState(String values) {
-        Map<String, Object> params = jsniHelper.getUrlParameters(values);
+    public void saveState(JavaScriptObject values) {
+        Map<String, Object> params = jsniHelper.getParameters(values);
         saveState(params);
     }
 
@@ -112,11 +113,11 @@ public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
     // Set up the JS-callable signature as a global JS function.
     protected native void publish(PlaceManagerTaskDisplayerImpl td)/*-{
         $wnd.complete = function (from) {
-            td.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.PlaceManagerTaskDisplayerImpl::complete(Ljava/lang/String;)(from);
+            td.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.PlaceManagerTaskDisplayerImpl::complete(Lcom/google/gwt/core/client/JavaScriptObject;)(from);
         }
 
         $wnd.saveState = function (from) {
-            td.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.PlaceManagerTaskDisplayerImpl::saveState(Ljava/lang/String;)(from);
+            td.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.PlaceManagerTaskDisplayerImpl::saveState(Lcom/google/gwt/core/client/JavaScriptObject;)(from);
         }
     }-*/;
 }
