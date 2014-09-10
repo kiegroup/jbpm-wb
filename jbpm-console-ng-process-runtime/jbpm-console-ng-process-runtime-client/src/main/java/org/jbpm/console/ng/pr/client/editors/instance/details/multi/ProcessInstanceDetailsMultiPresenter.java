@@ -103,9 +103,7 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
         return Position.EAST;
     }
 
-    @Override
-    public void selectDefaultTab() {
-    }
+
 
     @WorkbenchPartTitle
     public String getTitle() {

@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsPresenter;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView.TabbedDetailsView;
+import org.jbpm.console.ng.ht.client.editors.taskadmin.TaskAdminPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskdetails.TaskDetailsPresenter;
@@ -56,7 +57,8 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
         void setupPresenters( final GenericFormDisplayPresenter genericFormDisplayPresenter,
                               final TaskDetailsPresenter taskDetailsPresenter,
                               final TaskAssignmentsPresenter taskAssignmentsPresenter,
-                              final TaskCommentsPresenter taskCommentsPresenter );
+                              final TaskCommentsPresenter taskCommentsPresenter,
+                              final TaskAdminPresenter taskAdminPresenter);
 
         IsWidget getRefreshButton();
 
@@ -83,10 +85,13 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
 
     @Inject
     private TaskDetailsMultiView view;
+    
+    @Inject
+    private TaskAdminPresenter taskAdminPresenter;
 
     @PostConstruct
     public void init() {
-        view.setupPresenters( genericFormDisplayPresenter, taskDetailsPresenter, taskAssignmentsPresenter, taskCommentsPresenter );
+        view.setupPresenters( genericFormDisplayPresenter, taskDetailsPresenter, taskAssignmentsPresenter, taskCommentsPresenter, taskAdminPresenter );
     }
 
     @WorkbenchPartView
@@ -99,9 +104,6 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
         return Position.EAST;
     }
 
-    @Override
-    public void selectDefaultTab() {
-    }
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -111,7 +113,6 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
     @OnStartup
     public void onStartup( final PlaceRequest place ) {
         super.onStartup( place );
-        selectDefaultTab();
     }
 
     public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
@@ -124,12 +125,16 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
         } );
 
         changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( selectedItemId ) + " - " + selectedItemName ) );
-
-        view.getTabPanel().selectTab( 0 );
+        if (event.isForAdmin()) {
+            view.getTabPanel().getTabWidget(4).getParent().setVisible(true);
+        } else {
+            view.getTabPanel().getTabWidget(4).getParent().setVisible(false);
+        }
+        view.getTabPanel().selectTab(0);
     }
 
     public void refresh() {
-        taskSelected.fire( new TaskSelectionEvent( Long.valueOf( selectedItemId ), selectedItemName, "Generic Form Display" ) );
+        taskSelected.fire( new TaskSelectionEvent( Long.valueOf( selectedItemId ), selectedItemName ) );
     }
 
     @WorkbenchMenu

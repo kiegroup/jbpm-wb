@@ -55,6 +55,10 @@ public class DetailsTabbedPanel extends Composite {
     public Widget getWidget( int index ) {
         return tabsContainer.getWidget( index );
     }
+    
+    public Widget getTabWidget(int index){
+        return tabsContainer.getTabWidget( index );
+    }
 
     public int getWidgetCount() {
         return tabsContainer.getWidgetCount();
@@ -79,5 +83,9 @@ public class DetailsTabbedPanel extends Composite {
 
     public int getSelectedIndex() {
         return tabsContainer.getSelectedIndex();
+    }
+    
+    public void clear(){
+      tabsContainer.clear();
     }
 }

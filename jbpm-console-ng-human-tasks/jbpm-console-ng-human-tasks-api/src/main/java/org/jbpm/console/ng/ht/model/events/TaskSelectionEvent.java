@@ -21,50 +21,41 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class TaskSelectionEvent implements Serializable {
-    private long taskId;
+    private Long taskId;
     private String taskName;
-    private String place;
+    private boolean forAdmin;
 
     public TaskSelectionEvent() {
     }
 
-    public TaskSelectionEvent(long taskId) {
+    public TaskSelectionEvent(Long taskId) {
         this.taskId = taskId;
     }
 
-    public TaskSelectionEvent(long taskId, String taskName) {
-        this.taskId = taskId;
-        this.taskName = taskName;
-    }
-
-    public TaskSelectionEvent(long taskId, String taskName, String place) {
+    public TaskSelectionEvent(Long taskId, String taskName) {
         this.taskId = taskId;
         this.taskName = taskName;
-        this.place = place;
-    }
-    
-    public String getPlace() {
-        return place;
     }
 
-    public void setPlace(String place) {
-        this.place = place;
+    public TaskSelectionEvent(Long taskId, String taskName,  boolean forAdmin) {
+        this.taskId = taskId;
+        this.taskName = taskName;
+        this.forAdmin = forAdmin;
     }
     
     public String getTaskName() {
         return taskName;
     }
 
-    public long getTaskId() {
+    public Long getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(long taskId) {
-        this.taskId = taskId;
+    public boolean isForAdmin() {
+        return forAdmin;
     }
 
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
-    }
+    
+    
 
 }

@@ -64,8 +64,6 @@ public abstract class AbstractTabbedDetailsPresenter {
     
   }
 
-  public abstract void selectDefaultTab();
-  
   @OnClose
   public void onClose() {
     for (String activityId : activitiesMap.keySet()) {

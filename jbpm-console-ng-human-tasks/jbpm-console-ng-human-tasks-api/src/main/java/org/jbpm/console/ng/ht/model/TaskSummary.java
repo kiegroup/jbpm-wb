@@ -37,7 +37,7 @@ public class TaskSummary extends GenericSummary {
     private String processId;
     private int processSessionId;
     private String deploymentId;
-
+    private boolean isForAdmin;
     private Long parentId;
 
     public TaskSummary(long taskId, String taskName, String description, String status,
@@ -63,6 +63,15 @@ public class TaskSummary extends GenericSummary {
         this.parentId = parentId;
     }
 
+    public TaskSummary(long taskId, String taskName, String description, String status,
+            int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
+            Date expirationTime, String processId, int processSessionId, long processInstanceId, String deploymentId, long parentId,boolean isForAdmin) {
+         this(taskId, taskName, description, status, priority, 
+                 actualOwner, createdBy, createdOn, activationTime, 
+                 expirationTime, processId, processSessionId, 
+                 processInstanceId, deploymentId, parentId);
+         this.isForAdmin = isForAdmin;
+    }
     public TaskSummary() {
     }
 
@@ -133,13 +142,21 @@ public class TaskSummary extends GenericSummary {
         return deploymentId;
     }
 
+    public boolean isForAdmin() {
+        return isForAdmin;
+    }
+
+    public void setForAdmin(boolean isForAdmin) {
+        this.isForAdmin = isForAdmin;
+    }
+
     @Override
     public String toString() {
         return "TaskSummary [id=" + taskId + ", name=" + taskName + ", description=" + description + ", deploymentId=" + deploymentId
                 + ", status=" + status + ", priority=" + priority + ", parentId=" + parentId
                 + ", actualOwner=" + actualOwner + ", createdBy=" + createdBy + ", createdOn=" + createdOn
                 + ", activationTime=" + activationTime + ", expirationTime=" + expirationTime + ", processInstanceId="
-                + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + "]";
+                + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", isForAdmin="+ isForAdmin+ "]";
     }
 
 }

@@ -35,6 +35,7 @@ import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.forms.client.editors.taskform.generic.GenericFormDisplayPresenter;
 
 import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.*;
+import org.jbpm.console.ng.ht.client.editors.taskadmin.TaskAdminPresenter;
 
 @Dependent
 public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDetailsMultiPresenter>
@@ -53,6 +54,8 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
     private TaskAssignmentsPresenter taskAssignmentsPresenter;
 
     private TaskCommentsPresenter taskCommentsPresenter;
+    
+    private TaskAdminPresenter taskAdminPresenter;
 
     @Override
     public void init( final TaskDetailsMultiPresenter presenter ) {
@@ -65,12 +68,15 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
         tabPanel.addTab( "Task Details", Constants.INSTANCE.Details() );
         tabPanel.addTab( "Task Assignments", Constants.INSTANCE.Assignments() );
         tabPanel.addTab( "Task Comments", Constants.INSTANCE.Comments() );
-        tabPanel.setHeight( "600px" );
+        tabPanel.addTab( "Task Admin", Constants.INSTANCE.Task_Admin());
+        
+        tabPanel.setHeight( "700px" );
 
         ( (HTMLPanel) tabPanel.getWidget( 0 ) ).add( genericFormDisplayPresenter.getView() );
         ( (HTMLPanel) tabPanel.getWidget( 1 ) ).add( taskDetailsPresenter.getView() );
         ( (HTMLPanel) tabPanel.getWidget( 2 ) ).add( taskAssignmentsPresenter.getView() );
         ( (HTMLPanel) tabPanel.getWidget( 3 ) ).add( taskCommentsPresenter.getView() );
+        ( (HTMLPanel) tabPanel.getWidget( 4 ) ).add( taskAdminPresenter.getView() );
 
         tabPanel.addSelectionHandler( new SelectionHandler<Integer>() {
 
@@ -82,6 +88,8 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
                     taskAssignmentsPresenter.refreshTaskPotentialOwners();
                 } else if ( event.getSelectedItem() == 3 ) {
                     taskCommentsPresenter.refreshComments();
+                }else if ( event.getSelectedItem() == 3 ) {
+                    taskAdminPresenter.refreshTaskPotentialOwners();
                 }
             }
         } );
@@ -107,11 +115,13 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
     public void setupPresenters( final GenericFormDisplayPresenter genericFormDisplayPresenter,
                                  final TaskDetailsPresenter taskDetailsPresenter,
                                  final TaskAssignmentsPresenter taskAssignmentsPresenter,
-                                 final TaskCommentsPresenter taskCommentsPresenter ) {
+                                 final TaskCommentsPresenter taskCommentsPresenter,
+                                 final TaskAdminPresenter taskAdminPresenter) {
         this.genericFormDisplayPresenter = genericFormDisplayPresenter;
         this.taskDetailsPresenter = taskDetailsPresenter;
         this.taskAssignmentsPresenter = taskAssignmentsPresenter;
         this.taskCommentsPresenter = taskCommentsPresenter;
+        this.taskAdminPresenter = taskAdminPresenter;
     }
 
     @Override
