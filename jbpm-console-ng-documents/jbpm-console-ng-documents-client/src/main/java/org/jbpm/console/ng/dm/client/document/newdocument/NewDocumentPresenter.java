@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.dm.client.experimental.pagination;
+package org.jbpm.console.ng.dm.client.document.newdocument;
 
 import java.util.Map;
 
