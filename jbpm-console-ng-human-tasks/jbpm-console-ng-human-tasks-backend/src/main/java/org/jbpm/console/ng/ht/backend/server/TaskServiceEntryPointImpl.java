@@ -347,8 +347,11 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
     }
 
     @Override
-    public void claim(long taskId, String user) {
+    public void claim(long taskId, String user, boolean autoStart) {
         taskService.claim(taskId, user);
+        if(autoStart){
+            taskService.start(taskId, user);
+        }
     }
 
     @Override

@@ -107,12 +107,11 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
         taskServices.call(new RemoteCallback<TaskSummary>() {
             @Override
             public void callback(final TaskSummary task) {
-                buttonsContainer.clear();
-                taskName = task.getTaskName();
-
                 if (task == null) {
                     return;
                 }
+                buttonsContainer.clear();
+                taskName = task.getTaskName();
 
                 if (opener != null) {
                     injectEventListener(AbstractHumanTaskFormDisplayer.this);
@@ -209,7 +208,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
 
     @Override
     public void claim() {
-        taskServices.call(getClaimTaskCallback(), getUnexpectedErrorCallback()).claim(taskId, identity.getName());
+        taskServices.call(getClaimTaskCallback(), getUnexpectedErrorCallback()).claim(taskId, identity.getName(), true);
     }
 
     @Override

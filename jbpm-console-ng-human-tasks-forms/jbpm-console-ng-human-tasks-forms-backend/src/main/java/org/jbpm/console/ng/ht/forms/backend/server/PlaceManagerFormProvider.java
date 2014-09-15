@@ -56,10 +56,10 @@ public class PlaceManagerFormProvider implements FormProvider {
   @Override
   public String render(String name, ProcessDefinition process, Map<String, Object> renderContext) {
 
-    Map<String, String> params = new HashMap<String, String>(renderContext.size());
+    Map<String, Object> params = new HashMap<String, Object>(renderContext.size());
     for (String key : renderContext.keySet()) {
       if (!(renderContext.get(key) instanceof Task) && !key.equals("marshallerContext")) {
-        params.put(key, renderContext.get(key).toString());
+        params.put(key, renderContext.get(key));
       }
 
     }
@@ -75,15 +75,16 @@ public class PlaceManagerFormProvider implements FormProvider {
 
   @Override
   public String render(String name, Task task, ProcessDefinition process, Map<String, Object> renderContext) {
-    Map<String, String> params = new HashMap<String, String>(renderContext.size());
+    Map<String, Object> params = new HashMap<String, Object>(renderContext.size());
     String taskName = (renderContext.get("TaskName") != null) ? (String) renderContext.get("TaskName") : "";
     for (String key : renderContext.keySet()) {
       if (!(renderContext.get(key) instanceof Task) && !key.equals("marshallerContext")) {
-        params.put(key, renderContext.get(key).toString());
+        params.put(key, renderContext.get(key));
       }
     }
     if (task != null) {
       params.put("taskId", task.getId().toString());
+      params.put("taskStatus", task.getTaskData().getStatus().toString());
     }
     if (process != null) {
       params.put("processId", process.getId());

@@ -68,7 +68,7 @@ public interface TaskServiceEntryPoint {
 
     void startBatch(List<Long> taskIds, String user);
 
-    void claim(long taskId, String user);
+    void claim(long taskId, String user, boolean autoStart);
 
     void claimBatch(List<Long> taskIds, String user);
 

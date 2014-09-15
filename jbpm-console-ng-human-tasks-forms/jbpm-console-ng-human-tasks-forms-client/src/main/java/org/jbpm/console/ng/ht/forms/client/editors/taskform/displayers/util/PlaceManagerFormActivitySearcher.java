@@ -16,6 +16,7 @@
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import java.util.HashMap;
 import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -36,6 +37,9 @@ public class PlaceManagerFormActivitySearcher {
   private AbstractWorkbenchScreenActivity currentActivity;
 
   public IsWidget findFormActivityWidget(String name, Map<String, String> params) {
+    if(params == null){
+        params = new HashMap<String, String>();
+    } 
     DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(name + " Form", params);
     currentActivity = (AbstractWorkbenchScreenActivity) activityManager.getActivity(defaultPlaceRequest);
     if (currentActivity == null) {

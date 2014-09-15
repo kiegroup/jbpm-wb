@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.asset.backend.server;
 
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
