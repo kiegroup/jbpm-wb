@@ -55,7 +55,7 @@ public class TaskUtils {
                     "Obsolete", "Completed");
             break;
         case PERSONAL:
-            status = ImmutableList.of("Ready", "InProgress", "Created", "Reserved");
+            status = ImmutableList.of("InProgress", "Created", "Reserved");
             break;
         case ADMIN:
             status = ImmutableList.of("Ready", "InProgress", "Created", "Reserved");
