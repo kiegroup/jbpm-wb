@@ -18,10 +18,12 @@ package org.jbpm.console.ng.ht.client.editors.taskadmin;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -49,12 +51,11 @@ import org.uberfire.security.Identity;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
-@WorkbenchScreen(identifier = "Task Admin")
 public class TaskAdminPresenter {
 
     private Constants constants = GWT.create(Constants.class);
 
-    public interface TaskAdminView extends UberView<TaskAdminPresenter> {
+    public interface TaskAdminView extends IsWidget{
 
         void displayNotification(String text);
 
@@ -64,6 +65,7 @@ public class TaskAdminPresenter {
         
         TextBox getUserOrGroupText();
         
+        void init( final TaskAdminPresenter presenter );
     }
 
     @Inject
@@ -91,20 +93,15 @@ public class TaskAdminPresenter {
     @Inject
     private Event<TaskRefreshedEvent> taskRefreshed;
 
-    @OnStartup
-    public void onStartup(final PlaceRequest place) {
-        this.place = place;
+    @PostConstruct
+    public void init() {
+        view.init( this );
     }
 
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.Task_Admin();
-    }
-
-    @WorkbenchPartView
-    public UberView<TaskAdminPresenter> getView() {
+    public IsWidget getView() {
         return view;
     }
+    
 
     public void forwardTask(String entity) {
         taskServices.call(new RemoteCallback<Void>() {
@@ -160,14 +157,7 @@ public class TaskAdminPresenter {
           }).getTaskDetails(currentTaskId);
 
     }
-
-    @OnOpen
-    public void onOpen() {
-
-        this.currentTaskId = Long.parseLong(place.getParameter("taskId", "0").toString());
-        refreshTaskPotentialOwners();
-    }
-    
+ 
     public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
         this.currentTaskId = event.getTaskId();
         refreshTaskPotentialOwners();

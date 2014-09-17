@@ -118,5 +118,4 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
         return userOrGroupText;
     }
     
-    
 }

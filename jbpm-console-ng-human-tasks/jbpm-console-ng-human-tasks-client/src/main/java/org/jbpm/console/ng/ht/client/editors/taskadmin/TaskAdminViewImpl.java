@@ -43,31 +43,32 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
 
     
     @Inject
-    @DataField
-    public ControlLabel detailsAccordionLabel;
-
-    @Inject
     private PlaceManager placeManager;
+    
+    @Inject
+    @DataField
+    public ControlLabel adminDetailsAccordionLabel;
+
 
     @Inject
     @DataField
-    public Label userOrGroupLabel;
+    public Label adminUserOrGroupLabel;
     
     @Inject
     @DataField
-    public Label usersGroupsControlsLabel;
+    public Label adminUsersGroupsControlsLabel;
     
     @Inject
     @DataField
-    public TextBox userOrGroupText;
+    public TextBox adminUserOrGroupText;
     
     @Inject
     @DataField
-    public Button forwardButton;
+    public Button adminForwardButton;
 
     @Inject
     @DataField
-    public Label usersGroupsControlsPanel;
+    public Label adminUsersGroupsControlsPanel;
   
 
     @Inject
@@ -78,20 +79,20 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
     @Override
     public void init( TaskAdminPresenter presenter ) {
         this.presenter = presenter;
-        userOrGroupLabel.setText(constants.UserOrGroup());
-        detailsAccordionLabel.add( new HTMLPanel( constants.Details()) );
-        forwardButton.setText(constants.Forward());
-        usersGroupsControlsLabel.setText(constants.Potential_Owners());
-        usersGroupsControlsPanel.setStyleName("");
+        adminUserOrGroupLabel.setText(constants.UserOrGroup());
+        adminDetailsAccordionLabel.add( new HTMLPanel( constants.Details()) );
+        adminForwardButton.setText(constants.Forward());
+        adminUsersGroupsControlsLabel.setText(constants.Potential_Owners());
+        adminUsersGroupsControlsPanel.setStyleName("");
 
     }
 
-    @EventHandler("forwardButton")
-    public void forwardButton( ClickEvent e ) {
-        String userOrGroup = userOrGroupText.getText();
+    @EventHandler("adminForwardButton")
+    public void adminForwardButton( ClickEvent e ) {
+        String userOrGroup = adminUserOrGroupText.getText();
         if(!userOrGroup.equals("")){
             presenter.forwardTask( userOrGroup);
-            forwardButton.setEnabled(false);
+            adminForwardButton.setEnabled(false);
         }else{
             displayNotification("Please enter a user or a group to delegate the task");
         }
@@ -99,7 +100,7 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
 
     @Override
     public Label getUsersGroupsControlsPanel() {
-        return usersGroupsControlsPanel;
+        return adminUsersGroupsControlsPanel;
     }
 
     @Override
@@ -109,12 +110,12 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
 
     @Override
     public Button getForwardButton(){
-        return forwardButton;
+        return adminForwardButton;
     }
     
     @Override
     public TextBox getUserOrGroupText() {
-        return userOrGroupText;
+        return adminUserOrGroupText;
     }
     
 }
