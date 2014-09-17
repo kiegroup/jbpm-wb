@@ -115,21 +115,19 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
 
     @Override
     public Collection<NodeInstanceSummary> getProcessInstanceHistory(long processInstanceId) {
-        ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
         // TODO make use of paging properly as it's currently limiting to 100
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistoryByType(piDesc.getDeploymentId(),
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistoryByType(
                 processInstanceId, RuntimeDataService.EntryType.START, new QueryContextImpl(0, 100)));
     }
 
     @Override
     public Collection<NodeInstanceSummary> getProcessInstanceHistory(long processInstanceId, boolean completed) {
-        ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
         // TODO make use of paging properly as it's currently limiting to 100
         if (completed) {
-            return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistoryByType(piDesc.getDeploymentId(),
+            return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistoryByType(
                     processInstanceId, RuntimeDataService.EntryType.END, new QueryContextImpl(0, 100)));
         }  else {
-            return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistoryByType(piDesc.getDeploymentId(),
+            return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistoryByType(
                     processInstanceId, RuntimeDataService.EntryType.START, new QueryContextImpl(0, 100)));
         }
 
@@ -137,17 +135,15 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
 
     @Override
     public Collection<NodeInstanceSummary> getProcessInstanceFullHistory(long processInstanceId) {
-        ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
         // TODO make use of paging properly as it's currently limiting to 100
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistory(piDesc.getDeploymentId(),
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistory(
                 processInstanceId, new QueryContextImpl(0, 100)));
     }
 
     @Override
     public Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(long processInstanceId) {
-        ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
         // TODO make use of paging properly as it's currently limiting to 100
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistoryActive(piDesc.getDeploymentId(),
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistoryActive(
                 processInstanceId, new QueryContextImpl(0, 100)));
     }
 
@@ -169,7 +165,7 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
     public Collection<NodeInstanceSummary> getProcessInstanceCompletedNodes(long processInstanceId) {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
         // TODO make use of paging properly as it's currently limiting to 100
-        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistoryCompleted(piDesc.getDeploymentId(),
+        return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistoryCompleted(
                 processInstanceId, new QueryContextImpl(0, 100)));
 
     }
