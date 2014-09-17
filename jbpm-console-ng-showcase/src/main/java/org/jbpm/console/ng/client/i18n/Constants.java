@@ -84,5 +84,7 @@ public interface Constants extends Messages {
 
     String Logs();
 
+    String DeploymentDescriptor();
+
 
 }

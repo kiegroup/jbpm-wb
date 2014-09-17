@@ -73,4 +73,57 @@ public interface Constants extends Messages {
 
     String Undeploy_Question();
 
+    String DeploymentDescriptorEditor();
+
+    String PersistenceUnit();
+
+    String AuditPersistenceUnit();
+
+    String PersistenceMode();
+
+    String AuditMode();
+
+    String RuntimeStrategy();
+
+    String MarshalStrategy();
+
+    String Add();
+
+    String Remove();
+
+    String Resolver();
+
+    String Value();
+
+    String PromptForRemoval();
+
+    String NoDataDefined();
+
+    String DeploymentDescriptorParameters();
+
+    String NoParametersDefined();
+
+    String DDParametersPopupTitle();
+
+    String EventListeners();
+
+    String Globals();
+
+    String WorkItemHandlers();
+
+    String TaskEventListeners();
+
+    String EnvironmentEntries();
+
+    String Configuration();
+
+    String RequiredRoles();
+
+    String RemoteableClasses();
+
+    String NamedParams();
+
+    String NoParamResolver();
+
+    String Type();
 }

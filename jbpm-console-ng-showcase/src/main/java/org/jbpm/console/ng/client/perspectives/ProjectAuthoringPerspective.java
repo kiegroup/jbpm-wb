@@ -16,15 +16,21 @@
 
 package org.jbpm.console.ng.client.perspectives;
 
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
+import org.guvnor.common.services.project.context.ProjectContextChangeEvent;
 import org.jbpm.console.ng.client.i18n.Constants;
 import org.kie.workbench.common.screens.projecteditor.client.menu.ProjectMenu;
+import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcesMenu;
+import org.kie.workbench.common.widgets.client.resources.i18n.ToolsMenuConstants;
+import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -40,6 +46,7 @@ import org.uberfire.workbench.model.impl.PanelDefinitionImpl;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.toolbar.IconType;
 import org.uberfire.workbench.model.toolbar.ToolBar;
@@ -67,6 +74,12 @@ public class ProjectAuthoringPerspective {
     private ProjectMenu projectMenu;
 
     private ToolBar toolBar;
+
+    private String projectRootPath;
+
+    public void onProjectContextChanged( @Observes final ProjectContextChangeEvent event ) {
+        projectRootPath = event.getProject().getRootPath().toURI();
+    }
 
     public ProjectAuthoringPerspective() {
     }
@@ -116,6 +129,7 @@ public class ProjectAuthoringPerspective {
     }
 
     private void buildMenuBar() {
+
         this.menus = MenuFactory
                 .newTopLevelMenu( "Projects" )
                 .respondsWith( new Command() {
@@ -130,11 +144,27 @@ public class ProjectAuthoringPerspective {
                 .withItems( newResourcesMenu.getMenuItems() )
                 .endMenu()
 
-                .newTopLevelMenu( "Tools" )
-                .withItems( projectMenu.getMenuItems() )
+                .newTopLevelMenu("Tools")
+                .withItems( getToolsMenuItems() )
                 .endMenu()
 
                 .build();
     }
+
+    private List<MenuItem> getToolsMenuItems() {
+        List<MenuItem> toolsMenuItems = projectMenu.getMenuItems();
+        toolsMenuItems.add(MenuFactory.newSimpleItem( Constants.INSTANCE.DeploymentDescriptor() ).respondsWith(
+                new Command() {
+                    @Override
+                    public void execute() {
+                        placeManager.goTo(PathFactory.newPath("kie-deployment-descriptor.xml",
+                                projectRootPath + "/src/main/resources/META-INF/kie-deployment-descriptor.xml"));
+                    }
+                } ).endMenu().build().getItems().get( 0 ));
+
+        return toolsMenuItems;
+    }
+
+
 
 }
