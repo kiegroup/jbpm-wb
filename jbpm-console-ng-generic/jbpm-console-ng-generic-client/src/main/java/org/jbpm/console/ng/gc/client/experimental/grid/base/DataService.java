@@ -1,15 +1,18 @@
 package org.jbpm.console.ng.gc.client.experimental.grid.base;
 
-import com.google.gwt.i18n.client.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import org.jbpm.console.ng.ga.model.DataMockKey;
 import org.jbpm.console.ng.ga.model.DataMockSummary;
-import org.jbpm.console.ng.ga.model.QueryFilter;
+import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.ga.service.GenericServiceEntryPoint;
+import org.kie.internal.query.QueryFilter;
 import org.uberfire.paging.PageResponse;
+
+import com.google.gwt.i18n.client.NumberFormat;
 
 
 

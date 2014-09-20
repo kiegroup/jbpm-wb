@@ -19,21 +19,21 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ht.model.Day;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.TasksPerDaySummary;
 import org.jbpm.console.ng.ht.service.TaskCalendarService;
 import org.jbpm.services.api.RuntimeDataService;
-import org.jbpm.services.task.query.QueryFilterImpl;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.kie.api.task.model.Status;
-import org.kie.internal.task.api.InternalTaskService;
+import org.kie.internal.query.QueryFilter;
 import org.uberfire.paging.PageResponse;
 
 /**
@@ -80,7 +80,7 @@ public class TaskCalendarServiceImpl implements TaskCalendarService {
       statuses.add(Status.valueOf(s));
     }
 
-    org.kie.internal.query.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1);
+    org.kie.internal.query.QueryFilter qf = new QueryFilter(filter.getOffset(), filter.getCount() + 1);
     List<TaskSummary> taskSummaries = null;
     if(!ownedFilter){        
       taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf));

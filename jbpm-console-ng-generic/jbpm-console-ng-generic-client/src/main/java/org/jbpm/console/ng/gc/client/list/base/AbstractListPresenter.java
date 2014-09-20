@@ -17,13 +17,15 @@ package org.jbpm.console.ng.gc.client.list.base;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.enterprise.event.Observes;
+
+import org.jbpm.console.ng.ga.model.events.SearchEvent;
+import org.kie.internal.query.QueryFilter;
 
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
-import org.jbpm.console.ng.ga.model.QueryFilter;
-import org.jbpm.console.ng.ga.model.events.SearchEvent;
 
 /**
  * @param <T> data type for the AsyncDataProvider

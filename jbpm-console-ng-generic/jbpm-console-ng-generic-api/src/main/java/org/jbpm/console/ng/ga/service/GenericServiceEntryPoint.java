@@ -16,7 +16,7 @@
 package org.jbpm.console.ng.ga.service;
 
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.jbpm.console.ng.ga.model.QueryFilter;
+import org.kie.internal.query.QueryFilter;
 import org.uberfire.paging.AbstractPageRow;
 import org.uberfire.paging.PageResponse;
 

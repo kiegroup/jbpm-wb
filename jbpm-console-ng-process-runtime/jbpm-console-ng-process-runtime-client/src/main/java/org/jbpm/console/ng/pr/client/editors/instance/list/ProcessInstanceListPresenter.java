@@ -113,7 +113,7 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
 
         currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
                 .getColumn().getDataStoreName() : "");
-        currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
+        currentFilter.setAscending((columnSortList.size() > 0) ? columnSortList.get(0)
                 .isAscending() : true);
 
         processInstanceService.call(new RemoteCallback<PageResponse<ProcessInstanceSummary>>() {

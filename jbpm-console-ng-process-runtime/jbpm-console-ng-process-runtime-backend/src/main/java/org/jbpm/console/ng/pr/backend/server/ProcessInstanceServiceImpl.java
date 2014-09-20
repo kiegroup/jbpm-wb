@@ -18,22 +18,18 @@ package org.jbpm.console.ng.pr.backend.server;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.ga.model.QueryFilter;
-import org.jbpm.console.ng.ga.service.ItemKey;
 import org.jbpm.console.ng.pr.model.ProcessInstanceKey;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.service.ProcessInstanceService;
 import org.jbpm.services.api.RuntimeDataService;
 import org.jbpm.services.api.model.ProcessInstanceDesc;
-import org.jbpm.services.task.query.QueryFilterImpl;
-import org.kie.internal.query.QueryContext;
+import org.kie.internal.query.QueryFilter;
 import org.uberfire.paging.PageResponse;
 
 /**
@@ -56,7 +52,7 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
             initiator = (String) filter.getParams().get("initiator");
         }
         // append 1 to the count to check if there are further pages
-        org.kie.internal.query.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1,
+        QueryFilter qf = new QueryFilter(filter.getOffset(), filter.getCount() + 1,
                 filter.getOrderBy(), filter.isAscending());
         Collection<ProcessInstanceDesc> processInstances = dataService.getProcessInstances(states, initiator, qf);
         List<ProcessInstanceSummary> processInstancesSums = new ArrayList<ProcessInstanceSummary>(processInstances.size());

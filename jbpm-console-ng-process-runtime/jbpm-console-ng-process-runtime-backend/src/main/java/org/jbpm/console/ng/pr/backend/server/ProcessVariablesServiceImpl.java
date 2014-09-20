@@ -20,17 +20,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.pr.model.ProcessVariableKey;
 import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.console.ng.pr.service.ProcessVariablesService;
 import org.jbpm.services.api.DefinitionService;
 import org.jbpm.services.api.RuntimeDataService;
-import org.jbpm.services.task.query.QueryFilterImpl;
+import org.kie.internal.query.QueryFilter;
 import org.uberfire.paging.PageResponse;
 
 /**
@@ -58,7 +58,7 @@ public class ProcessVariablesServiceImpl implements ProcessVariablesService {
       deploymentId = (String) filter.getParams().get("deploymentId");
     }
     // append 1 to the count to check if there are further pages
-    org.kie.internal.query.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1,
+    QueryFilter qf = new QueryFilter(filter.getOffset(), filter.getCount() + 1,
             filter.getOrderBy(), filter.isAscending());
 
     Map<String, String> properties = new HashMap<String, String>(bpmn2Service.getProcessVariables(deploymentId, processId));

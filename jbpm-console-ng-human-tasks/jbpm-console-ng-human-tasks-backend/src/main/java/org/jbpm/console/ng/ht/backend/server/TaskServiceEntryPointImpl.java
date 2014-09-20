@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -38,7 +39,6 @@ import org.jbpm.services.api.RuntimeDataService;
 import org.jbpm.services.api.UserTaskService;
 import org.jbpm.services.task.audit.service.TaskAuditService;
 import org.jbpm.services.task.impl.factories.TaskFactory;
-import org.jbpm.services.task.query.QueryFilterImpl;
 import org.jbpm.services.task.utils.TaskFluent;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -47,8 +47,8 @@ import org.kie.api.task.model.OrganizationalEntity;
 import org.kie.api.task.model.Status;
 import org.kie.api.task.model.Task;
 import org.kie.api.task.model.User;
-import org.kie.internal.task.api.InternalTaskService;
 import org.kie.internal.query.QueryFilter;
+import org.kie.internal.task.api.InternalTaskService;
 
 @Service
 @ApplicationScoped
@@ -86,13 +86,13 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         if (from != null) {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("expirationDate", from);
-		QueryFilter qf = new QueryFilterImpl( "(t.taskData.expirationTime = :expirationDate or t.taskData.expirationTime is null)", 
+		QueryFilter qf = new QueryFilter( "(t.taskData.expirationTime = :expirationDate or t.taskData.expirationTime is null)", 
                             params, "order by t.id DESC", offset, count);
                 
             taskSummaries = TaskSummaryHelper.adaptCollection(
                     runtimeDataService.getTasksAssignedAsPotentialOwnerByStatus(userId, statuses, qf));
         } else {
-            QueryFilter qf = new QueryFilterImpl(offset,count);
+            QueryFilter qf = new QueryFilter(offset,count);
             taskSummaries = TaskSummaryHelper.adaptCollection(
                     runtimeDataService.getTasksAssignedAsPotentialOwnerByStatus(userId, statuses, qf));
         }
@@ -106,7 +106,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
             statuses.add(Status.valueOf(s));
         }
         List<TaskSummary> taskSummaries = TaskSummaryHelper.adaptCollection(
-                runtimeDataService.getTasksOwnedByStatus(userId, statuses, new QueryFilterImpl(offset, count)));
+                runtimeDataService.getTasksOwnedByStatus(userId, statuses, new QueryFilter(offset, count)));
 //        setPotentionalOwners(taskSummaries);
         return taskSummaries;
     }
@@ -144,7 +144,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         Map<LocalDate, List<TaskSummary>> tasksByDay = createDaysMapAndInitWithEmptyListForEachDay(dayFrom, nrOfDaysTotal);
 
         List<TaskSummary> taskSummaries = adaptTaskSummaryCollection(
-                runtimeDataService.getTasksOwnedByStatus(userId, convertStatuses(strStatuses), new QueryFilterImpl(0, 0)));
+                runtimeDataService.getTasksOwnedByStatus(userId, convertStatuses(strStatuses), new QueryFilter(0, 0)));
 
 //        setPotentionalOwners(taskSummaries);
         fillDaysMapWithTasksBasedOnExpirationDate(tasksByDay, taskSummaries, today);
@@ -221,7 +221,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         Map<LocalDate, List<TaskSummary>> tasksByDay = createDaysMapAndInitWithEmptyListForEachDay(dayFrom, nrOfDaysTotal);
 
         List<TaskSummary> taskSummaries = adaptTaskSummaryCollection(
-                runtimeDataService.getTasksAssignedAsPotentialOwnerByStatus(userId, convertStatuses(strStatuses), new QueryFilterImpl(0, 0)));
+                runtimeDataService.getTasksAssignedAsPotentialOwnerByStatus(userId, convertStatuses(strStatuses), new QueryFilter(0, 0)));
 
 //        setPotentionalOwners(taskSummaries);
         fillDaysMapWithTasksBasedOnExpirationDate(tasksByDay, taskSummaries, today);
@@ -254,7 +254,7 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
         List<String> groupIds = new ArrayList<String>();
         groupIds.add(groupId);
         List<org.kie.api.task.model.TaskSummary> tasksAssignedAsPotentialOwner = runtimeDataService.getTasksAssignedAsPotentialOwner(
-                userId, groupIds, new QueryFilterImpl(0, 0));
+                userId, groupIds, new QueryFilter(0, 0));
         List<org.kie.api.task.model.TaskSummary> taskForGroup = new ArrayList<org.kie.api.task.model.TaskSummary>();
         for (org.kie.api.task.model.TaskSummary ts : tasksAssignedAsPotentialOwner) {
             if (ts.getPotentialOwners().contains(groupId)) {
@@ -497,20 +497,20 @@ public class TaskServiceEntryPointImpl implements TaskServiceEntryPoint {
 
     @Override
     public List<TaskEventSummary> getAllTaskEvents(long taskId, String filter) {
-        return TaskEventSummaryHelper.adaptCollection(taskAuditService.getAllTaskEvents(taskId, new QueryFilterImpl(0,0)));
+        return TaskEventSummaryHelper.adaptCollection(taskAuditService.getAllTaskEvents(taskId, new QueryFilter(0,0)));
     }
 
     @Override
     public List<TaskEventSummary> getAllTaskEventsByProcessInstanceId(long processInstanceId, String filter) {
-        return TaskEventSummaryHelper.adaptCollection(taskAuditService.getAllTaskEventsByProcessInstanceId(processInstanceId, new QueryFilterImpl(0,0)));
+        return TaskEventSummaryHelper.adaptCollection(taskAuditService.getAllTaskEventsByProcessInstanceId(processInstanceId, new QueryFilter(0,0)));
     }
 
     public List<AuditTaskSummary> getAllAuditTasks(String filter) {
-        return AuditTaskSummaryHelper.adaptCollection(taskAuditService.getAllAuditTasks(new QueryFilterImpl(0,0)));
+        return AuditTaskSummaryHelper.adaptCollection(taskAuditService.getAllAuditTasks(new QueryFilter(0,0)));
     }
 
     public List<AuditTaskSummary> getAllAuditTasksByUser(String userId, String filter) {
-        return AuditTaskSummaryHelper.adaptCollection(taskAuditService.getAllAuditTasksByUser(userId, new QueryFilterImpl(0,0)));
+        return AuditTaskSummaryHelper.adaptCollection(taskAuditService.getAllAuditTasksByUser(userId, new QueryFilter(0,0)));
     }
 
     
