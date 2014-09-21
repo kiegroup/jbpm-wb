@@ -85,7 +85,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
                 currentFilter.setOrderBy( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
                         .getColumn().getDataStoreName() : "" );
-                currentFilter.setAscending( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                currentFilter.setIsAscending( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
                         .isAscending() : true );
 
                 processDefinitionService.call( new RemoteCallback<PageResponse<ProcessSummary>>() {

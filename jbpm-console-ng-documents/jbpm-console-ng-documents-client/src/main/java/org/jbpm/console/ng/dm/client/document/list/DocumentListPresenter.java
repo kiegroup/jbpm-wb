@@ -110,7 +110,7 @@ public class DocumentListPresenter extends AbstractScreenListPresenter<CMSConten
                 }
                 currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0).getColumn().getDataStoreName()
                         : "");
-                currentFilter.setAscending((columnSortList.size() > 0) ? columnSortList.get(0).isAscending() : true);
+                currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0).isAscending() : true);
                 if (id != null) {
                     Map<String, Object> params = currentFilter.getParams();
                     if (params == null){

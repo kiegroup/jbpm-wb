@@ -95,7 +95,7 @@ public class ProcessDocumentListPresenter extends AbstractListPresenter<Document
 
                     currentFilter.setOrderBy( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
                             .getColumn().getDataStoreName() : "" );
-                    currentFilter.setAscending( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                    currentFilter.setIsAscending( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
                             .isAscending() : true );
 
                     documentsServices.call( new RemoteCallback<PageResponse<DocumentSummary>>() {

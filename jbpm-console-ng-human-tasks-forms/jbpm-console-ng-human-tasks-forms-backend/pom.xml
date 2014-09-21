@@ -185,6 +185,10 @@
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-business-domain-api</artifactId>
     </dependency>
   </dependencies>

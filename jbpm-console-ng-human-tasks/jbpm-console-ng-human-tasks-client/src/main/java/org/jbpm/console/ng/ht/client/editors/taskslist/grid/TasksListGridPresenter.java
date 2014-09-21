@@ -15,8 +15,11 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid;
 
-import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.TASK_ROLE_ADMINISTRATOR;
-import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.TASK_ROLE_POTENTIALOWNER;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.Range;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,13 +27,16 @@ import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
-import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
+import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.util.TaskUtils;
 import org.jbpm.console.ng.gc.client.util.TaskUtils.TaskType;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
@@ -43,12 +49,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopup;
 import org.uberfire.paging.PageResponse;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.view.client.AsyncDataProvider;
-import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.Range;
+import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.*;
 @Dependent
 @WorkbenchScreen(identifier = "Tasks List")
 public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSummary> {
@@ -104,7 +105,7 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
         currentFilter.setParams(filterParams);
         currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
                 .getColumn().getDataStoreName() : "");
-        currentFilter.setAscending((columnSortList.size() > 0) ? columnSortList.get(0)
+        currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
                 .isAscending() : true);
 
         taskQueryService.call(new RemoteCallback<PageResponse<TaskSummary>>() {

@@ -18,16 +18,15 @@ package org.jbpm.console.ng.ht.backend.server;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ht.model.TaskEventKey;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.service.TaskAuditService;
-import org.kie.internal.query.QueryFilter;
+import org.jbpm.services.task.query.QueryFilterImpl;
 import org.kie.internal.task.api.InternalTaskService;
 import org.uberfire.paging.PageResponse;
 
@@ -68,7 +67,7 @@ public class TaskAuditServiceImpl implements TaskAuditService {
       filterCount = filter.getCount() + 1;
     }
     
-    org.kie.internal.query.QueryFilter qf = new QueryFilter(filter.getOffset(), filterCount,
+    org.kie.internal.query.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filterCount,
                                                                     filter.getOrderBy(), filter.isAscending());
     List<TaskEventSummary> taskEventSummaries = TaskEventSummaryHelper.adaptCollection(taskAuditService.getAllTaskEvents( taskId, qf));
 

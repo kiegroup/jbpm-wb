@@ -16,8 +16,6 @@
 package org.jbpm.console.ng.ht.backend.server;
 
 
-import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.TASK_ROLE_ADMINISTRATOR;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,16 +23,18 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
 import org.jbpm.services.api.RuntimeDataService;
+import org.jbpm.services.task.query.QueryFilterImpl;
 import org.kie.api.task.model.OrganizationalEntity;
 import org.kie.api.task.model.Status;
 import org.kie.api.task.model.Task;
-import org.kie.internal.query.QueryFilter;
 import org.kie.internal.task.api.InternalTaskService;
 import org.uberfire.paging.PageResponse;
+import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.*;
 /**
  *
  * @author salaboy
@@ -71,7 +71,7 @@ public class TaskQueryServiceImpl implements TaskQueryService {
       statuses.add(Status.valueOf(s));
     }
     
-    org.kie.internal.query.QueryFilter qf = new QueryFilter(filter.getOffset(), filter.getCount() + 1,
+    org.kie.internal.query.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1,
                                                                     filter.getOrderBy(), filter.isAscending());
     List<TaskSummary> taskSummaries = new ArrayList<TaskSummary>();
     if (TASK_ROLE_ADMINISTRATOR.equals(taskRole)){

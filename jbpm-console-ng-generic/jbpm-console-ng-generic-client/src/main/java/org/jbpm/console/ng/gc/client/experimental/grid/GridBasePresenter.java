@@ -15,15 +15,18 @@
  */
 package org.jbpm.console.ng.gc.client.experimental.grid;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.Range;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-
+import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ga.model.DataMockSummary;
-import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.DataService;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.i18n.Constants;
-import org.kie.internal.query.QueryFilter;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -31,11 +34,6 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnFocus;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.paging.PageResponse;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.view.client.AsyncDataProvider;
-import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.Range;
 
 @Dependent
 @WorkbenchScreen(identifier = "Grid Base Test")

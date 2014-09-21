@@ -18,17 +18,18 @@ package org.jbpm.console.ng.pr.backend.server;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
+
 import org.jbpm.services.api.RuntimeDataService;
 import org.jbpm.services.api.model.ProcessDefinition;
-import org.kie.internal.query.QueryFilter;
+import org.jbpm.services.task.query.QueryFilterImpl;
 import org.uberfire.paging.PageResponse;
 
 /**
@@ -45,7 +46,7 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
     public PageResponse<ProcessSummary> getData(final QueryFilter filter) {
         PageResponse<ProcessSummary> response = new PageResponse<ProcessSummary>();
         // append 1 to the count to check if there are further pages
-        org.kie.internal.query.QueryFilter qf = new QueryFilter(filter.getOffset(), filter.getCount()+1,
+        org.kie.internal.query.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount()+1,
                 filter.getOrderBy(), filter.isAscending());
         Collection<ProcessDefinition> processDefs = dataService.getProcesses(qf);
         List<ProcessSummary> processDefsSums = new ArrayList<ProcessSummary>(processDefs.size());

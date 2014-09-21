@@ -23,10 +23,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.bd.model.RuntimeLogSummary;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -41,14 +39,14 @@ import org.jbpm.console.ng.pr.backend.server.VariableHelper;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
+import org.ocpsoft.prettytime.PrettyTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.services.api.DefinitionService;
 import org.jbpm.services.api.RuntimeDataService;
 import org.jbpm.services.api.model.ProcessInstanceDesc;
-import org.kie.internal.query.QueryContext;
-import org.ocpsoft.prettytime.PrettyTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jbpm.services.api.model.QueryContextImpl;
 
 /**
  * This Service combines the Data and BPMN2 services.
@@ -84,19 +82,19 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
     @Override
     public Collection<ProcessInstanceSummary> getProcessInstances() {
         // TODO make use of paging properly as it's currently limiting to 100
-        return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstances(new QueryContext(0, 100)));
+        return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstances(new QueryContextImpl(0, 100)));
     }
 
     @Override
     public Collection<ProcessInstanceSummary> getProcessInstancesByDeploymentId(String deploymentId, List<Integer> states) {
         // TODO make use of paging properly as it's currently limiting to 100
-        return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstancesByDeploymentId(deploymentId, states, new QueryContext(0, 100)));
+        return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstancesByDeploymentId(deploymentId, states, new QueryContextImpl(0, 100)));
     }
 
     @Override
     public Collection<ProcessSummary> getProcessesByFilter(String filter) {
         // TODO make use of paging properly as it's currently limiting to 100
-        return ProcessHelper.adaptCollection(dataService.getProcessesByFilter(filter, new QueryContext(0, 100)));
+        return ProcessHelper.adaptCollection(dataService.getProcessesByFilter(filter, new QueryContextImpl(0, 100)));
     }
 
     @Override
@@ -112,14 +110,14 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
     @Override
     public Collection<ProcessInstanceSummary> getProcessInstancesByProcessDefinition(String processDefId) {
         // TODO make use of paging properly as it's currently limiting to 100
-        return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstancesByProcessDefinition(processDefId, new QueryContext(0, 100)));
+        return ProcessInstanceHelper.adaptCollection(dataService.getProcessInstancesByProcessDefinition(processDefId, new QueryContextImpl(0, 100)));
     }
 
     @Override
     public Collection<NodeInstanceSummary> getProcessInstanceHistory(long processInstanceId) {
         // TODO make use of paging properly as it's currently limiting to 100
         return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistoryByType(
-                processInstanceId, RuntimeDataService.EntryType.START, new QueryContext(0, 100)));
+                processInstanceId, RuntimeDataService.EntryType.START, new QueryContextImpl(0, 100)));
     }
 
     @Override
@@ -127,10 +125,10 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
         // TODO make use of paging properly as it's currently limiting to 100
         if (completed) {
             return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistoryByType(
-                    processInstanceId, RuntimeDataService.EntryType.END, new QueryContext(0, 100)));
+                    processInstanceId, RuntimeDataService.EntryType.END, new QueryContextImpl(0, 100)));
         }  else {
             return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistoryByType(
-                    processInstanceId, RuntimeDataService.EntryType.START, new QueryContext(0, 100)));
+                    processInstanceId, RuntimeDataService.EntryType.START, new QueryContextImpl(0, 100)));
         }
 
     }
@@ -139,14 +137,14 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
     public Collection<NodeInstanceSummary> getProcessInstanceFullHistory(long processInstanceId) {
         // TODO make use of paging properly as it's currently limiting to 100
         return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceFullHistory(
-                processInstanceId, new QueryContext(0, 100)));
+                processInstanceId, new QueryContextImpl(0, 100)));
     }
 
     @Override
     public Collection<NodeInstanceSummary> getProcessInstanceActiveNodes(long processInstanceId) {
         // TODO make use of paging properly as it's currently limiting to 100
         return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistoryActive(
-                processInstanceId, new QueryContext(0, 100)));
+                processInstanceId, new QueryContextImpl(0, 100)));
     }
 
     @Override
@@ -155,9 +153,9 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
         // TODO make use of paging properly as it's currently limiting to 100
         if (!filterText.equals("")) {
             // search by process name
-            result = dataService.getProcessInstancesByProcessName(states, filterText, initiator, new QueryContext(0, 100));
+            result = dataService.getProcessInstancesByProcessName(states, filterText, initiator, new QueryContextImpl(0, 100));
         } else {
-            result = dataService.getProcessInstances(states, initiator, new QueryContext(0, 100));
+            result = dataService.getProcessInstances(states, initiator, new QueryContextImpl(0, 100));
         }
 
         return ProcessInstanceHelper.adaptCollection(result);
@@ -168,14 +166,14 @@ public class DataServiceEntryPointImpl implements DataServiceEntryPoint {
         ProcessInstanceDesc piDesc = dataService.getProcessInstanceById(processInstanceId);
         // TODO make use of paging properly as it's currently limiting to 100
         return NodeInstanceHelper.adaptCollection(dataService.getProcessInstanceHistoryCompleted(
-                processInstanceId, new QueryContext(0, 100)));
+                processInstanceId, new QueryContextImpl(0, 100)));
 
     }
 
     @Override
     public Collection<ProcessVariableSummary> getVariableHistory(long processInstanceId, String variableId) {
         // TODO make use of paging properly as it's currently limiting to 100
-        return VariableHelper.adaptCollection(dataService.getVariableHistory(processInstanceId, variableId, new QueryContext(0, 100)));
+        return VariableHelper.adaptCollection(dataService.getVariableHistory(processInstanceId, variableId, new QueryContextImpl(0, 100)));
     }
 
     /*
