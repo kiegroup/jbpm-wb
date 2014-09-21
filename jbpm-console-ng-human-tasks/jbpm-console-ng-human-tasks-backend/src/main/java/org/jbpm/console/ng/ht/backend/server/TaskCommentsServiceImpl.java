@@ -15,13 +15,14 @@
  */
 package org.jbpm.console.ng.ht.backend.server;
 
-import java.util.Map;
+import java.util.Date;
+import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
+import org.jbpm.console.ng.ht.model.CommentSummary;
+import org.jbpm.console.ng.ht.service.TaskCommentsService;
 import org.jbpm.services.api.UserTaskService;
-import org.kie.internal.task.api.InternalTaskService;
 
 /**
  *
@@ -29,38 +30,30 @@ import org.kie.internal.task.api.InternalTaskService;
  */
 @Service
 @ApplicationScoped
-public class TaskLifeCycleServiceImpl implements TaskLifeCycleService {
+public class TaskCommentsServiceImpl implements TaskCommentsService {
 
     @Inject
     private UserTaskService taskService;
 
-    public TaskLifeCycleServiceImpl() {
+    @Override
+    public long addComment(long taskId, String text, String addedBy, Date addedOn) {
+
+        return taskService.addComment(taskId, text, addedBy, addedOn);
     }
 
     @Override
-    public void start(long taskId, String user) {
-        taskService.start(taskId, user);
+    public void deleteComment(long taskId, long commentId) {
+        taskService.deleteComment(taskId, commentId);
     }
 
     @Override
-    public void complete(long taskId, String user, Map<String, Object> params) {
-        taskService.complete(taskId, user, params);
+    public List<CommentSummary> getAllCommentsByTaskId(long taskId) {
+        return CommentSummaryHelper.adaptCollection(taskService.getCommentsByTaskId(taskId));
     }
 
     @Override
-    public void claim(long taskId, String user) {
-        taskService.claim(taskId, user);
-        taskService.start(taskId, user);
-    }
-
-    @Override
-    public void release(long taskId, String user) {
-        taskService.release(taskId, user);
-    }
-
-    @Override
-    public void delegate(long taskId, String userId, String targetEntityId) {
-        taskService.delegate(taskId, userId, targetEntityId);
+    public CommentSummary getCommentById(long taskId, long commentId) {
+        return CommentSummaryHelper.adapt(taskService.getCommentById(taskId, commentId));
     }
 
 }

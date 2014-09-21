@@ -37,7 +37,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
+import org.jbpm.console.ng.ht.service.TaskCommentsService;
 import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.security.Identity;
 
@@ -67,8 +67,9 @@ public class TaskCommentsPresenter {
 
     private long currentTaskId = 0;
 
+    
     @Inject
-    private Caller<TaskServiceEntryPoint> taskServices;
+    Caller<TaskCommentsService> taskCommentsServices;
 
     private ListDataProvider<CommentSummary> dataProvider = new ListDataProvider<CommentSummary>();
 
@@ -86,7 +87,7 @@ public class TaskCommentsPresenter {
     }
 
     public void refreshComments() {
-        taskServices.call( new RemoteCallback<List<CommentSummary>>() {
+        taskCommentsServices.call( new RemoteCallback<List<CommentSummary>>() {
 
             @Override
             public void callback( List<CommentSummary> comments ) {
@@ -112,7 +113,7 @@ public class TaskCommentsPresenter {
 
     public void addTaskComment( final String text,
                                 final Date addedOn ) {
-        taskServices.call( new RemoteCallback<Long>() {
+        taskCommentsServices.call( new RemoteCallback<Long>() {
 
             @Override
             public void callback( Long response ) {
@@ -130,7 +131,7 @@ public class TaskCommentsPresenter {
     }
 
     public void removeTaskComment( long commentId ) {
-        taskServices.call( new RemoteCallback<Long>() {
+        taskCommentsServices.call( new RemoteCallback<Long>() {
             @Override
             public void callback( Long response ) {
                 refreshComments();

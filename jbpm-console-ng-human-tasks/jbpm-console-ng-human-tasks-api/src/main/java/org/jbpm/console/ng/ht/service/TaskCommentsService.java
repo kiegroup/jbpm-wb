@@ -13,22 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.ht.service;
 
+import java.util.Date;
+import java.util.List;
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.jbpm.console.ng.ga.service.GenericServiceEntryPoint;
-import org.jbpm.console.ng.ht.model.TaskKey;
-import org.jbpm.console.ng.ht.model.TasksPerDaySummary;
-
-
+import org.jbpm.console.ng.ht.model.CommentSummary;
 
 /**
  *
  * @author salaboy
  */
 @Remote
-public interface TaskCalendarService extends GenericServiceEntryPoint<TaskKey, TasksPerDaySummary>{
+public interface TaskCommentsService {
 
-  
+    public long addComment(long taskId, String text, String addedBy, Date addedOn);
+
+    public void deleteComment(long taskId, long commentId);
+
+    public List<CommentSummary> getAllCommentsByTaskId(long taskId);
+
+    public CommentSummary getCommentById(long taskId, long commentId);
+
 }

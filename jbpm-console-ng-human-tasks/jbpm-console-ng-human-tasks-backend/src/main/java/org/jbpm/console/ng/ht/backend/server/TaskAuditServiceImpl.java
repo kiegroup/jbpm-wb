@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.ht.backend.server;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -26,7 +25,7 @@ import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ht.model.TaskEventKey;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.service.TaskAuditService;
-import org.jbpm.services.task.query.QueryFilterImpl;
+
 import org.kie.internal.task.api.InternalTaskService;
 import org.uberfire.paging.PageResponse;
 
@@ -38,65 +37,69 @@ import org.uberfire.paging.PageResponse;
 @ApplicationScoped
 public class TaskAuditServiceImpl implements TaskAuditService {
 
-  @Inject
-  private org.jbpm.services.task.audit.service.TaskAuditService taskAuditService;
-  
-  @Inject
-  private InternalTaskService taskService;
+    @Inject
+    private org.jbpm.services.task.audit.service.TaskAuditService taskAuditService;
 
+    @Inject
+    private InternalTaskService taskService;
 
-  public TaskAuditServiceImpl() {
-  }
-  
-  @PostConstruct
-  private void init(){
-    taskAuditService.setTaskService(taskService);
-  }
-
-  @Override
-  public PageResponse<TaskEventSummary> getData(QueryFilter filter) {
-    PageResponse<TaskEventSummary> response = new PageResponse<TaskEventSummary>();
-    
-    Long taskId = null;
-    if (filter.getParams() != null) {
-      taskId = (Long) filter.getParams().get("taskId");
-
-    }
-    int filterCount = 0;
-    if(filter.getCount() != 0){
-      filterCount = filter.getCount() + 1;
-    }
-    
-    org.kie.internal.query.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filterCount,
-                                                                    filter.getOrderBy(), filter.isAscending());
-    List<TaskEventSummary> taskEventSummaries = TaskEventSummaryHelper.adaptCollection(taskAuditService.getAllTaskEvents( taskId, qf));
-
-    response.setStartRowIndex(filter.getOffset());
-    if(filter.getCount() != 0){
-      response.setTotalRowSize(taskEventSummaries.size() - 1);
-    }
-    if(taskEventSummaries.size() > filter.getCount() && filter.getCount() != 0){
-      response.setTotalRowSizeExact(false);
-    }else{
-      response.setTotalRowSizeExact(true);
+    public TaskAuditServiceImpl() {
     }
 
-    if (!taskEventSummaries.isEmpty() && filter.getCount() != 0 
-            && taskEventSummaries.size() > (filter.getCount() + filter.getOffset())) {
-      response.setPageRowList(new ArrayList<TaskEventSummary>(taskEventSummaries.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
-      response.setLastPage(false);
-
-    } else {
-      response.setPageRowList(new ArrayList<TaskEventSummary>(taskEventSummaries));
-      response.setLastPage(true);
-
+    @PostConstruct
+    private void init() {
+        taskAuditService.setTaskService(taskService);
     }
-    return response;
-  }
 
-  @Override
-  public TaskEventSummary getItem(TaskEventKey key) {
+    @Override
+    public PageResponse<TaskEventSummary> getData(QueryFilter filter) {
+        PageResponse<TaskEventSummary> response = new PageResponse<TaskEventSummary>();
+
+        Long taskId = null;
+        if (filter.getParams() != null) {
+            taskId = (Long) filter.getParams().get("taskId");
+
+        }
+        int filterCount = 0;
+        if (filter.getCount() != 0) {
+            filterCount = filter.getCount() + 1;
+        }
+
+        org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filterCount,
+                filter.getOrderBy(), filter.isAscending());
+        List<TaskEventSummary> taskEventSummaries = TaskEventSummaryHelper.adaptCollection(taskAuditService.getAllTaskEvents(taskId, qf));
+
+        response.setStartRowIndex(filter.getOffset());
+        if (filter.getCount() != 0) {
+            response.setTotalRowSize(taskEventSummaries.size() - 1);
+        }
+        if (taskEventSummaries.size() > filter.getCount() && filter.getCount() != 0) {
+            response.setTotalRowSizeExact(false);
+        } else {
+            response.setTotalRowSizeExact(true);
+        }
+
+        if (!taskEventSummaries.isEmpty() && filter.getCount() != 0
+                && taskEventSummaries.size() > (filter.getCount() + filter.getOffset())) {
+            response.setPageRowList(new ArrayList<TaskEventSummary>(taskEventSummaries.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
+            response.setLastPage(false);
+
+        } else {
+            response.setPageRowList(new ArrayList<TaskEventSummary>(taskEventSummaries));
+            response.setLastPage(true);
+
+        }
+        return response;
+    }
+
+    @Override
+    public TaskEventSummary getItem(TaskEventKey key) {
         return null;
-  }
+    }
+
+    @Override
+    public List<TaskEventSummary> getAllTaskEventsByProcessInstanceId(long processInstanceId, String filter) {
+        return TaskEventSummaryHelper.adaptCollection(taskAuditService.getAllTaskEventsByProcessInstanceId(processInstanceId, new org.kie.internal.query.QueryFilter(0, 0)));
+    }
 
 }

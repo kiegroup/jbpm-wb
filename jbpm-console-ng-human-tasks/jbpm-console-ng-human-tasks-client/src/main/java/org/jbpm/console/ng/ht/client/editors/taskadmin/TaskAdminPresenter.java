@@ -37,15 +37,10 @@ import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
-import org.uberfire.client.annotations.WorkbenchPartTitle;
-import org.uberfire.client.annotations.WorkbenchPartView;
-import org.uberfire.client.annotations.WorkbenchScreen;
+import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
+import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.UberView;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Identity;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
@@ -78,7 +73,11 @@ public class TaskAdminPresenter {
     private Identity identity;
 
     @Inject
-    Caller<TaskServiceEntryPoint> taskServices;
+    protected Caller<TaskLifeCycleService> taskServices;
+    
+    @Inject
+    protected Caller<TaskOperationsService> taskOperationsServices;
+
 
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
@@ -124,24 +123,24 @@ public class TaskAdminPresenter {
     public void refreshTaskPotentialOwners() {
         List<Long> taskIds = new ArrayList<Long>(1);
         taskIds.add(currentTaskId);
-        taskServices.call(new RemoteCallback<Map<Long, List<String>>>() {
-            @Override
-            public void callback(Map<Long, List<String>> ids) {
-                if (ids.isEmpty()) {
-                    view.getUsersGroupsControlsPanel().setText(constants.No_Potential_Owners());
-                } else {
-                    view.getUsersGroupsControlsPanel().setText(("" + ids.get(currentTaskId).toString()));
-                }
-            }
-        }, new ErrorCallback<Message>() {
-              @Override
-              public boolean error( Message message, Throwable throwable ) {
-                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                  return true;
-              }
-          }).getPotentialOwnersForTaskIds(taskIds);
+//        taskServices.call(new RemoteCallback<Map<Long, List<String>>>() {
+//            @Override
+//            public void callback(Map<Long, List<String>> ids) {
+//                if (ids.isEmpty()) {
+//                    view.getUsersGroupsControlsPanel().setText(constants.No_Potential_Owners());
+//                } else {
+//                    view.getUsersGroupsControlsPanel().setText(("" + ids.get(currentTaskId).toString()));
+//                }
+//            }
+//        }, new ErrorCallback<Message>() {
+//              @Override
+//              public boolean error( Message message, Throwable throwable ) {
+//                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+//                  return true;
+//              }
+//          }).getPotentialOwnersForTaskIds(taskIds);
         
-        taskServices.call(new RemoteCallback<TaskSummary>() {
+        taskOperationsServices.call(new RemoteCallback<TaskSummary>() {
             @Override
             public void callback(TaskSummary ts) {
                 if (ts == null) return;

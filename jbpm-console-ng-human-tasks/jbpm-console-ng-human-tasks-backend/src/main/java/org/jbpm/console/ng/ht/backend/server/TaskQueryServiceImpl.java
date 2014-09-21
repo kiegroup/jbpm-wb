@@ -28,7 +28,7 @@ import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
 import org.jbpm.services.api.RuntimeDataService;
-import org.jbpm.services.task.query.QueryFilterImpl;
+
 import org.kie.api.task.model.OrganizationalEntity;
 import org.kie.api.task.model.Status;
 import org.kie.api.task.model.Task;
@@ -71,7 +71,7 @@ public class TaskQueryServiceImpl implements TaskQueryService {
       statuses.add(Status.valueOf(s));
     }
     
-    org.kie.internal.query.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1,
+    org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount() + 1,
                                                                     filter.getOrderBy(), filter.isAscending());
     List<TaskSummary> taskSummaries = new ArrayList<TaskSummary>();
     if (TASK_ROLE_ADMINISTRATOR.equals(taskRole)){

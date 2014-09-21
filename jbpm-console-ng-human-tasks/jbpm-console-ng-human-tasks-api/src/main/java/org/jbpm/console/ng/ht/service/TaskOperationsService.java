@@ -18,7 +18,9 @@ package org.jbpm.console.ng.ht.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.console.ng.ht.model.TaskSummary;
 
 
 /**
@@ -34,5 +36,11 @@ public interface TaskOperationsService{
                          Date dueDate, final List<String> users, List<String> groups, String identity, boolean start, boolean claim);
   
   public void updateTask(long taskId, int priority, List<String> taskDescription, Date dueDate);
+  
+  TaskSummary getTaskDetails(long taskId);
+  
+  long saveContent(long taskId, Map<String, Object> values);
+  
+  Boolean existInDatabase(long taskId);
   
 }

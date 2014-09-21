@@ -16,16 +16,21 @@
 
 package org.jbpm.console.ng.ht.backend.server;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.jbpm.services.api.RuntimeDataService;
 import org.jbpm.services.api.UserTaskService;
 import org.jbpm.services.task.utils.TaskFluent;
+import org.kie.api.task.model.OrganizationalEntity;
+import org.kie.api.task.model.Task;
 import org.kie.internal.task.api.InternalTaskService;
 
 /**
@@ -35,9 +40,10 @@ import org.kie.internal.task.api.InternalTaskService;
 @Service
 @ApplicationScoped
 public class TaskOperationsServiceImpl implements TaskOperationsService{
+
   @Inject
   private InternalTaskService internalTaskService;
-
+    
   @Inject
   private UserTaskService taskService;
 
@@ -83,6 +89,40 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
           taskService.setExpirationDate(taskId, dueDate);
         }
   }
+  
+  
+    @Override
+    public TaskSummary getTaskDetails(long taskId) {
+        Task task = taskService.getTask(taskId);
+        if (task != null) {
+            List<OrganizationalEntity> potentialOwners = task.getPeopleAssignments().getPotentialOwners();
+            List<String> potOwnersString = null;
+            if (potentialOwners != null) {
+                potOwnersString = new ArrayList<String>(potentialOwners.size());
+                for (OrganizationalEntity e : potentialOwners) {
+                    potOwnersString.add(e.getId());
+                }
+            } 
+            return new TaskSummary(task.getId(), task.getName(),
+                    task.getDescription(), task.getTaskData().getStatus().name(), task.getPriority(), (task.getTaskData().getActualOwner() != null) ? task.getTaskData().getActualOwner()
+                    .getId() : "", (task.getTaskData().getCreatedBy() != null) ? task.getTaskData().getCreatedBy().getId()
+                    : "", task.getTaskData().getCreatedOn(), task.getTaskData().getActivationTime(), task.getTaskData()
+                    .getExpirationTime(), task.getTaskData().getProcessId(), task.getTaskData().getProcessSessionId(),
+                    task.getTaskData().getProcessInstanceId(), task.getTaskData().getDeploymentId()
+                    , (int) task.getTaskData().getParentId());
+        }
+        return null;
+    }
+
+    @Override
+    public long saveContent(long taskId, Map<String, Object> values) {
+        return taskService.saveContent(taskId, values);
+    }
+    
+    @Override
+    public Boolean existInDatabase(long taskId) {
+        return runtimeDataService.getTaskById(taskId) == null ? false : true;
+    }
   
   
 }

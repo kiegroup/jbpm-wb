@@ -16,8 +16,6 @@
 
 package org.jbpm.console.ng.ht.service;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import org.jboss.errai.bus.server.annotations.Remote;
 
@@ -33,6 +31,8 @@ public interface TaskLifeCycleService{
   void complete(long taskId, String user, Map<String, Object> params);
   
   void claim(long taskId, String user);
+  
+  void start(long taskId, String user);
   
   void release(long taskId, String user);
     

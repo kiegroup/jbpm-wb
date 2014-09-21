@@ -35,7 +35,6 @@ import org.jbpm.console.ng.ht.forms.ht.api.HumanTaskFormDisplayer;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
-import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.uberfire.client.workbench.widgets.common.ErrorPopup;
 import org.uberfire.security.Identity;
 
@@ -44,6 +43,8 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
+import org.jbpm.console.ng.ht.service.TaskOperationsService;
 
 /**
  *
@@ -67,7 +68,10 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     protected Constants constants = GWT.create(Constants.class);
 
     @Inject
-    protected Caller<TaskServiceEntryPoint> taskServices;
+    protected Caller<TaskLifeCycleService> taskServices;
+    
+    @Inject
+    protected Caller<TaskOperationsService> taskOperationServices;
 
     @Inject
     protected Event<TaskRefreshedEvent> taskRefreshed;
@@ -104,7 +108,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
         if (formContent == null || formContent.length() == 0) {
             return;
         }
-        taskServices.call(new RemoteCallback<TaskSummary>() {
+        taskOperationServices.call(new RemoteCallback<TaskSummary>() {
             @Override
             public void callback(final TaskSummary task) {
                 if (task == null) {
@@ -208,7 +212,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
 
     @Override
     public void claim() {
-        taskServices.call(getClaimTaskCallback(), getUnexpectedErrorCallback()).claim(taskId, identity.getName(), true);
+        taskServices.call(getClaimTaskCallback(), getUnexpectedErrorCallback()).claim(taskId, identity.getName());
     }
 
     @Override
@@ -218,7 +222,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
 
     @Override
     public void saveState(Map<String, Object> state) {
-        taskServices.call(getSaveTaskStateCallback(), getUnexpectedErrorCallback()).saveContent(taskId, state);
+        taskOperationServices.call(getSaveTaskStateCallback(), getUnexpectedErrorCallback()).saveContent(taskId, state);
     }
 
     @Override
@@ -282,7 +286,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
 
                 taskRefreshed.fire(new TaskRefreshedEvent(taskId));
                 jsniHelper.notifySuccessMessage(opener, "Task: " + taskId + " was completed!");
-                taskServices.call(new RemoteCallback<Boolean>() {
+                taskOperationServices.call(new RemoteCallback<Boolean>() {
                     @Override
                     public void callback(Boolean response) {
                         if (!response) {

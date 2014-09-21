@@ -33,7 +33,7 @@ import org.jbpm.document.Document;
 import org.jbpm.services.api.DefinitionService;
 import org.jbpm.services.api.ProcessService;
 import org.jbpm.services.api.RuntimeDataService;
-import org.jbpm.services.task.query.QueryFilterImpl;
+
 import org.uberfire.paging.PageResponse;
 
 /**
@@ -65,7 +65,7 @@ public class DocumentsServiceImpl implements DocumentsService {
       deploymentId = (String) filter.getParams().get("deploymentId");
     }
     // append 1 to the count to check if there are further pages
-    org.kie.internal.query.QueryFilter qf = new QueryFilterImpl(filter.getOffset(), filter.getCount() + 1,
+    org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount() + 1,
             filter.getOrderBy(), filter.isAscending());
 
     Map<String, String> properties = new HashMap<String, String>(bpmn2Service.getProcessVariables(deploymentId, processId));

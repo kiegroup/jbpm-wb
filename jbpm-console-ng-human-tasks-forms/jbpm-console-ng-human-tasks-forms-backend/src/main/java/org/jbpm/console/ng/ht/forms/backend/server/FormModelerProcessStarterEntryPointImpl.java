@@ -19,12 +19,13 @@ package org.jbpm.console.ng.ht.forms.backend.server;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.ht.forms.service.FormModelerProcessStarterEntryPoint;
-import org.jbpm.console.ng.ht.service.TaskServiceEntryPoint;
 import org.jbpm.formModeler.api.client.FormRenderContextManager;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Map;
+import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
+import org.jbpm.console.ng.ht.service.TaskOperationsService;
 
 @Service
 @ApplicationScoped
@@ -36,7 +37,10 @@ public class FormModelerProcessStarterEntryPointImpl implements FormModelerProce
     private KieSessionEntryPoint kieSessionEntryPoint;
 
     @Inject
-    private TaskServiceEntryPoint taskServiceEntryPoint;
+    private TaskLifeCycleService taskServices;
+    
+    @Inject
+    private TaskOperationsService taskOperationsServices;
 
     public Long startProcessFromRenderContext(String ctxUID, String domainId, String processId) {
         Map params = formRenderContextManager.getFormRenderContext(ctxUID).getOutputData();
@@ -48,7 +52,7 @@ public class FormModelerProcessStarterEntryPointImpl implements FormModelerProce
     public Long saveTaskStateFromRenderContext(String ctxUID, Long taskId, boolean clearStatus) {
         Map params = formRenderContextManager.getFormRenderContext(ctxUID).getOutputData();
         if (clearStatus) formRenderContextManager.removeContext(ctxUID);
-        return taskServiceEntryPoint.saveContent(taskId, params);
+        return taskOperationsServices.saveContent(taskId, params);
     }
 
     @Override
@@ -60,7 +64,7 @@ public class FormModelerProcessStarterEntryPointImpl implements FormModelerProce
     public void completeTaskFromContext(String ctxUID, Long taskId, String identityName) {
         Map params = formRenderContextManager.getFormRenderContext(ctxUID).getOutputData();
         formRenderContextManager.removeContext(ctxUID);
-        taskServiceEntryPoint.complete(taskId,  identityName, params);
+        taskServices.complete(taskId,  identityName, params);
     }
 
     @Override
