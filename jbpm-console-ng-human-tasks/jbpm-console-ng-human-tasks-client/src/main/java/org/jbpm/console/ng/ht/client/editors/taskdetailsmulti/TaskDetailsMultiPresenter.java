@@ -121,6 +121,7 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
         genericFormDisplayPresenter.setup( event.getTaskId(), "none", "none", new Command() {
             @Override
             public void execute() {
+                closeDetails();
             }
         } );
 

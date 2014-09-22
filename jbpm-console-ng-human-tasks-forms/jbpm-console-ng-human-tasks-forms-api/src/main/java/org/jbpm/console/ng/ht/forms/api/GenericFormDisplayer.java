@@ -18,6 +18,7 @@ package org.jbpm.console.ng.ht.forms.api;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.jbpm.console.ng.ga.service.ItemKey;
+import org.uberfire.mvp.Command;
 
 /**
  *
@@ -31,7 +32,9 @@ public interface GenericFormDisplayer<T extends ItemKey> {
 
     FlowPanel getContainer();
 
-    void addFormRefreshCallback(FormRefreshCallback callback);
+    void addOnCloseCallback(Command callback);
+    
+    void addOnRefreshCallback(Command callback);
 
     int getPriority();
 

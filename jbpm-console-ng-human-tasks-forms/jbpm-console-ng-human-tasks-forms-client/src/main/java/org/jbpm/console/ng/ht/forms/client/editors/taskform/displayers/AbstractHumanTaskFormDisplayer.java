@@ -27,7 +27,6 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.ht.forms.api.FormRefreshCallback;
 import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.ActionRequest;
 import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.JSNIHelper;
 import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
@@ -40,12 +39,11 @@ import org.uberfire.security.Identity;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Map;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
-
+import org.uberfire.mvp.Command;
 /**
  *
  * @author salaboy
@@ -65,6 +63,11 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     final protected FlowPanel container = new FlowPanel();
     final protected FlowPanel buttonsContainer = new FlowPanel();
     final protected VerticalPanel formContainer = new VerticalPanel();
+    
+    private Command onClose;
+    
+    private Command onRefresh;
+    
     protected Constants constants = GWT.create(Constants.class);
 
     @Inject
@@ -81,9 +84,6 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
 
     @Inject
     protected JSNIHelper jsniHelper;
-
-    protected List<FormRefreshCallback> refreshCallbacks = new ArrayList<FormRefreshCallback>();
-
 
     protected abstract void initDisplayer();
 
@@ -314,20 +314,26 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     }
 
     @Override
-    public void addFormRefreshCallback(FormRefreshCallback callback) {
-        refreshCallbacks.add(callback);
+    public void addOnCloseCallback(Command callback) {
+        this.onClose = callback;
     }
 
+    @Override
+    public void addOnRefreshCallback(Command callback) {
+        this.onRefresh = callback;
+    }
+
+
     protected void refresh(){
-        for(FormRefreshCallback callback : refreshCallbacks){
-            callback.refresh();
+        if(this.onRefresh != null){
+            this.onRefresh.execute();
         }
     }
 
     @Override
     public void close() {
-        for(FormRefreshCallback callback : refreshCallbacks){
-            callback.close();
+        if(this.onClose != null){
+            this.onClose.execute();
         }
     }
 

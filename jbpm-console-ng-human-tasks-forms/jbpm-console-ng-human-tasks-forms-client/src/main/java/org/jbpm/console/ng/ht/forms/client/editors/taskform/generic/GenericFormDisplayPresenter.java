@@ -21,7 +21,6 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
-import org.jbpm.console.ng.ht.forms.api.FormRefreshCallback;
 import org.jbpm.console.ng.ht.forms.ht.api.HumanTaskFormDisplayer;
 import org.jbpm.console.ng.ht.forms.process.api.StartProcessFormDisplayer;
 import org.jbpm.console.ng.ht.forms.service.FormServiceEntryPoint;
@@ -38,7 +37,7 @@ import java.util.*;
  * @author salaboy
  */
 @Dependent
-public class GenericFormDisplayPresenter implements FormRefreshCallback {
+public class GenericFormDisplayPresenter {
 
     @Inject
     protected SyncBeanManager iocManager;
@@ -61,6 +60,8 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
     protected String opener;
 
     private Command onClose;
+    
+    private Command onRefresh;
 
     public interface GenericFormDisplayView extends IsWidget {
 
@@ -99,7 +100,13 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
         this.currentProcessId = currentProcessId;
         this.currentDeploymentId = currentDeploymentId;
         this.onClose = onClose;
-
+        this.onRefresh = new Command() {
+            @Override
+            public void execute() {
+                refresh();
+            }
+        };
+        
         refresh();
     }
 
@@ -113,7 +120,12 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
         this.currentDeploymentId = currentDeploymentId;
         this.onClose = onClose;
         view.onReadyToRender( onReadyToRender );
-
+        this.onRefresh = new Command() {
+            @Override
+            public void execute() {
+                refresh();
+            }
+        };
         refresh();
     }
 
@@ -121,7 +133,6 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
         return view;
     }
 
-    @Override
     public void refresh() {
         if (currentTaskId != -1) {
             if (taskDisplayers != null) {
@@ -144,7 +155,8 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
                         for (HumanTaskFormDisplayer d : taskDisplayers) {
                             if (d.supportsContent(form)) {
                                 d.init(new TaskKey(currentTaskId), form, opener);
-                                d.addFormRefreshCallback(GenericFormDisplayPresenter.this);
+                                d.addOnCloseCallback(onClose);
+                                d.addOnRefreshCallback(onRefresh);
                                 view.render(d.getContainer());
                                 return;
                             }
@@ -174,7 +186,8 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
                         for (StartProcessFormDisplayer d : processDisplayers) {
                             if (d.supportsContent(form)) {
                                 d.init(new ProcessDefinitionKey(currentDeploymentId, currentProcessId), form, opener);
-                                d.addFormRefreshCallback(GenericFormDisplayPresenter.this);
+                                d.addOnCloseCallback(onClose);
+                                d.addOnRefreshCallback(onRefresh);
                                 view.render(d.getContainer());
                                 return;
                             }
@@ -186,8 +199,4 @@ public class GenericFormDisplayPresenter implements FormRefreshCallback {
         }
     }
 
-    @Override
-    public void close() {
-        onClose.execute();
-    }
 }

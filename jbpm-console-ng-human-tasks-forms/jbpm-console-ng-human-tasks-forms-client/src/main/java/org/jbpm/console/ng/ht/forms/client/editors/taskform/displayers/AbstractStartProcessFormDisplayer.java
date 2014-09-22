@@ -29,7 +29,6 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
-import org.jbpm.console.ng.ht.forms.api.FormRefreshCallback;
 import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.ActionRequest;
 import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.JSNIHelper;
 import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
@@ -44,6 +43,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.uberfire.mvp.Command;
 
 /**
  *
@@ -57,7 +57,6 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     final protected FlowPanel container = new FlowPanel();
     final protected FlowPanel buttonsContainer = new FlowPanel();
     final protected VerticalPanel formContainer = new VerticalPanel();
-    protected List<FormRefreshCallback> refreshCallbacks = new ArrayList<FormRefreshCallback>();
 
     protected String formContent;
 
@@ -65,6 +64,11 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     protected String processDefId;
     protected String processName;
     protected String opener;
+    
+       
+    private Command onClose;
+    
+    private Command onRefresh;
 
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
@@ -125,10 +129,6 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
 
 
 
-    @Override
-    public void addFormRefreshCallback(FormRefreshCallback callback) {
-        refreshCallbacks.add(callback);
-    }
 
     protected ErrorCallback<Message> getUnexpectedErrorCallback() {
         return new ErrorCallback<Message>() {
@@ -165,9 +165,20 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     }
 
     @Override
+    public void addOnCloseCallback(Command callback) {
+        this.onClose = callback;
+    }
+
+    @Override
+    public void addOnRefreshCallback(Command callback) {
+        this.onRefresh = callback;
+    }
+
+    
+    @Override
     public void close() {
-        for (FormRefreshCallback callback : refreshCallbacks) {
-            callback.close();
+        if(this.onClose!=null){
+            this.onClose.execute();
         }
     }
 
