@@ -15,3 +15,6 @@
 
 # Bitronix transactin logs
 *.tlog
+
+# Created by Zanata
+/org.jbpm
