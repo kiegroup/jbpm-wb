@@ -144,6 +144,11 @@ public class TaskAdminPresenter {
             @Override
             public void callback(TaskSummary ts) {
                 if (ts == null) return;
+                if( ts.getPotOwnersString() != null && ts.getPotOwnersString().size() == 0 ){
+                    view.getUsersGroupsControlsPanel().setText( Constants.INSTANCE.No_Potential_Owners() );
+                } else {
+                    view.getUsersGroupsControlsPanel().setText("" + ts.getPotOwnersString().toString() );
+                }
                 view.getForwardButton().setEnabled(true);
                 view.getUserOrGroupText().setEnabled(true);
             }
