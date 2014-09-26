@@ -41,6 +41,7 @@ import org.jbpm.services.api.model.DeployedUnit;
 import org.jbpm.services.api.model.DeploymentUnit;
 import org.jbpm.services.cdi.Deploy;
 import org.jbpm.services.cdi.Undeploy;
+import org.kie.internal.runtime.conf.MergeMode;
 import org.kie.internal.runtime.conf.RuntimeStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,7 @@ import org.uberfire.paging.PageResponse;
 public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPoint, Initializable<DeploymentUnit>, PostBuildHandler {
 
   private static final Logger logger = LoggerFactory.getLogger(DeploymentManagerEntryPointImpl.class);
+  private static final MergeMode defaultMergeMode = MergeMode.valueOf(System.getProperty("org.kie.dd.mergemode", MergeMode.MERGE_COLLECTIONS.toString()));
 
   @Inject
   private DeploymentService deploymentService;
@@ -104,6 +106,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
               ((KModuleDeploymentUnitSummary) unitSummary).getKbaseName(),
               ((KModuleDeploymentUnitSummary) unitSummary).getKsessionName(),
               ((KModuleDeploymentUnitSummary) unitSummary).getStrategy());
+        ((KModuleDeploymentUnit)unit).setMergeMode(MergeMode.valueOf(((KModuleDeploymentUnitSummary) unitSummary).getMergeMode()));
     }// add for vfs
     deploy(unit);
   }
@@ -202,7 +205,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
     for (DeployedUnit du : deployedUnits) {
       KModuleDeploymentUnit kdu = (KModuleDeploymentUnit) du.getDeploymentUnit();
       KModuleDeploymentUnitSummary duSummary = new KModuleDeploymentUnitSummary(kdu.getIdentifier(), kdu.getGroupId(),
-                kdu.getArtifactId(), kdu.getVersion(), kdu.getKbaseName(), kdu.getKsessionName(), kdu.getStrategy().toString());
+                kdu.getArtifactId(), kdu.getVersion(), kdu.getKbaseName(), kdu.getKsessionName(), kdu.getStrategy().toString(), kdu.getMergeMode().toString());
       if(filter.getParams() == null || filter.getParams().get("textSearch") == null || ((String)filter.getParams().get("textSearch")).isEmpty()){
         unitsIds.add(duSummary);
       }else if(kdu.getIdentifier().toLowerCase().contains((String)filter.getParams().get("textSearch"))){
@@ -405,7 +408,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
       KModuleDeploymentUnitSummary unit = new KModuleDeploymentUnitSummary("",
               buildResults.getGAV().getGroupId(),
               buildResults.getGAV().getArtifactId(),
-              buildResults.getGAV().getVersion(), "", "", RuntimeStrategy.SINGLETON.toString());
+              buildResults.getGAV().getVersion(), "", "", RuntimeStrategy.SINGLETON.toString(), defaultMergeMode.toString());
 
       undeploy(unit);
       deploy(unit);

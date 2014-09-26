@@ -109,6 +109,14 @@ public class NewDeploymentViewImpl extends Composite implements NewDeploymentPre
     public Label strategyLabel;
 
     @Inject
+    @DataField
+    public ListBox mergeModeListBox;
+
+    @Inject
+    @DataField
+    public Label mergeModeLabel;
+
+    @Inject
     private Event<NotificationEvent> notification;
 
 
@@ -130,13 +138,20 @@ public class NewDeploymentViewImpl extends Composite implements NewDeploymentPre
         strategyListBox.addItem( "Singleton", "SINGLETON" );
         strategyListBox.addItem( "Request", "PER_REQUEST" );
         strategyListBox.addItem( "Process instance", "PER_PROCESS_INSTANCE" );
+
+        mergeModeLabel.setText(constants.MergeMode());
+        mergeModeListBox.addItem( "Merge collections", "MERGE_COLLECTIONS" );
+        mergeModeListBox.addItem( "Keep all", "KEEP_ALL" );
+        mergeModeListBox.addItem( "Override all", "OVERRIDE_ALL" );
+        mergeModeListBox.addItem( "Override empty", "OVERRIDE_EMPTY" );
     }
 
     @EventHandler("deployUnitButton")
     public void deployUnitButton( ClickEvent e ) {
         String strategy = strategyListBox.getValue(strategyListBox.getSelectedIndex());
+        String mergeMode = mergeModeListBox.getValue(mergeModeListBox.getSelectedIndex());
         presenter.deployUnit(groupText.getText(), artifactText.getText(), versionText.getText(),
-                              kbaseNameText.getText(), kieSessionNameText.getText(), strategy );
+                              kbaseNameText.getText(), kieSessionNameText.getText(), strategy, mergeMode );
     }
 
     @Override

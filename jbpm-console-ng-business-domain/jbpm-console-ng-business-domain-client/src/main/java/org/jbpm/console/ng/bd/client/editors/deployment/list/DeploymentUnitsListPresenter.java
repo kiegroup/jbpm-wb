@@ -125,7 +125,7 @@ public class DeploymentUnitsListPresenter extends AbstractScreenListPresenter<KM
         view.displayNotification("Error: Undeploy failed, check Problems panel");
         return true;
       }
-    }).undeploy(new KModuleDeploymentUnitSummary(id, group, artifact, version, kbaseName, kieSessionName, null));
+    }).undeploy(new KModuleDeploymentUnitSummary(id, group, artifact, version, kbaseName, kieSessionName, null, null));
   }
 
   @WorkbenchPartView

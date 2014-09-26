@@ -126,4 +126,6 @@ public interface Constants extends Messages {
     String NoParamResolver();
 
     String Type();
+
+    String MergeMode();
 }

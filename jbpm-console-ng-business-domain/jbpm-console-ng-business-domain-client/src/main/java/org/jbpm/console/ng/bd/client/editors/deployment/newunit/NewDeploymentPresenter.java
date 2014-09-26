@@ -108,7 +108,8 @@ public class NewDeploymentPresenter {
                             final String version,
                             final String kbaseName,
                             final String kieSessionName,
-                            String strategy ) {
+                            final String strategy,
+                            final String mergeMode) {
         view.showBusyIndicator( constants.Please_Wait() );
         deploymentManager.call( new RemoteCallback<Void>() {
                                     @Override
@@ -130,7 +131,7 @@ public class NewDeploymentPresenter {
                                         return true;
                                     }
                                 }
-                              ).deploy( new KModuleDeploymentUnitSummary( "", group, artifact, version, kbaseName, kieSessionName, strategy ) );
+                              ).deploy( new KModuleDeploymentUnitSummary( "", group, artifact, version, kbaseName, kieSessionName, strategy, mergeMode ) );
     }
 
     @OnOpen

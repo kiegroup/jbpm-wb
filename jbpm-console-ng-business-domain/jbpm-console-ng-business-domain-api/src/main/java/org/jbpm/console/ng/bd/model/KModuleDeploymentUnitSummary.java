@@ -28,6 +28,7 @@ public class KModuleDeploymentUnitSummary extends DeploymentUnitSummary {
     private String kbaseName;
     private String ksessionName;
     private String strategy;
+    private String mergeMode;
 
     public KModuleDeploymentUnitSummary() {
     }
@@ -37,7 +38,7 @@ public class KModuleDeploymentUnitSummary extends DeploymentUnitSummary {
     }
 
     public KModuleDeploymentUnitSummary(String id, String groupId, String artifactId, String version, String kbaseName,
-            String ksessionName, String strategy) {
+            String ksessionName, String strategy, String mergeMode) {
         super(id, "kjar");
         this.groupId = groupId;
         this.artifactId = artifactId;
@@ -45,6 +46,7 @@ public class KModuleDeploymentUnitSummary extends DeploymentUnitSummary {
         this.kbaseName = kbaseName;
         this.ksessionName = ksessionName;
         this.strategy = strategy;
+        this.mergeMode = mergeMode;
     }
 
     public String getGroupId() {
@@ -99,4 +101,11 @@ public class KModuleDeploymentUnitSummary extends DeploymentUnitSummary {
         return this.artifactId;
     }
 
+    public String getMergeMode() {
+        return mergeMode;
+    }
+
+    public void setMergeMode(String mergeMode) {
+        this.mergeMode = mergeMode;
+    }
 }
