@@ -34,15 +34,15 @@ public class AdvancedAssetManagementImpl {
   }
 
   public void configureRepository(@Observes ConfigureRepositoryEvent event) {
-    sessionServices.startProcess("org.guvnor:guvnor-asset-mgmt-project:6.2.0-SNAPSHOT", "asset-management-kmodule.ConfigureRepository", event.getParams());
+    sessionServices.startProcess("org.guvnor:guvnor-asset-mgmt-project:6.2.0.Beta3", "asset-management-kmodule.ConfigureRepository", event.getParams());
   }
 
   public void buildProject(@Observes BuildProjectStructureEvent event) {
-    sessionServices.startProcess("org.guvnor:guvnor-asset-mgmt-project:6.2.0-SNAPSHOT", "asset-management-kmodule.BuildProject", event.getParams());
+    sessionServices.startProcess("org.guvnor:guvnor-asset-mgmt-project:6.2.0.Beta3", "asset-management-kmodule.BuildProject", event.getParams());
   }
 
   public void promoteChanges(@Observes PromoteChangesEvent event) {
-    sessionServices.startProcess("org.guvnor:guvnor-asset-mgmt-project:6.2.0-SNAPSHOT", "asset-management-kmodule.PromoteAssets", event.getParams());
+    sessionServices.startProcess("org.guvnor:guvnor-asset-mgmt-project:6.2.0.Beta3", "asset-management-kmodule.PromoteAssets", event.getParams());
   }
 
 }

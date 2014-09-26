@@ -21,13 +21,13 @@
   <parent>
     <groupId>org.jbpm</groupId>
     <artifactId>jbpm-console-ng-documents</artifactId>
-    <version>6.2.0-SNAPSHOT</version>
+    <version>6.2.0.Beta3</version>
   </parent>
 
   <artifactId>jbpm-console-ng-documents-client</artifactId>
   <packaging>jar</packaging>
   <groupId>org.jbpm</groupId>
-  <version>6.2.0-SNAPSHOT</version>
+  <version>6.2.0.Beta3</version>
 
   <name>jBPM Console NG - Documents Client</name>
 
