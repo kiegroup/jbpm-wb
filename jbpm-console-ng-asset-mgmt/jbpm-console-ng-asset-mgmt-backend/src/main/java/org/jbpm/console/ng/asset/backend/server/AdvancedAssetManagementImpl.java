@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import org.guvnor.asset.management.model.BuildProjectStructureEvent;
 import org.guvnor.asset.management.model.ConfigureRepositoryEvent;
 import org.guvnor.asset.management.model.PromoteChangesEvent;
+import org.guvnor.asset.management.model.ReleaseProjectEvent;
 
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 
@@ -44,5 +45,9 @@ public class AdvancedAssetManagementImpl {
   public void promoteChanges(@Observes PromoteChangesEvent event) {
     sessionServices.startProcess("org.guvnor:guvnor-asset-mgmt-project:6.2.0-SNAPSHOT", "asset-management-kmodule.PromoteAssets", event.getParams());
   }
+
+    public void releaseProject(@Observes ReleaseProjectEvent event) {
+        sessionServices.startProcess("org.guvnor:guvnor-asset-mgmt-project:6.2.0-SNAPSHOT", "asset-management-kmodule.ReleaseProject", event.getParams());
+    }
 
 }
