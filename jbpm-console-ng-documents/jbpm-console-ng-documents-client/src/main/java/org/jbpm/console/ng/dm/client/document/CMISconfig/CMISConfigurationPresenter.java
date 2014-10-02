@@ -19,10 +19,12 @@ package org.jbpm.console.ng.dm.client.document.CMISconfig;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.core.client.GWT;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
@@ -44,14 +46,11 @@ import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.events.NotificationEvent.NotificationType;
+import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
-
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.core.client.GWT;
 
 @Dependent
 @WorkbenchScreen(identifier = "CMIS Configuration")
@@ -117,7 +116,7 @@ public class CMISConfigurationPresenter {
 
 	@DefaultPosition
 	public Position getPosition() {
-		return Position.EAST;
+		return CompassPosition.EAST;
 	}
 
 	@OnStartup

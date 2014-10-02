@@ -50,6 +50,7 @@ import org.uberfire.lifecycle.OnClose;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
@@ -100,7 +101,7 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
 
     @DefaultPosition
     public Position getPosition() {
-        return Position.EAST;
+        return CompassPosition.EAST;
     }
 
 

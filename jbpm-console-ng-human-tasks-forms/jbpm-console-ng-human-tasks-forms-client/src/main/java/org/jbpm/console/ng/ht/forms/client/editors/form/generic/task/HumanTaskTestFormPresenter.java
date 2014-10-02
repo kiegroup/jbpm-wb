@@ -15,26 +15,22 @@
  */
 package org.jbpm.console.ng.ht.forms.client.editors.form.generic.task;
 
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.core.client.GWT;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
+
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.core.client.GWT;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
-
-
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
-import org.uberfire.lifecycle.OnClose;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.security.Identity;
 
 @Dependent
 @WorkbenchScreen(identifier = "HumanTaskTest Form")
@@ -47,11 +43,11 @@ public class HumanTaskTestFormPresenter {
     void displayNotification(String text);
 
     TextBox getInputTextBox();
-    
+
     TextBox getOutputTextBox();
 
     TextBox getTaskIdTextBox();
-    
+
     void setReadOnly(boolean readOnly);
 
   }
@@ -60,10 +56,7 @@ public class HumanTaskTestFormPresenter {
   private HumanTaskTestFormView view;
 
   @Inject
-  private Identity identity;
-
-  @Inject
-  private Event<BeforeClosePlaceEvent> closePlaceEvent;
+  private User identity;
 
   private PlaceRequest place;
 
@@ -73,7 +66,7 @@ public class HumanTaskTestFormPresenter {
   @OnStartup
   public void onStartup(final PlaceRequest place) {
     this.place = place;
-    
+
   }
 
   @WorkbenchPartTitle
@@ -98,14 +91,10 @@ public class HumanTaskTestFormPresenter {
     String taskId = place.getParameter("taskId", "");
     String inputs = place.getParameter("inputs", "");
     String outputs = place.getParameter("outputs", "");
-    
+
     view.getInputTextBox().setText(inputs);
     view.getTaskIdTextBox().setText(taskId);
     view.getOutputTextBox().setText(outputs);
     view.getOutputTextBox().setName("out_variable");
-  }
-  @OnClose
-  public void close() {
-    closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
   }
 }

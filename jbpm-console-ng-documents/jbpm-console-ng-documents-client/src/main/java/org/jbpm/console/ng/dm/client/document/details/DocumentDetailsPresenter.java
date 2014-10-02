@@ -17,11 +17,14 @@
 package org.jbpm.console.ng.dm.client.document.details;
 
 import java.util.List;
-
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HTML;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -41,14 +44,10 @@ import org.uberfire.client.workbench.widgets.split.WorkbenchSplitLayoutPanel;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
-
-import com.github.gwtbootstrap.client.ui.Button;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HTML;
 
 @Dependent
 @WorkbenchScreen(identifier = "Document Details")
@@ -94,7 +93,7 @@ public class DocumentDetailsPresenter {
 
 	@DefaultPosition
 	public Position getPosition() {
-		return Position.EAST;
+		return CompassPosition.EAST;
 	}
 
 	@OnStartup

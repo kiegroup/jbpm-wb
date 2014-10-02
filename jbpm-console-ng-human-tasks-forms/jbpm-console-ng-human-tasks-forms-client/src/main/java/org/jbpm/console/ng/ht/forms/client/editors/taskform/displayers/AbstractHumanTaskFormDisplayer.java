@@ -15,6 +15,10 @@
  */
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
+import java.util.Map;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.google.gwt.core.client.GWT;
@@ -27,6 +31,7 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.ActionRequest;
 import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.JSNIHelper;
 import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
@@ -34,15 +39,9 @@ import org.jbpm.console.ng.ht.forms.ht.api.HumanTaskFormDisplayer;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
-import org.uberfire.client.workbench.widgets.common.ErrorPopup;
-import org.uberfire.security.Identity;
-
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
-import java.util.Map;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
+import org.uberfire.client.workbench.widgets.common.ErrorPopup;
 import org.uberfire.mvp.Command;
 /**
  *
@@ -80,7 +79,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     protected Event<TaskRefreshedEvent> taskRefreshed;
 
     @Inject
-    protected Identity identity;
+    protected User identity;
 
     @Inject
     protected JSNIHelper jsniHelper;
@@ -138,7 +137,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
                         buttonsContainer.add(wrapperFlowPanel);
                     }
 
-                    if (task.getStatus().equals("Reserved") && task.getActualOwner().equals(identity.getName())) {
+                    if (task.getStatus().equals("Reserved") && task.getActualOwner().equals(identity.getIdentifier())) {
 
                         Button releaseButton = new Button();
                         releaseButton.setText(constants.Release());
@@ -162,7 +161,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
                         wrapperFlowPanel.add(startButton);
 
                         buttonsContainer.add(wrapperFlowPanel);
-                    } else if (task.getStatus().equals("InProgress") && task.getActualOwner().equals(identity.getName())) {
+                    } else if (task.getStatus().equals("InProgress") && task.getActualOwner().equals(identity.getIdentifier())) {
                         Button saveButton = new Button();
                         saveButton.setText(constants.Save());
                         saveButton.addClickHandler(new ClickHandler() {
@@ -207,17 +206,17 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     @Override
     public void complete(Map<String, Object> params) {
         taskServices.call(getCompleteTaskRemoteCallback(), getUnexpectedErrorCallback())
-                .complete(taskId, identity.getName(), params);
+                .complete(taskId, identity.getIdentifier(), params);
     }
 
     @Override
     public void claim() {
-        taskServices.call(getClaimTaskCallback(), getUnexpectedErrorCallback()).claim(taskId, identity.getName());
+        taskServices.call(getClaimTaskCallback(), getUnexpectedErrorCallback()).claim(taskId, identity.getIdentifier());
     }
 
     @Override
     public void release() {
-        taskServices.call(getReleaseTaskRemoteCallback(), getUnexpectedErrorCallback()).release(taskId, identity.getName());
+        taskServices.call(getReleaseTaskRemoteCallback(), getUnexpectedErrorCallback()).release(taskId, identity.getIdentifier());
     }
 
     @Override
@@ -227,7 +226,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
 
     @Override
     public void start() {
-        taskServices.call(getStartTaskRemoteCallback(), getUnexpectedErrorCallback()).start(taskId, identity.getName());
+        taskServices.call(getStartTaskRemoteCallback(), getUnexpectedErrorCallback()).start(taskId, identity.getIdentifier());
     }
 
     @Override

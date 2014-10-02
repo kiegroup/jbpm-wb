@@ -41,6 +41,7 @@ import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
@@ -101,7 +102,7 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
 
     @DefaultPosition
     public Position getPosition() {
-        return Position.EAST;
+        return CompassPosition.EAST;
     }
 
 

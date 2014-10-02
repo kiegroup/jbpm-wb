@@ -26,19 +26,19 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Focusable;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
 @WorkbenchPopup(identifier = "Quick New Job")
@@ -56,11 +56,11 @@ public class QuickNewJobPresenter {
     }
 
     @Inject
+    private PlaceManager placeManager;
+    @Inject
     QuickNewJobView view;
     @Inject
     private Caller<ExecutorServiceEntryPoint> executorServices;
-    @Inject
-    private Event<BeforeClosePlaceEvent> closePlaceEvent;
     @Inject
     private Event<RequestChangedEvent> requestCreatedEvent;
     private PlaceRequest place;
@@ -115,7 +115,7 @@ public class QuickNewJobPresenter {
             public void callback( Long requestId ) {
                 view.displayNotification( "Request Schedulled: " + requestId );
                 requestCreatedEvent.fire( new RequestChangedEvent( requestId ) );
-                close();
+                placeManager.closePlace( place );
             }
         } ).scheduleRequest( jobType, dueDate, ctx );
 
@@ -124,10 +124,6 @@ public class QuickNewJobPresenter {
     @OnOpen
     public void onOpen() {
         view.getJobNameText().setFocus( true );
-    }
-
-    public void close() {
-        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }
 
 }

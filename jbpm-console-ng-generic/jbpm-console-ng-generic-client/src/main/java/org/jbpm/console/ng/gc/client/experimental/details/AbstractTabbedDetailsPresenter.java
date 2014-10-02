@@ -18,8 +18,8 @@ package org.jbpm.console.ng.gc.client.experimental.details;
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
+
 import org.uberfire.client.mvp.AbstractWorkbenchActivity;
-import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.lifecycle.OnClose;
 import org.uberfire.lifecycle.OnFocus;
@@ -28,53 +28,48 @@ import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 
 /**
- *
  * @author salaboy
  */
 public abstract class AbstractTabbedDetailsPresenter {
 
-  @Inject
-  protected ActivityManager activityManager;
+    @Inject
+    protected PlaceManager placeManager;
 
-  @Inject
-  protected PlaceManager placeManager;
+    protected PlaceRequest place;
 
-  protected PlaceRequest place;
-  
-  protected Map<String, AbstractWorkbenchActivity> activitiesMap = 
-                                new HashMap<String, AbstractWorkbenchActivity>();
+    protected Map<String, AbstractWorkbenchActivity> activitiesMap =
+            new HashMap<String, AbstractWorkbenchActivity>();
 
-  protected String selectedItemId = "";
+    protected String selectedItemId = "";
 
-  protected String selectedItemName = "";
+    protected String selectedItemName = "";
 
-  @OnOpen
-  public void onOpen() {
+    @OnOpen
+    public void onOpen() {
 
-  }
-
-  @OnFocus
-  public void onFocus() {
-
-  }
-
-  @OnStartup
-  public void onStartup(final PlaceRequest place) {
-    this.place = place;
-    
-  }
-
-  @OnClose
-  public void onClose() {
-    for (String activityId : activitiesMap.keySet()) {
-      activitiesMap.get(activityId).onClose();
     }
-    activitiesMap.clear();
-  }
 
-  public void closeDetails() {
-    placeManager.closePlace(place);
-  }
+    @OnFocus
+    public void onFocus() {
 
+    }
+
+    @OnStartup
+    public void onStartup( final PlaceRequest place ) {
+        this.place = place;
+
+    }
+
+    @OnClose
+    public void onClose() {
+        for ( String activityId : activitiesMap.keySet() ) {
+            activitiesMap.get( activityId ).onClose();
+        }
+        activitiesMap.clear();
+    }
+
+    public void closeDetails() {
+        placeManager.closePlace( place );
+    }
 
 }

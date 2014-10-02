@@ -15,60 +15,52 @@
  */
 package org.jbpm.console.ng.gc.client.perspectives;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.FlowPanel;
 import org.jbpm.console.ng.ga.model.events.SearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
-import org.uberfire.client.annotations.Perspective;
+import org.uberfire.client.annotations.WorkbenchPanel;
 import org.uberfire.client.annotations.WorkbenchPerspective;
+import org.uberfire.client.util.Layouts;
 import org.uberfire.lifecycle.OnStartup;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.PanelDefinition;
-import org.uberfire.workbench.model.PanelType;
-import org.uberfire.workbench.model.PerspectiveDefinition;
-import org.uberfire.workbench.model.Position;
-import org.uberfire.workbench.model.impl.PanelDefinitionImpl;
-import org.uberfire.workbench.model.impl.PartDefinitionImpl;
-import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 /**
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Experimental Paging", isDefault = false)
-public class ExperimentalPagingPerspective {
-    
-    
+@WorkbenchPerspective(identifier = "Experimental Paging")
+public class ExperimentalPagingPerspective extends FlowPanel {
+
     @Inject
     private ContextualSearch contextualSearch;
-    
+
     @Inject
     private Event<SearchEvent> searchEvents;
-    
-    @Perspective
-    public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_LIST);
-        p.setName("Experimental Paging");
-        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Pagination For Tables")));
 
-        
+    @Inject
+    @WorkbenchPanel(parts = "Pagination For Tables")
+    FlowPanel paginationTables;
 
-        p.setTransient(true);
-        return p;
+    @PostConstruct
+    private void init() {
+        Layouts.setToFillParent( paginationTables );
+        add( paginationTables );
     }
-    
+
     @OnStartup
-    public void init() {
-        contextualSearch.setSearchBehavior(new SearchBehavior() {
+    public void onStartup() {
+        contextualSearch.setSearchBehavior( new SearchBehavior() {
             @Override
-            public void execute(String searchFilter) {
-                searchEvents.fire(new SearchEvent(searchFilter));
+            public void execute( String searchFilter ) {
+                searchEvents.fire( new SearchEvent( searchFilter ) );
             }
 
-        });
-        
+        } );
+
     }
 }

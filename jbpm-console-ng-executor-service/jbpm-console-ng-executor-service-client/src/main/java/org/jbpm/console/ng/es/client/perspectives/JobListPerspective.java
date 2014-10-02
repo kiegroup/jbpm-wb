@@ -17,13 +17,12 @@ package org.jbpm.console.ng.es.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import org.kie.workbench.common.widgets.client.search.ContextualSearch;
-import org.uberfire.lifecycle.OnStartup;
 
+import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
+import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.PanelType;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
@@ -32,34 +31,18 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Jobs", isDefault = false)
+@WorkbenchPerspective(identifier = "Jobs")
 public class JobListPerspective {
-    
-    
+
     @Inject
     private ContextualSearch contextualSearch;
-    
-//    @Inject
-//    private Event<DeploymentsSearchEvent> searchEvents;
-    
+
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_LIST);
-        p.setName("Deployments");
-        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Requests List")));
-        p.setTransient(true);
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( MultiListWorkbenchPanelPresenter.class.getName() );
+        p.setName( "Deployments" );
+        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Requests List" ) ) );
         return p;
     }
-    
-    @OnStartup
-    public void init() {
-//        contextualSearch.setSearchBehavior(new SearchBehavior() {
-//            @Override
-//            public void execute(String searchFilter) {
-//                searchEvents.fire(new RequestsSearchEvent(searchFilter));
-//            }
-//
-//        });
-        
-    }
+
 }

@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.generic;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
@@ -25,7 +24,6 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
@@ -39,9 +37,6 @@ public class PopUpGenericFormDisplayPresenter {
 
     @Inject
     private GenericFormDisplayPresenter widgetPresenter;
-
-    @Inject
-    private Event<BeforeClosePlaceEvent> closePlaceEvent;
 
     @Inject
     private PlaceManager placeManager;
@@ -64,7 +59,7 @@ public class PopUpGenericFormDisplayPresenter {
                                new Command() {
                                    @Override
                                    public void execute() {
-                                       closePlaceEvent.fire( new BeforeClosePlaceEvent( place ) );
+                                       placeManager.closePlace( place );
                                    }
                                } );
     }

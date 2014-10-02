@@ -15,17 +15,14 @@
  */
 package org.jbpm.console.ng.gc.client.list.base;
 
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
-import org.uberfire.lifecycle.OnClose;
 import org.uberfire.lifecycle.OnFocus;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.security.Identity;
 
 /**
  * @param <T> data type for the AsyncDataProvider
@@ -34,15 +31,12 @@ import org.uberfire.security.Identity;
 public abstract class AbstractScreenListPresenter<T> extends AbstractListPresenter<T> {
 
     @Inject
-    protected Identity identity;
+    protected User identity;
 
     @Inject
     protected PlaceManager placeManager;
 
     protected PlaceRequest place;
-
-    @Inject
-    protected Event<BeforeClosePlaceEvent> beforeCloseEvent;
 
     @OnOpen
     public void onOpen() {
@@ -57,11 +51,6 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
     @OnStartup
     public void onStartup( final PlaceRequest place ) {
         this.place = place;
-    }
-
-    @OnClose
-    public void onClose() {
-        beforeCloseEvent.fire( new BeforeClosePlaceEvent( place ) );
     }
 
 }

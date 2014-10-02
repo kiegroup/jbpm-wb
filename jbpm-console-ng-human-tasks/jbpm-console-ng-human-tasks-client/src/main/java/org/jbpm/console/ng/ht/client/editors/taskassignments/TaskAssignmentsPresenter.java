@@ -31,6 +31,7 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
@@ -39,8 +40,6 @@ import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
-import org.uberfire.security.Identity;
 
 @Dependent
 public class TaskAssignmentsPresenter {
@@ -65,7 +64,7 @@ public class TaskAssignmentsPresenter {
     private TaskAssignmentsView view;
 
     @Inject
-    private Identity identity;
+    private User identity;
 
     @Inject
     Caller<TaskLifeCycleService> taskServices;
@@ -75,9 +74,6 @@ public class TaskAssignmentsPresenter {
 
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
-
-    @Inject
-    private Event<BeforeClosePlaceEvent> closePlaceEvent;
 
     private long currentTaskId = 0;
 
@@ -109,7 +105,7 @@ public class TaskAssignmentsPresenter {
                 ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                 return true;
             }
-        } ).delegate( currentTaskId, identity.getName(), entity );
+        } ).delegate( currentTaskId, identity.getIdentifier(), entity );
     }
 
     public void refreshTaskPotentialOwners() {
@@ -140,7 +136,7 @@ public class TaskAssignmentsPresenter {
                     return;
                 }
                 String actualOwner = ts.getActualOwner();
-                if ( actualOwner.equals( "" ) || !actualOwner.equals( identity.getName() ) ) {
+                if ( actualOwner.equals( "" ) || !actualOwner.equals( identity.getIdentifier() ) ) {
                     view.getDelegateButton().setEnabled( false );
                     view.getUserOrGroupText().setEnabled( false );
                 } else {

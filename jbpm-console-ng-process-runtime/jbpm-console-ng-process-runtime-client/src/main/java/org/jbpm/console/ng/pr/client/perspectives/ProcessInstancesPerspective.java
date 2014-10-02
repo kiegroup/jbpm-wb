@@ -18,24 +18,23 @@ package org.jbpm.console.ng.pr.client.perspectives;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import org.jbpm.console.ng.pr.model.events.ProcessInstancesSearchEvent;
+
+import org.jbpm.console.ng.ga.model.events.SearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
 import org.kie.workbench.common.widgets.client.search.SetSearchTextEvent;
-import org.uberfire.lifecycle.OnStartup;
-
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
+import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.PanelType;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
-import org.jbpm.console.ng.ga.model.events.SearchEvent;
 
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Process Instances", isDefault = false)
+@WorkbenchPerspective(identifier = "Process Instances")
 public class ProcessInstancesPerspective {
 
     @Inject
@@ -48,15 +47,14 @@ public class ProcessInstancesPerspective {
     private Event<SetSearchTextEvent> setSearchTextEvents;
     
     private String currentProcessDefinition = "";
-    
+
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_SIMPLE);
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(SimpleWorkbenchPanelPresenter.class.getName());
         p.setName( "Process Instances" );
         DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Process Instance List" );
-        defaultPlaceRequest.addParameter("processName", currentProcessDefinition);
+        defaultPlaceRequest.addParameter( "processName", currentProcessDefinition );
         p.getRoot().addPart( new PartDefinitionImpl( defaultPlaceRequest ) );
-        p.setTransient( true );
         return p;
     }
     

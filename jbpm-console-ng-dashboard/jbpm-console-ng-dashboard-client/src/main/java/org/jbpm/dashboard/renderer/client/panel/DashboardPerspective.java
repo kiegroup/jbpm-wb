@@ -15,35 +15,29 @@
  */
 package org.jbpm.dashboard.renderer.client.panel;
 
-import org.uberfire.client.annotations.Perspective;
-import org.uberfire.client.annotations.WorkbenchMenu;
-import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.workbench.model.PanelType;
-import org.uberfire.workbench.model.PartDefinition;
-import org.uberfire.workbench.model.PerspectiveDefinition;
-import org.uberfire.workbench.model.impl.PartDefinitionImpl;
-import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
-
-
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.FlowPanel;
+import org.uberfire.client.annotations.WorkbenchPanel;
+import org.uberfire.client.annotations.WorkbenchPerspective;
+import org.uberfire.client.util.Layouts;
 
 /**
  * A Perspective to show Dashboard
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "DashboardPerspective", isDefault = false)
-public class DashboardPerspective {
+@WorkbenchPerspective(identifier = "DashboardPerspective")
+public class DashboardPerspective extends FlowPanel {
 
-    @Perspective
-    public PerspectiveDefinition buildPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_STATIC);
-        p.setName("Dashboard builder");
-        PartDefinition pDef = new PartDefinitionImpl(new DefaultPlaceRequest("DashboardPanel"));
-        p.getRoot().addPart(pDef);
-        p.setTransient(true);
-        return p;
+    @Inject
+    @WorkbenchPanel(parts = "DashboardPanel")
+    FlowPanel dashboard;
+
+    @PostConstruct
+    private void init() {
+        Layouts.setToFillParent( dashboard );
+        add( dashboard );
     }
-
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 
 
   <listener>
@@ -24,16 +24,35 @@
   </context-param>
 
   <filter>
-    <filter-name>UberFire Security Filter</filter-name>
-    <filter-class>org.uberfire.security.server.UberFireSecurityFilter</filter-class>
+    <filter-name>UI Security Filter</filter-name>
+
+    <filter-class>org.picketlink.authentication.web.AuthenticationFilter</filter-class>
+
     <init-param>
-      <param-name>org.uberfire.cookie.id</param-name>
-      <param-value>jbpm.console</param-value>
+      <param-name>authType</param-name>
+      <param-value>org.jboss.errai.security.server.FormAuthenticationScheme</param-value>
+    </init-param>
+    <init-param>
+      <param-name>form-login-page</param-name>
+      <param-value>/login.jsp</param-value>
+    </init-param>
+    <init-param>
+      <param-name>host-page</param-name>
+      <param-value>/jbpm-console.html</param-value>
+    </init-param>
+    <init-param>
+      <param-name>forceReAuthentication</param-name>
+      <param-value>true</param-value>
     </init-param>
   </filter>
 
   <filter-mapping>
-    <filter-name>UberFire Security Filter</filter-name>
+    <filter-name>UI Security Filter</filter-name>
+    <!--<url-pattern>/rest/*</url-pattern>-->
+    <!--<url-pattern>/maven2/*</url-pattern>-->
+    <url-pattern>/jbpm-console.html</url-pattern>
+    <url-pattern>/uf_security_check</url-pattern>
+    <url-pattern>*.erraiBus</url-pattern>
     <url-pattern>/org.jbpm.console.ng.jBPMShowcase/*</url-pattern>
   </filter-mapping>
 
@@ -45,17 +64,6 @@
   <servlet-mapping>
     <servlet-name>Resteasy</servlet-name>
     <url-pattern>/rest/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
-    <servlet-name>UberFireServlet</servlet-name>
-    <servlet-class>org.uberfire.server.UberfireServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>UberFireServlet</servlet-name>
-    <url-pattern>/org.jbpm.console.ng.jBPMShowcase/jBPM.html</url-pattern>
   </servlet-mapping>
 
   <servlet>
@@ -85,25 +93,10 @@ profile in pom.xml to use that. -->
     <resource-env-ref-type>org.jboss.errai.bus.server.service.ErraiService</resource-env-ref-type>
   </resource-env-ref>
 
-  <context-param>
-    <param-name>errai.properties</param-name>
-    <param-value>/WEB-INF/errai.properties</param-value>
-  </context-param>
-
-  <context-param>
-    <param-name>login.config</param-name>
-    <param-value>/WEB-INF/login.config</param-value>
-  </context-param>
-
-  <context-param>
-    <param-name>users.properties</param-name>
-    <param-value>/WEB-INF/users.properties</param-value>
-  </context-param>
-
   <welcome-file-list>
-    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>login.jsp</welcome-file>
   </welcome-file-list>
-  
+
   <!-- Designer -->
   <!-- Designer Injection Filter -->
   <filter>
@@ -184,7 +177,7 @@ profile in pom.xml to use that. -->
     <servlet-name>TransformerServlet</servlet-name>
     <servlet-class>org.jbpm.designer.web.server.TransformerServlet</servlet-class>
   </servlet>
-    <servlet>
+  <servlet>
     <display-name>DocumentView</display-name>
     <servlet-name>DocumentViewServlet</servlet-name>
     <servlet-class>org.jbpm.console.ng.documents.backend.server.DocumentViewServlet</servlet-class>
@@ -390,31 +383,31 @@ profile in pom.xml to use that. -->
     <servlet-name>DocumentViewServlet</servlet-name>
     <url-pattern>/documentview/*</url-pattern>
   </servlet-mapping>
-    <!-- start form-modeler component -->
-    <servlet>
-        <servlet-name>Controller</servlet-name>
-        <servlet-class>org.jbpm.formModeler.service.bb.mvc.controller.ControllerServlet</servlet-class>
-        <init-param>
-            <param-name>base.app.dir</param-name>
-            <param-value>${project.basedir}/target/${project.artifactId}-${project.version}</param-value>
-        </init-param>
-    </servlet>
+  <!-- start form-modeler component -->
+  <servlet>
+    <servlet-name>Controller</servlet-name>
+    <servlet-class>org.jbpm.formModeler.service.bb.mvc.controller.ControllerServlet</servlet-class>
+    <init-param>
+      <param-name>base.app.dir</param-name>
+      <param-value>${project.basedir}/target/${project.artifactId}-${project.version}</param-value>
+    </init-param>
+  </servlet>
 
-    <servlet-mapping>
-        <servlet-name>Controller</servlet-name>
-        <url-pattern>/org.jbpm.console.ng.jBPMShowcase/Controller</url-pattern>
-    </servlet-mapping>
-    <!-- end form-modeler component -->
-    
+  <servlet-mapping>
+    <servlet-name>Controller</servlet-name>
+    <url-pattern>/org.jbpm.console.ng.jBPMShowcase/Controller</url-pattern>
+  </servlet-mapping>
+  <!-- end form-modeler component -->
+
   <!-- the number within the session-timout element must be expressed in
        minutes. it is now 24 hours. -->
   <session-config>
     <session-timeout>1440</session-timeout>
   </session-config>
-    <!-- jBoss' default mapping is to "image/svg", which causes the client
-         not to parse the SVG content as XML. However, the Oryx Editor client relies
-         on that behaviour. The mimetype as per W3C specification must be "image/svg+xml".
-         See http://www.w3.org/TR/SVG/intro.html#MIMEType. -->
+  <!-- jBoss' default mapping is to "image/svg", which causes the client
+       not to parse the SVG content as XML. However, the Oryx Editor client relies
+       on that behaviour. The mimetype as per W3C specification must be "image/svg+xml".
+       See http://www.w3.org/TR/SVG/intro.html#MIMEType. -->
   <mime-mapping>
     <extension>svg</extension>
     <mime-type>image/svg+xml</mime-type>
@@ -427,12 +420,12 @@ profile in pom.xml to use that. -->
     <extension>css</extension>
     <mime-type>text/css</mime-type>
   </mime-mapping>
-    <!-- Set Favourites Icon MIME-Type -->
+  <!-- Set Favourites Icon MIME-Type -->
   <mime-mapping>
     <extension>ico</extension>
     <mime-type>image/x-icon</mime-type>
   </mime-mapping>
-    <!-- end designer -->
+  <!-- end designer -->
 
   <resource-ref>
     <description>Console DS</description>

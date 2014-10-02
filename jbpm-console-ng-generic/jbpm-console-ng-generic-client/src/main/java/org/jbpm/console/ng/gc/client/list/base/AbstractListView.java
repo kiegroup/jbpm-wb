@@ -31,6 +31,7 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.kie.uberfire.client.common.BusyPopup;
@@ -39,7 +40,6 @@ import org.kie.uberfire.shared.preferences.GridPreferencesStore;
 import org.kie.uberfire.shared.preferences.UserDataGridPreferencesService;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.NotificationEvent;
 
 /**
@@ -51,7 +51,7 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
         extends Composite implements RequiresResize {
 
     @Inject
-    public Identity identity;
+    public User identity;
 
     @Inject
     protected Event<NotificationEvent> notification;

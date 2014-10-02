@@ -19,7 +19,6 @@ package org.jbpm.console.ng.pr.client.editors.variables.history;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.Modal;
@@ -30,23 +29,21 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.security.Identity;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
 @WorkbenchPopup(identifier = "Variable History Popup")
@@ -73,13 +70,7 @@ public class VariableHistoryPresenter {
     private PopupView view;
 
     @Inject
-    private Identity identity;
-
-    @Inject
     private PlaceManager placeManager;
-
-    @Inject
-    private Event<BeforeClosePlaceEvent> closePlaceEvent;
 
     private PlaceRequest place;
 
@@ -132,10 +123,6 @@ public class VariableHistoryPresenter {
             });
         }
         loadVariableHistory();
-    }
-
-    public void close() {
-        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }
 
     public void loadVariableHistory() {

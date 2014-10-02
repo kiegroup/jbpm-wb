@@ -15,38 +15,29 @@
  */
 package org.jbpm.console.ng.ht.admin.client.perspectives;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import org.uberfire.lifecycle.OnStartup;
+import javax.inject.Inject;
 
-import org.uberfire.client.annotations.Perspective;
+import com.google.gwt.user.client.ui.FlowPanel;
+import org.uberfire.client.annotations.WorkbenchPanel;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.PanelType;
-import org.uberfire.workbench.model.PerspectiveDefinition;
-import org.uberfire.workbench.model.impl.PartDefinitionImpl;
-import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
+import org.uberfire.client.util.Layouts;
 
 /**
  * A Perspective
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Tasks Admin", isDefault = false)
-public class TaskAdminSettingsPerspective {
+@WorkbenchPerspective(identifier = "Tasks Admin")
+public class TaskAdminSettingsPerspective extends FlowPanel {
 
+    @Inject
+    @WorkbenchPanel(parts = "Tasks Admin Settings")
+    FlowPanel tasksAdminSettings;
 
-    @Perspective
-    public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( PanelType.ROOT_LIST );
-        p.setName( "Tasks Admin" );
-        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Tasks Admin Settings" ) ) );
-        p.setTransient( true );
-        return p;
+    @PostConstruct
+    private void init() {
+        Layouts.setToFillParent( tasksAdminSettings );
+        add( tasksAdminSettings );
     }
-    
-    @OnStartup
-    public void init() {
-       
-        
-    }
-
 }

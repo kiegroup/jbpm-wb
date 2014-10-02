@@ -15,32 +15,23 @@
  */
 package org.jbpm.console.ng.ht.forms.client.editors.form.generic.process;
 
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.core.client.GWT;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
 
-
+import com.github.gwtbootstrap.client.ui.TextBox;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
-import org.uberfire.lifecycle.OnClose;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.security.Identity;
 
 @Dependent
 @WorkbenchScreen(identifier = "test.test Form")
 public class StartProcessTestFormPresenter {
-
-  private Constants constants = GWT.create(Constants.class);
 
   public interface StartProcessTestFormView extends UberView<StartProcessTestFormPresenter> {
 
@@ -54,12 +45,6 @@ public class StartProcessTestFormPresenter {
 
   @Inject
   private StartProcessTestFormView view;
-
-  @Inject
-  private Identity identity;
-
-  @Inject
-  private Event<BeforeClosePlaceEvent> closePlaceEvent;
 
   private PlaceRequest place;
 
@@ -98,9 +83,4 @@ public class StartProcessTestFormPresenter {
     view.getOutputTextBox().setName("p_variable");
   }
   
-  @OnClose
-  public void close() {
-    closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
-  }
-
 }

@@ -15,52 +15,29 @@
  */
 package org.jbpm.console.ng.dm.client.perspectives;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.widgets.client.search.ContextualSearch;
-import org.kie.workbench.common.widgets.client.search.SearchBehavior;
-import org.uberfire.client.annotations.Perspective;
+import com.google.gwt.user.client.ui.FlowPanel;
+import org.uberfire.client.annotations.WorkbenchPanel;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.lifecycle.OnStartup;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.PanelType;
-import org.uberfire.workbench.model.PerspectiveDefinition;
-import org.uberfire.workbench.model.impl.PartDefinitionImpl;
-import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
+import org.uberfire.client.util.Layouts;
 
 /**
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Documents Perspective", isDefault = false)
-public class DocumentsListPerspective {
-    
-    
+@WorkbenchPerspective(identifier = "Documents Perspective")
+public class DocumentsListPerspective extends FlowPanel {
+
     @Inject
-    private ContextualSearch contextualSearch;
-    
-    @Perspective
-    public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_LIST);
-        p.setName("Nicolas");
-//        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("DocumentsList")));
-        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Documents Presenter")));
-        
+    @WorkbenchPanel(parts = "Documents Presenter")
+    FlowPanel documents;
 
-        p.setTransient(true);
-        return p;
-    }
-    
-    @OnStartup
-    public void init() {
-        contextualSearch.setSearchBehavior(new SearchBehavior() {
-            @Override
-            public void execute(String searchFilter) {
-                //searchEvents.fire(new SearchEvent(searchFilter));
-            }
-
-        });
-        
+    @PostConstruct
+    private void init() {
+        Layouts.setToFillParent( documents );
+        add( documents );
     }
 }

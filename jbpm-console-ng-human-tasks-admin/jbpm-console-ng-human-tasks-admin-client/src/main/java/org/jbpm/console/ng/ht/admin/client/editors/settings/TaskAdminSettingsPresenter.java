@@ -15,33 +15,28 @@
  */
 package org.jbpm.console.ng.ht.admin.client.editors.settings;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ht.admin.client.i18n.Constants;
 import org.jbpm.console.ng.ht.admin.service.TaskServiceAdminEntryPoint;
-import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
-import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
-import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.client.workbench.widgets.common.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.security.Identity;
 
 @Dependent
 @WorkbenchScreen(identifier = "Tasks Admin Settings")
@@ -62,13 +57,7 @@ public class TaskAdminSettingsPresenter {
     TaskAdminSettingsView view;
 
     @Inject
-    Identity identity;
-
-    @Inject
     Caller<TaskServiceAdminEntryPoint> taskAdminServices;
-
-    @Inject
-    private Event<BeforeClosePlaceEvent> closePlaceEvent;
 
     private PlaceRequest place;
 
@@ -131,9 +120,5 @@ public class TaskAdminSettingsPresenter {
     public void onOpen() {
         view.getUserNameText().setFocus(true);
 
-    }
-
-    public void close() {
-        closePlaceEvent.fire(new BeforeClosePlaceEvent(this.place));
     }
 }

@@ -17,42 +17,34 @@
 package org.jbpm.console.ng.client.perspectives;
 
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 import org.guvnor.common.services.project.context.ProjectContextChangeEvent;
 import org.jbpm.console.ng.client.i18n.Constants;
 import org.kie.workbench.common.screens.projecteditor.client.menu.ProjectMenu;
-import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcesMenu;
-import org.kie.workbench.common.widgets.client.resources.i18n.ToolsMenuConstants;
 import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.client.annotations.WorkbenchToolBar;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
+import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.PanelDefinition;
-import org.uberfire.workbench.model.PanelType;
 import org.uberfire.workbench.model.PerspectiveDefinition;
-import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.impl.PanelDefinitionImpl;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
-import org.uberfire.workbench.model.toolbar.IconType;
-import org.uberfire.workbench.model.toolbar.ToolBar;
-import org.uberfire.workbench.model.toolbar.impl.DefaultToolBar;
-import org.uberfire.workbench.model.toolbar.impl.DefaultToolBarItem;
 
 @ApplicationScoped
 @WorkbenchPerspective(identifier = "Authoring")
@@ -62,8 +54,6 @@ public class ProjectAuthoringPerspective {
 
     @Inject
     private PlaceManager placeManager;
-    private PerspectiveDefinition perspective;
-    private Menus menus;
 
     @Inject
     private NewResourcePresenter newResourcePresenter;
@@ -74,83 +64,49 @@ public class ProjectAuthoringPerspective {
     @Inject
     private ProjectMenu projectMenu;
 
-    private ToolBar toolBar;
-
     private String projectRootPath;
 
-    private MenuItem ddMenuItem = MenuFactory.newSimpleItem(Constants.INSTANCE.DeploymentDescriptor()).respondsWith(
+    private MenuItem ddMenuItem = MenuFactory.newSimpleItem( Constants.INSTANCE.DeploymentDescriptor() ).respondsWith(
             new Command() {
                 @Override
                 public void execute() {
 
-                    placeManager.goTo(PathFactory.newPath("kie-deployment-descriptor.xml",
-                            projectRootPath + "/src/main/resources/META-INF/kie-deployment-descriptor.xml"));
+                    placeManager.goTo( PathFactory.newPath( "kie-deployment-descriptor.xml",
+                                                            projectRootPath + "/src/main/resources/META-INF/kie-deployment-descriptor.xml" ) );
 
                 }
             }
 
-    ).endMenu().build().getItems().get(0);
-
-    public void onProjectContextChanged( @Observes final ProjectContextChangeEvent event ) {
-        if (event.getProject() != null) {
-            projectRootPath = event.getProject().getRootPath().toURI();
-            ddMenuItem.setEnabled(true);
-        } else {
-            ddMenuItem.setEnabled(false);
-        }
-
-    }
+                                                                                                                     ).endMenu().build().getItems().get( 0 );
 
     public ProjectAuthoringPerspective() {
     }
 
-    @PostConstruct
-    public void init() {
-
-        buildMenuBar();
-        buildToolBar();
-    }
-
-    private void buildToolBar() {
-        this.toolBar = new DefaultToolBar( "guvnor.new.item" );
-        final String tooltip = constants.newItem();
-        final Command command = new Command() {
-            @Override
-            public void execute() {
-                newResourcePresenter.show();
-            }
-        };
-        toolBar.addItem( new DefaultToolBarItem( IconType.FILE, tooltip, command ) );
-
+    public void onProjectContextChanged( @Observes final ProjectContextChangeEvent event ) {
+        if ( event.getProject() != null ) {
+            projectRootPath = event.getProject().getRootPath().toURI();
+            ddMenuItem.setEnabled( true );
+        } else {
+            ddMenuItem.setEnabled( false );
+        }
     }
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_LIST);
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( MultiListWorkbenchPanelPresenter.class.getName() );
         p.setName( "Project Authoring Perspective" );
 
-        final PanelDefinition west = new PanelDefinitionImpl(PanelType.MULTI_LIST);
+        final PanelDefinition west = new PanelDefinitionImpl( SimpleWorkbenchPanelPresenter.class.getName() );
         west.setWidth( 300 );
         west.setMinWidth( 200 );
         west.addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "org.kie.guvnor.explorer" ) ) );
-        p.getRoot().insertChild( Position.WEST, west );
-        p.setTransient( true );
+        p.getRoot().insertChild( CompassPosition.WEST, west );
         return p;
     }
 
     @WorkbenchMenu
     public Menus getMenus() {
-        return this.menus;
-    }
-
-    @WorkbenchToolBar
-    public ToolBar getToolBar() {
-        return this.toolBar;
-    }
-
-    private void buildMenuBar() {
-
-        this.menus = MenuFactory
+        return MenuFactory
                 .newTopLevelMenu( "Projects" )
                 .respondsWith( new Command() {
                     @Override
@@ -164,7 +120,7 @@ public class ProjectAuthoringPerspective {
                 .withItems( newResourcesMenu.getMenuItems() )
                 .endMenu()
 
-                .newTopLevelMenu("Tools")
+                .newTopLevelMenu( "Tools" )
                 .withItems( getToolsMenuItems() )
                 .endMenu()
 
@@ -173,7 +129,7 @@ public class ProjectAuthoringPerspective {
 
     private List<MenuItem> getToolsMenuItems() {
         List<MenuItem> toolsMenuItems = projectMenu.getMenuItems();
-        toolsMenuItems.add(ddMenuItem);
+        toolsMenuItems.add( ddMenuItem );
 
         return toolsMenuItems;
     }

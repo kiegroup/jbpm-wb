@@ -17,7 +17,6 @@
 package org.jbpm.console.ng.dm.client.document.newdocument;
 
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -31,8 +30,8 @@ import org.jbpm.console.ng.dm.service.DocumentServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
@@ -47,12 +46,13 @@ public class NewDocumentPresenter {
 
         void displayNotification( String notification );
     }
-    
+
+    @Inject
+    private PlaceManager placeManager;
+
     private String folder;
     @Inject
     NewDocumentView view;
-    @Inject
-    private Event<BeforeClosePlaceEvent> closePlaceEvent;
     @Inject
     private Event<NewDocumentEvent> documentAddedEvent;
     @Inject
@@ -90,9 +90,9 @@ public class NewDocumentPresenter {
     }
 
     public void close() {
-        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
+        placeManager.closePlace( place );
     }
-    
+
     public void createDocument(DocumentSummary doc) {
     	this.documentServices.call(new RemoteCallback<Void>() {
     		@Override

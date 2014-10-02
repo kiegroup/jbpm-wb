@@ -15,10 +15,13 @@
  */
 package org.jbpm.console.ng.pr.client.editors.variables.list;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
+
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
@@ -39,17 +42,15 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import java.util.ArrayList;
-import java.util.Date;
-import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
 import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
+import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
 public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariableSummary, ProcessVariableListPresenter>

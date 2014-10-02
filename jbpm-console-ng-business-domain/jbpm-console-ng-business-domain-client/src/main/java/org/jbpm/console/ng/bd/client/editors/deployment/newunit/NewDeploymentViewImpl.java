@@ -16,6 +16,10 @@
 
 package org.jbpm.console.ng.bd.client.editors.deployment.newunit;
 
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ControlLabel;
 import com.github.gwtbootstrap.client.ui.Label;
@@ -24,27 +28,18 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
 import com.google.gwt.user.client.ui.ListBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
-
 import org.kie.uberfire.client.common.BusyPopup;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "NewDeploymentViewImpl.html")
 public class NewDeploymentViewImpl extends Composite implements NewDeploymentPresenter.NewDeploymentView {
-
-    @Inject
-    private Identity identity;
 
     @Inject
     private PlaceManager placeManager;

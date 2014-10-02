@@ -34,12 +34,12 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskCommentsService;
 import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
-import org.uberfire.security.Identity;
 
 @Dependent
 public class TaskCommentsPresenter {
@@ -63,7 +63,7 @@ public class TaskCommentsPresenter {
     private TaskCommentsView view;
 
     @Inject
-    private Identity identity;
+    private User identity;
 
     private long currentTaskId = 0;
 
@@ -127,7 +127,7 @@ public class TaskCommentsPresenter {
                 ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                 return true;
             }
-        } ).addComment( currentTaskId, text, identity.getName(), addedOn );
+        } ).addComment( currentTaskId, text, identity.getIdentifier(), addedOn );
     }
 
     public void removeTaskComment( long commentId ) {

@@ -18,27 +18,24 @@ package org.jbpm.console.ng.pr.client.editors.variables.edit;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.security.Identity;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
 @WorkbenchPopup(identifier = "Edit Variable Popup")
@@ -70,13 +67,7 @@ public class VariableEditPresenter {
     private PopupView view;
 
     @Inject
-    private Identity identity;
-
-    @Inject
     private PlaceManager placeManager;
-
-    @Inject
-    private Event<BeforeClosePlaceEvent> closePlaceEvent;
 
     private PlaceRequest place;
 
@@ -111,17 +102,12 @@ public class VariableEditPresenter {
         view.setVariableText( place.getParameter( "value", "-1" ).toString() );
     }
 
-    public void close() {
-        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
-    }
-
     public void setProcessVariable( Object value ) {
 
         kieSessionServices.call( new RemoteCallback<Void>() {
             @Override
             public void callback( Void v ) {
-                close();
-
+                placeManager.closePlace( place );
             }
         }, new ErrorCallback<Message>() {
              @Override

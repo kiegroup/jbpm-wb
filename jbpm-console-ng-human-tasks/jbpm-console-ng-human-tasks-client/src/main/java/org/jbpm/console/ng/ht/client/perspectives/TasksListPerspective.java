@@ -18,15 +18,15 @@ package org.jbpm.console.ng.ht.client.perspectives;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+
 import org.jbpm.console.ng.ga.model.events.SearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
-import org.uberfire.lifecycle.OnStartup;
-
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
+import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.PanelType;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
@@ -35,34 +35,33 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Tasks", isDefault = false)
+@WorkbenchPerspective(identifier = "Tasks")
 public class TasksListPerspective {
 
     @Inject
     private ContextualSearch contextualSearch;
-    
+
     @Inject
     private Event<SearchEvent> searchEvents;
-    
+
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( PanelType.ROOT_SIMPLE );
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( SimpleWorkbenchPanelPresenter.class.getName() );
         p.setName( "Tasks" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Tasks List" ) ) );
-        p.setTransient( true );
         return p;
     }
-    
+
     @OnStartup
     public void init() {
-        contextualSearch.setSearchBehavior(new SearchBehavior() {
+        contextualSearch.setSearchBehavior( new SearchBehavior() {
             @Override
-            public void execute(String searchFilter) {
-                searchEvents.fire(new SearchEvent(searchFilter));
+            public void execute( String searchFilter ) {
+                searchEvents.fire( new SearchEvent( searchFilter ) );
             }
-           
-        });
-        
+
+        } );
+
     }
 
 }

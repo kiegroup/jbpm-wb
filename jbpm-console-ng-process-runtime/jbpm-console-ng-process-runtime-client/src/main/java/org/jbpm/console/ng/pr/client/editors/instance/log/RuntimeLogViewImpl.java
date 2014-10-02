@@ -16,11 +16,11 @@
 
 package org.jbpm.console.ng.pr.client.editors.instance.log;
 
-import com.github.gwtbootstrap.client.ui.Button;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.core.client.GWT;
@@ -35,7 +35,6 @@ import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogOrder;
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogType;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.security.Identity;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
@@ -71,9 +70,6 @@ public class RuntimeLogViewImpl extends Composite
     @DataField
     public Button showDescLogButton;
      
-    @Inject
-    private Identity identity;
-
     @Inject
     private PlaceManager placeManager;
 

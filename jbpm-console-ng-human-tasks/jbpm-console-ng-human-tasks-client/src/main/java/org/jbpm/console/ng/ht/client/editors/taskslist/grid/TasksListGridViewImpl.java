@@ -15,6 +15,15 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ButtonGroup;
 import com.github.gwtbootstrap.client.ui.Label;
@@ -44,17 +53,6 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
@@ -62,9 +60,9 @@ import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
+import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
 @Dependent
 public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksListGridPresenter>
         implements TasksListGridPresenter.TaskListView {
@@ -474,7 +472,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
       @Override
       public void execute(TaskSummary task) {
 
-        presenter.claimTask(task.getTaskId(), identity.getName());
+        presenter.claimTask(task.getTaskId(), identity.getIdentifier());
         taskSelected.fire(new TaskSelectionEvent(task.getTaskId(), task.getTaskName()));
         listGrid.refresh();
       }
@@ -484,7 +482,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
       @Override
       public void execute(TaskSummary task) {
 
-        presenter.releaseTask(task.getTaskId(), identity.getName());
+        presenter.releaseTask(task.getTaskId(), identity.getIdentifier());
         taskSelected.fire(new TaskSelectionEvent(task.getTaskId(), task.getTaskName()));
         listGrid.refresh();
       }
@@ -602,7 +600,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
       cell = new ActionCell<TaskSummary>(text, delegate) {
         @Override
         public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
-          if (value.getActualOwner() != null && value.getActualOwner().equals(identity.getName())
+          if (value.getActualOwner() != null && value.getActualOwner().equals(identity.getIdentifier())
                   && (value.getStatus().equals("Reserved") || value.getStatus().equals("InProgress"))) {
             AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.claimGridIcon());
             SafeHtmlBuilder mysb = new SafeHtmlBuilder();

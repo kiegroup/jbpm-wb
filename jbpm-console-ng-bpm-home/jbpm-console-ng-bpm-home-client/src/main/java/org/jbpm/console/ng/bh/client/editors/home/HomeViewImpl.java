@@ -16,7 +16,7 @@
 
 package org.jbpm.console.ng.bh.client.editors.home;
 
-import java.util.List;
+import java.util.Collection;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -30,6 +30,8 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
+import org.jboss.errai.security.shared.api.Role;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.bh.client.i18n.Constants;
@@ -37,8 +39,6 @@ import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.security.Identity;
-import org.uberfire.security.Role;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
@@ -51,7 +51,7 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
     private PlaceManager placeManager;
 
     @Inject
-    public Identity identity;
+    public User identity;
 
     @DataField
     public Image carouselImg0;
@@ -196,7 +196,7 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
         String url = GWT.getHostPageBaseURL();
         // avatar.setUrl(url + "images/avatars/" + identity.getName() + ".png");
         // avatar.setSize("64px", "64px");
-        List<Role> roles = identity.getRoles();
+        Collection<Role> roles = identity.getRoles();
 
         carouselImg5.setUrl( url + "images/mountain.jpg" );
         carouselImg4.setUrl( url + "images/mountain.jpg" );

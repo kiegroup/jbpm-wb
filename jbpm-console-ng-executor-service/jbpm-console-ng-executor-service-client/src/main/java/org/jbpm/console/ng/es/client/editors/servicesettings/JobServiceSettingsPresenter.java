@@ -18,21 +18,20 @@ package org.jbpm.console.ng.es.client.editors.servicesettings;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Focusable;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
 @WorkbenchPopup(identifier = "Job Service Settings")
@@ -54,11 +53,11 @@ public class JobServiceSettingsPresenter {
     }
 
     @Inject
+    private PlaceManager placeManager;
+    @Inject
     JobServiceSettingsView view;
     @Inject
     private Caller<ExecutorServiceEntryPoint> executorServices;
-    @Inject
-    private Event<BeforeClosePlaceEvent> closePlaceEvent;
     private PlaceRequest place;
 
     public JobServiceSettingsPresenter() {
@@ -104,7 +103,7 @@ public class JobServiceSettingsPresenter {
                 @Override
                 public void callback( Boolean serviceStatus ) {
                     view.displayNotification( serviceStatus ? "Service started" : "Service stopped" );
-                    close();
+                    placeManager.closePlace( place );
                 }
             } ).startStopService( interval, numberOfExecutors );
         } catch ( NumberFormatException e ) {
@@ -120,10 +119,6 @@ public class JobServiceSettingsPresenter {
     @OnStartup
     public void onStartup( final PlaceRequest place ) {
         this.place = place;
-    }
-
-    public void close() {
-        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
     }
 
     private String fromIntervalToFrequency( Integer interval ) {

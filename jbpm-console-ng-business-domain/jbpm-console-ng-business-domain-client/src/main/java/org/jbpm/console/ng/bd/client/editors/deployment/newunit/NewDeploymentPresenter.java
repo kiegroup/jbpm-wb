@@ -39,8 +39,6 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.security.Identity;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
 @WorkbenchPopup(identifier = "New Deployment")
@@ -65,13 +63,7 @@ public class NewDeploymentPresenter {
     private NewDeploymentView view;
 
     @Inject
-    private Identity identity;
-
-    @Inject
     private Caller<DeploymentManagerEntryPoint> deploymentManager;
-
-    @Inject
-    private Event<BeforeClosePlaceEvent> closePlaceEvent;
 
     @Inject
     private Event<DeployedUnitChangedEvent> unitChanged;
@@ -141,6 +133,6 @@ public class NewDeploymentPresenter {
     }
 
     public void close() {
-        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
+        placeManager.closePlace( place );
     }
 }

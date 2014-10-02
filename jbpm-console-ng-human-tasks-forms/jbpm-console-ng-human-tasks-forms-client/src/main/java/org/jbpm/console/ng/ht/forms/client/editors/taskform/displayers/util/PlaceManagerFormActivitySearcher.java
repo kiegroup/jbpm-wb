@@ -15,15 +15,13 @@
  */
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util;
 
-import com.google.gwt.user.client.ui.IsWidget;
-import java.util.HashMap;
-import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
-import org.uberfire.client.mvp.ActivityManager;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
-
+import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.Map;
+
+import com.google.gwt.user.client.ui.IsWidget;
+import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
+import org.uberfire.client.mvp.ActivityManager;
 
 /**
  * @author pefernan
@@ -31,29 +29,31 @@ import java.util.Map;
 @Dependent
 public class PlaceManagerFormActivitySearcher {
 
-  @Inject
-  private ActivityManager activityManager;
+    @Inject
+    private ActivityManager activityManager;
 
-  private AbstractWorkbenchScreenActivity currentActivity;
+    private AbstractWorkbenchScreenActivity currentActivity;
 
-  public IsWidget findFormActivityWidget(String name, Map<String, String> params) {
-    if(params == null){
-        params = new HashMap<String, String>();
-    } 
-    DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(name + " Form", params);
-    currentActivity = (AbstractWorkbenchScreenActivity) activityManager.getActivity(defaultPlaceRequest);
-    if (currentActivity == null) {
-      return null;
+    public IsWidget findFormActivityWidget( String name,
+                                            Map<String, String> params ) {
+        return null;
+//    if(params == null){
+//        params = new HashMap<String, String>();
+//    }
+//    DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(name + " Form", params);
+//    currentActivity = (AbstractWorkbenchScreenActivity) activityManager.getActivity(defaultPlaceRequest);
+//    if (currentActivity == null) {
+//      return null;
+//    }
+////    currentActivity.launch(defaultPlaceRequest, null);
+//    currentActivity.onStartup(defaultPlaceRequest);
+//    currentActivity.onOpen();
+//    return currentActivity.getWidget();
     }
-    currentActivity.launch(defaultPlaceRequest, null);
-    currentActivity.onStartup(defaultPlaceRequest);
-    currentActivity.onOpen();
-    return currentActivity.getWidget();
-  }
 
-  public void closeFormActivity() {
-    if (currentActivity != null) {
-      currentActivity.onClose();
+    public void closeFormActivity() {
+        if ( currentActivity != null ) {
+            currentActivity.onClose();
+        }
     }
-  }
 }

@@ -16,39 +16,37 @@
     
 package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
-
-import java.util.List;
-
 import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.security.shared.api.Role;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.gc.client.util.UTCDateBox;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
+import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.security.Identity;
-import org.uberfire.security.Role;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent
 @WorkbenchPopup(identifier = "Quick New Task")
@@ -69,13 +67,10 @@ public class QuickNewTaskPresenter {
     QuickNewTaskView view;
 
     @Inject
-    Identity identity;
+    User identity;
 
     @Inject
     Caller<TaskOperationsService> taskOperationsService;
-
-    @Inject
-    private Event<BeforeClosePlaceEvent> closePlaceEvent;
 
     private PlaceRequest place;
 
@@ -132,7 +127,7 @@ public class QuickNewTaskPresenter {
                        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                        return true;
                    }
-               } ).addQuickTask(taskName, priority, due, users, groups, identity.getName(), true, true);
+               } ).addQuickTask(taskName, priority, due, users, groups, identity.getIdentifier(), true, true);
         } else if ( !isAssignToMe && users != null && users.isEmpty() && groups != null 
                 && containsGroup(groups, identity.getRoles()) ) {
             taskOperationsService.call( new RemoteCallback<Long>() {
@@ -147,8 +142,8 @@ public class QuickNewTaskPresenter {
                        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                        return true;
                    }
-               } ).addQuickTask(taskName, priority, due, users, groups, identity.getName(), false, false);
-        }  if (users != null && !users.isEmpty() && users.contains(identity.getName())) {
+               } ).addQuickTask(taskName, priority, due, users, groups, identity.getIdentifier(), false, false);
+        }  if (users != null && !users.isEmpty() && users.contains(identity.getIdentifier())) {
             taskOperationsService.call( new RemoteCallback<Long>() {
                 @Override
                 public void callback( Long taskId ) {
@@ -161,8 +156,8 @@ public class QuickNewTaskPresenter {
                    ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                    return true;
                }
-           } ).addQuickTask(taskName, priority, due, users, groups, identity.getName(), true, false);
-        } else if (users != null && !users.isEmpty() && !users.contains(identity.getName())) {
+           } ).addQuickTask(taskName, priority, due, users, groups, identity.getIdentifier(), true, false);
+        } else if (users != null && !users.isEmpty() && !users.contains(identity.getIdentifier())) {
             taskOperationsService.call( new RemoteCallback<Long>() {
                 @Override
                 public void callback( Long taskId ) {
@@ -175,7 +170,7 @@ public class QuickNewTaskPresenter {
                    ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                    return true;
                }
-           } ).addQuickTask(taskName, priority, due, users, groups, identity.getName(), false, false);
+           } ).addQuickTask(taskName, priority, due, users, groups, identity.getIdentifier(), false, false);
         }else if(groups != null && !groups.isEmpty() && !containsGroup(groups, identity.getRoles())){
             taskOperationsService.call( new RemoteCallback<Long>() {
                 @Override
@@ -188,7 +183,7 @@ public class QuickNewTaskPresenter {
                        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                        return true;
                    }
-               } ).addQuickTask(taskName, priority, due, users, groups, identity.getName(), false, false);
+               } ).addQuickTask(taskName, priority, due, users, groups, identity.getIdentifier(), false, false);
         } 
 
     }
@@ -196,10 +191,10 @@ public class QuickNewTaskPresenter {
     private void refreshNewTask(Long taskId, String taskName, String msj){
         view.displayNotification( msj );
         newTaskEvent.fire( new NewTaskEvent( taskId, taskName ));
-        close();
+        placeManager.closePlace( place );
     }
 
-    private boolean containsGroup(List<String> groups, List<Role> roles){
+    private boolean containsGroup(List<String> groups, Set<Role> roles){
         for(String g : groups){
             for(Role r : roles){
                 //System.out.println(" ->  Role: '"+r.getName()+"' == '"+g+"'");
@@ -218,8 +213,4 @@ public class QuickNewTaskPresenter {
 
     }
     
-    
-    public void close() {
-        closePlaceEvent.fire( new BeforeClosePlaceEvent( this.place ) );
-    }
 }

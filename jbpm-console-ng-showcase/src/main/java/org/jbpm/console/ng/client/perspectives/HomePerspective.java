@@ -15,30 +15,29 @@
  */
 package org.jbpm.console.ng.client.perspectives;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
-import org.uberfire.client.annotations.Perspective;
+import com.google.gwt.user.client.ui.FlowPanel;
+import org.uberfire.client.annotations.WorkbenchPanel;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.PanelType;
-import org.uberfire.workbench.model.PerspectiveDefinition;
-import org.uberfire.workbench.model.impl.PartDefinitionImpl;
-import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
+import org.uberfire.client.util.Layouts;
 
 /**
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
 @WorkbenchPerspective(identifier = "Home Perspective", isDefault = true)
-public class HomePerspective {
+public class HomePerspective extends FlowPanel {
 
-    @Perspective
-    public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(PanelType.ROOT_STATIC);
-        p.setName("Home Perspective");
-        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Home Screen")));
-        p.setTransient(true);
-        return p;
+    @Inject
+    @WorkbenchPanel(parts = "Home Screen")
+    FlowPanel homeScreen;
+
+    @PostConstruct
+    private void init() {
+        Layouts.setToFillParent( homeScreen );
+        add( homeScreen );
     }
-
 }
