@@ -18,36 +18,55 @@ package org.jbpm.console.ng.asset.backend.server;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+
 import org.guvnor.asset.management.model.BuildProjectStructureEvent;
 import org.guvnor.asset.management.model.ConfigureRepositoryEvent;
 import org.guvnor.asset.management.model.PromoteChangesEvent;
 import org.guvnor.asset.management.model.ReleaseProjectEvent;
+import org.guvnor.asset.management.model.ExecuteOperationEvent;
 
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
+import org.jbpm.kie.services.impl.KModuleDeploymentUnit;
+import org.jbpm.services.api.DeploymentEvent;
+import org.jbpm.services.api.model.DeploymentUnit;
+import org.jbpm.services.cdi.Deploy;
 
 @ApplicationScoped
 public class AdvancedAssetManagementImpl {
 
-  @Inject
-  private KieSessionEntryPoint sessionServices;
+    private static final String GA_ASSET_MGMT = System.getProperty("org.guvnor.assetmgmt.project", "org.guvnor:guvnor-asset-mgmt-project");
 
-  public AdvancedAssetManagementImpl() {
-  }
+    @Inject
+    private KieSessionEntryPoint sessionServices;
 
-  public void configureRepository(@Observes ConfigureRepositoryEvent event) {
-    sessionServices.startProcess("org.guvnor:guvnor-asset-mgmt-project:6.2.0-SNAPSHOT", "asset-management-kmodule.ConfigureRepository", event.getParams());
-  }
+    private String deploymentId;
 
-  public void buildProject(@Observes BuildProjectStructureEvent event) {
-    sessionServices.startProcess("org.guvnor:guvnor-asset-mgmt-project:6.2.0-SNAPSHOT", "asset-management-kmodule.BuildProject", event.getParams());
-  }
-
-  public void promoteChanges(@Observes PromoteChangesEvent event) {
-    sessionServices.startProcess("org.guvnor:guvnor-asset-mgmt-project:6.2.0-SNAPSHOT", "asset-management-kmodule.PromoteAssets", event.getParams());
-  }
-
-    public void releaseProject(@Observes ReleaseProjectEvent event) {
-        sessionServices.startProcess("org.guvnor:guvnor-asset-mgmt-project:6.2.0-SNAPSHOT", "asset-management-kmodule.ReleaseProject", event.getParams());
+    public AdvancedAssetManagementImpl() {
     }
 
+    public void deploymentObserver(@Observes @Deploy DeploymentEvent event) {
+        if (event.getDeploymentId().startsWith(GA_ASSET_MGMT)) {
+            deploymentId = event.getDeploymentId();
+        }
+    }
+
+    public void configureRepository(@Observes ConfigureRepositoryEvent event) {
+        sessionServices.startProcess(deploymentId, "guvnor-asset-management.ConfigureRepository", event.getParams());
+    }
+
+    public void buildProject(@Observes BuildProjectStructureEvent event) {
+        sessionServices.startProcess(deploymentId, "guvnor-asset-management.BuildProject", event.getParams());
+    }
+
+    public void promoteChanges(@Observes PromoteChangesEvent event) {
+        sessionServices.startProcess(deploymentId, "guvnor-asset-management.PromoteAssets", event.getParams());
+    }
+
+    public void releaseProject(@Observes ReleaseProjectEvent event) {
+        sessionServices.startProcess(deploymentId, "guvnor-asset-management.ReleaseProject", event.getParams());
+    }
+
+    public void executeOperation(@Observes ExecuteOperationEvent event) {
+        sessionServices.startProcess(deploymentId, "guvnor-asset-management.ExecuteOperation", event.getParams());
+    }
 }

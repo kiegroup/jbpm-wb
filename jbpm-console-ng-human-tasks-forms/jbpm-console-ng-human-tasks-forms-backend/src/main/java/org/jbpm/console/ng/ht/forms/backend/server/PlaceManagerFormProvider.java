@@ -73,28 +73,31 @@ public class PlaceManagerFormProvider implements FormProvider {
     return "";
   }
 
-  @Override
-  public String render(String name, Task task, ProcessDefinition process, Map<String, Object> renderContext) {
-    Map<String, Object> params = new HashMap<String, Object>(renderContext.size());
-    String taskName = (renderContext.get("TaskName") != null) ? (String) renderContext.get("TaskName") : "";
-    for (String key : renderContext.keySet()) {
-      if (!(renderContext.get(key) instanceof Task) && !key.equals("marshallerContext")) {
-        params.put(key, renderContext.get(key));
-      }
-    }
-    if (task != null) {
-      params.put("taskId", task.getId().toString());
-      params.put("taskStatus", task.getTaskData().getStatus().toString());
-    }
-    if (process != null) {
-      params.put("processId", process.getId());
-    }
+    @Override
+    public String render(String name, Task task, ProcessDefinition process, Map<String, Object> renderContext) {
+        Map<String, Object> params = new HashMap<String, Object>(renderContext.size());
+        String taskName = (renderContext.get("TaskName") != null) ? (String) renderContext.get("TaskName") : "";
+        for (String key : renderContext.keySet()) {
+            if (!(renderContext.get(key) instanceof Task) && !key.equals("marshallerContext")) {
+                params.put(key, renderContext.get(key));
+            }
+        }
+        if (task != null) {
+            params.put("taskId", task.getId().toString());
+            params.put("taskName", task.getName());
+            params.put("taskDescription", task.getDescription());
+            params.put("taskStatus", task.getTaskData().getStatus().toString());
+        }
+        if (process != null) {
+            params.put("processId", process.getId());
+            params.put("processName", process.getName());
+        }
 
-    if (allActivities.contains(taskName + " Form")) {
-      renderForm.fire(new RenderFormEvent(taskName, params));
-      return "handledByPlaceManagerFormProvider";
+        if (allActivities.contains(taskName + " Form")) {
+            renderForm.fire(new RenderFormEvent(taskName, params));
+            return "handledByPlaceManagerFormProvider";
+        }
+        return "";
     }
-    return "";
-  }
 
 }
