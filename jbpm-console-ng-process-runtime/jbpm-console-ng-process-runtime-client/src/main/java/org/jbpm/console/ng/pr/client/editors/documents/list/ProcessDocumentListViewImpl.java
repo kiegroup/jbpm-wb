@@ -32,6 +32,7 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
@@ -206,7 +207,10 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
     cells.add(new AccessDocumentActionHasCell("Access Document", new Delegate<DocumentSummary>() {
       @Override
       public void execute(DocumentSummary document) {
-        GWT.log("Accessing document: "+document.getDocumentLink());
+          if(document != null){
+            GWT.log("Accessing document: "+document.getDocumentLink());
+            Window.open(document.getDocumentLink(), "_blank", "");
+          }
       }
     }));
 
