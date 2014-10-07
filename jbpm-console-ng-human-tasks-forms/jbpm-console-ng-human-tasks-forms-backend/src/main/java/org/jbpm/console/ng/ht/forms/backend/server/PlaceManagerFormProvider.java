@@ -15,71 +15,74 @@
  */
 package org.jbpm.console.ng.ht.forms.backend.server;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 import org.jbpm.console.ng.ht.forms.service.PlaceManagerActivityService;
 import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
 import org.jbpm.kie.services.impl.form.FormProvider;
 import org.jbpm.services.api.model.ProcessDefinition;
 import org.kie.api.task.model.Task;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author salaboy
  */
 @ApplicationScoped
 public class PlaceManagerFormProvider implements FormProvider {
 
-  @Inject
-  private Event<RenderFormEvent> renderForm;
+    @Inject
+    private Event<RenderFormEvent> renderForm;
 
-  private List<String> allActivities;
+    private List<String> allActivities;
 
-  @Inject
-  private PlaceManagerActivityService pmas;
+    @Inject
+    private PlaceManagerActivityService pmas;
 
-  @PostConstruct
-  public void init() {
-    this.allActivities = pmas.getAllActivities();
-  }
-
-  @Override
-  public int getPriority() {
-    return 0;
-  }
-
-  @Override
-  public String render(String name, ProcessDefinition process, Map<String, Object> renderContext) {
-
-    Map<String, Object> params = new HashMap<String, Object>(renderContext.size());
-    for (String key : renderContext.keySet()) {
-      if (!(renderContext.get(key) instanceof Task) && !key.equals("marshallerContext")) {
-        params.put(key, renderContext.get(key));
-      }
-
+    @PostConstruct
+    public void init() {
+        this.allActivities = pmas.getAllActivities();
     }
-    if (process != null) {
-      params.put("processId", process.getId());
-      if (allActivities.contains(process.getId() + " Form")) {
-        renderForm.fire(new RenderFormEvent(process.getId() + " Form", params));
-        return "handledByPlaceManagerFormProvider";
-      }
+
+    @Override
+    public int getPriority() {
+        return 0;
     }
-    return "";
-  }
+
+    @Override
+    public String render(String name, ProcessDefinition process, Map<String, Object> renderContext) {
+
+        Map<String, String> params = new HashMap<String, String>(renderContext.size());
+        for (String key : renderContext.keySet()) {
+            if (!(renderContext.get(key) instanceof Task) && !key.equals("marshallerContext")) {
+                params.put(key, renderContext.get(key).toString());
+            }
+        }
+
+        if (process != null) {
+            params.put("processId", process.getId());
+
+            // TODO: change this for a correct implementation
+            assetManagementHack(process, renderContext, params);
+            if (allActivities.contains(process.getId() + " Form")) {
+                renderForm.fire(new RenderFormEvent(process.getId() + " Form", params));
+                return "handledByPlaceManagerFormProvider";
+            }
+        }
+        return "";
+    }
 
     @Override
     public String render(String name, Task task, ProcessDefinition process, Map<String, Object> renderContext) {
-        Map<String, Object> params = new HashMap<String, Object>(renderContext.size());
+        Map<String, String> params = new HashMap<String, String>(renderContext.size());
         String taskName = (renderContext.get("TaskName") != null) ? (String) renderContext.get("TaskName") : "";
         for (String key : renderContext.keySet()) {
             if (!(renderContext.get(key) instanceof Task) && !key.equals("marshallerContext")) {
-                params.put(key, renderContext.get(key));
+                params.put(key, renderContext.get(key).toString());
             }
         }
         if (task != null) {
@@ -94,10 +97,28 @@ public class PlaceManagerFormProvider implements FormProvider {
         }
 
         if (allActivities.contains(taskName + " Form")) {
+            // TODO: change this for a correct implementation
+            assetManagementHack(process, renderContext, params);
             renderForm.fire(new RenderFormEvent(taskName, params));
             return "handledByPlaceManagerFormProvider";
         }
         return "";
     }
 
+    protected void assetManagementHack(ProcessDefinition process, Map<String, Object> renderContext, Map<String, String> params) {
+        if (process.getId().equals("guvnor-asset-management.PromoteAssets")) {
+            Map<String, List<String>> commitsPerFile = (Map<String, List<String>>) renderContext.get("in_commits_per_file");
+            StringBuffer commits = new StringBuffer();
+
+            for (String file : commitsPerFile.keySet()) {
+                if (commits.length() > 0) commits.append(";");
+                commits.append(file).append("=");
+                for (String commit : commitsPerFile.get(file)) {
+                    if (!commits.substring(commits.length() - 1).equals("=")) commits.append(",");
+                    commits.append(commit);
+                }
+            }
+            params.put("in_commits_per_file", commits.toString());
+        }
+    }
 }

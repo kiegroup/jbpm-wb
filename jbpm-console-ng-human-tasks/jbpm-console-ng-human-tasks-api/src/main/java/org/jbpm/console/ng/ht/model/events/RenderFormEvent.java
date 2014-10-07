@@ -27,13 +27,13 @@ public class RenderFormEvent implements Serializable {
 
     private String name;
 
-    private Map<String, Object> params;
+    private Map<String, String> params;
 
     public RenderFormEvent() {
 
     }
 
-    public RenderFormEvent(String name, Map<String, Object> params) {
+    public RenderFormEvent(String name, Map<String, String> params) {
         this.name = name;
         this.params = params;
     }
@@ -42,7 +42,7 @@ public class RenderFormEvent implements Serializable {
         return name;
     }
 
-    public Map<String, Object> getParams() {
+    public Map<String, String> getParams() {
         return params;
     }
 
