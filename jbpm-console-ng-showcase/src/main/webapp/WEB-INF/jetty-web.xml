@@ -1,7 +1,30 @@
 <!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN"
     "http://jetty.mortbay.org/configure.dtd">
-
 <Configure id="sample-weld" class="org.mortbay.jetty.webapp.WebAppContext">
+
+  <!-- Tell jetty where to find login config -->
+  <Call class="java.lang.System" name="setProperty">
+    <Arg>java.security.auth.login.config</Arg>
+    <Arg>WEB-INF/classes/login.conf</Arg>
+  </Call>
+
+  <!-- Bug fix for Jetty to properly handle login config in a per-project setup -->
+  <Set name="serverClasses">
+    <Array type="java.lang.String">
+      <Item>-org.mortbay.jetty.plus.jaas.</Item>
+      <Item>org.mortbay.jetty</Item>
+      <Item>org.slf4j.</Item>
+    </Array>
+  </Set>
+
+  <Get name="securityHandler">
+    <Set name="userRealm">
+      <New class="org.mortbay.jetty.plus.jaas.JAASUserRealm">
+        <Set name="name">ApplicationRealm</Set>
+        <Set name="LoginModuleName">ApplicationRealm</Set>
+      </New>
+    </Set>
+  </Get>
 
   <Array id="plusConfig" type="java.lang.String">
     <Item>org.mortbay.jetty.webapp.WebInfConfiguration</Item>

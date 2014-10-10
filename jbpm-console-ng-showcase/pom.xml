@@ -33,6 +33,12 @@
   <dependencies>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty-plus</artifactId>
       <scope>runtime</scope>
     </dependency>
@@ -276,9 +282,10 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- UberFire Security Extension -->
     <dependency>
-      <groupId>org.jboss.errai</groupId>
-      <artifactId>errai-security-picketlink</artifactId>
+      <groupId>org.kie.uberfire</groupId>
+      <artifactId>kie-uberfire-servlet-security</artifactId>
     </dependency>
 
     <!-- Errai AS -->
@@ -650,14 +657,6 @@
       <artifactId>chemistry-opencmis-client-bindings</artifactId>
     </dependency>
 
-    <!-- PicketLink has a hard dependency on JBoss Logging.
-     Since this app deploys to Jetty, we include this as a runtime-scoped dependency.
-     If deploying to JBoss AS or WildFly, you would set this to provided scope. -->
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging</artifactId>
-      <scope>runtime</scope>
-    </dependency>
   </dependencies>
 
   <build>

@@ -1,3 +1,6 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -87,7 +90,7 @@
     }
 
     input.button {
-      float: right;
+      float: center;
       padding: 6px 10px;
       color: #fff;
       font-size: 14px;
@@ -130,31 +133,16 @@
   </div>
 
   <div id="login-content">
-    <c:if test="${param.message != null}">
-      <h3><c:out value="${param.message}"/></h3>
-    </c:if>
 
-    <form action="j_security_check" method="POST">
-      <p>
-        <label>Username</label>
-        <input value="" name="j_username" class="text-input" type="text" autofocus/>
-      </p>
-      <br style="clear: both;"/>
+    <h3>Login failed: Not Authorized</h3>
 
+    <form action="jbpm-console.html" method="GET">
       <p>
-        <label>Password</label>
-        <input name="j_password" class="text-input" type="password"/>
-      </p>
-      <br style="clear: both;"/>
-
-      <p>
-        <% if ( request.getParameter( "gwt.codesvr" ) != null ) { %>
+        <% if (request.getParameter("gwt.codesvr") != null) { %>
         <input type="hidden" name="gwt.codesvr" value="<%= org.owasp.encoder.Encode.forHtmlAttribute(request.getParameter("gwt.codesvr")) %>"/>
         <% } %>
-        <% if ( request.getParameter( "message" ) != null ) { %>
-        <span class="error">Login failed. Please try again.</span>
-        <% } %>
-        <input class="button" type="submit" value="Sign In"/>
+
+        <input class="button" type="submit" value='Login as another user'/>
       </p>
 
     </form>
