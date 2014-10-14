@@ -16,8 +16,6 @@
 
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.PlaceManagerFormActivitySearcher;
@@ -26,8 +24,10 @@ import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import java.util.Map;
-import org.kie.uberfire.client.forms.FormDisplayerView;
+import javax.enterprise.event.Event;
+import org.kie.uberfire.client.forms.GetFormParamsEvent;
+import org.kie.uberfire.client.forms.RequestFormParamsEvent;
+import org.kie.uberfire.client.forms.SetFormParamsEvent;
 
 /**
  *
@@ -42,7 +42,11 @@ public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessF
     @Inject
     private PlaceManagerFormActivitySearcher placeManagerFormActivitySearcher;
     
-    private FormDisplayerView fdp;
+    @Inject
+    private Event<SetFormParamsEvent> setFormParamsEvent;
+    
+    @Inject
+    private Event<RequestFormParamsEvent> requestFormParamsEvent;
 
     public PlaceManagerStartProcessDisplayerImpl() {
 
@@ -66,29 +70,30 @@ public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessF
 
     public void onFormRender(@Observes RenderFormEvent event) {
         String processId = (String)event.getParams().get("processId");
-        if (processId == null || processId.equals("")) {
+        if (processId == null || processId.equals("") || !event.getParams().get("TaskName").equals("")) {
             return;
         }
-        IsWidget widget = placeManagerFormActivitySearcher.findFormActivityWidget(processId, null);
-        formContainer.clear();
-        if (widget != null) {
-            fdp = (FormDisplayerView)widget;
-            fdp.setInputMap(event.getParams());
-            formContainer.add(widget);
-        }
+        
+        formContainer.setWidth("100%");
+        formContainer.setHeight("400px");
+        placeManagerFormActivitySearcher.findFormActivityWidget(processId, null, formContainer);
+        setFormParamsEvent.fire(new SetFormParamsEvent(event.getParams(), false));
+            
+       
     }
 
     @Override
     public void close() {
         super.close();
-        placeManagerFormActivitySearcher.closeFormActivity();
     }
 
     public void startProcess() {
-        final Map<String, Object> params = fdp.getOutputMap();
-
+        requestFormParamsEvent.fire(new RequestFormParamsEvent());
+    }
+    
+    public void startProcessCallback(@Observes GetFormParamsEvent event){
         sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
-                .startProcess(deploymentId, processDefId, params);
+                .startProcess(deploymentId, processDefId, event.getParams());
     }
 
     @Override

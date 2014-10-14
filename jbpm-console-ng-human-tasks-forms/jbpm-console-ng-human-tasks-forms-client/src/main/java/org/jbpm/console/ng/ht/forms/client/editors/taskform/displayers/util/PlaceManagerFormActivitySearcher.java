@@ -15,13 +15,15 @@
  */
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.IsWidget;
-import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
-import org.uberfire.client.mvp.ActivityManager;
+import java.util.HashMap;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 /**
  * @author pefernan
@@ -30,30 +32,24 @@ import org.uberfire.client.mvp.ActivityManager;
 public class PlaceManagerFormActivitySearcher {
 
     @Inject
-    private ActivityManager activityManager;
+    private PlaceManager placeManager;
 
-    private AbstractWorkbenchScreenActivity currentActivity;
 
-    public IsWidget findFormActivityWidget( String name,
-                                            Map<String, String> params ) {
-        return null;
-//    if(params == null){
-//        params = new HashMap<String, String>();
-//    }
-//    DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(name + " Form", params);
-//    currentActivity = (AbstractWorkbenchScreenActivity) activityManager.getActivity(defaultPlaceRequest);
-//    if (currentActivity == null) {
-//      return null;
-//    }
-////    currentActivity.launch(defaultPlaceRequest, null);
-//    currentActivity.onStartup(defaultPlaceRequest);
-//    currentActivity.onOpen();
-//    return currentActivity.getWidget();
-    }
+    public void findFormActivityWidget( String name,
+                                            Map<String, String> params, HasWidgets widget ) {
 
-    public void closeFormActivity() {
-        if ( currentActivity != null ) {
-            currentActivity.onClose();
+        if(params == null){
+            params = new HashMap<String, String>();
         }
+        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(name + " Form", params);
+        widget.clear();
+        PlaceStatus status = placeManager.getStatus(defaultPlaceRequest);
+        if(status.equals(PlaceStatus.OPEN)){
+            placeManager.closePlace(defaultPlaceRequest);
+            placeManager.forceClosePlace(defaultPlaceRequest);
+        }
+        placeManager.goTo(defaultPlaceRequest, widget);
+
     }
+
 }
