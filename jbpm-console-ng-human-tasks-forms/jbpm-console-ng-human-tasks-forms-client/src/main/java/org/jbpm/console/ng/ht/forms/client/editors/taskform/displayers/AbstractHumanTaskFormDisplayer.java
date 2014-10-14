@@ -26,7 +26,7 @@ import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -61,7 +61,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
 
     final protected FlowPanel container = new FlowPanel();
     final protected FlowPanel buttonsContainer = new FlowPanel();
-    final protected VerticalPanel formContainer = new VerticalPanel();
+    final protected SimplePanel formContainer = new SimplePanel();
     
     private Command onClose;
     
