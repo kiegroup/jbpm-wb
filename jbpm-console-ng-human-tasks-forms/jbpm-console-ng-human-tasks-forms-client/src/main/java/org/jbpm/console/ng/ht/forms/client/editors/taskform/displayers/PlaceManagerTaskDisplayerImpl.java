@@ -15,8 +15,6 @@
  */
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
-import org.kie.uberfire.client.forms.FormDisplayerView;
-import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.PlaceManagerFormActivitySearcher;
 import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
 
@@ -24,6 +22,10 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.Map;
+import javax.enterprise.event.Event;
+import org.kie.uberfire.client.forms.GetFormParamsEvent;
+import org.kie.uberfire.client.forms.RequestFormParamsEvent;
+import org.kie.uberfire.client.forms.SetFormParamsEvent;
 
 /**
  *
@@ -34,15 +36,19 @@ public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
 
     @Inject
     private PlaceManagerFormActivitySearcher placeManagerFormActivitySearcher;
-    
-    private FormDisplayerView fdp;
+
+    @Inject
+    private Event<SetFormParamsEvent> setFormParamsEvent;
+
+    @Inject
+    private Event<RequestFormParamsEvent> requestFormParamsEvent;
 
     public PlaceManagerTaskDisplayerImpl() {
     }
 
     @Override
     protected void initDisplayer() {
-        
+
     }
 
     @Override
@@ -50,18 +56,13 @@ public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
         return content.contains("handledByPlaceManagerFormProvider");
     }
 
-
     public void complete() {
-        Map<String, Object> params = fdp.getOutputMap();
-
-        complete(params);
+        requestFormParamsEvent.fire(new RequestFormParamsEvent("completeTask"));
         close();
     }
 
-
     public void saveState() {
-        Map<String, Object> params = fdp.getOutputMap();
-        saveState(params);
+        requestFormParamsEvent.fire(new RequestFormParamsEvent("saveTask"));
     }
 
     @Override
@@ -85,40 +86,47 @@ public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
     }
 
     public void onFormRender(@Observes RenderFormEvent event) {
-        String taskName = (String)event.getParams().get("TaskName");
-        String taskStatus = (String)event.getParams().get("taskStatus");
+        String taskName = (String) event.getParams().get("TaskName");
+        String taskStatus = (String) event.getParams().get("taskStatus");
         if (taskName == null || taskName.equals("")) {
             return;
         }
-        IsWidget widget = placeManagerFormActivitySearcher.findFormActivityWidget(taskName, null);
 
-        formContainer.clear();
-        if (widget != null) {
-            formContainer.add(widget);
-            fdp = (FormDisplayerView)widget;
-            if(taskStatus.equals("Ready") || taskStatus.equals("Reserved")){
-                fdp.setReadOnly(true);
-            }else if(taskStatus.equals("InProgress")){
-                fdp.setReadOnly(false);
-            }
-            fdp.setInputMap(event.getParams());
+        formContainer.setWidth("100%");
+        formContainer.setHeight("400px");
+        placeManagerFormActivitySearcher.findFormActivityWidget(taskName, null, formContainer);
+
+        if (taskStatus.equals("Ready") || taskStatus.equals("Reserved")) {
+            setFormParamsEvent.fire(new SetFormParamsEvent(event.getParams(), true));
+        } else if (taskStatus.equals("InProgress")) {
+            setFormParamsEvent.fire(new SetFormParamsEvent(event.getParams(), false));
         }
+
     }
 
     @Override
     public void close() {
         super.close();
-        placeManagerFormActivitySearcher.closeFormActivity();
     }
 
     @Override
     protected void completeFromDisplayer() {
-        complete();
+        requestFormParamsEvent.fire(new RequestFormParamsEvent("completeTask"));
+
+    }
+
+    private void completeOrSaveFromEvent(@Observes GetFormParamsEvent event) {
+        if (event.getAction().equals("completeTask")) {
+            complete(event.getParams());
+        } else if (event.getAction().equals("saveTask")) {
+            saveState(event.getParams());
+        }
     }
 
     @Override
     protected void saveStateFromDisplayer() {
-        saveState();
+        requestFormParamsEvent.fire(new RequestFormParamsEvent("saveTask"));
+
     }
 
 }

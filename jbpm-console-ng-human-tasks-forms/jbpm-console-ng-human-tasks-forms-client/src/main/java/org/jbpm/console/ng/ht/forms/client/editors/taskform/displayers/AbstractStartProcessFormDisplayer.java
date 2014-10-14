@@ -40,8 +40,6 @@ import org.uberfire.client.workbench.widgets.common.ErrorPopup;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import org.uberfire.mvp.Command;
 
