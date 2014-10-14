@@ -24,6 +24,7 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.lifecycle.OnClose;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
@@ -78,6 +79,11 @@ public class ScreenGenericFormDisplayPresenter {
                                        }
                                    }
                                } );
+    }
+
+    @OnClose
+    public void OnClose() {
+        widgetPresenter.cleanup();
     }
 
 }

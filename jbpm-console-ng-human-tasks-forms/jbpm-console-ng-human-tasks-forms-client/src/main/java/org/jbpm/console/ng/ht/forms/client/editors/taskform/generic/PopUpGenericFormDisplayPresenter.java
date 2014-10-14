@@ -24,6 +24,7 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.lifecycle.OnClose;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
@@ -62,5 +63,10 @@ public class PopUpGenericFormDisplayPresenter {
                                        placeManager.closePlace( place );
                                    }
                                } );
+    }
+
+    @OnClose
+    public void OnClose() {
+        widgetPresenter.cleanup();
     }
 }
