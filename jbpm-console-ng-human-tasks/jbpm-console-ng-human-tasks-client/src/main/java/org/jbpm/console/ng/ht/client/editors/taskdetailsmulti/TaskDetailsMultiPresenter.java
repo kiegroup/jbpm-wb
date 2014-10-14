@@ -38,6 +38,7 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
+import org.uberfire.lifecycle.OnClose;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
@@ -114,6 +115,11 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
     @OnStartup
     public void onStartup( final PlaceRequest place ) {
         super.onStartup( place );
+    }
+
+    @OnClose
+    public void onClose( ) {
+        genericFormDisplayPresenter.cleanup();
     }
 
     public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {

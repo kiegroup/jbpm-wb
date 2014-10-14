@@ -60,7 +60,7 @@ public class GenericFormDisplayPresenter {
     protected String opener;
 
     private Command onClose;
-    
+
     private Command onRefresh;
 
     public interface GenericFormDisplayView extends IsWidget {
@@ -106,7 +106,7 @@ public class GenericFormDisplayPresenter {
                 refresh();
             }
         };
-        
+
         refresh();
     }
 
@@ -196,6 +196,15 @@ public class GenericFormDisplayPresenter {
                 }).getFormDisplayProcess(currentDeploymentId, currentProcessId);
             }
 
+        }
+    }
+
+    public void cleanup(){
+        for ( StartProcessFormDisplayer processDisplayer : processDisplayers ) {
+            iocManager.destroyBean( processDisplayer );
+        }
+        for ( HumanTaskFormDisplayer taskDisplayer : taskDisplayers ) {
+            iocManager.destroyBean( taskDisplayer );
         }
     }
 
