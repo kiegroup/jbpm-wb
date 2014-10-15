@@ -16,17 +16,10 @@
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
 import java.util.Map;
+
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JsonUtils;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -43,6 +36,15 @@ import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.uberfire.client.workbench.widgets.common.ErrorPopup;
 import org.uberfire.mvp.Command;
+
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.constants.ButtonType;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsonUtils;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 /**
  *
  * @author salaboy
@@ -62,16 +64,16 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     final protected FlowPanel container = new FlowPanel();
     final protected FlowPanel buttonsContainer = new FlowPanel();
     final protected SimplePanel formContainer = new SimplePanel();
-    
+
     private Command onClose;
-    
+
     private Command onRefresh;
-    
+
     protected Constants constants = GWT.create(Constants.class);
 
     @Inject
     protected Caller<TaskLifeCycleService> taskServices;
-    
+
     @Inject
     protected Caller<TaskOperationsService> taskOperationServices;
 
@@ -101,7 +103,9 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
         this.taskId = key.getTaskId();
         this.formContent = formContent;
         this.opener = openerUrl;
-        container.add(formContainer);
+        if ( formContainer.getParent() != container ) {
+            container.add(formContainer);
+        }
         container.add(buttonsContainer);
 
         if (formContent == null || formContent.length() == 0) {
