@@ -19,12 +19,13 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
+
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  * @author salaboy
@@ -49,8 +50,10 @@ public class GenericFormDisplayView extends Composite implements GenericFormDisp
 
     @Override
     public void render( final FlowPanel content ) {
-        formContainer.clear();
-        formContainer.add( content );
+        if ( content.getParent() != formContainer ) {
+            formContainer.clear();
+            formContainer.add( content );
+        }
         if ( onReadyToRenderCommand != null ) {
             onReadyToRenderCommand.execute();
         }
