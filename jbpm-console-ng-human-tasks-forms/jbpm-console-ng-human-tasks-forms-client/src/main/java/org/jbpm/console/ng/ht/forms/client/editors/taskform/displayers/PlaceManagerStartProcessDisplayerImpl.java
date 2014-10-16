@@ -88,12 +88,14 @@ public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessF
     }
 
     public void startProcess() {
-        requestFormParamsEvent.fire(new RequestFormParamsEvent());
+        requestFormParamsEvent.fire(new RequestFormParamsEvent("startProcess"));
     }
     
     public void startProcessCallback(@Observes GetFormParamsEvent event){
-        sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
-                .startProcess(deploymentId, processDefId, event.getParams());
+        if(event.getAction().equals("startProcess")){
+            sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
+                    .startProcess(deploymentId, processDefId, event.getParams());
+        }
     }
 
     @Override

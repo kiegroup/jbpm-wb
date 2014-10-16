@@ -120,7 +120,7 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
     }
     
     @Override
-    public Boolean existInDatabase(long taskId) {
+    public boolean existInDatabase(long taskId) {
         return runtimeDataService.getTaskById(taskId) == null ? false : true;
     }
   

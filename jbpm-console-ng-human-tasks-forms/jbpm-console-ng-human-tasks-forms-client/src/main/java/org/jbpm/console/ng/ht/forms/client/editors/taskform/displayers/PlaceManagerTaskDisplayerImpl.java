@@ -96,10 +96,10 @@ public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
         formContainer.setHeight("400px");
         placeManagerFormActivitySearcher.findFormActivityWidget(taskName, null, formContainer);
 
-        if (taskStatus.equals("Ready") || taskStatus.equals("Reserved")) {
-            setFormParamsEvent.fire(new SetFormParamsEvent(event.getParams(), true));
-        } else if (taskStatus.equals("InProgress")) {
+        if (taskStatus.equals("InProgress")) {
             setFormParamsEvent.fire(new SetFormParamsEvent(event.getParams(), false));
+        } else {
+            setFormParamsEvent.fire(new SetFormParamsEvent(event.getParams(), true));
         }
 
     }

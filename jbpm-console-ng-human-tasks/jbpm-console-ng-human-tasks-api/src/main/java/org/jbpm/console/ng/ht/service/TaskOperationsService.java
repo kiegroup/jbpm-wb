@@ -41,6 +41,6 @@ public interface TaskOperationsService{
   
   long saveContent(long taskId, Map<String, Object> values);
   
-  Boolean existInDatabase(long taskId);
+  boolean existInDatabase(long taskId);
   
 }
