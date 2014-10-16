@@ -54,17 +54,17 @@ public class PlaceManagerFormActivitySearcher {
         final Panel container = (Panel) widget;
         if ( customContainers.get( container ) == null ) {
 
-            System.out.println("Got new custom container " + Debug.objectId( widget ));
+            //System.out.println("Got new custom container " + Debug.objectId( widget ));
             container.getElement().addClassName( "custom-container-" + Debug.toMemorableString( System.identityHashCode( widget ) ) + "-" + customContainers.size() );
             customContainers.put( container, customContainers.size() );
             container.addAttachHandler( new AttachEvent.Handler() {
                 @Override
                 public void onAttachOrDetach( AttachEvent event ) {
-                    new Exception( "Container attached " + event.isAttached() + ": " + container.getElement().getId()).printStackTrace(System.out);
+                    //new Exception( "Container attached " + event.isAttached() + ": " + container.getElement().getId()).printStackTrace(System.out);
                 }
             } );
         } else {
-            System.out.println("Reusing custom container " + container.getElement().getAttribute( "class" ));
+            //System.out.println("Reusing custom container " + container.getElement().getAttribute( "class" ));
         }
         widget.clear();
         PlaceStatus status = placeManager.getStatus(defaultPlaceRequest);

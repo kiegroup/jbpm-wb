@@ -63,7 +63,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
 
     final protected FlowPanel container = new FlowPanel();
     final protected FlowPanel buttonsContainer = new FlowPanel();
-    final protected SimplePanel formContainer = new SimplePanel();
+    final protected FlowPanel formContainer = new FlowPanel();
 
     private Command onClose;
 
@@ -286,9 +286,6 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
         return new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
-
-                taskRefreshed.fire(new TaskRefreshedEvent(taskId));
-                jsniHelper.notifySuccessMessage(opener, "Task: " + taskId + " was completed!");
                 taskOperationServices.call(new RemoteCallback<Boolean>() {
                     @Override
                     public void callback(Boolean response) {
@@ -298,7 +295,10 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
                         }
                         refresh();
                     }
-                }).existInDatabase(taskId);
+                }, getUnexpectedErrorCallback()).existInDatabase(taskId);
+                taskRefreshed.fire(new TaskRefreshedEvent(taskId));
+                jsniHelper.notifySuccessMessage(opener, "Task: " + taskId + " was completed!");
+                
 
             }
         };
