@@ -214,6 +214,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     initProcessVersionColumn();
     initProcessStateColumn();
     initStartDateColumn();
+    initDescriptionColumn();
     actionsColumn = initActionsColumn();
     listGrid.addColumn(actionsColumn, constants.Actions());
   }
@@ -487,6 +488,20 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
 
   }
 
+  private void initDescriptionColumn() {
+      // start time
+      Column<ProcessInstanceSummary, String> descriptionColumn = new Column<ProcessInstanceSummary, String>(new TextCell()) {
+        @Override
+        public String getValue(ProcessInstanceSummary object) {
+                return object.getProcessInstanceDescription();
+        }
+      };
+      descriptionColumn.setSortable(true);
+
+      listGrid.addColumn(descriptionColumn, constants.Process_Instance_Description());
+      descriptionColumn.setDataStoreName("Description");
+    }
+  
   public void onProcessInstanceSelectionEvent(@Observes ProcessInstancesWithDetailsRequestEvent event) {
       placeManager.goTo("Process Instance Details Multi");
       processInstanceSelected.fire(new ProcessInstanceSelectionEvent(event.getDeploymentId(),
