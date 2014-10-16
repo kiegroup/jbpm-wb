@@ -217,5 +217,6 @@ public interface Constants extends Messages {
     String Asc_Log_Order();
     
     String Process_Instance_Name();
-
+    
+    String Process_Instance_Description();
 }

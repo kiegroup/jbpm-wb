@@ -17,6 +17,7 @@
 package org.jbpm.console.ng.pr.model;
 
 import java.util.Date;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.console.ng.ga.model.GenericSummary;
 
@@ -30,9 +31,10 @@ public class ProcessInstanceSummary extends GenericSummary {
     private Date startTime;
     private String deploymentId;
     private String initiator;
-
+    private String processInstanceDescription;
+    
     public ProcessInstanceSummary(long processInstanceId, String processId, String deploymentId, String processName, String processVersion,
-            int state, Date startTime, String initiator) {
+            int state, Date startTime, String initiator,String processInstanceDescription) {
         super();
         this.id = processInstanceId;
         this.name = processName;
@@ -44,6 +46,7 @@ public class ProcessInstanceSummary extends GenericSummary {
         this.state = state;
         this.startTime = startTime;
         this.initiator = initiator;
+        this.processInstanceDescription = processInstanceDescription;
     }
 
     public ProcessInstanceSummary() {
@@ -111,6 +114,14 @@ public class ProcessInstanceSummary extends GenericSummary {
 
     public void setInitiator(String initiator) {
         this.initiator = initiator;
+    }
+
+    public String getProcessInstanceDescription() {
+        return processInstanceDescription;
+    }
+
+    public void setProcessInstanceDescription(String processInstanceDescription) {
+        this.processInstanceDescription = processInstanceDescription;
     }
 
 }
