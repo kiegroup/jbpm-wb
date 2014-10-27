@@ -67,6 +67,11 @@ public class AssetMgmtDeploymentUnitProvider implements DeploymentUnitProvider<D
             if (artifactLocation.indexOf("!") != -1) {
                 artifactLocation = artifactLocation.substring(0, artifactLocation.indexOf("!"));
 
+                if (artifactLocation.startsWith("jar:")) {
+                    // remove jar: prefix from it
+                    artifactLocation = artifactLocation.substring(4);
+                }
+
                 inputStream = new URL(artifactLocation).openStream();
             } else if (artifactLocation.startsWith("vfs")){
                 artifactLocation = artifactLocation.replaceFirst(ASSET_MGMT_PROPS, "");
