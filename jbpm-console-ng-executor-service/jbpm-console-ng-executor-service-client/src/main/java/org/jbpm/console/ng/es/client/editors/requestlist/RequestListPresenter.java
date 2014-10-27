@@ -175,6 +175,16 @@ public class RequestListPresenter {
         }).cancelRequest(requestId);
     }
 
+    public void requeueRequest(final Long requestId) {
+        executorServices.call(new RemoteCallback<Void>() {
+            @Override
+            public void callback(Void nothing) {
+                view.displayNotification("Request " + requestId + " cancelled");
+                requestChangedEvent.fire(new RequestChangedEvent(requestId));
+            }
+        }).requeueRequest(requestId);
+    }
+
     @WorkbenchMenu
     public Menus getMenus() {
         return menus;

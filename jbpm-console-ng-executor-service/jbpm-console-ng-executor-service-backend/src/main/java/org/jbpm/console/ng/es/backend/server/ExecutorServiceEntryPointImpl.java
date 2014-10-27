@@ -30,6 +30,7 @@ import org.jbpm.console.ng.es.model.RequestDetails;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
+import org.jbpm.executor.RequeueAware;
 import org.kie.internal.executor.api.CommandContext;
 import org.kie.internal.executor.api.ExecutorService;
 import org.kie.internal.executor.api.RequestInfo;
@@ -118,6 +119,11 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
     @Override
     public void cancelRequest(Long requestId) {
         executor.cancelRequest(requestId);
+    }
+
+    @Override
+    public void requeueRequest(Long requestId) {
+        ((RequeueAware)executor).requeueById(requestId);
     }
 
     @Override

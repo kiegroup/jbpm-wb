@@ -43,6 +43,7 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
@@ -418,8 +419,14 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
 
         // actions (icons)
         List<HasCell<RequestSummary, ?>> cells = new LinkedList<HasCell<RequestSummary, ?>>();
-
-        cells.add( new ActionHasCell( "Details", new Delegate<RequestSummary>() {
+        List<String> allStatuses = new ArrayList<String>();
+        allStatuses.add("QUEUED");
+        allStatuses.add("DONE");
+        allStatuses.add("CANCELLED");
+        allStatuses.add("ERROR");
+        allStatuses.add("RETRYING");
+        allStatuses.add("RUNNING");
+        cells.add( new ActionHasCell( "Details", allStatuses, new Delegate<RequestSummary>() {
             @Override
             public void execute( RequestSummary job ) {
                 DefaultPlaceRequest request = new DefaultPlaceRequest( "Job Request Details" );
@@ -427,11 +434,28 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
                 placeManager.goTo( request );
             }
         } ) );
-        cells.add( new ActionHasCell( "Cancel", new Delegate<RequestSummary>() {
+
+        List<String> activeStatuses = new ArrayList<String>();
+        activeStatuses.add("QUEUED");
+        activeStatuses.add("RETRYING");
+        activeStatuses.add("RUNNING");
+        cells.add( new ActionHasCell( "Cancel", activeStatuses, new Delegate<RequestSummary>() {
             @Override
             public void execute( RequestSummary job ) {
                 if ( Window.confirm( "Are you sure you want to cancel this Job?" ) ) {
                     presenter.cancelRequest( job.getId() );
+                }
+            }
+        } ) );
+
+        List<String> requeueStatuses = new ArrayList<String>();
+        requeueStatuses.add("ERROR");
+        requeueStatuses.add("RUNNING");
+        cells.add( new ActionHasCell( "Requeue", requeueStatuses, new Delegate<RequestSummary>() {
+            @Override
+            public void execute( RequestSummary job ) {
+                if ( Window.confirm( "Are you sure you want to requeue this Job?" ) ) {
+                    presenter.requeueRequest(job.getId());
                 }
             }
         } ) );
@@ -495,11 +519,20 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
 
     private class ActionHasCell implements HasCell<RequestSummary, RequestSummary> {
 
+        private final List<String> avaliableStatuses;
         private ActionCell<RequestSummary> cell;
 
-        public ActionHasCell( String text,
+        public ActionHasCell( String text, List<String> avaliableStatusesList,
                               Delegate<RequestSummary> delegate ) {
-            cell = new ActionCell<RequestSummary>( text, delegate );
+            this.avaliableStatuses = avaliableStatusesList;
+            cell = new ActionCell<RequestSummary>( text, delegate ){
+                @Override
+                public void render(Context context, RequestSummary value, SafeHtmlBuilder sb) {
+                    if (avaliableStatuses.contains(value.getStatus())){
+                        super.render(context, value, sb);
+                    }
+                }
+            };
         }
 
         @Override
