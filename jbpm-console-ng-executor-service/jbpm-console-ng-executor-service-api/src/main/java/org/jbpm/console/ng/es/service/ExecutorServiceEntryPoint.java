@@ -54,6 +54,8 @@ public interface ExecutorServiceEntryPoint {
 
     public void cancelRequest(Long requestId);
 
+    public void requeueRequest(Long requestId);
+
     public void init();
 
     public void destroy();
