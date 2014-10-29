@@ -28,6 +28,8 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
+import java.util.Map;
+import org.guvnor.common.services.shared.config.AppConfigService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
@@ -41,6 +43,7 @@ import org.jbpm.console.ng.ht.forms.service.PlaceManagerActivityService;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
 import org.kie.workbench.common.services.security.KieWorkbenchACL;
 import org.kie.workbench.common.services.security.KieWorkbenchPolicy;
+import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
 import org.kie.workbench.common.services.shared.security.KieWorkbenchSecurityService;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityBeansCache;
@@ -81,6 +84,9 @@ public class ShowcaseEntryPoint {
     
     @Inject
     private ActivityBeansCache activityBeansCache;
+    
+    @Inject
+    private Caller<AppConfigService> appConfigService;
 
     @AfterInitialization
     public void startApp() {
@@ -89,12 +95,22 @@ public class ShowcaseEntryPoint {
                 KieWorkbenchPolicy policy = new KieWorkbenchPolicy( str );
                 kieACL.activatePolicy( policy );
                 setupMenu();
+                loadPreferences();
                 hideLoadingPopup();
             }
         } ).loadPolicy();
         
       List<String> allActivities = activityBeansCache.getActivitiesById();
       pmas.call().initActivities(allActivities);
+    }
+    
+    private void loadPreferences() {
+        appConfigService.call( new RemoteCallback<Map<String, String>>() {
+            @Override
+            public void callback( final Map<String, String> response ) {
+                ApplicationPreferences.setUp( response );
+            }
+        } ).loadPreferences();
     }
 
     private void setupMenu() {
