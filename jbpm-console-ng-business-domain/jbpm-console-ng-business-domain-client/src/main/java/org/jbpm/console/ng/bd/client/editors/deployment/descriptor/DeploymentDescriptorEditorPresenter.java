@@ -6,6 +6,8 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
+import org.guvnor.structure.client.file.CommandWithCommitMessage;
+import org.guvnor.structure.client.file.SaveOperationService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.client.editors.deployment.descriptor.type.DDResourceType;
@@ -13,8 +15,6 @@ import org.jbpm.console.ng.bd.dd.model.DeploymentDescriptorModel;
 import org.jbpm.console.ng.bd.dd.service.DDEditorService;
 import org.kie.uberfire.client.callbacks.DefaultErrorCallback;
 import org.kie.uberfire.client.callbacks.HasBusyIndicatorDefaultErrorCallback;
-import org.kie.workbench.common.widgets.client.popups.file.CommandWithCommitMessage;
-import org.kie.workbench.common.widgets.client.popups.file.SaveOperationService;
 import org.kie.workbench.common.widgets.client.popups.validation.ValidationPopup;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
 import org.kie.workbench.common.widgets.metadata.client.KieEditor;
