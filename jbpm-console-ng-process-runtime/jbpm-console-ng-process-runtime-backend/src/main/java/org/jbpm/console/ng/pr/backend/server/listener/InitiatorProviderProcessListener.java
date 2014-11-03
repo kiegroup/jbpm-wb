@@ -1,6 +1,5 @@
 package org.jbpm.console.ng.pr.backend.server.listener;
 
-import org.jbpm.kie.services.api.IdentityProvider;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.kie.api.event.process.ProcessCompletedEvent;
 import org.kie.api.event.process.ProcessEventListener;
@@ -10,6 +9,7 @@ import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.process.ProcessVariableChangedEvent;
 import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.KieSession;
+import org.kie.internal.identity.IdentityProvider;
 
 public class InitiatorProviderProcessListener implements ProcessEventListener {
     
