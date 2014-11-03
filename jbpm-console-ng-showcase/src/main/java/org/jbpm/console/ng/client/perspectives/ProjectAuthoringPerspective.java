@@ -64,31 +64,7 @@ public class ProjectAuthoringPerspective {
     @Inject
     private ProjectMenu projectMenu;
 
-    private String projectRootPath;
-
-    private MenuItem ddMenuItem = MenuFactory.newSimpleItem( Constants.INSTANCE.DeploymentDescriptor() ).respondsWith(
-            new Command() {
-                @Override
-                public void execute() {
-
-                    placeManager.goTo( PathFactory.newPath( "kie-deployment-descriptor.xml",
-                                                            projectRootPath + "/src/main/resources/META-INF/kie-deployment-descriptor.xml" ) );
-
-                }
-            }
-
-                                                                                                                     ).endMenu().build().getItems().get( 0 );
-
     public ProjectAuthoringPerspective() {
-    }
-
-    public void onProjectContextChanged( @Observes final ProjectContextChangeEvent event ) {
-        if ( event.getProject() != null ) {
-            projectRootPath = event.getProject().getRootPath().toURI();
-            ddMenuItem.setEnabled( true );
-        } else {
-            ddMenuItem.setEnabled( false );
-        }
     }
 
     @Perspective
@@ -121,17 +97,11 @@ public class ProjectAuthoringPerspective {
                 .endMenu()
 
                 .newTopLevelMenu( "Tools" )
-                .withItems( getToolsMenuItems() )
+                .withItems( projectMenu.getMenuItems() )
                 .endMenu()
 
                 .build();
     }
 
-    private List<MenuItem> getToolsMenuItems() {
-        List<MenuItem> toolsMenuItems = projectMenu.getMenuItems();
-        toolsMenuItems.add( ddMenuItem );
-
-        return toolsMenuItems;
-    }
 
 }

@@ -71,7 +71,7 @@ public class AppSetup {
             administrationService.bootstrapProject("repository1", "org.kie.example", "project1", "1.0.0-SNAPSHOT");
         }
         
-        administrationService.bootstrapConfig();
+        administrationSedeplorvice.bootstrapConfig();
 
         administrationService.bootstrapDeployments();
 
@@ -99,6 +99,8 @@ public class AppSetup {
         */
 
         group.addConfigItem( configurationFactory.newConfigItem( "build.enable-incremental",
+                "true" ) );
+        group.addConfigItem( configurationFactory.newConfigItem( "support.runtime.deploy",
                 "true" ) );
 
         /*
