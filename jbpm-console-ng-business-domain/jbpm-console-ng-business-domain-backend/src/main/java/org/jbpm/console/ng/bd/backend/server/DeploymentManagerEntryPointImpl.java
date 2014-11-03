@@ -104,9 +104,14 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
               ((KModuleDeploymentUnitSummary) unitSummary).getArtifactId(),
               ((KModuleDeploymentUnitSummary) unitSummary).getVersion(),
               ((KModuleDeploymentUnitSummary) unitSummary).getKbaseName(),
-              ((KModuleDeploymentUnitSummary) unitSummary).getKsessionName(),
-              ((KModuleDeploymentUnitSummary) unitSummary).getStrategy());
-        ((KModuleDeploymentUnit)unit).setMergeMode(MergeMode.valueOf(((KModuleDeploymentUnitSummary) unitSummary).getMergeMode()));
+              ((KModuleDeploymentUnitSummary) unitSummary).getKsessionName());
+        if (((KModuleDeploymentUnitSummary) unitSummary).getStrategy() != null) {
+            ((KModuleDeploymentUnit)unit).setStrategy(RuntimeStrategy.valueOf(((KModuleDeploymentUnitSummary) unitSummary).getStrategy()));
+        }
+
+        if (((KModuleDeploymentUnitSummary) unitSummary).getMergeMode() != null) {
+            ((KModuleDeploymentUnit)unit).setMergeMode(MergeMode.valueOf(((KModuleDeploymentUnitSummary) unitSummary).getMergeMode()));
+        }
     }// add for vfs
     deploy(unit);
   }
@@ -408,7 +413,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
       KModuleDeploymentUnitSummary unit = new KModuleDeploymentUnitSummary("",
               buildResults.getGAV().getGroupId(),
               buildResults.getGAV().getArtifactId(),
-              buildResults.getGAV().getVersion(), "", "", RuntimeStrategy.SINGLETON.toString(), defaultMergeMode.toString());
+              buildResults.getGAV().getVersion(), "", "", null, null);
 
       undeploy(unit);
       deploy(unit);
