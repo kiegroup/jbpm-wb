@@ -71,7 +71,7 @@ public class AppSetup {
             administrationService.bootstrapProject("repository1", "org.kie.example", "project1", "1.0.0-SNAPSHOT");
         }
         
-        administrationSedeplorvice.bootstrapConfig();
+        administrationService.bootstrapConfig();
 
         administrationService.bootstrapDeployments();
 
