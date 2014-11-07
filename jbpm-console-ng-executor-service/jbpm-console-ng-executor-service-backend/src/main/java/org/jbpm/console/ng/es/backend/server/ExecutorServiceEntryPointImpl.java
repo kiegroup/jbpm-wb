@@ -16,6 +16,9 @@
 
 package org.jbpm.console.ng.es.backend.server;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,18 +30,22 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.es.model.ErrorSummary;
 import org.jbpm.console.ng.es.model.RequestDetails;
+import org.jbpm.console.ng.es.model.RequestKey;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
+import org.jbpm.console.ng.ga.model.QueryFilter;
+import org.jbpm.console.ng.ga.service.GenericServiceEntryPoint;
 import org.jbpm.executor.RequeueAware;
 import org.kie.internal.executor.api.CommandContext;
 import org.kie.internal.executor.api.ExecutorService;
 import org.kie.internal.executor.api.RequestInfo;
 import org.kie.internal.executor.api.STATUS;
+import org.uberfire.paging.PageResponse;
 
 @Service
 @ApplicationScoped
-public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint {
+public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint ,GenericServiceEntryPoint<RequestKey, RequestSummary> {
 
     @Inject
     ExecutorService executor;
@@ -203,4 +210,52 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
         return RequestSummaryHelper.adaptRequestList(executor.getFutureQueuedRequests());
     }
 
+    @Override
+    public PageResponse<RequestSummary> getData(QueryFilter filter) {
+        PageResponse<RequestSummary> response = new PageResponse<RequestSummary>();
+        List<String> states = null;
+        if (filter.getParams() != null) {
+            states = (List<String>) filter.getParams().get("states");
+        }
+        Collection<RequestInfo> requestInfoList = null;
+        if (states == null || states.isEmpty()) {
+            requestInfoList = executor.getAllRequests(); 
+        }else{
+            List<STATUS> statusList = RequestSummaryHelper.adaptStatusList(states);
+            requestInfoList =executor.getRequestsByStatus(statusList);
+        }
+        List<RequestSummary> requestSummarys = new ArrayList<RequestSummary>(requestInfoList.size()); ;
+        for(RequestInfo requestInfo:requestInfoList){
+            if (filter.getParams().get("textSearch") == null || ((String) filter.getParams().get("textSearch")).isEmpty()) {
+                requestSummarys.add( RequestSummaryHelper.adaptRequest( requestInfo ) );
+            }else if(requestInfo.getCommandName().toLowerCase().contains((String) filter.getParams().get("textSearch"))){
+                requestSummarys.add( RequestSummaryHelper.adaptRequest( requestInfo ) );
+            }
+            
+        }
+        response.setStartRowIndex(filter.getOffset());
+        response.setTotalRowSize(requestSummarys.size()-1);
+        if(requestSummarys.size() > filter.getCount()){
+            response.setTotalRowSizeExact(false);
+        } else{
+            response.setTotalRowSizeExact(true);
+        }
+
+        if (!requestSummarys.isEmpty() && requestSummarys.size() > (filter.getCount() + filter.getOffset())) {
+            response.setPageRowList(new ArrayList<RequestSummary>(requestSummarys.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
+            response.setLastPage(false);
+
+        } else {
+            response.setPageRowList(new ArrayList<RequestSummary>(requestSummarys));
+            response.setLastPage(true);
+
+        }
+        return response;
+    }
+
+    @Override
+    public RequestSummary getItem(RequestKey key) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

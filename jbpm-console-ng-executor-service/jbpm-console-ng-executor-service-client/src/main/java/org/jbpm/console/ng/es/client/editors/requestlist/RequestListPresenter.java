@@ -16,14 +16,6 @@
 
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
-import com.github.gwtbootstrap.client.ui.CheckBox;
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.cellview.client.ColumnSortEvent;
-import com.google.gwt.user.cellview.client.DataGrid;
-
-import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,56 +23,44 @@ import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import org.jboss.errai.common.client.api.RemoteCallback;
+
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
-import org.kie.workbench.common.widgets.client.search.ClearSearchEvent;
+import org.jbpm.console.ng.ga.model.PortableQueryFilter;
+import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
+import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.uberfire.client.annotations.WorkbenchMenu;
-
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.paging.PageResponse;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
+import com.google.gwt.core.client.GWT;
+import org.jboss.errai.bus.client.api.messaging.Message;
+import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.Range;
+
 @Dependent
 @WorkbenchScreen(identifier = "Requests List")
-public class RequestListPresenter {
+public class RequestListPresenter extends AbstractScreenListPresenter<RequestSummary> {
 
-    public interface RequestListView extends UberView<RequestListPresenter> {
+    public interface RequestListView extends ListView<RequestSummary, RequestListPresenter> {
 
-        void displayNotification(String text);
-
-        NavLink getShowAllLink();
-
-        NavLink getShowQueuedLink();
-
-        NavLink getShowRunningLink();
-
-        NavLink getShowRetryingLink();
-
-        NavLink getShowErrorLink();
-
-        NavLink getShowCompletedLink();
-
-        NavLink getShowCancelledLink();
-
-        DataGrid<RequestSummary> getDataGrid();
-
-        ColumnSortEvent.ListHandler<RequestSummary> getSortHandler();
     }
     private Constants constants = GWT.create( Constants.class );
     
-    @Inject
-    private PlaceManager placeManager;
-
     @Inject
     private RequestListView view;
     
@@ -91,14 +71,69 @@ public class RequestListPresenter {
     @Inject
     private Event<RequestChangedEvent> requestChangedEvent;
 
-    private ListDataProvider<RequestSummary> dataProvider = new ListDataProvider<RequestSummary>();
 
+    private List<String> currentActiveStates;
+    
     public RequestListPresenter() {
+        onRangeChanged();
         makeMenuBar();
     }
-
     
-    
+    private void onRangeChanged(){
+        dataProvider = new AsyncDataProvider<RequestSummary>() {
+            @Override
+            protected void onRangeChanged(HasData<RequestSummary> display) {
+                final Range visibleRange = display.getVisibleRange();
+                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+                if (currentFilter == null) {
+                    currentFilter = new PortableQueryFilter(visibleRange.getStart(),
+                            visibleRange.getLength(),
+                            false, "",
+                            (columnSortList.size() > 0) ? columnSortList.get(0)
+                            .getColumn().getDataStoreName() : "",
+                            (columnSortList.size() > 0) ? columnSortList.get(0)
+                            .isAscending() : true);
+                  }
+                  // If we are refreshing after a search action, we need to go back to offset 0
+                  if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
+                          || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")) {
+                    currentFilter.setOffset(visibleRange.getStart());
+                    currentFilter.setCount(visibleRange.getLength());
+                  } else {
+                    currentFilter.setOffset(0);
+                    currentFilter.setCount(view.getListGrid().getPageSize());
+                  }
+                  //Applying screen specific filters
+                  if (currentFilter.getParams() == null) {
+                    currentFilter.setParams(new HashMap<String, Object>());
+                  }
+                  currentFilter.getParams().put("states", currentActiveStates);
+                  
+                  currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
+                      .getColumn().getDataStoreName() : "");
+                  currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
+                      .isAscending() : true);
+                  
+                  executorServices.call(new RemoteCallback<PageResponse<RequestSummary>>() {
+                      @Override
+                    public void callback(PageResponse<RequestSummary> response) {
+                          dataProvider.updateRowCount( response.getTotalRowSize(),
+                                                       response.isTotalRowSizeExact() );
+                           dataProvider.updateRowData( response.getStartRowIndex(),
+                                                      response.getPageRowList() );
+                      }
+                    }, new ErrorCallback<Message>() {
+                        @Override
+                        public boolean error(Message message, Throwable throwable) {
+                          view.hideBusyIndicator();
+                          view.displayNotification("Error: Getting Jbos Requests: " + message);
+                          GWT.log(throwable.toString());
+                          return true;
+                        }
+                }).getData(currentFilter);
+        }
+        } ;
+    }
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.RequestsListTitle();
@@ -110,26 +145,8 @@ public class RequestListPresenter {
     }
 
     public void refreshRequests(List<String> statuses) {
-        if (statuses == null || statuses.isEmpty()) {
-            executorServices.call(new RemoteCallback<List<RequestSummary>>() {
-                @Override
-                public void callback(List<RequestSummary> requests) {
-                    dataProvider.setList(requests);
-                    dataProvider.refresh();
-                    view.getSortHandler().getList().addAll(dataProvider.getList());
-
-                }
-            }).getAllRequests();
-        } else {
-            executorServices.call(new RemoteCallback<List<RequestSummary>>() {
-                @Override
-                public void callback(List<RequestSummary> requests) {
-                    dataProvider.setList(requests);
-                    dataProvider.refresh();
-                    view.getSortHandler().getList().addAll(dataProvider.getList());
-                }
-            }).getRequestsByStatus(statuses);
-        }
+        currentActiveStates = statuses;
+        refreshGrid();
     }
 
     public void init() {
@@ -157,12 +174,8 @@ public class RequestListPresenter {
         dataProvider.addDataDisplay(display);
     }
 
-    public ListDataProvider<RequestSummary> getDataProvider() {
+    public AsyncDataProvider<RequestSummary> getDataProvider() {
         return dataProvider;
-    }
-
-    public void refreshData() {
-        dataProvider.refresh();
     }
 
     public void cancelRequest(final Long requestId) {
@@ -212,15 +225,7 @@ public class RequestListPresenter {
                 .endMenu()
                 .newTopLevelMenu(constants.Refresh())
                 .respondsWith(new Command() {
-                    @Override
                     public void execute() {
-                        view.getShowAllLink().setStyleName("active");
-                        view.getShowCompletedLink().setStyleName("");
-                        view.getShowCancelledLink().setStyleName("");
-                        view.getShowErrorLink().setStyleName("");
-                        view.getShowQueuedLink().setStyleName("");
-                        view.getShowRetryingLink().setStyleName("");
-                        view.getShowRunningLink().setStyleName("");
                         refreshRequests(null);
 //                        clearSearchEvent.fire(new ClearSearchEvent());
 //                        view.setCurrentFilter("");
@@ -230,6 +235,4 @@ public class RequestListPresenter {
                 .endMenu().build();
 
     }
-    
-    
 }
