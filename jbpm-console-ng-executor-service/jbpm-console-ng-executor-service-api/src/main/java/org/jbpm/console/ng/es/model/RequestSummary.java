@@ -16,12 +16,13 @@
 
 package org.jbpm.console.ng.es.model;
 
-import java.io.Serializable;
 import java.util.Date;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jbpm.console.ng.ga.model.GenericSummary;
 
 @Portable
-public class RequestSummary implements Serializable {
+public class RequestSummary extends GenericSummary {
 
     private Long id;
     private Date time;

@@ -16,11 +16,39 @@
 
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.es.client.i18n.Constants;
+import org.jbpm.console.ng.es.client.util.ResizableHeader;
+import org.jbpm.console.ng.es.model.RequestSummary;
+import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
+import org.jbpm.console.ng.es.model.events.RequestSelectionEvent;
+import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
+import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.events.NotificationEvent;
+
 import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.CheckBox;
+import com.github.gwtbootstrap.client.ui.ButtonGroup;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
+import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
@@ -31,16 +59,11 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -50,277 +73,65 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.LayoutPanel;
-import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
+import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.MultiSelectionModel;
+import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.es.client.i18n.Constants;
-import org.jbpm.console.ng.es.client.util.ResizableHeader;
-import org.jbpm.console.ng.es.model.RequestSummary;
-import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
-import org.jbpm.console.ng.es.model.events.RequestSelectionEvent;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
-@Templated(value = "RequestListViewImpl.html")
-public class RequestListViewImpl extends Composite implements RequestListPresenter.RequestListView, RequiresResize {
+public class RequestListViewImpl extends AbstractListView<RequestSummary,RequestListPresenter> implements RequestListPresenter.RequestListView{
 
     private Constants constants = GWT.create( Constants.class );
 
-    @Inject
-    private PlaceManager placeManager;
-
-    private RequestListPresenter presenter;
-
+    private Label filterLabel;
     
+    private ButtonGroup filtersButtonGroup;
 
-   
+    private Button showAllFilterButton;
 
-    @Inject
-    @DataField
-    public LayoutPanel listContainer;
+    private Button showQueuedFilterButton;
 
-   
-    @Inject
-    @DataField
-    public DataGrid<RequestSummary> myRequestListGrid;
+    private Button showRunningFilterButton;
 
-    @DataField
-    public SimplePager pager;
-
-    @Inject
-    @DataField
-    public NavLink showAllLink;
+    private Button showRetryingFilterButton;
     
-    @Inject
-    @DataField
-    public NavLink showQueuedLink;
-
-    @Inject
-    @DataField
-    public NavLink showRunningLink;
-
-    @Inject
-    @DataField
-    public NavLink showRetryingLink;
-
-    @Inject
-    @DataField
-    public NavLink showErrorLink;
-
-    @Inject
-    @DataField
-    public NavLink showCompletedLink;
-
-    @Inject
-    @DataField
-    public NavLink showCancelledLink;
+    private Button showErrorFilterButton;
     
-    @Inject
-    @DataField
-    public NavLink fiterLabel;
-
-    private Set<RequestSummary> selectedRequests;
-
+    private Button showCompletedFilterButton;
+    
+    private Button showCancelledFilterButton;
+    
     @Inject
     private Event<NotificationEvent> notification;
 
-    @Inject
-    private Event<RequestSelectionEvent> requestSelection;
-
-    private ListHandler<RequestSummary> sortHandler;
-
-    public RequestListViewImpl() {
-        pager = new SimplePager(SimplePager.TextLocation.CENTER, false, true);
-    }
-    
-    @Override
-    public void onResize() {
-        if( (getParent().getOffsetHeight()-120) > 0 ){
-            listContainer.setHeight(getParent().getOffsetHeight()-120+"px");
-        }
-    }
-    
+    private List<RequestSummary> selectedRequestSummary = new ArrayList<RequestSummary>();
 
     @Override
     public void init(final RequestListPresenter presenter ) {
-        this.presenter = presenter;
+        List<String> bannedColumns = new ArrayList<String>();
+        bannedColumns.add(constants.Id());
+        bannedColumns.add(constants.JobName());
+        List<String> initColumns = new ArrayList<String>();
+        initColumns.add(constants.Id());
+        initColumns.add(constants.JobName());
+        initColumns.add(constants.Actions());
+        
+        super.init(presenter, new GridGlobalPreferences("RequestListGrid", initColumns, bannedColumns));
 
-        listContainer.add( myRequestListGrid );
-        
-        pager.setStyleName("pagination pagination-right pull-right");
-        pager.setDisplay( myRequestListGrid );
-        pager.setPageSize(10);
-       
-        fiterLabel.setText( constants.Showing() );
-        
-        showAllLink.setText( constants.All() );
-        showAllLink.setStyleName( "active" );
-        showAllLink.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                showAllLink.setStyleName( "active" );
-                showQueuedLink.setStyleName( "" );
-                showRunningLink.setStyleName( "" );
-                showRetryingLink.setStyleName( "" );
-                showErrorLink.setStyleName( "" );
-                showCompletedLink.setStyleName( "" );
-                showCancelledLink.setStyleName( "" );
-                presenter.refreshRequests( null );
-            }
-        } );
-        
-        
-        showQueuedLink.setText( constants.Queued() );
-        showQueuedLink.setStyleName( "" );
-        showQueuedLink.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                showQueuedLink.setStyleName( "active" );
-                showAllLink.setStyleName( "" );
-                showRunningLink.setStyleName( "" );
-                showRetryingLink.setStyleName( "" );
-                showErrorLink.setStyleName( "" );
-                showCompletedLink.setStyleName( "" );
-                showCancelledLink.setStyleName( "" );
-                
-                List<String> statuses = new ArrayList<String>();
-                statuses.add( "QUEUED" );
-                presenter.refreshRequests( statuses );
-            }
-        } );
-        
-        showRunningLink.setText( constants.Running() );
-        showRunningLink.setStyleName( "" );
-        showRunningLink.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                showRunningLink.setStyleName( "active" );
-                showAllLink.setStyleName( "" );
-                showQueuedLink.setStyleName( "" );
-                showRetryingLink.setStyleName( "" );
-                showErrorLink.setStyleName( "" );
-                showCompletedLink.setStyleName( "" );
-                showCancelledLink.setStyleName( "" );
-                
-                List<String> statuses = new ArrayList<String>();
-                statuses.add( "RUNNING" );
-                presenter.refreshRequests( statuses );
-            }
-        } );
-        
-        
-        showRetryingLink.setText( constants.Retrying() );
-        showRetryingLink.setStyleName( "" );
-        showRetryingLink.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                showRetryingLink.setStyleName( "active" );
-                showAllLink.setStyleName( "" );
-                showQueuedLink.setStyleName( "" );
-                showRunningLink.setStyleName( "" );
-                showErrorLink.setStyleName( "" );
-                showCompletedLink.setStyleName( "" );
-                showCancelledLink.setStyleName( "" );
-                
-                List<String> statuses = new ArrayList<String>();
-                statuses.add( "RETRYING" );
-                presenter.refreshRequests( statuses );
-            }
-        } );
-        
-        showErrorLink.setText( constants.Error() );
-        showErrorLink.setStyleName( "" );
-        showErrorLink.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                showErrorLink.setStyleName( "active" );
-                showAllLink.setStyleName( "" );
-                showQueuedLink.setStyleName( "" );
-                showRunningLink.setStyleName( "" );
-                showRetryingLink.setStyleName( "" );
-                showCompletedLink.setStyleName( "" );
-                showCancelledLink.setStyleName( "" );
-                
-                List<String> statuses = new ArrayList<String>();
-                statuses.add( "ERROR" );
-                presenter.refreshRequests( statuses );
-            }
-        } );
-        
-        showCompletedLink.setText( constants.Completed() );
-        showCompletedLink.setStyleName( "" );
-        showCompletedLink.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                showCompletedLink.setStyleName( "active" );
-                showAllLink.setStyleName( "" );
-                showQueuedLink.setStyleName( "" );
-                showRunningLink.setStyleName( "" );
-                showRetryingLink.setStyleName( "" );
-                showErrorLink.setStyleName( "" );
-                showCancelledLink.setStyleName( "" );
-                
-                List<String> statuses = new ArrayList<String>();
-                statuses.add( "DONE" );
-                presenter.refreshRequests( statuses );
-            }
-        } );
-        
-        showCancelledLink.setText( constants.Cancelled() );
-        showCancelledLink.setStyleName( "" );
-        showCancelledLink.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                showCancelledLink.setStyleName( "active" );
-                showAllLink.setStyleName( "" );
-                showQueuedLink.setStyleName( "" );
-                showRunningLink.setStyleName( "" );
-                showRetryingLink.setStyleName( "" );
-                showErrorLink.setStyleName( "" );
-                showCompletedLink.setStyleName( "" );
-                
-                List<String> statuses = new ArrayList<String>();
-                statuses.add( "CANCELLED" );
-                presenter.refreshRequests( statuses );
-            }
-        } );
-        
+        initFiltersBar();
 
-        // Set the message to display when the table is empty.
-        myRequestListGrid.setEmptyTableWidget( new Label( constants.No_Pending_Jobs() ) );
-
-        // Attach a column sort handler to the ListDataProvider to sort the list.
-        sortHandler = new ListHandler<RequestSummary>( presenter.getDataProvider().getList() );
-        myRequestListGrid.addColumnSortHandler( sortHandler );
-
-       
-        // Add a selection model so we can select cells.
-        final MultiSelectionModel<RequestSummary> selectionModel = new MultiSelectionModel<RequestSummary>();
-        selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
-            @Override
-            public void onSelectionChange( SelectionChangeEvent event ) {
-                selectedRequests = selectionModel.getSelectedSet();
-                for ( RequestSummary r : selectedRequests ) {
-                    requestSelection.fire( new RequestSelectionEvent( r.getId() ) );
-                }
-            }
-        } );
-
-        myRequestListGrid.setSelectionModel( selectionModel,
-                                             DefaultSelectionEventManager.<RequestSummary>createCheckboxManager() );
-
-        initTableColumns( selectionModel );
-
-        presenter.addDataDisplay( myRequestListGrid );
+        listGrid.setEmptyTableCaption(constants.No_Jobs_Found());
+        initSelectionModel();
+        initNoActionColumnManager();
+        
+        listGrid.setSelectionModel(selectionModel, noActionColumnManager);
+        listGrid.setRowStyles(selectedStyles);
 
     }
 
@@ -328,27 +139,259 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
         presenter.refreshRequests(null);
     }
 
-  
-
-
-   
     
+    @Override
+    public void initColumns() {
+        initChecksColumn();
+        initJobIdColumn();
+        initJobNameColumn();
+        initStatusColumn();
+        initDueDateColumn();
+        actionsColumn = initActionsColumn();
+        listGrid.addColumn(actionsColumn, constants.Actions());
+    }
+    private void initFiltersBar(){
+        HorizontalPanel filtersBar = new HorizontalPanel();
+        filterLabel = new Label();
+        filterLabel.setStyleName("");
+        filterLabel.setText(constants.Showing());
+        
+        showAllFilterButton = new Button();
+        showAllFilterButton.setIcon(IconType.FILTER);
+        showAllFilterButton.setSize(ButtonSize.SMALL);
+        showAllFilterButton.setText(constants.All());
+        showAllFilterButton.setEnabled(false);
+        showAllFilterButton.addClickHandler(new ClickHandler() {
+          @Override
+          public void onClick(ClickEvent event) {
+              showAllFilterButton.setEnabled(false);
+              showQueuedFilterButton.setEnabled(true);
+              showRunningFilterButton.setEnabled(true);
+              showRetryingFilterButton.setEnabled(true);
+              showErrorFilterButton.setEnabled(true);
+              showCompletedFilterButton.setEnabled(true);
+              showCancelledFilterButton.setEnabled(true);
+            presenter.refreshRequests( null );
+          }
+        });
+    
+        showQueuedFilterButton = new Button();
+        showQueuedFilterButton.setIcon(IconType.FILTER);
+        showQueuedFilterButton.setSize(ButtonSize.SMALL);
+        showQueuedFilterButton.setText(constants.Queued());
+        showQueuedFilterButton.setEnabled(true);
+        showQueuedFilterButton.addClickHandler(new ClickHandler() {
+          @Override
+          public void onClick(ClickEvent event) {
+              showAllFilterButton.setEnabled(true);
+              showQueuedFilterButton.setEnabled(false);
+              showRunningFilterButton.setEnabled(true);
+              showRetryingFilterButton.setEnabled(true);
+              showErrorFilterButton.setEnabled(true);
+              showCompletedFilterButton.setEnabled(true);
+              showCancelledFilterButton.setEnabled(true);
+              List<String> statuses = new ArrayList<String>();
+              statuses.add( "QUEUED" );
+              presenter.refreshRequests( statuses );
+          }
+        });
+        
+        showRunningFilterButton = new Button();
+        showRunningFilterButton.setIcon(IconType.FILTER);
+        showRunningFilterButton.setSize(ButtonSize.SMALL);
+        showRunningFilterButton.setText(constants.Running());
+        showRunningFilterButton.setEnabled(true);
+        showRunningFilterButton.addClickHandler(new ClickHandler() {
+          @Override
+          public void onClick(ClickEvent event) {
+              showAllFilterButton.setEnabled(true);
+              showQueuedFilterButton.setEnabled(true);
+              showRunningFilterButton.setEnabled(false);
+              showRetryingFilterButton.setEnabled(true);
+              showErrorFilterButton.setEnabled(true);
+              showCompletedFilterButton.setEnabled(true);
+              showCancelledFilterButton.setEnabled(true);
+              List<String> statuses = new ArrayList<String>();
+              statuses.add( "RUNNING" );
+              presenter.refreshRequests( statuses );
+          }
+        });
+        
+        showRetryingFilterButton = new Button();
+        showRetryingFilterButton.setIcon(IconType.FILTER);
+        showRetryingFilterButton.setSize(ButtonSize.SMALL);
+        showRetryingFilterButton.setText(constants.Retrying());
+        showRetryingFilterButton.setEnabled(true);
+        showRetryingFilterButton.addClickHandler(new ClickHandler() {
+          @Override
+          public void onClick(ClickEvent event) {
+              showAllFilterButton.setEnabled(true);
+              showQueuedFilterButton.setEnabled(true);
+              showRunningFilterButton.setEnabled(true);
+              showRetryingFilterButton.setEnabled(false);
+              showErrorFilterButton.setEnabled(true);
+              showCompletedFilterButton.setEnabled(true);
+              showCancelledFilterButton.setEnabled(true);
+              List<String> statuses = new ArrayList<String>();
+              statuses.add( "RETRYING" );
+              presenter.refreshRequests( statuses );
+          }
+        });
+        
+        showErrorFilterButton = new Button();
+        showErrorFilterButton.setIcon(IconType.FILTER);
+        showErrorFilterButton.setSize(ButtonSize.SMALL);
+        showErrorFilterButton.setText(constants.Error());
+        showErrorFilterButton.setEnabled(true);
+        showErrorFilterButton.addClickHandler(new ClickHandler() {
+          @Override
+          public void onClick(ClickEvent event) {
+              showAllFilterButton.setEnabled(true);
+              showQueuedFilterButton.setEnabled(true);
+              showRunningFilterButton.setEnabled(true);
+              showRetryingFilterButton.setEnabled(true);
+              showErrorFilterButton.setEnabled(false);
+              showCompletedFilterButton.setEnabled(true);
+              showCancelledFilterButton.setEnabled(true);
+              List<String> statuses = new ArrayList<String>();
+              statuses.add( "ERROR" );
+              presenter.refreshRequests( statuses );
+          }
+        });
+        
+        showCompletedFilterButton = new Button();
+        showCompletedFilterButton.setIcon(IconType.FILTER);
+        showCompletedFilterButton.setSize(ButtonSize.SMALL);
+        showCompletedFilterButton.setText(constants.Completed());
+        showCompletedFilterButton.setEnabled(true);
+        showCompletedFilterButton.addClickHandler(new ClickHandler() {
+          @Override
+          public void onClick(ClickEvent event) {
+              showAllFilterButton.setEnabled(true);
+              showQueuedFilterButton.setEnabled(true);
+              showRunningFilterButton.setEnabled(true);
+              showRetryingFilterButton.setEnabled(true);
+              showErrorFilterButton.setEnabled(true);
+              showCompletedFilterButton.setEnabled(false);
+              showCancelledFilterButton.setEnabled(true);
+              List<String> statuses = new ArrayList<String>();
+              statuses.add( "DONE" );
+              presenter.refreshRequests( statuses );
+          }
+        });
+        
+        showCancelledFilterButton = new Button();
+        showCancelledFilterButton.setIcon(IconType.FILTER);
+        showCancelledFilterButton.setSize(ButtonSize.SMALL);
+        showCancelledFilterButton.setText(constants.Cancelled());
+        showCancelledFilterButton.setEnabled(true);
+        showCancelledFilterButton.addClickHandler(new ClickHandler() {
+          @Override
+          public void onClick(ClickEvent event) {
+              showAllFilterButton.setEnabled(true);
+              showQueuedFilterButton.setEnabled(true);
+              showRunningFilterButton.setEnabled(true);
+              showRetryingFilterButton.setEnabled(true);
+              showErrorFilterButton.setEnabled(true);
+              showCompletedFilterButton.setEnabled(true);
+              showCancelledFilterButton.setEnabled(false);
+              List<String> statuses = new ArrayList<String>();
+              statuses.add( "CANCELLED" );
+              presenter.refreshRequests( statuses );
+          }
+        });
+        
+        filtersBar.add(filterLabel);
+        filtersButtonGroup = new ButtonGroup(showAllFilterButton, showQueuedFilterButton,
+                                             showRunningFilterButton, showRetryingFilterButton ,showErrorFilterButton,showCompletedFilterButton,showCancelledFilterButton);
 
-    private void initTableColumns( final SelectionModel<RequestSummary> selectionModel ) {
+        filtersBar.add(filtersButtonGroup);
+        listGrid.getCenterToolbar().add(filtersBar);
+    }
+    
+    private void initSelectionModel(){
+        selectionModel = new NoSelectionModel<RequestSummary>();
+        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+          @Override
+          public void onSelectionChange(SelectionChangeEvent event) {
+
+            boolean close = false;
+            if (selectedRow == -1) {
+              listGrid.setRowStyles(selectedStyles);
+              selectedRow = listGrid.getKeyboardSelectedRow();
+              listGrid.redraw();
+
+            } else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
+              listGrid.setRowStyles(selectedStyles);
+              selectedRow = listGrid.getKeyboardSelectedRow();
+              listGrid.redraw();
+            } else {
+              close = true;
+            }
+          }
+        });
+    }
+    
+    private void initNoActionColumnManager(){
+        noActionColumnManager = DefaultSelectionEventManager
+                .createCustomManager(new DefaultSelectionEventManager.EventTranslator<RequestSummary>() {
+
+                  @Override
+                  public boolean clearCurrentSelection(CellPreviewEvent<RequestSummary> event) {
+                    return false;
+                  }
+
+                  @Override
+                  public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<RequestSummary> event) {
+                    NativeEvent nativeEvent = event.getNativeEvent();
+                    if (BrowserEvents.CLICK.equals(nativeEvent.getType())) {
+                      // Ignore if the event didn't occur in the correct column.
+                      if (listGrid.getColumnIndex(actionsColumn) == event.getColumn()) {
+                        return DefaultSelectionEventManager.SelectAction.IGNORE;
+                      }
+                      //Extension for checkboxes
+                      Element target = nativeEvent.getEventTarget().cast();
+                      if ("input".equals(target.getTagName().toLowerCase())) {
+                        final InputElement input = target.cast();
+                        if ("checkbox".equals(input.getType().toLowerCase())) {
+                          // Synchronize the checkbox with the current selection state.
+                          if (!selectedRequestSummary.contains(event.getValue())) {
+                              selectedRequestSummary.add(event.getValue());
+                            input.setChecked(true);
+                          } else {
+                              selectedRequestSummary.remove(event.getValue());
+                            input.setChecked(false);
+                          }
+                          return DefaultSelectionEventManager.SelectAction.IGNORE;
+                        }
+                      }
+                    }
+
+                    return DefaultSelectionEventManager.SelectAction.DEFAULT;
+                  }
+
+                });
+
+    }
+    
+    
+    private void initChecksColumn() {
         // Checkbox column. This table will uses a checkbox column for selection.
         // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
         // mouse selection.
+        Column<RequestSummary, Boolean> checkColumn = new Column<RequestSummary, Boolean>(new CheckboxCell(
+                true, false)) {
+                  @Override
+                  public Boolean getValue(RequestSummary object) {
+                    // Get the value from the selection model.
+                    return selectedRequestSummary.contains(object);
+                  }
+                };
+        listGrid.addColumn(checkColumn, "");
 
-        Column<RequestSummary, Boolean> checkColumn = new Column<RequestSummary, Boolean>( new CheckboxCell( true, false ) ) {
-            @Override
-            public Boolean getValue( RequestSummary object ) {
-                // Get the value from the selection model.
-                return selectionModel.isSelected( object );
-            }
-        };
-        myRequestListGrid.addColumn( checkColumn, SafeHtmlUtils.fromSafeConstant( "<br/>" ) );
-        myRequestListGrid.setColumnWidth( checkColumn, "40px" );
-
+      }
+    
+    private void initJobIdColumn(){
         // Id
         Column<RequestSummary, Number> taskIdColumn = new Column<RequestSummary, Number>( new NumberCell() ) {
             @Override
@@ -357,67 +400,50 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
             }
         };
         taskIdColumn.setSortable( true );
-        sortHandler.setComparator( taskIdColumn, new Comparator<RequestSummary>() {
-            @Override
-            public int compare( RequestSummary o1,
-                                RequestSummary o2 ) {
-                return Long.valueOf( o1.getId() ).compareTo( Long.valueOf( o2.getId() ) );
-            }
-        } );
-
-        myRequestListGrid.addColumn( taskIdColumn, new ResizableHeader( constants.Id(), myRequestListGrid, taskIdColumn ) );
-        myRequestListGrid.setColumnWidth( taskIdColumn, "40px" );
-
-        // Task name.
-        Column<RequestSummary, String> taskNameColumn = new Column<RequestSummary, String>( new EditTextCell() ) {
+        listGrid.addColumn(taskIdColumn, constants.Id());
+        taskIdColumn.setDataStoreName( "Id" );
+    }
+    
+    private void initJobNameColumn(){
+        // Name
+        Column<RequestSummary, String> taskNameColumn = new Column<RequestSummary, String>( new TextCell() ) {
             @Override
             public String getValue( RequestSummary object ) {
                 return object.getCommandName();
             }
         };
         taskNameColumn.setSortable( true );
-        sortHandler.setComparator( taskNameColumn, new Comparator<RequestSummary>() {
-            @Override
-            public int compare( RequestSummary o1,
-                                RequestSummary o2 ) {
-                return o1.getCommandName().compareTo( o2.getCommandName() );
-            }
-        } );
-        myRequestListGrid.addColumn( taskNameColumn, new ResizableHeader( constants.JobName(), myRequestListGrid, taskNameColumn ) );
-
+        listGrid.addColumn(taskNameColumn, constants.JobName());
+        taskNameColumn.setDataStoreName( "CommandName" );
+    }
+    
+    private void initStatusColumn(){
         // Status
-        Column<RequestSummary, String> statusColumn = new Column<RequestSummary, String>( new EditTextCell() ) {
+        Column<RequestSummary, String> taskNameColumn = new Column<RequestSummary, String>( new TextCell() ) {
             @Override
             public String getValue( RequestSummary object ) {
                 return object.getStatus();
             }
         };
-        statusColumn.setSortable( true );
-        sortHandler.setComparator( statusColumn, new Comparator<RequestSummary>() {
-            @Override
-            public int compare( RequestSummary o1,
-                                RequestSummary o2 ) {
-                return o1.getStatus().compareTo( o2.getStatus() );
-            }
-        } );
-        myRequestListGrid.addColumn( statusColumn, new ResizableHeader( constants.Status(), myRequestListGrid, taskNameColumn ) );
-        myRequestListGrid.setColumnWidth( statusColumn, "100px" );
-
-        // Due Date.
-        Column<RequestSummary, String> dueDateColumn = new Column<RequestSummary, String>( new TextCell() ) {
+        taskNameColumn.setSortable( true );
+        listGrid.addColumn(taskNameColumn, constants.Status());
+        taskNameColumn.setDataStoreName( "Status" );
+    }
+    
+    private void initDueDateColumn(){
+        // Time
+        Column<RequestSummary, String> taskNameColumn = new Column<RequestSummary, String>( new TextCell() ) {
             @Override
             public String getValue( RequestSummary object ) {
-                if ( object.getTime() != null ) {
-                    return object.getTime().toString();
-                }
-                return "";
+                return object.getTime().toString();
             }
         };
-        dueDateColumn.setSortable( true );
-
-        myRequestListGrid.addColumn( dueDateColumn, new ResizableHeader( constants.Due_On(), myRequestListGrid, dueDateColumn ) );
-
-        // actions (icons)
+        taskNameColumn.setSortable( true );
+        listGrid.addColumn(taskNameColumn, constants.Due_On());
+        taskNameColumn.setDataStoreName( "Time" );
+    }
+    
+    private Column<RequestSummary, RequestSummary> initActionsColumn(){
         List<HasCell<RequestSummary, ?>> cells = new LinkedList<HasCell<RequestSummary, ?>>();
         List<String> allStatuses = new ArrayList<String>();
         allStatuses.add("QUEUED");
@@ -467,55 +493,13 @@ public class RequestListViewImpl extends Composite implements RequestListPresent
                 return object;
             }
         };
-
-        myRequestListGrid.addColumn( actionsColumn, new SafeHtmlHeader( SafeHtmlUtils.fromSafeConstant( constants.Actions() ) ) );
-        myRequestListGrid.setColumnWidth( actionsColumn, "100px" );
+        return actionsColumn;
     }
 
-    @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
-    }
-
-    public NavLink getShowAllLink() {
-        return showAllLink;
-    }
-
-    public NavLink getShowQueuedLink() {
-        return showQueuedLink;
-    }
-
-    public NavLink getShowRunningLink() {
-        return showRunningLink;
-    }
-
-    public NavLink getShowRetryingLink() {
-        return showRetryingLink;
-    }
-
-    public NavLink getShowErrorLink() {
-        return showErrorLink;
-    }
-
-    public NavLink getShowCompletedLink() {
-        return showCompletedLink;
-    }
-
-    public NavLink getShowCancelledLink() {
-        return showCancelledLink;
-    }
-
-  
-
-    @Override
-    public DataGrid<RequestSummary> getDataGrid() {
-        return myRequestListGrid;
-    }
-
-    @Override
-    public ListHandler<RequestSummary> getSortHandler() {
-        return sortHandler;
-    }
+//    @Override
+//    public void displayNotification( String text ) {
+//        notification.fire( new NotificationEvent( text ) );
+//    }
 
     private class ActionHasCell implements HasCell<RequestSummary, RequestSummary> {
 

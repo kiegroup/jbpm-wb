@@ -29,6 +29,10 @@
   <name>jBPM Console NG - Executor Service Client</name>
 
   <dependencies>
+  <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-generic-client</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-executor-service-api</artifactId>
