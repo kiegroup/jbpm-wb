@@ -17,6 +17,7 @@ package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
 
 import javax.enterprise.context.Dependent;
 import java.util.HashMap;
@@ -60,8 +61,14 @@ public class JSNIHelper {
         if (opener != null) notifyOpener("success", message);
     }
 
-    protected native void notifyOpener(String status, String message) /*-{
-        var response = '{"status":"' + status + '", "message":"' + message + '"}'
-        $wnd.top.postMessage(response, $wnd.location.href);
+    protected void notifyOpener(String status, String message) {
+        JSONObject jsonMessage = new JSONObject();
+        jsonMessage.put("status", new JSONString(status));
+        jsonMessage.put("message", new JSONString(message));
+        notifyOpener(jsonMessage.toString());
+    }
+
+    protected native void notifyOpener(String message) /*-{
+        $wnd.top.postMessage(message, $wnd.location.href);
     }-*/;
 }

@@ -68,6 +68,7 @@ public class ScreenGenericFormDisplayPresenter {
         widgetPresenter.setup( Long.parseLong( place.getParameter( "taskId", "-1" ) ),
                                place.getParameter( "processId", "none" ),
                                place.getParameter( "domainId", "none" ),
+                               place.getParameter("opener", null),
                                new Command() {
                                    @Override
                                    public void execute() {
