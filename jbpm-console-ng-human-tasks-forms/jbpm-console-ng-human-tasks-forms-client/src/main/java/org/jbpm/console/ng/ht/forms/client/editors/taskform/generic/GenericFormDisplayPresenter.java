@@ -95,10 +95,12 @@ public class GenericFormDisplayPresenter {
     public void setup( final long currentTaskId,
                        final String currentProcessId,
                        final String currentDeploymentId,
+                       final String opener,
                        final Command onClose ) {
         this.currentTaskId = currentTaskId;
         this.currentProcessId = currentProcessId;
         this.currentDeploymentId = currentDeploymentId;
+        this.opener = opener;
         this.onClose = onClose;
         this.onRefresh = new Command() {
             @Override
@@ -113,11 +115,13 @@ public class GenericFormDisplayPresenter {
     public void setup( final long currentTaskId,
                        final String currentProcessId,
                        final String currentDeploymentId,
+                       final String opener,
                        final Command onClose,
                        final Command onReadyToRender ) {
         this.currentTaskId = currentTaskId;
         this.currentProcessId = currentProcessId;
         this.currentDeploymentId = currentDeploymentId;
+        this.opener = opener;
         this.onClose = onClose;
         view.onReadyToRender( onReadyToRender );
         this.onRefresh = new Command() {

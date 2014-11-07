@@ -125,7 +125,7 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
     public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
         selectedItemId = String.valueOf( event.getTaskId() );
         selectedItemName = event.getTaskName();
-        genericFormDisplayPresenter.setup( event.getTaskId(), "none", "none", new Command() {
+        genericFormDisplayPresenter.setup( event.getTaskId(), "none", "none", null, new Command() {
             @Override
             public void execute() {
                 closeDetails();
