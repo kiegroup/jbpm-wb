@@ -16,18 +16,14 @@
 
 package org.jbpm.console.ng.client.perspectives;
 
-import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import org.guvnor.common.services.project.context.ProjectContextChangeEvent;
 import org.jbpm.console.ng.client.i18n.Constants;
-import org.kie.workbench.common.screens.projecteditor.client.menu.ProjectMenu;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcesMenu;
-import org.uberfire.backend.vfs.PathFactory;
+import org.kie.workbench.common.widgets.client.menu.RepositoryMenu;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -43,7 +39,6 @@ import org.uberfire.workbench.model.impl.PanelDefinitionImpl;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.workbench.model.menu.MenuFactory;
-import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
 @ApplicationScoped
@@ -62,7 +57,7 @@ public class ProjectAuthoringPerspective {
     private NewResourcesMenu newResourcesMenu;
 
     @Inject
-    private ProjectMenu projectMenu;
+    private RepositoryMenu repositoryMenu;
 
     public ProjectAuthoringPerspective() {
     }
@@ -96,8 +91,8 @@ public class ProjectAuthoringPerspective {
                 .withItems( newResourcesMenu.getMenuItems() )
                 .endMenu()
 
-                .newTopLevelMenu( "Tools" )
-                .withItems( projectMenu.getMenuItems() )
+                .newTopLevelMenu( "Repository" )
+                .withItems( repositoryMenu.getMenuItems() )
                 .endMenu()
 
                 .build();
