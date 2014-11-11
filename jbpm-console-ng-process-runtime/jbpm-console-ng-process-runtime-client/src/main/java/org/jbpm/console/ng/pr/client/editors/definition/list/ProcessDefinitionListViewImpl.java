@@ -49,8 +49,8 @@ import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
-import org.kie.uberfire.client.tables.ColumnMeta;
-import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 

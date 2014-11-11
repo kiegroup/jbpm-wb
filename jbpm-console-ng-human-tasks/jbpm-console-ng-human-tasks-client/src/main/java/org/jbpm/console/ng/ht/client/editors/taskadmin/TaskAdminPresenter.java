@@ -33,14 +33,13 @@ import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
 
-import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
-
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import java.util.ArrayList;
 import java.util.List;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 
 @Dependent
 public class TaskAdminPresenter {

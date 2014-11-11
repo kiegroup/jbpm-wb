@@ -21,11 +21,10 @@ import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
 import org.uberfire.client.mvp.PlaceManager;
 
-
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.TextBox;
-import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 
 @Dependent
 public class TaskProcessContextPresenter {

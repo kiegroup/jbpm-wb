@@ -39,7 +39,7 @@ import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskCommentsService;
-import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 
 @Dependent
 public class TaskCommentsPresenter {

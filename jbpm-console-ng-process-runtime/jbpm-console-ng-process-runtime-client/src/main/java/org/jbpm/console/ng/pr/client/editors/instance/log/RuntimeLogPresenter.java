@@ -34,7 +34,7 @@ import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogOrder;
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogType;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
-import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 
 @Dependent
 public class RuntimeLogPresenter {

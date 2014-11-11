@@ -36,8 +36,8 @@ import org.jbpm.console.ng.ga.model.DataMockSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 
 import org.jbpm.console.ng.gc.client.i18n.Constants;
-import org.kie.uberfire.client.common.BusyPopup;
-import org.kie.uberfire.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
 

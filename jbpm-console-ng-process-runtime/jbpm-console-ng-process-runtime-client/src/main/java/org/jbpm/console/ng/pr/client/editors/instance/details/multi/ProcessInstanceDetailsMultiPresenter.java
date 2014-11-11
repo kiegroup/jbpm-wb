@@ -38,7 +38,7 @@ import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;

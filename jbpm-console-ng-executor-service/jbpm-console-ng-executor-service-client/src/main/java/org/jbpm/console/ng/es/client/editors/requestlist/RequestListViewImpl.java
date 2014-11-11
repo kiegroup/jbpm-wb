@@ -16,8 +16,28 @@
 
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.CheckBox;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.es.client.i18n.Constants;
+import org.jbpm.console.ng.es.client.util.ResizableHeader;
+import org.jbpm.console.ng.es.model.RequestSummary;
+import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
+import org.jbpm.console.ng.es.model.events.RequestSelectionEvent;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.events.NotificationEvent;
+
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SimplePager;
@@ -31,15 +51,6 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -57,17 +68,6 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.es.client.i18n.Constants;
-import org.jbpm.console.ng.es.client.util.ResizableHeader;
-import org.jbpm.console.ng.es.model.RequestSummary;
-import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
-import org.jbpm.console.ng.es.model.events.RequestSelectionEvent;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "RequestListViewImpl.html")

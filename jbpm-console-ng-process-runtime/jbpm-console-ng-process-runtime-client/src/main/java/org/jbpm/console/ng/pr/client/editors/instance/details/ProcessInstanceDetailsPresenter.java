@@ -41,7 +41,7 @@ import org.jbpm.console.ng.pr.model.events.ProcessInstanceStyleEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.jbpm.console.ng.pr.service.ProcessInstanceService;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.uberfire.client.common.popups.errors.ErrorPopup;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.mvp.PlaceManager;
