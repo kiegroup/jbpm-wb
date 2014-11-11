@@ -23,8 +23,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 import com.google.gwt.view.client.ProvidesKey;
 import org.jbpm.console.ng.ga.model.GenericSummary;
-import org.kie.uberfire.client.tables.PagedTable;
-import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.widgets.common.client.tables.PagedTable;
+import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 
 /**
  *

@@ -127,7 +127,7 @@ public class DocumentDetailsPresenter {
 		}, new ErrorCallback<Message>() {
 			@Override
 			public boolean error(Message message, Throwable throwable) {
-				org.kie.uberfire.client.common.popups.errors.ErrorPopup.showMessage("Unexpected error encountered : "
+				org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup.showMessage("Unexpected error encountered : "
 						+ throwable.getMessage());
 				return true;
 			}

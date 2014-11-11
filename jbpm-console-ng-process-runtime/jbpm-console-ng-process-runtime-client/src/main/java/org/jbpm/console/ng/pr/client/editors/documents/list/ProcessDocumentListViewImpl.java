@@ -45,7 +45,7 @@ import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
 import org.jbpm.console.ng.pr.model.DocumentSummary;
-import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 
 @Dependent

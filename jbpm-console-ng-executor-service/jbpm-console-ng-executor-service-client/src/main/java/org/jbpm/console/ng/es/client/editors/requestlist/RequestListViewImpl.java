@@ -36,7 +36,7 @@ import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.es.model.events.RequestSelectionEvent;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
-import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;

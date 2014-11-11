@@ -31,7 +31,7 @@
 
   <inherits name="org.kie.workbench.common.widgets.KieWorkbenchWidgetsCommon"/>
   
-  <inherits name="org.kie.uberfire.KIEUberfireWidgetsCommons"/>
+  <inherits name="org.uberfire.ext.widgets.common.UberfireWidgetsCommons"/>
 
   <inherits name="com.github.gwtbootstrap.datetimepicker.Datetimepicker" />
   <inherits name="com.github.gwtbootstrap.datepicker.Datepicker" />

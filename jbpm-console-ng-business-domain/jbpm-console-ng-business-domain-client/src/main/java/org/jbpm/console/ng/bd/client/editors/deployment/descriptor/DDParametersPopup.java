@@ -34,7 +34,7 @@ import com.google.gwt.view.client.ListDataProvider;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.dd.model.ItemObjectModel;
 import org.jbpm.console.ng.bd.dd.model.Parameter;
-import org.kie.uberfire.client.common.popups.footers.ModalFooterOKCancelButtons;
+import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKCancelButtons;
 import org.uberfire.client.workbench.widgets.common.Modal;
 import com.google.gwt.user.client.Command;
 

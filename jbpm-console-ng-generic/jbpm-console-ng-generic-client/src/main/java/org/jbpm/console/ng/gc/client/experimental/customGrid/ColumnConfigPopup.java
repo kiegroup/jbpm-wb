@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Map;
-import org.kie.uberfire.client.common.popups.footers.ModalFooterOKButton;
+import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKButton;
 
 
 public class ColumnConfigPopup extends Modal {
