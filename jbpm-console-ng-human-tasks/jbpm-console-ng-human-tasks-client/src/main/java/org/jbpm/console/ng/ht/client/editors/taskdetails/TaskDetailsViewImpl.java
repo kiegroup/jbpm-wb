@@ -53,14 +53,6 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
 
     @Inject
     @DataField
-    public TextBox processInstanceIdText;
-
-    @Inject
-    @DataField
-    public TextBox processIdText;
-
-    @Inject
-    @DataField
     public TextBox taskStatusText;
 
     @Inject
@@ -71,14 +63,6 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @DataField
     public ListBox taskPriorityListBox;
 
-    // @Inject
-    // @DataField
-    // public ListBox subTaskStrategyListBox;
-
-    @Inject
-    @DataField
-    public Label processContextLabel;
-    
     @Inject
     @DataField
     public Label logTextLabel;
@@ -104,11 +88,6 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @DataField
     public Button updateTaskButton;
 
-    
-    @Inject
-    @DataField
-    public Button pIDetailsButton;
-
     @Inject
     @DataField
     public ControlLabel taskStatusLabel;
@@ -125,17 +104,6 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @DataField
     public ControlLabel taskPriorityLabel;
 
-    @Inject
-    @DataField
-    public ControlLabel processInstanceIdLabel;
-
-    @Inject
-    @DataField
-    public ControlLabel processIdLabel;
-
-    @Inject
-    @DataField
-    public ControlLabel pIDetailsLabel;
 
     @Inject
     @DataField
@@ -180,20 +148,13 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
 
         taskPriorityLabel.add( new HTMLPanel( constants.Priority() ) );
 
-        processInstanceIdLabel.add( new HTMLPanel( constants.Process_Instance_Id() ) );
-        processIdLabel.add( new HTMLPanel( constants.Process_Definition_Id() ) );
-        pIDetailsLabel.add( new HTMLPanel( constants.Process_Instance_Details() ) );
         taskDescriptionLabel.add( new HTMLPanel( constants.Description() ) );
         detailsAccordionLabel.add( new HTMLPanel( constants.Details()) );
-        processContextLabel.setText( constants.Process_Context() );
-        processContextLabel.setStyleName( "" );
         taskLogsLabel.setText( constants.Logs() );
         taskLogsLabel.setStyleName( "" );
         
-        pIDetailsButton.setText( constants.Process_Instance_Details() );
         updateTaskButton.setText( constants.Update() );
         
-        processIdText.setReadOnly(true);
     }
 
     @EventHandler("updateTaskButton")
@@ -205,11 +166,6 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
 
     }
     
-
-    @EventHandler("pIDetailsButton")
-    public void pIDetailsButton( ClickEvent e ) {
-        presenter.goToProcessInstanceDetails();
-    }
 
     @Override
     public TextBox getUserText() {
@@ -256,20 +212,6 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
         return taskStatusText;
     }
 
-    @Override
-    public TextBox getProcessInstanceIdText() {
-        return processInstanceIdText;
-    }
-
-    @Override
-    public TextBox getProcessIdText() {
-        return processIdText;
-    }
-
-    @Override
-    public Button getpIDetailsButton() {
-        return pIDetailsButton;
-    }
     
     @Override
     public HTML getLogTextArea() {

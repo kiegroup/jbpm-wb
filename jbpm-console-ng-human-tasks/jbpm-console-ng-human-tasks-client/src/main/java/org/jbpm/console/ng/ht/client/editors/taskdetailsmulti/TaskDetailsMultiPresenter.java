@@ -22,12 +22,14 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
+
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsPresenter;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView.TabbedDetailsView;
 import org.jbpm.console.ng.ht.client.editors.taskadmin.TaskAdminPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskdetails.TaskDetailsPresenter;
+import org.jbpm.console.ng.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.forms.client.editors.taskform.generic.GenericFormDisplayPresenter;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
@@ -60,7 +62,8 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
                               final TaskDetailsPresenter taskDetailsPresenter,
                               final TaskAssignmentsPresenter taskAssignmentsPresenter,
                               final TaskCommentsPresenter taskCommentsPresenter,
-                              final TaskAdminPresenter taskAdminPresenter);
+                              final TaskAdminPresenter taskAdminPresenter,
+                              final TaskProcessContextPresenter taskProcessContextPresenter);
 
         IsWidget getRefreshButton();
 
@@ -90,10 +93,13 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
     
     @Inject
     private TaskAdminPresenter taskAdminPresenter;
+    
+    @Inject
+    private TaskProcessContextPresenter taskProcessContextPresenter;
 
     @PostConstruct
     public void init() {
-        view.setupPresenters( genericFormDisplayPresenter, taskDetailsPresenter, taskAssignmentsPresenter, taskCommentsPresenter, taskAdminPresenter );
+        view.setupPresenters( genericFormDisplayPresenter, taskDetailsPresenter, taskAssignmentsPresenter, taskCommentsPresenter, taskAdminPresenter ,taskProcessContextPresenter);
     }
 
     @WorkbenchPartView
