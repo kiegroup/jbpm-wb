@@ -31,9 +31,9 @@ import org.jbpm.console.ng.ht.admin.service.TaskServiceAdminEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.PlaceManager;
+
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.widgets.common.ErrorPopup;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
@@ -61,8 +61,7 @@ public class TaskAdminSettingsPresenter {
 
     private PlaceRequest place;
 
-    @Inject
-    private PlaceManager placeManager;
+ 
 
     @OnStartup
     public void onStartup(final PlaceRequest place) {

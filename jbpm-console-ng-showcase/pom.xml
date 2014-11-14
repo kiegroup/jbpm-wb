@@ -84,18 +84,23 @@
       <artifactId>jbpm-services-cdi</artifactId>
     </dependency>
 
-    <!-- Manstis hackathon -->
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-scorecard-xls-editor-client</artifactId>
-    </dependency>
 
     <!-- jBPM Console Panels -->
+    
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-bpm-home-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-generic-client</artifactId>
+    </dependency>
+    
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
     </dependency>
-
 
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -128,12 +133,7 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-human-tasks-forms-backend</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-business-domain-api</artifactId>
-    </dependency>
-
+  
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-business-domain-client</artifactId>
@@ -163,15 +163,25 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-executor-service-backend</artifactId>
     </dependency>
-
-    <dependency>
+    
+     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-bpm-home-client</artifactId>
+      <artifactId>jbpm-console-ng-human-tasks-forms-modeler-client</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-generic-client</artifactId>
+      <artifactId>jbpm-console-ng-human-tasks-forms-modeler-backend</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-workbench-integration-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-workbench-integration-backend</artifactId>
     </dependency>
 
     <dependency>
@@ -242,8 +252,31 @@
         </exclusion>
       </exclusions>
     </dependency>
+    
+    <!-- UberFire -->
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-all</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-workbench-processors</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- UberFire Security Extension -->
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-servlet-security</artifactId>
+    </dependency>
 
     <!-- UberFire Extension -->
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-metadata-api</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-metadata-commons-io</artifactId>
@@ -262,25 +295,6 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-widgets-service-backend</artifactId>
-    </dependency>
-
-
-    <!-- UberFire -->
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-all</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-workbench-processors</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <!-- UberFire Security Extension -->
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-servlet-security</artifactId>
     </dependency>
 
     <!-- Errai AS -->
@@ -425,7 +439,6 @@
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-asset-mgmt-backend</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-services-api</artifactId>
@@ -496,12 +509,10 @@
       <groupId>org.kie.workbench.screens</groupId>
       <artifactId>kie-wb-common-project-imports-editor-client</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.kie.workbench.services</groupId>
       <artifactId>kie-wb-common-datamodel-api</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.kie.workbench.widgets</groupId>
       <artifactId>kie-wb-common-ui</artifactId>
@@ -580,6 +591,7 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-form-modeler-form-provider</artifactId>
     </dependency>
+    
     <!-- Data Modeller -->
     <dependency>
       <groupId>org.kie.workbench.screens</groupId>
@@ -708,6 +720,7 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-admin-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-forms-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-forms-modeler-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-api</compileSourcesArtifact>
@@ -715,7 +728,7 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-documents-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-documents-client</compileSourcesArtifact>
-
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-workbench-integration-client</compileSourcesArtifact>
 
             <compileSourcesArtifact>org.jbpm:jbpm-designer-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-designer-client</compileSourcesArtifact>

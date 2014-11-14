@@ -31,10 +31,7 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-human-tasks-forms-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-api</artifactId>
-    </dependency>
+   
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-api</artifactId>

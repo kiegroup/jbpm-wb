@@ -72,9 +72,6 @@ public class TaskAssignmentsPresenter {
     @Inject
     Caller<TaskOperationsService> taskOperationsServices;
 
-    @Inject
-    private Caller<DataServiceEntryPoint> dataServices;
-
     private long currentTaskId = 0;
 
     @Inject

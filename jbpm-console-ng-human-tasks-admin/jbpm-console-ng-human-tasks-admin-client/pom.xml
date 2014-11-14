@@ -35,15 +35,7 @@
       <artifactId>jbpm-console-ng-human-tasks-admin-api</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-process-runtime-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-business-domain-api</artifactId>
-    </dependency>
+   
 
     <dependency>
       <groupId>org.kie.workbench.widgets</groupId>
@@ -60,7 +52,7 @@
       <artifactId>uberfire-workbench-processors</artifactId>
       <scope>provided</scope>
     </dependency>
-
+    
     <!-- Errai UI -->
     <dependency>
       <groupId>org.jboss.errai</groupId>

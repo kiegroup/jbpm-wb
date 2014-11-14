@@ -35,20 +35,7 @@
       <artifactId>jbpm-console-ng-human-tasks-forms-api</artifactId>
     </dependency>
 
-   <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-renderer-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-renderer-client</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-renderer-backend</artifactId>
-    </dependency>
+   
     
     <dependency>
       <groupId>org.jbpm</groupId>
