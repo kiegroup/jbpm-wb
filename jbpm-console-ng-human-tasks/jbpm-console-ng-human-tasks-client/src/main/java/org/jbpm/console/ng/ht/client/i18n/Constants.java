@@ -168,4 +168,6 @@ public interface Constants extends Messages {
     String Hide_Details();
     
     String Task_Admin();
+    
+    String Delegate_User();
 }

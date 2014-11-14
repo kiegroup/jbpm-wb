@@ -21,16 +21,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.ht.model.TaskAssignmentSummay;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.jbpm.services.api.RuntimeDataService;
 import org.jbpm.services.api.UserTaskService;
 import org.jbpm.services.task.utils.TaskFluent;
+import org.kie.api.task.model.Group;
 import org.kie.api.task.model.OrganizationalEntity;
 import org.kie.api.task.model.Task;
+import org.kie.api.task.model.User;
 import org.kie.internal.task.api.InternalTaskService;
 
 /**
@@ -95,14 +100,6 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
     public TaskSummary getTaskDetails(long taskId) {
         Task task = taskService.getTask(taskId);
         if (task != null) {
-            List<OrganizationalEntity> potentialOwners = task.getPeopleAssignments().getPotentialOwners();
-            List<String> potOwnersString = null;
-            if (potentialOwners != null) {
-                potOwnersString = new ArrayList<String>(potentialOwners.size());
-                for (OrganizationalEntity e : potentialOwners) {
-                    potOwnersString.add(e.getId());
-                }
-            } 
             return new TaskSummary(task.getId(), task.getName(),
                     task.getDescription(), task.getTaskData().getStatus().name(), task.getPriority(), (task.getTaskData().getActualOwner() != null) ? task.getTaskData().getActualOwner()
                     .getId() : "", (task.getTaskData().getCreatedBy() != null) ? task.getTaskData().getCreatedBy().getId()
@@ -124,5 +121,35 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
         return runtimeDataService.getTaskById(taskId) == null ? false : true;
     }
   
-  
+    @Override
+    public TaskAssignmentSummay getTaskAssignmentDetails(long taskId) {
+        Task task = taskService.getTask(taskId);
+        if (task != null) {
+            List<OrganizationalEntity> potentialOwners = task.getPeopleAssignments().getPotentialOwners();
+            List<String> potOwnersString = null;
+            if (potentialOwners != null) {
+                potOwnersString = new ArrayList<String>(potentialOwners.size());
+                potOwnersString = getPotentialOwnersByTaskId(potentialOwners);
+                }
+            return new TaskAssignmentSummay(task.getId(),task.getName(),(task.getTaskData().getActualOwner() != null) ? task.getTaskData().getActualOwner()
+                .getId() : "",potOwnersString);
+            }
+        return null;
+    }
+    
+    private List<String> getPotentialOwnersByTaskId(List<OrganizationalEntity> potentialOwners){
+        
+        List<String> orgEntitiesSimple = new ArrayList<String>(potentialOwners.size());
+        for (OrganizationalEntity entity : potentialOwners) {
+           if (entity instanceof Group) {
+             
+             orgEntitiesSimple.add("Group:" + entity.getId());
+            } else if (entity instanceof User) {
+              
+                orgEntitiesSimple.add("User:" + entity.getId());
+             }
+        }
+        return orgEntitiesSimple;
+     
+ }
 }

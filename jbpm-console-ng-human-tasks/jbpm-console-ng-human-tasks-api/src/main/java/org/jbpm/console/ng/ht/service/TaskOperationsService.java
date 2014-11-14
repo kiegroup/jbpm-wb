@@ -19,7 +19,9 @@ package org.jbpm.console.ng.ht.service;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.console.ng.ht.model.TaskAssignmentSummay;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 
 
@@ -42,5 +44,7 @@ public interface TaskOperationsService{
   long saveContent(long taskId, Map<String, Object> values);
   
   boolean existInDatabase(long taskId);
+  
+  TaskAssignmentSummay getTaskAssignmentDetails(long taskId); 
   
 }
