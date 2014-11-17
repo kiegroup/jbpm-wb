@@ -32,7 +32,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
+import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
@@ -108,23 +108,7 @@ public class TaskAssignmentsPresenter {
     public void refreshTaskPotentialOwners() {
         List<Long> taskIds = new ArrayList<Long>( 1 );
         taskIds.add( currentTaskId );
-//        taskServices.call( new RemoteCallback<Map<Long, List<String>>>() {
-//            @Override
-//            public void callback( Map<Long, List<String>> ids ) {
-//                if ( ids.isEmpty() ) {
-//                    view.getUsersGroupsControlsPanel().setText( Constants.INSTANCE.No_Potential_Owners() );
-//                } else {
-//                    view.getUsersGroupsControlsPanel().setText( ( "" + ids.get( currentTaskId ).toString() ) );
-//                }
-//            }
-//        }, new ErrorCallback<Message>() {
-//            @Override
-//            public boolean error( Message message,
-//                                  Throwable throwable ) {
-//                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
-//                return true;
-//            }
-//        } ).getPotentialOwnersForTaskIds( taskIds );
+
 
         taskOperationsServices.call( new RemoteCallback<TaskSummary>() {
             @Override
@@ -133,6 +117,11 @@ public class TaskAssignmentsPresenter {
                     return;
                 }
                 String actualOwner = ts.getActualOwner();
+                 if( ts.getPotOwnersString() != null && ts.getPotOwnersString().isEmpty() ){
+                    view.getUsersGroupsControlsPanel().setText( Constants.INSTANCE.No_Potential_Owners() );
+                } else {
+                    view.getUsersGroupsControlsPanel().setText("" + ts.getPotOwnersString().toString() );
+                }
                 if ( actualOwner.equals( "" ) || !actualOwner.equals( identity.getIdentifier() ) ) {
                     view.getDelegateButton().setEnabled( false );
                     view.getUserOrGroupText().setEnabled( false );

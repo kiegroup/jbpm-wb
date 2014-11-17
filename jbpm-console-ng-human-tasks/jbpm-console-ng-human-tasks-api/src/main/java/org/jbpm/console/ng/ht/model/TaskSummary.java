@@ -15,9 +15,12 @@
  */
 package org.jbpm.console.ng.ht.model;
 
+import java.util.ArrayList;
 import java.util.Date;
-import org.jbpm.console.ng.ga.model.GenericSummary;
+import java.util.List;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jbpm.console.ng.ga.model.GenericSummary;
 
 @Portable
 public class TaskSummary extends GenericSummary {
@@ -39,7 +42,8 @@ public class TaskSummary extends GenericSummary {
     private String deploymentId;
     private boolean isForAdmin;
     private Long parentId;
-
+    private List<String> potOwnersString = new ArrayList<String>();
+    
     public TaskSummary(long taskId, String taskName, String description, String status,
             int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
             Date expirationTime, String processId, int processSessionId, long processInstanceId, String deploymentId, long parentId) {
@@ -71,6 +75,17 @@ public class TaskSummary extends GenericSummary {
                  expirationTime, processId, processSessionId, 
                  processInstanceId, deploymentId, parentId);
          this.isForAdmin = isForAdmin;
+    }
+    public TaskSummary(long taskId, String taskName, String description, String status,
+                       int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
+                       Date expirationTime, String processId, int processSessionId, long processInstanceId, String deploymentId, long parentId,boolean isForAdmin,List<String> potOwnersString) {
+                    this(taskId, taskName, description, status, priority, 
+                            actualOwner, createdBy, createdOn, activationTime, 
+                            expirationTime, processId, processSessionId, 
+                            processInstanceId, deploymentId, parentId);
+                    this.isForAdmin = isForAdmin;
+                    this.potOwnersString.clear();
+                    this.potOwnersString.addAll( potOwnersString );
     }
     public TaskSummary() {
     }
@@ -149,14 +164,20 @@ public class TaskSummary extends GenericSummary {
     public void setForAdmin(boolean isForAdmin) {
         this.isForAdmin = isForAdmin;
     }
+    public List<String> getPotOwnersString() {
+        return potOwnersString;
+    }
 
+    public void setPotOwnersString(List<String> potOwnersString) {
+        this.potOwnersString = potOwnersString;
+    }
     @Override
     public String toString() {
         return "TaskSummary [id=" + taskId + ", name=" + taskName + ", description=" + description + ", deploymentId=" + deploymentId
                 + ", status=" + status + ", priority=" + priority + ", parentId=" + parentId
                 + ", actualOwner=" + actualOwner + ", createdBy=" + createdBy + ", createdOn=" + createdOn
                 + ", activationTime=" + activationTime + ", expirationTime=" + expirationTime + ", processInstanceId="
-                + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", isForAdmin="+ isForAdmin+ "]";
+                + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", isForAdmin="+ isForAdmin+ ", potOwnersString + "+potOwnersString.toString()+"]";
     }
 
 }
