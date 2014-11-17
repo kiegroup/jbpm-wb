@@ -109,13 +109,14 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     List<String> bannedColumns = new ArrayList<String>();
     bannedColumns.add(constants.Id());
     bannedColumns.add(constants.Name());
+    bannedColumns.add(constants.Process_Instance_Description());
     bannedColumns.add(constants.Actions());
     List<String> initColumns = new ArrayList<String>();
     initColumns.add(constants.Id());
     initColumns.add(constants.Name());
-    initColumns.add(constants.Version());
+    initColumns.add(constants.Process_Instance_Description());
     initColumns.add(constants.Actions());
-
+    initColumns.add(constants.Version());
     super.init(presenter, new GridGlobalPreferences("ProcessInstancesGrid", initColumns, bannedColumns));
 
     initBulkActionsDropDown();
@@ -210,12 +211,12 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     initChecksColumn();
     initProcessInstanceIdColumn();
     initProcessNameColumn();
-    initInitiatorColumn();
-    initProcessVersionColumn();
-    initProcessStateColumn();
-    initStartDateColumn();
     initDescriptionColumn();
     actionsColumn = initActionsColumn();
+    initProcessVersionColumn();
+    initInitiatorColumn();
+    initProcessStateColumn();
+    initStartDateColumn();
     listGrid.addColumn(actionsColumn, constants.Actions());
   }
 
