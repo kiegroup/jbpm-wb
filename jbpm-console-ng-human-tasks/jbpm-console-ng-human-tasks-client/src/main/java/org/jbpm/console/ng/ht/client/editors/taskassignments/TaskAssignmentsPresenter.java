@@ -33,6 +33,7 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.model.TaskAssignmentSummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
@@ -56,9 +57,6 @@ public class TaskAssignmentsPresenter {
 
         TextBox getUserOrGroupText();
     }
-
-    @Inject
-    private PlaceManager placeManager;
 
     @Inject
     private TaskAssignmentsView view;
@@ -110,17 +108,17 @@ public class TaskAssignmentsPresenter {
         taskIds.add( currentTaskId );
 
 
-        taskOperationsServices.call( new RemoteCallback<TaskSummary>() {
+        taskOperationsServices.call( new RemoteCallback<TaskAssignmentSummary>() {
             @Override
-            public void callback( TaskSummary ts ) {
+            public void callback( TaskAssignmentSummary ts ) {
                 if ( ts == null ) {
                     return;
                 }
                 String actualOwner = ts.getActualOwner();
-                 if( ts.getPotOwnersString() != null && ts.getPotOwnersString().isEmpty() ){
+                if( ts.getPotOwnersString() != null && ts.getPotOwnersString().size() == 0 ){
                     view.getUsersGroupsControlsPanel().setText( Constants.INSTANCE.No_Potential_Owners() );
                 } else {
-                    view.getUsersGroupsControlsPanel().setText("" + ts.getPotOwnersString().toString() );
+                       view.getUsersGroupsControlsPanel().setText("" + ts.getPotOwnersString().toString() );
                 }
                 if ( actualOwner.equals( "" ) || !actualOwner.equals( identity.getIdentifier() ) ) {
                     view.getDelegateButton().setEnabled( false );
@@ -137,7 +135,7 @@ public class TaskAssignmentsPresenter {
                 ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                 return true;
             }
-        } ).getTaskDetails( currentTaskId );
+        } ).getTaskAssignmentDetails( currentTaskId );
 
     }
 
