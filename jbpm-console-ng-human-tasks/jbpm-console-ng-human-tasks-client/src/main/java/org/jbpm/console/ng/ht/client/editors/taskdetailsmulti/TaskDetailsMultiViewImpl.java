@@ -15,7 +15,18 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskdetailsmulti;
 
+import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.MINI;
+
 import javax.enterprise.context.Dependent;
+
+import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView;
+import org.jbpm.console.ng.ht.client.editors.taskadmin.TaskAdminPresenter;
+import org.jbpm.console.ng.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
+import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter;
+import org.jbpm.console.ng.ht.client.editors.taskdetails.TaskDetailsPresenter;
+import org.jbpm.console.ng.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter;
+import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.forms.client.editors.taskform.generic.GenericFormDisplayPresenter;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
@@ -27,15 +38,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
-import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView;
-import org.jbpm.console.ng.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
-import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter;
-import org.jbpm.console.ng.ht.client.editors.taskdetails.TaskDetailsPresenter;
-import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.forms.client.editors.taskform.generic.GenericFormDisplayPresenter;
-
-import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.*;
-import org.jbpm.console.ng.ht.client.editors.taskadmin.TaskAdminPresenter;
 
 @Dependent
 public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDetailsMultiPresenter>
@@ -57,6 +59,7 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
     
     private TaskAdminPresenter taskAdminPresenter;
 
+    private TaskProcessContextPresenter taskProcessContextPresenter;
     @Override
     public void init( final TaskDetailsMultiPresenter presenter ) {
         super.init( presenter );
@@ -69,6 +72,7 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
         tabPanel.addTab( "Task Assignments", Constants.INSTANCE.Assignments() );
         tabPanel.addTab( "Task Comments", Constants.INSTANCE.Comments() );
         tabPanel.addTab( "Task Admin", Constants.INSTANCE.Task_Admin());
+        tabPanel.addTab( "Process_Context", Constants.INSTANCE.Process_Context());
         
         tabPanel.setHeight( "700px" );
 
@@ -77,6 +81,7 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
         ( (HTMLPanel) tabPanel.getWidget( 2 ) ).add( taskAssignmentsPresenter.getView() );
         ( (HTMLPanel) tabPanel.getWidget( 3 ) ).add( taskCommentsPresenter.getView() );
         ( (HTMLPanel) tabPanel.getWidget( 4 ) ).add( taskAdminPresenter.getView() );
+        ( (HTMLPanel) tabPanel.getWidget( 5 ) ).add( taskProcessContextPresenter.getView() );
 
         tabPanel.addSelectionHandler( new SelectionHandler<Integer>() {
 
@@ -90,6 +95,9 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
                     taskCommentsPresenter.refreshComments();
                 }else if ( event.getSelectedItem() == 3 ) {
                     taskAdminPresenter.refreshTaskPotentialOwners();
+                }
+                else if ( event.getSelectedItem() == 4 ) {
+                    taskProcessContextPresenter.refreshProcessContextOfTask();
                 }
             }
         } );
@@ -116,12 +124,14 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
                                  final TaskDetailsPresenter taskDetailsPresenter,
                                  final TaskAssignmentsPresenter taskAssignmentsPresenter,
                                  final TaskCommentsPresenter taskCommentsPresenter,
-                                 final TaskAdminPresenter taskAdminPresenter) {
+                                 final TaskAdminPresenter taskAdminPresenter,
+                                 final TaskProcessContextPresenter taskProcessContextPresenter) {
         this.genericFormDisplayPresenter = genericFormDisplayPresenter;
         this.taskDetailsPresenter = taskDetailsPresenter;
         this.taskAssignmentsPresenter = taskAssignmentsPresenter;
         this.taskCommentsPresenter = taskCommentsPresenter;
         this.taskAdminPresenter = taskAdminPresenter;
+        this.taskProcessContextPresenter =taskProcessContextPresenter;
     }
 
     @Override

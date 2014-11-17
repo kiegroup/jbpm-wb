@@ -78,10 +78,6 @@ public class TaskDetailsPresenter {
 
         TextBox getUserText();
 
-        TextBox getProcessInstanceIdText();
-
-        TextBox getProcessIdText();
-
         HTML getLogTextArea();
 
         // Commented out until we add the posibility of adding sub tasks
@@ -92,7 +88,6 @@ public class TaskDetailsPresenter {
 
         TextBox getTaskStatusText();
 
-        Button getpIDetailsButton();
 
     }
 
@@ -139,26 +134,6 @@ public class TaskDetailsPresenter {
         return view;
     }
 
-    public void goToProcessInstanceDetails() {
-
-        dataServices.call( new RemoteCallback<ProcessInstanceSummary>() {
-            @Override
-            public void callback( ProcessInstanceSummary processInstance ) {
-
-                placeManager.goTo( "Process Instances" );
-                processInstanceSelected.fire( new ProcessInstancesWithDetailsRequestEvent( processInstance.getDeploymentId(),
-                                                                                           processInstance.getProcessInstanceId(), processInstance.getProcessId(), processInstance.getProcessName(), processInstance.getState() ) );
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
-                return true;
-            }
-        } ).getProcessInstanceById( Long.parseLong( view.getProcessInstanceIdText().getText() ) );
-
-    }
 
     public void updateTask( final String taskDescription,
                             final String userId,
@@ -203,7 +178,6 @@ public class TaskDetailsPresenter {
                     view.getDueDate().setEnabled( false );
                     view.getUserText().setEnabled( false );
                     view.getTaskStatusText().setEnabled( false );
-                    view.getProcessInstanceIdText().setEnabled( false );
                 }
 
                 view.getTaskDescriptionTextArea().setText( details.getDescription() );
@@ -213,18 +187,6 @@ public class TaskDetailsPresenter {
                 view.getUserText().setEnabled( false );
                 view.getTaskStatusText().setText( details.getStatus() );
                 view.getTaskStatusText().setEnabled( false );
-                view.getProcessIdText().setEnabled( false );
-                if ( details.getProcessInstanceId() == -1 ) {
-                    view.getProcessInstanceIdText().setText( "None" );
-                    view.getProcessIdText().setText( "None" );
-                    view.getpIDetailsButton().setEnabled( false );
-                } else {
-                    view.getProcessInstanceIdText().setText( String.valueOf( details.getProcessInstanceId() ) );
-                    view.getProcessIdText().setText( details.getProcessId() );
-                    view.getpIDetailsButton().setEnabled( true );
-                }
-
-                view.getProcessInstanceIdText().setEnabled( false );
 
                 int i = 0;
                 // Commented out until we add the posibility of adding sub tasks
