@@ -26,6 +26,29 @@
     <packaging>jar</packaging>
     <name>jBPM Console NG - Asset Management Backend</name>
     <dependencies>
+
+      <!-- dependencies added because of new illegal transitive dependency check -->
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-project-api</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-backend</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-kie-services</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-api</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-cdi</artifactId>
+      </dependency>
+
         <!-- Internal dependencies -->
         <dependency>
             <groupId>org.guvnor</groupId>
