@@ -32,7 +32,6 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
@@ -41,13 +40,10 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
 
     private TaskAssignmentsPresenter presenter;
 
-    
     @Inject
     @DataField
     public ControlLabel detailsAccordionLabel;
 
-    @Inject
-    private PlaceManager placeManager;
 
     @Inject
     @DataField
@@ -79,7 +75,7 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
     public void init( TaskAssignmentsPresenter presenter ) {
         this.presenter = presenter;
 
-        userOrGroupLabel.setText(constants.UserOrGroup());
+        userOrGroupLabel.setText(constants.Delegate_User());
         detailsAccordionLabel.add( new HTMLPanel( constants.Details()) );
         delegateButton.setText(constants.Delegate());
         usersGroupsControlsLabel.setText(constants.Potential_Owners());

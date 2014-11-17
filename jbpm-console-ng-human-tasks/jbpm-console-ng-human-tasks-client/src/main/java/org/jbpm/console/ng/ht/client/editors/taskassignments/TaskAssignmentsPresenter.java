@@ -17,29 +17,30 @@ package org.jbpm.console.ng.ht.client.editors.taskassignments;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
-import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.model.TaskAssignmentSummay;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
-import org.uberfire.client.mvp.PlaceManager;
+
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Label;
 
 @Dependent
 public class TaskAssignmentsPresenter {
@@ -56,9 +57,6 @@ public class TaskAssignmentsPresenter {
 
         TextBox getUserOrGroupText();
     }
-
-    @Inject
-    private PlaceManager placeManager;
 
     @Inject
     private TaskAssignmentsView view;
@@ -106,32 +104,17 @@ public class TaskAssignmentsPresenter {
     }
 
     public void refreshTaskPotentialOwners() {
-        List<Long> taskIds = new ArrayList<Long>( 1 );
-        taskIds.add( currentTaskId );
-//        taskServices.call( new RemoteCallback<Map<Long, List<String>>>() {
-//            @Override
-//            public void callback( Map<Long, List<String>> ids ) {
-//                if ( ids.isEmpty() ) {
-//                    view.getUsersGroupsControlsPanel().setText( Constants.INSTANCE.No_Potential_Owners() );
-//                } else {
-//                    view.getUsersGroupsControlsPanel().setText( ( "" + ids.get( currentTaskId ).toString() ) );
-//                }
-//            }
-//        }, new ErrorCallback<Message>() {
-//            @Override
-//            public boolean error( Message message,
-//                                  Throwable throwable ) {
-//                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
-//                return true;
-//            }
-//        } ).getPotentialOwnersForTaskIds( taskIds );
-
-        taskOperationsServices.call( new RemoteCallback<TaskSummary>() {
+        taskOperationsServices.call( new RemoteCallback<TaskAssignmentSummay>() {
             @Override
-            public void callback( TaskSummary ts ) {
+            public void callback( TaskAssignmentSummay ts ) {
                 if ( ts == null ) {
                     return;
                 }
+                if( ts.getPotOwnersString() != null && ts.getPotOwnersString().size() == 0 ){
+                    view.getUsersGroupsControlsPanel().setText( Constants.INSTANCE.No_Potential_Owners() );
+                   } else {
+                       view.getUsersGroupsControlsPanel().setText("" + ts.getPotOwnersString().toString() );
+                   }
                 String actualOwner = ts.getActualOwner();
                 if ( actualOwner.equals( "" ) || !actualOwner.equals( identity.getIdentifier() ) ) {
                     view.getDelegateButton().setEnabled( false );
@@ -148,7 +131,7 @@ public class TaskAssignmentsPresenter {
                 ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                 return true;
             }
-        } ).getTaskDetails( currentTaskId );
+        } ).getTaskAssignmentDetails( currentTaskId );
 
     }
 
