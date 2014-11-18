@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.ga.model.events;
+package org.jbpm.console.ng.gc.client.list.base.events;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 

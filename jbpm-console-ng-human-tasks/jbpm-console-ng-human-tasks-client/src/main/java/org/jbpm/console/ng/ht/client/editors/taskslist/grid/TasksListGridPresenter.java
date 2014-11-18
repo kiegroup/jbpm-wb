@@ -15,8 +15,6 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -38,6 +36,7 @@ import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
+import org.jbpm.console.ng.ht.util.TaskRoleDefinition;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -64,8 +63,10 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
 
   @Inject
   private Caller<TaskLifeCycleService> taskOperationsService;
+  
+  private String currentRole;
 
-  private Map<String, Object> filterParams = new HashMap<String, Object>();
+  
 
   private TaskType currentStatusFilter = TaskUtils.TaskType.ACTIVE;
 
@@ -96,9 +97,10 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
           currentFilter.setOffset(0);
           currentFilter.setCount(view.getListGrid().getPageSize());
         }
-        filterParams.put("statuses", TaskUtils.getStatusByType(currentStatusFilter));
-        filterParams.put("userId", identity.getIdentifier());
-        currentFilter.setParams(filterParams);
+        
+        currentFilter.getParams().put("statuses", TaskUtils.getStatusByType(currentStatusFilter));
+        currentFilter.getParams().put("userId", identity.getIdentifier());
+        currentFilter.getParams().put("taskRole",currentRole);
         currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
                 .getColumn().getDataStoreName() : "");
         currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
@@ -126,32 +128,33 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
     };
   }
 
+
   public void refreshActiveTasks() {
-    filterParams.put("taskRole",TASK_ROLE_POTENTIALOWNER);
+    currentRole = TASK_ROLE_POTENTIALOWNER;
     currentStatusFilter = TaskUtils.TaskType.ACTIVE;
     refreshGrid();
   }
 
   public void refreshPersonalTasks() {
-    filterParams.put("taskRole",TASK_ROLE_POTENTIALOWNER);
+    currentRole = TASK_ROLE_POTENTIALOWNER;
     currentStatusFilter = TaskUtils.TaskType.PERSONAL;
     refreshGrid();
   }
 
   public void refreshGroupTasks() {
-    filterParams.put("taskRole",TASK_ROLE_POTENTIALOWNER);
+    currentRole = TASK_ROLE_POTENTIALOWNER;
     currentStatusFilter = TaskUtils.TaskType.GROUP;
     refreshGrid();
   }
 
   public void refreshAllTasks() {
-    filterParams.put("taskRole",TASK_ROLE_POTENTIALOWNER);
+    currentRole = TASK_ROLE_POTENTIALOWNER;
     currentStatusFilter = TaskUtils.TaskType.ALL;
     refreshGrid();
   }
 
   public void refreshAdminTasks() {
-     filterParams.put("taskRole",TASK_ROLE_ADMINISTRATOR);
+     currentRole = TASK_ROLE_ADMINISTRATOR;
      currentStatusFilter = TaskUtils.TaskType.ADMIN;
      refreshGrid();
     }
