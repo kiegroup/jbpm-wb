@@ -17,6 +17,7 @@
 package org.jbpm.console.ng.ga.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
@@ -35,7 +36,7 @@ public class PortableQueryFilter implements QueryFilter, Serializable{
   private String orderBy;
   private boolean isAscending;
   private String filterParams;
-  private Map<String, Object> params;
+  private Map<String, Object> params = new HashMap<String, Object>();
 
   public PortableQueryFilter() {
   }

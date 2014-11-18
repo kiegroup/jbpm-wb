@@ -23,7 +23,7 @@ import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import org.jbpm.console.ng.ga.model.QueryFilter;
-import org.jbpm.console.ng.ga.model.events.SearchEvent;
+import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 
 /**
  * @param <T> data type for the AsyncDataProvider

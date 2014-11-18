@@ -67,8 +67,10 @@ public class TaskQueryServiceImpl implements TaskQueryService {
 
     }
     List<Status> statuses = new ArrayList<Status>();
-    for (String s : statusesString) {
-      statuses.add(Status.valueOf(s));
+    if(statusesString != null){
+        for (String s : statusesString) {
+          statuses.add(Status.valueOf(s));
+        }
     }
     
     org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount() + 1,
@@ -79,21 +81,31 @@ public class TaskQueryServiceImpl implements TaskQueryService {
     }else{
         taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf));
     }
+    List<TaskSummary> tasksFilteredSums = new ArrayList<TaskSummary>(taskSummaries.size());
+    for (TaskSummary t : taskSummaries) {
+
+            if (filter.getParams().get("textSearch") == null || ((String) filter.getParams().get("textSearch")).isEmpty()) {
+                tasksFilteredSums.add(t);
+            } else if ((t.getName() != null && t.getName().toLowerCase().contains((String) filter.getParams().get("textSearch"))) || 
+                    (t.getDescription() != null && t.getDescription().toLowerCase().contains((String) filter.getParams().get("textSearch")))) {
+                tasksFilteredSums.add(t);
+            }
+        }
     
     response.setStartRowIndex(filter.getOffset());
-    response.setTotalRowSize(taskSummaries.size() - 1);
-    if(taskSummaries.size() > filter.getCount()){
+    response.setTotalRowSize(tasksFilteredSums.size() - 1);
+    if(tasksFilteredSums.size() > filter.getCount()){
       response.setTotalRowSizeExact(false);
     }else{
       response.setTotalRowSizeExact(true);
     }
 
-    if (!taskSummaries.isEmpty() && taskSummaries.size() > (filter.getCount() + filter.getOffset())) {
-      response.setPageRowList(new ArrayList<TaskSummary>(taskSummaries.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
+    if (!tasksFilteredSums.isEmpty() && tasksFilteredSums.size() > (filter.getCount() + filter.getOffset())) {
+      response.setPageRowList(new ArrayList<TaskSummary>(tasksFilteredSums.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
       response.setLastPage(false);
 
     } else {
-      response.setPageRowList(new ArrayList<TaskSummary>(taskSummaries));
+      response.setPageRowList(new ArrayList<TaskSummary>(tasksFilteredSums));
       response.setLastPage(true);
 
     }
