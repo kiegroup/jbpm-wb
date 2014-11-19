@@ -82,7 +82,8 @@ public class PlaceManagerFormProvider implements FormProvider {
         String taskName = (renderContext.get("TaskName") != null) ? (String) renderContext.get("TaskName") : "";
         for (String key : renderContext.keySet()) {
             if (!(renderContext.get(key) instanceof Task) && !key.equals("marshallerContext")) {
-                params.put(key, renderContext.get(key).toString());
+                String paramValue = renderContext.get(key) != null ? renderContext.get(key).toString() : null;
+                params.put(key, paramValue);
             }
         }
         if (task != null) {
