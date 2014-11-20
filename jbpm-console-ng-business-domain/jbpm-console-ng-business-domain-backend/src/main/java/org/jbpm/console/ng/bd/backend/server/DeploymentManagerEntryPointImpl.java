@@ -26,6 +26,9 @@ import org.guvnor.structure.backend.config.Added;
 import org.guvnor.structure.backend.config.Removed;
 import org.guvnor.structure.backend.deployment.DeploymentConfigChangedEvent;
 import org.guvnor.structure.deployment.DeploymentConfigService;
+import org.guvnor.structure.server.config.ConfigGroup;
+import org.guvnor.structure.server.config.ConfigType;
+import org.guvnor.structure.server.config.ConfigurationService;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.bd.exception.DeploymentException;
 import org.jbpm.console.ng.bd.model.DeploymentUnitSummary;
@@ -54,6 +57,8 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
   private static final Logger logger = LoggerFactory.getLogger(DeploymentManagerEntryPointImpl.class);
   private static final MergeMode defaultMergeMode = MergeMode.valueOf(System.getProperty("org.kie.dd.mergemode", MergeMode.MERGE_COLLECTIONS.toString()));
 
+  private boolean autoDeployEnabled = Boolean.parseBoolean(System.getProperty("org.kie.auto.deploy.enabled", "true"));
+
   @Inject
   private DeploymentService deploymentService;
 
@@ -66,6 +71,9 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
   private DeploymentConfigService deploymentConfigService;
 
   @Inject
+  private ConfigurationService configurationService;
+
+  @Inject
   private GuvnorM2Repository guvnorM2Repository;
 
   @Inject
@@ -76,7 +84,16 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
 
   @PostConstruct
   public void configure() {
-    guvnorM2Repository.getRepositoryURL();
+      guvnorM2Repository.getRepositoryURL();
+      String supportRuntimeDeployment = "true";
+      List<ConfigGroup> globalConfigGroups = configurationService.getConfiguration( ConfigType.GLOBAL );
+      for ( ConfigGroup globalConfigGroup : globalConfigGroups ) {
+          if ( "settings".equals( globalConfigGroup.getName() ) ) {
+              supportRuntimeDeployment = globalConfigGroup.getConfigItemValue("support.runtime.deploy");
+              break;
+          }
+      }
+      autoDeployEnabled = Boolean.parseBoolean(supportRuntimeDeployment);
   }
 
   @Override
@@ -405,7 +422,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
   @Override
   public void process(BuildResults buildResults) {
 
-    if (!buildResults.getErrorMessages().isEmpty()) {
+    if (!buildResults.getErrorMessages().isEmpty() || !autoDeployEnabled) {
       return;
     }
     try {
