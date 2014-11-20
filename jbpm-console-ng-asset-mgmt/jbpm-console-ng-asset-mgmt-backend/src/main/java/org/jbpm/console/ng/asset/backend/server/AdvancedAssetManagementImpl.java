@@ -21,33 +21,20 @@ import javax.inject.Inject;
 
 import org.guvnor.asset.management.model.BuildProjectStructureEvent;
 import org.guvnor.asset.management.model.ConfigureRepositoryEvent;
+import org.guvnor.asset.management.model.ExecuteOperationEvent;
 import org.guvnor.asset.management.model.PromoteChangesEvent;
 import org.guvnor.asset.management.model.ReleaseProjectEvent;
-import org.guvnor.asset.management.model.ExecuteOperationEvent;
-
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
-import org.jbpm.kie.services.impl.KModuleDeploymentUnit;
-import org.jbpm.services.api.DeploymentEvent;
-import org.jbpm.services.api.model.DeploymentUnit;
-import org.jbpm.services.cdi.Deploy;
 
 @ApplicationScoped
 public class AdvancedAssetManagementImpl {
 
-    private static final String GA_ASSET_MGMT = System.getProperty("org.guvnor.assetmgmt.project", "org.guvnor:guvnor-asset-mgmt-project");
-
     @Inject
     private KieSessionEntryPoint sessionServices;
 
-    private String deploymentId;
+    private String deploymentId = "org.guvnor:guvnor-asset-mgmt-project:latest";
 
     public AdvancedAssetManagementImpl() {
-    }
-
-    public void deploymentObserver(@Observes @Deploy DeploymentEvent event) {
-        if (event.getDeploymentId().startsWith(GA_ASSET_MGMT)) {
-            deploymentId = event.getDeploymentId();
-        }
     }
 
     public void configureRepository(@Observes ConfigureRepositoryEvent event) {
