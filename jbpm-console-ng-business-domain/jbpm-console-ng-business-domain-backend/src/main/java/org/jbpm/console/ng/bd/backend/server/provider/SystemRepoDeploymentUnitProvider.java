@@ -18,6 +18,7 @@ package org.jbpm.console.ng.bd.backend.server.provider;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -33,6 +34,8 @@ import org.jbpm.services.cdi.Kjar;
 @Kjar
 public class SystemRepoDeploymentUnitProvider implements DeploymentUnitProvider<DeploymentUnit> {
 
+    private boolean gitDeploymentsEnabled = Boolean.parseBoolean(System.getProperty("org.kie.git.deployments", "false"));
+
     @Inject
     private DeploymentConfigService deploymentConfigService;
 
@@ -43,6 +46,10 @@ public class SystemRepoDeploymentUnitProvider implements DeploymentUnitProvider<
         if ( deploymentConfigs != null ) {
             for ( DeploymentConfig config : deploymentConfigs ) {
                 deploymentUnits.add( (DeploymentUnit) config.getDeploymentUnit() );
+
+                if (!gitDeploymentsEnabled) {
+                    deploymentConfigService.removeDeployment(config.getIdentifier());
+                }
             }
         }
         return deploymentUnits;

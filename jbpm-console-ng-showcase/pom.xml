@@ -835,7 +835,7 @@
 
           </compileSourcesArtifacts>
           <runTarget>jbpm-console.html</runTarget>
-          <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m -Djetty.custom.sys.classes=bitronix;javax.transaction -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Djava.security.auth.login.config=./src/main/resources/login-cli.conf</extraJvmArgs>
+          <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m -Djetty.custom.sys.classes=bitronix;javax.transaction -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Djava.security.auth.login.config=./src/main/resources/login-cli.conf -Dorg.kie.git.deployments=true</extraJvmArgs>
           <!-- drools-compiler has dependency on org.eclipse.jdt.core.compiler:ecj:jar:3.5.1:compile,
                see http://code.google.com/p/google-web-toolkit/issues/detail?id=4479 -->
           <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
