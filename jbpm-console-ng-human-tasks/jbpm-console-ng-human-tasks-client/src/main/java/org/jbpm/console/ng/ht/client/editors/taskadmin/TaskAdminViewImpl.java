@@ -32,7 +32,6 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
@@ -41,10 +40,6 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
 
     private TaskAdminPresenter presenter;
 
-    
-    @Inject
-    private PlaceManager placeManager;
-    
     @Inject
     @DataField
     public ControlLabel adminDetailsAccordionLabel;
@@ -79,7 +74,7 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
     @Override
     public void init( TaskAdminPresenter presenter ) {
         this.presenter = presenter;
-        adminUserOrGroupLabel.setText(constants.UserOrGroup());
+        adminUserOrGroupLabel.setText(constants.Delegate_User());
         adminDetailsAccordionLabel.add( new HTMLPanel( constants.Details()) );
         adminForwardButton.setText(constants.Forward());
         adminUsersGroupsControlsLabel.setText(constants.Potential_Owners());

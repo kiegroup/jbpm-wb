@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.ht.model.TaskAssignmentSummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.jbpm.services.api.RuntimeDataService;
@@ -32,7 +33,8 @@ import org.jbpm.services.task.utils.TaskFluent;
 import org.kie.api.task.model.OrganizationalEntity;
 import org.kie.api.task.model.Task;
 import org.kie.internal.task.api.InternalTaskService;
-
+import org.kie.api.task.model.User;
+import org.kie.api.task.model.Group;
 /**
  *
  * @author salaboy
@@ -96,20 +98,14 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
         Task task = taskService.getTask(taskId);
         if (task != null) {
             List<OrganizationalEntity> potentialOwners = task.getPeopleAssignments().getPotentialOwners();
-            List<String> potOwnersString = null;
-            if (potentialOwners != null) {
-                potOwnersString = new ArrayList<String>(potentialOwners.size());
-                for (OrganizationalEntity e : potentialOwners) {
-                    potOwnersString.add(e.getId());
-                }
-            } 
+            List<String> potOwnersString = getPotentialOwnersForTaskIds(potentialOwners);
             return new TaskSummary(task.getId(), task.getName(),
                     task.getDescription(), task.getTaskData().getStatus().name(), task.getPriority(), (task.getTaskData().getActualOwner() != null) ? task.getTaskData().getActualOwner()
                     .getId() : "", (task.getTaskData().getCreatedBy() != null) ? task.getTaskData().getCreatedBy().getId()
                     : "", task.getTaskData().getCreatedOn(), task.getTaskData().getActivationTime(), task.getTaskData()
                     .getExpirationTime(), task.getTaskData().getProcessId(), task.getTaskData().getProcessSessionId(),
                     task.getTaskData().getProcessInstanceId(), task.getTaskData().getDeploymentId()
-                    , (int) task.getTaskData().getParentId());
+                    , (int) task.getTaskData().getParentId(),false,potOwnersString);
         }
         return null;
     }
@@ -124,5 +120,52 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
         return runtimeDataService.getTaskById(taskId) == null ? false : true;
     }
   
+    private List<String> getPotentialOwnersForTaskIds(List<OrganizationalEntity> potentialOwners){
+        
+         List<String> orgEntitiesSimple = new ArrayList<String>(potentialOwners.size());
+         for (OrganizationalEntity entity : potentialOwners) {
+            if (entity instanceof Group) {
+              
+              orgEntitiesSimple.add("Group:" + entity.getId());
+             } else if (entity instanceof User) {
+               
+                 orgEntitiesSimple.add("User:" + entity.getId());
+              }
+         }
+         return orgEntitiesSimple;
+      
+  }
   
+    @Override
+    public TaskAssignmentSummary getTaskAssignmentDetails(long taskId) {
+        Task task = taskService.getTask(taskId);
+        if (task != null) {
+            List<OrganizationalEntity> potentialOwners = task.getPeopleAssignments().getPotentialOwners();
+            List<String> potOwnersString = null;
+            if (potentialOwners != null) {
+                potOwnersString = new ArrayList<String>(potentialOwners.size());
+                potOwnersString = getPotentialOwnersByTaskId(potentialOwners);
+                }
+            return new TaskAssignmentSummary(task.getId(),task.getName(),(task.getTaskData().getActualOwner() != null) ? task.getTaskData().getActualOwner()
+                .getId() : "",potOwnersString);
+            }
+        return null;
+    }
+    
+    private List<String> getPotentialOwnersByTaskId(List<OrganizationalEntity> potentialOwners){
+        
+        List<String> orgEntitiesSimple = new ArrayList<String>(potentialOwners.size());
+        for (OrganizationalEntity entity : potentialOwners) {
+           if (entity instanceof Group) {
+             
+             orgEntitiesSimple.add("Group:" + entity.getId());
+            } else if (entity instanceof User) {
+              
+                orgEntitiesSimple.add("User:" + entity.getId());
+             }
+        }
+        return orgEntitiesSimple;
+     
+ }
+    
 }
