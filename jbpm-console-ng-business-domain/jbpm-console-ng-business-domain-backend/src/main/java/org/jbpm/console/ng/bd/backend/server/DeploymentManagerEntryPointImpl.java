@@ -57,6 +57,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
   private static final Logger logger = LoggerFactory.getLogger(DeploymentManagerEntryPointImpl.class);
   private static final MergeMode defaultMergeMode = MergeMode.valueOf(System.getProperty("org.kie.dd.mergemode", MergeMode.MERGE_COLLECTIONS.toString()));
 
+  private boolean gitDeploymentsEnabled = Boolean.parseBoolean(System.getProperty("org.kie.git.deployments.enabled", "false"));
   private boolean autoDeployEnabled = Boolean.parseBoolean(System.getProperty("org.kie.auto.deploy.enabled", "true"));
 
   @Inject
@@ -396,9 +397,12 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
    * runtime point of view
    */
   public void saveDeployment(@Observes @Deploy DeploymentEvent event) {
-    if (deploymentConfigService.getDeployment(event.getDeploymentId()) == null) {
-      deploymentConfigService.addDeployment(event.getDeploymentId(), event.getDeployedUnit().getDeploymentUnit());
-    }
+      if (!gitDeploymentsEnabled) {
+          return;
+      }
+      if (deploymentConfigService.getDeployment(event.getDeploymentId()) == null) {
+          deploymentConfigService.addDeployment(event.getDeploymentId(), event.getDeployedUnit().getDeploymentUnit());
+      }
   }
 
   /**
@@ -409,7 +413,10 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
    * runtime point of view
    */
   public void removeDeployment(@Observes @Undeploy DeploymentEvent event) {
-    deploymentConfigService.removeDeployment(event.getDeploymentId());
+      if (!gitDeploymentsEnabled) {
+          return;
+      }
+      deploymentConfigService.removeDeployment(event.getDeploymentId());
   }
 
   /**
