@@ -198,10 +198,12 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
 
     @EventHandler("updateTaskButton")
     public void updateTaskButton( ClickEvent e ) {
+        
         presenter.updateTask( taskDescriptionTextArea.getText(),
                               userText.getText(),
                               // subTaskStrategyListBox.getItemText(subTaskStrategyListBox.getSelectedIndex()),
-                              UTCDateBox.utc2date(dueDate.getValue() + dueDateTime.getValue()), taskPriorityListBox.getSelectedIndex() );
+                              (dueDate.getValue() != null && dueDateTime.getValue() != null)?UTCDateBox.utc2date(dueDate.getValue() + dueDateTime.getValue()):null,
+                              taskPriorityListBox.getSelectedIndex() );
 
     }
     
@@ -280,6 +282,13 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     public UTCTimeBox getDueDateTime() {
         return dueDateTime;
     }
+
+    @Override
+    public Button getUpdateTaskButton() {
+        return updateTaskButton;
+    }
+    
+    
 
     
 }

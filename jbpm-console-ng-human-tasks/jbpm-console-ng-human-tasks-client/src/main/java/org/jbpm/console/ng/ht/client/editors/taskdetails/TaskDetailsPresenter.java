@@ -93,6 +93,8 @@ public class TaskDetailsPresenter {
         TextBox getTaskStatusText();
 
         Button getpIDetailsButton();
+        
+        Button getUpdateTaskButton();
 
     }
 
@@ -204,6 +206,9 @@ public class TaskDetailsPresenter {
                     view.getUserText().setEnabled( false );
                     view.getTaskStatusText().setEnabled( false );
                     view.getProcessInstanceIdText().setEnabled( false );
+                    view.getDueDateTime().setEnabled(false);
+                    view.getTaskPriorityListBox().setEnabled(false);
+                    view.getUpdateTaskButton().setEnabled(false);
                 }
 
                 view.getTaskDescriptionTextArea().setText( details.getDescription() );
