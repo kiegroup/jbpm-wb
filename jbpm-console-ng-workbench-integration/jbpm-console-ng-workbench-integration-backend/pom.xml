@@ -31,6 +31,16 @@
 
   <dependencies>
     <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-bus</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-workbench-integration-api</artifactId>
     </dependency>
@@ -64,6 +74,10 @@
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-runtime-manager</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
       <artifactId>jbpm-services-api</artifactId>
     </dependency>
     <dependency>
@@ -79,12 +93,19 @@
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-m2repo-editor-backend</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-structure-backend</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-services-api</artifactId>
+    </dependency>
 
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-internal</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.kie.workbench.services</groupId>
       <artifactId>kie-wb-common-services-api</artifactId>
@@ -97,6 +118,14 @@
 
     <dependency>
       <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-backend-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
       <artifactId>uberfire-io</artifactId>
       <exclusions>
         <exclusion>
@@ -104,6 +133,10 @@
           <groupId>log4j</groupId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-nio2-model</artifactId>
     </dependency>
   </dependencies>
 

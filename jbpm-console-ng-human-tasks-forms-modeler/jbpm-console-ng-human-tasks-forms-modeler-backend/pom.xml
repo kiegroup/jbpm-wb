@@ -33,6 +33,10 @@
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
       <artifactId>jbpm-form-modeler-api</artifactId>
     </dependency>
     <dependency>

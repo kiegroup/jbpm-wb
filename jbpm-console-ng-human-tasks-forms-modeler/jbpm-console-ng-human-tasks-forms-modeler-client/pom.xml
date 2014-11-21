@@ -30,11 +30,22 @@
   <name>jBPM Console NG - Human Tasks Forms Modeler Integration Client</name>
 
   <dependencies>
+
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-common</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-security-server</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-human-tasks-forms-modeler-api</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-human-tasks-forms-api</artifactId>
@@ -45,7 +56,12 @@
       <artifactId>jbpm-console-ng-human-tasks-forms-client</artifactId>
     </dependency>
 
-   <dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-form-modeler-api</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-form-modeler-renderer-api</artifactId>
     </dependency>
@@ -59,17 +75,26 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-form-modeler-renderer-backend</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-business-domain-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-workbench-client</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.kie.workbench.widgets</groupId>
