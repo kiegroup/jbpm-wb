@@ -49,13 +49,9 @@ import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
-<<<<<<< HEAD
-import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-=======
-import org.kie.uberfire.client.tables.ColumnMeta;
-import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
->>>>>>> 77da8ad... BZ-1146836: fixed errors ordering columns:
 import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
@@ -179,7 +175,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
             }
         };
         processNameColumn.setSortable( true );
-        processNameColumn.setDataStoreName( "ProcessName" );
+        processNameColumn.setDataStoreName("ProcessName");
         return processNameColumn;
     }
 
@@ -191,7 +187,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
             }
         };
         versionColumn.setSortable( true );
-        versionColumn.setDataStoreName( "ProcessVersion" );
+        versionColumn.setDataStoreName("ProcessVersion");
         return versionColumn;
     }
 

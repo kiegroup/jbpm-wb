@@ -36,13 +36,9 @@ import org.jbpm.console.ng.ga.model.DataMockSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 
 import org.jbpm.console.ng.gc.client.i18n.Constants;
-<<<<<<< HEAD
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
-=======
-import org.kie.uberfire.client.common.BusyPopup;
-import org.kie.uberfire.client.tables.ColumnMeta;
->>>>>>> 77da8ad... BZ-1146836: fixed errors ordering columns:
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import java.util.ArrayList;

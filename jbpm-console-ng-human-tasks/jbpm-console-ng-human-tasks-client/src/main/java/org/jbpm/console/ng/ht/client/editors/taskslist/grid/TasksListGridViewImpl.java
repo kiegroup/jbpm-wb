@@ -45,13 +45,9 @@ import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-<<<<<<< HEAD
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-=======
-import org.kie.uberfire.client.tables.ColumnMeta;
-import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
->>>>>>> 77da8ad... BZ-1146836: fixed errors ordering columns:
 import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import javax.enterprise.context.Dependent;

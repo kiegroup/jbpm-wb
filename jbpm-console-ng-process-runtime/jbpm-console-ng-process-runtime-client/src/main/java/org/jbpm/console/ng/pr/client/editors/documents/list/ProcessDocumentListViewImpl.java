@@ -34,13 +34,9 @@ import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
 import org.jbpm.console.ng.pr.model.DocumentSummary;
-<<<<<<< HEAD
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-=======
-import org.kie.uberfire.client.tables.ColumnMeta;
-import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
->>>>>>> 77da8ad... BZ-1146836: fixed errors ordering columns:
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
+import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
