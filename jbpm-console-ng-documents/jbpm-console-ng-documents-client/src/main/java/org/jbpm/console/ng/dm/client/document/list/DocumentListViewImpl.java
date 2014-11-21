@@ -33,7 +33,12 @@ import org.jbpm.console.ng.dm.model.events.DocumentsHomeSearchEvent;
 import org.jbpm.console.ng.dm.model.events.DocumentsListSearchEvent;
 import org.jbpm.console.ng.dm.model.events.DocumentsParentSearchEvent;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
+<<<<<<< HEAD
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
+=======
+import org.kie.uberfire.client.tables.ColumnMeta;
+import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
+>>>>>>> 77da8ad... BZ-1146836: fixed errors ordering columns:
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -195,26 +200,30 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
 
     @Override
     public void initColumns() {
-        initIdColumn();
-        initNameColumn();
-        initActionsColumn();
+        Column<CMSContentSummary, ?> idColumn = initIdColumn();
+        Column<CMSContentSummary, ?> processNameColumn = initNameColumn();
+        actionsColumn = initActionsColumn();
+
+        List<ColumnMeta<CMSContentSummary>> columnMetas = new ArrayList<ColumnMeta<CMSContentSummary>>();
+        columnMetas.add(new ColumnMeta<CMSContentSummary>(idColumn, constants.DocumentID()));
+        columnMetas.add(new ColumnMeta<CMSContentSummary>(processNameColumn, constants.DocumentName()));
+        columnMetas.add(new ColumnMeta<CMSContentSummary>(actionsColumn, constants.Actions()));
+        listGrid.addColumns(columnMetas);
     }
 
-    private void initIdColumn() {
+    private Column<CMSContentSummary, ?> initIdColumn() {
         Column<CMSContentSummary, String> idColumn = new Column<CMSContentSummary, String>(new TextCell()) {
             @Override
             public String getValue(CMSContentSummary object) {
                 return object.getId();
             }
         };
-
         idColumn.setSortable(true);
 
-        listGrid.addColumn(idColumn, constants.DocumentID());
-
+        return idColumn;
     }
 
-    private void initNameColumn() {
+    private Column<CMSContentSummary, ?> initNameColumn() {
         Column<CMSContentSummary, String> processNameColumn = new Column<CMSContentSummary, String>(new TextCell()) {
             @Override
             public String getValue(CMSContentSummary object) {
@@ -223,10 +232,10 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
         };
         processNameColumn.setSortable(true);
 
-        listGrid.addColumn(processNameColumn, constants.DocumentName());
+        return processNameColumn;
     }
 
-    private void initActionsColumn() {
+    private Column<CMSContentSummary, ?> initActionsColumn() {
         List<HasCell<CMSContentSummary, ?>> cells = new LinkedList<HasCell<CMSContentSummary, ?>>();
 
         cells.add(new RemoveHasCell("Remove", new Delegate<CMSContentSummary>() {
@@ -245,14 +254,12 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
         }));
 
         CompositeCell<CMSContentSummary> cell = new CompositeCell<CMSContentSummary>(cells);
-        actionsColumn = new Column<CMSContentSummary, CMSContentSummary>(cell) {
+        return new Column<CMSContentSummary, CMSContentSummary>(cell) {
             @Override
             public CMSContentSummary getValue(CMSContentSummary object) {
                 return object;
             }
         };
-        listGrid.addColumn(actionsColumn, constants.Actions());
-
     }
 
     private void initFiltersBar() {
