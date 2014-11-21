@@ -49,6 +49,7 @@ import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
+import org.kie.uberfire.client.tables.ColumnMeta;
 import org.kie.uberfire.shared.preferences.GridGlobalPreferences;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -153,13 +154,19 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
 
     @Override
     public void initColumns() {
-        initProcessNameColumn();
-        initVersionColumn();
+        Column processNameColumn = initProcessNameColumn();
+        Column versionColumn = initVersionColumn();
         actionsColumn = initActionsColumn();
-        listGrid.addColumn( actionsColumn, constants.Actions() );
+
+        List<ColumnMeta<ProcessSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessSummary>>();
+        columnMetas.add(new ColumnMeta<ProcessSummary>(processNameColumn, constants.Name()));
+        columnMetas.add(new ColumnMeta<ProcessSummary>(versionColumn, constants.Version()));
+        columnMetas.add(new ColumnMeta<ProcessSummary>(actionsColumn, constants.Actions()));
+
+        listGrid.addColumns(columnMetas);
     }
 
-    private void initProcessNameColumn() {
+    private Column initProcessNameColumn() {
         // Process Name String.
         Column<ProcessSummary, String> processNameColumn = new Column<ProcessSummary, String>( new TextCell() ) {
             @Override
@@ -168,11 +175,11 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
             }
         };
         processNameColumn.setSortable( true );
-        listGrid.addColumn( processNameColumn, constants.Name() );
         processNameColumn.setDataStoreName( "ProcessName" );
+        return processNameColumn;
     }
 
-    private void initVersionColumn() {
+    private Column initVersionColumn() {
         Column<ProcessSummary, String> versionColumn = new Column<ProcessSummary, String>( new TextCell() ) {
             @Override
             public String getValue( ProcessSummary object ) {
@@ -180,8 +187,8 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
             }
         };
         versionColumn.setSortable( true );
-        listGrid.addColumn( versionColumn, constants.Version() );
         versionColumn.setDataStoreName( "ProcessVersion" );
+        return versionColumn;
     }
 
     private Column initActionsColumn() {

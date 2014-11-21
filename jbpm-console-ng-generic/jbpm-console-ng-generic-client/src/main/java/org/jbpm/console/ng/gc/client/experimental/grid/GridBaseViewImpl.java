@@ -37,8 +37,12 @@ import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 
 import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.kie.uberfire.client.common.BusyPopup;
+import org.kie.uberfire.client.tables.ColumnMeta;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Dependent
 @Templated(value = "GridBaseViewImpl.html")
@@ -107,14 +111,22 @@ public class GridBaseViewImpl extends Composite
     
 
     public void initGridColumns() {
-        idColumn();
-        column1Column();
-        column2Column();
-        column3Column();
-        column4Column();
+        Column columnIdColumn = idColumn();
+        Column column1Column = column1Column();
+        Column column2Column = column2Column();
+        Column column3Column = column3Column();
+        Column column4Column = column4Column();
+
+        List<ColumnMeta<DataMockSummary>> columnMetas = new ArrayList<ColumnMeta<DataMockSummary>>();
+        columnMetas.add(new ColumnMeta<DataMockSummary>(columnIdColumn, "ID"));
+        columnMetas.add(new ColumnMeta<DataMockSummary>(column1Column, "Column1"));
+        columnMetas.add(new ColumnMeta<DataMockSummary>(column2Column, "Column2"));
+        columnMetas.add(new ColumnMeta<DataMockSummary>(column3Column, "Column3"));
+        columnMetas.add(new ColumnMeta<DataMockSummary>(column4Column, "Column4"));
+        listGrid.addColumns(columnMetas);
     }
 
-    private void idColumn() {
+    private Column idColumn() {
         Column<DataMockSummary, String> columnIdColumn = new Column<DataMockSummary, String>(
                 new TextCell()) {
 
@@ -124,11 +136,10 @@ public class GridBaseViewImpl extends Composite
             }
         };
         columnIdColumn.setSortable(true);
-        listGrid.addColumn(columnIdColumn, "ID");
-
+        return columnIdColumn;
     }
 
-    private void column1Column() {
+    private Column column1Column() {
         Column<DataMockSummary, String> column1Column = new Column<DataMockSummary, String>(
                 new TextCell()) {
 
@@ -140,11 +151,10 @@ public class GridBaseViewImpl extends Composite
             }
         };
         column1Column.setSortable(true);
-        listGrid.addColumn(column1Column, "Column1");
-
+        return column1Column;
     }
 
-    private void column2Column() {
+    private Column column2Column() {
         Column<DataMockSummary, String> column2Column = new Column<DataMockSummary, String>(
                 new TextCell()) {
 
@@ -155,11 +165,10 @@ public class GridBaseViewImpl extends Composite
             }
         };
         column2Column.setSortable(true);
-        listGrid.addColumn(column2Column, "Column2");
-
+        return column2Column;
     }
 
-    private void column3Column() {
+    private Column column3Column() {
         Column<DataMockSummary, String> column3Column = new Column<DataMockSummary, String>(
                 new TextCell()) {
 
@@ -169,11 +178,10 @@ public class GridBaseViewImpl extends Composite
             }
         };
         column3Column.setSortable(true);
-        listGrid.addColumn(column3Column, "Column3");
-
+        return column3Column;
     }
 
-    private void column4Column() {
+    private Column column4Column() {
         Column<DataMockSummary, String> column4Column = new Column<DataMockSummary, String>(
                 new TextCell()) {
 
@@ -184,8 +192,7 @@ public class GridBaseViewImpl extends Composite
             }
         };
         column4Column.setSortable(true);
-        listGrid.addColumn(column4Column, "Column4");
-
+        return column4Column;
     }
 
     @Override
