@@ -178,7 +178,6 @@ public class TaskDetailsPresenter {
                     view.getDueDate().setEnabled( false );
                     view.getUserText().setEnabled( false );
                     view.getTaskStatusText().setEnabled( false );
-                    view.getProcessInstanceIdText().setEnabled( false );
                     view.getDueDateTime().setEnabled(false);
                     view.getTaskPriorityListBox().setEnabled(false);
                     view.getUpdateTaskButton().setEnabled(false);
