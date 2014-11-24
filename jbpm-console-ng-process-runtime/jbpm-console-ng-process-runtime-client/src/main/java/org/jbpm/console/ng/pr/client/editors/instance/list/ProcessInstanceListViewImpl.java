@@ -99,12 +99,15 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     @Override
     public void init(final ProcessInstanceListPresenter presenter) {
         List<String> bannedColumns = new ArrayList<String>();
+        bannedColumns.add(constants.Select());
         bannedColumns.add(constants.Id());
         bannedColumns.add(constants.Name());
         bannedColumns.add(constants.Actions());
         List<String> initColumns = new ArrayList<String>();
+        initColumns.add(constants.Select());
         initColumns.add(constants.Id());
         initColumns.add(constants.Name());
+        initColumns.add(constants.Process_Instance_Description());
         initColumns.add(constants.Version());
         initColumns.add(constants.Actions());
 
@@ -210,14 +213,14 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
         actionsColumn = initActionsColumn();
 
         List<ColumnMeta<ProcessInstanceSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessInstanceSummary>>();
-        columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(checkColumn, ""));
+        columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(checkColumn, constants.Select()));
         columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(processInstanceIdColumn, constants.Id()));
         columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(processNameColumn, constants.Name()));
+        columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(descriptionColumn, constants.Process_Instance_Description()));
         columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(processInitiatorColumn, constants.Initiator()));
         columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(processVersionColumn, constants.Version()));
         columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(processStateColumn, constants.State()));
         columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(startTimeColumn, constants.Start_Date()));
-        columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(descriptionColumn, constants.Process_Instance_Description()));
         columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(actionsColumn, constants.Actions()));
         listGrid.addColumns(columnMetas);
     }
