@@ -116,10 +116,10 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
     public void init(final RequestListPresenter presenter ) {
         List<String> bannedColumns = new ArrayList<String>();
         bannedColumns.add(constants.Id());
-        bannedColumns.add(constants.JobName());
+        bannedColumns.add(constants.Type());
         List<String> initColumns = new ArrayList<String>();
         initColumns.add(constants.Id());
-        initColumns.add(constants.JobName());
+        initColumns.add(constants.Type());
         initColumns.add(constants.Actions());
         
         super.init(presenter, new GridGlobalPreferences("RequestListGrid", initColumns, bannedColumns));
@@ -144,7 +144,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
     public void initColumns() {
         initChecksColumn();
         initJobIdColumn();
-        initJobNameColumn();
+        initJobTypeColumn();
         initStatusColumn();
         initDueDateColumn();
         actionsColumn = initActionsColumn();
@@ -387,7 +387,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
                     return selectedRequestSummary.contains(object);
                   }
                 };
-        listGrid.addColumn(checkColumn, "");
+        listGrid.addColumn(checkColumn, "Select");
 
       }
     
@@ -404,30 +404,30 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         taskIdColumn.setDataStoreName( "Id" );
     }
     
-    private void initJobNameColumn(){
+    private void initJobTypeColumn(){
         // Name
-        Column<RequestSummary, String> taskNameColumn = new Column<RequestSummary, String>( new TextCell() ) {
+        Column<RequestSummary, String> jobTypeColumn = new Column<RequestSummary, String>( new TextCell() ) {
             @Override
             public String getValue( RequestSummary object ) {
                 return object.getCommandName();
             }
         };
-        taskNameColumn.setSortable( true );
-        listGrid.addColumn(taskNameColumn, constants.JobName());
-        taskNameColumn.setDataStoreName( "CommandName" );
+        jobTypeColumn.setSortable( true );
+        listGrid.addColumn(jobTypeColumn, constants.Type());
+        jobTypeColumn.setDataStoreName( "CommandName" );
     }
     
     private void initStatusColumn(){
         // Status
-        Column<RequestSummary, String> taskNameColumn = new Column<RequestSummary, String>( new TextCell() ) {
+        Column<RequestSummary, String> statusColumn = new Column<RequestSummary, String>( new TextCell() ) {
             @Override
             public String getValue( RequestSummary object ) {
                 return object.getStatus();
             }
         };
-        taskNameColumn.setSortable( true );
-        listGrid.addColumn(taskNameColumn, constants.Status());
-        taskNameColumn.setDataStoreName( "Status" );
+        statusColumn.setSortable( true );
+        listGrid.addColumn(statusColumn, constants.Status());
+        statusColumn.setDataStoreName( "Status" );
     }
     
     private void initDueDateColumn(){
