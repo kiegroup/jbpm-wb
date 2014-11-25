@@ -90,6 +90,7 @@ public interface Constants extends Messages {
 
     String RequestsListTitle();
 
+    String No_Jobs_Found();
    
 
 }

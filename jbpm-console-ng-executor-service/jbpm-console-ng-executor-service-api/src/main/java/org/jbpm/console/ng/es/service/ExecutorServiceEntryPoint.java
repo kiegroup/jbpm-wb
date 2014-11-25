@@ -24,6 +24,8 @@ import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.es.model.ErrorSummary;
 import org.jbpm.console.ng.es.model.RequestDetails;
 import org.jbpm.console.ng.es.model.RequestSummary;
+import org.jbpm.console.ng.ga.model.QueryFilter;
+import org.uberfire.paging.PageResponse;
 
 @Remote
 public interface ExecutorServiceEntryPoint {
@@ -83,5 +85,7 @@ public interface ExecutorServiceEntryPoint {
     public List<RequestSummary> getRunningRequests();
 
     public List<RequestSummary> getFutureQueuedRequests();
+    
+    public PageResponse<RequestSummary> getData(QueryFilter filter);
 
 }

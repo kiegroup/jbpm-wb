@@ -30,7 +30,6 @@
   <name>jBPM Console NG - Process Runtime Client</name>
 
   <dependencies>
-    
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-generic-client</artifactId>
