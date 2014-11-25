@@ -15,13 +15,10 @@
  */
 package org.jbpm.console.ng.gc.client.list.base.events;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-
 /**
  * 
  * @author salaboy
  */
-@Portable
 public class SearchEvent {
     private String filter;
 
