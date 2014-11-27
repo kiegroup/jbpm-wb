@@ -22,6 +22,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -32,10 +33,12 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.ga.model.process.DummyProcessPath;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceKey;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
+import org.jbpm.console.ng.pr.model.UserTaskSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceStyleEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
@@ -60,6 +63,8 @@ public class ProcessInstanceDetailsPresenter {
         void displayNotification( String text );
 
         HTML getCurrentActivitiesListBox();
+
+        HTML getActiveTasksListBox();
 
         HTML getProcessDefinitionIdText();
 
@@ -108,6 +113,8 @@ public class ProcessInstanceDetailsPresenter {
 
     @Inject
     private Caller<VFSService> fileServices;
+
+    private Constants constants = GWT.create(Constants.class);
 
     private ProcessInstanceSummary processSelected = null;
 
@@ -183,7 +190,15 @@ public class ProcessInstanceDetailsPresenter {
                     default:
                         break;
                 }
+                view.getActiveTasksListBox().setText( "" );
+                if (process.getActiveTasks() != null && !process.getActiveTasks().isEmpty()) {
+                    SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
 
+                    for ( UserTaskSummary uts : process.getActiveTasks() ) {
+                        safeHtmlBuilder.appendEscapedLines( uts.getName() + " (" + uts.getStatus() +")  "+constants.Owner() +": " + uts.getOwner() +" \n" );
+                    }
+                    view.getActiveTasksListBox().setHTML( safeHtmlBuilder.toSafeHtml() );
+                }
                 view.getStateText().setText( statusStr );
                 processSelected = process;
                 changeStyleRow( Long.parseLong( processId ), processSelected.getProcessName(), processSelected.getProcessVersion(),
@@ -197,7 +212,7 @@ public class ProcessInstanceDetailsPresenter {
                 ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                 return true;
             }
-        } ).getItem( new ProcessInstanceKey( Long.parseLong( processId ) ) );
+        } ).getItem(new ProcessInstanceKey(Long.parseLong(processId)));
 
         dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override

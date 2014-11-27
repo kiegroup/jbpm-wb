@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.pr.model.UserTaskSummary;
 import org.jbpm.services.api.model.ProcessInstanceDesc;
+import org.jbpm.services.api.model.UserTaskInstanceDesc;
 import org.jbpm.workflow.instance.node.CompositeNodeInstance;
 import org.jbpm.workflow.instance.node.EventNodeInstance;
 import org.kie.api.runtime.process.NodeInstance;
@@ -36,9 +38,20 @@ public class ProcessInstanceHelper {
     }
 
     public static ProcessInstanceSummary adapt(ProcessInstanceDesc processInstance) {
-        return new ProcessInstanceSummary(processInstance.getId(), processInstance.getProcessId(),
+        ProcessInstanceSummary processInstanceSummary = new ProcessInstanceSummary(processInstance.getId(), processInstance.getProcessId(),
                 processInstance.getDeploymentId(), processInstance.getProcessName(), processInstance.getProcessVersion(),
                 processInstance.getState(), processInstance.getDataTimeStamp(), processInstance.getInitiator(),processInstance.getProcessInstanceDescription());
+
+        List<UserTaskSummary> activeTasks = new ArrayList<UserTaskSummary>();
+        if (processInstance.getActiveTasks() != null) {
+
+            for (UserTaskInstanceDesc desc : processInstance.getActiveTasks()) {
+                activeTasks.add(new UserTaskSummary(desc.getTaskId(), desc.getName(), desc.getActualOwner(), desc.getStatus()));
+            }
+        }
+        processInstanceSummary.setActiveTasks(activeTasks);
+
+        return processInstanceSummary;
     }
 
     public static Collection<String> collectActiveSignals(Collection<NodeInstance> activeNodes) {

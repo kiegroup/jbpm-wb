@@ -221,4 +221,8 @@ public interface Constants extends Messages {
     String Process_Instance_Description();
 
     String Select();
+
+    String Active_Tasks();
+
+    String Owner();
 }

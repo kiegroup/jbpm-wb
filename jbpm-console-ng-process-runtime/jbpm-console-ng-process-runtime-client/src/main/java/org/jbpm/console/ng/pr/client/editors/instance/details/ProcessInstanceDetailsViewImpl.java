@@ -81,6 +81,14 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     public Label currentActivitiesListLabel;
 
     @Inject
+    @DataField
+    public HTML activeTasksListBox;
+
+    @Inject
+    @DataField
+    public Label activeTasksListLabel;
+
+    @Inject
     private Event<NotificationEvent> notification;
 
     private Constants constants = GWT.create( Constants.class );
@@ -99,6 +107,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
         processDeploymentLabel.setText( constants.Deployment_Name() );
         processVersionLabel.setText( constants.Process_Definition_Version() );
         stateLabel.setText( constants.Process_Instance_State() );
+        activeTasksListLabel.setText( constants.Active_Tasks() );
         currentActivitiesListLabel.setText( constants.Current_Activities() );
     }
 
@@ -111,6 +120,11 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     @Override
     public HTML getCurrentActivitiesListBox() {
         return currentActivitiesListBox;
+    }
+
+    @Override
+    public HTML getActiveTasksListBox() {
+        return activeTasksListBox;
     }
 
     @Override
