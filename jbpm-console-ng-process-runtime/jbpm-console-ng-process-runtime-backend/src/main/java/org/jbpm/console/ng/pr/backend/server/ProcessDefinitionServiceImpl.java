@@ -47,16 +47,14 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
         // append 1 to the count to check if there are further pages
         org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount()+1,
                 filter.getOrderBy(), filter.isAscending());
-        Collection<ProcessDefinition> processDefs = dataService.getProcesses(qf);
-        List<ProcessSummary> processDefsSums = new ArrayList<ProcessSummary>(processDefs.size());
-        for (ProcessDefinition pd : processDefs) {
-
-            if (filter.getParams() == null || filter.getParams().get("textSearch") == null || ((String) filter.getParams().get("textSearch")).isEmpty()) {
-                processDefsSums.add(ProcessHelper.adapt(pd));
-            } else if (pd.getName().toLowerCase().contains((String) filter.getParams().get("textSearch"))) {
-                processDefsSums.add(ProcessHelper.adapt(pd));
-            }
+        Collection<ProcessDefinition> processDefs;
+        if((String)filter.getParams().get("textSearch") != null && !((String)filter.getParams().get("textSearch")).equals("")){
+            processDefs = dataService.getProcessesByFilter(((String)filter.getParams().get("textSearch")), qf);
+        }else{
+            processDefs = dataService.getProcesses(qf);
         }
+        List<ProcessSummary> processDefsSums = new ArrayList<ProcessSummary>(ProcessHelper.adaptCollection(processDefs));
+        
         response.setStartRowIndex(filter.getOffset());
         response.setTotalRowSize(processDefsSums.size()-1);
         if(processDefsSums.size() > filter.getCount()){
