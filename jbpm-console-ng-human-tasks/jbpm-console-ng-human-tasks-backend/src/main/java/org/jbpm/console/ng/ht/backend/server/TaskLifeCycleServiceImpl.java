@@ -16,8 +16,10 @@
 package org.jbpm.console.ng.ht.backend.server;
 
 import java.util.Map;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.jbpm.services.api.UserTaskService;
@@ -62,5 +64,4 @@ public class TaskLifeCycleServiceImpl implements TaskLifeCycleService {
     public void delegate(long taskId, String userId, String targetEntityId) {
         taskService.delegate(taskId, userId, targetEntityId);
     }
-
 }
