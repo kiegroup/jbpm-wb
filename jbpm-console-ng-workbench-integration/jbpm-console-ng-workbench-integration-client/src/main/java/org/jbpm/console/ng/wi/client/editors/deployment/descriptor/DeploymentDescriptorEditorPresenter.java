@@ -111,7 +111,7 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
                     public void execute( final String comment ) {
                         view.showSaving();
                         view.updateContent(model);
-                        ddEditorService.call( getSaveSuccessCallback(),
+                        ddEditorService.call( getSaveSuccessCallback(model.hashCode()),
                                 new HasBusyIndicatorDefaultErrorCallback( view ) ).save( versionRecordManager.getCurrentPath(),
                                 model,
                                 metadata,
