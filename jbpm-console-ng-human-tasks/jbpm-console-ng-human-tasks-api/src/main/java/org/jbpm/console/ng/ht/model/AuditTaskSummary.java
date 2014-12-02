@@ -39,7 +39,7 @@ public class AuditTaskSummary implements Serializable {
   private Date dueDate;
   private Long processInstanceId;
   private String processId;
-  private int processSessionId;
+  private Long processSessionId;
   private Long parentId;
   private String deploymentId;
 
@@ -51,7 +51,7 @@ public class AuditTaskSummary implements Serializable {
   public AuditTaskSummary( Long taskId, String status, Date activationTime,
           String name, String description, int priority, String createdBy, 
           String actualOwner, Date createdOn, Date dueDate, Long processInstanceId, 
-          String processId, int processSessionId, Long parentId, String deploymentId) {
+          String processId, Long processSessionId, Long parentId, String deploymentId) {
    
     this.taskId = taskId;
     this.status = status;
@@ -124,7 +124,7 @@ public class AuditTaskSummary implements Serializable {
     return processId;
   }
 
-  public int getProcessSessionId() {
+  public long getProcessSessionId() {
     return processSessionId;
   }
 
