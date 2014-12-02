@@ -320,8 +320,8 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
         columnMetas.add(new ColumnMeta<TaskSummary>(descriptionColumn, constants.Description()));
         columnMetas.add(new ColumnMeta<TaskSummary>(taskPriorityColumn, constants.Priority()));
         columnMetas.add(new ColumnMeta<TaskSummary>(statusColumn, constants.Status()));
-        columnMetas.add(new ColumnMeta<TaskSummary>(createdOnDateColumn, constants.Created_On()));
-        columnMetas.add(new ColumnMeta<TaskSummary>(dueDateColumn, constants.Due_On()));
+        columnMetas.add(new ColumnMeta<TaskSummary>(createdOnDateColumn, "CreatedOn"));
+        columnMetas.add(new ColumnMeta<TaskSummary>(dueDateColumn, "DueOn"));
         columnMetas.add(new ColumnMeta<TaskSummary>(actionsColumn, constants.Actions()));
         listGrid.addColumns(columnMetas);
     }
@@ -357,7 +357,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         taskIdColumn.setSortable(true);
-        taskIdColumn.setDataStoreName("Id");
+        
         return taskIdColumn;
     }
 
@@ -369,7 +369,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         taskNameColumn.setSortable(true);
-        taskNameColumn.setDataStoreName("Task");
+        
         return taskNameColumn;
     }
 
@@ -381,7 +381,6 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         descriptionColumn.setSortable(true);
-        descriptionColumn.setDataStoreName("Description");
         return descriptionColumn;
     }
 
@@ -393,7 +392,6 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         taskPriorityColumn.setSortable(true);
-        taskPriorityColumn.setDataStoreName("Priority");
         return taskPriorityColumn;
     }
 
@@ -405,7 +403,6 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         statusColumn.setSortable(true);
-        statusColumn.setDataStoreName("Status");
         return statusColumn;
     }
 
@@ -422,7 +419,6 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         createdOnDateColumn.setSortable(true);
-        createdOnDateColumn.setDataStoreName("CreatedOn");
         return createdOnDateColumn;
     }
 
@@ -439,7 +435,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         dueDateColumn.setSortable(true);
-        dueDateColumn.setDataStoreName("DueOn");
+       
         return dueDateColumn;
     }
 
