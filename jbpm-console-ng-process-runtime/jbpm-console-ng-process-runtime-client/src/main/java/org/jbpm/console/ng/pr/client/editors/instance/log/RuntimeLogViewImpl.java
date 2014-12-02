@@ -24,12 +24,16 @@ import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.pr.client.editors.instance.details.multi.ProcessInstanceDetailsMultiViewImpl;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogOrder;
@@ -40,7 +44,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 @Dependent
 @Templated(value = "RuntimeLogViewImpl.html")
 public class RuntimeLogViewImpl extends Composite 
-                                implements RuntimeLogPresenter.RuntimeLogView {
+                                implements RequiresResize, RuntimeLogPresenter.RuntimeLogView {
 
     private RuntimeLogPresenter presenter;
     private LogOrder logOrder = LogOrder.ASC;
@@ -79,7 +83,19 @@ public class RuntimeLogViewImpl extends Composite
     private Constants constants = GWT.create( Constants.class );
     private ProcessRuntimeImages images = GWT.create( ProcessRuntimeImages.class );
 
-
+    @Override
+    public void onResize() {
+        
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                int height = RuntimeLogViewImpl.this.getOffsetHeight();
+                GWT.log("RuntimeLogViewImpl height"+height);
+                logTextLabel.setHeight(height+"px");
+            }
+        });
+    }
+    
     @Override
     public void init( final RuntimeLogPresenter presenter ) {
         this.presenter = presenter;
@@ -89,6 +105,7 @@ public class RuntimeLogViewImpl extends Composite
         this.setFilters(showTechnicalLogButton, constants.Technical_Log(), LogType.TECHNICAL);
         this.setOrder(showAscLogButton, constants.Asc_Log_Order(), LogOrder.ASC);
         this.setOrder(showDescLogButton, constants.Desc_Log_Order(), LogOrder.DESC);
+        
     }
     
     private void setFilters(Button button, String description, final LogType logType) {

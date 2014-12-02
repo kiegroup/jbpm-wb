@@ -39,6 +39,8 @@ import org.jbpm.console.ng.pr.client.editors.variables.list.ProcessVariableListP
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 
 import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.*;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.user.client.ui.ScrollPanel;
 
 @Dependent
 public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsView<ProcessInstanceDetailsMultiPresenter>
@@ -69,6 +71,22 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
         super.init( presenter );
         uiBinder.createAndBindUi( this );
     }
+    
+    @Override
+    public void onResize() {
+        super.onResize();
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                int height = ProcessInstanceDetailsMultiViewImpl.this.getOffsetHeight();
+                if(height == 0){
+                    height = 700;
+                }
+                GWT.log("ProcessInstanceDetailsMultiViewImpl height"+height);
+                tabPanel.setHeight(height+"px");
+            }
+        });
+    }
 
     @Override
     public void initTabs() {
@@ -81,7 +99,17 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
 
         tabPanel.addTab( "Process Logs", Constants.INSTANCE.Logs() );
 
-        tabPanel.setHeight( "600px" );
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                int height = ProcessInstanceDetailsMultiViewImpl.this.getOffsetHeight();
+                if(height == 0){
+                    height = 700;
+                }
+                GWT.log("initTabs ProcessInstanceDetailsMultiViewImpl height"+height);
+                tabPanel.setHeight(height+"px");
+            }
+        });
 
         tabPanel.addSelectionHandler( new SelectionHandler<Integer>() {
 
@@ -94,11 +122,23 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
                 }
             }
         } );
-
-        ( (HTMLPanel) tabPanel.getWidget( 0 ) ).add( detailsPresenter.getWidget() );
-        ( (HTMLPanel) tabPanel.getWidget( 1 ) ).add( variableListPresenter.getWidget() );
-        ( (HTMLPanel) tabPanel.getWidget( 2 ) ).add( documentListPresenter.getWidget() );
-        ( (HTMLPanel) tabPanel.getWidget( 3 ) ).add( runtimeLogPresenter.getWidget() );
+        int height = ProcessInstanceDetailsMultiViewImpl.this.getOffsetHeight();
+                if(height == 0){
+                    height = 700;
+                }
+        ScrollPanel detailsScrollPanel = new ScrollPanel(detailsPresenter.getWidget().asWidget());
+        detailsScrollPanel.setHeight(height+"px");
+        ScrollPanel variablesScrollPanel = new ScrollPanel(variableListPresenter.getWidget().asWidget());
+        variablesScrollPanel.setHeight(height+"px");
+        ScrollPanel documentScrollPanel = new ScrollPanel(documentListPresenter.getWidget().asWidget());
+        documentScrollPanel.setHeight(height+"px");
+        ScrollPanel runtimeScrollPanel = new ScrollPanel(runtimeLogPresenter.getWidget().asWidget());
+        runtimeScrollPanel.setHeight(height+"px");
+        
+        ( (HTMLPanel) tabPanel.getWidget( 0 ) ).add( detailsScrollPanel );
+        ( (HTMLPanel) tabPanel.getWidget( 1 ) ).add( variablesScrollPanel );
+        ( (HTMLPanel) tabPanel.getWidget( 2 ) ).add( documentScrollPanel );
+        ( (HTMLPanel) tabPanel.getWidget( 3 ) ).add( runtimeScrollPanel );
     }
 
     @Override
