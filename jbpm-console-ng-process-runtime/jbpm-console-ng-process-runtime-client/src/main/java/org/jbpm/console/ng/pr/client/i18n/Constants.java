@@ -227,4 +227,6 @@ public interface Constants extends Messages {
     String Active_Tasks();
 
     String Owner();
+
+    String Project();
 }

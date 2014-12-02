@@ -83,6 +83,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         List<String> initColumns = new ArrayList<String>();
         initColumns.add( constants.Name() );
         initColumns.add( constants.Version() );
+        initColumns.add( constants.Project() );
         initColumns.add( constants.Actions() );
         super.init( presenter, new GridGlobalPreferences( "ProcessDefinitionsGrid", initColumns, bannedColumns ) );
 
@@ -156,11 +157,13 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     public void initColumns() {
         Column processNameColumn = initProcessNameColumn();
         Column versionColumn = initVersionColumn();
+        Column projectColumn = initProjectColumn();
         actionsColumn = initActionsColumn();
 
         List<ColumnMeta<ProcessSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessSummary>>();
         columnMetas.add(new ColumnMeta<ProcessSummary>(processNameColumn, constants.Name()));
         columnMetas.add(new ColumnMeta<ProcessSummary>(versionColumn, constants.Version()));
+        columnMetas.add(new ColumnMeta<ProcessSummary>(projectColumn, constants.Project()));
         columnMetas.add(new ColumnMeta<ProcessSummary>(actionsColumn, constants.Actions()));
 
         listGrid.addColumns(columnMetas);
@@ -189,6 +192,18 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         versionColumn.setSortable( true );
         versionColumn.setDataStoreName( "ProcessVersion" );
         return versionColumn;
+    }
+
+    private Column initProjectColumn() {
+        Column<ProcessSummary, String> projectColumn = new Column<ProcessSummary, String>( new TextCell() ) {
+            @Override
+            public String getValue( ProcessSummary object ) {
+                return object.getDeploymentId();
+            }
+        };
+        projectColumn.setSortable(true);
+        projectColumn.setDataStoreName("Project");
+        return projectColumn;
     }
 
     private Column initActionsColumn() {
