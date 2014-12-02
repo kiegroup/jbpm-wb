@@ -38,7 +38,7 @@ public class TaskSummary extends GenericSummary {
     private Date expirationTime;
     private Long processInstanceId;
     private String processId;
-    private int processSessionId;
+    private Long processSessionId;
     private String deploymentId;
     private boolean isForAdmin;
     private Long parentId;
@@ -46,7 +46,7 @@ public class TaskSummary extends GenericSummary {
     
     public TaskSummary(long taskId, String taskName, String description, String status,
             int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
-            Date expirationTime, String processId, int processSessionId, long processInstanceId, String deploymentId, long parentId) {
+            Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId) {
         super();
         this.id = taskId;
         this.name = taskName;
@@ -69,7 +69,7 @@ public class TaskSummary extends GenericSummary {
 
     public TaskSummary(long taskId, String taskName, String description, String status,
             int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
-            Date expirationTime, String processId, int processSessionId, long processInstanceId, String deploymentId, long parentId,boolean isForAdmin) {
+            Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId,boolean isForAdmin) {
          this(taskId, taskName, description, status, priority, 
                  actualOwner, createdBy, createdOn, activationTime, 
                  expirationTime, processId, processSessionId, 
@@ -78,7 +78,7 @@ public class TaskSummary extends GenericSummary {
     }
     public TaskSummary(long taskId, String taskName, String description, String status,
                        int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
-                       Date expirationTime, String processId, int processSessionId, long processInstanceId, String deploymentId, long parentId,boolean isForAdmin,List<String> potOwnersString) {
+                       Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId,boolean isForAdmin,List<String> potOwnersString) {
                     this(taskId, taskName, description, status, priority, 
                             actualOwner, createdBy, createdOn, activationTime, 
                             expirationTime, processId, processSessionId, 
@@ -145,7 +145,7 @@ public class TaskSummary extends GenericSummary {
         return processId;
     }
 
-    public int getProcessSessionId() {
+    public long getProcessSessionId() {
         return processSessionId;
     }
 
