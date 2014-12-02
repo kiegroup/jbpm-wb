@@ -20,11 +20,11 @@ import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
@@ -59,6 +59,8 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
     private Constants constants = GWT.create(Constants.class);
 
     private ProcessRuntimeImages images = GWT.create(ProcessRuntimeImages.class);
+
+    final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
 
     private Column actionsColumn;
 
@@ -177,12 +179,18 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
 
             @Override
             public String getValue(DocumentSummary object) {
-                return object.getDocumentLastModified().toString();
+                return readableFileSize(object.getDocumentSize());
             }
         };
         sizeColumn.setSortable(true);
 
         return sizeColumn;
+    }
+
+    public String readableFileSize(long size) {
+        if(size <= 0) return "0";
+        int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
+        return NumberFormat.getDecimalFormat().format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
     public Column initDocumentLinkColumn() {
@@ -211,7 +219,6 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
             public void execute(DocumentSummary document) {
                 if (document != null) {
                     GWT.log("Accessing document: " + document.getDocumentLink());
-                    Window.open(document.getDocumentLink(), "_blank", "");
                 }
             }
         }));
@@ -244,12 +251,10 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                 public void render(Cell.Context context,
                                    DocumentSummary value,
                                    SafeHtmlBuilder sb) {
-
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.historyGridIcon());
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='" + constants.Variables_History() + "'>");
-                    mysb.append(imageProto.getSafeHtml());
-                    mysb.appendHtmlConstant("</span>");
+                    mysb.appendHtmlConstant("<a href='" + value.getDocumentLink() + "' title='" + constants.download() + "' target='_blank'>");
+                    mysb.appendHtmlConstant(constants.download());
+                    mysb.appendHtmlConstant("</a>");
                     sb.append(mysb.toSafeHtml());
                 }
             };
