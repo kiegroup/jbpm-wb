@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.log;
 
+import com.google.gwt.dom.client.Style.Unit;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -23,8 +24,10 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -68,8 +71,8 @@ public class RuntimeLogPresenter {
     public void refreshProcessInstanceData( final LogOrder logOrder,
                                             final LogType logType ) {
 
-        view.getLogTextArea().setText( "" );
-
+        view.getLogTextArea().setHTML("");
+        
         if ( LogType.TECHNICAL.equals( logType ) ) {
             dataServices.call( new RemoteCallback<List<RuntimeLogSummary>>() {
                 @Override
@@ -83,7 +86,9 @@ public class RuntimeLogPresenter {
                     for ( RuntimeLogSummary rls : logs ) {
                         safeHtmlBuilder.appendEscapedLines( rls.getTime() + ": " + rls.getLogLine() + " - " + rls.getType() + "\n" );
                     }
-                    view.getLogTextArea().setHTML( safeHtmlBuilder.toSafeHtml() );
+                    
+                   
+                    view.getLogTextArea().setHTML(safeHtmlBuilder.toSafeHtml());
                 }
             }, new ErrorCallback<Message>() {
                 @Override
@@ -105,7 +110,7 @@ public class RuntimeLogPresenter {
                     for ( RuntimeLogSummary rls : logs ) {
                         safeHtmlBuilder.appendEscapedLines( rls.getTime() + ": " + rls.getLogLine() + "\n" );
                     }
-                    view.getLogTextArea().setHTML( safeHtmlBuilder.toSafeHtml() );
+                    view.getLogTextArea().setHTML(safeHtmlBuilder.toSafeHtml());
                 }
             }, new ErrorCallback<Message>() {
                 @Override

@@ -35,6 +35,7 @@ import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.forms.client.editors.taskform.generic.GenericFormDisplayPresenter;
 
 import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.*;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import org.jbpm.console.ng.ht.client.editors.taskadmin.TaskAdminPresenter;
 
 @Dependent
@@ -70,13 +71,30 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
         tabPanel.addTab( "Task Comments", Constants.INSTANCE.Comments() );
         tabPanel.addTab( "Task Admin", Constants.INSTANCE.Task_Admin());
         
-        tabPanel.setHeight( "700px" );
-
-        ( (HTMLPanel) tabPanel.getWidget( 0 ) ).add( genericFormDisplayPresenter.getView() );
-        ( (HTMLPanel) tabPanel.getWidget( 1 ) ).add( taskDetailsPresenter.getView() );
-        ( (HTMLPanel) tabPanel.getWidget( 2 ) ).add( taskAssignmentsPresenter.getView() );
-        ( (HTMLPanel) tabPanel.getWidget( 3 ) ).add( taskCommentsPresenter.getView() );
-        ( (HTMLPanel) tabPanel.getWidget( 4 ) ).add( taskAdminPresenter.getView() );
+        
+        
+        int height = TaskDetailsMultiViewImpl.this.getOffsetHeight();
+        if(height == 0){
+            height = 700;
+        }
+        tabPanel.setHeight( height+"px" );
+        ScrollPanel formScrollPanel = new ScrollPanel(genericFormDisplayPresenter.getView().asWidget());
+        formScrollPanel.setHeight(height+"px");
+        ScrollPanel taskDetailsScrollPanel = new ScrollPanel(taskDetailsPresenter.getView().asWidget());
+        taskDetailsScrollPanel.setHeight(height+"px");
+        ScrollPanel assignmentsScrollPanel = new ScrollPanel(taskAssignmentsPresenter.getView().asWidget());
+        assignmentsScrollPanel.setHeight(height+"px");
+        ScrollPanel commentsScrollPanel = new ScrollPanel(taskCommentsPresenter.getView().asWidget());
+        commentsScrollPanel.setHeight(height+"px");
+        ScrollPanel taskAdminScrollPanel = new ScrollPanel( taskAdminPresenter.getView().asWidget());
+        taskAdminScrollPanel.setHeight(height+"px");
+        
+        
+        ( (HTMLPanel) tabPanel.getWidget( 0 ) ).add( formScrollPanel );
+        ( (HTMLPanel) tabPanel.getWidget( 1 ) ).add( taskDetailsScrollPanel );
+        ( (HTMLPanel) tabPanel.getWidget( 2 ) ).add( assignmentsScrollPanel );
+        ( (HTMLPanel) tabPanel.getWidget( 3 ) ).add( commentsScrollPanel );
+        ( (HTMLPanel) tabPanel.getWidget( 4 ) ).add( taskAdminScrollPanel );
 
         tabPanel.addSelectionHandler( new SelectionHandler<Integer>() {
 
