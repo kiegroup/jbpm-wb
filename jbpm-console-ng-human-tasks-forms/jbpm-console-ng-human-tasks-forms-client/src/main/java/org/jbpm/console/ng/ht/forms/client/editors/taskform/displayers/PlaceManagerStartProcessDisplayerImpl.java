@@ -70,7 +70,7 @@ public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessF
 
     public void onFormRender(@Observes RenderFormEvent event) {
         String processId = (String)event.getParams().get("processId");
-        if (processId == null || processId.equals("") || !event.getParams().get("TaskName").equals("")) {
+        if (processId == null || processId.equals("") || !event.getParams().containsKey("TaskName") || !event.getParams().get("TaskName").equals("")) {
             return;
         }
         
@@ -78,8 +78,6 @@ public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessF
         formContainer.setHeight("400px");
         placeManagerFormActivitySearcher.findFormActivityWidget(processId, null, formContainer);
         setFormParamsEvent.fire(new SetFormParamsEvent(event.getParams(), false));
-            
-       
     }
 
     @Override
