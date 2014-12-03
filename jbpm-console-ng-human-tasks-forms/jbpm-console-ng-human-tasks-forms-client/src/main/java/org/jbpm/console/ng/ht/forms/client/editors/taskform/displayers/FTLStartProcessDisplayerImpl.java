@@ -44,17 +44,27 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
         return 1000;
     }
 
+
     @Override
     protected void initDisplayer() {
         publish(this);
         jsniHelper.publishGetFormValues();
         formContainer.clear();
+
+        jsniHelper.injectFormValidationsScripts(formContent);
+
         formContainer.add(new HTMLPanel(formContent));
     }
 
+
+
     @Override
     protected native void startProcessFromDisplayer() /*-{
-        $wnd.startProcess($wnd.getFormValues($doc.getElementById("form-data")));
+        try {
+            if($wnd.eval("taskFormValidator()")) $wnd.startProcess($wnd.getFormValues($doc.getElementById("form-data")));
+        } catch (err) {
+            alert("Unexpected error: " + FTLerr);
+        }
     }-*/;
 
     public void startProcess(JavaScriptObject values) {

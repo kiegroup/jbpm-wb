@@ -16,7 +16,9 @@
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.JSNIHelper;
 
 import javax.enterprise.context.Dependent;
 import java.util.Map;
@@ -32,6 +34,9 @@ public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
     protected void initDisplayer() {
         publish(this);
         jsniHelper.publishGetFormValues();
+
+        jsniHelper.injectFormValidationsScripts(formContent);
+
         formContainer.clear();
         formContainer.add(new HTMLPanel(formContent));
     }
@@ -68,12 +73,20 @@ public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
 
     @Override
     protected native void completeFromDisplayer()/*-{
-        $wnd.complete($wnd.getFormValues($doc.getElementById("form-data")));
+        try {
+            if($wnd.eval("taskFormValidator()")) $wnd.complete($wnd.getFormValues($doc.getElementById("form-data")));
+        } catch (err) {
+            alert("Unexpected error: " + FTLerr);
+        }
     }-*/;
 
     @Override
     protected native void saveStateFromDisplayer()/*-{
-        $wnd.saveState($wnd.getFormValues($doc.getElementById("form-data")));
+        try {
+            if($wnd.eval("taskFormValidator()")) $wnd.saveState($wnd.getFormValues($doc.getElementById("form-data")));
+        } catch (err) {
+            alert("Unexpected error: " + FTLerr);
+        }
     }-*/;
 
     @Override

@@ -16,6 +16,7 @@
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 
@@ -28,6 +29,8 @@ import java.util.Map;
  */
 @Dependent
 public class JSNIHelper {
+    public static final String FORM_VALIDATOR_FUNCTION = "taskFormValidator()";
+
     public native void publishGetFormValues() /*-{
         $wnd.getFormValues = function (form) {
             var result = new Object()
@@ -71,4 +74,37 @@ public class JSNIHelper {
     protected native void notifyOpener(String message) /*-{
         $wnd.top.postMessage(message, $wnd.location.href);
     }-*/;
+
+    public void injectFormValidationsScripts(String html) {
+        String formScripts = "";
+
+        while (startOfScript(html) != -1) {
+            int begin = startOfScript(html);
+            int end = endOfScript(html);
+
+            String fullScript = html.substring(begin, end);
+            String script = fullScript.substring(fullScript.indexOf(">") + 1, fullScript.lastIndexOf("</"));
+
+            formScripts += script;
+            html = html.replace(fullScript, "");
+        }
+
+        if (formScripts == null || formScripts.length() == 0) {
+            formScripts = "function taskFormValidator() {return true;}";
+        }
+
+        ScriptInjector.fromString(formScripts).setWindow(ScriptInjector.TOP_WINDOW).inject();
+    }
+
+    protected int startOfScript(String html) {
+        return html.toLowerCase().indexOf("<script");
+    }
+
+    protected int endOfScript(String html) {
+        int start = html.toLowerCase().indexOf("</script");
+
+        int end = html.substring(start).indexOf(">") + 1;
+
+        return  start + end;
+    }
 }
