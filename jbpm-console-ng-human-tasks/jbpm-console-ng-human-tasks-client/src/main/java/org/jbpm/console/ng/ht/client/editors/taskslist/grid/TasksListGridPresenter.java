@@ -93,7 +93,10 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
                 || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")) {
           currentFilter.setOffset(visibleRange.getStart());
           currentFilter.setCount(visibleRange.getLength());
+          currentFilter.setFilterParams("");
         } else {
+          currentFilter.setFilterParams("(LOWER(t.name) like '"+currentFilter.getParams().get("textSearch")
+                                        +"' or LOWER(t.description) like '"+currentFilter.getParams().get("textSearch")+"') ");
           currentFilter.setOffset(0);
           currentFilter.setCount(view.getListGrid().getPageSize());
         }
