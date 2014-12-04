@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.bd.client.editors.deployment.list;
 
+import org.jbpm.console.ng.bd.model.DeploymentUnitSummary;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
@@ -126,6 +127,44 @@ public class DeploymentUnitsListPresenter extends AbstractScreenListPresenter<KM
         return true;
       }
     }).undeploy(new KModuleDeploymentUnitSummary(id, group, artifact, version, kbaseName, kieSessionName, null, null));
+  }
+
+  public void activateOrDeactivate(final DeploymentUnitSummary unitSummary, boolean activate) {
+      if (activate) {
+          view.showBusyIndicator(constants.Please_Wait());
+          deploymentManagerService.call(new RemoteCallback<Void>() {
+                                            @Override
+                                            public void callback(Void nothing) {
+                view.hideBusyIndicator();
+                view.displayNotification(" Kjar activated " + unitSummary.getId());
+                refreshGrid();
+            }
+        }, new ErrorCallback<Message>() {
+            @Override
+            public boolean error(Message message, Throwable throwable) {
+                view.hideBusyIndicator();
+                view.displayNotification("Error: Activation failed, check Problems panel");
+                return true;
+            }
+        }).activate(unitSummary);
+      }  else {
+          view.showBusyIndicator(constants.Please_Wait());
+          deploymentManagerService.call(new RemoteCallback<Void>() {
+                                            @Override
+                                            public void callback(Void nothing) {
+                    view.hideBusyIndicator();
+                    view.displayNotification(" Kjar deactivated " + unitSummary.getId());
+                    refreshGrid();
+                }
+            }, new ErrorCallback<Message>() {
+                @Override
+                public boolean error(Message message, Throwable throwable) {
+                    view.hideBusyIndicator();
+                    view.displayNotification("Error: Deactivation failed, check Problems panel");
+                    return true;
+                }
+            }).deactivate(unitSummary);
+      }
   }
 
   @WorkbenchPartView

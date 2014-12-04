@@ -29,6 +29,12 @@ public interface BusinessDomainImages extends ClientBundle {
 
     @Source("org/jbpm/console/ng/bd/public/images/icons/undeploy-grid-icon.png")
     public ImageResource undeployGridIcon();
+
+    @Source("org/jbpm/console/ng/bd/public/images/icons/activate-grid-icon.png")
+    public ImageResource activateGridIcon();
+
+    @Source("org/jbpm/console/ng/bd/public/images/icons/deactivate-grid-icon.png")
+    public ImageResource deactivateGridIcon();
  
 
 }

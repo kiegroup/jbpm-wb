@@ -167,7 +167,17 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
     undeploy(unit);
   }
 
-  protected void undeploy(DeploymentUnit unit) {
+    @Override
+    public void activate(DeploymentUnitSummary unitSummary) {
+        deploymentService.activate(unitSummary.getId());
+    }
+
+    @Override
+    public void deactivate(DeploymentUnitSummary unitSummary) {
+        deploymentService.deactivate(unitSummary.getId());
+    }
+
+    protected void undeploy(DeploymentUnit unit) {
     String[] gavElemes = unit.getIdentifier().split(":");
     GAV gav = new GAV(gavElemes[0], gavElemes[1], gavElemes[2]);
     BuildResults buildResults = new BuildResults(gav);
@@ -234,6 +244,8 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
       }else if(kdu.getIdentifier().toLowerCase().contains((String)filter.getParams().get("textSearch"))){
         unitsIds.add(duSummary);
       }
+
+      duSummary.setActive(du.isActive());
     }
     
     sort(unitsIds, filter);

@@ -31,6 +31,10 @@ public interface DeploymentManagerEntryPoint extends GenericServiceEntryPoint<KM
     void deploy(DeploymentUnitSummary unit);
     
     void undeploy(DeploymentUnitSummary unitSummary);
+
+    void activate(DeploymentUnitSummary unitSummary);
+
+    void deactivate(DeploymentUnitSummary unitSummary);
     
 
 }
