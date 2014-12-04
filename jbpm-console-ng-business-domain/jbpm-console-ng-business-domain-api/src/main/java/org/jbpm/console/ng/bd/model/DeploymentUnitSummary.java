@@ -27,6 +27,8 @@ public class DeploymentUnitSummary extends GenericSummary implements Serializabl
     private static final long serialVersionUID = 6584282551560911624L;
     private String type;
 
+    private boolean active;
+
     public DeploymentUnitSummary() {
     }
 
@@ -50,5 +52,14 @@ public class DeploymentUnitSummary extends GenericSummary implements Serializabl
     public void setType(String type) {
         this.type = type;
     }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
 
 }

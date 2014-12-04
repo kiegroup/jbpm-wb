@@ -46,6 +46,8 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
+import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.client.resources.BusinessDomainImages;
@@ -81,6 +83,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
         List<String> initColumns = new ArrayList<String>();
         initColumns.add(constants.Deployment());
         initColumns.add(constants.Strategy());
+        initColumns.add(constants.Status());
         initColumns.add(constants.Actions());
 
         super.init(presenter, new GridGlobalPreferences("DeploymentUnitsGrid", initColumns, bannedColumns));
@@ -154,6 +157,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
         Column<KModuleDeploymentUnitSummary, ?> kbaseColumn = kbaseColumn();
         Column<KModuleDeploymentUnitSummary, ?> ksessionColumn = ksessionColumn();
         Column<KModuleDeploymentUnitSummary, ?> strategyColumn = strategyColumn();
+        Column<KModuleDeploymentUnitSummary, ?> statusColumn = statusColumn();
         actionsColumn = actionsColumn();
 
         List<ColumnMeta<KModuleDeploymentUnitSummary>> columnMetas = new ArrayList<ColumnMeta<KModuleDeploymentUnitSummary>>();
@@ -164,6 +168,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
         columnMetas.add(new ColumnMeta<KModuleDeploymentUnitSummary>(kbaseColumn, constants.KieBaseName()));
         columnMetas.add(new ColumnMeta<KModuleDeploymentUnitSummary>(ksessionColumn, constants.KieSessionName()));
         columnMetas.add(new ColumnMeta<KModuleDeploymentUnitSummary>(strategyColumn, constants.Strategy()));
+        columnMetas.add(new ColumnMeta<KModuleDeploymentUnitSummary>(statusColumn, constants.Status()));
         columnMetas.add(new ColumnMeta<KModuleDeploymentUnitSummary>(actionsColumn, constants.Actions()));
         listGrid.addColumns(columnMetas);
     }
@@ -269,8 +274,38 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
         return strategyColumn;
     }
 
+    private Column<KModuleDeploymentUnitSummary, ?> statusColumn() {
+        Column<KModuleDeploymentUnitSummary, String> statusColumn = new Column<KModuleDeploymentUnitSummary, String>(
+                new TextCell()) {
+
+            @Override
+            public String getValue(KModuleDeploymentUnitSummary unit) {
+                if (unit.isActive()) {
+                    return constants.Active();
+                } else {
+                    return constants.NotActive();
+                }
+
+            }
+        };
+        statusColumn.setSortable(true);
+
+        return statusColumn;
+    }
+
     private Column<KModuleDeploymentUnitSummary, ?> actionsColumn() {
         List<HasCell<KModuleDeploymentUnitSummary, ?>> cells = new LinkedList<HasCell<KModuleDeploymentUnitSummary, ?>>();
+
+
+        cells.add(new ActivateDeactivateActionHasCell(constants.Activate(), new Delegate<KModuleDeploymentUnitSummary>() {
+            @Override
+            public void execute(KModuleDeploymentUnitSummary unit) {
+
+                presenter.activateOrDeactivate(unit, !unit.isActive());
+            }
+
+
+        }));
 
         cells.add(new DeleteActionHasCell(constants.Undeploy(), new Delegate<KModuleDeploymentUnitSummary>() {
             @Override
@@ -283,6 +318,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
             }
         }));
+
 
         CompositeCell<KModuleDeploymentUnitSummary> cell = new CompositeCell<KModuleDeploymentUnitSummary>(cells);
         return new Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary>(
@@ -318,6 +354,52 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 }
             };
 
+        }
+
+        @Override
+        public Cell<KModuleDeploymentUnitSummary> getCell() {
+            return cell;
+        }
+
+        @Override
+        public FieldUpdater<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> getFieldUpdater() {
+            return null;
+        }
+
+        @Override
+        public KModuleDeploymentUnitSummary getValue(KModuleDeploymentUnitSummary object) {
+            return object;
+        }
+    }
+
+    private class ActivateDeactivateActionHasCell implements HasCell<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> {
+
+        private ActionCell<KModuleDeploymentUnitSummary> cell;
+
+        public ActivateDeactivateActionHasCell(String text,
+                Delegate<KModuleDeploymentUnitSummary> delegate) {
+            cell = new ActionCell<KModuleDeploymentUnitSummary>(text, delegate) {
+                @Override
+                public void render(Cell.Context context,
+                        KModuleDeploymentUnitSummary value,
+                        SafeHtmlBuilder sb) {
+                    if (value.isActive()) {
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.deactivateGridIcon());
+                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                        mysb.appendHtmlConstant("<span title='" + constants.Deactivate() + "' style='margin-right:5px;'>");
+                        mysb.append(imageProto.getSafeHtml());
+                        mysb.appendHtmlConstant("</span>");
+                        sb.append(mysb.toSafeHtml());
+                    } else {
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.activateGridIcon());
+                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                        mysb.appendHtmlConstant("<span title='" + constants.Activate() + "' style='margin-right:5px;'>");
+                        mysb.append(imageProto.getSafeHtml());
+                        mysb.appendHtmlConstant("</span>");
+                        sb.append(mysb.toSafeHtml());
+                    }
+                }
+            };
         }
 
         @Override

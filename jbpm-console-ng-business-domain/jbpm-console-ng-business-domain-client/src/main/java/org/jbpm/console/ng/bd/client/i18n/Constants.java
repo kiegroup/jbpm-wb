@@ -128,4 +128,14 @@ public interface Constants extends Messages {
     String Type();
 
     String MergeMode();
+
+    String Activate();
+
+    String Deactivate();
+
+    String Status();
+
+    String Active();
+
+    String NotActive();
 }

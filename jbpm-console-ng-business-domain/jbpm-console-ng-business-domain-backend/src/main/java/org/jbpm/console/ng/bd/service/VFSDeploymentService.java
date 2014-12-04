@@ -143,5 +143,11 @@ public class VFSDeploymentService extends AbstractDeploymentService {
         this.bpmn2Service = bpmn2Service;
     }
 
+    public void activate(String deploymentId) {
 
+    }
+
+    public void deactivate(String deploymentId) {
+
+    }
 }
