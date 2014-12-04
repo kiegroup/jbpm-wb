@@ -91,6 +91,14 @@ public interface Constants extends Messages {
     String RequestsListTitle();
 
     String No_Jobs_Found();
+
+   String The_Job_Must_Have_A_Name();
+
+   String The_Job_Must_Have_A_Due_Date_In_The_Future();
+
+   String The_Job_Must_Have_A_Type();
+
+   String The_Job_Must_Have_A_Positive_Number_Of_Reties();
    
 
 }

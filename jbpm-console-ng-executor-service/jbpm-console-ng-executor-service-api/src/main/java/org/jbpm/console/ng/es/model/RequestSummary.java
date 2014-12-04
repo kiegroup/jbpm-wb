@@ -24,7 +24,7 @@ import org.jbpm.console.ng.ga.model.GenericSummary;
 @Portable
 public class RequestSummary extends GenericSummary {
 
-    private Long id;
+    private Long jobId;
     private Date time;
     private String status;
     private String commandName;
@@ -39,8 +39,9 @@ public class RequestSummary extends GenericSummary {
     public RequestSummary() {
     }
 
-    public RequestSummary(Long id, Date time, String status, String commandName, String message, String key) {
-        this.id = id;
+    public RequestSummary(Long jobId, Date time, String status, String commandName, String message, String key) {
+        this.id = jobId;
+        this.jobId = jobId;
         this.time = time;
         this.status = status;
         this.commandName = commandName;
@@ -48,14 +49,16 @@ public class RequestSummary extends GenericSummary {
         this.key = key;
     }
 
-    public Long getId() {
-        return id;
+    public Long getJobId() {
+        return jobId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setJobId(Long jobId) {
+        this.jobId = jobId;
     }
 
+
+    
     public Date getTime() {
         return time;
     }

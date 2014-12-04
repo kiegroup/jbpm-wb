@@ -375,7 +375,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         Column<RequestSummary, Number> taskIdColumn = new Column<RequestSummary, Number>( new NumberCell() ) {
             @Override
             public Number getValue( RequestSummary object ) {
-                return object.getId();
+                return object.getJobId();
             }
         };
         taskIdColumn.setSortable( true );
@@ -435,7 +435,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
             @Override
             public void execute( RequestSummary job ) {
                 DefaultPlaceRequest request = new DefaultPlaceRequest( "Job Request Details" );
-                request.addParameter( "requestId", String.valueOf( job.getId() ) );
+                request.addParameter( "requestId", String.valueOf( job.getJobId() ) );
                 placeManager.goTo( request );
             }
         } ) );
@@ -448,7 +448,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
             @Override
             public void execute( RequestSummary job ) {
                 if ( Window.confirm( "Are you sure you want to cancel this Job?" ) ) {
-                    presenter.cancelRequest( job.getId() );
+                    presenter.cancelRequest( job.getJobId() );
                 }
             }
         } ) );
@@ -460,7 +460,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
             @Override
             public void execute( RequestSummary job ) {
                 if ( Window.confirm( "Are you sure you want to requeue this Job?" ) ) {
-                    presenter.requeueRequest(job.getId());
+                    presenter.requeueRequest(job.getJobId());
                 }
             }
         } ) );
