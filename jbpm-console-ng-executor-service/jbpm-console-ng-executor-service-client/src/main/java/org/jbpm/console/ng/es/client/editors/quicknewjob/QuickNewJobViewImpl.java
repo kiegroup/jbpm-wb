@@ -17,9 +17,12 @@
 package org.jbpm.console.ng.es.client.editors.quicknewjob;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.ControlGroup;
+import com.github.gwtbootstrap.client.ui.HelpInline;
 import com.github.gwtbootstrap.client.ui.IntegerBox;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +30,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
@@ -37,15 +39,17 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Focusable;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import com.google.gwt.view.client.ListDataProvider;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.client.util.ResizableHeader;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
@@ -54,58 +58,80 @@ import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
-@Templated(value = "QuickNewJobViewImpl.html")
+
 public class QuickNewJobViewImpl extends Composite implements QuickNewJobPresenter.QuickNewJobView {
 
+    interface QuickNewJobViewWidgetBinder
+            extends
+            UiBinder<Widget, QuickNewJobViewImpl> {
+
+    }
+    
     private Constants constants = GWT.create( Constants.class );
 
-    @Inject
-    @DataField
+    private QuickNewJobViewWidgetBinder uiBinder = GWT.create(QuickNewJobViewWidgetBinder.class);
+    
+    
+    
+    @UiField
+    public ControlGroup jobNameControlGroup;
+    
+    @UiField
     public TextBox jobNameText;
     
-    @Inject
-    @DataField
-    public Label jobNameLabel;
+    
+    
+    @UiField
+    HelpInline jobNameHelpInline;
 
+    @UiField
+    public ControlGroup jobDueDateControlGroup;
+    
+    
+    @UiField
+    public HorizontalPanel jobDueSimplePanel;
+    
     @Inject
-    @DataField
     public UTCDateBox jobDueDate;
 
     @Inject
-    @DataField
     public UTCTimeBox jobDueDateTime;
     
-    @Inject
-    @DataField
-    public Label jobDueLabel;
+    
+    
+    @UiField
+    HelpInline jobDueDateHelpInline;
 
-    @Inject
-    @DataField
+    @UiField
+    public ControlGroup jobTypeControlGroup;
+    
+    
+    @UiField
     public TextBox jobTypeText;
     
-    @Inject
-    @DataField
-    public Label jobTypeLabel;
-
-    @Inject
-    @DataField
-    public IntegerBox dataTriesNumber;
     
-    @Inject
-    @DataField
-    public Label dataTriesLabel;
+    @UiField
+    HelpInline jobTypeHelpInline;
+
+    
+    @UiField
+    public ControlGroup jobRetriesControlGroup;
+    
+    
+    @UiField
+    public IntegerBox jobRetriesNumber;
+    
+    @UiField
+    HelpInline jobRetriesHelpInline;
 
 
-    @Inject
-    @DataField
+    @UiField
     public Button newParametersButton;
 
-    @Inject
-    @DataField
+    @UiField
     public Button createButton;
 
-    @Inject
-    @DataField
+    @UiField
     public DataGrid<RequestParameterSummary> myParametersGrid;
 
     @Inject
@@ -116,14 +142,14 @@ public class QuickNewJobViewImpl extends Composite implements QuickNewJobPresent
 
     @Override
     public void init( QuickNewJobPresenter p ) {
+        
+        
         this.presenter = p;
-
+        
+        initWidget(uiBinder.createAndBindUi( this ) );
+        
         newParametersButton.setText(constants.Add_Parameter());
         createButton.setText(constants.Create());
-        jobNameLabel.setText(constants.Name());
-        jobDueLabel.setText(constants.Due_On());
-        jobTypeLabel.setText(constants.Type());
-        dataTriesLabel.setText(constants.Retries());
         
         myParametersGrid.setHeight( "200px" );
 
@@ -132,12 +158,20 @@ public class QuickNewJobViewImpl extends Composite implements QuickNewJobPresent
 
         initGridColumns();
 
-        long now = System.currentTimeMillis();
+        long now = System.currentTimeMillis() + 120 * 1000;
         jobDueDate.setEnabled(true);
 
         jobDueDate.setValue( now  );
-
-        jobDueDateTime.setValue(UTCDateBox.date2utc(new Date()));
+        // Two minutes in the future
+        jobDueDateTime.setValue(UTCDateBox.date2utc(new Date(now )));
+        
+        jobRetriesNumber.setText("0");
+        
+        jobDueSimplePanel.add(jobDueDate);
+        jobDueSimplePanel.add(jobDueDateTime);
+        
+        
+        
     }
 
     private void initGridColumns() {
@@ -202,15 +236,50 @@ public class QuickNewJobViewImpl extends Composite implements QuickNewJobPresent
         dataProvider.addDataDisplay( myParametersGrid );
     }
 
-    @EventHandler("newParametersButton")
+    @UiHandler("newParametersButton")
     public void newParametersButton( ClickEvent e ) {
         presenter.addNewParameter();
     }
 
-    @EventHandler("createButton")
+    @UiHandler("createButton")
     public void createButton( ClickEvent e ) {
-        presenter.createJob( jobNameText.getText(), UTCDateBox.utc2date(jobDueDate.getValue() + jobDueDateTime.getValue()),
-                jobTypeText.getText(), dataTriesNumber.getValue(), dataProvider.getList() );
+        
+        if(jobNameText.getText() == null || jobNameText.getText().isEmpty()){
+            jobNameControlGroup.setType(ControlGroupType.ERROR);
+            jobNameHelpInline.setText(constants.The_Job_Must_Have_A_Name());
+            return;
+        }else{
+            jobNameControlGroup.setType(ControlGroupType.SUCCESS);
+            
+        }
+            
+        if(UTCDateBox.utc2date(jobDueDate.getValue() + jobDueDateTime.getValue()).before(new Date())){
+            jobDueDateControlGroup.setType(ControlGroupType.ERROR);
+            jobDueDateHelpInline.setText(constants.The_Job_Must_Have_A_Due_Date_In_The_Future());
+            return;
+        }else {
+            jobDueDateControlGroup.setType(ControlGroupType.SUCCESS);
+            
+        }
+        if(jobTypeText.getText() == null || jobTypeText.getText().isEmpty()){
+            jobTypeControlGroup.setType(ControlGroupType.ERROR);
+            jobTypeHelpInline.setText(constants.The_Job_Must_Have_A_Type());
+            return;
+        }else{
+            jobTypeControlGroup.setType(ControlGroupType.SUCCESS);
+            
+        } 
+        if(jobRetriesNumber.getValue() == null || jobRetriesNumber.getValue() < 0){
+            jobRetriesControlGroup.setType(ControlGroupType.ERROR);
+            jobRetriesHelpInline.setText(constants.The_Job_Must_Have_A_Positive_Number_Of_Reties());
+            return;
+        }else{
+            jobRetriesControlGroup.setType(ControlGroupType.SUCCESS);
+            
+        }
+        presenter.createJob(jobNameText.getText(), UTCDateBox.utc2date(jobDueDate.getValue() + jobDueDateTime.getValue()),
+                jobTypeText.getText(), jobRetriesNumber.getValue(), dataProvider.getList() );
+        
     }
 
     private class ActionHasCell implements HasCell<RequestParameterSummary, RequestParameterSummary> {
