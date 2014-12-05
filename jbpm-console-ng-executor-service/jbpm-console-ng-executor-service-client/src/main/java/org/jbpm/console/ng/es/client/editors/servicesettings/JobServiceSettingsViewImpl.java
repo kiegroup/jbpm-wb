@@ -135,10 +135,7 @@ public class JobServiceSettingsViewImpl extends Composite implements JobServiceS
         notificationEvents.fire( new NotificationEvent( notification ) );
     }
 
-    @Override
-    public Focusable getNumberOfExecutorsText() {
-        return numberOfExecutorsText;
-    }
+    
 
     @Override
     public void setFrequencyText( String frequency ) {
@@ -164,6 +161,17 @@ public class JobServiceSettingsViewImpl extends Composite implements JobServiceS
     public Button getStartStopButton() {
         return startStopButton;
     }
+
+    @Override
+    public IntegerBox getNumberOfExecutorsText() {
+        return numberOfExecutorsText;
+    }
+
+    @Override
+    public TextBox getFrequencyText() {
+        return frequencyText;
+    }
+    
     
     
 }
