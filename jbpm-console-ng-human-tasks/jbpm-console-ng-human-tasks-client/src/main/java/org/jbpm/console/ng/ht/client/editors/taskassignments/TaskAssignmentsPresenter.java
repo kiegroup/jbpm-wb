@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.bus.client.api.messaging.Message;
@@ -108,38 +109,50 @@ public class TaskAssignmentsPresenter {
     }
 
     public void refreshTaskPotentialOwners() {
-        List<Long> taskIds = new ArrayList<Long>( 1 );
-        taskIds.add( currentTaskId );
+        if(currentTaskId != 0){
+            taskOperationsServices.call( new RemoteCallback<TaskSummary>() {
 
+                @Override
+                public void callback(TaskSummary response) {
+                     if ( response == null ) {
+                        return;
+                    }
+                    if(response.getStatus().equals("Completed") || response.getActualOwner().equals( "" ) 
+                            || !response.getActualOwner().equals( identity.getIdentifier() )  ){
+                        view.getDelegateButton().setEnabled( false );
+                        view.getUserOrGroupText().setEnabled( false );
+                    }else{
+                        view.getDelegateButton().setEnabled( true );
+                        view.getUserOrGroupText().setEnabled( true );
+                    }
+                    
+                }
 
-        taskOperationsServices.call( new RemoteCallback<TaskAssignmentSummary>() {
-            @Override
-            public void callback( TaskAssignmentSummary ts ) {
-                if ( ts == null ) {
-                    return;
+            }).getTaskDetails(currentTaskId);
+
+            taskOperationsServices.call( new RemoteCallback<TaskAssignmentSummary>() {
+                @Override
+                public void callback( TaskAssignmentSummary ts ) {
+                    if ( ts == null ) {
+                        return;
+                    }
+                    
+                    if( ts.getPotOwnersString() != null && ts.getPotOwnersString().size() == 0 ){
+                        view.getUsersGroupsControlsPanel().setText( Constants.INSTANCE.No_Potential_Owners() );
+                    } else {
+                           view.getUsersGroupsControlsPanel().setText("" + ts.getPotOwnersString().toString() );
+                    }
+                   
                 }
-                String actualOwner = ts.getActualOwner();
-                if( ts.getPotOwnersString() != null && ts.getPotOwnersString().size() == 0 ){
-                    view.getUsersGroupsControlsPanel().setText( Constants.INSTANCE.No_Potential_Owners() );
-                } else {
-                       view.getUsersGroupsControlsPanel().setText("" + ts.getPotOwnersString().toString() );
+            }, new ErrorCallback<Message>() {
+                @Override
+                public boolean error( Message message,
+                                      Throwable throwable ) {
+                    ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                    return true;
                 }
-                if ( actualOwner.equals( "" ) || !actualOwner.equals( identity.getIdentifier() ) ) {
-                    view.getDelegateButton().setEnabled( false );
-                    view.getUserOrGroupText().setEnabled( false );
-                } else {
-                    view.getDelegateButton().setEnabled( true );
-                    view.getUserOrGroupText().setEnabled( true );
-                }
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
-                return true;
-            }
-        } ).getTaskAssignmentDetails( currentTaskId );
+            } ).getTaskAssignmentDetails( currentTaskId );
+        }
 
     }
 

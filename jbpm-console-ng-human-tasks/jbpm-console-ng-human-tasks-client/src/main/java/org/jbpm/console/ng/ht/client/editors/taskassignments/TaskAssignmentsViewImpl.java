@@ -80,7 +80,6 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
         delegateButton.setText(constants.Delegate());
         usersGroupsControlsLabel.setText(constants.Potential_Owners());
         usersGroupsControlsPanel.setStyleName("");
-
     }
 
     @EventHandler("delegateButton")
