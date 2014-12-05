@@ -64,8 +64,6 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     @Inject
     private RequestListView view;
     
-    private Menus menus;
-    
     @Inject
     private Caller<ExecutorServiceEntryPoint> executorServices;
     @Inject
@@ -76,7 +74,6 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     
     public RequestListPresenter() {
         onRangeChanged();
-        makeMenuBar();
     }
     
     private void onRangeChanged(){
@@ -198,41 +195,4 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         }).requeueRequest(requestId);
     }
 
-    @WorkbenchMenu
-    public Menus getMenus() {
-        return menus;
-    }
-
-    private void makeMenuBar() {
-        menus = MenuFactory
-                .newTopLevelMenu(constants.Settings())
-                .respondsWith(new Command() {
-                    @Override
-                    public void execute() {
-                        placeManager.goTo( new DefaultPlaceRequest( "Job Service Settings" ) );
-                        
-                    }
-                })
-                .endMenu()
-                .newTopLevelMenu(constants.New_Job())
-                .respondsWith(new Command() {
-                    @Override
-                    public void execute() {
-                        placeManager.goTo( new DefaultPlaceRequest( "Quick New Job" ) );
-                        
-                    }
-                })
-                .endMenu()
-                .newTopLevelMenu(constants.Refresh())
-                .respondsWith(new Command() {
-                    public void execute() {
-                        refreshRequests(null);
-//                        clearSearchEvent.fire(new ClearSearchEvent());
-//                        view.setCurrentFilter("");
-//                        view.displayNotification(constants.Process_Instances_Refreshed());
-                    }
-                })
-                .endMenu().build();
-
-    }
 }

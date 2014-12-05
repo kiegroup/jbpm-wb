@@ -81,10 +81,12 @@
                 </bootstrap:DataGrid> 
                 <bootstrap:Button ui:field="newParametersButton"></bootstrap:Button>
             </bootstrap:Fieldset>
-            <bootstrap:ModalFooter>
-                <bootstrap:Button type="PRIMARY" ui:field="createButton"></bootstrap:Button>
-            </bootstrap:ModalFooter>
+            
             
         </bootstrap:Well>
+        <bootstrap:ModalFooter>
+            <bootstrap:Button type="PRIMARY" ui:field="createButton"></bootstrap:Button>
+        </bootstrap:ModalFooter>
     </gwt:HTMLPanel>
+    
 </ui:UiBinder>
