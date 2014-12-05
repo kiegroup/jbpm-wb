@@ -16,59 +16,69 @@
 
 package org.jbpm.console.ng.es.client.editors.servicesettings;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.ControlGroup;
+import com.github.gwtbootstrap.client.ui.HelpInline;
+import com.github.gwtbootstrap.client.ui.IntegerBox;
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Focusable;
-import com.google.gwt.user.client.ui.IntegerBox;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
+
+import com.google.gwt.user.client.ui.Widget;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
-@Templated(value = "JobServiceSettingsViewImpl.html")
+
 public class JobServiceSettingsViewImpl extends Composite implements JobServiceSettingsPresenter.JobServiceSettingsView {
 
     private Constants constants = GWT.create( Constants.class );
 
+     interface JobServiceSettingsViewWidgetBinder
+            extends
+            UiBinder<Widget, JobServiceSettingsViewImpl> {
+    }
     
-    @Inject
-    @DataField
-    public Label startedStatusLabel;
+    private JobServiceSettingsViewWidgetBinder uiBinder = GWT.create(JobServiceSettingsViewWidgetBinder.class);
     
-    @Inject
-    @DataField
+    @UiField
     public IntegerBox numberOfExecutorsText;
-   
-    @Inject
-    @DataField
-    public Label numberOfExecutorsLabel;
 
-    @Inject
-    @DataField
-    public TextBox frequencyText;
-    
-    @Inject
-    @DataField
-    public Label frequencyLabel;
+    @UiField
+    public TextBox frequencyText;  
 
-    @Inject
-    @DataField
+    @UiField
     public Button startStopButton;
 
-    @Inject
-    @DataField
+    @UiField
     public Label startedLabel;
+    
+    @UiField
+    public ControlGroup numberOfExecutorsControlGroup;
+    
+    @UiField
+    public ControlGroup frequencyControlGroup;
+    
+    @UiField
+    public ControlGroup startedControlGroup;
+    
+    @UiField
+    public HelpInline frequencyHelpInline;
+    
+    @UiField
+    public HelpInline numberOfExecutorsHelpInline;
 
     @Inject
     Event<NotificationEvent> notificationEvents;
@@ -78,16 +88,46 @@ public class JobServiceSettingsViewImpl extends Composite implements JobServiceS
     @Override
     public void init( JobServiceSettingsPresenter p ) {
         this.presenter = p;
+        initWidget(uiBinder.createAndBindUi( this ) );
+        
+        
         this.presenter.init();
-        startStopButton.setText(constants.Start_StopService());
-        startedStatusLabel.setText(constants.Status());
-        numberOfExecutorsLabel.setText(constants.Number_of_Threads());
-        frequencyLabel.setText(constants.Frequency());
+        
     }
 
-    @EventHandler("startStopButton")
+    @UiHandler("startStopButton")
     public void startStopButton( ClickEvent e ) {
-        presenter.initService( numberOfExecutorsText.getValue(), frequencyText.getText() );
+        Integer frequency = 0;   
+        if(startedLabel.getText().equals("Stopped")){
+            if(numberOfExecutorsText.getText() == null || 
+                    numberOfExecutorsText.getText().equals("") || 
+                    numberOfExecutorsText.getValue() < 0){
+                numberOfExecutorsControlGroup.setType(ControlGroupType.ERROR);
+                numberOfExecutorsHelpInline.setText(constants.Please_Provide_The_Number_Of_Executors());
+                return;
+            }else{
+                numberOfExecutorsControlGroup.setType(ControlGroupType.SUCCESS);
+
+            }
+            try{
+                if(frequencyText.getText() != null && !frequencyText.getText().equals("")){
+                    frequency = presenter.fromFrequencyToInterval( frequencyText.getText() );
+                    frequencyControlGroup.setType(ControlGroupType.SUCCESS);
+                }else{
+                    frequencyControlGroup.setType(ControlGroupType.ERROR);
+                    frequencyHelpInline.setText(constants.Please_Provide_A_Valid_Frequency());
+                    return;
+                }
+            }catch(NumberFormatException ex){
+                frequencyControlGroup.setType(ControlGroupType.ERROR);
+                frequencyHelpInline.setText(constants.Please_Provide_A_Valid_Frequency());
+                return;
+            }
+
+            
+        }
+        
+        presenter.initService( numberOfExecutorsText.getValue(), frequency );
     }
 
     @Override
@@ -119,4 +159,11 @@ public class JobServiceSettingsViewImpl extends Composite implements JobServiceS
     public void alert( String message ) {
         Window.alert( message ); // TODO improve??
     }
+
+    @Override
+    public Button getStartStopButton() {
+        return startStopButton;
+    }
+    
+    
 }

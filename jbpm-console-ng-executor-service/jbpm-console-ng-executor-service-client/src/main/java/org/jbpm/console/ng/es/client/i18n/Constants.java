@@ -99,6 +99,14 @@ public interface Constants extends Messages {
    String The_Job_Must_Have_A_Type();
 
    String The_Job_Must_Have_A_Positive_Number_Of_Reties();
+
+   String Please_Provide_A_Valid_Frequency();
+
+   String Please_Provide_The_Number_Of_Executors();
+
+   String Stop();
+
+   String Start();
    
 
 }

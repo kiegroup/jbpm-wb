@@ -34,6 +34,9 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.NavLink;
+import com.github.gwtbootstrap.client.ui.SimplePager;
+import com.github.gwtbootstrap.client.ui.SplitDropdownButton;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.cell.client.ActionCell;
@@ -104,7 +107,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         super.init(presenter, new GridGlobalPreferences("RequestListGrid", initColumns, bannedColumns));
 
         initFiltersBar();
-
+        this.initActionsDropDown();
         listGrid.setEmptyTableCaption(constants.No_Jobs_Found());
         initSelectionModel();
         initNoActionColumnManager();
@@ -353,6 +356,31 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
 
     }
     
+    private void initActionsDropDown() {
+        SplitDropdownButton actions = new SplitDropdownButton();
+        actions.setText(constants.Actions());
+        NavLink newJobNavLink = new NavLink(constants.New_Job());
+        newJobNavLink.setIcon(IconType.PLUS_SIGN);
+        newJobNavLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+            	placeManager.goTo( new DefaultPlaceRequest( "Quick New Job" ) );
+            }
+        });
+
+        NavLink settingsNavLink = new NavLink(constants.Settings());
+        settingsNavLink.setIcon(IconType.COG);
+        settingsNavLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+            	placeManager.goTo( new DefaultPlaceRequest( "Job Service Settings" ) );
+            }
+        });
+
+        actions.add(newJobNavLink);
+        actions.add(settingsNavLink);
+        listGrid.getLeftToolbar().add(actions);
+    }
     
     private void initChecksColumn() {
         // Checkbox column. This table will uses a checkbox column for selection.

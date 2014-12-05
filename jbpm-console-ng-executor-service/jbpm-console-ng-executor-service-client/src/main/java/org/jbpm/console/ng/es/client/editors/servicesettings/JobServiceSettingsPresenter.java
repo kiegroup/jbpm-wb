@@ -16,6 +16,8 @@
 
 package org.jbpm.console.ng.es.client.editors.servicesettings;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.google.gwt.core.shared.GWT;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -23,6 +25,7 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.Focusable;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -50,6 +53,8 @@ public class JobServiceSettingsPresenter {
         void setStartedLabel( Boolean started );
 
         void alert( String message );
+        
+        Button getStartStopButton();
     }
 
     @Inject
@@ -59,6 +64,8 @@ public class JobServiceSettingsPresenter {
     @Inject
     private Caller<ExecutorServiceEntryPoint> executorServices;
     private PlaceRequest place;
+    
+    private Constants constants = GWT.create( Constants.class );
 
     public JobServiceSettingsPresenter() {
     }
@@ -91,24 +98,32 @@ public class JobServiceSettingsPresenter {
             @Override
             public void callback( Boolean started ) {
                 view.setStartedLabel( started );
+                 if(started){
+                        view.getStartStopButton().setText(constants.Stop());
+                    }else{
+                        view.getStartStopButton().setText(constants.Start());
+                    }
             }
         } ).isActive();
     }
 
     public void initService( final Integer numberOfExecutors,
-                             String frequency ) {
-        try {
-            Integer interval = fromFrequencyToInterval( frequency );
+                             Integer frequency ) {
+        
+            
             executorServices.call( new RemoteCallback<Boolean>() {
                 @Override
                 public void callback( Boolean serviceStatus ) {
                     view.displayNotification( serviceStatus ? "Service started" : "Service stopped" );
+                    if(serviceStatus){
+                        view.getStartStopButton().setText(constants.Stop());
+                    }else{
+                        view.getStartStopButton().setText(constants.Start());
+                    }
                     placeManager.closePlace( place );
                 }
-            } ).startStopService( interval, numberOfExecutors );
-        } catch ( NumberFormatException e ) {
-            view.alert( "Invalid frequency expression: " + frequency );
-        }
+            } ).startStopService( frequency, numberOfExecutors );
+        
     }
 
     @OnOpen
@@ -121,7 +136,7 @@ public class JobServiceSettingsPresenter {
         this.place = place;
     }
 
-    private String fromIntervalToFrequency( Integer interval ) {
+    public String fromIntervalToFrequency( Integer interval ) {
         int seconds = interval % 60;
         int minutes = ( interval / 60 ) % 60;
         int hours = ( interval / 3600 ) % 24;
@@ -142,7 +157,7 @@ public class JobServiceSettingsPresenter {
         return frequencyText.toString();
     }
 
-    private Integer fromFrequencyToInterval( String frequency ) throws NumberFormatException {
+    public Integer fromFrequencyToInterval( String frequency ) throws NumberFormatException {
         String[] sections = frequency.split( " " );
         int interval = 0;
         for ( String section : sections ) {
