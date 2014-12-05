@@ -17,6 +17,8 @@
 package org.jbpm.console.ng.es.client.editors.servicesettings;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.IntegerBox;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.shared.GWT;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -42,7 +44,7 @@ public class JobServiceSettingsPresenter {
 
     public interface JobServiceSettingsView extends UberView<JobServiceSettingsPresenter> {
 
-        Focusable getNumberOfExecutorsText();
+        IntegerBox getNumberOfExecutorsText();
 
         void displayNotification( String notification );
 
@@ -55,6 +57,8 @@ public class JobServiceSettingsPresenter {
         void alert( String message );
         
         Button getStartStopButton();
+        
+        TextBox getFrequencyText();
     }
 
     @Inject
@@ -100,8 +104,12 @@ public class JobServiceSettingsPresenter {
                 view.setStartedLabel( started );
                  if(started){
                         view.getStartStopButton().setText(constants.Stop());
+                        view.getFrequencyText().setEnabled(false);
+                        view.getNumberOfExecutorsText().setEnabled(false);
                     }else{
                         view.getStartStopButton().setText(constants.Start());
+                        view.getFrequencyText().setEnabled(true);
+                        view.getNumberOfExecutorsText().setEnabled(true);
                     }
             }
         } ).isActive();
@@ -117,7 +125,11 @@ public class JobServiceSettingsPresenter {
                     view.displayNotification( serviceStatus ? "Service started" : "Service stopped" );
                     if(serviceStatus){
                         view.getStartStopButton().setText(constants.Stop());
+                        view.getFrequencyText().setEnabled(false);
+                        view.getNumberOfExecutorsText().setEnabled(false);
                     }else{
+                        view.getFrequencyText().setEnabled(true);
+                        view.getNumberOfExecutorsText().setEnabled(true);
                         view.getStartStopButton().setText(constants.Start());
                     }
                     placeManager.closePlace( place );
