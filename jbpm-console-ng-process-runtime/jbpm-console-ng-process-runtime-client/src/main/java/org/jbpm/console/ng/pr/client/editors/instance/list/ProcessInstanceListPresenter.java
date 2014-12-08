@@ -38,6 +38,7 @@ import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.jbpm.console.ng.pr.service.ProcessInstanceService;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -169,6 +170,10 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
   public void newInstanceCreated(@Observes NewProcessInstanceEvent pi) {
     refreshActiveProcessList();
   }
+  
+  public void newInstanceCreated(@Observes ProcessInstancesUpdateEvent pis) {
+    refreshActiveProcessList();
+  }
 
   @OnStartup
   public void onStartup(final PlaceRequest place) {
@@ -282,35 +287,6 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
     }
   }
 
-//  public void onSearch(@Observes final ProcessInstancesSearchEvent searchFilter) {
-//    view.setCurrentFilter(searchFilter.getFilter());
-//    String relatedToMe = identity.getName();
-//    List<Integer> states = new ArrayList<Integer>();
-//
-//    if (view.getShowAllLink().getStyleName().equals("active")) {
-//      states.add(ProcessInstance.STATE_ACTIVE);
-//    } else if (view.getShowRelatedToMeLink().getStyleName().equals("active")) {
-//      states.add(ProcessInstance.STATE_ACTIVE);
-//    } else if (view.getShowCompletedLink().getStyleName().equals("active")) {
-//      states.add(ProcessInstance.STATE_COMPLETED);
-//    } else if (view.getShowAbortedLink().getStyleName().equals("active")) {
-//      states.add(ProcessInstance.STATE_ABORTED);
-//    }
-//
-//    dataServices.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
-//      @Override
-//      public void callback(List<ProcessInstanceSummary> processInstances) {
-//        currentProcessInstances = processInstances;
-//        filterProcessList(view.getCurrentFilter());
-//      }
-//    }, new ErrorCallback<Message>() {
-//      @Override
-//      public boolean error(Message message, Throwable throwable) {
-//        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-//        return true;
-//      }
-//    }).getProcessInstances(states, "", relatedToMe);
-//  }
 
   @WorkbenchPartTitle
   public String getTitle() {
