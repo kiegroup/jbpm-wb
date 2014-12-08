@@ -36,7 +36,9 @@ import org.jbpm.console.ng.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.annotations.DefaultPosition;
@@ -84,6 +86,9 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
 
     @Inject
     private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
+    
+    @Inject
+    private Event<ProcessInstancesUpdateEvent> processInstancesUpdatedEvent;
 
     @Inject
     private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
@@ -129,7 +134,7 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
     }
 
     public void refresh() {
-        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedDeploymentId, Long.valueOf( selectedItemId ), selectedItemName, selectedProcessDefName, selectedProcessInstanceStatus ) );
+        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedDeploymentId, Long.valueOf( selectedItemId ), selectedItemName, selectedProcessDefName, selectedProcessInstanceStatus ) );        
     }
 
     public void signalProcessInstance() {
@@ -150,7 +155,7 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
                         kieSessionServices.call( new RemoteCallback<Void>() {
                             @Override
                             public void callback( Void v ) {
-                                refresh();
+                                processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
                             }
                         }, new ErrorCallback<Message>() {
                             @Override

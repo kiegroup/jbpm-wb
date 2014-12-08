@@ -101,6 +101,7 @@ public class ProcessInstanceSignalPresenter {
             @Override
             public void callback( Void v ) {
                 processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
+                
                 placeManager.closePlace( place );
                 
             }
