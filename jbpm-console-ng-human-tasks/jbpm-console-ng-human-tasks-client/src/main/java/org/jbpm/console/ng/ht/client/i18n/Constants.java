@@ -170,4 +170,12 @@ public interface Constants extends Messages {
     String Task_Admin();
     
     String Delegate_User();
+    
+    String Reminder();
+    
+    String Actual_Owner();
+    
+    String Reminder_Details();
+    
+    String No_Actual_Owner();
 }

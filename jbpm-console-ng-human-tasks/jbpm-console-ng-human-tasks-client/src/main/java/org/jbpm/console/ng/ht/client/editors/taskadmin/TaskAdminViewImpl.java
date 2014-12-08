@@ -39,8 +39,8 @@ import org.uberfire.workbench.events.NotificationEvent;
 public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.TaskAdminView {
 
     private TaskAdminPresenter presenter;
-
-    @Inject
+    
+	@Inject
     @DataField
     public ControlLabel adminDetailsAccordionLabel;
 
@@ -65,6 +65,21 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
     @DataField
     public Label adminUsersGroupsControlsPanel;
   
+    @Inject
+    @DataField
+    public ControlLabel reminderDetailsAccordionLabel;
+    
+    @Inject
+    @DataField
+    public Label actualOwnerLabel;
+    
+    @Inject
+    @DataField
+    public Label actualOwnerPanel;
+    
+    @Inject
+    @DataField
+    public Button adminReminderButton;
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -79,7 +94,11 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
         adminForwardButton.setText(constants.Forward());
         adminUsersGroupsControlsLabel.setText(constants.Potential_Owners());
         adminUsersGroupsControlsPanel.setStyleName("");
-
+        
+        reminderDetailsAccordionLabel.add( new HTMLPanel(constants.Reminder_Details() ));
+        actualOwnerLabel.setText(constants.Actual_Owner());
+        actualOwnerPanel.setStyleName("");
+        adminReminderButton.setText(constants.Reminder());
     }
 
     @EventHandler("adminForwardButton")
@@ -93,6 +112,11 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
         }
     }
 
+    @EventHandler("adminReminderButton")
+    public void adminReminderButton( ClickEvent e ) {
+            presenter.reminder();
+    }
+    
     @Override
     public Label getUsersGroupsControlsPanel() {
         return adminUsersGroupsControlsPanel;
@@ -112,5 +136,14 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
     public TextBox getUserOrGroupText() {
         return adminUserOrGroupText;
     }
-    
+
+	@Override
+	public Button getReminderButton() {
+		return adminReminderButton;
+	}
+
+	@Override
+	public Label getActualOwnerPanel() {
+		return actualOwnerPanel;
+	}
 }

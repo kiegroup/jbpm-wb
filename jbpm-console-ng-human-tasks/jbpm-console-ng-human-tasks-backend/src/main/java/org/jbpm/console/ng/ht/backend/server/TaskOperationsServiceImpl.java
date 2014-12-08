@@ -21,8 +21,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ht.model.TaskAssignmentSummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
@@ -30,11 +32,11 @@ import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.jbpm.services.api.RuntimeDataService;
 import org.jbpm.services.api.UserTaskService;
 import org.jbpm.services.task.utils.TaskFluent;
+import org.kie.api.task.model.Group;
 import org.kie.api.task.model.OrganizationalEntity;
 import org.kie.api.task.model.Task;
-import org.kie.internal.task.api.InternalTaskService;
 import org.kie.api.task.model.User;
-import org.kie.api.task.model.Group;
+import org.kie.internal.task.api.InternalTaskService;
 /**
  *
  * @author salaboy
@@ -146,6 +148,7 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
                 potOwnersString = new ArrayList<String>(potentialOwners.size());
                 potOwnersString = getPotentialOwnersByTaskId(potentialOwners);
                 }
+            
             return new TaskAssignmentSummary(task.getId(),task.getName(),(task.getTaskData().getActualOwner() != null) ? task.getTaskData().getActualOwner()
                 .getId() : "",potOwnersString);
             }
@@ -166,6 +169,9 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
         }
         return orgEntitiesSimple;
      
- }
-    
+    }
+    @Override
+   	public void executeReminderForTask(long taskId,String fromUser) {
+    	internalTaskService.executeReminderForTask(taskId,fromUser);
+   	}
 }
