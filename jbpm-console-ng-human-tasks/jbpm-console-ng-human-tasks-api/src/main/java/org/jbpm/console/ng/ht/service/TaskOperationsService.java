@@ -47,4 +47,6 @@ public interface TaskOperationsService{
   
   TaskAssignmentSummary getTaskAssignmentDetails(long taskId); 
   
+  void executeReminderForTask(long taskId,String fromUser);
+  
 }

@@ -15,6 +15,9 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskadmin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -38,8 +41,6 @@ import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
-import java.util.ArrayList;
-import java.util.List;
 
 @Dependent
 public class TaskAdminPresenter {
@@ -53,6 +54,10 @@ public class TaskAdminPresenter {
         Button getForwardButton();
         
         TextBox getUserOrGroupText();
+        
+        Button getReminderButton();
+        
+        Label getActualOwnerPanel();
         
         void init( final TaskAdminPresenter presenter );
     }
@@ -102,10 +107,23 @@ public class TaskAdminPresenter {
       }).delegate( currentTaskId, identity.getIdentifier(), entity );
     }
 
+    public void reminder(){
+        taskOperationsServices.call(new RemoteCallback<TaskAssignmentSummary>() {
+            @Override
+            public void callback(TaskAssignmentSummary ts) {
+            	view.displayNotification("Reminder was succesfully sent to " + ts.getActualOwner());
+            }
+        }, new ErrorCallback<Message>() {
+              @Override
+              public boolean error( Message message, Throwable throwable ) {
+                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                  return true;
+              }
+          }).executeReminderForTask(currentTaskId,identity.getIdentifier());
+    }
     public void refreshTaskPotentialOwners() {
         List<Long> taskIds = new ArrayList<Long>(1);
         taskIds.add(currentTaskId);
-
         
         taskOperationsServices.call(new RemoteCallback<TaskAssignmentSummary>() {
             @Override
@@ -118,6 +136,14 @@ public class TaskAdminPresenter {
                 }
                 view.getForwardButton().setEnabled(true);
                 view.getUserOrGroupText().setEnabled(true);
+                
+                if(ts.getActualOwner() == null || ts.getActualOwner().equals("")){
+                	view.getReminderButton().setEnabled(false);
+                	view.getActualOwnerPanel().setText(Constants.INSTANCE.No_Actual_Owner());
+                }else{
+                	view.getReminderButton().setEnabled(true);
+                	view.getActualOwnerPanel().setText(ts.getActualOwner());
+                }
             }
         }, new ErrorCallback<Message>() {
               @Override
