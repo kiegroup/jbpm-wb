@@ -1,12 +1,12 @@
 package org.jbpm.console.ng.bd.dd.service;
 
+import org.guvnor.common.services.shared.file.SupportsUpdate;
+import org.guvnor.common.services.shared.validation.ValidationService;
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.bd.dd.model.DeploymentDescriptorModel;
-import org.guvnor.common.services.shared.file.SupportsRead;
-import org.guvnor.common.services.shared.file.SupportsUpdate;
 import org.kie.workbench.common.services.shared.source.ViewSourceService;
-import org.guvnor.common.services.shared.validation.ValidationService;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.ext.editor.commons.service.support.SupportsRead;
 
 @Remote
 public interface DDEditorService extends ViewSourceService<DeploymentDescriptorModel>,
