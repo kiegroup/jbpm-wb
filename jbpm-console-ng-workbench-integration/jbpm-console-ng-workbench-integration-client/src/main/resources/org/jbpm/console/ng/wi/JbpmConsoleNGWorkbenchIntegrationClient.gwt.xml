@@ -20,17 +20,19 @@
     "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
 <module>
 
-    <!-- Inherit the core Web Toolkit stuff. -->
-  <inherits name="com.google.gwt.i18n.I18N" />
-  <inherits name="com.google.gwt.http.HTTP" />
-  <inherits name="com.google.gwt.user.User" />
+  <!-- Inherit the core Web Toolkit stuff. -->
+  <inherits name="com.google.gwt.i18n.I18N"/>
+  <inherits name="com.google.gwt.http.HTTP"/>
+  <inherits name="com.google.gwt.user.User"/>
 
-  <inherits name="org.jboss.errai.ui.UI" />
-  <inherits name="org.uberfire.UberfireClientAPI" />
+  <inherits name="org.jboss.errai.ui.UI"/>
+  <inherits name="org.uberfire.UberfireClientAPI"/>
 
-  <inherits name="org.jbpm.console.ng.bd.JbpmConsoleNGBusinessDomainAPI" />
-  <inherits name="org.jbpm.console.ng.wi.JbpmConsoleNGWorkbenchIntegrationAPI" />
-  <inherits name="org.jbpm.console.ng.ga.JbpmConsoleNGGenericAPI" />
+  <inherits name="org.uberfire.ext.editor.commons.UberfireCommonsEditorClient"/>
+
+  <inherits name="org.jbpm.console.ng.bd.JbpmConsoleNGBusinessDomainAPI"/>
+  <inherits name="org.jbpm.console.ng.wi.JbpmConsoleNGWorkbenchIntegrationAPI"/>
+  <inherits name="org.jbpm.console.ng.ga.JbpmConsoleNGGenericAPI"/>
   <inherits name="org.guvnor.structure.GuvnorStructureClient"/>
 
 </module>
