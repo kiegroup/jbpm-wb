@@ -23,7 +23,10 @@ import javax.inject.Inject;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.jbpm.services.api.UserTaskService;
-import org.kie.internal.task.api.InternalTaskService;
+import org.jbpm.services.task.commands.ClaimTaskCommand;
+import org.jbpm.services.task.commands.CompositeCommand;
+import org.jbpm.services.task.commands.StartTaskCommand;
+import org.kie.api.task.model.Task;
 
 /**
  *
@@ -50,9 +53,8 @@ public class TaskLifeCycleServiceImpl implements TaskLifeCycleService {
     }
 
     @Override
-    public void claim(long taskId, String user) {
-        taskService.claim(taskId, user);
-        taskService.start(taskId, user);
+    public void claim(long taskId, String user, String deploymentId) {
+        taskService.execute(deploymentId, new CompositeCommand<Void>(new StartTaskCommand(taskId, user), new ClaimTaskCommand(taskId, user)));
     }
 
     @Override

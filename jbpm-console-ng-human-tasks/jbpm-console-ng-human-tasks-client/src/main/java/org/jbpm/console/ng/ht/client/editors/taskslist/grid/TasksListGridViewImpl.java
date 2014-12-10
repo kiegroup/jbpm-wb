@@ -449,7 +449,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             @Override
             public void execute(TaskSummary task) {
 
-                presenter.claimTask(task.getTaskId(), identity.getIdentifier());
+                presenter.claimTask(task.getTaskId(), identity.getIdentifier(), task.getDeploymentId());
                 taskSelected.fire(new TaskSelectionEvent(task.getTaskId(), task.getTaskName()));
                 listGrid.refresh();
             }

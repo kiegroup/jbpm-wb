@@ -60,6 +60,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     protected String formContent;
     protected String opener;
     protected String taskName;
+    protected String deploymentId;
 
     final protected FlowPanel container = new FlowPanel();
     final protected FlowPanel buttonsContainer = new FlowPanel();
@@ -119,7 +120,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
                 }
                 buttonsContainer.clear();
                 taskName = task.getTaskName();
-
+                deploymentId = task.getDeploymentId();
                 if (opener != null) {
                     injectEventListener(AbstractHumanTaskFormDisplayer.this);
                 } else {
@@ -215,7 +216,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
 
     @Override
     public void claim() {
-        taskServices.call(getClaimTaskCallback(), getUnexpectedErrorCallback()).claim(taskId, identity.getIdentifier());
+        taskServices.call(getClaimTaskCallback(), getUnexpectedErrorCallback()).claim(taskId, identity.getIdentifier(), deploymentId);
     }
 
     @Override
