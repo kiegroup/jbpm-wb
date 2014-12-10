@@ -188,7 +188,7 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
     }).release(taskId, userId);
   }
 
-  public void claimTask(final Long taskId, final String userId) {
+  public void claimTask(final Long taskId, final String userId, final String deploymentId) {
     taskOperationsService.call(new RemoteCallback<Void>() {
       @Override
       public void callback(Void nothing) {
@@ -201,6 +201,6 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
         ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
         return true;
       }
-    }).claim(taskId, userId);
+    }).claim(taskId, userId, deploymentId);
   }
 }

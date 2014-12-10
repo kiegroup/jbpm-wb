@@ -30,7 +30,7 @@ public interface TaskLifeCycleService{
   
   void complete(long taskId, String user, Map<String, Object> params);
   
-  void claim(long taskId, String user);
+  void claim(long taskId, String user, String deploymentId);
   
   void start(long taskId, String user);
   
