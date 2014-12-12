@@ -56,9 +56,11 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
 
   private static final Logger logger = LoggerFactory.getLogger(DeploymentManagerEntryPointImpl.class);
   private static final MergeMode defaultMergeMode = MergeMode.valueOf(System.getProperty("org.kie.dd.mergemode", MergeMode.MERGE_COLLECTIONS.toString()));
-
+ 
   private boolean gitDeploymentsEnabled = Boolean.parseBoolean(System.getProperty("org.kie.git.deployments.enabled", "false"));
   private boolean autoDeployEnabled = Boolean.parseBoolean(System.getProperty("org.kie.auto.deploy.enabled", "true"));
+  
+  private boolean overrideDeploymentsEnabled = Boolean.parseBoolean(System.getProperty("org.kie.override.deploy.enabled", "false"));
 
   @Inject
   private DeploymentService deploymentService;
@@ -117,21 +119,34 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
   @Override
   public void deploy(DeploymentUnitSummary unitSummary) {
     DeploymentUnit unit = null;
-    if (unitSummary.getType().equals("kjar")) {
-      unit = new KModuleDeploymentUnit(((KModuleDeploymentUnitSummary) unitSummary).getGroupId(),
-              ((KModuleDeploymentUnitSummary) unitSummary).getArtifactId(),
-              ((KModuleDeploymentUnitSummary) unitSummary).getVersion(),
-              ((KModuleDeploymentUnitSummary) unitSummary).getKbaseName(),
-              ((KModuleDeploymentUnitSummary) unitSummary).getKsessionName());
-        if (((KModuleDeploymentUnitSummary) unitSummary).getStrategy() != null) {
-            ((KModuleDeploymentUnit)unit).setStrategy(RuntimeStrategy.valueOf(((KModuleDeploymentUnitSummary) unitSummary).getStrategy()));
-        }
+    if(!deploymentService.isDeployed(unitSummary.getId()) ||  (deploymentService.isDeployed(unitSummary.getId()) && overrideDeploymentsEnabled)){
+        if (unitSummary.getType().equals("kjar")) {
+          unit = new KModuleDeploymentUnit(((KModuleDeploymentUnitSummary) unitSummary).getGroupId(),
+                  ((KModuleDeploymentUnitSummary) unitSummary).getArtifactId(),
+                  ((KModuleDeploymentUnitSummary) unitSummary).getVersion(),
+                  ((KModuleDeploymentUnitSummary) unitSummary).getKbaseName(),
+                  ((KModuleDeploymentUnitSummary) unitSummary).getKsessionName());
+            if (((KModuleDeploymentUnitSummary) unitSummary).getStrategy() != null) {
+                ((KModuleDeploymentUnit)unit).setStrategy(RuntimeStrategy.valueOf(((KModuleDeploymentUnitSummary) unitSummary).getStrategy()));
+            }
 
-        if (((KModuleDeploymentUnitSummary) unitSummary).getMergeMode() != null) {
-            ((KModuleDeploymentUnit)unit).setMergeMode(MergeMode.valueOf(((KModuleDeploymentUnitSummary) unitSummary).getMergeMode()));
-        }
-    }// add for vfs
-    deploy(unit);
+            if (((KModuleDeploymentUnitSummary) unitSummary).getMergeMode() != null) {
+                ((KModuleDeploymentUnit)unit).setMergeMode(MergeMode.valueOf(((KModuleDeploymentUnitSummary) unitSummary).getMergeMode()));
+            }
+        }// add for vfs
+        logger.info("Deploying unit "+((KModuleDeploymentUnitSummary) unitSummary).getGroupId()+":"+((KModuleDeploymentUnitSummary) unitSummary).getArtifactId()+":"+((KModuleDeploymentUnitSummary) unitSummary).getVersion());
+        deploy(unit);
+    }else{
+        String[] gavElemes = unitSummary.getId().split(":");
+        GAV gav = new GAV(gavElemes[0], gavElemes[1], gavElemes[2]);
+        BuildResults buildResults = new BuildResults(gav);
+        BuildMessage message = new BuildMessage();
+        message.setLevel(BuildMessage.Level.ERROR);
+        message.setText("Deployment of unit " + gav + " failed: " + "unit already deployed! (override deployment: "+overrideDeploymentsEnabled+")");
+        buildResults.addBuildMessage(message);
+         buildResultsEvent.fire(buildResults);
+        throw new DeploymentException("unit already deployed!", null);
+    }
   }
 
   protected void deploy(DeploymentUnit unit) {
@@ -444,15 +459,27 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
     if (!buildResults.getErrorMessages().isEmpty() || !autoDeployEnabled) {
       return;
     }
+    
     try {
-
-      KModuleDeploymentUnitSummary unit = new KModuleDeploymentUnitSummary("",
+      String id = buildResults.getGAV().getGroupId()+":"+buildResults.getGAV().getArtifactId()+":"+buildResults.getGAV().getVersion();
+      KModuleDeploymentUnitSummary unit = new KModuleDeploymentUnitSummary(id,
               buildResults.getGAV().getGroupId(),
               buildResults.getGAV().getArtifactId(),
               buildResults.getGAV().getVersion(), "", "", null, null);
-
-      undeploy(unit);
-      deploy(unit);
+      if(!deploymentService.isDeployed(id) ||  (deploymentService.isDeployed(id) && overrideDeploymentsEnabled)){
+        undeploy(unit);
+        deploy(unit);
+      }else{
+        String[] gavElemes = unit.getId().split(":");
+        GAV gav = new GAV(gavElemes[0], gavElemes[1], gavElemes[2]);
+        
+        BuildMessage message = new BuildMessage();
+        message.setLevel(BuildMessage.Level.ERROR);
+        message.setText("Deployment of unit " + gav + " failed: " + "unit already deployed! (override deployment: "+overrideDeploymentsEnabled+")");
+        buildResults.addBuildMessage(message);
+         buildResultsEvent.fire(buildResults);
+        throw new DeploymentException("unit already deployed! (override deployment: "+overrideDeploymentsEnabled+")", null);
+      }
     } catch (Exception e) {
       BuildMessage message = new BuildMessage();
       message.setLevel(BuildMessage.Level.ERROR);

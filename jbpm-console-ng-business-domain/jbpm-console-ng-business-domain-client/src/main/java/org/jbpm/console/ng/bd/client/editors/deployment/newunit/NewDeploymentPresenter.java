@@ -123,7 +123,7 @@ public class NewDeploymentPresenter {
                                         return true;
                                     }
                                 }
-                              ).deploy( new KModuleDeploymentUnitSummary( "", group, artifact, version, kbaseName, kieSessionName, strategy, mergeMode ) );
+                              ).deploy( new KModuleDeploymentUnitSummary(group+ ":"+artifact+":"+version, group, artifact, version, kbaseName, kieSessionName, strategy, mergeMode ) );
     }
 
     @OnOpen
