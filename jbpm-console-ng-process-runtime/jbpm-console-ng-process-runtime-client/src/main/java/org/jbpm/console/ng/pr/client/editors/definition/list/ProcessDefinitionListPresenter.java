@@ -30,19 +30,28 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
+import org.jbpm.console.ng.ht.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
+import org.jbpm.console.ng.ht.forms.client.display.views.PopupFormDisplayerView;
+import org.jbpm.console.ng.ht.forms.display.process.api.ProcessDisplayerConfig;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
+import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.paging.PageResponse;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Definition List")
 public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<ProcessSummary> {
+
+    @Inject
+    PopupFormDisplayerView formDisplayPopUp;
+
+    @Inject
+    StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
 
     public interface ProcessDefinitionListView extends ListView<ProcessSummary, ProcessDefinitionListPresenter> {
 
@@ -124,10 +133,12 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     public void openGenericForm( final String processDefId,
                                  final String deploymentId,
                                  final String processDefName ) {
-        placeManager.goTo( new DefaultPlaceRequest( "Generic Form Display PopUp" )
-                                   .addParameter( "processId", processDefId )
-                                   .addParameter( "domainId", deploymentId )
-                                   .addParameter( "processName", processDefName ) );
+
+        ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(deploymentId, processDefId), processDefName);
+
+        formDisplayPopUp.setTitle(processDefName);
+
+        startProcessDisplayProvider.setup(config, formDisplayPopUp);
     }
 
 }

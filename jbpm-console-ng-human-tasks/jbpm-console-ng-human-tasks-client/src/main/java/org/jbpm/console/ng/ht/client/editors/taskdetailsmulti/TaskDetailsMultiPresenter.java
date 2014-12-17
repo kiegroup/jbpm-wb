@@ -29,9 +29,12 @@ import org.jbpm.console.ng.ht.client.editors.taskadmin.TaskAdminPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskdetails.TaskDetailsPresenter;
+import org.jbpm.console.ng.ht.client.editors.taskform.TaskFormPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.forms.client.editors.taskform.generic.GenericFormDisplayPresenter;
+import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayProvider;
+import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskDisplayerConfig;
+import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -40,7 +43,6 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
-import org.uberfire.lifecycle.OnClose;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
@@ -58,7 +60,7 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
     public interface TaskDetailsMultiView
             extends TabbedDetailsView<TaskDetailsMultiPresenter> {
 
-        void setupPresenters( final GenericFormDisplayPresenter genericFormDisplayPresenter,
+        void setupPresenters( final TaskFormPresenter taskFormPresenter,
                               final TaskDetailsPresenter taskDetailsPresenter,
                               final TaskAssignmentsPresenter taskAssignmentsPresenter,
                               final TaskCommentsPresenter taskCommentsPresenter,
@@ -77,7 +79,10 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
     private Event<TaskSelectionEvent> taskSelected;
 
     @Inject
-    private GenericFormDisplayPresenter genericFormDisplayPresenter;
+    private HumanTaskFormDisplayProvider taskFormDisplayProvider;
+
+    @Inject
+    private TaskFormPresenter taskFormPresenter;
 
     @Inject
     private TaskDetailsPresenter taskDetailsPresenter;
@@ -99,7 +104,7 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
 
     @PostConstruct
     public void init() {
-        view.setupPresenters( genericFormDisplayPresenter, taskDetailsPresenter, taskAssignmentsPresenter, taskCommentsPresenter, taskAdminPresenter ,taskProcessContextPresenter);
+        view.setupPresenters( taskFormPresenter, taskDetailsPresenter, taskAssignmentsPresenter, taskCommentsPresenter, taskAdminPresenter ,taskProcessContextPresenter);
     }
 
     @WorkbenchPartView
@@ -123,22 +128,19 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
         super.onStartup( place );
     }
 
-    @OnClose
-    public void onClose( ) {
-        genericFormDisplayPresenter.cleanup();
-    }
-
     public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
-        selectedItemId = String.valueOf( event.getTaskId() );
-        selectedItemName = event.getTaskName();
-        genericFormDisplayPresenter.setup( event.getTaskId(), "none", "none", null, new Command() {
+        deploymentId = String.valueOf( event.getTaskId() );
+        processId = event.getTaskName();
+
+        taskFormPresenter.getTaskFormView().getDisplayerView().setOnCloseCommand(new Command() {
             @Override
             public void execute() {
                 closeDetails();
             }
-        } );
+        });
+        taskFormDisplayProvider.setup(new HumanTaskDisplayerConfig(new TaskKey(event.getTaskId())), taskFormPresenter.getTaskFormView().getDisplayerView());
 
-        changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( selectedItemId ) + " - " + selectedItemName ) );
+        changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf(deploymentId) + " - " + processId) );
         if (event.isForAdmin()) {
             view.getTabPanel().getTabWidget(4).getParent().setVisible(true);
         } else {
@@ -148,7 +150,7 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
     }
 
     public void refresh() {
-        taskSelected.fire( new TaskSelectionEvent( Long.valueOf( selectedItemId ), selectedItemName ) );
+        taskSelected.fire( new TaskSelectionEvent( Long.valueOf(deploymentId), processId) );
     }
 
     @WorkbenchMenu

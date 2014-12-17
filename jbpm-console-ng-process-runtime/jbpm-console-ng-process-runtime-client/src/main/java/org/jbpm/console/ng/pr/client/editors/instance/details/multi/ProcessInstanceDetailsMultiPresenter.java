@@ -36,7 +36,6 @@ import org.jbpm.console.ng.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
-import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.kie.api.runtime.process.ProcessInstance;
@@ -122,24 +121,24 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
     }
 
     public void onProcessSelectionEvent( @Observes ProcessInstanceSelectionEvent event ) {
-        selectedItemId = String.valueOf( event.getProcessInstanceId() );
-        selectedItemName = event.getProcessDefId();
+        deploymentId = String.valueOf( event.getProcessInstanceId() );
+        processId = event.getProcessDefId();
         selectedDeploymentId = event.getDeploymentId();
         selectedProcessInstanceStatus = event.getProcessInstanceStatus();
         selectedProcessDefName = event.getProcessDefName();
 
-        changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( selectedItemId ) + " - " + selectedProcessDefName ) );
+        changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf(deploymentId) + " - " + selectedProcessDefName ) );
 
         view.getTabPanel().selectTab( 0 );
     }
 
     public void refresh() {
-        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedDeploymentId, Long.valueOf( selectedItemId ), selectedItemName, selectedProcessDefName, selectedProcessInstanceStatus ) );        
+        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedDeploymentId, Long.valueOf(deploymentId), processId, selectedProcessDefName, selectedProcessInstanceStatus ) );
     }
 
     public void signalProcessInstance() {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Signal Process Popup" );
-        placeRequestImpl.addParameter( "processInstanceId", selectedItemId );
+        placeRequestImpl.addParameter( "processInstanceId", deploymentId);
         placeManager.goTo( placeRequestImpl );
 
     }
@@ -151,7 +150,7 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
                 if ( processInstance.getState() == ProcessInstance.STATE_ACTIVE ||
                         processInstance.getState() == ProcessInstance.STATE_PENDING ) {
                     if ( Window.confirm( "Are you sure that you want to abort the process instance?" ) ) {
-                        final long processInstanceId = Long.parseLong( selectedItemId );
+                        final long processInstanceId = Long.parseLong(deploymentId);
                         kieSessionServices.call( new RemoteCallback<Void>() {
                             @Override
                             public void callback( Void v ) {
@@ -177,11 +176,11 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
                 ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                 return true;
             }
-        } ).getProcessInstanceById( Long.parseLong( selectedItemId ) );
+        } ).getProcessInstanceById( Long.parseLong(deploymentId) );
     }
 
     public void goToProcessInstanceModelPopup() {
-        if ( place != null && !selectedItemId.equals( "" ) ) {
+        if ( place != null && !deploymentId.equals( "" ) ) {
             dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
                 @Override
                 public void callback( List<NodeInstanceSummary> activeNodes ) {
@@ -213,7 +212,7 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
                                                                                              .addParameter( "activeNodes", nodeParam.toString() )
                                                                                              .addParameter( "completedNodes", completedNodeParam.toString() )
                                                                                              .addParameter( "readOnly", "true" )
-                                                                                             .addParameter( "processId", selectedItemName )
+                                                                                             .addParameter( "processId", processId)
                                                                                              .addParameter( "deploymentId", selectedDeploymentId ) ) );
 
                         }
@@ -224,7 +223,7 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
                             ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                             return true;
                         }
-                    } ).getProcessInstanceCompletedNodes( Long.parseLong( selectedItemId ) );
+                    } ).getProcessInstanceCompletedNodes( Long.parseLong(deploymentId) );
 
                 }
             }, new ErrorCallback<Message>() {
@@ -234,7 +233,7 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
                     ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                     return true;
                 }
-            } ).getProcessInstanceActiveNodes( Long.parseLong( selectedItemId ) );
+            } ).getProcessInstanceActiveNodes( Long.parseLong(deploymentId) );
 
         }
     }

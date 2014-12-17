@@ -24,8 +24,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsPresenter;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView.TabbedDetailsView;
+import org.jbpm.console.ng.ht.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
+import org.jbpm.console.ng.ht.forms.client.display.views.PopupFormDisplayerView;
+import org.jbpm.console.ng.ht.forms.display.process.api.ProcessDisplayerConfig;
 import org.jbpm.console.ng.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
+import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
 import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -59,6 +63,12 @@ public class ProcessDefDetailsMultiPresenter extends AbstractTabbedDetailsPresen
 
         IsWidget getNewInstanceButton();
     }
+
+    @Inject
+    protected StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
+
+    @Inject
+    protected PopupFormDisplayerView formDisplayPopUp;
 
     @Inject
     public ProcessDefDetailsMultiView view;
@@ -97,32 +107,33 @@ public class ProcessDefDetailsMultiPresenter extends AbstractTabbedDetailsPresen
     }
 
     public void onProcessSelectionEvent( @Observes final ProcessDefSelectionEvent event ) {
-        selectedItemId = event.getDeploymentId();
-        selectedItemName = event.getProcessId();
+        deploymentId = event.getDeploymentId();
+        processId = event.getProcessId();
 
-        changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( selectedItemId ) + " - " + selectedItemName ) );
+        changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf(deploymentId) + " - " + processId) );
 
         view.getTabPanel().selectTab( 0 );
     }
 
     public void createNewProcessInstance() {
-        placeManager.goTo( new DefaultPlaceRequest( "Generic Form Display PopUp" )
-                                   .addParameter( "processId", selectedItemName )
-                                   .addParameter( "domainId", selectedItemId )
-                                   .addParameter( "processName", selectedItemName ) );
+        ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(deploymentId, processId), processId);
+
+        formDisplayPopUp.setTitle("");
+
+        startProcessDisplayProvider.setup(config, formDisplayPopUp);
     }
 
     public void goToProcessDefModelPopup() {
-        if ( place != null && !selectedItemId.equals( "" ) ) {
+        if ( place != null && !deploymentId.equals( "" ) ) {
             placeManager.goTo( ProcessDiagramUtil.buildPlaceRequest( new DefaultPlaceRequest( "" )
-                                                                             .addParameter( "processId", selectedItemName )
-                                                                             .addParameter( "deploymentId", selectedItemId ) ) );
+                                                                             .addParameter( "processId", processId)
+                                                                             .addParameter( "deploymentId", deploymentId) ) );
         }
     }
 
     public void viewProcessInstances() {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instances" );
-        placeRequestImpl.addParameter( "processName", selectedItemName );
+        placeRequestImpl.addParameter( "processName", processId);
         placeManager.goTo( placeRequestImpl );
     }
 
@@ -195,7 +206,7 @@ public class ProcessDefDetailsMultiPresenter extends AbstractTabbedDetailsPresen
     }
 
     public void refresh() {
-        processDefSelectionEvent.fire( new ProcessDefSelectionEvent( selectedItemName, selectedItemId ) );
+        processDefSelectionEvent.fire( new ProcessDefSelectionEvent(processId, deploymentId) );
     }
 
 }

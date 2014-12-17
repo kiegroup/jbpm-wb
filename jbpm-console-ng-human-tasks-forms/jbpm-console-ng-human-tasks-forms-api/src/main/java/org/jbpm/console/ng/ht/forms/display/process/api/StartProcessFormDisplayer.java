@@ -13,29 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util;
+package org.jbpm.console.ng.ht.forms.display.process.api;
 
-import com.google.gwt.core.client.JavaScriptObject;
+import java.util.Map;
 
-public class ActionRequest extends JavaScriptObject {
+import org.jbpm.console.ng.ht.forms.display.GenericFormDisplayer;
+import org.jbpm.console.ng.ht.forms.display.view.FormContentResizeListener;
+import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 
-    protected ActionRequest() {
-    }
+/**
+ *
+ * @author salaboy
+ */
+public interface StartProcessFormDisplayer extends GenericFormDisplayer<ProcessDefinitionKey> {
 
-    public final native String getAction() /*-{
-        return this.action;
-    }-*/;
+    void startProcessFromDisplayer();
 
-    public final native String getTaskId() /*-{
-        return this.taskId;
-    }-*/;
+    void startProcess(Map<String, Object> params);
 
-    public final native String getProcessId() /*-{
-        return this.processId;
-    }-*/;
-
-    public final native String getDomainId() /*-{
-        return this.domainId;
-    }-*/;
-
+    void addResizeFormContent(FormContentResizeListener resizeListener);
 }

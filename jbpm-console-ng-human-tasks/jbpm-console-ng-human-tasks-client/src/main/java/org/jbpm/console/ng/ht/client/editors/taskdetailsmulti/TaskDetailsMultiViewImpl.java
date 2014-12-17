@@ -18,14 +18,17 @@ package org.jbpm.console.ng.ht.client.editors.taskdetailsmulti;
 import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.MINI;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView;
 import org.jbpm.console.ng.ht.client.editors.taskadmin.TaskAdminPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskdetails.TaskDetailsPresenter;
+import org.jbpm.console.ng.ht.client.editors.taskform.TaskFormPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
+import org.jbpm.console.ng.ht.forms.client.display.views.EmbeddedFormDisplayView;
 import org.jbpm.console.ng.ht.forms.client.editors.taskform.generic.GenericFormDisplayPresenter;
 
 import com.github.gwtbootstrap.client.ui.Button;
@@ -61,7 +64,7 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
 
     }
 
-    private GenericFormDisplayPresenter genericFormDisplayPresenter;
+    private TaskFormPresenter taskFormPresenter;
 
     private TaskDetailsPresenter taskDetailsPresenter;
 
@@ -86,14 +89,12 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
         tabPanel.addTab( "Task Admin", Constants.INSTANCE.Task_Admin());
         tabPanel.addTab( "Process_Context", Constants.INSTANCE.Process_Context());
         
-        
-        
         int height = TaskDetailsMultiViewImpl.this.getOffsetHeight();
         if(height == 0){
             height = 700;
         }
         tabPanel.setHeight( height+"px" );
-        ScrollPanel formScrollPanel = new ScrollPanel(genericFormDisplayPresenter.getView().asWidget());
+        ScrollPanel formScrollPanel = new ScrollPanel(taskFormPresenter.getView().asWidget());
         formScrollPanel.setHeight(height+"px");
         ScrollPanel taskDetailsScrollPanel = new ScrollPanel(taskDetailsPresenter.getView().asWidget());
         taskDetailsScrollPanel.setHeight(height+"px");
@@ -149,13 +150,13 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
     }
 
     @Override
-    public void setupPresenters( final GenericFormDisplayPresenter genericFormDisplayPresenter,
+    public void setupPresenters( final TaskFormPresenter taskFormPresenter,
                                  final TaskDetailsPresenter taskDetailsPresenter,
                                  final TaskAssignmentsPresenter taskAssignmentsPresenter,
                                  final TaskCommentsPresenter taskCommentsPresenter,
                                  final TaskAdminPresenter taskAdminPresenter,
                                  final TaskProcessContextPresenter taskProcessContextPresenter) {
-        this.genericFormDisplayPresenter = genericFormDisplayPresenter;
+        this.taskFormPresenter = taskFormPresenter;
         this.taskDetailsPresenter = taskDetailsPresenter;
         this.taskAssignmentsPresenter = taskAssignmentsPresenter;
         this.taskCommentsPresenter = taskCommentsPresenter;

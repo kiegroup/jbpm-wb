@@ -21,9 +21,10 @@ import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.AbstractHumanTaskFormDisplayer;
+import org.jbpm.console.ng.ht.forms.client.display.displayers.task.AbstractHumanTaskFormDisplayer;
 import org.jbpm.console.ng.ht.forms.modeler.service.FormModelerProcessStarterEntryPoint;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
+import org.jbpm.formModeler.api.events.ResizeFormcontainerEvent;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 
 /**
@@ -122,5 +123,10 @@ public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
         return 1;
     }
 
-
+    public void onFormResized(@Observes ResizeFormcontainerEvent event) {
+        if (event.isMine(formContent)) {
+            formRenderer.resize(event.getWidth(), event.getHeight());
+            if (resizeListener != null) resizeListener.resize(event.getWidth(), event.getHeight());
+        }
+    }
 }

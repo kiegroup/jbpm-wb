@@ -27,5 +27,6 @@
   <source path="api"/>
   <source path="ht"/>
   <source path="process"/>
+  <source path="display"/>
 
 </module>

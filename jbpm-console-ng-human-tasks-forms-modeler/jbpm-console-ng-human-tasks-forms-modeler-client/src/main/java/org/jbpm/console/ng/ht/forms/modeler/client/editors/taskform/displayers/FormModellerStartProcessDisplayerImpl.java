@@ -22,9 +22,10 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.AbstractStartProcessFormDisplayer;
+import org.jbpm.console.ng.ht.forms.client.display.displayers.process.AbstractStartProcessFormDisplayer;
 import org.jbpm.console.ng.ht.forms.modeler.service.FormModelerProcessStarterEntryPoint;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
+import org.jbpm.formModeler.api.events.ResizeFormcontainerEvent;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 
 /**
@@ -52,7 +53,7 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
         formContainer.add(formRenderer.asWidget());
     }
 
-    protected void startProcessFromDisplayer() {
+    public void startProcessFromDisplayer() {
         submitForm(ACTION_START_PROCESS);
     }
 
@@ -64,11 +65,6 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
     @Override
     public boolean supportsContent(String content) {
         return formRenderer.isValidContextUID(content);
-    }
-
-    @Override
-    public FlowPanel getContainer() {
-        return container;
     }
 
     @Override
@@ -95,6 +91,13 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
                             .startProcessFromRenderContext(formContent, deploymentId, processDefId);
                 }
             }
+        }
+    }
+
+    public void onFormResized(@Observes ResizeFormcontainerEvent event) {
+        if (event.isMine(formContent)) {
+            formRenderer.resize(event.getWidth(), event.getHeight());
+            if (resizeListener != null) resizeListener.resize(event.getWidth(), event.getHeight());
         }
     }
 

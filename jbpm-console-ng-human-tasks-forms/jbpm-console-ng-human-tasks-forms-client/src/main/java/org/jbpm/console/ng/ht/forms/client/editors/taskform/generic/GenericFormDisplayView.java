@@ -15,12 +15,16 @@
  */
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.generic;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.Panel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.ht.forms.client.display.views.EmbeddedFormDisplayView;
+import org.jbpm.console.ng.ht.forms.display.view.FormDisplayerView;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
@@ -41,26 +45,20 @@ public class GenericFormDisplayView extends Composite implements GenericFormDisp
     @DataField
     private FlowPanel formContainer;
 
-    private Command onReadyToRenderCommand;
+    @Inject
+    private EmbeddedFormDisplayView view;
+
+    @PostConstruct
+    public void init() {
+        formContainer.add(view.getView());
+    }
+    @Override
+    public FormDisplayerView getDisplayerView() {
+        return view;
+    }
 
     @Override
     public void displayNotification( final String text ) {
         notification.fire( new NotificationEvent( text ) );
-    }
-
-    @Override
-    public void render( final FlowPanel content ) {
-        if ( content.getParent() != formContainer ) {
-            formContainer.clear();
-            formContainer.add( content );
-        }
-        if ( onReadyToRenderCommand != null ) {
-            onReadyToRenderCommand.execute();
-        }
-    }
-
-    @Override
-    public void onReadyToRender( final Command command ) {
-        this.onReadyToRenderCommand = command;
     }
 }

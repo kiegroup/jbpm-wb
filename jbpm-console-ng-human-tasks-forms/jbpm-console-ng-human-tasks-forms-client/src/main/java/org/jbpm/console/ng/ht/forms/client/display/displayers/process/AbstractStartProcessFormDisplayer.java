@@ -13,15 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
+package org.jbpm.console.ng.ht.forms.client.display.displayers.process;
+
+import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
@@ -29,32 +38,30 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
-import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.ActionRequest;
-import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.JSNIHelper;
+import org.jbpm.console.ng.ht.forms.client.display.displayers.util.ActionRequest;
+import org.jbpm.console.ng.ht.forms.client.display.displayers.util.JSNIHelper;
 import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
-import org.jbpm.console.ng.ht.forms.process.api.StartProcessFormDisplayer;
+import org.jbpm.console.ng.ht.forms.display.FormDisplayerConfig;
+import org.jbpm.console.ng.ht.forms.display.process.api.StartProcessFormDisplayer;
+import org.jbpm.console.ng.ht.forms.display.view.FormContentResizeListener;
 import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.uberfire.client.workbench.widgets.common.ErrorPopup;
-
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import java.util.Map;
 import org.uberfire.mvp.Command;
 
 /**
- *
  * @author salaboy
  */
 public abstract class AbstractStartProcessFormDisplayer implements StartProcessFormDisplayer {
+
     public static final String ACTION_START_PROCESS = "startProcess";
 
     protected Constants constants = GWT.create(Constants.class);
 
-    final protected FlowPanel container = new FlowPanel();
-    final protected FlowPanel buttonsContainer = new FlowPanel();
-    final protected VerticalPanel formContainer = new VerticalPanel();
+    protected FormPanel container = new FormPanel();
+    protected FlowPanel formContainer = new FlowPanel();
+    protected FlowPanel footerButtons = new FlowPanel();
 
     protected String formContent;
 
@@ -62,10 +69,10 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     protected String processDefId;
     protected String processName;
     protected String opener;
-    
-       
+    protected FormContentResizeListener resizeListener;
+
     private Command onClose;
-    
+
     private Command onRefresh;
 
     @Inject
@@ -80,15 +87,34 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     @Inject
     protected JSNIHelper jsniHelper;
 
+    @PostConstruct
+    protected void init() {
+        container.getElement().setId("form-data");
+    }
+
     @Override
-    public void init(ProcessDefinitionKey key, String formContent, String openerUrl) {
-        this.deploymentId = key.getDeploymentId();
-        this.processDefId = key.getProcessId();
-        this.formContent = formContent;
-        this.opener = openerUrl;
+    public void init(FormDisplayerConfig<ProcessDefinitionKey> config, Command onClose, Command onRefreshCommand, FormContentResizeListener resizeContentListener) {
+        this.deploymentId = config.getKey().getDeploymentId();
+        this.processDefId = config.getKey().getProcessId();
+        this.formContent = config.getFormContent();
+        this.opener = config.getFormOpener();
+        this.onClose = onClose;
+        this.onRefresh = onRefreshCommand;
+        this.resizeListener = resizeContentListener;
+
+        container.clear();
+        formContainer.clear();
+        footerButtons.clear();
 
         container.add(formContainer);
-        container.add(buttonsContainer);
+
+        Button startButton = new Button(constants.Submit(), new ClickHandler() {
+            @Override public void onClick(ClickEvent event) {
+                startProcessFromDisplayer();
+            }
+        });
+        startButton.setType(ButtonType.PRIMARY);
+        footerButtons.add(startButton);
 
         dataServices.call(new RemoteCallback<ProcessSummary>() {
             @Override
@@ -97,36 +123,21 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
                 FocusPanel wrapperFlowPanel = new FocusPanel();
                 wrapperFlowPanel.setStyleName("wrapper form-actions");
 
-                buttonsContainer.clear();
-
                 if (opener != null) {
                     injectEventListener(AbstractStartProcessFormDisplayer.this);
-                } else {
-                    ClickHandler start = new ClickHandler() {
-                        @Override
-                        public void onClick(ClickEvent event) {
-                            startProcessFromDisplayer();
-                        }
-                    };
-
-                    Button startButton = new Button();
-                    startButton.setText(constants.Start());
-                    startButton.addClickHandler(start);
-
-                    wrapperFlowPanel.add(startButton);
-                    buttonsContainer.add(wrapperFlowPanel);
                 }
+
                 initDisplayer();
+                doResize();
             }
         }).getProcessDesc(deploymentId, processDefId);
     }
 
-    protected abstract void startProcessFromDisplayer();
-
     protected abstract void initDisplayer();
 
-
-
+    public void doResize() {
+        if (resizeListener != null) resizeListener.resize(formContainer.getOffsetWidth(), formContainer.getOffsetHeight());
+    }
 
     protected ErrorCallback<Message> getUnexpectedErrorCallback() {
         return new ErrorCallback<Message>() {
@@ -141,8 +152,13 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     }
 
     @Override
-    public FlowPanel getContainer() {
+    public Panel getContainer() {
         return container;
+    }
+
+    @Override
+    public IsWidget getFooter() {
+        return footerButtons;
     }
 
     @Override
@@ -172,25 +188,33 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
         this.onRefresh = callback;
     }
 
-    
+    @Override
+    public void addResizeFormContent(FormContentResizeListener resizeListener) {
+        this.resizeListener = resizeListener;
+    }
+
     @Override
     public void close() {
-        if(this.onClose!=null){
+        if (this.onClose != null) {
             this.onClose.execute();
         }
     }
 
     protected void eventListener(String origin, String request) {
-        if (origin == null || !origin.endsWith("//" + opener)) return;
+        if (origin == null || !origin.endsWith("//" + opener)) {
+            return;
+        }
 
         ActionRequest actionRequest = JsonUtils.safeEval(request);
 
-        if (ACTION_START_PROCESS.equals(actionRequest.getAction())) startProcessFromDisplayer();
+        if (ACTION_START_PROCESS.equals(actionRequest.getAction())) {
+            startProcessFromDisplayer();
+        }
     }
 
     private native void injectEventListener(AbstractStartProcessFormDisplayer fdp) /*-{
         function postMessageListener(e) {
-            fdp.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.AbstractStartProcessFormDisplayer::eventListener(Ljava/lang/String;Ljava/lang/String;)(e.origin, e.data);
+            fdp.@org.jbpm.console.ng.ht.forms.client.display.displayers.process.AbstractStartProcessFormDisplayer::eventListener(Ljava/lang/String;Ljava/lang/String;)(e.origin, e.data);
         }
 
         if ($wnd.addEventListener) {
@@ -199,4 +223,9 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
             $wnd.attachEvent("onmessage", postMessageListener, false);
         }
     }-*/;
+
+    @Override
+    public String getOpener() {
+        return opener;
+    }
 }
