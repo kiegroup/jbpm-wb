@@ -29,7 +29,6 @@ import org.jbpm.console.ng.ht.client.editors.taskassignments.TaskAssignmentsPres
 import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskdetails.TaskDetailsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskform.TaskFormPresenter;
-import org.jbpm.console.ng.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayProvider;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskDisplayerConfig;
@@ -99,9 +98,7 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
 
     @PostConstruct
     public void init() {
-<<<<<<< HEAD
-        view.setupPresenters( genericFormDisplayPresenter, taskDetailsPresenter, taskAssignmentsPresenter, taskCommentsPresenter, taskAdminPresenter );
-        view.setupPresenters( taskFormPresenter, taskDetailsPresenter, taskAssignmentsPresenter, taskCommentsPresenter, taskAdminPresenter ,taskProcessContextPresenter);
+        view.setupPresenters( taskFormPresenter, taskDetailsPresenter, taskAssignmentsPresenter, taskCommentsPresenter, taskAdminPresenter );
     }
 
     @WorkbenchPartView

@@ -16,22 +16,7 @@
 package org.jbpm.console.ng.ht.client.editors.taskdetailsmulti;
 
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 
-<<<<<<< HEAD
-=======
-import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView;
-import org.jbpm.console.ng.ht.client.editors.taskadmin.TaskAdminPresenter;
-import org.jbpm.console.ng.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
-import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter;
-import org.jbpm.console.ng.ht.client.editors.taskdetails.TaskDetailsPresenter;
-import org.jbpm.console.ng.ht.client.editors.taskform.TaskFormPresenter;
-import org.jbpm.console.ng.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter;
-import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.forms.client.display.views.EmbeddedFormDisplayView;
-import org.jbpm.console.ng.ht.forms.client.editors.taskform.generic.GenericFormDisplayPresenter;
-
->>>>>>> 5dc3f25... BZ-1169631: Task form resizing
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -41,17 +26,17 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView;
+import org.jbpm.console.ng.ht.client.editors.taskadmin.TaskAdminPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskdetails.TaskDetailsPresenter;
+import org.jbpm.console.ng.ht.client.editors.taskform.TaskFormPresenter;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.forms.client.editors.taskform.generic.GenericFormDisplayPresenter;
 
 import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.*;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import org.jbpm.console.ng.ht.client.editors.taskadmin.TaskAdminPresenter;
 
 @Dependent
 public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDetailsMultiPresenter>
@@ -103,7 +88,7 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
         taskAdminScrollPanel.setHeight(height+"px");
         
         
-        ( (HTMLPanel) tabPanel.getWidget( 0 ) ).add( formScrollPanel );
+        ( (HTMLPanel) tabPanel.getWidget( 0 ) ).add(formScrollPanel);
         ( (HTMLPanel) tabPanel.getWidget( 1 ) ).add( taskDetailsScrollPanel );
         ( (HTMLPanel) tabPanel.getWidget( 2 ) ).add( assignmentsScrollPanel );
         ( (HTMLPanel) tabPanel.getWidget( 3 ) ).add( commentsScrollPanel );
@@ -147,14 +132,8 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
                                  final TaskDetailsPresenter taskDetailsPresenter,
                                  final TaskAssignmentsPresenter taskAssignmentsPresenter,
                                  final TaskCommentsPresenter taskCommentsPresenter,
-<<<<<<< HEAD
                                  final TaskAdminPresenter taskAdminPresenter) {
-        this.genericFormDisplayPresenter = genericFormDisplayPresenter;
-=======
-                                 final TaskAdminPresenter taskAdminPresenter,
-                                 final TaskProcessContextPresenter taskProcessContextPresenter) {
         this.taskFormPresenter = taskFormPresenter;
->>>>>>> 5dc3f25... BZ-1169631: Task form resizing
         this.taskDetailsPresenter = taskDetailsPresenter;
         this.taskAssignmentsPresenter = taskAssignmentsPresenter;
         this.taskCommentsPresenter = taskCommentsPresenter;

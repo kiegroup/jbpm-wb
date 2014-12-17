@@ -21,11 +21,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-<<<<<<< HEAD:jbpm-console-ng-human-tasks-forms/jbpm-console-ng-human-tasks-forms-client/src/main/java/org/jbpm/console/ng/ht/forms/client/editors/taskform/displayers/FormModellerStartProcessDisplayerImpl.java
 import org.jbpm.console.ng.ht.forms.service.FormModelerProcessStarterEntryPoint;
-=======
-import org.jbpm.console.ng.ht.forms.modeler.service.FormModelerProcessStarterEntryPoint;
->>>>>>> 5dc3f25... BZ-1169631: Task form resizing:jbpm-console-ng-human-tasks-forms-modeler/jbpm-console-ng-human-tasks-forms-modeler-client/src/main/java/org/jbpm/console/ng/ht/forms/modeler/client/editors/taskform/displayers/FormModellerStartProcessDisplayerImpl.java
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
 import org.jbpm.formModeler.api.events.ResizeFormcontainerEvent;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;
