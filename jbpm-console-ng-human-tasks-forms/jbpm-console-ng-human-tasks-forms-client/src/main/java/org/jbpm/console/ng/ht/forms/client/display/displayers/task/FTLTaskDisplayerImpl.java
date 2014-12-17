@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
+package org.jbpm.console.ng.ht.forms.client.display.displayers.task;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.JSNIHelper;
+import org.jbpm.console.ng.ht.forms.client.display.displayers.util.JSNIHelper;
 
 import javax.enterprise.context.Dependent;
 import java.util.Map;
@@ -39,6 +38,7 @@ public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
 
         formContainer.clear();
         formContainer.add(new HTMLPanel(formContent));
+        if (resizeListener != null) resizeListener.resize(formContainer.getOffsetWidth(), formContainer.getOffsetHeight());
     }
 
     @Override
@@ -49,11 +49,11 @@ public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
     // Set up the JS-callable signature as a global JS function.
     protected native void publish(FTLTaskDisplayerImpl td)/*-{
         $wnd.complete = function (from) {
-            td.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.FTLTaskDisplayerImpl::complete(Lcom/google/gwt/core/client/JavaScriptObject;)(from);
+            td.@org.jbpm.console.ng.ht.forms.client.display.displayers.task.FTLTaskDisplayerImpl::complete(Lcom/google/gwt/core/client/JavaScriptObject;)(from);
         }
 
         $wnd.saveState = function (from) {
-            td.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.FTLTaskDisplayerImpl::saveState(Lcom/google/gwt/core/client/JavaScriptObject;)(from);
+            td.@org.jbpm.console.ng.ht.forms.client.display.displayers.task.FTLTaskDisplayerImpl::saveState(Lcom/google/gwt/core/client/JavaScriptObject;)(from);
         }
     }-*/;
   /*
@@ -76,7 +76,7 @@ public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
         try {
             if($wnd.eval("taskFormValidator()")) $wnd.complete($wnd.getFormValues($doc.getElementById("form-data")));
         } catch (err) {
-            alert("Unexpected error: " + FTLerr);
+            alert("Unexpected error: " + err);
         }
     }-*/;
 
@@ -85,7 +85,7 @@ public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
         try {
             if($wnd.eval("taskFormValidator()")) $wnd.saveState($wnd.getFormValues($doc.getElementById("form-data")));
         } catch (err) {
-            alert("Unexpected error: " + FTLerr);
+            alert("Unexpected error: " + err);
         }
     }-*/;
 

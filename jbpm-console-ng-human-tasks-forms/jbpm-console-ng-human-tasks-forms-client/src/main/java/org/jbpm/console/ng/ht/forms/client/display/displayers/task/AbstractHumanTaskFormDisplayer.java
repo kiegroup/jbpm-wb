@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
+package org.jbpm.console.ng.ht.forms.client.display.displayers.task;
 
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Panel;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.ActionRequest;
-import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.JSNIHelper;
+import org.jbpm.console.ng.ht.forms.display.FormDisplayerConfig;
+import org.jbpm.console.ng.ht.forms.display.view.FormContentResizeListener;
+import org.jbpm.console.ng.ht.forms.client.display.displayers.util.ActionRequest;
+import org.jbpm.console.ng.ht.forms.client.display.displayers.util.JSNIHelper;
 import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
-import org.jbpm.console.ng.ht.forms.ht.api.HumanTaskFormDisplayer;
+import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayer;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
@@ -44,7 +50,7 @@ import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
+
 /**
  *
  * @author salaboy
@@ -62,13 +68,15 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     protected String taskName;
     protected String deploymentId;
 
-    final protected FlowPanel container = new FlowPanel();
+    final protected FormPanel container = new FormPanel();
     final protected FlowPanel buttonsContainer = new FlowPanel();
     final protected FlowPanel formContainer = new FlowPanel();
 
     private Command onClose;
 
     private Command onRefresh;
+
+    protected FormContentResizeListener resizeListener;
 
     protected Constants constants = GWT.create(Constants.class);
 
@@ -99,15 +107,22 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
 
     protected abstract void releaseFromDisplayer();
 
+    @PostConstruct
+    protected void init() {
+        container.getElement().setId("form-data");
+    }
+
     @Override
-    public void init(TaskKey key, String formContent, String openerUrl) {
-        this.taskId = key.getTaskId();
-        this.formContent = formContent;
-        this.opener = openerUrl;
+    public void init(FormDisplayerConfig<TaskKey> config, Command onCloseCommand, Command onRefreshCommand, FormContentResizeListener resizeListener) {
+        this.taskId = config.getKey().getTaskId();
+        this.formContent = config.getFormContent();
+        this.opener = config.getFormOpener();
+        this.resizeListener = resizeListener;
+        this.onClose = onCloseCommand;
+        this.onRefresh = onRefreshCommand;
         if ( formContainer.getParent() != container ) {
             container.add(formContainer);
         }
-        container.add(buttonsContainer);
 
         if (formContent == null || formContent.length() == 0) {
             return;
@@ -235,8 +250,13 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     }
 
     @Override
-    public FlowPanel getContainer() {
+    public Panel getContainer() {
         return container;
+    }
+
+    @Override
+    public IsWidget getFooter() {
+        return buttonsContainer;
     }
 
     protected RemoteCallback getStartTaskRemoteCallback() {
@@ -290,11 +310,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
                 taskOperationServices.call(new RemoteCallback<Boolean>() {
                     @Override
                     public void callback(Boolean response) {
-                        if (!response) {
-                            //editPanelEvent.fire(new EditPanelEvent(taskId));
-                            close();
-                        }
-                        refresh();
+                        close();
                     }
                 }, getUnexpectedErrorCallback()).existInDatabase(taskId);
                 taskRefreshed.fire(new TaskRefreshedEvent(taskId));
@@ -355,7 +371,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
 
     private native void injectEventListener(AbstractHumanTaskFormDisplayer fdp) /*-{
         function postMessageListener(e) {
-            fdp.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.AbstractHumanTaskFormDisplayer::eventListener(Ljava/lang/String;Ljava/lang/String;)(e.origin, e.data);
+            fdp.@org.jbpm.console.ng.ht.forms.client.display.displayers.task.AbstractHumanTaskFormDisplayer::eventListener(Ljava/lang/String;Ljava/lang/String;)(e.origin, e.data);
         }
 
         if ($wnd.addEventListener) {
@@ -364,4 +380,9 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
             $wnd.attachEvent("onmessage", postMessageListener, false);
         }
     }-*/;
+
+    @Override
+    public String getOpener() {
+        return opener;
+    }
 }

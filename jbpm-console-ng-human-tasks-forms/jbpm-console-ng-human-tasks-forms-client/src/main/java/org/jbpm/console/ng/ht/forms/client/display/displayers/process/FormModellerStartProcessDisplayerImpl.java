@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
+package org.jbpm.console.ng.ht.forms.client.display.displayers.process;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.FlowPanel;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+<<<<<<< HEAD:jbpm-console-ng-human-tasks-forms/jbpm-console-ng-human-tasks-forms-client/src/main/java/org/jbpm/console/ng/ht/forms/client/editors/taskform/displayers/FormModellerStartProcessDisplayerImpl.java
 import org.jbpm.console.ng.ht.forms.service.FormModelerProcessStarterEntryPoint;
+=======
+import org.jbpm.console.ng.ht.forms.modeler.service.FormModelerProcessStarterEntryPoint;
+>>>>>>> 5dc3f25... BZ-1169631: Task form resizing:jbpm-console-ng-human-tasks-forms-modeler/jbpm-console-ng-human-tasks-forms-modeler-client/src/main/java/org/jbpm/console/ng/ht/forms/modeler/client/editors/taskform/displayers/FormModellerStartProcessDisplayerImpl.java
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
+import org.jbpm.formModeler.api.events.ResizeFormcontainerEvent;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 
 /**
@@ -51,7 +55,7 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
         formContainer.add(formRenderer.asWidget());
     }
 
-    protected void startProcessFromDisplayer() {
+    public void startProcessFromDisplayer() {
         submitForm(ACTION_START_PROCESS);
     }
 
@@ -63,11 +67,6 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
     @Override
     public boolean supportsContent(String content) {
         return formRenderer.isValidContextUID(content);
-    }
-
-    @Override
-    public FlowPanel getContainer() {
-        return container;
     }
 
     @Override
@@ -94,6 +93,13 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
                             .startProcessFromRenderContext(formContent, deploymentId, processDefId);
                 }
             }
+        }
+    }
+
+    public void onFormResized(@Observes ResizeFormcontainerEvent event) {
+        if (event.isMine(formContent)) {
+            formRenderer.resize(event.getWidth(), event.getHeight());
+            if (resizeListener != null) resizeListener.resize(event.getWidth(), event.getHeight());
         }
     }
 

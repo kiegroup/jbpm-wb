@@ -29,25 +29,27 @@ import com.google.gwt.i18n.client.Messages;
  */
 public interface Constants extends Messages {
 
-   Constants INSTANCE = GWT.create(Constants.class);
+    Constants INSTANCE = GWT.create(Constants.class);
 
-   String Work();
+    String Work();
 
-   String Details();
+    String Details();
 
-   String Comments();
+    String Comments();
 
-   String Assignments();
+    String Assignments();
 
-   String Claim();
+    String Claim();
 
-   String Save();
+    String Save();
 
-   String Release();
+    String Release();
 
-   String Complete();
+    String Complete();
 
-   String Form();
+    String Form();
 
-   String Start();
+    String Start();
+
+    String Submit();
 }

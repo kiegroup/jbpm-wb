@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
+package org.jbpm.console.ng.ht.forms.client.display.displayers.process;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -59,11 +59,11 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
 
 
     @Override
-    protected native void startProcessFromDisplayer() /*-{
+    public native void startProcessFromDisplayer() /*-{
         try {
             if($wnd.eval("taskFormValidator()")) $wnd.startProcess($wnd.getFormValues($doc.getElementById("form-data")));
         } catch (err) {
-            alert("Unexpected error: " + FTLerr);
+            alert("Unexpected error: " + err);
         }
     }-*/;
 
@@ -75,7 +75,7 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
 
     protected native void publish(FTLStartProcessDisplayerImpl ftl)/*-{
         $wnd.startProcess = function (form) {
-            ftl.@org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.FTLStartProcessDisplayerImpl::startProcess(Lcom/google/gwt/core/client/JavaScriptObject;)(form);
+            ftl.@org.jbpm.console.ng.ht.forms.client.display.displayers.process.FTLStartProcessDisplayerImpl::startProcess(Lcom/google/gwt/core/client/JavaScriptObject;)(form);
         }
     }-*/;
 }

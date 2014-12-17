@@ -40,9 +40,9 @@ public abstract class AbstractTabbedDetailsPresenter {
     protected Map<String, AbstractWorkbenchActivity> activitiesMap =
             new HashMap<String, AbstractWorkbenchActivity>();
 
-    protected String selectedItemId = "";
+    protected String deploymentId = "";
 
-    protected String selectedItemName = "";
+    protected String processId = "";
 
     @OnOpen
     public void onOpen() {

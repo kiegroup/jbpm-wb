@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ht.forms.ht.api;
+package org.jbpm.console.ng.ht.forms.display.ht.api;
 
 import java.util.Map;
-import org.jbpm.console.ng.ht.forms.api.GenericFormDisplayer;
+import org.jbpm.console.ng.ht.forms.display.GenericFormDisplayer;
 import org.jbpm.console.ng.ht.model.TaskKey;
 
 /**
@@ -27,8 +27,9 @@ import org.jbpm.console.ng.ht.model.TaskKey;
 public interface HumanTaskFormDisplayer extends GenericFormDisplayer<TaskKey> {
   
   void start();
-  
-  void complete( Map<String, Object> params);
+
+
+    void complete( Map<String, Object> params);
   
   void claim();
   

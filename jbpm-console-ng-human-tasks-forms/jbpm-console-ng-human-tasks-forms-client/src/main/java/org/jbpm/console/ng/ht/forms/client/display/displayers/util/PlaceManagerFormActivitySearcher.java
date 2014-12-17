@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util;
+package org.jbpm.console.ng.ht.forms.client.display.displayers.util;
 
 import java.util.HashMap;
 import java.util.IdentityHashMap;

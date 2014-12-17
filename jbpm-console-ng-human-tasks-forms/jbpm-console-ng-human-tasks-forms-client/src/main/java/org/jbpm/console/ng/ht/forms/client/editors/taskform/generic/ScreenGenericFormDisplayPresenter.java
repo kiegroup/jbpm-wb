@@ -19,6 +19,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import org.jbpm.console.ng.ht.forms.client.display.views.EmbeddedFormDisplayView;
 import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -39,6 +40,7 @@ public class ScreenGenericFormDisplayPresenter {
 
     @Inject
     private GenericFormDisplayPresenter widgetPresenter;
+
 
     @Inject
     private PlaceManager placeManager;
@@ -64,6 +66,7 @@ public class ScreenGenericFormDisplayPresenter {
 
     @OnOpen
     public void onOpen() {
+
         placeOnClose = place.getParameter( "onClose", "none" );
         widgetPresenter.setup( Long.parseLong( place.getParameter( "taskId", "-1" ) ),
                                place.getParameter( "processId", "none" ),
@@ -80,11 +83,7 @@ public class ScreenGenericFormDisplayPresenter {
                                        }
                                    }
                                } );
-    }
 
-    @OnClose
-    public void OnClose() {
-        widgetPresenter.cleanup();
     }
 
 }

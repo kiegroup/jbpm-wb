@@ -13,30 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.jbpm.console.ng.ht.forms.client.display.displayers.util;
 
-package org.jbpm.console.ng.ht.forms.api;
+import com.google.gwt.core.client.JavaScriptObject;
 
-import com.google.gwt.user.client.ui.FlowPanel;
-import org.jbpm.console.ng.ga.service.ItemKey;
-import org.uberfire.mvp.Command;
+public class ActionRequest extends JavaScriptObject {
 
-/**
- *
- * @author salaboy
- * @param <T>
- */
-public interface GenericFormDisplayer<T extends ItemKey> {
-    boolean supportsContent(String content);
+    protected ActionRequest() {
+    }
 
-    void init(T key, String content, String opener);
+    public final native String getAction() /*-{
+        return this.action;
+    }-*/;
 
-    FlowPanel getContainer();
+    public final native String getTaskId() /*-{
+        return this.taskId;
+    }-*/;
 
-    void addOnCloseCallback(Command callback);
-    
-    void addOnRefreshCallback(Command callback);
+    public final native String getProcessId() /*-{
+        return this.processId;
+    }-*/;
 
-    int getPriority();
+    public final native String getDomainId() /*-{
+        return this.domainId;
+    }-*/;
 
-    void close();
 }

@@ -13,12 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.jbpm.console.ng.ht.forms.client.display.displayers.task;
 
-package org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers;
-
-import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
-import org.jbpm.console.ng.ht.forms.client.editors.taskform.displayers.util.PlaceManagerFormActivitySearcher;
+import org.jbpm.console.ng.ht.forms.client.display.displayers.util.PlaceManagerFormActivitySearcher;
 import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
 
 import javax.enterprise.context.Dependent;
@@ -34,33 +31,52 @@ import org.uberfire.ext.widgets.common.client.forms.SetFormParamsEvent;
  * @author salaboy
  */
 @Dependent
-public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessFormDisplayer {
-
-    @Inject
-    private Caller<KieSessionEntryPoint> sessionServices;
+public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
 
     @Inject
     private PlaceManagerFormActivitySearcher placeManagerFormActivitySearcher;
-    
+
     @Inject
     private Event<SetFormParamsEvent> setFormParamsEvent;
-    
+
     @Inject
     private Event<RequestFormParamsEvent> requestFormParamsEvent;
 
-    public PlaceManagerStartProcessDisplayerImpl() {
-
+    public PlaceManagerTaskDisplayerImpl() {
     }
-    
 
     @Override
     protected void initDisplayer() {
-        
+
     }
 
     @Override
     public boolean supportsContent(String content) {
         return content.contains("handledByPlaceManagerFormProvider");
+    }
+
+    public void complete() {
+        requestFormParamsEvent.fire(new RequestFormParamsEvent("completeTask"));
+        close();
+    }
+
+    public void saveState() {
+        requestFormParamsEvent.fire(new RequestFormParamsEvent("saveTask"));
+    }
+
+    @Override
+    protected void startFromDisplayer() {
+        start();
+    }
+
+    @Override
+    protected void claimFromDisplayer() {
+        claim();
+    }
+
+    @Override
+    protected void releaseFromDisplayer() {
+        release();
     }
 
     @Override
@@ -69,15 +85,22 @@ public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessF
     }
 
     public void onFormRender(@Observes RenderFormEvent event) {
-        String processId = (String)event.getParams().get("processId");
-        if (processId == null || processId.equals("") || !event.getParams().containsKey("TaskName") || !event.getParams().get("TaskName").equals("")) {
+        String taskName = (String) event.getParams().get("TaskName");
+        String taskStatus = (String) event.getParams().get("taskStatus");
+        if (taskName == null || taskName.equals("")) {
             return;
         }
-        
+
         formContainer.setWidth("100%");
         formContainer.setHeight("400px");
-        placeManagerFormActivitySearcher.findFormActivityWidget(processId, null, formContainer);
-        setFormParamsEvent.fire(new SetFormParamsEvent(event.getParams(), false));
+        placeManagerFormActivitySearcher.findFormActivityWidget(taskName, null, formContainer);
+
+        if (taskStatus.equals("InProgress")) {
+            setFormParamsEvent.fire(new SetFormParamsEvent(event.getParams(), false));
+        } else {
+            setFormParamsEvent.fire(new SetFormParamsEvent(event.getParams(), true));
+        }
+
     }
 
     @Override
@@ -85,20 +108,24 @@ public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessF
         super.close();
     }
 
-    public void startProcess() {
-        requestFormParamsEvent.fire(new RequestFormParamsEvent("startProcess"));
+    @Override
+    protected void completeFromDisplayer() {
+        requestFormParamsEvent.fire(new RequestFormParamsEvent("completeTask"));
+
     }
-    
-    public void startProcessCallback(@Observes GetFormParamsEvent event){
-        if(event.getAction().equals("startProcess")){
-            sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
-                    .startProcess(deploymentId, processDefId, event.getParams());
+
+    private void completeOrSaveFromEvent(@Observes GetFormParamsEvent event) {
+        if (event.getAction().equals("completeTask")) {
+            complete(event.getParams());
+        } else if (event.getAction().equals("saveTask")) {
+            saveState(event.getParams());
         }
     }
 
     @Override
-    protected void startProcessFromDisplayer() {
-        startProcess();
+    protected void saveStateFromDisplayer() {
+        requestFormParamsEvent.fire(new RequestFormParamsEvent("saveTask"));
+
     }
 
 }
