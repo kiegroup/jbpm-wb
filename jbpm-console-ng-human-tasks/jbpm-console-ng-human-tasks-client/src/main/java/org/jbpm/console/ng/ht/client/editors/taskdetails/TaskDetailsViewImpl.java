@@ -198,10 +198,23 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
 
     @EventHandler("updateTaskButton")
     public void updateTaskButton( ClickEvent e ) {
+        Long dateValue = 0l;
+        if(dueDate.getValue() != null ){
+            dateValue = dueDate.getValue();
+        }
+        Long timeValue = 0l;
+        if(dueDateTime.getValue() != null){
+            timeValue = dueDateTime.getValue();
+        }
+        Date utc2date = null;
+        if(dateValue + timeValue > 0 ){
+            utc2date = UTCDateBox.utc2date(dateValue + timeValue);
+        }
+        
         presenter.updateTask( taskDescriptionTextArea.getText(),
                               userText.getText(),
                               // subTaskStrategyListBox.getItemText(subTaskStrategyListBox.getSelectedIndex()),
-                              UTCDateBox.utc2date(dueDate.getValue() + dueDateTime.getValue()), taskPriorityListBox.getSelectedIndex() );
+                              utc2date , taskPriorityListBox.getSelectedIndex() );
 
     }
     

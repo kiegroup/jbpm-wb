@@ -18,6 +18,7 @@ package org.jbpm.console.ng.ht.client.util;
 
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.constants.ResponsiveStyle;
+import com.google.gwt.i18n.client.NumberFormat;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 
 public class DataGridUtils {
@@ -101,7 +102,8 @@ public class DataGridUtils {
     public static void paintRowSelected(DataGrid<TaskSummary> myTaskListGrid, Long idTask) {
         for (int i = 0; i < getCurrentRowCount(myTaskListGrid); i++) {
             for (int j = 0; j < myTaskListGrid.getColumnCount(); j++) {
-                if (!Long.valueOf(myTaskListGrid.getRowElement(i).getCells().getItem(0).getInnerText()).equals(idTask)) {
+                Long value = new Double(NumberFormat.getDecimalFormat().parse(myTaskListGrid.getRowElement(i).getCells().getItem(0).getInnerText())).longValue();
+                if (!idTask.equals(value)) {
                     myTaskListGrid.getRowElement(i).getCells().getItem(j).getStyle().clearBackgroundColor();
                 } else {
                     myTaskListGrid.getRowElement(i).getCells().getItem(j).getStyle().setBackgroundColor(BG_ROW_SELECTED);
@@ -114,7 +116,8 @@ public class DataGridUtils {
         Long idTaskSelected = null;
         for (int i = 0; i < getCurrentRowCount(myTaskListGrid); i++) {
             if (myTaskListGrid.getRowElement(i).getCells().getItem(0).getStyle().getBackgroundColor().equals(BG_ROW_SELECTED)) {
-                idTaskSelected = Long.valueOf(myTaskListGrid.getRowElement(i).getCells().getItem(0).getInnerText());
+                idTaskSelected = new Double(NumberFormat.getDecimalFormat().parse(myTaskListGrid.getRowElement(i).getCells().getItem(0).getInnerText())).longValue();
+                
                 break;
             }
         }

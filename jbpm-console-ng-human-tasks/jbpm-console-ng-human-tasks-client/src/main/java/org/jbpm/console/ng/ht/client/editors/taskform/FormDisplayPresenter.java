@@ -29,6 +29,7 @@ import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -425,7 +426,8 @@ public class FormDisplayPresenter {
               ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
               return true;
           }
-      }).complete(Long.parseLong(params.get("taskId")), identity.getName(), objParams);
+      }).complete(new Double(NumberFormat.getDecimalFormat().parse(params.get("taskId"))).longValue(), 
+              identity.getName(), objParams);
 
     }
 
@@ -459,7 +461,8 @@ public class FormDisplayPresenter {
                   ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                   return true;
               }
-          }).saveContent(Long.parseLong(params.get("taskId").toString()), params);
+          }).saveContent(new Double(NumberFormat.getDecimalFormat().parse(params.get("taskId"))).longValue(),
+                  params);
     }
 
     public void startFormModelerTask(final Long taskId, final String identity) {
@@ -503,7 +506,8 @@ public class FormDisplayPresenter {
                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                return true;
            }
-       } ).start( Long.parseLong( params.get( "taskId" ).toString() ), identity.getName() );
+       } ).start(new Double(NumberFormat.getDecimalFormat().parse(params.get("taskId"))).longValue(), 
+               identity.getName() );
 
     }
     

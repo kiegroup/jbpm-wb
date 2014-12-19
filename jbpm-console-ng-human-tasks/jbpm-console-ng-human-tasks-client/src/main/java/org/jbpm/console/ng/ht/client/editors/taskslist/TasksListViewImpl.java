@@ -62,6 +62,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
@@ -416,7 +417,7 @@ public class TasksListViewImpl extends ActionsCellTaskList implements TasksListP
         Column<TaskSummary, Number> taskIdColumn = new Column<TaskSummary, Number>(new NumberCell()) {
             @Override
             public Number getValue(TaskSummary object) {
-                return object.getId();
+                return NumberFormat.getDecimalFormat().parse(String.valueOf(object.getId()));
             }
         };
         taskIdColumn.setSortable(true);
