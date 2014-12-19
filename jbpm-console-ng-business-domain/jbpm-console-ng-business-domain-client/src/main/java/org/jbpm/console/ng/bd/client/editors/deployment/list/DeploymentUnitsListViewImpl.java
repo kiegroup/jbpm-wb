@@ -46,8 +46,6 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 
-import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
-import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.client.resources.BusinessDomainImages;

@@ -170,6 +170,13 @@ public class TaskDetailsPresenter {
             @Override
             public void callback( TaskSummary details ) {
                 if ( details == null ) {
+                    view.getTaskDescriptionTextArea().setEnabled( false );
+                    view.getDueDate().setEnabled( false );
+                    view.getUserText().setEnabled( false );
+                    view.getTaskStatusText().setEnabled( false );
+                    view.getDueDateTime().setEnabled(false);
+                    view.getTaskPriorityListBox().setEnabled(false);
+                    view.getUpdateTaskButton().setEnabled(false);
                     return;
                 }
                 if ( details.getStatus().equals( "Completed" ) ) {

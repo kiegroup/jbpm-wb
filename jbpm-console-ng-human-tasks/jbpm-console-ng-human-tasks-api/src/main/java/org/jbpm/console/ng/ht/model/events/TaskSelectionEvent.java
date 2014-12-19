@@ -24,6 +24,7 @@ public class TaskSelectionEvent implements Serializable {
     private Long taskId;
     private String taskName;
     private boolean forAdmin;
+    private boolean forLog;
 
     public TaskSelectionEvent() {
     }
@@ -37,10 +38,11 @@ public class TaskSelectionEvent implements Serializable {
         this.taskName = taskName;
     }
 
-    public TaskSelectionEvent(Long taskId, String taskName,  boolean forAdmin) {
+    public TaskSelectionEvent(Long taskId, String taskName,  boolean forAdmin, boolean forLog) {
         this.taskId = taskId;
         this.taskName = taskName;
         this.forAdmin = forAdmin;
+        this.forLog = forLog;
     }
     
     public String getTaskName() {
@@ -55,6 +57,9 @@ public class TaskSelectionEvent implements Serializable {
         return forAdmin;
     }
 
+    public boolean isForLog() {
+        return forLog;
+    }
     
     
 

@@ -147,11 +147,15 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
 
                 DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest("Task Details Multi");
                 PlaceStatus status = placeManager.getStatus(defaultPlaceRequest);
+                boolean logOnly = false;
+                if(selectedItem.getStatus().equals("Completed") && selectedItem.isLogOnly()){
+                    logOnly = true;
+                }
                 if (status == PlaceStatus.CLOSE) {
                     placeManager.goTo(defaultPlaceRequest);
-                    taskSelected.fire(new TaskSelectionEvent(selectedItem.getTaskId(), selectedItem.getTaskName(), selectedItem.isForAdmin()));
+                    taskSelected.fire(new TaskSelectionEvent(selectedItem.getTaskId(), selectedItem.getTaskName(), selectedItem.isForAdmin(), logOnly));
                 } else if (status == PlaceStatus.OPEN && !close) {
-                    taskSelected.fire(new TaskSelectionEvent(selectedItem.getTaskId(), selectedItem.getTaskName(), selectedItem.isForAdmin()));
+                    taskSelected.fire(new TaskSelectionEvent(selectedItem.getTaskId(), selectedItem.getTaskName(), selectedItem.isForAdmin(), logOnly));
                 } else if (status == PlaceStatus.OPEN && close) {
                     placeManager.closePlace("Task Details Multi");
                 }
@@ -357,7 +361,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         taskIdColumn.setSortable(true);
-        
+        taskIdColumn.setDataStoreName("t.id");
         return taskIdColumn;
     }
 
@@ -369,7 +373,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         taskNameColumn.setSortable(true);
-        
+        taskNameColumn.setDataStoreName("t.name");
         return taskNameColumn;
     }
 
@@ -381,6 +385,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         descriptionColumn.setSortable(true);
+        descriptionColumn.setDataStoreName("t.description");
         return descriptionColumn;
     }
 
@@ -392,6 +397,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         taskPriorityColumn.setSortable(true);
+        taskPriorityColumn.setDataStoreName("t.priority");
         return taskPriorityColumn;
     }
 
@@ -403,6 +409,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         statusColumn.setSortable(true);
+        statusColumn.setDataStoreName("t.taskData.status");
         return statusColumn;
     }
 
@@ -419,6 +426,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         createdOnDateColumn.setSortable(true);
+        createdOnDateColumn.setDataStoreName("t.taskData.createdOn");
         return createdOnDateColumn;
     }
 
@@ -435,7 +443,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         dueDateColumn.setSortable(true);
-       
+        dueDateColumn.setDataStoreName("t.taskData.expirationTime");
         return dueDateColumn;
     }
 
@@ -469,7 +477,11 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             @Override
             public void execute(TaskSummary task) {
                 placeManager.goTo("Task Details Multi");
-                taskSelected.fire(new TaskSelectionEvent(task.getTaskId(), task.getName(), task.isForAdmin()));
+                boolean logOnly = false;
+                if(task.getStatus().equals("Completed") && task.isLogOnly()){
+                    logOnly = true;
+                }
+                taskSelected.fire(new TaskSelectionEvent(task.getTaskId(), task.getName(), task.isForAdmin(), logOnly));
             }
         }));
 

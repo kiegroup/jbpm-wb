@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.kie.internal.task.api.AuditTask;
+
 
 public class TaskSummaryHelper {
     public static List<TaskSummary> adaptCollection(List<org.kie.api.task.model.TaskSummary> taskSums) {
@@ -51,7 +53,36 @@ public class TaskSummaryHelper {
                     taskSum.getProcessInstanceId(),
                     taskSum.getDeploymentId(), 
                     taskSum.getParentId(),
-                    isForAdmin);
+                    isForAdmin, false);
+    
+    }
+
+    public static List<TaskSummary> adaptAuditCollection(List<AuditTask> allAuditTasks) {
+        List<TaskSummary> taskSummaries = new ArrayList<TaskSummary>(allAuditTasks.size());
+        for (AuditTask auditTaskSum : allAuditTasks) {
+            taskSummaries.add(adaptAudit(auditTaskSum));
+        }
+        return taskSummaries;
+    }
+    
+    public static TaskSummary adaptAudit(AuditTask taskSum) {
+        return new TaskSummary(
+                    taskSum.getTaskId(),
+                    taskSum.getName(),
+                    taskSum.getDescription(),
+                    taskSum.getStatus(),
+                    taskSum.getPriority(),
+                    taskSum.getActualOwner(),
+                    taskSum.getCreatedBy(),
+                    taskSum.getCreatedOn(),
+                    taskSum.getActivationTime(),
+                    taskSum.getDueDate(),
+                    taskSum.getProcessId(),
+                    taskSum.getProcessSessionId(),
+                    taskSum.getProcessInstanceId(),
+                    taskSum.getDeploymentId(), 
+                    taskSum.getParentId(),
+                    false, true);
     
     }
 }

@@ -18,7 +18,8 @@ package org.jbpm.console.ng.ht.backend.server;
 import java.util.ArrayList;
 import java.util.List;
 import org.jbpm.console.ng.ht.model.AuditTaskSummary;
-import org.jbpm.services.task.audit.impl.model.api.AuditTask;
+import org.kie.internal.task.api.AuditTask;
+
 
 public class AuditTaskSummaryHelper {
 

@@ -111,6 +111,8 @@ public class TaskAssignmentsPresenter {
                 @Override
                 public void callback(TaskSummary response) {
                      if ( response == null ) {
+                        view.getDelegateButton().setEnabled( false );
+                        view.getUserOrGroupText().setEnabled( false );
                         return;
                     }
                     if(response.getStatus().equals("Completed") || response.getActualOwner().equals( "" ) 

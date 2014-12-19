@@ -128,7 +128,12 @@ public class TaskAdminPresenter {
         taskOperationsServices.call(new RemoteCallback<TaskAssignmentSummary>() {
             @Override
             public void callback(TaskAssignmentSummary ts) {
-                if (ts == null) return;
+                if (ts == null) {
+                    view.getReminderButton().setEnabled(false);
+                    view.getForwardButton().setEnabled(false);
+                    view.getUserOrGroupText().setEnabled(false);
+                    return;
+                }
                 if( ts.getPotOwnersString() != null && ts.getPotOwnersString().isEmpty() ){
                     view.getUsersGroupsControlsPanel().setText( Constants.INSTANCE.No_Potential_Owners() );
                 } else {

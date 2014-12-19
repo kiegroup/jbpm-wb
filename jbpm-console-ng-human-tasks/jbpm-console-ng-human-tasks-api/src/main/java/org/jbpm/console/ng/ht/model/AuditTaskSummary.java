@@ -15,13 +15,13 @@
  */
 package org.jbpm.console.ng.ht.model;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jbpm.console.ng.ga.model.GenericSummary;
 
 @Portable
-public class AuditTaskSummary implements Serializable {
+public class AuditTaskSummary extends GenericSummary {
 
   private static final long serialVersionUID = -506604206868228075L;
   
@@ -30,7 +30,7 @@ public class AuditTaskSummary implements Serializable {
 
   private String status;
   private Date activationTime;
-  private String name;
+  private String taskName;
   private String description;
   private int priority;
   private String createdBy;
@@ -52,11 +52,12 @@ public class AuditTaskSummary implements Serializable {
           String name, String description, int priority, String createdBy, 
           String actualOwner, Date createdOn, Date dueDate, Long processInstanceId, 
           String processId, Long processSessionId, Long parentId, String deploymentId) {
-   
+    this.id = taskId;
+    this.name = name;
     this.taskId = taskId;
     this.status = status;
     this.activationTime = activationTime;
-    this.name = name;
+    this.taskName = name;
     this.description = description;
     this.priority = priority;
     this.createdBy = createdBy;
@@ -88,7 +89,7 @@ public class AuditTaskSummary implements Serializable {
     return activationTime;
   }
 
-  public String getName() {
+  public String getTaskName() {
     return name;
   }
 

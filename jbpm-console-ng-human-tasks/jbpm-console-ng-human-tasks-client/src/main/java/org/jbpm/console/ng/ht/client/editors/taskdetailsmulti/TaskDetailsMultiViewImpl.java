@@ -84,10 +84,11 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
     public void initTabs() {
         tabPanel.addTab( "Generic Form Display", Constants.INSTANCE.Work() );
         tabPanel.addTab( "Task Details", Constants.INSTANCE.Details() );
+        tabPanel.addTab( "Process Context", Constants.INSTANCE.Process_Context());
         tabPanel.addTab( "Task Assignments", Constants.INSTANCE.Assignments() );
         tabPanel.addTab( "Task Comments", Constants.INSTANCE.Comments() );
         tabPanel.addTab( "Task Admin", Constants.INSTANCE.Task_Admin());
-        tabPanel.addTab( "Process_Context", Constants.INSTANCE.Process_Context());
+        
         
         int height = TaskDetailsMultiViewImpl.this.getOffsetHeight();
         if(height == 0){
@@ -98,6 +99,8 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
         formScrollPanel.setHeight(height+"px");
         ScrollPanel taskDetailsScrollPanel = new ScrollPanel(taskDetailsPresenter.getView().asWidget());
         taskDetailsScrollPanel.setHeight(height+"px");
+        ScrollPanel taskProcessContextScrollPanel = new ScrollPanel(taskProcessContextPresenter.getView().asWidget());
+        taskProcessContextScrollPanel.setHeight(height+"px");
         ScrollPanel assignmentsScrollPanel = new ScrollPanel(taskAssignmentsPresenter.getView().asWidget());
         assignmentsScrollPanel.setHeight(height+"px");
         ScrollPanel commentsScrollPanel = new ScrollPanel(taskCommentsPresenter.getView().asWidget());
@@ -106,29 +109,33 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
         taskAdminScrollPanel.setHeight(height+"px");
         
         
+        
         ( (HTMLPanel) tabPanel.getWidget( 0 ) ).add( formScrollPanel );
         ( (HTMLPanel) tabPanel.getWidget( 1 ) ).add( taskDetailsScrollPanel );
-        ( (HTMLPanel) tabPanel.getWidget( 2 ) ).add( assignmentsScrollPanel );
-        ( (HTMLPanel) tabPanel.getWidget( 3 ) ).add( commentsScrollPanel );
-        ( (HTMLPanel) tabPanel.getWidget( 4 ) ).add( taskAdminScrollPanel );
+        ( (HTMLPanel) tabPanel.getWidget( 2 ) ).add( taskProcessContextScrollPanel );
+        ( (HTMLPanel) tabPanel.getWidget( 3 ) ).add( assignmentsScrollPanel );
+        ( (HTMLPanel) tabPanel.getWidget( 4 ) ).add( commentsScrollPanel );
+        ( (HTMLPanel) tabPanel.getWidget( 5 ) ).add( taskAdminScrollPanel );
 
 
         tabPanel.addSelectionHandler( new SelectionHandler<Integer>() {
 
             @Override
             public void onSelection( SelectionEvent<Integer> event ) {
-                if ( event.getSelectedItem() == 1 ) {
+                if ( event.getSelectedItem() == 0 ) {
+                    
+                } else if ( event.getSelectedItem() == 1 ) {
                     taskDetailsPresenter.refreshTask();
                 } else if ( event.getSelectedItem() == 2 ) {
-                    taskAssignmentsPresenter.refreshTaskPotentialOwners();
-                } else if ( event.getSelectedItem() == 3 ) {
-                    taskCommentsPresenter.refreshComments();
+                    taskProcessContextPresenter.refreshProcessContextOfTask();
                 }else if ( event.getSelectedItem() == 3 ) {
+                    taskAssignmentsPresenter.refreshTaskPotentialOwners();
+                } else if ( event.getSelectedItem() == 4 ) {
+                    taskCommentsPresenter.refreshComments();
+                }else if ( event.getSelectedItem() == 5 ) {
                     taskAdminPresenter.refreshTaskPotentialOwners();
                 }
-                else if ( event.getSelectedItem() == 4 ) {
-                    taskProcessContextPresenter.refreshProcessContextOfTask();
-                }
+                
             }
         } );
     }
