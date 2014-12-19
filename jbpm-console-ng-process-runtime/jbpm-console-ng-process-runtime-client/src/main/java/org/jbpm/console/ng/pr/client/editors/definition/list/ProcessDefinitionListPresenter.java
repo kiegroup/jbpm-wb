@@ -70,7 +70,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
             @Override
             protected void onRangeChanged( HasData<ProcessSummary> display ) {
-
+                view.showBusyIndicator(constants.Loading());
                 final Range visibleRange = display.getVisibleRange();
                 ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
                 if ( currentFilter == null ) {
@@ -100,6 +100,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                 processDefinitionService.call( new RemoteCallback<PageResponse<ProcessSummary>>() {
                     @Override
                     public void callback( PageResponse<ProcessSummary> response ) {
+                        view.hideBusyIndicator();
                         dataProvider.updateRowCount( response.getTotalRowSize(),
                                                      response.isTotalRowSizeExact() );
                         dataProvider.updateRowData( response.getStartRowIndex(),

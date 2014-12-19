@@ -66,4 +66,6 @@ public interface Constants extends Messages {
     String New();
     
     String ConfigurationPanel();
+    
+    String Loading();
 }

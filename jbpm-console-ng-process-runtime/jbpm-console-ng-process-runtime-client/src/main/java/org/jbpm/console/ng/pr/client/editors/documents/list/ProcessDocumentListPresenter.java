@@ -34,6 +34,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.BasicListView;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.DocumentSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.service.DocumentsService;
@@ -42,6 +43,8 @@ import org.uberfire.paging.PageResponse;
 @Dependent
 public class ProcessDocumentListPresenter extends AbstractListPresenter<DocumentSummary> {
 
+    private Constants constants = GWT.create( Constants.class );
+    
     public interface ProcessDocumentListView extends BasicListView<DocumentSummary> {
 
         void init( final ProcessDocumentListPresenter presenter );
@@ -64,6 +67,7 @@ public class ProcessDocumentListPresenter extends AbstractListPresenter<Document
 
             @Override
             protected void onRangeChanged( HasData<DocumentSummary> display ) {
+                view.showBusyIndicator(constants.Loading());
                 if ( processInstanceId != null && deploymentId != null ) {
                     final Range visibleRange = display.getVisibleRange();
                     ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
@@ -101,6 +105,7 @@ public class ProcessDocumentListPresenter extends AbstractListPresenter<Document
                     documentsServices.call( new RemoteCallback<PageResponse<DocumentSummary>>() {
                         @Override
                         public void callback( PageResponse<DocumentSummary> response ) {
+                            view.hideBusyIndicator();
                             dataProvider.updateRowCount( response.getTotalRowSize(),
                                                          response.isTotalRowSizeExact() );
                             dataProvider.updateRowData( response.getStartRowIndex(),

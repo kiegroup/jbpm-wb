@@ -60,7 +60,7 @@ public class DeploymentUnitsListPresenter extends AbstractScreenListPresenter<KM
 
       @Override
       protected void onRangeChanged(HasData<KModuleDeploymentUnitSummary> display) {
-
+        view.showBusyIndicator(constants.Loading());
         final Range visibleRange = display.getVisibleRange();
         ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
         if(currentFilter == null){
@@ -89,6 +89,7 @@ public class DeploymentUnitsListPresenter extends AbstractScreenListPresenter<KM
         deploymentManagerService.call(new RemoteCallback<PageResponse<KModuleDeploymentUnitSummary>>() {
           @Override
           public void callback(PageResponse<KModuleDeploymentUnitSummary> response) {
+            view.hideBusyIndicator();
             dataProvider.updateRowCount( response.getTotalRowSize(),
                                         response.isTotalRowSizeExact() );
             dataProvider.updateRowData( response.getStartRowIndex(),

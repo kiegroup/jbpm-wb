@@ -82,8 +82,8 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
     dataProvider = new AsyncDataProvider<ProcessInstanceSummary>() {
 
       @Override
-      protected void onRangeChanged(HasData<ProcessInstanceSummary> display) {
-
+      protected void onRangeChanged(HasData<ProcessInstanceSummary> display) {  
+        view.showBusyIndicator(constants.Loading());
         final Range visibleRange = display.getVisibleRange();
         ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
         if (currentFilter == null) {
@@ -120,6 +120,7 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
         processInstanceService.call(new RemoteCallback<PageResponse<ProcessInstanceSummary>>() {
           @Override
           public void callback(PageResponse<ProcessInstanceSummary> response) {
+            view.hideBusyIndicator();
             dataProvider.updateRowCount( response.getTotalRowSize(),
                                         response.isTotalRowSizeExact() );
             dataProvider.updateRowData( response.getStartRowIndex(),

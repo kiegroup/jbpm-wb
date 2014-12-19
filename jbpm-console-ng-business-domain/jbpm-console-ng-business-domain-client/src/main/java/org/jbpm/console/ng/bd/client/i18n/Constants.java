@@ -138,4 +138,6 @@ public interface Constants extends Messages {
     String Active();
 
     String NotActive();
+    
+    String Loading();
 }
