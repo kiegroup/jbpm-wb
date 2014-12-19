@@ -36,7 +36,6 @@ import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
-import org.jbpm.console.ng.ht.util.TaskRoleDefinition;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -75,7 +74,7 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
 
       @Override
       protected void onRangeChanged(HasData<TaskSummary> display) {
-
+        view.showBusyIndicator(constants.Loading());
         final Range visibleRange = display.getVisibleRange();
         ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
         if (currentFilter == null) {
@@ -102,6 +101,7 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
         }
         
         currentFilter.getParams().put("statuses", TaskUtils.getStatusByType(currentStatusFilter));
+        currentFilter.getParams().put("filter", currentStatusFilter.toString());
         currentFilter.getParams().put("userId", identity.getIdentifier());
         currentFilter.getParams().put("taskRole",currentRole);
         currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
@@ -112,6 +112,7 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
         taskQueryService.call(new RemoteCallback<PageResponse<TaskSummary>>() {
           @Override
           public void callback(PageResponse<TaskSummary> response) {
+            view.hideBusyIndicator();
             dataProvider.updateRowCount(response.getTotalRowSize(),
                     response.isTotalRowSizeExact());
             dataProvider.updateRowData(response.getStartRowIndex(),

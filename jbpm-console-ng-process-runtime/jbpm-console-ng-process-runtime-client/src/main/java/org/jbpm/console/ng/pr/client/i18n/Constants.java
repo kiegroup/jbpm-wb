@@ -229,4 +229,6 @@ public interface Constants extends Messages {
     String Owner();
 
     String Project();
+    
+    String Loading();
 }

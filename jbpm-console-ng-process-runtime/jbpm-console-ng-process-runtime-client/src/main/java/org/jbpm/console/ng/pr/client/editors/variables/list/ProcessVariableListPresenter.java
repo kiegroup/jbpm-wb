@@ -34,6 +34,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.service.ProcessVariablesService;
@@ -42,6 +43,8 @@ import org.uberfire.paging.PageResponse;
 @Dependent
 public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessVariableSummary> {
 
+    private Constants constants = GWT.create(Constants.class);
+      
     public interface ProcessVariableListView extends AbstractListView.BasicListView<ProcessVariableSummary> {
 
         void init( ProcessVariableListPresenter presenter );
@@ -64,6 +67,7 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
 
             @Override
             protected void onRangeChanged( HasData<ProcessVariableSummary> display ) {
+                view.showBusyIndicator(constants.Loading());
                 if ( processInstanceId != null && deploymentId != null ) {
                     final Range visibleRange = display.getVisibleRange();
                     ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
@@ -102,6 +106,7 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
                     variablesServices.call( new RemoteCallback<PageResponse<ProcessVariableSummary>>() {
                         @Override
                         public void callback( PageResponse<ProcessVariableSummary> response ) {
+                            view.hideBusyIndicator();
                             dataProvider.updateRowCount( response.getTotalRowSize(),
                                                          response.isTotalRowSizeExact() );
                             dataProvider.updateRowData( response.getStartRowIndex(),

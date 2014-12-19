@@ -80,6 +80,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         dataProvider = new AsyncDataProvider<RequestSummary>() {
             @Override
             protected void onRangeChanged(HasData<RequestSummary> display) {
+                view.showBusyIndicator(constants.Loading());
                 final Range visibleRange = display.getVisibleRange();
                 ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
                 if (currentFilter == null) {
@@ -114,9 +115,10 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                   executorServices.call(new RemoteCallback<PageResponse<RequestSummary>>() {
                       @Override
                     public void callback(PageResponse<RequestSummary> response) {
-                          dataProvider.updateRowCount( response.getTotalRowSize(),
+                        view.hideBusyIndicator();
+                        dataProvider.updateRowCount( response.getTotalRowSize(),
                                                        response.isTotalRowSizeExact() );
-                           dataProvider.updateRowData( response.getStartRowIndex(),
+                        dataProvider.updateRowData( response.getStartRowIndex(),
                                                       response.getPageRowList() );
                       }
                     }, new ErrorCallback<Message>() {

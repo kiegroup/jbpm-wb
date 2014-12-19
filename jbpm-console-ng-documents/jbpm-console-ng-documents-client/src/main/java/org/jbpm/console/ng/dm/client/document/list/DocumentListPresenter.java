@@ -89,7 +89,8 @@ public class DocumentListPresenter extends AbstractScreenListPresenter<CMSConten
 
             @Override
             protected void onRangeChanged(HasData<CMSContentSummary> display) {
-
+                
+                view.showBusyIndicator(constants.Loading());  
                 final Range visibleRange = display.getVisibleRange();
                 ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
                 if (currentFilter == null) {
@@ -123,6 +124,7 @@ public class DocumentListPresenter extends AbstractScreenListPresenter<CMSConten
                 dataServices.call(new RemoteCallback<List<CMSContentSummary>>() {
                     @Override
                     public void callback(List<CMSContentSummary> response) {
+                        view.hideBusyIndicator();
                         dataProvider.updateRowCount(response.size(), true);
                         dataProvider.updateRowData(0, response);
 

@@ -108,5 +108,6 @@ public interface Constants extends Messages {
 
    String Start();
    
+   String Loading();
 
 }

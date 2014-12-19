@@ -178,4 +178,6 @@ public interface Constants extends Messages {
     String Reminder_Details();
     
     String No_Actual_Owner();
+    
+    String Loading();
 }
