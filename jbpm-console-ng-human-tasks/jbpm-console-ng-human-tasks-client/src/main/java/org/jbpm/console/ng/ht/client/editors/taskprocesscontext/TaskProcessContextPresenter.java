@@ -95,6 +95,9 @@ public class TaskProcessContextPresenter {
             @Override
             public void callback( TaskSummary details ) {
                 if ( details == null ) {
+                    view.getProcessInstanceIdText().setText( "None" );
+                    view.getProcessIdText().setText( "None" );
+                    view.getpIDetailsButton().setEnabled( false );
                     return;
                 }
                 if ( details.getStatus().equals( "Completed" ) ) {

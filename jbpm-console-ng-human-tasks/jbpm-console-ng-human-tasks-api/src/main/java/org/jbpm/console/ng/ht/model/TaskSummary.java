@@ -41,6 +41,7 @@ public class TaskSummary extends GenericSummary {
     private Long processSessionId;
     private String deploymentId;
     private boolean isForAdmin;
+    private boolean isLogOnly;
     private Long parentId;
     private List<String> potOwnersString = new ArrayList<String>();
     
@@ -76,6 +77,16 @@ public class TaskSummary extends GenericSummary {
                  processInstanceId, deploymentId, parentId);
          this.isForAdmin = isForAdmin;
     }
+    public TaskSummary(long taskId, String taskName, String description, String status,
+            int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
+            Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId,boolean isForAdmin, boolean isLogOnly) {
+         this(taskId, taskName, description, status, priority, 
+                 actualOwner, createdBy, createdOn, activationTime, 
+                 expirationTime, processId, processSessionId, 
+                 processInstanceId, deploymentId, parentId, isForAdmin);
+         this.isLogOnly = isLogOnly;
+    }
+    
     public TaskSummary(long taskId, String taskName, String description, String status,
                        int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
                        Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId,boolean isForAdmin,List<String> potOwnersString) {
@@ -171,13 +182,19 @@ public class TaskSummary extends GenericSummary {
     public void setPotOwnersString(List<String> potOwnersString) {
         this.potOwnersString = potOwnersString;
     }
+
+    public boolean isLogOnly() {
+        return isLogOnly;
+    }
+    
+    
     @Override
     public String toString() {
         return "TaskSummary [id=" + taskId + ", name=" + taskName + ", description=" + description + ", deploymentId=" + deploymentId
                 + ", status=" + status + ", priority=" + priority + ", parentId=" + parentId
                 + ", actualOwner=" + actualOwner + ", createdBy=" + createdBy + ", createdOn=" + createdOn
                 + ", activationTime=" + activationTime + ", expirationTime=" + expirationTime + ", processInstanceId="
-                + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", isForAdmin="+ isForAdmin+ ", potOwnersString + "+potOwnersString.toString()+"]";
+                + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", isForAdmin="+ isForAdmin+ ", isLogOnly="+ isLogOnly+ ", potOwnersString + "+potOwnersString.toString()+"]";
     }
 
 }

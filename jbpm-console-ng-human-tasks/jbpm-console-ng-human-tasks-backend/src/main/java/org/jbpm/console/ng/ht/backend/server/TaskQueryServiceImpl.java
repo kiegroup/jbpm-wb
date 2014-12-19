@@ -18,12 +18,14 @@ package org.jbpm.console.ng.ht.backend.server;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ga.model.QueryFilter;
+import org.jbpm.console.ng.ht.model.AuditTaskSummary;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
@@ -45,7 +47,7 @@ public class TaskQueryServiceImpl implements TaskQueryService {
 
   @Inject
   private InternalTaskService taskService;
-
+  
   @Inject
   private RuntimeDataService runtimeDataService;
 
@@ -60,11 +62,12 @@ public class TaskQueryServiceImpl implements TaskQueryService {
     List<String> statusesString = null;
     String userId = "";
     String taskRole="";
+    String stringFilter = "";
     if (filter.getParams() != null) {
       userId = (String) filter.getParams().get("userId");
       statusesString = (List<String>) filter.getParams().get("statuses");
       taskRole=(String) filter.getParams().get("taskRole");
-
+      stringFilter =(String) filter.getParams().get("filter");
     }
     List<Status> statuses = new ArrayList<Status>();
     if(statusesString != null){
@@ -76,9 +79,18 @@ public class TaskQueryServiceImpl implements TaskQueryService {
     org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount() + 1,
                                                                     filter.getOrderBy(), filter.isAscending());
     qf.setFilterParams(filter.getFilterParams());
-    List<TaskSummary> taskSummaries = new ArrayList<TaskSummary>();
+    List<TaskSummary> taskSummaries = null;
     if (TASK_ROLE_ADMINISTRATOR.equals(taskRole)){
         taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsBusinessAdministrator(userId,qf),true);
+    }else if(stringFilter.equals("ALL")){
+        if(qf.getOrderBy().equals("t.taskData.expirationTime")){
+            qf.setOrderBy("t.dueDate");
+        }else if(qf.getOrderBy().equals("t.taskData.createdOn")){
+            qf.setOrderBy("t.createdOn");
+        }else if(qf.getOrderBy().equals("t.taskData.status")){
+            qf.setOrderBy("t.status");
+        }
+        taskSummaries = TaskSummaryHelper.adaptAuditCollection(runtimeDataService.getAllAuditTask(userId, qf));
     }else{
         taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf));
     }
