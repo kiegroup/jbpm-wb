@@ -111,7 +111,6 @@ public class TaskAdminPresenter {
             @Override
             public void callback(TaskAssignmentSummary ts) {
                 if (ts == null) {
-                    view.getReminderButton().setEnabled(false);
                     view.getForwardButton().setEnabled(false);
                     view.getUserOrGroupText().setEnabled(false);
                     return;

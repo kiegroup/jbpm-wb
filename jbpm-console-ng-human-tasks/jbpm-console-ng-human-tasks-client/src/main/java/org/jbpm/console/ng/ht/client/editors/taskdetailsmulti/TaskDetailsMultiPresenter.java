@@ -140,22 +140,22 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
             view.getTabPanel().getTabWidget(0).getParent().setVisible(false);
             view.getTabPanel().getTabWidget(2).getParent().setVisible(false);
             view.getTabPanel().getTabWidget(3).getParent().setVisible(false);
-            view.getTabPanel().getTabWidget(4).getParent().setVisible(false);
+            
             view.getTabPanel().selectTab(1);
             changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( deploymentId ) + " - " + processId   + " (Log)"));
         }else {
             view.getTabPanel().getTabWidget(0).getParent().setVisible(true);
             view.getTabPanel().getTabWidget(2).getParent().setVisible(true);
             view.getTabPanel().getTabWidget(3).getParent().setVisible(true);
-             view.getTabPanel().getTabWidget(4).getParent().setVisible(true);
+             
             view.getTabPanel().selectTab(0);
             changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( deploymentId ) + " - " + processId ) );
         }
         if (event.isForAdmin()) {
-            view.getTabPanel().getTabWidget(5).getParent().setVisible(true);
+            view.getTabPanel().getTabWidget(4).getParent().setVisible(true);
          } else {
 
-            view.getTabPanel().getTabWidget(5).getParent().setVisible(false);
+            view.getTabPanel().getTabWidget(4).getParent().setVisible(false);
          }
         
         
