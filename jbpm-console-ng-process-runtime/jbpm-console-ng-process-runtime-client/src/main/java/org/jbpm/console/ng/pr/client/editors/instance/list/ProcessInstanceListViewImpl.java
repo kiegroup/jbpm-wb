@@ -223,7 +223,17 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
         columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(processStateColumn, constants.State()));
         columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(startTimeColumn, constants.Start_Date()));
         columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(actionsColumn, constants.Actions()));
+        
         listGrid.addColumns(columnMetas);
+        
+        processInstanceIdColumn.setDataStoreName("ProcessInstanceId");
+        processNameColumn.setDataStoreName("ProcessName");
+        processInitiatorColumn.setDataStoreName("Initiator");
+        processVersionColumn.setDataStoreName("ProcessVersion");
+        processStateColumn.setDataStoreName("Status");
+        startTimeColumn.setDataStoreName("StartDate");
+        descriptionColumn.setDataStoreName("ProcessInstanceDescription");
+        
     }
 
     private void initBulkActionsDropDown() {
@@ -354,8 +364,6 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
             }
         };
         processNameColumn.setSortable(true);
-        processNameColumn.setDataStoreName("ProcessName");
-
         return processNameColumn;
     }
 
@@ -368,8 +376,6 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
             }
         };
         processInitiatorColumn.setSortable(true);
-        processInitiatorColumn.setDataStoreName("Initiator");
-
         return processInitiatorColumn;
     }
 
@@ -382,8 +388,6 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
             }
         };
         processVersionColumn.setSortable(true);
-        processVersionColumn.setDataStoreName("ProcessVersion");
-
         return processVersionColumn;
     }
 
@@ -437,8 +441,6 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
             }
         };
         startTimeColumn.setSortable(true);
-        startTimeColumn.setDataStoreName("StartDate");
-
         return startTimeColumn;
     }
 
@@ -502,7 +504,6 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
             }
         };
         descriptionColumn.setSortable(true);
-        descriptionColumn.setDataStoreName("Description");
         return descriptionColumn;
     }
 
