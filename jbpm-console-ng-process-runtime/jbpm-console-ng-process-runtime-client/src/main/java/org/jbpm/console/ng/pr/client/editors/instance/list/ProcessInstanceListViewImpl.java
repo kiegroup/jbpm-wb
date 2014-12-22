@@ -339,7 +339,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
             }
         };
         processInstanceIdColumn.setSortable(true);
-        processInstanceIdColumn.setDataStoreName("ProcessInstanceId");
+        processInstanceIdColumn.setDataStoreName("log.processInstanceId");
 
         return processInstanceIdColumn;
     }
@@ -353,7 +353,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
             }
         };
         processNameColumn.setSortable(true);
-        processNameColumn.setDataStoreName("ProcessName");
+        processNameColumn.setDataStoreName("log.processName");
 
         return processNameColumn;
     }
@@ -367,7 +367,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
             }
         };
         processInitiatorColumn.setSortable(true);
-        processInitiatorColumn.setDataStoreName("Initiator");
+        processInitiatorColumn.setDataStoreName("log.identity");
 
         return processInitiatorColumn;
     }
@@ -381,7 +381,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
             }
         };
         processVersionColumn.setSortable(true);
-        processVersionColumn.setDataStoreName("ProcessVersion");
+        processVersionColumn.setDataStoreName("log.processVersion");
 
         return processVersionColumn;
     }
@@ -417,7 +417,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
             }
         };
         processStateColumn.setSortable(true);
-        processStateColumn.setDataStoreName("Status");
+        processStateColumn.setDataStoreName("log.status");
 
         return processStateColumn;
     }
@@ -436,7 +436,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
             }
         };
         startTimeColumn.setSortable(true);
-        startTimeColumn.setDataStoreName("StartDate");
+        startTimeColumn.setDataStoreName("log.start");
 
         return startTimeColumn;
     }
@@ -500,8 +500,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
             }
         };
         descriptionColumn.setSortable(true);
-        descriptionColumn.setDataStoreName("Description");
-
+        descriptionColumn.setDataStoreName("log.processInstanceDescription");
         return descriptionColumn;
     }
 
