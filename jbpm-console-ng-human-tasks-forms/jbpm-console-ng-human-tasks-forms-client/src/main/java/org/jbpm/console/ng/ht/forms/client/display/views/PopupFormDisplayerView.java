@@ -48,7 +48,7 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
         formContentResizeListener = new FormContentResizeListener () {
             @Override
             public void resize(int width, int height) {
-                if (width > 0) setWidth(width + 20);
+                if (width > getOffsetWidth()) setWidth(width + 20);
                 centerVertically(getElement());
             }
         };
