@@ -36,6 +36,8 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
 
     private GenericFormDisplayer currentDisplayer;
 
+    private int initialWidth = -1;
+
     @PostConstruct
     protected void init() {
         onCloseCommand = new Command() {
@@ -48,7 +50,9 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
         formContentResizeListener = new FormContentResizeListener () {
             @Override
             public void resize(int width, int height) {
+                if (initialWidth == -1 && getOffsetWidth() > 0) initialWidth = getOffsetWidth();
                 if (width > getOffsetWidth()) setWidth(width + 20);
+                else if (initialWidth != -1) setWidth(initialWidth);
                 centerVertically(getElement());
             }
         };
