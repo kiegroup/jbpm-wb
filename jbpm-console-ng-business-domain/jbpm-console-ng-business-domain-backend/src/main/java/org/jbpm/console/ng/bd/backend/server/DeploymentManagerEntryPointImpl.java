@@ -119,7 +119,9 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
   @Override
   public void deploy(DeploymentUnitSummary unitSummary) {
     DeploymentUnit unit = null;
-    if(!deploymentService.isDeployed(unitSummary.getId()) ||  (deploymentService.isDeployed(unitSummary.getId()) && overrideDeploymentsEnabled)){
+    if(!deploymentService.isDeployed(unitSummary.getId()) ||  
+            (deploymentService.isDeployed(unitSummary.getId()) && overrideDeploymentsEnabled)
+            || unitSummary.getId().contains("SNAPSHOT")){
         if (unitSummary.getType().equals("kjar")) {
           unit = new KModuleDeploymentUnit(((KModuleDeploymentUnitSummary) unitSummary).getGroupId(),
                   ((KModuleDeploymentUnitSummary) unitSummary).getArtifactId(),
@@ -466,7 +468,9 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
               buildResults.getGAV().getGroupId(),
               buildResults.getGAV().getArtifactId(),
               buildResults.getGAV().getVersion(), "", "", null, null);
-      if(!deploymentService.isDeployed(id) ||  (deploymentService.isDeployed(id) && overrideDeploymentsEnabled)){
+      if(!deploymentService.isDeployed(id) ||  
+              (deploymentService.isDeployed(id) && overrideDeploymentsEnabled) ||
+              id.contains("SNAPSHOT")){
         undeploy(unit);
         deploy(unit);
       }else{
