@@ -175,6 +175,6 @@ public class DeploymentUnitsListPresenter extends AbstractScreenListPresenter<KM
 
   @WorkbenchPartTitle
   public String getTitle() {
-    return constants.Deployment_Units();
+    return constants.Deployed_Units();
   }
 }

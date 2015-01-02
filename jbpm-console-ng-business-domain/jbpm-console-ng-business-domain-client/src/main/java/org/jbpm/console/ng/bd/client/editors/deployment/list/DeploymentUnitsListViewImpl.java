@@ -15,11 +15,6 @@
  */
 package org.jbpm.console.ng.bd.client.editors.deployment.list;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
@@ -52,7 +47,6 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 
-import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.client.resources.BusinessDomainImages;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
