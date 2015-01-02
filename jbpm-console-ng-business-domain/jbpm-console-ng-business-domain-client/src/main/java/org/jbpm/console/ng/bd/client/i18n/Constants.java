@@ -33,7 +33,7 @@ public interface Constants extends Messages {
 
     String No_Deployment_Units_Available();
 
-    String Deployment_Units();
+    String Deployed_Units();
 
     String Undeploy();
 
