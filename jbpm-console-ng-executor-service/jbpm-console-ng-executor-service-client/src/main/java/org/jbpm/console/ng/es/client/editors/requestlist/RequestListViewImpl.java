@@ -35,14 +35,12 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.SplitDropdownButton;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
-import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
@@ -65,6 +63,7 @@ import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
+
 
 @Dependent
 public class RequestListViewImpl extends AbstractListView<RequestSummary,RequestListPresenter> implements RequestListPresenter.RequestListView{
@@ -124,7 +123,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
     
     @Override
     public void initColumns() {
-        initChecksColumn();
+        
         initJobIdColumn();
         initJobTypeColumn();
         initStatusColumn();
@@ -382,21 +381,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         listGrid.getLeftToolbar().add(actions);
     }
     
-    private void initChecksColumn() {
-        // Checkbox column. This table will uses a checkbox column for selection.
-        // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
-        // mouse selection.
-        Column<RequestSummary, Boolean> checkColumn = new Column<RequestSummary, Boolean>(new CheckboxCell(
-                true, false)) {
-                  @Override
-                  public Boolean getValue(RequestSummary object) {
-                    // Get the value from the selection model.
-                    return selectedRequestSummary.contains(object);
-                  }
-                };
-        listGrid.addColumn(checkColumn, "Select");
-
-      }
+    
     
     private void initJobIdColumn(){
         // Id
