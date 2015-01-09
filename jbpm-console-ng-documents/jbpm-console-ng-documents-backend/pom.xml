@@ -14,13 +14,13 @@
   <parent>
     <groupId>org.jbpm</groupId>
     <artifactId>jbpm-console-ng-documents</artifactId>
-    <version>6.2.0-SNAPSHOT</version>
+    <version>6.2.0.CR4</version>
   </parent>
 
   <artifactId>jbpm-console-ng-documents-backend</artifactId>
   <packaging>jar</packaging>
   <groupId>org.jbpm</groupId>
-  <version>6.2.0-SNAPSHOT</version>
+  <version>6.2.0.CR4</version>
 
   <name>jBPM Console NG - Documents Backend</name>
 
