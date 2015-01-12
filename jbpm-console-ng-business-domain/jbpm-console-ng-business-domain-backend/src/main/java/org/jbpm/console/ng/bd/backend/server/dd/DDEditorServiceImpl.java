@@ -36,31 +36,31 @@ import org.uberfire.io.IOService;
 
 @Service
 @ApplicationScoped
-public class DDEditorServiceImpl extends KieService implements DDEditorService {
+public class DDEditorServiceImpl
+        extends KieService<DeploymentDescriptorModel>
+        implements DDEditorService {
 
     @Inject
     @Named("ioStrategy")
     private IOService ioService;
 
-
     @Override
     public DeploymentDescriptorModel load(Path path) {
-        try {
+        return super.loadContent(path);
+    }
 
-            InputStream input = ioService.newInputStream(Paths.convert(path));
+    @Override
+    protected DeploymentDescriptorModel constructContent(Path path, Overview overview) {
 
-            org.kie.internal.runtime.conf.DeploymentDescriptor originDD = DeploymentDescriptorIO.fromXml(input);
+        InputStream input = ioService.newInputStream(Paths.convert(path));
 
-            DeploymentDescriptorModel ddModel = marshal(originDD);
+        org.kie.internal.runtime.conf.DeploymentDescriptor originDD = DeploymentDescriptorIO.fromXml(input);
 
-            Overview overview = loadOverview(path);
-            ddModel.setOverview(overview);
+        DeploymentDescriptorModel ddModel = marshal(originDD);
 
-            return ddModel;
+        ddModel.setOverview(overview);
 
-        } catch ( Exception e ) {
-            throw ExceptionUtilities.handleException(e);
-        }
+        return ddModel;
     }
 
     @Override
@@ -69,15 +69,15 @@ public class DDEditorServiceImpl extends KieService implements DDEditorService {
         try {
             String deploymentContent = unmarshal(path, content).toXml();
 
-            ioService.write( Paths.convert( path ),
-                    deploymentContent,
-                    metadataService.setUpAttributes( path,
-                            metadata ),
-                    makeCommentedOption( comment ) );
+            ioService.write(Paths.convert(path),
+                            deploymentContent,
+                            metadataService.setUpAttributes(path,
+                                                            metadata),
+                            makeCommentedOption(comment));
 
             return path;
-        } catch ( Exception e ) {
-            throw ExceptionUtilities.handleException( e );
+        } catch (Exception e) {
+            throw ExceptionUtilities.handleException(e);
         }
     }
 
@@ -86,12 +86,12 @@ public class DDEditorServiceImpl extends KieService implements DDEditorService {
         final List<ValidationMessage> validationMessages = new ArrayList<ValidationMessage>();
         try {
             unmarshal(path, content).toXml();
-        } catch ( Exception e ) {
+        } catch (Exception e) {
             final ValidationMessage msg = new ValidationMessage();
-            msg.setPath( path );
-            msg.setLevel( ValidationMessage.Level.ERROR );
-            msg.setText( e.getMessage() );
-            validationMessages.add( msg );
+            msg.setPath(path);
+            msg.setLevel(ValidationMessage.Level.ERROR);
+            msg.setText(e.getMessage());
+            validationMessages.add(msg);
         }
 
         return validationMessages;
