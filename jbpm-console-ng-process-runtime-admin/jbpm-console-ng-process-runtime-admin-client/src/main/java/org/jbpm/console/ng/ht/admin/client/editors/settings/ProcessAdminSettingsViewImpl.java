@@ -86,8 +86,8 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
 
     
 
-    @EventHandler("generateMockTasksButton")
-    public void generateMockTasksButton(ClickEvent e) {
+    @EventHandler("generateMockInstancesButton")
+    public void setGenerateMockInstancesButton(ClickEvent e) {
         
             presenter.generateMockInstances( deploymentIdText.getText(), processIdText.getText(), Integer.parseInt( amountOfTasksText.getText() ) );
        
