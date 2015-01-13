@@ -189,7 +189,7 @@ public class ShowcaseEntryPoint {
         result.add( MenuFactory.newSimpleItem( constants.Process_Instances_Admin() ).respondsWith( new Command() {
             @Override
             public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Process Instances Admin" ) );
+                placeManager.goTo( new DefaultPlaceRequest( "Process Admin" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
