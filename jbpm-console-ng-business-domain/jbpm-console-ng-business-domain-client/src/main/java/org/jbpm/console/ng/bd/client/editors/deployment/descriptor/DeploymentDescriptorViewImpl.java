@@ -236,9 +236,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     private ListDataProvider<String> remoteableClassesDataProvider = new ListDataProvider<String>();
 
 
-    private boolean isDirty = false;
-
-
     public DeploymentDescriptorViewImpl() {
         initWidget( uiBinder.createAndBindUi( this ) );
         setup();
@@ -358,15 +355,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
         return Window.confirm(CommonConstants.INSTANCE.DiscardUnsavedData());
     }
 
-    @Override
-    public boolean isDirty() {
-        return isDirty;
-    }
 
-    @Override
-    public void setNotDirty() {
-        isDirty = false;
-    }
 
     private Column<ItemObjectModel, String> setUpResolverColumn() {
         ArrayList<String> options = new ArrayList<String>();
@@ -401,7 +390,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiHandler("addMarshalStrategyButton")
     public void onClickAddMarshalStrategyButton( final ClickEvent event ) {
         marshalStrategyDataProvider.getList().add(new ItemObjectModel("", "enter value", "enter resolver type", null));
-        this.isDirty = true;
     }
 
     private void configureMarshalingTable() {
@@ -452,7 +440,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
                     @Override
                         public void execute() {
                             item.setParameters(ddParametersPopup.getContent());
-                            isDirty = true;
                             marshalStrategyDataProvider.refresh();
                         }
                     }, item);
@@ -479,7 +466,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
                 if ( Window.confirm( Constants.INSTANCE.PromptForRemoval() ) ) {
                     marshalStrategyDataProvider.getList().remove( index );
-                    isDirty = true;
                 }
             }
         } );
@@ -501,7 +487,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiHandler("addEventListenersButton")
     public void onClickAddEventListenersButton( final ClickEvent event ) {
         eventListenersDataProvider.getList().add(new ItemObjectModel("", "enter value", "enter resolver type", null));
-        this.isDirty = true;
     }
 
     private void configureEventListenersTable() {
@@ -552,7 +537,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
                         @Override
                         public void execute() {
                             item.setParameters(ddParametersPopup.getContent());
-                            isDirty = true;
                             eventListenersDataProvider.refresh();
                         }
                     }, item);
@@ -579,7 +563,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
                 if ( Window.confirm( Constants.INSTANCE.PromptForRemoval() ) ) {
                     eventListenersDataProvider.getList().remove( index );
-                    isDirty = true;
                 }
             }
         } );
@@ -601,7 +584,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiHandler("addGlobalsButton")
     public void onClickAddGlobalsButton( final ClickEvent event ) {
         globalsDataProvider.getList().add(new ItemObjectModel("", "enter value", "enter resolver type", null));
-        this.isDirty = true;
     }
 
     private void configureGlobalsTable() {
@@ -667,7 +649,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
                         @Override
                         public void execute() {
                             item.setParameters(ddParametersPopup.getContent());
-                            isDirty = true;
                             globalsDataProvider.refresh();
                         }
                     }, item);
@@ -694,7 +675,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
                 if ( Window.confirm( Constants.INSTANCE.PromptForRemoval() ) ) {
                     globalsDataProvider.getList().remove( index );
-                    isDirty = true;
                 }
             }
         } );
@@ -717,7 +697,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiHandler("addWorkItemHandlersButton")
     public void onClickAddWorkItemHandlersButton( final ClickEvent event ) {
         workItemHandlersDataProvider.getList().add(new ItemObjectModel("", "enter value", "enter resolver type", null));
-        this.isDirty = true;
     }
 
     private void configureWorkItemHandlersTable() {
@@ -783,7 +762,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
                         @Override
                         public void execute() {
                             item.setParameters(ddParametersPopup.getContent());
-                            isDirty = true;
                             workItemHandlersDataProvider.refresh();
                         }
                     }, item);
@@ -810,7 +788,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
                 if ( Window.confirm( Constants.INSTANCE.PromptForRemoval() ) ) {
                     workItemHandlersDataProvider.getList().remove( index );
-                    isDirty = true;
                 }
             }
         } );
@@ -833,7 +810,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiHandler("addTaskEventListenersButton")
     public void onClickAddTaskEventListenersButton( final ClickEvent event ) {
         taskEventListenersDataProvider.getList().add(new ItemObjectModel("", "enter value", "enter resolver type", null));
-        this.isDirty = true;
     }
 
     private void configureTaskEventListenersTable() {
@@ -884,7 +860,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
                         @Override
                         public void execute() {
                             item.setParameters(ddParametersPopup.getContent());
-                            isDirty = true;
                             taskEventListenersDataProvider.refresh();
                         }
                     }, item);
@@ -911,7 +886,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
                 if ( Window.confirm( Constants.INSTANCE.PromptForRemoval() ) ) {
                     taskEventListenersDataProvider.getList().remove( index );
-                    isDirty = true;
                 }
             }
         } );
@@ -933,7 +907,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiHandler("addEnvironmentEntriesButton")
     public void onClickAddEnvironmentEntriesButton( final ClickEvent event ) {
         environmentEntriesDataProvider.getList().add(new ItemObjectModel("", "enter value", "enter resolver type", null));
-        this.isDirty = true;
     }
 
     private void configureEnvironmentEntriesTable() {
@@ -999,7 +972,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
                         @Override
                         public void execute() {
                             item.setParameters(ddParametersPopup.getContent());
-                            isDirty = true;
                             environmentEntriesDataProvider.refresh();
                         }
                     }, item);
@@ -1026,7 +998,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
                 if ( Window.confirm( Constants.INSTANCE.PromptForRemoval() ) ) {
                     environmentEntriesDataProvider.getList().remove( index );
-                    isDirty = true;
                 }
             }
         } );
@@ -1049,7 +1020,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiHandler("addConfigurationButton")
     public void onClickAddConfigurationButton( final ClickEvent event ) {
         configurationDataProvider.getList().add(new ItemObjectModel("", "enter value", "enter resolver type", null));
-        this.isDirty = true;
     }
 
     private void configureConfigurationTable() {
@@ -1115,7 +1085,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
                         @Override
                         public void execute() {
                             item.setParameters(ddParametersPopup.getContent());
-                            isDirty = true;
                             configurationDataProvider.refresh();
                         }
                     }, item);
@@ -1142,7 +1111,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
                 if ( Window.confirm( Constants.INSTANCE.PromptForRemoval() ) ) {
                     configurationDataProvider.getList().remove( index );
-                    isDirty = true;
                 }
             }
         } );
@@ -1166,7 +1134,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiHandler("addRequiredRolesButton")
     public void onClickAddRolesButton( final ClickEvent event ) {
         requiredRolesDataProvider.getList().add("");
-        this.isDirty = true;
     }
 
     private void configureRequiredRolesTable() {
@@ -1209,7 +1176,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
                 if ( Window.confirm( Constants.INSTANCE.PromptForRemoval() ) ) {
                     requiredRolesDataProvider.getList().remove( index );
-                    isDirty = true;
                 }
             }
         } );
@@ -1227,7 +1193,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiHandler("addRemoteableClassesButton")
     public void onClickAddRemoteableClassesButton( final ClickEvent event ) {
         remoteableClassesDataProvider.getList().add("");
-        this.isDirty = true;
     }
 
     private void configureRemoteableClassesTable() {
@@ -1270,7 +1235,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
                 if ( Window.confirm( Constants.INSTANCE.PromptForRemoval() ) ) {
                     remoteableClassesDataProvider.getList().remove( index );
-                    isDirty = true;
                 }
             }
         } );

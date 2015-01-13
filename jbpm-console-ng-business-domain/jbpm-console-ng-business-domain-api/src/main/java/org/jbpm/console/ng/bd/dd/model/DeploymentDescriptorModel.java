@@ -155,4 +155,94 @@ public class DeploymentDescriptorModel {
     public void setOverview(Overview overview) {
         this.overview = overview;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        DeploymentDescriptorModel that = (DeploymentDescriptorModel) o;
+
+        if (auditMode != null ? !auditMode.equals(that.auditMode) : that.auditMode != null) {
+            return false;
+        }
+        if (auditPersistenceUnitName != null ? !auditPersistenceUnitName.equals(that.auditPersistenceUnitName) : that.auditPersistenceUnitName != null) {
+            return false;
+        }
+        if (configuration != null ? !configuration.equals(that.configuration) : that.configuration != null) {
+            return false;
+        }
+        if (environmentEntries != null ? !environmentEntries.equals(that.environmentEntries) : that.environmentEntries != null) {
+            return false;
+        }
+        if (eventListeners != null ? !eventListeners.equals(that.eventListeners) : that.eventListeners != null) {
+            return false;
+        }
+        if (globals != null ? !globals.equals(that.globals) : that.globals != null) {
+            return false;
+        }
+        if (marshallingStrategies != null ? !marshallingStrategies.equals(that.marshallingStrategies) : that.marshallingStrategies != null) {
+            return false;
+        }
+        if (persistenceMode != null ? !persistenceMode.equals(that.persistenceMode) : that.persistenceMode != null) {
+            return false;
+        }
+        if (persistenceUnitName != null ? !persistenceUnitName.equals(that.persistenceUnitName) : that.persistenceUnitName != null) {
+            return false;
+        }
+        if (remotableClasses != null ? !remotableClasses.equals(that.remotableClasses) : that.remotableClasses != null) {
+            return false;
+        }
+        if (requiredRoles != null ? !requiredRoles.equals(that.requiredRoles) : that.requiredRoles != null) {
+            return false;
+        }
+        if (runtimeStrategy != null ? !runtimeStrategy.equals(that.runtimeStrategy) : that.runtimeStrategy != null) {
+            return false;
+        }
+        if (taskEventListeners != null ? !taskEventListeners.equals(that.taskEventListeners) : that.taskEventListeners != null) {
+            return false;
+        }
+        if (workItemHandlers != null ? !workItemHandlers.equals(that.workItemHandlers) : that.workItemHandlers != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = persistenceUnitName != null ? persistenceUnitName.hashCode() : 0;
+        result = ~~result;
+        result = 31 * result + (auditPersistenceUnitName != null ? auditPersistenceUnitName.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (auditMode != null ? auditMode.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (persistenceMode != null ? persistenceMode.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (runtimeStrategy != null ? runtimeStrategy.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (marshallingStrategies != null ? marshallingStrategies.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (eventListeners != null ? eventListeners.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (globals != null ? globals.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (workItemHandlers != null ? workItemHandlers.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (taskEventListeners != null ? taskEventListeners.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (environmentEntries != null ? environmentEntries.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (configuration != null ? configuration.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (requiredRoles != null ? requiredRoles.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (remotableClasses != null ? remotableClasses.hashCode() : 0);
+        result = ~~result;
+        return result;
+    }
 }
