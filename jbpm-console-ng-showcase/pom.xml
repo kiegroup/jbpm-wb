@@ -202,6 +202,16 @@
       </exclusions>
     </dependency>
 
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-process-runtime-admin-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-process-runtime-admin-backend</artifactId>
+    </dependency>
+
 
     <dependency>
       <groupId>org.jbpm</groupId>

@@ -78,13 +78,13 @@ public class ShowcaseEntryPoint {
 
     @Inject
     private Caller<KieWorkbenchSecurityService> kieSecurityService;
-    
+
     @Inject
     private Caller<PlaceManagerActivityService> pmas;
-    
+
     @Inject
     private ActivityBeansCache activityBeansCache;
-    
+
     @Inject
     private Caller<AppConfigService> appConfigService;
 
@@ -99,11 +99,11 @@ public class ShowcaseEntryPoint {
                 hideLoadingPopup();
             }
         } ).loadPolicy();
-        
-      List<String> allActivities = activityBeansCache.getActivitiesById();
-      pmas.call().initActivities(allActivities);
+
+        List<String> allActivities = activityBeansCache.getActivitiesById();
+        pmas.call().initActivities(allActivities);
     }
-    
+
     private void loadPreferences() {
         appConfigService.call( new RemoteCallback<Map<String, String>>() {
             @Override
@@ -186,12 +186,19 @@ public class ShowcaseEntryPoint {
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
+        result.add( MenuFactory.newSimpleItem( constants.Process_Instances_Admin() ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "Process Admin" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+
         return result;
     }
 
     private List<? extends MenuItem> getExperimentalViews() {
 
-    	final List<MenuItem> result = new ArrayList<MenuItem>( 4 );
+        final List<MenuItem> result = new ArrayList<MenuItem>( 4 );
 
 
         result.add( MenuFactory.newSimpleItem( "Grid Base Test" ).respondsWith( new Command() {

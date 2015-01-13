@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.client.i18n;
+package org.jbpm.console.ng.ht.admin.client.i18n;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Messages;
-import org.uberfire.workbench.model.menu.MenuItem;
 
 /**
  * This uses GWT to provide client side compile time resolving of locales. See:
@@ -28,65 +27,17 @@ import org.uberfire.workbench.model.menu.MenuItem;
  * Each method name matches up with a key in Constants.properties (the properties file can still be used on the server). To use
  * this, use <code>GWT.create(Constants.class)</code>.
  */
-public interface Constants extends Messages {
+public interface ProcessAdminConstants extends Messages {
 
-    Constants INSTANCE = GWT.create(Constants.class);
-
-    String Tasks_List();
-    
-    String Tasks_List_Admin();
-
-    String Dashboards();
-
-    String Process_Dashboard();
-
-    String Business_Dashboard();
-
-    String Process_Authoring();
-
-    String Authoring();
-
-    String Process_Management();
-
-    String Work();
-
-    String LogOut();
-
-    String Home();
-
-    String Process_Definitions();
-
-    String Process_Instances();
+    ProcessAdminConstants INSTANCE = GWT.create(ProcessAdminConstants.class);
 
     String Process_Instances_Admin();
 
-    String Deploy();
+    String Amount_Of_Tasks();
 
-    String Deployments();
+    String DeploymentId();
 
-    String newItem();
+    String ProcessId();
 
-    String Role();
-
-    String User();
-    
-    String Settings();
-    
-    String Users();
-
-    String Jobs();
-
-    String Pagination_For_Tables();
-
-    String Experimental_Grid();
-
-    String Experimental();
-
-    String Asset_Management();
-
-    String Logs();
-
-    String DeploymentDescriptor();
-
-
+    String Generate_Mock_Instances();
 }
