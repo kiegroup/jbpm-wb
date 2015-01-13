@@ -12,8 +12,4 @@ public interface DeploymentDescriptorView extends KieEditorView, IsWidget {
     void updateContent(final DeploymentDescriptorModel deploymentDescriptorModel);
 
     boolean confirmClose();
-
-    boolean isDirty();
-
-    void setNotDirty();
 }

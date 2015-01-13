@@ -54,6 +54,13 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
         view = baseView;
     }
 
+
+
+    //This is called after the View's content has been loaded
+    public void onAfterViewLoaded() {
+        setOriginalHash( model.hashCode() );
+    }
+
     @OnStartup
     public void onStartup( final ObservablePath path, final PlaceRequest place ) {
         ddEditorService.call().createIfNotExists(path);
@@ -76,7 +83,7 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
                 addSourcePage();
 
                 view.setContent( content );
-
+                onAfterViewLoaded();
                 view.hideBusyIndicator();
             }
         },
@@ -142,20 +149,10 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
         this.versionRecordManager.clear();
     }
 
-    @IsDirty
-    public boolean isDirty() {
-        if ( isReadOnly ) {
-            return false;
-        }
-        return ( view.isDirty() );
-    }
-
     @OnMayClose
     public boolean checkIfDirty() {
-        if ( isDirty() ) {
-            return view.confirmClose();
-        }
-        return true;
+        view.updateContent(model);
+        return super.mayClose( model.hashCode() );
     }
 
     @WorkbenchPartTitleDecoration
