@@ -47,6 +47,10 @@
   <inherits name="org.jbpm.console.ng.ht.forms.JbpmConsoleNGHumanTasksFormsClient"/>
   <inherits name="org.jbpm.console.ng.ht.forms.modeler.JbpmConsoleNGHumanTasksFormsModelerClient"/>
   <inherits name="org.jbpm.console.ng.ht.admin.JbpmConsoleNGHumanTasksAdminClient"/>
+  <!--
+  since ProcessRuntimeAdminAPI module does not include any classes exclude it
+  <inherits name="org.jbpm.console.ng.pr.admin.JbpmConsoleNGProcessRuntimeAdminAPI"/>
+  -->
   <inherits name="org.jbpm.console.ng.pr.admin.JbpmConsoleNGProcessRuntimeAdminClient"/>
   <inherits name="org.jbpm.console.ng.pr.JbpmConsoleNGProcessRuntimeClient"/>
   <inherits name="org.jbpm.console.ng.bd.JbpmConsoleNGBusinessDomainAPI"/>
