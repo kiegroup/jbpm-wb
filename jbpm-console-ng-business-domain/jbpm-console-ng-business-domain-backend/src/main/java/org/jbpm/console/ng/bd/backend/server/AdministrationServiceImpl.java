@@ -140,7 +140,7 @@ public class AdministrationServiceImpl implements AdministrationService {
             if ( repository != null ) {
                 repositories.add( repository );
             }
-            organizationalUnitService.createOrganizationalUnit( ou, ou + "@jbpm.org", repositories );
+            organizationalUnitService.createOrganizationalUnit( ou, ou + "@jbpm.org", null, repositories );
 
         } else {
             Collection<Repository> repositories = demoOrganizationalUnit.getRepositories();
