@@ -96,6 +96,19 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
 
     private Column actionsColumn;
 
+    private NavLink bulkAbortNavLink;
+    private NavLink bulkSignalNavLink;
+
+    private void controlBulkOperations() {
+        if (selectedProcessInstances != null && selectedProcessInstances.size() > 0) {
+            bulkAbortNavLink.setDisabled(false);
+            bulkSignalNavLink.setDisabled(false);
+        } else {
+            bulkAbortNavLink.setDisabled(true);
+            bulkSignalNavLink.setDisabled(true);
+        }
+    }
+
     @Override
     public void init(final ProcessInstanceListPresenter presenter) {
         List<String> bannedColumns = new ArrayList<String>();
@@ -186,6 +199,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
                                         selectedProcessInstances.remove(event.getValue());
                                         input.setChecked(false);
                                     }
+                                    controlBulkOperations();
                                     return DefaultSelectionEventManager.SelectAction.IGNORE;
                                 }
                             }
@@ -228,7 +242,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     private void initBulkActionsDropDown() {
         SplitDropdownButton bulkActions = new SplitDropdownButton();
         bulkActions.setText(constants.Bulk_Actions());
-        NavLink bulkAbortNavLink = new NavLink(constants.Bulk_Abort());
+        bulkAbortNavLink = new NavLink(constants.Bulk_Abort());
         bulkAbortNavLink.setIcon(IconType.REMOVE_SIGN);
         bulkAbortNavLink.addClickHandler(new ClickHandler() {
             @Override
@@ -239,7 +253,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
             }
         });
 
-        NavLink bulkSignalNavLink = new NavLink(constants.Bulk_Signal());
+        bulkSignalNavLink = new NavLink(constants.Bulk_Signal());
         bulkSignalNavLink.setIcon(IconType.BELL);
         bulkSignalNavLink.addClickHandler(new ClickHandler() {
             @Override
@@ -253,6 +267,8 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
         bulkActions.add(bulkAbortNavLink);
         bulkActions.add(bulkSignalNavLink);
         listGrid.getLeftToolbar().add(bulkActions);
+
+        controlBulkOperations();
     }
 
     private void initFiltersBar() {
