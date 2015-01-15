@@ -2,6 +2,8 @@ package org.jbpm.console.ng.ht.forms.client.display.providers;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -38,6 +40,19 @@ public class HumanTaskFormDisplayProviderImpl implements HumanTaskFormDisplayPro
                 taskDisplayers.add((HumanTaskFormDisplayer) displayerDef.getInstance());
             }
         }
+        Collections.sort( taskDisplayers, new Comparator<HumanTaskFormDisplayer>() {
+
+            @Override
+            public int compare( HumanTaskFormDisplayer o1, HumanTaskFormDisplayer o2 ) {
+                if ( o1.getPriority() < o2.getPriority() ) {
+                    return -1;
+                } else if ( o1.getPriority() > o2.getPriority() ) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        } );
     }
 
     @Override public void setup(final HumanTaskDisplayerConfig config, final FormDisplayerView view) {
