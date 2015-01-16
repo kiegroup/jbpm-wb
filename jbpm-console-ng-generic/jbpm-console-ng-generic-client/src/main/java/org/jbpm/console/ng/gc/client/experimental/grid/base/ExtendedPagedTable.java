@@ -17,14 +17,17 @@ package org.jbpm.console.ng.gc.client.experimental.grid.base;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.google.gwt.view.client.ProvidesKey;
 import org.jbpm.console.ng.ga.model.GenericSummary;
+import org.uberfire.ext.widgets.common.client.resources.UberfireSimplePagerResources;
 import org.uberfire.ext.widgets.common.client.tables.PagedTable;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.widgets.common.client.tables.UberfireSimplePager;
 
 /**
  *
@@ -50,6 +53,7 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
     }, gridPreferences);
 
     dataGrid.addColumnSortHandler(new AsyncHandler(dataGrid));
+    dataGrid.setHeight( "350px" );
 
   }
 
@@ -73,4 +77,17 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
     dataGrid.removeColumn(col);
   }
 
+  protected Widget makeWidget() {
+    return uiBinder.createAndBindUi( this );
+  }
+
+  @UiFactory
+  public UberfireSimplePager makeUberfireSimplePager () {
+    return new UberfireSimplePager(
+            UberfireSimplePager.TextLocation.CENTER,
+            UberfireSimplePagerResources.INSTANCE,
+            false,          //avoid pager FastForwardButton
+            100,
+            false );        //avoid pager LastPageButton
+  }
 }
