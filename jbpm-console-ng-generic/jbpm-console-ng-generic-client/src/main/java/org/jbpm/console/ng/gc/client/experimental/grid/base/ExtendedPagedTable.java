@@ -53,6 +53,7 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
     }, gridPreferences);
 
     dataGrid.addColumnSortHandler(new AsyncHandler(dataGrid));
+    dataGrid.setHeight(( pageSize * 40) + 36 + 15 + "px" );
 
   }
 
