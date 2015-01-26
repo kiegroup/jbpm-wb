@@ -69,11 +69,14 @@ public class DDEditorServiceImpl
         try {
             String deploymentContent = unmarshal(path, content).toXml();
 
+            Metadata currentMetadata = metadataService.getMetadata( path );
             ioService.write(Paths.convert(path),
                             deploymentContent,
                             metadataService.setUpAttributes(path,
                                                             metadata),
                             makeCommentedOption(comment));
+
+            fireMetadataSocialEvents( path, currentMetadata, metadata );
 
             return path;
         } catch (Exception e) {
