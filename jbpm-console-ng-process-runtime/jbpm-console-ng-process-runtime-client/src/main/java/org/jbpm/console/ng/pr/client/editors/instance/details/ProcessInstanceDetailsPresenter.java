@@ -62,10 +62,6 @@ public class ProcessInstanceDetailsPresenter {
 
         void displayNotification( String text );
 
-        HTML getCurrentActivitiesListBox();
-
-        HTML getActiveTasksListBox();
-
         HTML getProcessDefinitionIdText();
 
         HTML getStateText();
@@ -77,10 +73,6 @@ public class ProcessInstanceDetailsPresenter {
         HTML getProcessVersionText();
 
         void setProcessAssetPath( Path processAssetPath );
-
-        void setCurrentActiveNodes( List<NodeInstanceSummary> activeNodes );
-
-        void setCurrentCompletedNodes( List<NodeInstanceSummary> completedNodes );
 
         void setEncodedProcessSource( String encodedProcessSource );
 
@@ -128,26 +120,6 @@ public class ProcessInstanceDetailsPresenter {
         processSelected = null;
 
         view.getProcessDefinitionIdText().setText( processId );
-        dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
-            @Override
-            public void callback( List<NodeInstanceSummary> details ) {
-                view.setCurrentActiveNodes( details );
-                view.getCurrentActivitiesListBox().setText( "" );
-                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                for ( NodeInstanceSummary nis : details ) {
-                    safeHtmlBuilder.appendEscapedLines( nis.getTimestamp() + ": "
-                                                                + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType() + ") \n" );
-                }
-                view.getCurrentActivitiesListBox().setHTML( safeHtmlBuilder.toSafeHtml() );
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
-                return true;
-            }
-        } ).getProcessInstanceActiveNodes( Long.parseLong( processId ) );
 
         dataServices.call( new RemoteCallback<ProcessSummary>() {
             @Override
@@ -190,15 +162,6 @@ public class ProcessInstanceDetailsPresenter {
                     default:
                         break;
                 }
-                view.getActiveTasksListBox().setText( "" );
-                if (process.getActiveTasks() != null && !process.getActiveTasks().isEmpty()) {
-                    SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-
-                    for ( UserTaskSummary uts : process.getActiveTasks() ) {
-                        safeHtmlBuilder.appendEscapedLines( uts.getName() + " (" + uts.getStatus() +")  "+constants.Owner() +": " + uts.getOwner() +" \n" );
-                    }
-                    view.getActiveTasksListBox().setHTML( safeHtmlBuilder.toSafeHtml() );
-                }
                 view.getStateText().setText( statusStr );
                 processSelected = process;
                 changeStyleRow( Long.parseLong( processId ), processSelected.getProcessName(), processSelected.getProcessVersion(),
@@ -213,20 +176,6 @@ public class ProcessInstanceDetailsPresenter {
                 return true;
             }
         } ).getItem(new ProcessInstanceKey(Long.parseLong(processId)));
-
-        dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
-            @Override
-            public void callback( List<NodeInstanceSummary> details ) {
-                view.setCurrentCompletedNodes( details );
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
-                return true;
-            }
-        } ).getProcessInstanceCompletedNodes( Long.parseLong( processId ) );
 
         dataServices.call( new RemoteCallback<ProcessSummary>() {
             @Override
