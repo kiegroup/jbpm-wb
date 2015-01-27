@@ -15,7 +15,8 @@ public class UserTaskSummary extends GenericSummary {
     private String description;
     private String createdBy;
     private Date createdOn;
-    private Date activationTime;
+
+	private Date activationTime;
     private Date expirationTime;
     public UserTaskSummary() {
 
@@ -53,6 +54,22 @@ public class UserTaskSummary extends GenericSummary {
 		this.expirationTime = expirationTime;
 	}
 
+    public Long getTaskId() {
+		return taskId;
+	}
+
+	public void setTaskId(Long taskId) {
+		this.taskId = taskId;
+	}
+
+	public String getTaskName() {
+		return taskName;
+	}
+
+	public void setTaskName(String taskName) {
+		this.taskName = taskName;
+	}
+	
 	public Long getId() {
         return taskId;
     }

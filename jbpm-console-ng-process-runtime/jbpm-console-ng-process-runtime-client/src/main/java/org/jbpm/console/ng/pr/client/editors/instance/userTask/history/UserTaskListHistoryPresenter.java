@@ -29,10 +29,17 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
+import org.jbpm.console.ng.ht.forms.client.display.views.PopupFormDisplayerView;
+import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskDisplayerConfig;
+import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayProvider;
+import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.UserTaskSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.service.ProcessUserTasksService;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.paging.PageResponse;
 
 import com.google.gwt.core.client.GWT;
@@ -41,7 +48,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
-
 @Dependent
 public class UserTaskListHistoryPresenter extends AbstractListPresenter<UserTaskSummary> {
 
@@ -51,7 +57,17 @@ public class UserTaskListHistoryPresenter extends AbstractListPresenter<UserTask
 
         void init( UserTaskListHistoryPresenter presenter );
     }
+    @Inject
+    private PopupFormDisplayerView popupView;
+    
+    @Inject
+    private PlaceManager placeManager;
 
+
+    protected PlaceRequest place;
+    
+    @Inject
+    private HumanTaskFormDisplayProvider humanTaskFormDisplayProvider;
     @Inject
     private UserTaskListHistoryView view;
 
@@ -139,4 +155,12 @@ public class UserTaskListHistoryPresenter extends AbstractListPresenter<UserTask
         return processInstanceStatus;
     }
 
+    public void popupView(final long taskId){
+    	if (taskId != -1) {
+            TaskKey key = new TaskKey(taskId);
+            HumanTaskDisplayerConfig config = new HumanTaskDisplayerConfig(key);
+            humanTaskFormDisplayProvider.setup(config, popupView);
+        } 
+    }
+    
 }

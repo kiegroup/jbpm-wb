@@ -245,4 +245,6 @@ public interface Constants extends Messages {
     String User_Task_Owner();
     
     String User_Task_CreatedBy();
+    
+    String User_Task_Work();
 }

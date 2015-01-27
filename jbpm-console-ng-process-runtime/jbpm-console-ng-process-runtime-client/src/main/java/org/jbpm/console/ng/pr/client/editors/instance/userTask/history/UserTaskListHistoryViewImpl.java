@@ -153,7 +153,7 @@ public class UserTaskListHistoryViewImpl extends AbstractListView<UserTaskSummar
         Column dueDate = initTaskDueColumn();
         Column owner = initTaskActualownerIdColumn();
         Column createbyId = initTaskCreateByIdColumn();
-//        actionsColumn = initActionsColumn();
+        actionsColumn = initActionsColumn();
         List<ColumnMeta<UserTaskSummary>> columnMetas = new ArrayList<ColumnMeta<UserTaskSummary>>();
         columnMetas.add(new ColumnMeta<UserTaskSummary>(name, constants.Name()));
         columnMetas.add(new ColumnMeta<UserTaskSummary>(description, constants.User_Task_Description()));
@@ -162,7 +162,7 @@ public class UserTaskListHistoryViewImpl extends AbstractListView<UserTaskSummar
         columnMetas.add(new ColumnMeta<UserTaskSummary>(createbyId, constants.User_Task_CreatedBy()));
         columnMetas.add(new ColumnMeta<UserTaskSummary>(createdOn, constants.User_Task_CreatedOn()));
         columnMetas.add(new ColumnMeta<UserTaskSummary>(dueDate, constants.User_Task_DueDate()));
-//        columnMetas.add(new ColumnMeta<UserTaskSummary>(actionsColumn, constants.Actions()));
+        columnMetas.add(new ColumnMeta<UserTaskSummary>(actionsColumn, constants.Actions()));
        
         listGrid.addColumns(columnMetas);
     }
@@ -171,7 +171,7 @@ public class UserTaskListHistoryViewImpl extends AbstractListView<UserTaskSummar
         Column<UserTaskSummary, String> taskNameColumn = new Column<UserTaskSummary, String>(new TextCell()) {
             @Override
             public String getValue(UserTaskSummary object) {
-                return object.getName();
+                return object.getTaskName();
             }
         };
         taskNameColumn.setSortable(true);
@@ -265,7 +265,8 @@ public class UserTaskListHistoryViewImpl extends AbstractListView<UserTaskSummar
 
         cells.add(new UserTaskHistoryActionHasCell("User_Task_History", new Delegate<UserTaskSummary>() {
             @Override
-            public void execute(UserTaskSummary variable) {
+            public void execute(UserTaskSummary object) {
+            	presenter.popupView(object.getTaskId());
             }
         }));
 
@@ -281,7 +282,7 @@ public class UserTaskListHistoryViewImpl extends AbstractListView<UserTaskSummar
     }
 
     public void formClosed(@Observes BeforeClosePlaceEvent closed) {
-        if ("Edit Variable Popup".equals(closed.getPlace().getIdentifier())) {
+        if ("Popup Form Display".equals(closed.getPlace().getIdentifier())) {
             presenter.refreshGrid();
         }
     }
@@ -297,12 +298,14 @@ public class UserTaskListHistoryViewImpl extends AbstractListView<UserTaskSummar
                 public void render(Cell.Context context,
                 		UserTaskSummary value,
                                    SafeHtmlBuilder sb) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.editGridIcon());
+                	    if(value.getStatus().equals("Completed")){
+                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.detailsGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.User_Task_Log() + "'>");
+                        mysb.appendHtmlConstant("<span title='" + constants.User_Task_Work() + "'>");
                         mysb.append(imageProto.getSafeHtml());
                         mysb.appendHtmlConstant("</span>");
                         sb.append(mysb.toSafeHtml());
+                	    }
                 }
             };
         }
