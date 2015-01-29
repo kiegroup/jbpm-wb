@@ -15,11 +15,46 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.list;
 
-import com.github.gwtbootstrap.client.ui.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
+import org.jbpm.console.ng.gc.client.cell.longContentCell;
+import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
+import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
+import org.kie.api.runtime.process.ProcessInstance;
+import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
+import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.ButtonGroup;
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.NavLink;
+import com.github.gwtbootstrap.client.ui.SplitDropdownButton;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
-import com.google.gwt.cell.client.*;
+import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
+import com.google.gwt.cell.client.Cell;
+import com.google.gwt.cell.client.CheckboxCell;
+import com.google.gwt.cell.client.CompositeCell;
+import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.HasCell;
+import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Element;
@@ -39,28 +74,6 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
-import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
-import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
-import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
-import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.uberfire.client.mvp.PlaceStatus;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
-import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 @Dependent
 public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanceSummary, ProcessInstanceListPresenter>
@@ -511,7 +524,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
 
     private Column initDescriptionColumn() {
         // start time
-        Column<ProcessInstanceSummary, String> descriptionColumn = new Column<ProcessInstanceSummary, String>(new TextCell()) {
+        Column<ProcessInstanceSummary, String> descriptionColumn = new Column<ProcessInstanceSummary, String>(new longContentCell()) {
             @Override
             public String getValue(ProcessInstanceSummary object) {
                 return object.getProcessInstanceDescription();

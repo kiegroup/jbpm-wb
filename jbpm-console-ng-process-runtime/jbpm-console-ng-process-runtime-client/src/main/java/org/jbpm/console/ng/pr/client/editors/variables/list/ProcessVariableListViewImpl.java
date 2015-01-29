@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import org.jbpm.console.ng.gc.client.cell.longContentCell;
 
 @Dependent
 public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariableSummary, ProcessVariableListPresenter>
@@ -167,7 +168,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
 
     private Column<ProcessVariableSummary, ?> initProcessVariableValueColumn() {
         // Value.
-        Column<ProcessVariableSummary, String> valueColumn = new Column<ProcessVariableSummary, String>(new TextCell()) {
+        Column<ProcessVariableSummary, String> valueColumn = new Column<ProcessVariableSummary, String>(new longContentCell()) {
 
             @Override
             public String getValue(ProcessVariableSummary object) {
