@@ -15,17 +15,13 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskassignments;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.core.client.GWT;
+import com.github.gwtbootstrap.client.ui.*;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.bus.client.api.messaging.Message;
@@ -41,7 +37,6 @@ import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
-import org.uberfire.client.mvp.PlaceManager;
 
 @Dependent
 public class TaskAssignmentsPresenter {
@@ -57,6 +52,8 @@ public class TaskAssignmentsPresenter {
         Button getDelegateButton();
 
         TextBox getUserOrGroupText();
+
+        HelpBlock getUserOrGroupHelpBlock();
     }
 
     @Inject
@@ -89,7 +86,9 @@ public class TaskAssignmentsPresenter {
         taskServices.call( new RemoteCallback<Void>() {
             @Override
             public void callback( Void nothing ) {
-                view.displayNotification( "Task was succesfully delegated" );
+                view.displayNotification( "Task was successfully delegated" );
+                view.getDelegateButton().setActive( false );
+                view.getUserOrGroupHelpBlock().setText( Constants.INSTANCE.DelegationSuccessfully() );
                 taskRefreshed.fire( new TaskRefreshedEvent( currentTaskId ) );
                 refreshTaskPotentialOwners();
             }
@@ -98,8 +97,11 @@ public class TaskAssignmentsPresenter {
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
+                view.getDelegateButton().setActive( true );
+                view.getUserOrGroupHelpBlock().setText( Constants.INSTANCE.DelegationUnable() );
                 ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                 return true;
+
             }
         } ).delegate( currentTaskId, identity.getIdentifier(), entity );
     }
