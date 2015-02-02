@@ -135,23 +135,38 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
             if (((KModuleDeploymentUnitSummary) unitSummary).getMergeMode() != null) {
                 ((KModuleDeploymentUnit)unit).setMergeMode(MergeMode.valueOf(((KModuleDeploymentUnitSummary) unitSummary).getMergeMode()));
             }
-        }// add for vfs
-        logger.info("Deploying unit "+((KModuleDeploymentUnitSummary) unitSummary).getGroupId()+":"+((KModuleDeploymentUnitSummary) unitSummary).getArtifactId()+":"+((KModuleDeploymentUnitSummary) unitSummary).getVersion());
-        deploy(unit);
+        }
+        logger.info("Deploying unit "+ unitSummary.getId());
+        boolean deployed = deploy(unit);
+        if (!deployed) {
+          BuildResults error = prepareBuildResults(unitSummary, "Deployment of unit " + unitSummary.getId()
+                  + " failed due to it is already deployed!", BuildMessage.Level.ERROR);
+          buildResultsEvent.fire(error);
+          throw new DeploymentException("unit already deployed!", null);
+        }
     }else{
-        String[] gavElemes = unitSummary.getId().split(":");
-        GAV gav = new GAV(gavElemes[0], gavElemes[1], gavElemes[2]);
-        BuildResults buildResults = new BuildResults(gav);
-        BuildMessage message = new BuildMessage();
-        message.setLevel(BuildMessage.Level.ERROR);
-        message.setText("Deployment of unit " + gav + " failed: " + "unit already deployed! (override deployment: "+overrideDeploymentsEnabled+")");
-        buildResults.addBuildMessage(message);
-         buildResultsEvent.fire(buildResults);
+
+        BuildResults error = prepareBuildResults(unitSummary,
+              "Deployment of unit " + unitSummary.getId() + " failed: "
+               + "unit already deployed! (override deployment: "+overrideDeploymentsEnabled+")", BuildMessage.Level.ERROR);
+        buildResultsEvent.fire(error);
         throw new DeploymentException("unit already deployed!", null);
     }
   }
 
-  protected void deploy(DeploymentUnit unit) {
+  private BuildResults prepareBuildResults(DeploymentUnitSummary unitSummary, String messageText, BuildMessage.Level level) {
+    String[] gavElemes = unitSummary.getId().split(":");
+    GAV gav = new GAV(gavElemes[0], gavElemes[1], gavElemes[2]);
+    BuildResults buildResults = new BuildResults(gav);
+    BuildMessage message = new BuildMessage();
+    message.setLevel(BuildMessage.Level.ERROR);
+    message.setText(messageText);
+    buildResults.addBuildMessage(message);
+
+    return buildResults;
+  }
+
+  protected boolean deploy(DeploymentUnit unit) {
     if (deploymentService.getDeployedUnit(unit.getIdentifier()) == null) {
       String[] gavElemes = unit.getIdentifier().split(":");
       GAV gav = new GAV(gavElemes[0], gavElemes[1], gavElemes[2]);
@@ -159,6 +174,8 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
 
       try {
         deploymentService.deploy(unit);
+
+        return true;
       } catch (Exception e) {
         BuildMessage message = new BuildMessage();
         message.setLevel(BuildMessage.Level.ERROR);
@@ -169,6 +186,8 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         buildResultsEvent.fire(buildResults);
       }
     }
+
+    return false;
   }
 
   @Override
