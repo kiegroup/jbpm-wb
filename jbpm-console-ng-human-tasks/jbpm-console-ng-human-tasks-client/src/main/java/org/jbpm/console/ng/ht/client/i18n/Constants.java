@@ -180,4 +180,11 @@ public interface Constants extends Messages {
     String No_Actual_Owner();
     
     String Loading();
+
+    String DelegationUserInputRequired();
+
+    String DelegationUnable();
+
+    String DelegationSuccessfully();
+
 }
