@@ -125,7 +125,7 @@ public class TaskAssignmentsPresenter {
                         view.getDelegateButton().setEnabled( true );
                         view.getUserOrGroupText().setEnabled( true );
                     }
-                    
+
                 }
 
             }).getTaskDetails(currentTaskId);
@@ -158,6 +158,8 @@ public class TaskAssignmentsPresenter {
 
     public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
         this.currentTaskId = event.getTaskId();
+        view.getUserOrGroupHelpBlock().setText( "" );
+        view.getUserOrGroupText().setText( "" );
         refreshTaskPotentialOwners();
     }
 
