@@ -107,6 +107,10 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
 
     @Override
     public Long scheduleRequest(String commandName, Map<String, String> ctx) {
+        if (!validate(commandName)) {
+            throw new IllegalArgumentException("Unknown job type given " + commandName);
+        }
+
         CommandContext commandContext = null;
         if (ctx != null && !ctx.isEmpty()) {
             commandContext = new CommandContext(new HashMap<String, Object>(ctx));
@@ -116,6 +120,9 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
 
     @Override
     public Long scheduleRequest(String commandName, Date date, Map<String, String> ctx) {
+        if (!validate(commandName)) {
+            throw new IllegalArgumentException("Unknown job type given " + commandName);
+        }
         CommandContext commandContext = null;
         if (ctx != null && !ctx.isEmpty()) {
             commandContext = new CommandContext(new HashMap<String, Object>(ctx));
@@ -257,5 +264,14 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
     public RequestSummary getItem(RequestKey key) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    protected boolean validate(String command) {
+        try {
+            Class.forName(command);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 }

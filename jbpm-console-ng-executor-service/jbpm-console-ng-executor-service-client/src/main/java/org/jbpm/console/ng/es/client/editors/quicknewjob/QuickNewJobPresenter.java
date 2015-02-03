@@ -26,7 +26,9 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Focusable;
+import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
@@ -36,6 +38,7 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
@@ -116,6 +119,12 @@ public class QuickNewJobPresenter {
                 view.displayNotification( "Request Schedulled: " + requestId );
                 requestCreatedEvent.fire( new RequestChangedEvent( requestId ) );
                 placeManager.closePlace( place );
+            }
+        }, new ErrorCallback<Message>() {
+            @Override
+            public boolean error( Message message, Throwable throwable ) {
+                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                return true;
             }
         } ).scheduleRequest( jobType, dueDate, ctx );
 
