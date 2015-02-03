@@ -319,7 +319,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
 
         }
       });
-    }else if(filter.getOrderBy().equals("Artifact")){
+    }else if(filter.getOrderBy().equals("ArtifactId")){
       Collections.sort(unitsIds, new Comparator<KModuleDeploymentUnitSummary>() {
 
         @Override
@@ -338,7 +338,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         }
       });
     
-    }else if(filter.getOrderBy().equals("Group ID")){
+    }else if(filter.getOrderBy().equals("GroupId")){
       Collections.sort(unitsIds, new Comparator<KModuleDeploymentUnitSummary>() {
 
         @Override
@@ -376,7 +376,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         }
       });
     
-    }else if(filter.getOrderBy().equals("Kie Base Name")){
+    }else if(filter.getOrderBy().equals("KieBaseName")){
       Collections.sort(unitsIds, new Comparator<KModuleDeploymentUnitSummary>() {
 
         @Override
@@ -395,7 +395,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         }
       });
     
-    }else if(filter.getOrderBy().equals("Kie Session Name")){
+    }else if(filter.getOrderBy().equals("KieSessionName")){
       Collections.sort(unitsIds, new Comparator<KModuleDeploymentUnitSummary>() {
 
         @Override
@@ -414,7 +414,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         }
       });
     
-    }else if(filter.getOrderBy().equals("Runtime strategy")){
+    }else if(filter.getOrderBy().equals("Strategy")){
       Collections.sort(unitsIds, new Comparator<KModuleDeploymentUnitSummary>() {
 
         @Override

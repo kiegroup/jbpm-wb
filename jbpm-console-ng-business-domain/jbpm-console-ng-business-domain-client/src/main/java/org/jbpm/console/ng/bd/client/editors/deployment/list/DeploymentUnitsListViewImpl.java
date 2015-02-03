@@ -181,6 +181,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
             }
         };
         unitIdColumn.setSortable(true);
+        unitIdColumn.setDataStoreName("Deployment");
         return unitIdColumn;
     }
 
@@ -194,6 +195,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
             }
         };
         groupIdColumn.setSortable(true);
+        groupIdColumn.setDataStoreName("GroupId");
         return groupIdColumn;
     }
 
@@ -207,6 +209,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
             }
         };
         artifactIdColumn.setSortable(true);
+        artifactIdColumn.setDataStoreName("ArtifactId");
         return artifactIdColumn;
     }
 
@@ -220,6 +223,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
             }
         };
         versionColumn.setSortable(true);
+        versionColumn.setDataStoreName("Version");
         return versionColumn;
 
     }
@@ -237,6 +241,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return kbaseName;
             }
         };
+        kbaseColumn.setDataStoreName("KieBaseName");
         kbaseColumn.setSortable(true);
         return kbaseColumn;
     }
@@ -254,6 +259,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return ksessionName;
             }
         };
+        ksessionColumn.setDataStoreName("KieSessionName");
         ksessionColumn.setSortable(true);
         return ksessionColumn;
     }
@@ -268,7 +274,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
             }
         };
         strategyColumn.setSortable(true);
-
+        strategyColumn.setDataStoreName("Strategy");
         return strategyColumn;
     }
 
@@ -287,7 +293,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
             }
         };
         statusColumn.setSortable(true);
-
+        statusColumn.setDataStoreName("Status");
         return statusColumn;
     }
 
