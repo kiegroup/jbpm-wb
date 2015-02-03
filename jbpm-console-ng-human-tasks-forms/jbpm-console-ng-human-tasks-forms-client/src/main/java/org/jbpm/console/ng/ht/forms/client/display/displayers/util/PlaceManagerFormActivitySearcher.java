@@ -43,13 +43,8 @@ public class PlaceManagerFormActivitySearcher {
     private PlaceManager placeManager;
 
 
-    public void findFormActivityWidget( String name,
-                                            Map<String, String> params, HasWidgets widget ) {
-
-        if(params == null){
-            params = new HashMap<String, String>();
-        }
-        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(name + " Form", params);
+    public void findFormActivityWidget( String name, HasWidgets widget ) {
+        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(name, new HashMap<String, String>());
 
         final Panel container = (Panel) widget;
         if ( customContainers.get( container ) == null ) {

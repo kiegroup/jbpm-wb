@@ -16,10 +16,15 @@
 
 package org.jbpm.console.ng.ht.forms.client.display.displayers.process;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.ht.forms.client.display.displayers.util.PlaceManagerFormActivitySearcher;
-import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
@@ -55,29 +60,54 @@ public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessF
 
     @Override
     protected void initDisplayer() {
-        
+        JSONValue jsonValue = JSONParser.parseStrict( formContent );
+
+        JSONObject jsonObject = jsonValue.isObject();
+
+        if (jsonObject != null) {
+            formContainer.setWidth("100%");
+            formContainer.setHeight("400px");
+
+            JSONValue jsonDestination = jsonObject.get( "destination" );
+
+            if (jsonDestination == null) return;
+
+            String destination = jsonDestination.isString().stringValue();
+
+            JSONObject jsonParams = jsonObject.get( "params" ).isObject();
+
+            if (jsonParams == null) return;
+
+            Map<String, String> params = new HashMap<String, String>(  );
+
+            for (String key : jsonParams.keySet()) {
+                JSONValue value = jsonParams.get( key );
+                if (value.isString() != null) params.put( key, value.isString().stringValue() );
+            }
+
+            placeManagerFormActivitySearcher.findFormActivityWidget(destination, formContainer);
+            setFormParamsEvent.fire(new SetFormParamsEvent(params, false));
+        }
     }
 
     @Override
     public boolean supportsContent(String content) {
-        return content.contains("handledByPlaceManagerFormProvider");
+        JSONValue jsonValue = JSONParser.parseStrict( content );
+
+        JSONObject jsonObject;
+
+        if ((jsonObject = jsonValue.isObject()) == null) return false;
+
+        jsonValue = jsonObject.get( "handler" );
+
+        if (jsonValue.isString() == null) return false;
+
+        return jsonValue.isString().stringValue().equals( "handledByPlaceManagerFormProvider" );
     }
 
     @Override
     public int getPriority() {
         return 2;
-    }
-
-    public void onFormRender(@Observes RenderFormEvent event) {
-        String processId = (String)event.getParams().get("processId");
-        if (processId == null || processId.equals("") || !event.getParams().containsKey("TaskName") || !event.getParams().get("TaskName").equals("")) {
-            return;
-        }
-        
-        formContainer.setWidth("100%");
-        formContainer.setHeight("400px");
-        placeManagerFormActivitySearcher.findFormActivityWidget(processId, null, formContainer);
-        setFormParamsEvent.fire(new SetFormParamsEvent(event.getParams(), false));
     }
 
     @Override

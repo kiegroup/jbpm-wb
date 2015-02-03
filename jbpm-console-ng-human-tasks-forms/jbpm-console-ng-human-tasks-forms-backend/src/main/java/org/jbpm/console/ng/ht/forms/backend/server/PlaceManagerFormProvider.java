@@ -15,8 +15,8 @@
  */
 package org.jbpm.console.ng.ht.forms.backend.server;
 
+import com.google.gson.Gson;
 import org.jbpm.console.ng.ht.forms.service.PlaceManagerActivityService;
-import org.jbpm.console.ng.ht.model.events.RenderFormEvent;
 import org.jbpm.kie.services.impl.form.FormProvider;
 import org.jbpm.services.api.model.ProcessDefinition;
 import org.kie.api.task.model.Task;
@@ -34,9 +34,6 @@ import java.util.Map;
  */
 @ApplicationScoped
 public class PlaceManagerFormProvider implements FormProvider {
-
-    @Inject
-    private Event<RenderFormEvent> renderForm;
 
     private List<String> allActivities;
 
@@ -66,11 +63,12 @@ public class PlaceManagerFormProvider implements FormProvider {
         if (process != null) {
             params.put("processId", process.getId());
 
-            // TODO: change this for a correct implementation
-            assetManagementHack(process, renderContext, params);
-            if (allActivities.contains(process.getId() + " Form")) {
-                renderForm.fire(new RenderFormEvent(process.getId() + " Form", params));
-                return "handledByPlaceManagerFormProvider";
+            String destination = process.getId() + " Form";
+            if (allActivities.contains(destination)) {
+                // TODO: change this for a correct implementation
+                assetManagementHack(process, renderContext, params);
+
+                return getFormRenderingInfo( destination, params );
             }
         }
         return "";
@@ -97,13 +95,23 @@ public class PlaceManagerFormProvider implements FormProvider {
             params.put("processName", process.getName());
         }
 
-        if (allActivities.contains(taskName + " Form")) {
+        String destination = taskName + " Form";
+        if (allActivities.contains(destination)) {
             // TODO: change this for a correct implementation
             assetManagementHack(process, renderContext, params);
-            renderForm.fire(new RenderFormEvent(taskName, params));
-            return "handledByPlaceManagerFormProvider";
+
+            return getFormRenderingInfo( destination, params );
         }
         return "";
+    }
+
+    protected String getFormRenderingInfo( String destination, Map<String, String> params ) {
+        Map result = new HashMap(  );
+        result.put( "handler", "handledByPlaceManagerFormProvider" );
+        result.put( "destination", destination );
+        result.put( "params", params );
+        Gson gson = new Gson();
+        return gson.toJson( result );
     }
 
     protected void assetManagementHack(ProcessDefinition process, Map<String, Object> renderContext, Map<String, String> params) {
