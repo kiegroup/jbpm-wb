@@ -244,7 +244,7 @@ public class QuickNewJobViewImpl extends Composite implements QuickNewJobPresent
     @UiHandler("createButton")
     public void createButton( ClickEvent e ) {
         
-        if(jobNameText.getText() == null || jobNameText.getText().isEmpty()){
+        if(jobNameText.getText() == null || jobNameText.getText().trim().isEmpty()){
             jobNameControlGroup.setType(ControlGroupType.ERROR);
             jobNameHelpInline.setText(constants.The_Job_Must_Have_A_Name());
             return;
@@ -261,7 +261,7 @@ public class QuickNewJobViewImpl extends Composite implements QuickNewJobPresent
             jobDueDateControlGroup.setType(ControlGroupType.SUCCESS);
             
         }
-        if(jobTypeText.getText() == null || jobTypeText.getText().isEmpty()){
+        if(jobTypeText.getText() == null || jobTypeText.getText().trim().isEmpty()){
             jobTypeControlGroup.setType(ControlGroupType.ERROR);
             jobTypeHelpInline.setText(constants.The_Job_Must_Have_A_Type());
             return;
