@@ -91,17 +91,21 @@ public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
 
     @Override
     public boolean supportsContent(String content) {
-        JSONValue jsonValue = JSONParser.parseStrict( content );
+        try {
+            JSONValue jsonValue = JSONParser.parseStrict( content );
 
-        JSONObject jsonObject;
+            JSONObject jsonObject;
 
-        if ((jsonObject = jsonValue.isObject()) == null) return false;
+            if ((jsonObject = jsonValue.isObject()) == null) return false;
 
-        jsonValue = jsonObject.get( "handler" );
+            jsonValue = jsonObject.get( "handler" );
 
-        if (jsonValue.isString() == null) return false;
+            if (jsonValue.isString() == null) return false;
 
-        return jsonValue.isString().stringValue().equals( "handledByPlaceManagerFormProvider" );
+            return jsonValue.isString().stringValue().equals( "handledByPlaceManagerFormProvider" );
+        } catch ( Exception e ) {
+        }
+        return false;
     }
 
     public void complete() {
