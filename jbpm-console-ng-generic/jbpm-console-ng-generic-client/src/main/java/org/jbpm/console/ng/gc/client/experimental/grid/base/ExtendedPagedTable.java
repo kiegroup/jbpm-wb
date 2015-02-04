@@ -50,11 +50,10 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
       public Object getKey(T item) {
         return (item == null) ? null : item.getId();
       }
-    }, gridPreferences);
-
+    }, gridPreferences, false);
+    
     dataGrid.addColumnSortHandler(new AsyncHandler(dataGrid));
     dataGrid.setHeight(( pageSize * 40) + 36 + 15 + "px" );
-
   }
 
   public void setTooltip(int row, int column, String description) {
@@ -78,6 +77,7 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
   }
 
   protected Widget makeWidget() {
+    pageSizesSelector = createPageSizesToggleButton();
     return uiBinder.createAndBindUi( this );
   }
 
