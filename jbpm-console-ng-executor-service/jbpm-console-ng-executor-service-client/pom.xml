@@ -84,6 +84,11 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-widgets-commons</artifactId>
+    </dependency>    
+
     <!-- Errai UI -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
