@@ -16,17 +16,20 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskassignments;
 
-import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.*;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.ControlLabel;
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
+import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -52,7 +55,7 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
     @Inject
     @DataField
     public Label usersGroupsControlsLabel;
-    
+
     @Inject
     @DataField
     public TextBox userOrGroupText;
@@ -64,7 +67,11 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
     @Inject
     @DataField
     public Label usersGroupsControlsPanel;
-  
+
+
+    @Inject
+    @DataField
+    public HelpBlock userOrGroupHelpBlock;
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -76,20 +83,20 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
         this.presenter = presenter;
 
         userOrGroupLabel.setText(constants.Delegate_User());
-        detailsAccordionLabel.add( new HTMLPanel( constants.Details()) );
-        delegateButton.setText(constants.Delegate());
+        detailsAccordionLabel.add( new HTMLPanel( constants.Details() ) );
+        delegateButton.setText( constants.Delegate() );
         usersGroupsControlsLabel.setText(constants.Potential_Owners());
-        usersGroupsControlsPanel.setStyleName("");
+        usersGroupsControlsPanel.setStyleName( "" );
+        userOrGroupHelpBlock.setText( "" );
     }
 
     @EventHandler("delegateButton")
     public void delegateButton( ClickEvent e ) {
         String userOrGroup = userOrGroupText.getText();
-        if(!userOrGroup.equals("")){
+        if(userOrGroup.equals("")){
+            userOrGroupHelpBlock.setText( Constants.INSTANCE.DelegationUserInputRequired() );
+        }else {
             presenter.delegateTask( userOrGroup);
-            delegateButton.setEnabled(false);
-        }else{
-            displayNotification("Please enter a user or a group to delegate the task");
         }
     }
 
@@ -112,5 +119,11 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
     public TextBox getUserOrGroupText() {
         return userOrGroupText;
     }
-    
+
+    @Override
+    public HelpBlock getUserOrGroupHelpBlock() {
+        return userOrGroupHelpBlock;
+    }
+
+
 }
