@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
@@ -20,6 +21,7 @@ import org.jbpm.console.ng.ht.forms.display.view.FormDisplayerView;
 import org.jbpm.console.ng.ht.forms.service.FormServiceEntryPoint;
 import org.uberfire.mvp.Command;
 
+@ApplicationScoped
 public class HumanTaskFormDisplayProviderImpl implements HumanTaskFormDisplayProvider {
 
     @Inject

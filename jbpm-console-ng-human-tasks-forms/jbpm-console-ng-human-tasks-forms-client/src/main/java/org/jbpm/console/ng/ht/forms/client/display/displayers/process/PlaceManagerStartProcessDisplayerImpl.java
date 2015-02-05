@@ -124,6 +124,9 @@ public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessF
     }
     
     public void startProcessCallback(@Observes GetFormParamsEvent event){
+
+        if (processDefId == null || deploymentId == null) return;
+
         if(event.getAction().equals("startProcess")){
             sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
                     .startProcess(deploymentId, processDefId, event.getParams());

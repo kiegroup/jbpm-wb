@@ -15,32 +15,26 @@
  */
 package org.jbpm.console.ng.ht.forms.client.editors.taskform.generic;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Panel;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.ht.forms.client.display.views.EmbeddedFormDisplayView;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskDisplayerConfig;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayProvider;
-import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayer;
 import org.jbpm.console.ng.ht.forms.display.process.api.ProcessDisplayerConfig;
 import org.jbpm.console.ng.ht.forms.display.process.api.StartProcessFormDisplayProvider;
-import org.jbpm.console.ng.ht.forms.display.process.api.StartProcessFormDisplayer;
 import org.jbpm.console.ng.ht.forms.display.view.FormDisplayerView;
 import org.jbpm.console.ng.ht.forms.service.FormServiceEntryPoint;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.uberfire.mvp.Command;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import java.util.*;
-
 /**
  * @author salaboy
  */
-@Dependent
+@ApplicationScoped
 public class GenericFormDisplayPresenter {
 
     @Inject

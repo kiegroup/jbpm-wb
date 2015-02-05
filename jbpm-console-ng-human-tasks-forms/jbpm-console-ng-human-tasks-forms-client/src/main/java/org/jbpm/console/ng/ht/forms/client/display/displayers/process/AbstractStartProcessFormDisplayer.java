@@ -198,7 +198,25 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
         if (this.onClose != null) {
             this.onClose.execute();
         }
+        clearStatus();
     }
+
+    protected void clearStatus() {
+        formContent = null;
+        opener = null;
+        deploymentId = null;
+        processDefId = null;
+        processName = null;
+
+        container.clear();
+        formContainer.clear();
+        footerButtons.clear();
+
+        onClose = null;
+        onRefresh = null;
+        resizeListener = null;
+    }
+
 
     protected void eventListener(String origin, String request) {
         if (origin == null || !origin.endsWith("//" + opener)) {
