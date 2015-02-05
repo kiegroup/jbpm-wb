@@ -231,4 +231,18 @@ public interface Constants extends Messages {
     String Project();
     
     String Loading();
+    
+    String User_Task_Description();
+    
+    String User_Task_Status();
+    
+    String User_Task_CreatedOn();
+    
+    String User_Task_DueDate();
+    
+    String User_Task_History();
+    
+    String User_Task_Owner();
+    
+    String User_Task_CreatedBy();
 }
