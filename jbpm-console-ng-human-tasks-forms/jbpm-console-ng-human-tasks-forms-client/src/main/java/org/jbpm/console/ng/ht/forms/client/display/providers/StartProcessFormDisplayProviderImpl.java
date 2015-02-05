@@ -15,15 +15,14 @@ import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
 import org.jbpm.console.ng.ht.forms.display.process.api.StartProcessFormDisplayer;
 import org.jbpm.console.ng.ht.forms.display.view.FormDisplayerView;
 import org.jbpm.console.ng.ht.forms.service.FormServiceEntryPoint;
-import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.uberfire.mvp.Command;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.*;
 
-@Dependent
+@ApplicationScoped
 public class StartProcessFormDisplayProviderImpl implements StartProcessFormDisplayProvider {
 
     protected Constants constants = GWT.create(Constants.class);

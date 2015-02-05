@@ -6,8 +6,8 @@ import com.github.gwtbootstrap.client.ui.event.HiddenEvent;
 import com.github.gwtbootstrap.client.ui.event.HiddenHandler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
-import org.jbpm.console.ng.ht.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.console.ng.ht.forms.display.GenericFormDisplayer;
+import org.jbpm.console.ng.ht.forms.display.process.api.StartProcessFormDisplayProvider;
 import org.jbpm.console.ng.ht.forms.display.view.FormContentResizeListener;
 import org.jbpm.console.ng.ht.forms.display.view.FormDisplayerView;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
@@ -20,7 +20,7 @@ import javax.inject.Inject;
 @Dependent
 public class PopupFormDisplayerView extends BaseModal implements FormDisplayerView {
     @Inject
-    private StartProcessFormDisplayProviderImpl widgetPresenter;
+    private StartProcessFormDisplayProvider widgetPresenter;
 
     private Command onCloseCommand;
 

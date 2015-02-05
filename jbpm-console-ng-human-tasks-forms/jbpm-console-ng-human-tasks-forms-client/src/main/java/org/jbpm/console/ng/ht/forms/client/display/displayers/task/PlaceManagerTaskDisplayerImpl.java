@@ -138,17 +138,15 @@ public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
     }
 
     @Override
-    public void close() {
-        super.close();
-    }
-
-    @Override
     protected void completeFromDisplayer() {
         requestFormParamsEvent.fire(new RequestFormParamsEvent("completeTask"));
 
     }
 
     private void completeOrSaveFromEvent(@Observes GetFormParamsEvent event) {
+
+        if (taskId == -1) return;
+
         if (event.getAction().equals("completeTask")) {
             complete(event.getParams());
         } else if (event.getAction().equals("saveTask")) {

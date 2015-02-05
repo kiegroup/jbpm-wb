@@ -62,7 +62,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     public static final String ACTION_SAVE_TASK = "saveTask";
     public static final String ACTION_COMPLETE_TASK = "completeTask";
 
-    protected long taskId;
+    protected long taskId = -1;
     protected String formContent;
     protected String opener;
     protected String taskName;
@@ -355,6 +355,22 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
         if(this.onClose != null){
             this.onClose.execute();
         }
+        clearStatus();
+    }
+
+    protected void clearStatus() {
+        taskId = -1;
+        formContent = null;
+        opener = null;
+        taskName = null;
+        deploymentId = null;
+
+        buttonsContainer.clear();
+        formContainer.clear();
+
+        onClose = null;
+        onRefresh = null;
+        resizeListener = null;
     }
 
     protected void eventListener(String origin, String request) {
