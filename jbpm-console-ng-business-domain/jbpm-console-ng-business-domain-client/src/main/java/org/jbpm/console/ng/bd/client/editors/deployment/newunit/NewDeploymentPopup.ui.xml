@@ -42,6 +42,7 @@
                 <g:cell horizontalAlignment="left">
                     <b:Controls>
                         <b:TextBox ui:field="groupText" placeholder="{i18n.GroupID}" styleName="{style.fieldPosition}"/>
+                        <b:HelpBlock ui:field="groupTextErrorMessage" styleName="{style.fieldPosition}"/>
                     </b:Controls>
                 </g:cell>
             </g:HorizontalPanel>
@@ -56,6 +57,7 @@
                 <g:cell horizontalAlignment="left">
                     <b:Controls>
                         <b:TextBox ui:field="artifactText" placeholder="{i18n.Artifact}" styleName="{style.fieldPosition}"/>
+                        <b:HelpBlock ui:field="artifactTextErrorMessage" styleName="{style.fieldPosition}"/>
                     </b:Controls>
                 </g:cell>
             </g:HorizontalPanel>
@@ -68,9 +70,10 @@
                         <g:Label text="{i18n.Version}"/>
                     </b:ControlLabel>
                 </g:cell>
-                <g:cell horizontalAlignment="left">
+                <g:cell horizontalAlignment="left" >
                     <b:Controls>
                         <b:TextBox ui:field="versionText" placeholder="{i18n.Version}" styleName="{style.fieldPosition}"/>
+                        <b:HelpBlock ui:field="versionTextErrorMessage" styleName="{style.fieldPosition}" />
                     </b:Controls>
                 </g:cell>
             </g:HorizontalPanel>
@@ -132,6 +135,11 @@
                 </g:cell>
             </g:HorizontalPanel>
         </b:ControlGroup>
+
+        <b:ControlGroup ui:field="errorMessagesGroup">
+            <b:HelpBlock ui:field="errorMessages"/>
+        </b:ControlGroup>
+
     </g:HTMLPanel>
 
 </ui:UiBinder>

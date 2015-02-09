@@ -155,4 +155,7 @@ public interface Constants extends Messages {
 
     String OverrideEmpty();
 
+    String ShouldProvide(String value);
+
+    String UnableCreateDeploymentUnit();
 }
