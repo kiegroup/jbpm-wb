@@ -96,7 +96,10 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
               break;
           }
       }
-      autoDeployEnabled = Boolean.parseBoolean(supportRuntimeDeployment);
+      // if autodeploy enabled flag is explicitly set then skip checks of runtime supporting deployments
+      if (autoDeployEnabled) {
+        autoDeployEnabled = Boolean.parseBoolean(supportRuntimeDeployment);
+      }
   }
 
   @Override
