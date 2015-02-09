@@ -45,7 +45,9 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 
+import org.jbpm.console.ng.bd.client.editors.deployment.newunit.NewDeploymentPopup;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.client.resources.BusinessDomainImages;
@@ -53,7 +55,6 @@ import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 import org.jbpm.console.ng.bd.model.events.DeployedUnitChangedEvent;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
 
@@ -70,6 +71,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
     private BusinessDomainImages images = GWT.create(BusinessDomainImages.class);
 
+    @Inject
+    private NewDeploymentPopup newDeploymentPopup;
 
     @Override
     public void init(final DeploymentUnitsListPresenter presenter) {
@@ -137,7 +140,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
         newUnitButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                placeManager.goTo(new DefaultPlaceRequest("New Deployment"));
+                newDeploymentPopup.show();
             }
         });
 
