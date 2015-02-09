@@ -16,9 +16,9 @@
 
 package org.jbpm.console.ng.bd.client.editors.deployment.newunit;
 
-import com.github.gwtbootstrap.client.ui.ListBox;
-import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.*;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
+import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -57,10 +57,28 @@ public class NewDeploymentPopup extends BaseModal {
     public TextBox groupText;
 
     @UiField
+    public HelpBlock groupTextErrorMessage;
+
+    @UiField
+    public ControlGroup groupControlGroup;
+
+    @UiField
     public TextBox artifactText;
 
     @UiField
+    public HelpBlock artifactTextErrorMessage;
+
+    @UiField
+    public ControlGroup artifactControlGroup;
+
+    @UiField
     public TextBox versionText;
+
+    @UiField
+    public HelpBlock versionTextErrorMessage;
+
+    @UiField
+    public ControlGroup versionControlGroup;
 
     @UiField
     public TextBox kbaseNameText;
@@ -71,9 +89,15 @@ public class NewDeploymentPopup extends BaseModal {
    @UiField
     public ListBox strategyListBox;
 
-
     @UiField
     public ListBox mergeModeListBox;
+
+    @UiField
+    public HelpBlock errorMessages;
+
+    @UiField
+    public ControlGroup errorMessagesGroup;
+
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -95,7 +119,7 @@ public class NewDeploymentPopup extends BaseModal {
         setTitle( Constants.INSTANCE.New_Deployment_Unit() );
 
         add( uiBinder.createAndBindUi( this ) );
-        initListBoxes();
+        init();
         final GenericModalFooter footer = new GenericModalFooter();
         footer.addButton( Constants.INSTANCE.Deploy_Unit(),
                 new Command() {
@@ -110,6 +134,7 @@ public class NewDeploymentPopup extends BaseModal {
     }
 
     public void show() {
+        cleanForm();
         super.show();
     }
 
@@ -118,13 +143,18 @@ public class NewDeploymentPopup extends BaseModal {
     }
 
     private void okButton() {
-        String strategy = strategyListBox.getValue( strategyListBox.getSelectedIndex() );
-        String mergeMode = mergeModeListBox.getValue( mergeModeListBox.getSelectedIndex() );
-        deployUnit( groupText.getText(), artifactText.getText(), versionText.getText(),
-                kbaseNameText.getText(), kieSessionNameText.getText(), strategy, mergeMode );
+        if(validateForm()) {
+            String strategy = strategyListBox.getValue( strategyListBox.getSelectedIndex() );
+            String mergeMode = mergeModeListBox.getValue( mergeModeListBox.getSelectedIndex() );
+
+            deployUnit( groupText.getText(), artifactText.getText(), versionText.getText(),
+                    kbaseNameText.getText(), kieSessionNameText.getText(), strategy, mergeMode );
+        }
     }
 
-    public void initListBoxes() {
+    public void init() {
+        cleanForm();
+
         if(strategyListBox==null) strategyListBox=new ListBox(  );
         strategyListBox.addItem( Constants.INSTANCE.Singleton(), "SINGLETON" );
         strategyListBox.addItem( Constants.INSTANCE.Request(), "PER_REQUEST" );
@@ -151,6 +181,19 @@ public class NewDeploymentPopup extends BaseModal {
     }
 
     public void cleanForm() {
+        groupTextErrorMessage.setText( "" );
+        groupControlGroup.setType( ControlGroupType.NONE );
+
+        artifactTextErrorMessage.setText( "" );
+        artifactControlGroup.setType( ControlGroupType.NONE );
+
+        versionTextErrorMessage.setText( "" );
+        versionControlGroup.setType( ControlGroupType.NONE );
+
+        errorMessages.setText( "" );
+        errorMessagesGroup.setType( ControlGroupType.NONE );
+
+
         this.artifactText.setText( "" );
         this.groupText.setText( "" );
         this.versionText.setText( "" );
@@ -164,6 +207,36 @@ public class NewDeploymentPopup extends BaseModal {
         hide();
         super.hide();
     }
+
+    private boolean validateForm(){
+        boolean valid=true;
+        if(groupText.getText()!=null && groupText.getText().trim().length()==0){
+            groupControlGroup.setType( ControlGroupType.ERROR );
+            groupTextErrorMessage.setText( Constants.INSTANCE.ShouldProvide( Constants.INSTANCE.GroupID() ) );
+            valid=false;
+        }else{
+            groupControlGroup.setType( ControlGroupType.NONE );
+            groupTextErrorMessage.setText( "" );
+        }
+        if(artifactText.getText()!=null && artifactText.getText().trim().length()==0){
+            artifactControlGroup.setType( ControlGroupType.ERROR );
+            artifactTextErrorMessage.setText( Constants.INSTANCE.ShouldProvide( Constants.INSTANCE.Artifact() ) );
+            valid=false;
+        }else{
+            artifactControlGroup.setType( ControlGroupType.NONE );
+            artifactTextErrorMessage.setText( "" );
+        }
+        if(versionText.getText()!=null && versionText.getText().trim().length()==0){
+            versionControlGroup.setType( ControlGroupType.ERROR );
+            versionTextErrorMessage.setText( Constants.INSTANCE.ShouldProvide( Constants.INSTANCE.Version() ) );
+            valid=false;
+        }else{
+            versionControlGroup.setType( ControlGroupType.NONE );
+            versionTextErrorMessage.setText( "" );
+        }
+        return valid;
+    }
+
 
     public void deployUnit( final String group,
                             final String artifact,
@@ -189,8 +262,11 @@ public class NewDeploymentPopup extends BaseModal {
                                                           Throwable throwable ) {
                                         cleanForm();
                                         hideBusyIndicator();
-                                        closePopup();
-                                        displayNotification( "Error: Deploy failed, check Problems panel " );
+                                        //closePopup();
+                                        errorMessagesGroup.setType( ControlGroupType.ERROR );
+                                        errorMessages.setText( Constants.INSTANCE.UnableCreateDeploymentUnit() );
+
+                                        //displayNotification( Constants.INSTANCE.DeploymentFailed() );
                                         return true;
                                     }
                                 }
