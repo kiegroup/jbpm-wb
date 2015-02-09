@@ -52,11 +52,11 @@ public interface Constants extends Messages {
     String KieBaseName();
 
     String KieSessionName();
-    
+
     String Actions();
 
     String Refresh();
-    
+
     String Deployed_Units_Refreshed();
 
     String Unit();
@@ -138,6 +138,21 @@ public interface Constants extends Messages {
     String Active();
 
     String NotActive();
-    
+
     String Loading();
+
+    String Singleton();
+
+    String Request();
+
+    String ProcessInstance();
+
+    String MergeCollections();
+
+    String KeepAll();
+
+    String OverrideAll();
+
+    String OverrideEmpty();
+
 }
