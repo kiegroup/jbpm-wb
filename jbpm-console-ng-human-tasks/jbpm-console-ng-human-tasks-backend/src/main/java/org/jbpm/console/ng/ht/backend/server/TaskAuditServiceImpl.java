@@ -26,6 +26,7 @@ import org.jbpm.console.ng.ht.model.TaskEventKey;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.service.TaskAuditService;
 
+import org.jbpm.services.api.RuntimeDataService;
 import org.kie.internal.task.api.InternalTaskService;
 import org.uberfire.paging.PageResponse;
 
@@ -39,6 +40,9 @@ public class TaskAuditServiceImpl implements TaskAuditService {
 
     @Inject
     private org.jbpm.services.task.audit.service.TaskAuditService taskAuditService;
+
+    @Inject
+    private RuntimeDataService runtimeDataService;
 
     @Inject
     private InternalTaskService taskService;
@@ -67,7 +71,7 @@ public class TaskAuditServiceImpl implements TaskAuditService {
 
         org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filterCount,
                 filter.getOrderBy(), filter.isAscending());
-        List<TaskEventSummary> taskEventSummaries = TaskEventSummaryHelper.adaptCollection(taskAuditService.getAllTaskEvents(taskId, qf));
+        List<TaskEventSummary> taskEventSummaries = TaskEventSummaryHelper.adaptCollection(runtimeDataService.getTaskEvents(taskId, qf));
 
         response.setStartRowIndex(filter.getOffset());
         if (filter.getCount() != 0) {
