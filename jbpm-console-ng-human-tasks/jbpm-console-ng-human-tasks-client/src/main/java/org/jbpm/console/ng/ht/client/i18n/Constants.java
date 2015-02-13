@@ -115,8 +115,10 @@ public interface Constants extends Messages {
 
     String Advanced();
 
+    String Basic();
+
     String Refresh();
-    
+
     String Tasks_Refreshed();
 
     String Add_User();
@@ -128,11 +130,11 @@ public interface Constants extends Messages {
     String Remove_Group();
 
     String Assignments();
-    
+
     String Auto_Assign_To_Me();
 
     String Created_On();
-    
+
     String Text_Require();
 
     String UserOrGroup();
@@ -144,11 +146,11 @@ public interface Constants extends Messages {
     String Potential_Owners();
 
     String No_Potential_Owners();
-    
+
     String Add_TypeRole();
-        
+
     String Type_Role();
-       
+
     String Parent_Group();
 
     String Save();
@@ -166,19 +168,19 @@ public interface Constants extends Messages {
     String Show_Details();
 
     String Hide_Details();
-    
+
     String Task_Admin();
-    
+
     String Delegate_User();
-    
+
     String Reminder();
-    
+
     String Actual_Owner();
-    
+
     String Reminder_Details();
-    
+
     String No_Actual_Owner();
-    
+
     String Loading();
 
     String DelegationUserInputRequired();
@@ -186,5 +188,14 @@ public interface Constants extends Messages {
     String DelegationUnable();
 
     String DelegationSuccessfully();
+
+    String TaskCreatedWithId(String id);
+
+    String High();
+
+    String Medium();
+
+    String Low();
+
 
 }
