@@ -39,6 +39,7 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
+import org.jbpm.console.ng.ht.client.editors.quicknewtask.QuickNewTaskPopup;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
 import org.jbpm.console.ng.ht.model.TaskSummary;
@@ -86,6 +87,9 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
     private Button allFilterButton;
 
     private Button adminFilterButton;
+
+    @Inject
+    private QuickNewTaskPopup quickNewTaskPopup;
 
     @Override
     public void init(final TasksListGridPresenter presenter) {
@@ -299,7 +303,8 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
         newTaskButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                placeManager.goTo(new DefaultPlaceRequest("Quick New Task"));
+                quickNewTaskPopup.show();
+                //placeManager.goTo(new DefaultPlaceRequest("Quick New Task"));
             }
         });
         listGrid.getLeftToolbar().add(newTaskButton);
