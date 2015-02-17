@@ -158,4 +158,9 @@ public interface Constants extends Messages {
     String ShouldProvide(String value);
 
     String UnableCreateDeploymentUnit();
+
+    String Advanced();
+
+    String Basic();
+
 }

@@ -52,6 +52,14 @@ public class NewDeploymentPopup extends BaseModal {
             UiBinder<Widget, NewDeploymentPopup> {
 
     }
+    @UiField
+    public TabPanel tabPanel;
+
+    @UiField
+    public Tab basicTab;
+
+    @UiField
+    public Tab advancedTab;
 
     @UiField
     public TextBox groupText;
@@ -181,6 +189,10 @@ public class NewDeploymentPopup extends BaseModal {
     }
 
     public void cleanForm() {
+        tabPanel.selectTab( 0 );
+        basicTab.setActive( true );
+        advancedTab.setActive(false);
+
         groupTextErrorMessage.setText( "" );
         groupControlGroup.setType( ControlGroupType.NONE );
 
@@ -199,6 +211,7 @@ public class NewDeploymentPopup extends BaseModal {
         this.versionText.setText( "" );
         this.kbaseNameText.setText( "" );
         this.kieSessionNameText.setText( "" );
+
     }
 
 
@@ -215,7 +228,7 @@ public class NewDeploymentPopup extends BaseModal {
             groupTextErrorMessage.setText( Constants.INSTANCE.ShouldProvide( Constants.INSTANCE.GroupID() ) );
             valid=false;
         }else{
-            groupControlGroup.setType( ControlGroupType.NONE );
+            groupControlGroup.setType( ControlGroupType.SUCCESS );
             groupTextErrorMessage.setText( "" );
         }
         if(artifactText.getText()!=null && artifactText.getText().trim().length()==0){
@@ -223,7 +236,7 @@ public class NewDeploymentPopup extends BaseModal {
             artifactTextErrorMessage.setText( Constants.INSTANCE.ShouldProvide( Constants.INSTANCE.Artifact() ) );
             valid=false;
         }else{
-            artifactControlGroup.setType( ControlGroupType.NONE );
+            artifactControlGroup.setType( ControlGroupType.SUCCESS );
             artifactTextErrorMessage.setText( "" );
         }
         if(versionText.getText()!=null && versionText.getText().trim().length()==0){
@@ -231,9 +244,10 @@ public class NewDeploymentPopup extends BaseModal {
             versionTextErrorMessage.setText( Constants.INSTANCE.ShouldProvide( Constants.INSTANCE.Version() ) );
             valid=false;
         }else{
-            versionControlGroup.setType( ControlGroupType.NONE );
+            versionControlGroup.setType( ControlGroupType.SUCCESS );
             versionTextErrorMessage.setText( "" );
         }
+        if(!valid) tabPanel.selectTab( 0 );
         return valid;
     }
 
@@ -260,7 +274,7 @@ public class NewDeploymentPopup extends BaseModal {
                                     @Override
                                     public boolean error( Message message,
                                                           Throwable throwable ) {
-                                        cleanForm();
+                                        //cleanForm();
                                         hideBusyIndicator();
                                         //closePopup();
                                         errorMessagesGroup.setType( ControlGroupType.ERROR );
