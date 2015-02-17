@@ -66,6 +66,13 @@ public class QuickNewTaskPopup extends BaseModal {
 
     @UiField
     public TabPanel tabPanel;
+
+    @UiField
+    public Tab basicTab;
+
+    @UiField
+    public Tab advancedTab;
+
     @UiField
     public Button addUserButton;
 
@@ -204,6 +211,9 @@ public class QuickNewTaskPopup extends BaseModal {
 
     public void cleanForm() {
         tabPanel.selectTab( 0 );
+        basicTab.setActive( true );
+        advancedTab.setActive(false);
+
         userControlGroups.clear();
         groupControlGroups.clear();
         clearErrorMessages();
@@ -237,10 +247,14 @@ public class QuickNewTaskPopup extends BaseModal {
             tabPanel.selectTab( 0 );
             taskNameText.setFocus( true );
             taskNameText.setErrorLabel( taskNameHelpLabel );
-            errorMessages.setText( Constants.INSTANCE.Task_Must_Have_A_Name());
+
+            errorMessages.setText( Constants.INSTANCE.Task_Must_Have_A_Name() );
             errorMessagesGroup.setType( ControlGroupType.ERROR );
+            taskNameHelpLabel.setText( Constants.INSTANCE.Task_Must_Have_A_Name() );
             taskNameControlGroup.setType( ControlGroupType.ERROR );
             valid = false;
+        } else {
+            taskNameControlGroup.setType( ControlGroupType.SUCCESS );
         }
         return valid;
     }
@@ -359,6 +373,7 @@ public class QuickNewTaskPopup extends BaseModal {
         taskOperationsService.call( new RemoteCallback<Long>() {
             @Override
             public void callback( Long taskId ) {
+                cleanForm();
                 refreshNewTask( taskId, taskName, Constants.INSTANCE.TaskCreatedWithId( String.valueOf( taskId ) ) );
             }
         }, new ErrorCallback<Message>() {
@@ -366,7 +381,7 @@ public class QuickNewTaskPopup extends BaseModal {
             public boolean error( Message message, Throwable throwable ) {
                 errorMessages.setText( throwable.getMessage() );
                 errorMessagesGroup.setType( ControlGroupType.ERROR );
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                //ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                 return true;
             }
         } ).addQuickTask( taskName, priority, due, users, groups, identity.getIdentifier(), start, claim );
@@ -398,14 +413,14 @@ public class QuickNewTaskPopup extends BaseModal {
 
     public HorizontalPanel createHorizontalPanelForUserAndGroups( ControlLabel controlLabel, TextBox textBox, Button removeButton ) {
         HorizontalPanel horizontalPanel = new HorizontalPanel();
-        horizontalPanel.setWidth( "80%" );
+        horizontalPanel.setWidth( "90%" );
 
         horizontalPanel.add( controlLabel );
-        horizontalPanel.setCellWidth( controlLabel, "30%" );
+        horizontalPanel.setCellWidth( controlLabel, "10%" );
         horizontalPanel.setCellHorizontalAlignment( controlLabel, HasHorizontalAlignment.ALIGN_RIGHT );
 
         horizontalPanel.add( textBox );
-        horizontalPanel.setCellWidth( textBox, "60%" );
+        horizontalPanel.setCellWidth( textBox, "70%" );
         horizontalPanel.setCellHorizontalAlignment( textBox, HasHorizontalAlignment.ALIGN_CENTER );
 
         horizontalPanel.add( removeButton );

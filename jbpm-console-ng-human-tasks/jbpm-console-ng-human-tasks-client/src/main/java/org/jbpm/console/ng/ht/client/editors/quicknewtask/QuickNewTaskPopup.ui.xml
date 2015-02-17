@@ -25,84 +25,71 @@
 
     <ui:with field="i18n" type="org.jbpm.console.ng.ht.client.i18n.Constants"/>
     <ui:style>
-        .fieldPosition {
-            margin-left: 20px;
+        .mandatory-field {
+            color: red;
         }
-
 
     </ui:style>
 
     <g:HTMLPanel>
         <b:TabPanel ui:field="tabPanel">
-            <b:Tab heading="{i18n.Basic}">
-                <b:Fieldset>
-                    <b:ControlGroup ui:field="taskNameControlGroup">
-                        <g:HorizontalPanel>
-                            <g:cell width="190px" horizontalAlignment="right">
+            <b:Tab heading="{i18n.Basic}" active="true" ui:field="basicTab">
+                <b:Well>
+                    <b:Fieldset>
+                        <b:Form type="HORIZONTAL">
+                            <b:ControlGroup ui:field="taskNameControlGroup">
                                 <b:ControlLabel>
-                                    <g:Label text="{i18n.Task_Name}"/>
+                                    <span class="{style.mandatory-field}">*</span>
+                                    <ui:text from="{i18n.Task_Name}"/>
                                 </b:ControlLabel>
-                            </g:cell>
-                            <g:cell horizontalAlignment="left">
                                 <b:Controls>
-                                    <b:TextBox ui:field="taskNameText" styleName="{style.fieldPosition}"/>
-                                    <b:HelpBlock ui:field="taskNameHelpLabel" styleName="{style.fieldPosition}"/>
+                                    <b:TextBox ui:field="taskNameText"/>
+                                    <b:HelpBlock ui:field="taskNameHelpLabel"/>
                                 </b:Controls>
-                            </g:cell>
-                        </g:HorizontalPanel>
-                    </b:ControlGroup>
-                </b:Fieldset>
+                            </b:ControlGroup>
+                        </b:Form>
+                    </b:Fieldset>
+                </b:Well>
             </b:Tab>
             <b:Tab heading="{i18n.Advanced}" ui:field="advancedTab">
                 <!--b:Button ui:field="advancedButton" text="{i18n.Advanced}" styleName="page-header"/ -->
                 <!--b:Fieldset ui:field="advancedFieldset"-->
-                <b:Fieldset>
-                    <b:ControlGroup>
-                        <g:HorizontalPanel>
-                            <g:cell horizontalAlignment="right">
+                <b:Well>
+                    <b:Fieldset>
+                        <b:Form type="HORIZONTAL">
+                            <b:ControlGroup>
                                 <b:ControlLabel>
                                     <g:Label text="{i18n.Due_On}"/>
                                 </b:ControlLabel>
-                            </g:cell>
-                            <g:cell horizontalAlignment="left">
                                 <b:Controls>
-                                    <c:UTCDateBox ui:field="dueDate" styleName="{style.fieldPosition}"/>
+                                    <c:UTCDateBox ui:field="dueDate"/>
+                                    <c:UTCTimeBox ui:field="dueDateTime"/>
                                 </b:Controls>
-                            </g:cell>
-                            <g:cell horizontalAlignment="left">
-                                <b:Controls>
-                                    <c:UTCTimeBox ui:field="dueDateTime" styleName="{style.fieldPosition}"/>
-                                </b:Controls>
-                            </g:cell>
-                        </g:HorizontalPanel>
-                    </b:ControlGroup>
-                    <b:ControlGroup>
-                        <g:HorizontalPanel>
-                            <g:cell horizontalAlignment="right">
+                            </b:ControlGroup>
+                            <b:ControlGroup>
                                 <b:ControlLabel>
                                     <g:Label text="{i18n.Priority}"/>
                                 </b:ControlLabel>
-                            </g:cell>
-                            <g:cell horizontalAlignment="left">
                                 <b:Controls>
-                                    <b:ListBox ui:field="taskPriorityListBox" styleName="{style.fieldPosition}"/>
+                                    <b:ListBox ui:field="taskPriorityListBox"/>
                                 </b:Controls>
-                            </g:cell>
-                        </g:HorizontalPanel>
-                    </b:ControlGroup>
-                    <b:ControlGroup>
-                        <g:HorizontalPanel>
-                            <g:cell width="250px" horizontalAlignment="right">
-                                <b:Button ui:field="addUserButton" text="{i18n.Add_User}"/>
-                            </g:cell>
-                            <g:cell horizontalAlignment="left">
-                                <b:Button ui:field="addGroupButton" text="{i18n.Add_Group}"/>
-                            </g:cell>
-                        </g:HorizontalPanel>
-                    </b:ControlGroup>
-                    <g:FlowPanel ui:field="usersGroupsControlsPanel"/>
 
-                </b:Fieldset>
+                            </b:ControlGroup>
+                            <b:ControlGroup>
+                                <g:HorizontalPanel>
+                                    <g:cell width="250px" horizontalAlignment="right">
+                                        <b:Button ui:field="addUserButton" text="{i18n.Add_User}"/>
+                                    </g:cell>
+                                    <g:cell horizontalAlignment="left">
+                                        <b:Button ui:field="addGroupButton" text="{i18n.Add_Group}"/>
+                                    </g:cell>
+                                </g:HorizontalPanel>
+                            </b:ControlGroup>
+                            <g:FlowPanel ui:field="usersGroupsControlsPanel"/>
+                        </b:Form>
+
+                    </b:Fieldset>
+                </b:Well>
             </b:Tab>
         </b:TabPanel>
 

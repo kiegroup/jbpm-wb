@@ -110,4 +110,10 @@ public interface Constants extends Messages {
    
    String Loading();
 
+    String Advanced();
+
+    String Basic();
+
+    String The_Job_Must_Have_A_Valid_Type();
+
 }

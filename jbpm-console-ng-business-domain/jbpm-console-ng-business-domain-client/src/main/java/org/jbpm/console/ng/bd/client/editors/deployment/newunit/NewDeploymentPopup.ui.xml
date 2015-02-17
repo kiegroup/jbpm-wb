@@ -24,118 +24,103 @@
 
     <ui:with field="i18n" type="org.jbpm.console.ng.bd.client.i18n.Constants"/>
     <ui:style>
-        .fieldPosition {
-            margin-left: 20px;
+        .mandatory-field {
+            color: red;
         }
-
-
     </ui:style>
-
     <g:HTMLPanel>
-        <b:ControlGroup ui:field="groupControlGroup">
-            <g:HorizontalPanel>
-                <g:cell width="250px" horizontalAlignment="right">
-                    <b:ControlLabel for="groupText">
-                        <g:Label text="{i18n.GroupID}"/>
-                    </b:ControlLabel>
-                </g:cell>
-                <g:cell horizontalAlignment="left">
-                    <b:Controls>
-                        <b:TextBox ui:field="groupText" placeholder="{i18n.GroupID}" styleName="{style.fieldPosition}"/>
-                        <b:HelpBlock ui:field="groupTextErrorMessage" styleName="{style.fieldPosition}"/>
-                    </b:Controls>
-                </g:cell>
-            </g:HorizontalPanel>
-        </b:ControlGroup>
-        <b:ControlGroup ui:field="artifactControlGroup">
-            <g:HorizontalPanel>
-                <g:cell width="250px" horizontalAlignment="right">
-                    <b:ControlLabel for="artifactText">
-                        <g:Label text="{i18n.Artifact}"/>
-                    </b:ControlLabel>
-                </g:cell>
-                <g:cell horizontalAlignment="left">
-                    <b:Controls>
-                        <b:TextBox ui:field="artifactText" placeholder="{i18n.Artifact}" styleName="{style.fieldPosition}"/>
-                        <b:HelpBlock ui:field="artifactTextErrorMessage" styleName="{style.fieldPosition}"/>
-                    </b:Controls>
-                </g:cell>
-            </g:HorizontalPanel>
-        </b:ControlGroup>
+        <b:TabPanel ui:field="tabPanel">
+            <b:Tab heading="{i18n.Basic}" active="true" ui:field="basicTab">
+                <b:Well>
+                    <b:Fieldset>
+                        <b:Form type="HORIZONTAL">
 
-        <b:ControlGroup ui:field="versionControlGroup">
-            <g:HorizontalPanel>
-                <g:cell width="250px" horizontalAlignment="right">
-                    <b:ControlLabel for="versionText">
-                        <g:Label text="{i18n.Version}"/>
-                    </b:ControlLabel>
-                </g:cell>
-                <g:cell horizontalAlignment="left" >
-                    <b:Controls>
-                        <b:TextBox ui:field="versionText" placeholder="{i18n.Version}" styleName="{style.fieldPosition}"/>
-                        <b:HelpBlock ui:field="versionTextErrorMessage" styleName="{style.fieldPosition}" />
-                    </b:Controls>
-                </g:cell>
-            </g:HorizontalPanel>
-        </b:ControlGroup>
-        <g:Label text="{i18n.KIE_Configurations}" styleName="page-header"/>
-        <b:ControlGroup ui:field="strategyControlGroup">
-            <g:HorizontalPanel>
-                <g:cell width="250px" horizontalAlignment="right">
-                    <b:ControlLabel for="strategyListBox">
-                        <g:Label text="{i18n.RuntimeStrategy}"/>
-                    </b:ControlLabel>
-                </g:cell>
-                <g:cell horizontalAlignment="left">
-                    <b:Controls>
-                        <b:ListBox ui:field="strategyListBox" styleName="{style.fieldPosition}"/>
-                    </b:Controls>
-                </g:cell>
-            </g:HorizontalPanel>
-        </b:ControlGroup>
-        <b:ControlGroup ui:field="kbaseNameControlGroup">
-            <g:HorizontalPanel>
-                <g:cell width="250px" horizontalAlignment="right">
-                    <b:ControlLabel for="kbaseNameText">
-                        <g:Label text="{i18n.KieBaseName}"/>
-                    </b:ControlLabel>
-                </g:cell>
-                <g:cell horizontalAlignment="left">
-                    <b:Controls>
-                        <b:TextBox ui:field="kbaseNameText" placeholder="{i18n.KieBaseName}" styleName="{style.fieldPosition}"/>
-                    </b:Controls>
-                </g:cell>
-            </g:HorizontalPanel>
-        </b:ControlGroup>
-        <b:ControlGroup ui:field="kieSessionNameControlGroup">
-            <g:HorizontalPanel>
-                <g:cell width="250px" horizontalAlignment="right">
-                    <b:ControlLabel for="kieSessionNameText">
-                        <g:Label text="{i18n.KieSessionName}"/>
-                    </b:ControlLabel>
-                </g:cell>
-                <g:cell horizontalAlignment="left">
-                    <b:Controls>
-                        <b:TextBox ui:field="kieSessionNameText" placeholder="{i18n.KieSessionName}" styleName="{style.fieldPosition}"/>
-                    </b:Controls>
-                </g:cell>
-            </g:HorizontalPanel>
-        </b:ControlGroup>
-        <b:ControlGroup ui:field="mergeModeBoxControlGroup">
-            <g:HorizontalPanel>
-                <g:cell width="250px" horizontalAlignment="right">
-                    <b:ControlLabel for="mergeModeListBox">
-                        <g:Label text="{i18n.MergeMode}"/>
-                    </b:ControlLabel>
-                </g:cell>
-                <g:cell horizontalAlignment="left">
-                    <b:Controls>
-                        <b:ListBox ui:field="mergeModeListBox" styleName="{style.fieldPosition}"/>
-                    </b:Controls>
-                </g:cell>
-            </g:HorizontalPanel>
-        </b:ControlGroup>
+                            <b:ControlGroup ui:field="groupControlGroup">
+                                <b:ControlLabel for="groupText">
+                                    <span class="{style.mandatory-field}">*</span>
+                                    <ui:text from="{i18n.GroupID}"/>
+                                </b:ControlLabel>
 
+                                <b:Controls>
+                                    <b:TextBox ui:field="groupText" placeholder="{i18n.GroupID}"/>
+                                    <b:HelpBlock ui:field="groupTextErrorMessage" />
+                                </b:Controls>
+
+                            </b:ControlGroup>
+                            <b:ControlGroup ui:field="artifactControlGroup">
+                                <b:ControlLabel for="artifactText">
+                                    <span class="{style.mandatory-field}">*</span>
+                                    <ui:text from="{i18n.Artifact}"/>
+                                </b:ControlLabel>
+                                <b:Controls>
+                                    <b:TextBox ui:field="artifactText" placeholder="{i18n.Artifact}"/>
+                                    <b:HelpBlock ui:field="artifactTextErrorMessage" />
+                                </b:Controls>
+                            </b:ControlGroup>
+
+                            <b:ControlGroup ui:field="versionControlGroup">
+                                <b:ControlLabel for="versionText">
+                                    <span class="{style.mandatory-field}">*</span>
+                                    <ui:text from="{i18n.Version}"/>
+                                </b:ControlLabel>
+                                <b:Controls>
+                                    <b:TextBox ui:field="versionText" placeholder="{i18n.Version}"/>
+                                    <b:HelpBlock ui:field="versionTextErrorMessage" />
+                                </b:Controls>
+                            </b:ControlGroup>
+                        </b:Form>
+                    </b:Fieldset>
+                </b:Well>
+            </b:Tab>
+            <b:Tab heading="{i18n.Advanced}" ui:field="advancedTab">
+                <b:Well>
+                    <b:Fieldset>
+                        <b:Form type="HORIZONTAL">
+                            <g:Label text="{i18n.KIE_Configurations}" styleName="page-header"/>
+                            <b:ControlGroup ui:field="strategyControlGroup">
+                                <b:ControlLabel for="strategyListBox">
+                                    <ui:text from="{i18n.RuntimeStrategy}"/>
+                                </b:ControlLabel>
+                                <b:Controls>
+                                    <b:ListBox ui:field="strategyListBox" />
+                                </b:Controls>
+
+                            </b:ControlGroup>
+                            <b:ControlGroup ui:field="kbaseNameControlGroup">
+                                <b:ControlLabel for="kbaseNameText">
+                                    <ui:text from="{i18n.KieBaseName}"/>
+                                </b:ControlLabel>
+                                <b:Controls>
+                                    <b:TextBox ui:field="kbaseNameText" placeholder="{i18n.KieBaseName}"/>
+                                </b:Controls>
+
+                            </b:ControlGroup>
+                            <b:ControlGroup ui:field="kieSessionNameControlGroup">
+
+                                <b:ControlLabel for="kieSessionNameText">
+                                    <ui:text from="{i18n.KieSessionName}"/>
+                                </b:ControlLabel>
+
+                                <b:Controls>
+                                    <b:TextBox ui:field="kieSessionNameText" placeholder="{i18n.KieSessionName}"/>
+                                </b:Controls>
+
+                            </b:ControlGroup>
+                            <b:ControlGroup ui:field="mergeModeBoxControlGroup">
+                                <b:ControlLabel for="mergeModeListBox">
+                                    <ui:text from="{i18n.MergeMode}"/>
+                                </b:ControlLabel>
+
+                                <b:Controls>
+                                    <b:ListBox ui:field="mergeModeListBox" />
+                                </b:Controls>
+
+                            </b:ControlGroup>
+                        </b:Form>
+                    </b:Fieldset>
+                </b:Well>
+            </b:Tab>
+        </b:TabPanel>
         <b:ControlGroup ui:field="errorMessagesGroup">
             <b:HelpBlock ui:field="errorMessages"/>
         </b:ControlGroup>
