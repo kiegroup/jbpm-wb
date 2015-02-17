@@ -25,6 +25,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.jbpm.console.ng.es.client.editors.quicknewjob.QuickNewJobPopup;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
@@ -92,6 +93,9 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
     private Event<NotificationEvent> notification;
 
     private List<RequestSummary> selectedRequestSummary = new ArrayList<RequestSummary>();
+
+    @Inject
+    private QuickNewJobPopup quickNewJobPopup;
 
     @Override
     public void init(final RequestListPresenter presenter ) {
@@ -363,7 +367,8 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         newJobNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-            	placeManager.goTo( new DefaultPlaceRequest( "Quick New Job" ) );
+            	//placeManager.goTo( new DefaultPlaceRequest( "Quick New Job" ) );
+                quickNewJobPopup.show();
             }
         });
 
