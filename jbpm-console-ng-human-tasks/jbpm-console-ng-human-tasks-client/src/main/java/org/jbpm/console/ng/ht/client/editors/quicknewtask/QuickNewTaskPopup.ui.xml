@@ -28,6 +28,9 @@
         .mandatory-field {
             color: red;
         }
+        .fieldCellWidth {
+            width: 50%;
+        }
     </ui:style>
 
     <g:HTMLPanel>
@@ -60,9 +63,9 @@
                                 <b:ControlLabel>
                                     <g:Label text="{i18n.Due_On}"/>
                                 </b:ControlLabel>
-                                <b:Controls styleName="controls row-fluid">
-                                    <c:UTCDateBox ui:field="dueDate" styleName="span3"/>
-                                    <c:UTCTimeBox ui:field="dueDateTime" styleName="span2"/>
+                                <b:Controls styleName="controls row-fluid {style.fieldCellWidth}">
+                                    <c:UTCDateBox ui:field="dueDate" styleName="span5"/>
+                                    <c:UTCTimeBox ui:field="dueDateTime" styleName="span3"/>
                                 </b:Controls>
                             </b:ControlGroup>
                             <b:ControlGroup>
