@@ -54,10 +54,10 @@
                                 <bootstrap:ControlLabel for="jobDueDate">
                                     <ui:text from="{i18n.Due_On}"/>
                                 </bootstrap:ControlLabel>
-                                <bootstrap:Controls>
-                                    <c:UTCDateBox ui:field="jobDueDate"/>
-                                    <c:UTCTimeBox ui:field="jobDueDateTime" visibleLength="10"/>
-                                    <bootstrap:HelpInline ui:field="jobDueDateHelpInline"/>
+                                <bootstrap:Controls styleName="controls row-fluid">
+                                    <c:UTCDateBox ui:field="jobDueDate" styleName="span3"/>
+                                    <c:UTCTimeBox ui:field="jobDueDateTime" visibleLength="10" styleName="span2"/>
+                                    <bootstrap:HelpBlock ui:field="jobDueDateHelpBlock"/>
                                 </bootstrap:Controls>
                             </bootstrap:ControlGroup>
 
