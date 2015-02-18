@@ -24,23 +24,15 @@ import com.google.gwt.cell.client.*;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.cellview.client.*;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.client.util.ResizableHeader;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
@@ -50,7 +42,6 @@ import org.jbpm.console.ng.gc.client.util.UTCDateBox;
 import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
 
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -97,7 +88,7 @@ public class QuickNewJobPopup extends BaseModal {
     public UTCTimeBox jobDueDateTime;
 
     @UiField
-    HelpInline jobDueDateHelpInline;
+    HelpBlock jobDueDateHelpBlock;
 
     @UiField
     public ControlGroup jobTypeControlGroup;
@@ -226,7 +217,7 @@ public class QuickNewJobPopup extends BaseModal {
         jobNameControlGroup.setType( ControlGroupType.NONE );
         jobNameHelpInline.setText( "" );
         jobDueDateControlGroup.setType( ControlGroupType.NONE );
-        jobDueDateHelpInline.setText( "" );
+        jobDueDateHelpBlock.setText( "" );
         jobTypeControlGroup.setType( ControlGroupType.NONE );
         jobTypeHelpInline.setText( "" );
         jobRetriesControlGroup.setType( ControlGroupType.NONE );
@@ -255,7 +246,7 @@ public class QuickNewJobPopup extends BaseModal {
 
         if ( UTCDateBox.utc2date( jobDueDate.getValue() + jobDueDateTime.getValue() ).before( new Date() ) ) {
             jobDueDateControlGroup.setType( ControlGroupType.ERROR );
-            jobDueDateHelpInline.setText( Constants.INSTANCE.The_Job_Must_Have_A_Due_Date_In_The_Future() );
+            jobDueDateHelpBlock.setText( Constants.INSTANCE.The_Job_Must_Have_A_Due_Date_In_The_Future() );
             valid = false;
         } else {
             jobDueDateControlGroup.setType( ControlGroupType.SUCCESS );

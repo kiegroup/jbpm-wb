@@ -28,7 +28,6 @@
         .mandatory-field {
             color: red;
         }
-
     </ui:style>
 
     <g:HTMLPanel>
@@ -61,9 +60,9 @@
                                 <b:ControlLabel>
                                     <g:Label text="{i18n.Due_On}"/>
                                 </b:ControlLabel>
-                                <b:Controls>
-                                    <c:UTCDateBox ui:field="dueDate"/>
-                                    <c:UTCTimeBox ui:field="dueDateTime"/>
+                                <b:Controls styleName="controls row-fluid">
+                                    <c:UTCDateBox ui:field="dueDate" styleName="span3"/>
+                                    <c:UTCTimeBox ui:field="dueDateTime" styleName="span2"/>
                                 </b:Controls>
                             </b:ControlGroup>
                             <b:ControlGroup>
