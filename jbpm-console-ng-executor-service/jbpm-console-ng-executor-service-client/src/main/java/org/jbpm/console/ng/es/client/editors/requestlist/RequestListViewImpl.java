@@ -26,6 +26,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jbpm.console.ng.es.client.editors.quicknewjob.QuickNewJobPopup;
+import org.jbpm.console.ng.es.client.editors.servicesettings.JobServiceSettingsPopup;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
@@ -96,6 +97,9 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
 
     @Inject
     private QuickNewJobPopup quickNewJobPopup;
+
+    @Inject
+    private JobServiceSettingsPopup jobServiceSettingsPopup;
 
     @Override
     public void init(final RequestListPresenter presenter ) {
@@ -377,7 +381,8 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         settingsNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-            	placeManager.goTo( new DefaultPlaceRequest( "Job Service Settings" ) );
+                jobServiceSettingsPopup.show();
+                //placeManager.goTo( new DefaultPlaceRequest( "Job Service Settings" ) );
             }
         });
 

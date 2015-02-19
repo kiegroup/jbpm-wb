@@ -213,7 +213,9 @@ public class QuickNewJobPopup extends BaseModal {
         jobRetriesNumber.setText( "0" );
 
         dataProvider.getList().clear();
+    }
 
+    private void cleanErrorMessages(){
         jobNameControlGroup.setType( ControlGroupType.NONE );
         jobNameHelpInline.setText( "" );
         jobDueDateControlGroup.setType( ControlGroupType.NONE );
@@ -222,9 +224,7 @@ public class QuickNewJobPopup extends BaseModal {
         jobTypeHelpInline.setText( "" );
         jobRetriesControlGroup.setType( ControlGroupType.NONE );
         jobRetriesHelpInline.setText( "" );
-
     }
-
 
     public void closePopup() {
         cleanForm();
@@ -234,7 +234,7 @@ public class QuickNewJobPopup extends BaseModal {
 
     private boolean validateForm() {
         boolean valid = true;
-        clearErrorMessages();
+        cleanErrorMessages();
         if ( jobNameText.getText() == null || jobNameText.getText().trim().isEmpty() ) {
             jobNameControlGroup.setType( ControlGroupType.ERROR );
             jobNameHelpInline.setText( Constants.INSTANCE.The_Job_Must_Have_A_Name() );
@@ -314,13 +314,6 @@ public class QuickNewJobPopup extends BaseModal {
 
     public void addRow( RequestParameterSummary parameter ) {
         dataProvider.getList().add( parameter );
-    }
-
-
-    private void clearErrorMessages() {
-        errorMessages.setText( "" );
-        jobNameHelpInline.setText( Constants.INSTANCE.The_Job_Must_Have_A_Name() );
-
     }
 
     private void initGridColumns() {

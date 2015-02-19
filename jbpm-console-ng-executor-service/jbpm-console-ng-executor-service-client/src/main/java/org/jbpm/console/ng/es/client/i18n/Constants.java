@@ -30,7 +30,7 @@ import org.uberfire.workbench.model.menu.MenuItem;
  */
 public interface Constants extends Messages {
 
-    Constants INSTANCE = GWT.create(Constants.class);
+    Constants INSTANCE = GWT.create( Constants.class );
 
     String Queued();
 
@@ -92,28 +92,36 @@ public interface Constants extends Messages {
 
     String No_Jobs_Found();
 
-   String The_Job_Must_Have_A_Name();
+    String The_Job_Must_Have_A_Name();
 
-   String The_Job_Must_Have_A_Due_Date_In_The_Future();
+    String The_Job_Must_Have_A_Due_Date_In_The_Future();
 
-   String The_Job_Must_Have_A_Type();
+    String The_Job_Must_Have_A_Type();
 
-   String The_Job_Must_Have_A_Positive_Number_Of_Reties();
+    String The_Job_Must_Have_A_Positive_Number_Of_Reties();
 
-   String Please_Provide_A_Valid_Frequency();
+    String Please_Provide_A_Valid_Frequency();
 
-   String Please_Provide_The_Number_Of_Executors();
+    String Please_Provide_The_Number_Of_Executors();
 
-   String Stop();
+    String Please_Provide_A_Valid_Number_Of_Executors();
 
-   String Start();
-   
-   String Loading();
+    String Stop();
+
+    String Start();
+
+    String Loading();
 
     String Advanced();
 
     String Basic();
 
     String The_Job_Must_Have_A_Valid_Type();
+
+    String ServiceStarted();
+
+    String ServiceStopped();
+
+    String Job_Service_Settings();
 
 }
