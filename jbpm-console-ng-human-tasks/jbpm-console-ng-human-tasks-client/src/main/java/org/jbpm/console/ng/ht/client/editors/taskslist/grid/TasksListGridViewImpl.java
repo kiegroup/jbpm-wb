@@ -304,7 +304,6 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             @Override
             public void onClick(ClickEvent event) {
                 quickNewTaskPopup.show();
-                //placeManager.goTo(new DefaultPlaceRequest("Quick New Task"));
             }
         });
         listGrid.getLeftToolbar().add(newTaskButton);
