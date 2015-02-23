@@ -50,6 +50,7 @@ public class AssetMgmtDeploymentUnitProvider implements DeploymentUnitProvider<D
 
                         KModuleDeploymentUnit unit = new KModuleDeploymentUnit(assetmgmtProps.getProperty("groupId"),
                                 assetmgmtProps.getProperty("artifactId"), assetmgmtProps.getProperty("version"));
+                        unit.addAttribute("sync", "false");
                         units.add(unit);
                         logger.info("Found guvnor asset management deployment unit {} attempting to deploy it", unit);
                     }
