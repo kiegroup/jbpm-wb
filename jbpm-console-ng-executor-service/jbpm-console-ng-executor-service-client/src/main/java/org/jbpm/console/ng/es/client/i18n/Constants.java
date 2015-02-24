@@ -124,4 +124,11 @@ public interface Constants extends Messages {
 
     String Job_Service_Settings();
 
+    String Number_Of_Attempted_Retries();
+    String Execution_Parameters();
+    String Exceptions_Occurred();
+    String Ok();
+    String Job_Request_Details();
+
+
 }

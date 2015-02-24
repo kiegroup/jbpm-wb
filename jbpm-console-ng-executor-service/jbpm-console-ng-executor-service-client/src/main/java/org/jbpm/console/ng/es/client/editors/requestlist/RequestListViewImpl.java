@@ -25,6 +25,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.jbpm.console.ng.es.client.editors.jobdetails.JobDetailsPopup;
 import org.jbpm.console.ng.es.client.editors.quicknewjob.QuickNewJobPopup;
 import org.jbpm.console.ng.es.client.editors.servicesettings.JobServiceSettingsPopup;
 import org.jbpm.console.ng.es.client.i18n.Constants;
@@ -94,6 +95,9 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
     private Event<NotificationEvent> notification;
 
     private List<RequestSummary> selectedRequestSummary = new ArrayList<RequestSummary>();
+
+    @Inject
+    private JobDetailsPopup jobDetailsPopup;
 
     @Inject
     private QuickNewJobPopup quickNewJobPopup;
@@ -457,9 +461,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         cells.add( new ActionHasCell( "Details", allStatuses, new Delegate<RequestSummary>() {
             @Override
             public void execute( RequestSummary job ) {
-                DefaultPlaceRequest request = new DefaultPlaceRequest( "Job Request Details" );
-                request.addParameter( "requestId", String.valueOf( job.getJobId() ) );
-                placeManager.goTo( request );
+                jobDetailsPopup.show(String.valueOf( job.getJobId() ));
             }
         } ) );
 
