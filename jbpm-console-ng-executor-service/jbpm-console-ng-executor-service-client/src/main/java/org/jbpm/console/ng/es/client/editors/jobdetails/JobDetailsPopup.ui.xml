@@ -42,7 +42,7 @@
                         <ui:text from="{i18n.Execution_Parameters}"/>
                     </b:ControlLabel>
                     <b:Controls>
-                        <b:DataGrid ui:field="executionParametersGrid">
+                        <b:DataGrid ui:field="executionParametersGrid" addStyleNames="table table-bordered table-striped table-hover">
                         </b:DataGrid>
                     </b:Controls>
                 </b:ControlGroup>
