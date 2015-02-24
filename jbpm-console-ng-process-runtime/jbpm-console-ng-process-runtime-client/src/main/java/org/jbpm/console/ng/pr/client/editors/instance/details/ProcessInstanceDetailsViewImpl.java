@@ -58,10 +58,6 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
     @Inject
     @DataField
-    public HTML currentActivitiesListBox;
-
-    @Inject
-    @DataField
     public Label processDefinitionIdLabel;
 
     @Inject
@@ -75,18 +71,6 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     @Inject
     @DataField
     public Label stateLabel;
-
-    @Inject
-    @DataField
-    public Label currentActivitiesListLabel;
-
-    @Inject
-    @DataField
-    public HTML activeTasksListBox;
-
-    @Inject
-    @DataField
-    public Label activeTasksListLabel;
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -107,24 +91,12 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
         processDeploymentLabel.setText( constants.Deployment_Name() );
         processVersionLabel.setText( constants.Process_Definition_Version() );
         stateLabel.setText( constants.Process_Instance_State() );
-        activeTasksListLabel.setText( constants.Active_Tasks() );
-        currentActivitiesListLabel.setText( constants.Current_Activities() );
     }
 
 
     @Override
     public HTML getProcessDefinitionIdText() {
         return processDefinitionIdText;
-    }
-
-    @Override
-    public HTML getCurrentActivitiesListBox() {
-        return currentActivitiesListBox;
-    }
-
-    @Override
-    public HTML getActiveTasksListBox() {
-        return activeTasksListBox;
     }
 
     @Override
@@ -155,17 +127,6 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     @Override
     public void setProcessAssetPath( Path processAssetPath ) {
         this.processAssetPath = processAssetPath;
-    }
-
-    @Override
-    public void setCurrentActiveNodes( List<NodeInstanceSummary> activeNodes ) {
-        this.activeNodes = activeNodes;
-
-    }
-
-    @Override
-    public void setCurrentCompletedNodes( List<NodeInstanceSummary> completedNodes ) {
-        this.completedNodes = completedNodes;
     }
 
     @Override
