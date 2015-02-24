@@ -210,6 +210,7 @@ public interface Constants extends Messages {
     String Last_Modified();
 
     String Size();
+
     String Technical_Log();
     
     String Business_Log();
@@ -231,4 +232,8 @@ public interface Constants extends Messages {
     String Project();
     
     String Loading();
+
+    String VariableValueUpdated(String variableName);
+
+    String Ok();
 }

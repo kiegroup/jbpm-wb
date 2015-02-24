@@ -31,18 +31,24 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
+import org.jbpm.console.ng.pr.client.editors.variables.edit.VariableEditPopup;
+import org.jbpm.console.ng.pr.client.editors.variables.history.VariableHistoryPopup;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
 import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
+import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.events.NotificationEvent;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -65,6 +71,12 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
     private ProcessRuntimeImages images = GWT.create(ProcessRuntimeImages.class);
 
     private Column actionsColumn;
+
+    @Inject
+    public VariableEditPopup variableEditPopup;
+
+    @Inject
+    public VariableHistoryPopup variableHistoryPopup;
 
     @Override
     public void init(final ProcessVariableListPresenter presenter) {
@@ -219,23 +231,16 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
         cells.add(new EditVariableActionHasCell("Edit Variable", new Delegate<ProcessVariableSummary>() {
             @Override
             public void execute(ProcessVariableSummary variable) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Edit Variable Popup");
-                placeRequestImpl.addParameter("processInstanceId", Long.toString(variable.getProcessInstanceId()));
-                placeRequestImpl.addParameter("variableId", variable.getVariableId());
-                placeRequestImpl.addParameter("value", variable.getNewValue());
+                variableEditPopup.show( variable.getProcessInstanceId(),variable.getVariableId(),variable.getNewValue() );
 
-                placeManager.goTo(placeRequestImpl);
             }
         }));
 
         cells.add(new VariableHistoryActionHasCell("Variable History", new Delegate<ProcessVariableSummary>() {
             @Override
             public void execute(ProcessVariableSummary variable) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Variable History Popup");
-                placeRequestImpl.addParameter("processInstanceId", Long.toString(variable.getProcessInstanceId()));
-                placeRequestImpl.addParameter("variableId", variable.getVariableId());
+                variableHistoryPopup.show( variable.getProcessInstanceId(),variable.getVariableId() );
 
-                placeManager.goTo(placeRequestImpl);
             }
         }));
 
@@ -249,10 +254,8 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
         return actionsColumn;
     }
 
-    public void formClosed(@Observes BeforeClosePlaceEvent closed) {
-        if ("Edit Variable Popup".equals(closed.getPlace().getIdentifier())) {
+    public void formClosed(@Observes ProcessInstancesUpdateEvent closed) {
             presenter.refreshGrid();
-        }
     }
 
     private class EditVariableActionHasCell implements HasCell<ProcessVariableSummary, ProcessVariableSummary> {
