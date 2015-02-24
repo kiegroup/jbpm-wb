@@ -94,8 +94,8 @@
             <bootstrap:Tab heading="{i18n.Advanced}" ui:field="advancedTab">
                 <bootstrap:Well>
                     <bootstrap:Fieldset>
-                        <bootstrap:Form type="HORIZONTAL">
-                            <bootstrap:DataGrid ui:field="myParametersGrid">
+                        <bootstrap:Form type="VERTICAL">
+                            <bootstrap:DataGrid ui:field="myParametersGrid" addStyleNames="table table-bordered table-striped table-hover">
 
                             </bootstrap:DataGrid>
                             <bootstrap:Button ui:field="newParametersButton"></bootstrap:Button>
