@@ -15,11 +15,16 @@
  */
 package org.jbpm.console.ng.pr.backend.server;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -29,7 +34,6 @@ import org.jbpm.console.ng.pr.model.DocumentKey;
 import org.jbpm.console.ng.pr.model.DocumentSummary;
 import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.console.ng.pr.service.DocumentsService;
-import org.jbpm.document.Document;
 import org.jbpm.services.api.DefinitionService;
 import org.jbpm.services.api.ProcessService;
 import org.jbpm.services.api.RuntimeDataService;
@@ -74,23 +78,23 @@ public class DocumentsServiceImpl implements DocumentsService {
     
     List<DocumentSummary> documents = new ArrayList<DocumentSummary>();
     for (ProcessVariableSummary pv : processVariables) {
-      if("org.jbpm.document.Document".equals(pv.getType())){
-        Document document = (Document)processService.getProcessInstanceVariable(processInstanceId, pv.getName());
-        if(document != null){
-          documents.add(new DocumentSummary(document.getName(), document.getLastModified(), document.getSize(), document.getLink()));
-        }
-      }
-    }
+        if ("org.jbpm.document.Document".equals(pv.getType())) {
+            if (pv.getNewValue() != null && !pv.getNewValue().isEmpty()) {
+                String[] values = pv.getNewValue().split(",");
+                if (values.length == 4) {
+                    Date lastModified = null;
+                    try {
+                        lastModified = DateFormat.getDateInstance().parse(values[2]);
 
-//    List<ProcessVariableSummary> processVariablesSums = new ArrayList<ProcessVariableSummary>(processVariables.size());
-//    for (ProcessVariableSummary pv : processVariables) {
-//
-//      if (filter.getParams().get("textSearch") == null || ((String) filter.getParams().get("textSearch")).isEmpty()) {
-//        processVariablesSums.add(pv);
-//      } else if (pv.getVariableId().toLowerCase().contains((String) filter.getParams().get("textSearch"))) {
-//        processVariablesSums.add(pv);
-//      }
-//    }
+                    } catch (ParseException ex) {
+                        Logger.getLogger(DocumentsServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    documents.add(new DocumentSummary(values[0], lastModified, Long.valueOf(values[1]), values[3]));
+                }
+            }
+
+        }
+    }
 
     response.setStartRowIndex(filter.getOffset());
     response.setTotalRowSize(documents.size() - 1);
