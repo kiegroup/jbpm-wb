@@ -23,8 +23,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -38,6 +36,8 @@ import org.jbpm.services.api.DefinitionService;
 import org.jbpm.services.api.ProcessService;
 import org.jbpm.services.api.RuntimeDataService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.paging.PageResponse;
 
 /**
@@ -46,6 +46,7 @@ import org.uberfire.paging.PageResponse;
 @Service
 @ApplicationScoped
 public class DocumentsServiceImpl implements DocumentsService {
+  private static final Logger logger = LoggerFactory.getLogger(DocumentsServiceImpl.class);
 
   @Inject
   private RuntimeDataService dataService;
@@ -87,7 +88,7 @@ public class DocumentsServiceImpl implements DocumentsService {
                         lastModified = DateFormat.getDateInstance().parse(values[2]);
 
                     } catch (ParseException ex) {
-                        Logger.getLogger(DocumentsServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                        logger.error("Can not parse last modified date!", ex);
                     }
                     documents.add(new DocumentSummary(values[0], lastModified, Long.valueOf(values[1]), values[3]));
                 }
