@@ -40,11 +40,12 @@ import org.jbpm.console.ng.pr.client.i18n.Constants;
 
 import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.*;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.ScrollPanel;
 
 @Dependent
 public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsView<ProcessInstanceDetailsMultiPresenter>
-        implements ProcessInstanceDetailsMultiPresenter.ProcessInstanceDetailsMultiView {
+        implements ProcessInstanceDetailsMultiPresenter.ProcessInstanceDetailsMultiView, RequiresResize {
 
     interface Binder
             extends
@@ -65,6 +66,11 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
 
     @Inject
     private RuntimeLogPresenter runtimeLogPresenter;
+    
+    private ScrollPanel detailsScrollPanel = new ScrollPanel();
+    private ScrollPanel variablesScrollPanel = new ScrollPanel();
+    private ScrollPanel documentScrollPanel = new ScrollPanel();
+    private ScrollPanel runtimeScrollPanel = new ScrollPanel();
 
     @Override
     public void init( final ProcessInstanceDetailsMultiPresenter presenter ) {
@@ -78,12 +84,11 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {
-                int height = ProcessInstanceDetailsMultiViewImpl.this.getOffsetHeight();
-                if(height == 0){
-                    height = 700;
-                }
-                GWT.log("ProcessInstanceDetailsMultiViewImpl height"+height);
-                tabPanel.setHeight(height+"px");
+               tabPanel.setHeight(ProcessInstanceDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
+               detailsScrollPanel.setHeight(ProcessInstanceDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
+               variablesScrollPanel.setHeight(ProcessInstanceDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
+               documentScrollPanel.setHeight(ProcessInstanceDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
+               runtimeScrollPanel.setHeight(ProcessInstanceDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
             }
         });
     }
@@ -99,17 +104,6 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
 
         tabPanel.addTab( "Process Logs", Constants.INSTANCE.Logs() );
 
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-                int height = ProcessInstanceDetailsMultiViewImpl.this.getOffsetHeight();
-                if(height == 0){
-                    height = 700;
-                }
-                GWT.log("initTabs ProcessInstanceDetailsMultiViewImpl height"+height);
-                tabPanel.setHeight(height+"px");
-            }
-        });
 
         tabPanel.addSelectionHandler( new SelectionHandler<Integer>() {
 
@@ -122,18 +116,15 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
                 }
             }
         } );
-        int height = ProcessInstanceDetailsMultiViewImpl.this.getOffsetHeight();
-                if(height == 0){
-                    height = 700;
-                }
-        ScrollPanel detailsScrollPanel = new ScrollPanel(detailsPresenter.getWidget().asWidget());
-        detailsScrollPanel.setHeight(height+"px");
-        ScrollPanel variablesScrollPanel = new ScrollPanel(variableListPresenter.getWidget().asWidget());
-        variablesScrollPanel.setHeight(height+"px");
-        ScrollPanel documentScrollPanel = new ScrollPanel(documentListPresenter.getWidget().asWidget());
-        documentScrollPanel.setHeight(height+"px");
-        ScrollPanel runtimeScrollPanel = new ScrollPanel(runtimeLogPresenter.getWidget().asWidget());
-        runtimeScrollPanel.setHeight(height+"px");
+
+        detailsScrollPanel.add(detailsPresenter.getWidget());
+        
+        variablesScrollPanel.add(variableListPresenter.getWidget().asWidget());
+        
+        documentScrollPanel.add(documentListPresenter.getWidget().asWidget());
+        
+        runtimeScrollPanel.add(runtimeLogPresenter.getWidget().asWidget());
+        
         
         ( (HTMLPanel) tabPanel.getWidget( 0 ) ).add( detailsScrollPanel );
         ( (HTMLPanel) tabPanel.getWidget( 1 ) ).add( variablesScrollPanel );

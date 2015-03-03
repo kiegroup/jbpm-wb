@@ -34,6 +34,8 @@ import org.jbpm.console.ng.pr.client.editors.definition.details.ProcessDefDetail
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 
 import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.*;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.user.client.ui.ScrollPanel;
 
 @Dependent
 public class ProcessDefDetailsMultiViewImpl extends AbstractTabbedDetailsView<ProcessDefDetailsMultiPresenter>
@@ -49,20 +51,19 @@ public class ProcessDefDetailsMultiViewImpl extends AbstractTabbedDetailsView<Pr
 
     @Inject
     private ProcessDefDetailsPresenter detailsPresenter;
+    private ScrollPanel spDetails = new ScrollPanel();
 
     @Override
     public void init( final ProcessDefDetailsMultiPresenter presenter ) {
         super.init( presenter );
         uiBinder.createAndBindUi( this );
-        ( (HTMLPanel) tabPanel.getWidget( 0 ) ).add( detailsPresenter.getWidget() );
+        spDetails.add(detailsPresenter.getWidget());
+        ( (HTMLPanel) tabPanel.getWidget( 0 ) ).add(  spDetails );
     }
 
     @Override
     public void initTabs() {
-
         tabPanel.addTab( "Definition Details", Constants.INSTANCE.Definition_Details() );
-
-        tabPanel.setHeight( "600px" );
     }
 
     @Override
@@ -135,5 +136,16 @@ public class ProcessDefDetailsMultiViewImpl extends AbstractTabbedDetailsView<Pr
                 }
             } );
         }};
+    }
+
+    @Override
+    public void onResize() {
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                tabPanel.setHeight(ProcessDefDetailsMultiViewImpl.this.getParent().getOffsetHeight() - 30 + "px");
+                spDetails.setHeight(ProcessDefDetailsMultiViewImpl.this.getParent().getOffsetHeight() - 30 + "px");
+            }
+        });
     }
 }
