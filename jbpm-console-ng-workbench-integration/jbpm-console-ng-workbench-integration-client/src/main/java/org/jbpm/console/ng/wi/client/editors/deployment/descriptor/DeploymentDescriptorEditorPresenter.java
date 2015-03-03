@@ -129,7 +129,7 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
     }
 
     @Override
-    protected void onSourceTabSelected() {
+    public void onSourceTabSelected() {
         view.updateContent(model);
         ddEditorService.call( new RemoteCallback<String>() {
             @Override
