@@ -19,6 +19,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
 
 import javax.enterprise.context.Dependent;
 import java.util.HashMap;
@@ -53,6 +54,20 @@ public class JSNIHelper {
                 params.put(key, jsonObject.get(key).isString().stringValue());
             }
         }
+        return params;
+    }
+
+    public Map<String, String> parseParams(JSONObject jsonParams) {
+        Map<String, String> params = new HashMap<String, String>(  );
+
+        for (String key : jsonParams.keySet()) {
+            JSONValue value = jsonParams.get( key );
+            if (value != null) {
+                if (value.isString() != null) params.put( key, value.isString().stringValue() );
+                else params.put( key, value.toString() );
+            }
+        }
+
         return params;
     }
 

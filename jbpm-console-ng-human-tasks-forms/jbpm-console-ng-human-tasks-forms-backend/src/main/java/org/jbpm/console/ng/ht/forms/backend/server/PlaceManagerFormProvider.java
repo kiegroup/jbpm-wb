@@ -53,10 +53,11 @@ public class PlaceManagerFormProvider implements FormProvider {
     @Override
     public String render(String name, ProcessDefinition process, Map<String, Object> renderContext) {
 
-        Map<String, String> params = new HashMap<String, String>(renderContext.size());
+        Map<String, Object> params = new HashMap<String, Object>(renderContext.size());
         for (String key : renderContext.keySet()) {
             if (!(renderContext.get(key) instanceof Task) && !key.equals("marshallerContext")) {
-                params.put(key, renderContext.get(key).toString());
+                Object paramValue = renderContext.get(key);
+                if (paramValue != null) params.put(key, paramValue);
             }
         }
 
@@ -65,9 +66,6 @@ public class PlaceManagerFormProvider implements FormProvider {
 
             String destination = process.getId() + " Form";
             if (allActivities.contains(destination)) {
-                // TODO: change this for a correct implementation
-                assetManagementHack(process, renderContext, params);
-
                 return getFormRenderingInfo( destination, params );
             }
         }
@@ -76,12 +74,12 @@ public class PlaceManagerFormProvider implements FormProvider {
 
     @Override
     public String render(String name, Task task, ProcessDefinition process, Map<String, Object> renderContext) {
-        Map<String, String> params = new HashMap<String, String>(renderContext.size());
+        Map<String, Object> params = new HashMap<String, Object>(renderContext.size());
         String taskName = (renderContext.get("TaskName") != null) ? (String) renderContext.get("TaskName") : "";
         for (String key : renderContext.keySet()) {
             if (!(renderContext.get(key) instanceof Task) && !key.equals("marshallerContext")) {
-                String paramValue = renderContext.get(key) != null ? renderContext.get(key).toString() : null;
-                params.put(key, paramValue);
+                Object paramValue = renderContext.get(key);
+                if (paramValue != null) params.put(key, paramValue);
             }
         }
         if (task != null) {
@@ -97,37 +95,17 @@ public class PlaceManagerFormProvider implements FormProvider {
 
         String destination = taskName + " Form";
         if (allActivities.contains(destination)) {
-            // TODO: change this for a correct implementation
-            assetManagementHack(process, renderContext, params);
-
             return getFormRenderingInfo( destination, params );
         }
         return "";
     }
 
-    protected String getFormRenderingInfo( String destination, Map<String, String> params ) {
+    protected String getFormRenderingInfo( String destination, Map<String, Object> params ) {
         Map result = new HashMap(  );
         result.put( "handler", "handledByPlaceManagerFormProvider" );
         result.put( "destination", destination );
         result.put( "params", params );
         Gson gson = new Gson();
         return gson.toJson( result );
-    }
-
-    protected void assetManagementHack(ProcessDefinition process, Map<String, Object> renderContext, Map<String, String> params) {
-        if (process.getId().equals("guvnor-asset-management.PromoteAssets")) {
-            Map<String, List<String>> commitsPerFile = (Map<String, List<String>>) renderContext.get("in_commits_per_file");
-            StringBuffer commits = new StringBuffer();
-
-            for (String file : commitsPerFile.keySet()) {
-                if (commits.length() > 0) commits.append(";");
-                commits.append(file).append("=");
-                for (String commit : commitsPerFile.get(file)) {
-                    if (!commits.substring(commits.length() - 1).equals("=")) commits.append(",");
-                    commits.append(commit);
-                }
-            }
-            params.put("in_commits_per_file", commits.toString());
-        }
     }
 }

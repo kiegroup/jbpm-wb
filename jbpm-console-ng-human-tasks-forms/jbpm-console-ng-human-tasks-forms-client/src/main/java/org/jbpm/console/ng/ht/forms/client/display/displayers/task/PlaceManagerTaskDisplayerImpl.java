@@ -70,12 +70,7 @@ public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
 
             if (jsonParams == null) return;
 
-            Map<String, String> params = new HashMap<String, String>(  );
-
-            for (String key : jsonParams.keySet()) {
-                JSONValue value = jsonParams.get( key );
-                if (value.isString() != null) params.put( key, value.isString().stringValue() );
-            }
+            Map<String, String> params = jsniHelper.parseParams( jsonParams );
 
             String taskStatus = params.get("taskStatus");
 
