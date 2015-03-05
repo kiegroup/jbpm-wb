@@ -16,22 +16,27 @@
 package org.jbpm.console.ng.ht.forms.client.display.displayers.process;
 
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.HelpBlock;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -87,6 +92,8 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     @Inject
     protected JSNIHelper jsniHelper;
 
+    private Button startButton;
+    
     @PostConstruct
     protected void init() {
         container.getElement().setId("form-data");
@@ -108,7 +115,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
 
         container.add(formContainer);
 
-        Button startButton = new Button(constants.Submit(), new ClickHandler() {
+        startButton = new Button(constants.Submit(), new ClickHandler() {
             @Override public void onClick(ClickEvent event) {
                 startProcessFromDisplayer();
             }
@@ -165,6 +172,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     public void startProcess(Map<String, Object> params) {
         sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
                 .startProcess(deploymentId, processDefId, params);
+        startButton.setActive(false);
     }
 
     protected RemoteCallback<Long> getStartProcessRemoteCallback() {
@@ -173,11 +181,23 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
             public void callback(Long processInstanceId) {
                 newProcessInstanceEvent.fire(new NewProcessInstanceEvent(deploymentId, processInstanceId, processDefId, processName, 1));
                 jsniHelper.notifySuccessMessage(opener, "Process Id: " + processInstanceId + " started!");
-                close();
+                afterStartProcess("Process Id: " + processInstanceId + " started!");
+                
             }
         };
     }
 
+    private void afterStartProcess(String content){
+    	HelpBlock helpBlock = new HelpBlock(content);
+    	footerButtons.clear();
+    	footerButtons.add(helpBlock);
+    	Button closeButton = new Button("Close", new ClickHandler() {
+            @Override public void onClick(ClickEvent event) {
+            	close();
+            }
+        });
+    	footerButtons.add(closeButton);
+    }
     @Override
     public void addOnCloseCallback(Command callback) {
         this.onClose = callback;
