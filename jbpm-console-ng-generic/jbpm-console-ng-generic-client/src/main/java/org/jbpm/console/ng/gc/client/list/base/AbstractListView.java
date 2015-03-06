@@ -124,6 +124,7 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
                 }
                 initColumns();
                 initGenericToolBar();
+                initFilters();
             }
         } ).loadGridPreferences( preferences.getKey() );
 
@@ -170,4 +171,6 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
      *  DataGrid columns and how they must be initialized
      */
     public abstract void initColumns();
+
+    public abstract void initFilters();
 }

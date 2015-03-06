@@ -174,6 +174,11 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
         listGrid.addColumns(columnMetas);
     }
 
+    @Override
+    public void initFilters() {
+
+    }
+
     private Column<KModuleDeploymentUnitSummary, ?> idColumn() {
         Column<KModuleDeploymentUnitSummary, String> unitIdColumn = new Column<KModuleDeploymentUnitSummary, String>(
                 new TextCell()) {

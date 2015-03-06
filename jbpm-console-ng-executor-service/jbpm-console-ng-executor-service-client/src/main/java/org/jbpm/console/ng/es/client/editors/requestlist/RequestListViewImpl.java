@@ -143,6 +143,12 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         actionsColumn = initActionsColumn();
         listGrid.addColumn(actionsColumn, constants.Actions());
     }
+
+    @Override
+    public void initFilters() {
+
+    }
+
     private void initFiltersBar(){
         HorizontalPanel filtersBar = new HorizontalPanel();
         filterLabel = new Label();

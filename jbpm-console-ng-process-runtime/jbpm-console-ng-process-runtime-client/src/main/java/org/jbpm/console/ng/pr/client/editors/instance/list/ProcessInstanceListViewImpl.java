@@ -50,6 +50,7 @@ import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.common.client.tables.DataGridFilter;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
@@ -128,7 +129,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
         super.init(presenter, new GridGlobalPreferences("ProcessInstancesGrid", initColumns, bannedColumns));
 
         initBulkActionsDropDown();
-        initFiltersBar();
+        //initFiltersBar();
 
         listGrid.setEmptyTableCaption(constants.No_Process_Instances_Found());
 
@@ -238,6 +239,43 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
         columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(startTimeColumn, constants.Start_Date()));
         columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(actionsColumn, constants.Actions()));
         listGrid.addColumns(columnMetas);
+    }
+
+    @Override
+    public void initFilters() {
+
+        listGrid.addFilter( new DataGridFilter<ProcessInstanceSummary> ( "active",Constants.INSTANCE.Active(),new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                presenter.refreshActiveProcessList();
+            }
+        } ));
+
+        listGrid.addFilter(new DataGridFilter<ProcessInstanceSummary>("completed",Constants.INSTANCE.Completed(),
+                new ClickHandler() {
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        presenter.refreshCompletedProcessList();
+                    }
+                }  ));
+
+        listGrid.addFilter(new DataGridFilter<ProcessInstanceSummary> ("aborted",Constants.INSTANCE.Aborted(),
+                new ClickHandler() {
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        presenter.refreshAbortedProcessList();
+                    }
+                }  ));
+
+        listGrid.addFilter(new DataGridFilter<ProcessInstanceSummary> ("relatedToMe",constants.Related_To_Me(),
+                new ClickHandler() {
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        presenter.refreshRelatedToMeProcessList( identity.getIdentifier() );
+                    }
+                }  ));
+        listGrid.refreshFilterDropdown();
+
     }
 
     private void initBulkActionsDropDown() {
@@ -612,5 +650,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
             presenter.refreshActiveProcessList();
         }
     }
+
+
 
 }

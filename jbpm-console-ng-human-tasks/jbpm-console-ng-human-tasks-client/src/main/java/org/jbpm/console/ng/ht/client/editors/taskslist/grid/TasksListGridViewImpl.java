@@ -334,6 +334,11 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
         listGrid.addColumns(columnMetas);
     }
 
+    @Override
+    public void initFilters() {
+
+    }
+
     private void initCellPreview() {
         listGrid.addCellPreviewHandler(new CellPreviewEvent.Handler<TaskSummary>() {
 
