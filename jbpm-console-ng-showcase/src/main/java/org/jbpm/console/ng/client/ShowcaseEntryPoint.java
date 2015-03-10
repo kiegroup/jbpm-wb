@@ -55,7 +55,7 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.MenuPosition;
 import org.uberfire.workbench.model.menu.Menus;
-
+import org.kie.workbench.common.widgets.client.menu.SwitchModeMenuBuilder;
 @EntryPoint
 public class ShowcaseEntryPoint {
 
@@ -134,7 +134,7 @@ public class ShowcaseEntryPoint {
                 .newTopLevelMenu( constants.Dashboards() ).withItems( getDashboardsViews() ).endMenu()
                 .newTopLevelMenu( constants.Experimental() ).withItems( getExperimentalViews() ).endMenu()
                 .newTopLevelMenu( constants.User() + ": " + identity.getIdentifier() ).position( MenuPosition.RIGHT ).withItems( getRoles() ).endMenu()
-
+                .newTopLevelCustomMenu( iocManager.lookupBean( SwitchModeMenuBuilder.class ).getInstance() ).endMenu()
                 .build();
 
         menubar.addMenus( menus );
