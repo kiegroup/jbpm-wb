@@ -243,7 +243,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
 
     @Override
     public void initFilters() {
-
+        listGrid.setShowFilterSelector( true );
         listGrid.addFilter( new DataGridFilter<ProcessInstanceSummary> ( "active",Constants.INSTANCE.Active(),new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {

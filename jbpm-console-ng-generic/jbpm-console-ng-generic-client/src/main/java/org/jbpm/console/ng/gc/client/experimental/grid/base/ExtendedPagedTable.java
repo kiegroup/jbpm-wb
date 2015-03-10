@@ -75,11 +75,6 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
     dataGrid.removeColumn(col);
   }
 
-  protected Widget makeWidget() {
-    pageSizesSelector = createPageSizesToggleButton();
-    return uiBinder.createAndBindUi( this );
-  }
-
   @UiFactory
   public UberfireSimplePager makeUberfireSimplePager () {
     return new UberfireSimplePager(
