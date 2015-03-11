@@ -16,10 +16,7 @@
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid;
 
 import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.ButtonGroup;
-import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.cell.client.*;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
@@ -32,7 +29,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
@@ -49,6 +45,7 @@ import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.common.client.tables.DataGridFilter;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import javax.enterprise.context.Dependent;
@@ -77,16 +74,6 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
 
     @Inject
     private Event<TaskSelectionEvent> taskSelected;
-
-    private Button activeFilterButton;
-
-    private Button personalFilterButton;
-
-    private Button groupFilterButton;
-
-    private Button allFilterButton;
-
-    private Button adminFilterButton;
 
     @Inject
     private QuickNewTaskPopup quickNewTaskPopup;
@@ -191,109 +178,6 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
 
         listGrid.setRowStyles(selectedStyles);
         initExtraButtons();
-        initFiltersBar();
-    }
-
-    private void initFiltersBar() {
-        HorizontalPanel filtersBar = new HorizontalPanel();
-        Label filterLabel = new Label();
-        filterLabel.setStyleName("");
-        filterLabel.setText(constants.Filters() + ": ");
-
-        activeFilterButton = new Button();
-        activeFilterButton.setIcon(IconType.FILTER);
-        activeFilterButton.setSize(ButtonSize.SMALL);
-        activeFilterButton.setText(constants.Active());
-        activeFilterButton.setEnabled(false);
-        activeFilterButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                activeFilterButton.setEnabled(false);
-                personalFilterButton.setEnabled(true);
-                groupFilterButton.setEnabled(true);
-                allFilterButton.setEnabled(true);
-                adminFilterButton.setEnabled(true);
-                presenter.refreshActiveTasks();
-                closePlace("Task Details Multi");
-            }
-        });
-
-        personalFilterButton = new Button();
-        personalFilterButton.setIcon(IconType.FILTER);
-        personalFilterButton.setSize(ButtonSize.SMALL);
-        personalFilterButton.setText(constants.Personal());
-        personalFilterButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                activeFilterButton.setEnabled(true);
-                personalFilterButton.setEnabled(false);
-                groupFilterButton.setEnabled(true);
-                adminFilterButton.setEnabled(true);
-                allFilterButton.setEnabled(true);
-                presenter.refreshPersonalTasks();
-                closePlace("Task Details Multi");
-            }
-        });
-
-        groupFilterButton = new Button();
-        groupFilterButton.setIcon(IconType.FILTER);
-        groupFilterButton.setSize(ButtonSize.SMALL);
-        groupFilterButton.setText(constants.Group());
-        groupFilterButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                activeFilterButton.setEnabled(true);
-                personalFilterButton.setEnabled(true);
-                groupFilterButton.setEnabled(false);
-                adminFilterButton.setEnabled(true);
-                allFilterButton.setEnabled(true);
-                presenter.refreshGroupTasks();
-                closePlace("Task Details Multi");
-            }
-        });
-
-        allFilterButton = new Button();
-        allFilterButton.setIcon(IconType.FILTER);
-        allFilterButton.setSize(ButtonSize.SMALL);
-        allFilterButton.setText(constants.All());
-        allFilterButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                activeFilterButton.setEnabled(true);
-                personalFilterButton.setEnabled(true);
-                groupFilterButton.setEnabled(true);
-                adminFilterButton.setEnabled(true);
-                allFilterButton.setEnabled(false);
-                presenter.refreshAllTasks();
-                closePlace("Task Details Multi");
-            }
-        });
-
-        adminFilterButton = new Button();
-        adminFilterButton.setIcon(IconType.FILTER);
-        adminFilterButton.setSize(ButtonSize.SMALL);
-        adminFilterButton.setText(constants.Task_Admin());
-        adminFilterButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                activeFilterButton.setEnabled(true);
-                personalFilterButton.setEnabled(true);
-                groupFilterButton.setEnabled(true);
-                allFilterButton.setEnabled(true);
-                adminFilterButton.setEnabled(false);
-                presenter.refreshAdminTasks();
-                closePlace("Task Details Multi");
-            }
-        });
-
-        filtersBar.add(filterLabel);
-        ButtonGroup filtersButtonGroup = new ButtonGroup(activeFilterButton, personalFilterButton,
-                groupFilterButton, allFilterButton, adminFilterButton);
-
-        filtersBar.add(filtersButtonGroup);
-
-        listGrid.getCenterToolbar().add(filtersBar);
-
     }
 
     private void initExtraButtons() {
@@ -336,6 +220,49 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
 
     @Override
     public void initFilters() {
+
+        listGrid.setShowFilterSelector( true );
+        listGrid.addFilter( new DataGridFilter<TaskSummary>( "active", Constants.INSTANCE.Active(), new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                presenter.refreshActiveTasks();
+                ;
+            }
+        } ) );
+
+        listGrid.addFilter( new DataGridFilter<TaskSummary>( "personal", Constants.INSTANCE.Personal(), new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                presenter.refreshPersonalTasks();
+                ;
+            }
+        } ) );
+
+        listGrid.addFilter( new DataGridFilter<TaskSummary>( "group", Constants.INSTANCE.Group(), new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                presenter.refreshGroupTasks();
+                ;
+            }
+        } ) );
+
+        listGrid.addFilter( new DataGridFilter<TaskSummary>( "all", Constants.INSTANCE.All(), new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                presenter.refreshAllTasks();
+                ;
+            }
+        } ) );
+
+        listGrid.addFilter( new DataGridFilter<TaskSummary>( "taskAdmin", Constants.INSTANCE.Task_Admin(), new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                presenter.refreshAdminTasks();
+                ;
+            }
+        } ) );
+
+        listGrid.refreshFilterDropdown();
 
     }
 

@@ -33,20 +33,15 @@ import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.ext.widgets.common.client.tables.DataGridFilter;
 import org.uberfire.workbench.events.NotificationEvent;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.ButtonGroup;
-import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.SplitDropdownButton;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
-import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
@@ -62,7 +57,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
@@ -73,24 +67,6 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
 
     private Constants constants = GWT.create( Constants.class );
 
-    private Label filterLabel;
-    
-    private ButtonGroup filtersButtonGroup;
-
-    private Button showAllFilterButton;
-
-    private Button showQueuedFilterButton;
-
-    private Button showRunningFilterButton;
-
-    private Button showRetryingFilterButton;
-    
-    private Button showErrorFilterButton;
-    
-    private Button showCompletedFilterButton;
-    
-    private Button showCancelledFilterButton;
-    
     @Inject
     private Event<NotificationEvent> notification;
 
@@ -117,7 +93,6 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         
         super.init(presenter, new GridGlobalPreferences("RequestListGrid", initColumns, bannedColumns));
 
-        initFiltersBar();
         this.initActionsDropDown();
         listGrid.setEmptyTableCaption(constants.No_Jobs_Found());
         initSelectionModel();
@@ -146,167 +121,71 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
 
     @Override
     public void initFilters() {
+        listGrid.setShowFilterSelector( true );
+        listGrid.addFilter( new DataGridFilter<RequestSummary>( "showAll", Constants.INSTANCE.All(), new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                presenter.refreshRequests( null );
+            }
+        } ) );
 
+        listGrid.addFilter( new DataGridFilter<RequestSummary>( "queued", Constants.INSTANCE.Queued(), new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                List<String> statuses = new ArrayList<String>();
+                statuses.add( "QUEUED" );
+                presenter.refreshRequests( statuses );
+            }
+        } ) );
+
+        listGrid.addFilter( new DataGridFilter<RequestSummary>( "running", Constants.INSTANCE.Running(), new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                List<String> statuses = new ArrayList<String>();
+                statuses.add( "RUNNING" );
+                presenter.refreshRequests( statuses );
+            }
+        } ) );
+
+        listGrid.addFilter( new DataGridFilter<RequestSummary>( "retrying", Constants.INSTANCE.Retrying(), new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                List<String> statuses = new ArrayList<String>();
+                statuses.add( "RETRYING" );
+                presenter.refreshRequests( statuses );
+            }
+        } ) );
+
+        listGrid.addFilter( new DataGridFilter<RequestSummary>( "error", Constants.INSTANCE.Error(), new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                List<String> statuses = new ArrayList<String>();
+                statuses.add( "ERROR" );
+                presenter.refreshRequests( statuses );
+            }
+        } ) );
+
+        listGrid.addFilter( new DataGridFilter<RequestSummary>( "showCompleted", Constants.INSTANCE.Completed(), new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                List<String> statuses = new ArrayList<String>();
+                statuses.add( "DONE" );
+                presenter.refreshRequests( statuses );
+            }
+        } ) );
+        listGrid.addFilter( new DataGridFilter<RequestSummary>( "showCancelled", Constants.INSTANCE.Cancelled(), new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                List<String> statuses = new ArrayList<String>();
+                statuses.add( "CANCELLED" );
+                presenter.refreshRequests( statuses );
+            }
+        } ) );
+
+        listGrid.refreshFilterDropdown();
     }
 
-    private void initFiltersBar(){
-        HorizontalPanel filtersBar = new HorizontalPanel();
-        filterLabel = new Label();
-        filterLabel.setStyleName("");
-        filterLabel.setText(constants.Showing());
-        
-        showAllFilterButton = new Button();
-        showAllFilterButton.setIcon(IconType.FILTER);
-        showAllFilterButton.setSize(ButtonSize.SMALL);
-        showAllFilterButton.setText(constants.All());
-        showAllFilterButton.setEnabled(false);
-        showAllFilterButton.addClickHandler(new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-              showAllFilterButton.setEnabled(false);
-              showQueuedFilterButton.setEnabled(true);
-              showRunningFilterButton.setEnabled(true);
-              showRetryingFilterButton.setEnabled(true);
-              showErrorFilterButton.setEnabled(true);
-              showCompletedFilterButton.setEnabled(true);
-              showCancelledFilterButton.setEnabled(true);
-            presenter.refreshRequests( null );
-          }
-        });
-    
-        showQueuedFilterButton = new Button();
-        showQueuedFilterButton.setIcon(IconType.FILTER);
-        showQueuedFilterButton.setSize(ButtonSize.SMALL);
-        showQueuedFilterButton.setText(constants.Queued());
-        showQueuedFilterButton.setEnabled(true);
-        showQueuedFilterButton.addClickHandler(new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-              showAllFilterButton.setEnabled(true);
-              showQueuedFilterButton.setEnabled(false);
-              showRunningFilterButton.setEnabled(true);
-              showRetryingFilterButton.setEnabled(true);
-              showErrorFilterButton.setEnabled(true);
-              showCompletedFilterButton.setEnabled(true);
-              showCancelledFilterButton.setEnabled(true);
-              List<String> statuses = new ArrayList<String>();
-              statuses.add( "QUEUED" );
-              presenter.refreshRequests( statuses );
-          }
-        });
-        
-        showRunningFilterButton = new Button();
-        showRunningFilterButton.setIcon(IconType.FILTER);
-        showRunningFilterButton.setSize(ButtonSize.SMALL);
-        showRunningFilterButton.setText(constants.Running());
-        showRunningFilterButton.setEnabled(true);
-        showRunningFilterButton.addClickHandler(new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-              showAllFilterButton.setEnabled(true);
-              showQueuedFilterButton.setEnabled(true);
-              showRunningFilterButton.setEnabled(false);
-              showRetryingFilterButton.setEnabled(true);
-              showErrorFilterButton.setEnabled(true);
-              showCompletedFilterButton.setEnabled(true);
-              showCancelledFilterButton.setEnabled(true);
-              List<String> statuses = new ArrayList<String>();
-              statuses.add( "RUNNING" );
-              presenter.refreshRequests( statuses );
-          }
-        });
-        
-        showRetryingFilterButton = new Button();
-        showRetryingFilterButton.setIcon(IconType.FILTER);
-        showRetryingFilterButton.setSize(ButtonSize.SMALL);
-        showRetryingFilterButton.setText(constants.Retrying());
-        showRetryingFilterButton.setEnabled(true);
-        showRetryingFilterButton.addClickHandler(new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-              showAllFilterButton.setEnabled(true);
-              showQueuedFilterButton.setEnabled(true);
-              showRunningFilterButton.setEnabled(true);
-              showRetryingFilterButton.setEnabled(false);
-              showErrorFilterButton.setEnabled(true);
-              showCompletedFilterButton.setEnabled(true);
-              showCancelledFilterButton.setEnabled(true);
-              List<String> statuses = new ArrayList<String>();
-              statuses.add( "RETRYING" );
-              presenter.refreshRequests( statuses );
-          }
-        });
-        
-        showErrorFilterButton = new Button();
-        showErrorFilterButton.setIcon(IconType.FILTER);
-        showErrorFilterButton.setSize(ButtonSize.SMALL);
-        showErrorFilterButton.setText(constants.Error());
-        showErrorFilterButton.setEnabled(true);
-        showErrorFilterButton.addClickHandler(new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-              showAllFilterButton.setEnabled(true);
-              showQueuedFilterButton.setEnabled(true);
-              showRunningFilterButton.setEnabled(true);
-              showRetryingFilterButton.setEnabled(true);
-              showErrorFilterButton.setEnabled(false);
-              showCompletedFilterButton.setEnabled(true);
-              showCancelledFilterButton.setEnabled(true);
-              List<String> statuses = new ArrayList<String>();
-              statuses.add( "ERROR" );
-              presenter.refreshRequests( statuses );
-          }
-        });
-        
-        showCompletedFilterButton = new Button();
-        showCompletedFilterButton.setIcon(IconType.FILTER);
-        showCompletedFilterButton.setSize(ButtonSize.SMALL);
-        showCompletedFilterButton.setText(constants.Completed());
-        showCompletedFilterButton.setEnabled(true);
-        showCompletedFilterButton.addClickHandler(new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-              showAllFilterButton.setEnabled(true);
-              showQueuedFilterButton.setEnabled(true);
-              showRunningFilterButton.setEnabled(true);
-              showRetryingFilterButton.setEnabled(true);
-              showErrorFilterButton.setEnabled(true);
-              showCompletedFilterButton.setEnabled(false);
-              showCancelledFilterButton.setEnabled(true);
-              List<String> statuses = new ArrayList<String>();
-              statuses.add( "DONE" );
-              presenter.refreshRequests( statuses );
-          }
-        });
-        
-        showCancelledFilterButton = new Button();
-        showCancelledFilterButton.setIcon(IconType.FILTER);
-        showCancelledFilterButton.setSize(ButtonSize.SMALL);
-        showCancelledFilterButton.setText(constants.Cancelled());
-        showCancelledFilterButton.setEnabled(true);
-        showCancelledFilterButton.addClickHandler(new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-              showAllFilterButton.setEnabled(true);
-              showQueuedFilterButton.setEnabled(true);
-              showRunningFilterButton.setEnabled(true);
-              showRetryingFilterButton.setEnabled(true);
-              showErrorFilterButton.setEnabled(true);
-              showCompletedFilterButton.setEnabled(true);
-              showCancelledFilterButton.setEnabled(false);
-              List<String> statuses = new ArrayList<String>();
-              statuses.add( "CANCELLED" );
-              presenter.refreshRequests( statuses );
-          }
-        });
-        
-        filtersBar.add(filterLabel);
-        filtersButtonGroup = new ButtonGroup(showAllFilterButton, showQueuedFilterButton,
-                                             showRunningFilterButton, showRetryingFilterButton ,showErrorFilterButton,showCompletedFilterButton,showCancelledFilterButton);
 
-        filtersBar.add(filtersButtonGroup);
-        listGrid.getCenterToolbar().add(filtersBar);
-    }
     
     private void initSelectionModel(){
         selectionModel = new NoSelectionModel<RequestSummary>();
