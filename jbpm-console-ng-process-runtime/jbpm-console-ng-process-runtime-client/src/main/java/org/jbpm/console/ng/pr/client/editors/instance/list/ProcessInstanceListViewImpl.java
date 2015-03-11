@@ -78,18 +78,6 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     private Constants constants = GWT.create(Constants.class);
     private ProcessRuntimeImages images = GWT.create(ProcessRuntimeImages.class);
 
-    private Label filterLabel;
-
-    private ButtonGroup filtersButtonGroup;
-
-    private Button activeFilterButton;
-
-    private Button completedFilterButton;
-
-    private Button abortedFilterButton;
-
-    private Button relatedToMeFilterButton;
-
     private List<ProcessInstanceSummary> selectedProcessInstances = new ArrayList<ProcessInstanceSummary>();
 
     @Inject
@@ -129,7 +117,6 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
         super.init(presenter, new GridGlobalPreferences("ProcessInstancesGrid", initColumns, bannedColumns));
 
         initBulkActionsDropDown();
-        //initFiltersBar();
 
         listGrid.setEmptyTableCaption(constants.No_Process_Instances_Found());
 
@@ -308,81 +295,6 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
         listGrid.getLeftToolbar().add(bulkActions);
 
         controlBulkOperations();
-    }
-
-    private void initFiltersBar() {
-        HorizontalPanel filtersBar = new HorizontalPanel();
-        filterLabel = new Label();
-        filterLabel.setStyleName("");
-        filterLabel.setText(constants.Showing());
-
-        activeFilterButton = new Button();
-        activeFilterButton.setIcon(IconType.FILTER);
-        activeFilterButton.setSize(ButtonSize.SMALL);
-        activeFilterButton.setText(constants.Active());
-        activeFilterButton.setEnabled(false);
-        activeFilterButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                activeFilterButton.setEnabled(false);
-                completedFilterButton.setEnabled(true);
-                abortedFilterButton.setEnabled(true);
-                relatedToMeFilterButton.setEnabled(true);
-                presenter.refreshActiveProcessList();
-            }
-        });
-
-        completedFilterButton = new Button();
-        completedFilterButton.setIcon(IconType.FILTER);
-        completedFilterButton.setSize(ButtonSize.SMALL);
-        completedFilterButton.setText(constants.Completed());
-        completedFilterButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                activeFilterButton.setEnabled(true);
-                completedFilterButton.setEnabled(false);
-                abortedFilterButton.setEnabled(true);
-                relatedToMeFilterButton.setEnabled(true);
-                presenter.refreshCompletedProcessList();
-            }
-        });
-
-        abortedFilterButton = new Button();
-        abortedFilterButton.setIcon(IconType.FILTER);
-        abortedFilterButton.setSize(ButtonSize.SMALL);
-        abortedFilterButton.setText(constants.Aborted());
-        abortedFilterButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                activeFilterButton.setEnabled(true);
-                completedFilterButton.setEnabled(true);
-                abortedFilterButton.setEnabled(false);
-                relatedToMeFilterButton.setEnabled(true);
-                presenter.refreshAbortedProcessList();
-            }
-        });
-
-        relatedToMeFilterButton = new Button();
-        relatedToMeFilterButton.setIcon(IconType.FILTER);
-        relatedToMeFilterButton.setSize(ButtonSize.SMALL);
-        relatedToMeFilterButton.setText(constants.Related_To_Me());
-        relatedToMeFilterButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                activeFilterButton.setEnabled(true);
-                completedFilterButton.setEnabled(true);
-                abortedFilterButton.setEnabled(true);
-                relatedToMeFilterButton.setEnabled(false);
-                presenter.refreshRelatedToMeProcessList(identity.getIdentifier());
-            }
-        });
-
-        filtersBar.add(filterLabel);
-        filtersButtonGroup = new ButtonGroup(activeFilterButton, completedFilterButton,
-                abortedFilterButton, relatedToMeFilterButton);
-
-        filtersBar.add(filtersButtonGroup);
-        listGrid.getCenterToolbar().add(filtersBar);
     }
 
     private Column initProcessInstanceIdColumn() {
