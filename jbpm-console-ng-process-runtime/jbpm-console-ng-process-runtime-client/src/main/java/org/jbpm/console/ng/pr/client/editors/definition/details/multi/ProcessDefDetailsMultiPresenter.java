@@ -21,7 +21,9 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
+
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsPresenter;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView.TabbedDetailsView;
 import org.jbpm.console.ng.ht.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
@@ -47,7 +49,7 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
-
+import org.kie.workbench.common.widgets.client.mode.ContextualSwtichMode;
 @Dependent
 @WorkbenchScreen(identifier = "Process Details Multi", preferredWidth = 500)
 public class ProcessDefDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
@@ -78,6 +80,9 @@ public class ProcessDefDetailsMultiPresenter extends AbstractTabbedDetailsPresen
 
     @Inject
     private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
+    
+    @Inject 
+    private ContextualSwtichMode contextualSwtichMode;
 
     private Constants constants = GWT.create( Constants.class );
 
@@ -139,7 +144,35 @@ public class ProcessDefDetailsMultiPresenter extends AbstractTabbedDetailsPresen
 
     @WorkbenchMenu
     public Menus buildMenu() {
-        return MenuFactory
+        if (contextualSwtichMode.getModeName().equals(ContextualSwtichMode.BASIC_MODE)){
+        	return buildBasicModeMenu();
+        }else{
+        	return buildAdvancedMenu();
+        }
+    }
+    
+    private Menus buildBasicModeMenu(){
+    	return MenuFactory
+                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+                    @Override
+                    public void push( MenuFactory.CustomMenuBuilder element ) {
+                    }
+
+                    @Override
+                    public MenuItem build() {
+                        return new BaseMenuCustom<IsWidget>() {
+                            @Override
+                            public IsWidget build() {
+                                return view.getNewInstanceButton();
+                            }
+                        };
+                    }
+                } ).endMenu().build();
+
+    }
+
+    private Menus buildAdvancedMenu(){
+    	return MenuFactory
                 .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
                     @Override
                     public void push( MenuFactory.CustomMenuBuilder element ) {
@@ -204,9 +237,8 @@ public class ProcessDefDetailsMultiPresenter extends AbstractTabbedDetailsPresen
                     }
                 } ).endMenu().build();
     }
-
     public void refresh() {
-        processDefSelectionEvent.fire( new ProcessDefSelectionEvent(processId, deploymentId) );
+        processDefSelectionEvent.fire( new ProcessDefSelectionEvent(processId, deploymentId ) );
     }
 
 }

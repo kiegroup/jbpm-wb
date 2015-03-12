@@ -48,4 +48,14 @@ public interface Constants extends Messages {
     String Month();
 
     String Today();
+    
+    String Basic();
+    
+    String Advanced();
+    
+    String SwitchModeOfPerspectives(String modeName);
+    
+    String View_Mode();
+    
+    String Switch(String modeName); 
 }
