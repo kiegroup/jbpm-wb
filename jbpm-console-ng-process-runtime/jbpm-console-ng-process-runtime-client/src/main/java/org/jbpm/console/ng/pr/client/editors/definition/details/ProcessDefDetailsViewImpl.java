@@ -201,4 +201,22 @@ public class ProcessDefDetailsViewImpl extends Composite implements ProcessDefDe
         return encodedProcessSource;
     }
 
+	@Override
+	public void initForBasic() {
+	     nroOfHumanTasksLabel.setVisible(false);
+	     humanTasksListLabel.setVisible(false);
+	     usersGroupsListLabel.setVisible(false);
+	     subprocessListLabel.setVisible(false);
+	     processDataListLabel.setVisible(false);
+	     processServicesListLabel.setVisible(false);
+		
+	     nroOfHumanTasksText.setVisible(false);
+	     humanTasksListBox.setVisible(false);
+	     usersGroupsListBox.setVisible(false);
+	     processDataListBox.setVisible(false);
+	     processServicesListBox.setVisible(false);
+	     subprocessListBox.setVisible(false);
+
+	}
+
 }
