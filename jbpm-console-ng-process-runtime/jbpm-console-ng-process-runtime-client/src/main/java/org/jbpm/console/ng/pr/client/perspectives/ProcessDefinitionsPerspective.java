@@ -23,6 +23,7 @@ import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
 import org.uberfire.client.annotations.Perspective;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
 import org.uberfire.lifecycle.OnStartup;
@@ -30,13 +31,14 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
-
+import org.uberfire.workbench.model.menu.Menus;
+import org.jbpm.console.ng.gc.client.experimental.viewmode.AbastractMultipeViewModePerspective;
 /**
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
 @WorkbenchPerspective(identifier = "Process Definitions")
-public class ProcessDefinitionsPerspective {
+public class ProcessDefinitionsPerspective extends AbastractMultipeViewModePerspective{
 
     @Inject
     private ContextualSearch contextualSearch;
@@ -63,6 +65,10 @@ public class ProcessDefinitionsPerspective {
 
         } );
 
+    }
+    @WorkbenchMenu
+    public Menus getMenus(){
+    	return super.getMenus();
     }
 
 }
