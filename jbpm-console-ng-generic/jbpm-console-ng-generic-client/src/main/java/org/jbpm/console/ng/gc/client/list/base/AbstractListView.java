@@ -34,6 +34,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
@@ -144,6 +145,7 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
     public void initGenericToolBar() {
         Button refreshButton = new Button();
         refreshButton.setIcon( IconType.REFRESH );
+        refreshButton.setTitle( Constants.INSTANCE.Refresh() );
         refreshButton.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {

@@ -210,6 +210,7 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
 
     private void initCalendarIcon() {
         calendarIcon.setIcon(IconType.CALENDAR);
+        calendarIcon.setTitle( Constants.INSTANCE.Select_Date() );
         calendarIcon.setIconSize(IconSize.LARGE);
         calendarIcon.addClickHandler(new ClickHandler() {
             @Override
@@ -236,14 +237,16 @@ public class CalendarPicker extends Composite implements HasValueChangeHandlers<
 
     private void initPrevNextTodayButtons() {
         previousButton.setIcon(IconType.CARET_LEFT);
-        previousButton.setIconSize(IconSize.LARGE);
-        previousButton.addClickHandler(new ClickHandler() {
+        previousButton.setTitle( Constants.INSTANCE.Previous() );
+        previousButton.setIconSize( IconSize.LARGE );
+        previousButton.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                adjustDate(true);
+            public void onClick( ClickEvent event ) {
+                adjustDate( true );
             }
-        });
-        nextButton.setIcon(IconType.CARET_RIGHT);
+        } );
+        nextButton.setIcon( IconType.CARET_RIGHT );
+        nextButton.setTitle( Constants.INSTANCE.Next() );
         nextButton.setIconSize(IconSize.LARGE);
         nextButton.addClickHandler(new ClickHandler() {
             @Override

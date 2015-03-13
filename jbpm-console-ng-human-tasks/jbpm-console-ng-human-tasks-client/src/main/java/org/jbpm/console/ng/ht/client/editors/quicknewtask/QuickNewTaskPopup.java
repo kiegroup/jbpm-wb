@@ -287,6 +287,7 @@ public class QuickNewTaskPopup extends BaseModal {
 
         Button removeUserButton = new Button();
         removeUserButton.setIcon( IconType.MINUS_SIGN );
+        removeUserButton.setTitle( Constants.INSTANCE.Remove_User() );
         removeUserButton.addClickHandler( new ClickHandler() {
 
             @Override
@@ -315,6 +316,7 @@ public class QuickNewTaskPopup extends BaseModal {
 
         Button removeGroupButton = new Button();
         removeGroupButton.setIcon( IconType.MINUS_SIGN );
+        removeGroupButton.setTitle( Constants.INSTANCE.Remove_Group() );
         removeGroupButton.addClickHandler( new ClickHandler() {
 
             @Override

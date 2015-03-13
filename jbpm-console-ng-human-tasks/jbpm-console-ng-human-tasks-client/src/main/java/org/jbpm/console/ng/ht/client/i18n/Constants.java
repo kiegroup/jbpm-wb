@@ -197,5 +197,5 @@ public interface Constants extends Messages {
 
     String Low();
 
-
+    String Close();
 }

@@ -174,15 +174,17 @@ public class LiCalendarPicker extends Composite implements HasValueChangeHandler
 
     private void initPrevNextTodayButtons() {
         previousButton.setIcon(IconType.CARET_LEFT);
-        previousButton.setIconSize(IconSize.SMALL);
-        previousButton.addClickHandler(new ClickHandler() {
+        previousButton.setTitle( Constants.INSTANCE.Previous() );
+        previousButton.setIconSize( IconSize.SMALL );
+        previousButton.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                adjustDate(true);
+            public void onClick( ClickEvent event ) {
+                adjustDate( true );
                 updateTodayButtonEnabled();
             }
-        });
-        nextButton.setIcon(IconType.CARET_RIGHT);
+        } );
+        nextButton.setIcon( IconType.CARET_RIGHT );
+        nextButton.setTitle( Constants.INSTANCE.Next() );
         nextButton.setIconSize(IconSize.SMALL);
         nextButton.addClickHandler(new ClickHandler() {
             @Override
@@ -349,6 +351,7 @@ public class LiCalendarPicker extends Composite implements HasValueChangeHandler
 
     private void initCalendarIcon() {
         calendarIcon.setIcon(IconType.CALENDAR);
+        calendarIcon.setTitle( Constants.INSTANCE.Select_Date() );
         calendarIcon.setIconSize(IconSize.SMALL);
         calendarIcon.addClickHandler(new ClickHandler() {
             @Override

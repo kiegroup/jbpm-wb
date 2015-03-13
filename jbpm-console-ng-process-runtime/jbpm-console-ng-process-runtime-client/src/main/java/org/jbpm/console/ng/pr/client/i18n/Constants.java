@@ -236,4 +236,6 @@ public interface Constants extends Messages {
     String VariableValueUpdated(String variableName);
 
     String Ok();
+
+    String Close();
 }

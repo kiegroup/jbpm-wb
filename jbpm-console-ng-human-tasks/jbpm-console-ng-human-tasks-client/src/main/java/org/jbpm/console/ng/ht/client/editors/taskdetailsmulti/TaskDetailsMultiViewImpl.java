@@ -142,6 +142,7 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
         return new Button() {
             {
                 setIcon( IconType.REMOVE );
+                setTitle( Constants.INSTANCE.Close() );
                 setSize( MINI );
                 addClickHandler( new ClickHandler() {
                     @Override
@@ -173,6 +174,7 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
         return new Button() {
             {
                 setIcon( IconType.REFRESH );
+                setTitle( Constants.INSTANCE.Refresh() );
                 setSize( MINI );
                 addClickHandler( new ClickHandler() {
                     @Override

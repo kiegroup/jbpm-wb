@@ -137,6 +137,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
         Button newUnitButton = new Button();
         newUnitButton.setIcon(IconType.PLUS);
+        newUnitButton.setTitle( Constants.INSTANCE.Deploy_A_New_Unit() );
         newUnitButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {

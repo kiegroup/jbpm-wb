@@ -299,7 +299,8 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
     private void initExtraButtons() {
         Button newTaskButton = new Button();
         newTaskButton.setTitle(constants.New_Task());
-        newTaskButton.setIcon(IconType.PLUS_SIGN);
+        newTaskButton.setIcon( IconType.PLUS_SIGN );
+        newTaskButton.setTitle( Constants.INSTANCE.New_Task() );
         newTaskButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
