@@ -34,6 +34,7 @@ import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.DataGridFilter;
+import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import com.github.gwtbootstrap.client.ui.NavLink;
@@ -122,60 +123,60 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
     @Override
     public void initFilters() {
         listGrid.setShowFilterSelector( true );
-        listGrid.addFilter( new DataGridFilter<RequestSummary>( "showAll", Constants.INSTANCE.All(), new ClickHandler() {
+        listGrid.addFilter( new DataGridFilter<RequestSummary>( "showAll", Constants.INSTANCE.All(), new Command() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void execute( ) {
                 presenter.refreshRequests( null );
             }
         } ) );
 
-        listGrid.addFilter( new DataGridFilter<RequestSummary>( "queued", Constants.INSTANCE.Queued(), new ClickHandler() {
+        listGrid.addFilter( new DataGridFilter<RequestSummary>( "queued", Constants.INSTANCE.Queued(), new Command() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void execute(  ) {
                 List<String> statuses = new ArrayList<String>();
                 statuses.add( "QUEUED" );
                 presenter.refreshRequests( statuses );
             }
         } ) );
 
-        listGrid.addFilter( new DataGridFilter<RequestSummary>( "running", Constants.INSTANCE.Running(), new ClickHandler() {
+        listGrid.addFilter( new DataGridFilter<RequestSummary>( "running", Constants.INSTANCE.Running(), new Command() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void execute(  ) {
                 List<String> statuses = new ArrayList<String>();
                 statuses.add( "RUNNING" );
                 presenter.refreshRequests( statuses );
             }
         } ) );
 
-        listGrid.addFilter( new DataGridFilter<RequestSummary>( "retrying", Constants.INSTANCE.Retrying(), new ClickHandler() {
+        listGrid.addFilter( new DataGridFilter<RequestSummary>( "retrying", Constants.INSTANCE.Retrying(), new Command() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void execute(  ) {
                 List<String> statuses = new ArrayList<String>();
                 statuses.add( "RETRYING" );
                 presenter.refreshRequests( statuses );
             }
         } ) );
 
-        listGrid.addFilter( new DataGridFilter<RequestSummary>( "error", Constants.INSTANCE.Error(), new ClickHandler() {
+        listGrid.addFilter( new DataGridFilter<RequestSummary>( "error", Constants.INSTANCE.Error(), new Command() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void execute(  ) {
                 List<String> statuses = new ArrayList<String>();
                 statuses.add( "ERROR" );
                 presenter.refreshRequests( statuses );
             }
         } ) );
 
-        listGrid.addFilter( new DataGridFilter<RequestSummary>( "showCompleted", Constants.INSTANCE.Completed(), new ClickHandler() {
+        listGrid.addFilter( new DataGridFilter<RequestSummary>( "showCompleted", Constants.INSTANCE.Completed(), new Command() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void execute( ) {
                 List<String> statuses = new ArrayList<String>();
                 statuses.add( "DONE" );
                 presenter.refreshRequests( statuses );
             }
         } ) );
-        listGrid.addFilter( new DataGridFilter<RequestSummary>( "showCancelled", Constants.INSTANCE.Cancelled(), new ClickHandler() {
+        listGrid.addFilter( new DataGridFilter<RequestSummary>( "showCancelled", Constants.INSTANCE.Cancelled(), new Command() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void execute(  ) {
                 List<String> statuses = new ArrayList<String>();
                 statuses.add( "CANCELLED" );
                 presenter.refreshRequests( statuses );

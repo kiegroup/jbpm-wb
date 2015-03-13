@@ -17,14 +17,12 @@ package org.jbpm.console.ng.pr.client.editors.instance.list;
 
 import com.github.gwtbootstrap.client.ui.*;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.cell.client.*;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.BrowserEvents;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.InputElement;
-import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -51,6 +49,8 @@ import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.DataGridFilter;
+import org.uberfire.ext.widgets.common.client.tables.popup.NewFilterPopup;
+import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
@@ -58,10 +58,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Dependent
 public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanceSummary, ProcessInstanceListPresenter>
@@ -82,6 +79,9 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
 
     @Inject
     private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
+
+    @Inject
+    private NewFilterPopup newFilterPopup;
 
     private Column actionsColumn;
 
@@ -231,37 +231,101 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     @Override
     public void initFilters() {
         listGrid.setShowFilterSelector( true );
-        listGrid.addFilter( new DataGridFilter<ProcessInstanceSummary> ( "active",Constants.INSTANCE.Active(),new ClickHandler() {
+
+        listGrid.addFilter( new DataGridFilter<ProcessInstanceSummary> ( "active",Constants.INSTANCE.Active(),
+                new Command() {
             @Override
-            public void onClick(ClickEvent event) {
+            public void execute() {
                 presenter.refreshActiveProcessList();
             }
         } ));
 
         listGrid.addFilter(new DataGridFilter<ProcessInstanceSummary>("completed",Constants.INSTANCE.Completed(),
-                new ClickHandler() {
+                new Command() {
                     @Override
-                    public void onClick(ClickEvent event) {
+                    public void execute() {
                         presenter.refreshCompletedProcessList();
                     }
                 }  ));
 
         listGrid.addFilter(new DataGridFilter<ProcessInstanceSummary> ("aborted",Constants.INSTANCE.Aborted(),
-                new ClickHandler() {
+                new Command() {
                     @Override
-                    public void onClick(ClickEvent event) {
+                    public void execute() {
                         presenter.refreshAbortedProcessList();
                     }
                 }  ));
 
         listGrid.addFilter(new DataGridFilter<ProcessInstanceSummary> ("relatedToMe",constants.Related_To_Me(),
-                new ClickHandler() {
+                new Command() {
                     @Override
-                    public void onClick(ClickEvent event) {
+                    public void execute() {
                         presenter.refreshRelatedToMeProcessList( identity.getIdentifier() );
+
+                    }
+                }  ));
+        HashMap storedCustomFilters = listGrid.getStoredCustomFilters();
+        if(storedCustomFilters!=null) {
+            Set customFilterKeys = storedCustomFilters.keySet();
+            Iterator it = customFilterKeys.iterator();
+            String customFilterName;
+
+            while ( it.hasNext() ) {
+                customFilterName = ( String ) it.next();
+
+                final HashMap filterValues = ( HashMap ) storedCustomFilters.get( customFilterName );
+
+                listGrid.addFilter( new DataGridFilter<ProcessInstanceSummary>( customFilterName, customFilterName,
+                        new Command() {
+                            @Override
+                            public void execute() {
+                                List<String> states = (List) filterValues.get( ProcessInstanceListPresenter.FILTER_STATE_PARAM_NAME );
+                                ArrayList<Integer> statesInteger= new ArrayList<Integer>(  );
+                                for(String state: states) {
+                                    statesInteger.add( Integer.parseInt( state ) );
+                                }
+                                presenter.filterGrid( statesInteger ,(String) filterValues.get( ProcessInstanceListPresenter.FILTER_PROCESS_DEFINITION_PARAM_NAME ));
+                            }
+                        } ) );
+
+
+            }
+        }
+
+        listGrid.addFilter(new DataGridFilter<ProcessInstanceSummary> ("addFilter","+",
+                new Command() {
+                    @Override
+                    public void execute() {
+                        Command addFilter =new Command() {
+                            @Override
+                            public void execute() {
+                                final String newFilterName =(String) newFilterPopup.getFormValues().get(NewFilterPopup.FILTER_NAME_PARAM);
+                                listGrid.storeNewCustomFilter( newFilterName , newFilterPopup.getFormValues() );
+                                listGrid.clearFilters();
+                                initFilters();
+                            }
+                        } ;
+                        createFilterForm();
+                        newFilterPopup.show(addFilter);
                     }
                 }  ));
         listGrid.refreshFilterDropdown();
+
+    }
+
+
+    private void createFilterForm(){
+        HashMap<String,String> stateListBoxInfo = new HashMap<String, String>(  );
+
+        stateListBoxInfo.put(String.valueOf( ProcessInstance.STATE_ACTIVE ), Constants.INSTANCE.Active());
+        stateListBoxInfo.put(String.valueOf( ProcessInstance.STATE_COMPLETED ), Constants.INSTANCE.Completed());
+        stateListBoxInfo.put(String.valueOf( ProcessInstance.STATE_ABORTED), Constants.INSTANCE.Aborted());
+        stateListBoxInfo.put(String.valueOf( ProcessInstance.STATE_PENDING ), Constants.INSTANCE.Pending());
+        stateListBoxInfo.put(String.valueOf( ProcessInstance.STATE_SUSPENDED ), Constants.INSTANCE.Suspended());
+
+        newFilterPopup.init();
+        newFilterPopup.addListBoxToFilter( Constants.INSTANCE.State(),ProcessInstanceListPresenter.FILTER_STATE_PARAM_NAME,true,stateListBoxInfo );
+        newFilterPopup.addTextBoxToFilter( Constants.INSTANCE.Process_Definitions(), ProcessInstanceListPresenter.FILTER_PROCESS_DEFINITION_PARAM_NAME);
 
     }
 

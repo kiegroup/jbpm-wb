@@ -46,6 +46,7 @@ import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.DataGridFilter;
+import org.uberfire.mvp.Command;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import javax.enterprise.context.Dependent;
@@ -176,7 +177,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
                 });
         listGrid.setSelectionModel(selectionModel, noActionColumnManager);
 
-        listGrid.setRowStyles(selectedStyles);
+        listGrid.setRowStyles( selectedStyles );
         initExtraButtons();
     }
 
@@ -222,41 +223,41 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
     public void initFilters() {
 
         listGrid.setShowFilterSelector( true );
-        listGrid.addFilter( new DataGridFilter<TaskSummary>( "active", Constants.INSTANCE.Active(), new ClickHandler() {
+        listGrid.addFilter( new DataGridFilter<TaskSummary>( "active", Constants.INSTANCE.Active(), new Command() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void execute( ) {
                 presenter.refreshActiveTasks();
                 ;
             }
         } ) );
 
-        listGrid.addFilter( new DataGridFilter<TaskSummary>( "personal", Constants.INSTANCE.Personal(), new ClickHandler() {
+        listGrid.addFilter( new DataGridFilter<TaskSummary>( "personal", Constants.INSTANCE.Personal(), new Command() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void execute( ) {
                 presenter.refreshPersonalTasks();
                 ;
             }
         } ) );
 
-        listGrid.addFilter( new DataGridFilter<TaskSummary>( "group", Constants.INSTANCE.Group(), new ClickHandler() {
+        listGrid.addFilter( new DataGridFilter<TaskSummary>( "group", Constants.INSTANCE.Group(), new Command() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void execute( ) {
                 presenter.refreshGroupTasks();
                 ;
             }
         } ) );
 
-        listGrid.addFilter( new DataGridFilter<TaskSummary>( "all", Constants.INSTANCE.All(), new ClickHandler() {
+        listGrid.addFilter( new DataGridFilter<TaskSummary>( "all", Constants.INSTANCE.All(), new Command() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void execute(  ) {
                 presenter.refreshAllTasks();
                 ;
             }
         } ) );
 
-        listGrid.addFilter( new DataGridFilter<TaskSummary>( "taskAdmin", Constants.INSTANCE.Task_Admin(), new ClickHandler() {
+        listGrid.addFilter( new DataGridFilter<TaskSummary>( "taskAdmin", Constants.INSTANCE.Task_Admin(), new Command() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void execute( ) {
                 presenter.refreshAdminTasks();
                 ;
             }
