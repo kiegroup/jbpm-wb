@@ -16,9 +16,7 @@
 
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -34,6 +32,7 @@ import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.DataGridFilter;
+import org.uberfire.ext.widgets.common.client.tables.popup.NewFilterPopup;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
@@ -78,6 +77,9 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
 
     @Inject
     private QuickNewJobPopup quickNewJobPopup;
+
+    @Inject
+    private NewFilterPopup newFilterPopup;
 
     @Inject
     private JobServiceSettingsPopup jobServiceSettingsPopup;
@@ -183,9 +185,64 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
             }
         } ) );
 
-        listGrid.refreshFilterDropdown();
-    }
+        HashMap storedCustomFilters = listGrid.getStoredCustomFilters();
+        if(storedCustomFilters!=null) {
+            Set customFilterKeys = storedCustomFilters.keySet();
+            Iterator it = customFilterKeys.iterator();
+            String customFilterName;
 
+            while ( it.hasNext() ) {
+                customFilterName = ( String ) it.next();
+
+                final HashMap filterValues = ( HashMap ) storedCustomFilters.get( customFilterName );
+
+                listGrid.addFilter( new DataGridFilter<RequestSummary>( customFilterName, customFilterName,
+                        new Command() {
+                            @Override
+                            public void execute() {
+                                List<String> statuses = (List) filterValues.get("states");
+                                presenter.refreshRequests( statuses );
+                            }
+                        } ) );
+
+
+            }
+        }
+
+        listGrid.addFilter(new DataGridFilter<RequestSummary>("addFilter","+",
+                new Command() {
+                    @Override
+                    public void execute() {
+                        Command addFilter =new Command() {
+                            @Override
+                            public void execute() {
+                                final String newFilterName =(String) newFilterPopup.getFormValues().get( NewFilterPopup.FILTER_NAME_PARAM);
+                                listGrid.storeNewCustomFilter( newFilterName , newFilterPopup.getFormValues() );
+                                listGrid.clearFilters();
+                                initFilters();
+                            }
+                        } ;
+                        createFilterForm();
+                        newFilterPopup.show(addFilter);
+                    }
+                }  ));
+        listGrid.refreshFilterDropdown();
+
+    }
+    private void createFilterForm(){
+        HashMap<String,String> statesListBoxInfo = new HashMap<String, String>(  );
+
+        statesListBoxInfo.put( String.valueOf( "QUEUED" ), Constants.INSTANCE.Queued() );
+        statesListBoxInfo.put( String.valueOf( "RUNNING" ), Constants.INSTANCE.Running() );
+        statesListBoxInfo.put( String.valueOf( "RETRYING" ), Constants.INSTANCE.Retrying() );
+        statesListBoxInfo.put( String.valueOf( "ERROR" ), Constants.INSTANCE.Error() );
+        statesListBoxInfo.put( String.valueOf( "DONE" ), Constants.INSTANCE.Completed() );
+        statesListBoxInfo.put( String.valueOf( "CANCELLED" ), Constants.INSTANCE.Cancelled() );
+
+        newFilterPopup.init();
+        newFilterPopup.addListBoxToFilter( Constants.INSTANCE.Status(), "states",true,statesListBoxInfo );
+
+    }
 
     
     private void initSelectionModel(){
