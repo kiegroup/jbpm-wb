@@ -35,6 +35,7 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
+import org.jbpm.console.ng.gc.client.util.TaskUtils;
 import org.jbpm.console.ng.ht.client.editors.quicknewtask.QuickNewTaskPopup;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
@@ -42,10 +43,13 @@ import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
+import org.jbpm.console.ng.ht.util.TaskRoleDefinition;
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.DataGridFilter;
+import org.uberfire.ext.widgets.common.client.tables.popup.NewFilterPopup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
@@ -53,10 +57,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Dependent
 public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksListGridPresenter>
@@ -78,6 +79,9 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
 
     @Inject
     private QuickNewTaskPopup quickNewTaskPopup;
+
+    @Inject
+    private NewFilterPopup newFilterPopup;
 
     @Override
     public void init(final TasksListGridPresenter presenter) {
@@ -263,10 +267,85 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         } ) );
 
+
+        HashMap storedCustomFilters = listGrid.getStoredCustomFilters();
+        if(storedCustomFilters!=null) {
+            Set customFilterKeys = storedCustomFilters.keySet();
+            Iterator it = customFilterKeys.iterator();
+            String customFilterName;
+
+            while ( it.hasNext() ) {
+                customFilterName = ( String ) it.next();
+
+                final HashMap filterValues = ( HashMap ) storedCustomFilters.get( customFilterName );
+
+                listGrid.addFilter( new DataGridFilter<TaskSummary>( customFilterName, customFilterName,
+                        new Command() {
+                            @Override
+                            public void execute() {
+                                List<String> states = (List) filterValues.get( TasksListGridPresenter.FILTER_STATUSES_PARAM_NAME);
+                                List<String> selectedCurrentRole = (List) filterValues.get( TasksListGridPresenter.FILTER_CURRENT_ROLE_PARAM_NAME);
+                                String currentRole = null;
+                                if(selectedCurrentRole!=null && selectedCurrentRole.size()>0){
+                                    currentRole = (String) selectedCurrentRole.get( 0 );
+                                }
+                                presenter.filterGrid( currentRole ,states);
+                            }
+                        } ) );
+
+
+            }
+        }
+
+        listGrid.addFilter(new DataGridFilter<TaskSummary> ("addFilter","+",
+                new Command() {
+                    @Override
+                    public void execute() {
+                        Command addFilter =new Command() {
+                            @Override
+                            public void execute() {
+                                final String newFilterName =(String) newFilterPopup.getFormValues().get( NewFilterPopup.FILTER_NAME_PARAM);
+                                listGrid.storeNewCustomFilter( newFilterName , newFilterPopup.getFormValues() );
+                                listGrid.clearFilters();
+                                initFilters();
+                            }
+                        } ;
+                        createFilterForm();
+                        newFilterPopup.show(addFilter);
+                    }
+                }  ));
         listGrid.refreshFilterDropdown();
 
     }
 
+    private void createFilterForm(){
+        HashMap<String,String> stateListBoxInfo = new HashMap<String, String>(  );
+
+        stateListBoxInfo.put( TaskUtils.TASK_STATUS_CREATED, Constants.INSTANCE.Created());
+        stateListBoxInfo.put( TaskUtils.TASK_STATUS_READY, Constants.INSTANCE.Ready());
+        stateListBoxInfo.put( TaskUtils.TASK_STATUS_RESERVED, Constants.INSTANCE.Reserved());
+        stateListBoxInfo.put( TaskUtils.TASK_STATUS_INPROGRESS, Constants.INSTANCE.InProgress());
+        stateListBoxInfo.put( TaskUtils.TASK_STATUS_SUSPENDED, Constants.INSTANCE.Suspended());
+        stateListBoxInfo.put( TaskUtils.TASK_STATUS_FAILED, Constants.INSTANCE.Failed());
+        stateListBoxInfo.put( TaskUtils.TASK_STATUS_ERROR, Constants.INSTANCE.Error());
+        stateListBoxInfo.put( TaskUtils.TASK_STATUS_EXITED, Constants.INSTANCE.Exited());
+        stateListBoxInfo.put( TaskUtils.TASK_STATUS_OBSOLETE, Constants.INSTANCE.Obsolete());
+        stateListBoxInfo.put( TaskUtils.TASK_STATUS_COMPLETED, Constants.INSTANCE.Completed());
+
+        HashMap<String,String> currentRoleListBoxInfo = new HashMap<String, String>(  );
+
+        currentRoleListBoxInfo.put( TaskRoleDefinition.TASK_ROLE_INITIATOR, Constants.INSTANCE.Initiator());
+        currentRoleListBoxInfo.put( TaskRoleDefinition.TASK_ROLE_STAKEHOLDER, Constants.INSTANCE.Stakeholder() );
+        currentRoleListBoxInfo.put( TaskRoleDefinition.TASK_ROLE_POTENTIALOWNER, Constants.INSTANCE.Potential_Owner() );
+        currentRoleListBoxInfo.put( TaskRoleDefinition.TASK_ROLE_ACTUALOWNER, Constants.INSTANCE.Actual_Owner() );
+        currentRoleListBoxInfo.put( TaskRoleDefinition.TASK_ROLE_ADMINISTRATOR, Constants.INSTANCE.Administrator() );
+
+
+        newFilterPopup.init();
+        newFilterPopup.addListBoxToFilter( Constants.INSTANCE.Status(),TasksListGridPresenter.FILTER_STATUSES_PARAM_NAME ,true, stateListBoxInfo );
+        newFilterPopup.addListBoxToFilter( Constants.INSTANCE.TaskRole(),TasksListGridPresenter.FILTER_CURRENT_ROLE_PARAM_NAME ,false, currentRoleListBoxInfo );
+
+    }
     private void initCellPreview() {
         listGrid.addCellPreviewHandler(new CellPreviewEvent.Handler<TaskSummary>() {
 

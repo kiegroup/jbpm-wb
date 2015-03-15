@@ -22,7 +22,17 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 public class TaskUtils {
-    
+    public static String TASK_STATUS_CREATED = "Created";
+    public static String TASK_STATUS_READY = "Ready";
+    public static String TASK_STATUS_RESERVED = "Reserved";
+    public static String TASK_STATUS_INPROGRESS = "InProgress";
+    public static String TASK_STATUS_SUSPENDED = "Suspended";
+    public static String TASK_STATUS_FAILED = "Failed";
+    public static String TASK_STATUS_ERROR = "Error";
+    public static String TASK_STATUS_EXITED = "Exited";
+    public static String TASK_STATUS_OBSOLETE = "Obsolete";
+    public static String TASK_STATUS_COMPLETED = "Completed";
+
     public static enum TaskType {
         PERSONAL, ACTIVE, GROUP, ALL, ADMIN
     }
@@ -45,20 +55,21 @@ public class TaskUtils {
         ImmutableList<String> status = null;
         switch (type) {
         case ACTIVE:
-            status = ImmutableList.of("Ready", "Reserved", "InProgress");
+            status = ImmutableList.of(TASK_STATUS_READY, TASK_STATUS_RESERVED, TASK_STATUS_INPROGRESS);
             break;
         case GROUP:
-            status = ImmutableList.of("Ready");
+            status = ImmutableList.of(TASK_STATUS_READY);
             break;
         case ALL:
-            status = ImmutableList.of("Created", "Ready", "Reserved", "InProgress", "Suspended", "Failed", "Error", "Exited",
-                    "Obsolete", "Completed");
+            status = ImmutableList.of(TASK_STATUS_CREATED, TASK_STATUS_READY, TASK_STATUS_RESERVED,
+                    TASK_STATUS_INPROGRESS, TASK_STATUS_SUSPENDED, TASK_STATUS_FAILED, TASK_STATUS_ERROR,
+                    TASK_STATUS_EXITED, TASK_STATUS_OBSOLETE, TASK_STATUS_COMPLETED);
             break;
         case PERSONAL:
-            status = ImmutableList.of("InProgress", "Created", "Reserved");
+            status = ImmutableList.of(TASK_STATUS_INPROGRESS, TASK_STATUS_CREATED, TASK_STATUS_RESERVED);
             break;
         case ADMIN:
-            status = ImmutableList.of("Ready", "InProgress", "Created", "Reserved");
+            status = ImmutableList.of(TASK_STATUS_READY, TASK_STATUS_INPROGRESS, TASK_STATUS_CREATED, TASK_STATUS_RESERVED);
             break;
         default:
             throw new IllegalStateException("Unrecognized view type '" + type + "'!");
