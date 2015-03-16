@@ -208,8 +208,14 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
 
             }
         }
-
-        listGrid.addFilter(new DataGridFilter<RequestSummary>("addFilter","+",
+        final Command refreshFilterDropDownCommand = new Command() {
+            @Override
+            public void execute() {
+                listGrid.clearFilters();
+                initFilters();
+            }
+        };
+        listGrid.addFilter(new DataGridFilter<RequestSummary>("addFilter","-- "+Constants.INSTANCE.ManageFilters()+" --",
                 new Command() {
                     @Override
                     public void execute() {
@@ -223,7 +229,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
                             }
                         } ;
                         createFilterForm();
-                        newFilterPopup.show(addFilter);
+                        newFilterPopup.show(addFilter, refreshFilterDropDownCommand,listGrid.getGridPreferencesStore());
                     }
                 }  ));
         listGrid.refreshFilterDropdown();

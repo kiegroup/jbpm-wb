@@ -213,5 +213,6 @@ public interface Constants extends Messages {
     String Stakeholder();
     String Potential_Owner();
     String Administrator();
+    String ManageFilters();
 
 }

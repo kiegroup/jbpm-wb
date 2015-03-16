@@ -296,8 +296,15 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
 
             }
         }
+        final Command refreshFilterDropDownCommand = new Command() {
+            @Override
+            public void execute() {
+                listGrid.clearFilters();
+                initFilters();
+            }
+        };
 
-        listGrid.addFilter(new DataGridFilter<TaskSummary> ("addFilter","+",
+        listGrid.addFilter(new DataGridFilter<TaskSummary> ("addFilter","-- " + Constants.INSTANCE.ManageFilters() + " --",
                 new Command() {
                     @Override
                     public void execute() {
@@ -311,7 +318,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
                             }
                         } ;
                         createFilterForm();
-                        newFilterPopup.show(addFilter);
+                        newFilterPopup.show(addFilter,refreshFilterDropDownCommand,listGrid.getGridPreferencesStore());
                     }
                 }  ));
         listGrid.refreshFilterDropdown();

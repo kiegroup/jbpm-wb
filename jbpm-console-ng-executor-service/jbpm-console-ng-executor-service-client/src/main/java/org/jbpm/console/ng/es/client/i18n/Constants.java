@@ -130,5 +130,7 @@ public interface Constants extends Messages {
     String Ok();
     String Job_Request_Details();
 
+    String ManageFilters();
+
 
 }
