@@ -41,6 +41,8 @@ public interface Constants extends Messages {
 
     String New_Item();
 
+    String Select_Date();
+
     String Day();
 
     String Week();
@@ -48,4 +50,8 @@ public interface Constants extends Messages {
     String Month();
 
     String Today();
+
+    String Previous();
+
+    String Next();
 }

@@ -178,6 +178,7 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
 
         Button configRepoButton = new Button();
         configRepoButton.setIcon(IconType.COG);
+        configRepoButton.setTitle( Constants.INSTANCE.ConfigurationPanel() );
         configRepoButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {

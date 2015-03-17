@@ -78,12 +78,7 @@ public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessF
 
             if (jsonParams == null) return;
 
-            Map<String, String> params = new HashMap<String, String>(  );
-
-            for (String key : jsonParams.keySet()) {
-                JSONValue value = jsonParams.get( key );
-                if (value.isString() != null) params.put( key, value.isString().stringValue() );
-            }
+            Map<String, String> params = jsniHelper.parseParams( jsonParams );
 
             placeManagerFormActivitySearcher.findFormActivityWidget(destination, formContainer);
             setFormParamsEvent.fire(new SetFormParamsEvent(params, false));

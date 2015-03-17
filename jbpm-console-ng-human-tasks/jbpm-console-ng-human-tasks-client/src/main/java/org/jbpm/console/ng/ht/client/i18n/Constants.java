@@ -215,4 +215,5 @@ public interface Constants extends Messages {
     String Administrator();
     String ManageFilters();
 
+    String Close();
 }
