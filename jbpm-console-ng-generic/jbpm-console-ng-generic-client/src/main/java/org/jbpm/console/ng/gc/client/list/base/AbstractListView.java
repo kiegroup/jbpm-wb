@@ -125,7 +125,7 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
                 }
                 initColumns();
                 initGenericToolBar();
-                listGrid.setPageSizeValue();
+                listGrid.loadPageSizePreferences();
             }
         } ).loadGridPreferences( preferences.getKey() );
 
