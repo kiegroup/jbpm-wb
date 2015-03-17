@@ -144,6 +144,11 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
         listGrid.addColumns(columnMetas);
     }
 
+    @Override
+    public void initFilters() {
+
+    }
+
     private Column initDocumentIdColumn() {
         // Id
         Column<DocumentSummary, String> documentId = new Column<DocumentSummary, String>(new TextCell()) {

@@ -163,6 +163,11 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
         listGrid.addColumns(columnMetas);
     }
 
+    @Override
+    public void initFilters() {
+
+    }
+
     private Column<ProcessVariableSummary, ?> initProcessVariableIdColumn() {
         // Id
         Column<ProcessVariableSummary, String> variableId = new Column<ProcessVariableSummary, String>(new TextCell()) {

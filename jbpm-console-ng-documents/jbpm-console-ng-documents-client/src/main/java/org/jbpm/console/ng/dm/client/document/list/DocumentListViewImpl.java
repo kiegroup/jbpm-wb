@@ -208,6 +208,11 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
         listGrid.addColumns(columnMetas);
     }
 
+    @Override
+    public void initFilters() {
+
+    }
+
     private Column<CMSContentSummary, ?> initIdColumn() {
         Column<CMSContentSummary, String> idColumn = new Column<CMSContentSummary, String>(new TextCell()) {
             @Override

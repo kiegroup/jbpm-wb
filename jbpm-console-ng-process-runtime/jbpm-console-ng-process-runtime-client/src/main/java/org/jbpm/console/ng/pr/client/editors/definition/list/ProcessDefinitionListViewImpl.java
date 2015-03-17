@@ -169,6 +169,11 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         listGrid.addColumns(columnMetas);
     }
 
+    @Override
+    public void initFilters() {
+
+    }
+
     private Column initProcessNameColumn() {
         // Process Name String.
         Column<ProcessSummary, String> processNameColumn = new Column<ProcessSummary, String>( new TextCell() ) {

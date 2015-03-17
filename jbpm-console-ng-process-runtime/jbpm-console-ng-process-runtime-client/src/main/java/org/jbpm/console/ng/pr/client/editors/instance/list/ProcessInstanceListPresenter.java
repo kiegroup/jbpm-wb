@@ -56,6 +56,8 @@ import org.uberfire.paging.PageResponse;
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance List")
 public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<ProcessInstanceSummary> {
+  public static String FILTER_STATE_PARAM_NAME = "states";
+  public static String FILTER_PROCESS_DEFINITION_PARAM_NAME = "currentProcessDefinition";
 
   public interface ProcessInstanceListView extends ListView<ProcessInstanceSummary, ProcessInstanceListPresenter> {
 
@@ -108,9 +110,9 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
         if (currentFilter.getParams() == null) {
           currentFilter.setParams(new HashMap<String, Object>());
         }
-        currentFilter.getParams().put("states", currentActiveStates);
+        currentFilter.getParams().put(FILTER_STATE_PARAM_NAME, currentActiveStates);
         currentFilter.getParams().put("initiator", initiator);
-        currentFilter.getParams().put("currentProcessDefinition", currentProcessDefinition);
+        currentFilter.getParams().put(FILTER_PROCESS_DEFINITION_PARAM_NAME, currentProcessDefinition);
 
         currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
                 .getColumn().getDataStoreName() : "");
@@ -139,6 +141,13 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
       }
     };
   }
+  public void filterGrid(ArrayList<Integer> states, String currentProcessDefinition ) {
+    this.currentActiveStates =states;
+    this.currentProcessDefinition = currentProcessDefinition;
+    refreshGrid();
+
+  }
+
 
   public void refreshActiveProcessList() {
     currentActiveStates = new ArrayList<Integer>();
@@ -167,6 +176,7 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
     refreshGrid();
 
   }
+
 
   public void newInstanceCreated(@Observes NewProcessInstanceEvent pi) {
     refreshActiveProcessList();

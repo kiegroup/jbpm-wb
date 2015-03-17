@@ -43,10 +43,15 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopup;
 import org.uberfire.paging.PageResponse;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.*;
 @Dependent
 @WorkbenchScreen(identifier = "Tasks List")
 public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSummary> {
+  public static String FILTER_STATUSES_PARAM_NAME = "statuses";
+  public static String FILTER_CURRENT_ROLE_PARAM_NAME = "filter";
 
   public interface TaskListView extends ListView<TaskSummary, TasksListGridPresenter> {
 
@@ -64,6 +69,8 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
   private Caller<TaskLifeCycleService> taskOperationsService;
   
   private String currentRole;
+
+  private List<String> currentStatuses;
 
   
 
@@ -99,8 +106,12 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
           currentFilter.setOffset(0);
           currentFilter.setCount(view.getListGrid().getPageSize());
         }
-        
-        currentFilter.getParams().put("statuses", TaskUtils.getStatusByType(currentStatusFilter));
+
+        if(currentStatusFilter==null) {
+          currentFilter.getParams().put( "statuses", TaskUtils.getStatusByType( currentStatusFilter ) );
+        } else {
+          currentFilter.getParams().put( "statuses",  currentStatuses  );
+        }
         currentFilter.getParams().put("filter", currentStatusFilter.toString());
         currentFilter.getParams().put("userId", identity.getIdentifier());
         currentFilter.getParams().put("taskRole",currentRole);
@@ -132,6 +143,12 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
     };
   }
 
+  public void filterGrid(String currentRole, List<String> currentStatuses) {
+    this.currentRole = currentRole;
+    this.currentStatuses= currentStatuses;
+    refreshGrid();
+
+  }
 
   public void refreshActiveTasks() {
     currentRole = TASK_ROLE_POTENTIALOWNER;
