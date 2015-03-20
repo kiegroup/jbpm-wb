@@ -277,13 +277,13 @@ public class AdministrationServiceImpl implements AdministrationService {
         Path ddVFSPath = ioService.get( URI.create( deploymentDescriptorPath ) );
         if ( !ioService.exists( ddVFSPath ) ) {
             DeploymentDescriptor dd = new DeploymentDescriptorManager( "org.jbpm.domain" ).getDefaultDescriptor();
-            Set<String> roles = new HashSet<String>( project.getRoles() );
+            Set<String> groups = new HashSet<String>( project.getGroups() );
 
             Repository repo = repositoryService.getRepository( repositoryAlias );
             if ( repo != null ) {
-                roles.addAll( repo.getRoles() );
+                groups.addAll( repo.getGroups() );
             }
-            dd.getBuilder().setRequiredRoles( new ArrayList<String>( roles ) );
+            dd.getBuilder().setRequiredRoles( new ArrayList<String>( groups ) );
 
             String xmlDescriptor = dd.toXml();
             ioService.write( ddVFSPath, xmlDescriptor );
