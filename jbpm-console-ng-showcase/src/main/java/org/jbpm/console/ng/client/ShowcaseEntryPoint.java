@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.inject.Inject;
 
 import com.google.gwt.animation.client.Animation;
@@ -28,7 +29,9 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
+
 import java.util.Map;
+
 import org.guvnor.common.services.shared.config.AppConfigService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -39,6 +42,7 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.client.i18n.Constants;
+import org.jbpm.console.ng.gc.client.experimental.workbranch.configuration.WorkbranchConfigurationMenuBuilder;
 import org.jbpm.console.ng.ht.forms.service.PlaceManagerActivityService;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
 import org.guvnor.common.services.shared.security.KieWorkbenchACL;
@@ -133,10 +137,10 @@ public class ShowcaseEntryPoint {
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu()
                 .newTopLevelMenu( constants.Dashboards() ).withItems( getDashboardsViews() ).endMenu()
                 .newTopLevelMenu( constants.Experimental() ).withItems( getExperimentalViews() ).endMenu()
+                .newTopLevelCustomMenu( iocManager.lookupBean( WorkbranchConfigurationMenuBuilder.class).getInstance() ).endMenu()
                 .newTopLevelMenu( constants.User() + ": " + identity.getIdentifier() ).position( MenuPosition.RIGHT ).withItems( getRoles() ).endMenu()
 
                 .build();
-
         menubar.addMenus( menus );
     }
 
