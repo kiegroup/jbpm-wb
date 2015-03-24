@@ -27,9 +27,7 @@
 
   <g:FlowPanel addStyleNames="{style.dataGridContainer}">
     <g:TabLayoutPanel ui:field="tabsContainer" barUnit="EM" barHeight="3">
-
     </g:TabLayoutPanel>
-
   </g:FlowPanel>
 
 </ui:UiBinder>

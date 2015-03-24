@@ -38,7 +38,8 @@ import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
-import org.uberfire.ext.services.shared.preferences.UserDataGridPreferencesService;
+import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
+import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -61,7 +62,7 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
     protected PlaceManager placeManager;
 
     @Inject
-    private Caller<UserDataGridPreferencesService> preferencesService;
+    private Caller<UserPreferencesService> preferencesService;
 
     protected V presenter;
 
@@ -109,7 +110,7 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
     public void init( V presenter,
                       final GridGlobalPreferences preferences ) {
         this.presenter = presenter;
-
+        
         listGrid = new ExtendedPagedTable<T>( 10, preferences );
         initWidget( listGrid );
         presenter.addDataDisplay( listGrid );
@@ -128,7 +129,7 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
                 initFilters();
                 listGrid.loadPageSizePreferences();
             }
-        } ).loadGridPreferences( preferences.getKey() );
+        } ).loadUserPreferences(preferences.getKey() , UserPreferencesType.GRIDPREFERENCES);
 
     }
 
