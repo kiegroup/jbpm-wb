@@ -15,8 +15,8 @@
  */
 package org.jbpm.console.ng.pr.backend.server;
 
-import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -32,6 +32,7 @@ import org.jbpm.console.ng.pr.model.DocumentKey;
 import org.jbpm.console.ng.pr.model.DocumentSummary;
 import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.console.ng.pr.service.DocumentsService;
+import org.jbpm.document.Document;
 import org.jbpm.services.api.DefinitionService;
 import org.jbpm.services.api.ProcessService;
 import org.jbpm.services.api.RuntimeDataService;
@@ -76,7 +77,9 @@ public class DocumentsServiceImpl implements DocumentsService {
     Map<String, String> properties = new HashMap<String, String>(bpmn2Service.getProcessVariables(deploymentId, processId));
     Collection<ProcessVariableSummary> processVariables = VariableHelper.adaptCollection(dataService.getVariablesCurrentState(processInstanceId), properties,
             processInstanceId);
-    
+
+    SimpleDateFormat sdf = new SimpleDateFormat( Document.DOCUMENT_DATE_PATTERN );
+
     List<DocumentSummary> documents = new ArrayList<DocumentSummary>();
     for (ProcessVariableSummary pv : processVariables) {
         if ("org.jbpm.document.Document".equals(pv.getType())) {
@@ -85,8 +88,7 @@ public class DocumentsServiceImpl implements DocumentsService {
                 if (values.length == 4) {
                     Date lastModified = null;
                     try {
-                        lastModified = DateFormat.getDateInstance().parse(values[2]);
-
+                        lastModified = sdf.parse( values[ 2 ] );
                     } catch (ParseException ex) {
                         logger.error("Can not parse last modified date!", ex);
                     }
