@@ -32,133 +32,173 @@
 
     <dependencies>
 
-      <!-- dependencies added because of new illegal transitive dependency check -->
-      <dependency>
-        <groupId>com.github.gwtbootstrap</groupId>
-        <artifactId>gwt-bootstrap</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-core</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-services-backend</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-common</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-ioc</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-security-server</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-forms-api</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-human-task-audit</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-api</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-internal</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-refactoring-backend</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-backend-server</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-workbench-client</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-commons</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-io</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-nio2-model</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-api</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-security-api</artifactId>
-      </dependency>
+        <!-- dependencies added because of new illegal transitive dependency check -->
+        <dependency>
+            <groupId>com.github.gwtbootstrap</groupId>
+            <artifactId>gwt-bootstrap</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-services-backend</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-structure-api</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.kie.uberfire</groupId>
+                    <artifactId>kie-uberfire-social-activities-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.errai</groupId>
+            <artifactId>errai-common</artifactId>
+        </dependency>
+         <dependency>
+            <groupId>org.jboss.errai</groupId>
+            <artifactId>errai-marshalling</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.errai</groupId>
+            <artifactId>errai-ioc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.errai</groupId>
+            <artifactId>errai-security-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-human-tasks-forms-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-form-modeler-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-human-task-audit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-internal</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.services</groupId>
+            <artifactId>kie-wb-common-refactoring-backend</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.drools</groupId>
+                    <artifactId>drools-workbench-models-commons</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.drools</groupId>
+                    <artifactId>drools-workbench-models-datamodel-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-backend-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-backend-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-client-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-commons-editor-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-nio2-model</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-workbench-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-security-api</artifactId>
+        </dependency>
 
 
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty</artifactId>
-        <scope>runtime</scope>
-      </dependency>
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jetty</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-plus</artifactId>
-        <scope>runtime</scope>
-      </dependency>
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jetty-plus</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-naming</artifactId>
-        <scope>runtime</scope>
-      </dependency>
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jetty-naming</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 
-      <!-- Hack: ANT bundled with kie-ci needs to be excluded when running on Jetty -->
-      <!-- It is added back for other Application Servers in their respective assemblies -->
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-ci</artifactId>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <scope>runtime</scope>
-      </dependency>
+        <!-- Hack: ANT bundled with kie-ci needs to be excluded when running on Jetty -->
+        <!-- It is added back for other Application Servers in their respective assemblies -->
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-ci</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.ant</groupId>
+                    <artifactId>ant</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-services-api</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-kie-services</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-services-cdi</artifactId>
-      </dependency>
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-services-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-kie-services</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-services-cdi</artifactId>
+        </dependency>
 
    
         <!-- jBPM Console Panels -->
@@ -167,10 +207,19 @@
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-generic-client</artifactId>
         </dependency>
-    
+        
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-generic-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
         </dependency>
 
         <dependency>
@@ -217,9 +266,22 @@
                     <groupId>org.kie.workbench.services</groupId>
                     <artifactId>kie-wb-common-refactoring-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.kie.uberfire</groupId>
+                    <artifactId>kie-uberfire-social-activities-backend</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.kie.uberfire</groupId>
+                    <artifactId>kie-uberfire-social-activities-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
     
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-business-domain-api</artifactId>
+            
+        </dependency>
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-process-runtime-client</artifactId>
@@ -230,6 +292,10 @@
             <artifactId>jbpm-console-ng-process-runtime-backend</artifactId>
         </dependency>
    
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-process-runtime-api</artifactId>
+        </dependency>
  
         <!-- UberFire Extension -->
         <dependency>
@@ -250,7 +316,10 @@
             <groupId>org.uberfire</groupId>
             <artifactId>uberfire-widgets-commons</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-widgets-service-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.uberfire</groupId>
             <artifactId>uberfire-widgets-service-backend</artifactId>
@@ -275,7 +344,31 @@
             <artifactId>uberfire-servlet-security</artifactId>
         </dependency>
 
+        <!-- UberFire Extension -->
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-metadata-api</artifactId>
+        </dependency>
        
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-metadata-commons-io</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-metadata-backend-lucene</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-widgets-commons</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-widgets-service-backend</artifactId>
+        </dependency>
 
         <!-- Errai AS -->
         <dependency>
@@ -397,22 +490,46 @@
         <dependency>
             <groupId>org.kie.workbench.services</groupId>
             <artifactId>kie-wb-common-services-api</artifactId>
+            
+        </dependency>
+        
+        <dependency>
+            <groupId>org.kie.uberfire</groupId>
+            <artifactId>kie-uberfire-social-activities-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kie.workbench.services</groupId>
             <artifactId>kie-wb-common-services-backend</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.kie.uberfire</groupId>
+                    <artifactId>kie-uberfire-social-activities-backend</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.kie.uberfire</groupId>
+                    <artifactId>kie-uberfire-social-activities-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.guvnor</groupId>
+            <artifactId>guvnor-workingset-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.services</groupId>
+            <artifactId>kie-wb-common-datamodel-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.kie.workbench.widgets</groupId>
             <artifactId>kie-wb-common-ui</artifactId>
             <exclusions>
+                
+               
+               
                 <exclusion>
-                    <groupId>org.guvnor</groupId>
-                    <artifactId>guvnor-workingset-api</artifactId>
+                    <groupId>org.drools</groupId>
+                    <artifactId>drools-workbench-models-datamodel-api</artifactId>
                 </exclusion>
-
             </exclusions>
         </dependency>
    
@@ -435,10 +552,33 @@
         <dependency>
             <groupId>org.guvnor</groupId>
             <artifactId>guvnor-project-api</artifactId>
+            <exclusions>
+               
+                <exclusion>
+                    <groupId>org.kie.uberfire</groupId>
+                    <artifactId>kie-uberfire-social-activities-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.guvnor</groupId>
             <artifactId>guvnor-project-backend</artifactId>
+            <exclusions>
+                
+                <exclusion>
+                    <groupId>org.kie.uberfire</groupId>
+                    <artifactId>kie-uberfire-social-activities-backend</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.kie.uberfire</groupId>
+                    <artifactId>kie-uberfire-social-activities-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-workbench-models-datamodel-api</artifactId>
+        
         </dependency>
         <dependency>
             <groupId>org.guvnor</groupId>
