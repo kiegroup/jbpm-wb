@@ -20,7 +20,7 @@ import org.jboss.errai.bus.server.annotations.Remote;
 @Remote
 public interface FormModelerProcessStarterEntryPoint {
 
-    Long startProcessFromRenderContext(String ctxUID, String domainId, String processId);
+    Long startProcessFromRenderContext(String ctxUID, String domainId, String processId, String correlationKey);
     Long saveTaskStateFromRenderContext(String ctxUID, Long taskId);
     Long saveTaskStateFromRenderContext(String ctxUID, Long taskId, boolean clearStatus);
     void completeTaskFromContext(String ctxUID, Long taskId, String identityName);

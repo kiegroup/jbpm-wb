@@ -52,4 +52,6 @@ public interface Constants extends Messages {
     String Start();
 
     String Submit();
+
+    String Correlation_Key();
 }

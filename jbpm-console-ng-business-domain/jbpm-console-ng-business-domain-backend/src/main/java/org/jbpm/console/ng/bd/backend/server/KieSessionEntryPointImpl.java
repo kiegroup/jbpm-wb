@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.bd.backend.server;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,9 @@ import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.services.api.ProcessService;
+import org.kie.internal.KieInternalServices;
+import org.kie.internal.process.CorrelationKey;
+import org.kie.internal.process.CorrelationKeyFactory;
 
 @Service
 @ApplicationScoped
@@ -32,6 +36,8 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
 
     @Inject
     private ProcessService processService;
+
+    private CorrelationKeyFactory correlationKeyFactory = KieInternalServices.Factory.get().newCorrelationKeyFactory();
 
     @Override
     public long startProcess(String deploymentId, String processId) {
@@ -48,6 +54,24 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
     public long startProcess(String deploymentUnitId, String processId, Map<String, Object> params) {
         try {
             Long processInstanceId = processService.startProcess(deploymentUnitId, processId, params);
+
+            return processInstanceId;
+        } catch (Exception e) {
+            throw ExceptionUtilities.handleException(e);
+        }
+    }
+
+    @Override
+    public long startProcess(String deploymentUnitId, String processId, String correlationKey, Map<String, Object> params) {
+        try {
+            CorrelationKey correlationKeyValue = null;
+            if (correlationKey != null && !correlationKey.isEmpty()) {
+                String[] correlations = correlationKey.split(",");
+
+                correlationKeyValue = correlationKeyFactory.newCorrelationKey(Arrays.asList(correlations));
+            }
+
+            Long processInstanceId = processService.startProcess(deploymentUnitId, processId, correlationKeyValue, params);
 
             return processInstanceId;
         } catch (Exception e) {

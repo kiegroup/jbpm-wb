@@ -15,7 +15,12 @@
  */
 package org.jbpm.console.ng.ht.forms.client.display.displayers.process;
 
+import com.github.gwtbootstrap.client.ui.Accordion;
+import com.github.gwtbootstrap.client.ui.AccordionGroup;
+import com.github.gwtbootstrap.client.ui.event.HiddenEvent;
+import com.github.gwtbootstrap.client.ui.event.HiddenHandler;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
@@ -51,9 +56,38 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
         jsniHelper.publishGetFormValues();
         formContainer.clear();
 
+        Accordion accordion = new Accordion();
+
+
+        AccordionGroup accordionGroupCorrelation = new AccordionGroup();
+        accordionGroupCorrelation.addHiddenHandler(new HiddenHandler() {
+            @Override
+            public void onHidden(HiddenEvent hiddenEvent) {
+                hiddenEvent.stopPropagation();
+            }
+        });
+        accordionGroupCorrelation.setHeading(constants.Correlation_Key());
+        accordionGroupCorrelation.setDefaultOpen(false);
+        accordionGroupCorrelation.add(correlationKey);
+        accordion.add(accordionGroupCorrelation);
+
+
+        AccordionGroup accordionGroupForm = new AccordionGroup();
+        accordionGroupForm.addHiddenHandler(new HiddenHandler() {
+            @Override
+            public void onHidden(HiddenEvent hiddenEvent) {
+                hiddenEvent.stopPropagation();
+            }
+        });
+        accordionGroupForm.setHeading(constants.Form());
+        accordionGroupForm.setDefaultOpen(true);
+        accordionGroupForm.add(new HTMLPanel(formContent));
+        accordion.add(accordionGroupForm);
+
         jsniHelper.injectFormValidationsScripts(formContent);
 
-        formContainer.add(new HTMLPanel(formContent));
+        formContainer.add(accordion);
+
     }
 
 
@@ -70,7 +104,7 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
     public void startProcess(JavaScriptObject values) {
         final Map<String, Object> params = jsniHelper.getParameters(values);
         sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
-                .startProcess(deploymentId, processDefId, params);
+                .startProcess(deploymentId, processDefId, getCorrelationKey(), params);
     }
 
     protected native void publish(FTLStartProcessDisplayerImpl ftl)/*-{

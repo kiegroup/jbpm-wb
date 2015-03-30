@@ -40,7 +40,7 @@ public class ProcessInstanceHelper {
     public static ProcessInstanceSummary adapt(ProcessInstanceDesc processInstance) {
         ProcessInstanceSummary processInstanceSummary = new ProcessInstanceSummary(processInstance.getId(), processInstance.getProcessId(),
                 processInstance.getDeploymentId(), processInstance.getProcessName(), processInstance.getProcessVersion(),
-                processInstance.getState(), processInstance.getDataTimeStamp(), processInstance.getInitiator(),processInstance.getProcessInstanceDescription());
+                processInstance.getState(), processInstance.getDataTimeStamp(), processInstance.getInitiator(),processInstance.getProcessInstanceDescription(), processInstance.getCorrelationKey());
 
         List<UserTaskSummary> activeTasks = new ArrayList<UserTaskSummary>();
         if (processInstance.getActiveTasks() != null) {

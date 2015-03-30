@@ -21,6 +21,8 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsonUtils;
@@ -29,6 +31,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -63,6 +66,9 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     protected FlowPanel formContainer = new FlowPanel();
     protected FlowPanel footerButtons = new FlowPanel();
 
+    protected TextBox correlationKey = new TextBox();
+    protected Label correlationKeyLabel;
+
     protected String formContent;
 
     protected String deploymentId;
@@ -87,6 +93,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     @Inject
     protected JSNIHelper jsniHelper;
 
+
     @PostConstruct
     protected void init() {
         container.getElement().setId("form-data");
@@ -108,6 +115,9 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
 
         container.add(formContainer);
 
+        correlationKey = new TextBox();
+
+
         Button startButton = new Button(constants.Submit(), new ClickHandler() {
             @Override public void onClick(ClickEvent event) {
                 startProcessFromDisplayer();
@@ -128,6 +138,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
                 }
 
                 initDisplayer();
+
                 doResize();
             }
         }).getProcessDesc(deploymentId, processDefId);
@@ -164,7 +175,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     @Override
     public void startProcess(Map<String, Object> params) {
         sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
-                .startProcess(deploymentId, processDefId, params);
+                .startProcess(deploymentId, processDefId, correlationKey.getValue(), params);
     }
 
     protected RemoteCallback<Long> getStartProcessRemoteCallback() {
@@ -245,5 +256,9 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     @Override
     public String getOpener() {
         return opener;
+    }
+
+    protected String getCorrelationKey() {
+        return correlationKey.getText();
     }
 }

@@ -238,4 +238,6 @@ public interface Constants extends Messages {
     String Ok();
 
     String Close();
+
+    String Correlation_Key();
 }

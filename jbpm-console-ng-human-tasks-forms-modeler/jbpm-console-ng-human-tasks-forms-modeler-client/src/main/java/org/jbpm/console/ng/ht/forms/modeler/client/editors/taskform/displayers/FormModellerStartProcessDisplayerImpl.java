@@ -19,7 +19,12 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.Accordion;
+import com.github.gwtbootstrap.client.ui.AccordionGroup;
+import com.github.gwtbootstrap.client.ui.event.HiddenEvent;
+import com.github.gwtbootstrap.client.ui.event.HiddenHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ht.forms.client.display.displayers.process.AbstractStartProcessFormDisplayer;
@@ -50,7 +55,34 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
 
         formRenderer.setVisible(true);
 
-        formContainer.add(formRenderer.asWidget());
+        Accordion accordion = new Accordion();
+
+        AccordionGroup accordionGroupCorrelation = new AccordionGroup();
+        accordionGroupCorrelation.addHiddenHandler(new HiddenHandler() {
+            @Override
+            public void onHidden(HiddenEvent hiddenEvent) {
+                hiddenEvent.stopPropagation();
+            }
+        });
+        accordionGroupCorrelation.setHeading(constants.Correlation_Key());
+        accordionGroupCorrelation.setDefaultOpen(false);
+        accordionGroupCorrelation.add(correlationKey);
+        accordion.add(accordionGroupCorrelation);
+
+
+        AccordionGroup accordionGroupForm = new AccordionGroup();
+        accordionGroupForm.addHiddenHandler(new HiddenHandler() {
+            @Override
+            public void onHidden(HiddenEvent hiddenEvent) {
+                hiddenEvent.stopPropagation();
+            }
+        });
+        accordionGroupForm.setHeading(constants.Form());
+        accordionGroupForm.setDefaultOpen(true);
+        accordionGroupForm.add(formRenderer.asWidget());
+        accordion.add(accordionGroupForm);
+
+        formContainer.add(accordion);
     }
 
     public void startProcessFromDisplayer() {
@@ -88,7 +120,7 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
             if (event.getContext().getErrors() == 0) {
                 if (ACTION_START_PROCESS.equals(action)) {
                     renderContextServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
-                            .startProcessFromRenderContext(formContent, deploymentId, processDefId);
+                            .startProcessFromRenderContext(formContent, deploymentId, processDefId, getCorrelationKey());
                 }
             }
         }

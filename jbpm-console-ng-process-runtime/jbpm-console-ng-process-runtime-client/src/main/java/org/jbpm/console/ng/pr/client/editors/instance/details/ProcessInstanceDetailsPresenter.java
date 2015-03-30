@@ -76,6 +76,8 @@ public class ProcessInstanceDetailsPresenter {
 
         HTML getProcessVersionText();
 
+        HTML getCorrelationKeyText();
+
         void setProcessAssetPath( Path processAssetPath );
 
         void setCurrentActiveNodes( List<NodeInstanceSummary> activeNodes );
@@ -168,6 +170,7 @@ public class ProcessInstanceDetailsPresenter {
             @Override
             public void callback( ProcessInstanceSummary process ) {
                 view.getProcessDeploymentText().setText( process.getDeploymentId() );
+                view.getCorrelationKeyText().setText(process.getCorrelationKey());
                 view.setProcessInstance( process );
 
                 String statusStr = "Unknown";
