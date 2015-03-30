@@ -84,7 +84,7 @@ public class DocumentsServiceImpl implements DocumentsService {
     for (ProcessVariableSummary pv : processVariables) {
         if ("org.jbpm.document.Document".equals(pv.getType())) {
             if (pv.getNewValue() != null && !pv.getNewValue().isEmpty()) {
-                String[] values = pv.getNewValue().split(",");
+                String[] values = pv.getNewValue().split( Document.PROPERTIES_SEPARATOR );
                 if (values.length == 4) {
                     Date lastModified = null;
                     try {
