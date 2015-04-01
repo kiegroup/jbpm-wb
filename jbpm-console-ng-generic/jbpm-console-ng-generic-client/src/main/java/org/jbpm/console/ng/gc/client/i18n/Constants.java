@@ -54,4 +54,30 @@ public interface Constants extends Messages {
     String Previous();
 
     String Next();
+    
+    String Basic();
+    
+    String Advanced();
+    
+    String Language();
+    
+    String German();
+    
+    String French();
+    
+    String Japanese();
+    
+    String Chinese();
+    
+    String Spanish();
+    
+    String Portuguese();
+    
+    String English();
+    
+    String PleaseSetAName();
+    
+    String Workbench_Settings();
+    
+    String View_Mode();
 }
