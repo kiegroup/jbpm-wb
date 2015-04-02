@@ -52,7 +52,7 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
       }
     }, gridPreferences, true);
 
-    dataGrid.addColumnSortHandler(new AsyncHandler(dataGrid));
+    dataGrid.addColumnSortHandler( new AsyncHandler( dataGrid ) );
   }
 
   public void setTooltip(int row, int column, String description) {
@@ -73,11 +73,6 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
 
   public void removeColumn(Column<T, ?> col) {
     dataGrid.removeColumn(col);
-  }
-
-  protected Widget makeWidget() {
-    pageSizesSelector = createPageSizesToggleButton();
-    return uiBinder.createAndBindUi( this );
   }
 
   @UiFactory

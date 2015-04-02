@@ -34,16 +34,12 @@ import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
-import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.mvp.Command;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.paging.PageResponse;
-import org.uberfire.workbench.model.menu.MenuFactory;
-import org.uberfire.workbench.model.menu.Menus;
+
 
 import com.google.gwt.core.client.GWT;
 import org.jboss.errai.bus.client.api.messaging.Message;
@@ -143,6 +139,9 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         return view;
     }
 
+    public void refreshRequests(String providerkey,List<String> statuses) {
+        refreshRequests( statuses );
+    }
     public void refreshRequests(List<String> statuses) {
         currentActiveStates = statuses;
         refreshGrid();
