@@ -54,4 +54,5 @@ public interface Constants extends Messages {
     String Previous();
 
     String Next();
+
 }

@@ -57,6 +57,10 @@ import org.uberfire.paging.PageResponse;
 @WorkbenchScreen(identifier = "Process Instance List")
 public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<ProcessInstanceSummary> {
 
+  public static String FILTER_STATE_PARAM_NAME = "states";
+  public static String FILTER_PROCESS_DEFINITION_PARAM_NAME = "currentProcessDefinition";
+  public static String FILTER_INITIATOR_PARAM_NAME = "initiator";
+
   public interface ProcessInstanceListView extends ListView<ProcessInstanceSummary, ProcessInstanceListPresenter> {
 
   }
@@ -108,9 +112,14 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
         if (currentFilter.getParams() == null) {
           currentFilter.setParams(new HashMap<String, Object>());
         }
-        currentFilter.getParams().put("states", currentActiveStates);
-        currentFilter.getParams().put("initiator", initiator);
-        currentFilter.getParams().put("currentProcessDefinition", currentProcessDefinition);
+        if ( initiator != null && initiator.trim().length() > 0 ) {
+          currentFilter.getParams().put( FILTER_INITIATOR_PARAM_NAME, initiator );
+        } else {
+          currentFilter.getParams().remove( FILTER_INITIATOR_PARAM_NAME );
+        }
+        currentFilter.getParams().put(FILTER_STATE_PARAM_NAME, currentActiveStates);
+
+        currentFilter.getParams().put(FILTER_PROCESS_DEFINITION_PARAM_NAME, currentProcessDefinition);
 
         currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
                 .getColumn().getDataStoreName() : "");
@@ -140,31 +149,52 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
     };
   }
 
-  public void refreshActiveProcessList() {
-    currentActiveStates = new ArrayList<Integer>();
-    currentActiveStates.add(ProcessInstance.STATE_ACTIVE);
-    refreshGrid();
+
+  public void filterGrid(  ArrayList<Integer> states, String currentProcessDefinition,String initiator ) {
+    this.currentActiveStates= states;
+    this.currentProcessDefinition = currentProcessDefinition;
+    this.initiator= initiator ;
+    refreshGrid(  );
 
   }
 
-  public void refreshRelatedToMeProcessList(String identity) {
-    currentActiveStates = new ArrayList<Integer>();
+
+  public void refreshActiveProcessList(  ) {
+    List<Integer> currentActiveStates =  new ArrayList<Integer>();
     currentActiveStates.add(ProcessInstance.STATE_ACTIVE);
-    initiator = identity;
+    this.currentActiveStates = currentActiveStates ;
+    this.currentProcessDefinition= place.getParameter( "processName", "" ) ;
+    this.initiator=null;
+    refreshGrid(  );
+
+  }
+
+  public void refreshRelatedToMeProcessList( String identity ) {
+    List<Integer> currentActiveStates =  new ArrayList<Integer>();
+    currentActiveStates.add( ProcessInstance.STATE_ACTIVE);
+    this.currentActiveStates = currentActiveStates ;
+    this.currentProcessDefinition= place.getParameter( "processName", "" ) ;
+    this.initiator=identity;
     refreshGrid();
   }
 
-  public void refreshAbortedProcessList() {
-    currentActiveStates = new ArrayList<Integer>();
+  public void refreshAbortedProcessList( ) {
+    List<Integer> currentActiveStates =  new ArrayList<Integer>();
     currentActiveStates.add(ProcessInstance.STATE_ABORTED);
-    refreshGrid();
+    this.currentActiveStates = currentActiveStates ;
+    this.currentProcessDefinition= place.getParameter( "processName", "" ) ;
+    this.initiator=null;
+    refreshGrid(  );
 
   }
 
-  public void refreshCompletedProcessList() {
-    currentActiveStates = new ArrayList<Integer>();
+  public void refreshCompletedProcessList(  ) {
+    List<Integer> currentActiveStates =  new ArrayList<Integer>();
     currentActiveStates.add(ProcessInstance.STATE_COMPLETED);
-    refreshGrid();
+    this.currentActiveStates = currentActiveStates ;
+    this.currentProcessDefinition= place.getParameter( "processName", "" ) ;
+    this.initiator=null;
+    refreshGrid(  );
 
   }
 

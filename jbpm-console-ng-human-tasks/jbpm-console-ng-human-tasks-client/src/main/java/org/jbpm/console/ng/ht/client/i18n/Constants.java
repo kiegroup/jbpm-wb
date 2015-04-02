@@ -198,4 +198,23 @@ public interface Constants extends Messages {
     String Low();
 
     String Close();
+
+    String FilterManagement();
+    String Created();
+    String Ready();
+    String Reserved();
+    String InProgress();
+    String Suspended();
+    String Failed();
+    String Error();
+    String Exited();
+    String Obsolete();
+    String Completed();
+
+    String TaskRole();
+    String Initiator();
+    String Stakeholder();
+    String Potential_Owner();
+    String Administrator();
+
 }

@@ -43,10 +43,14 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopup;
 import org.uberfire.paging.PageResponse;
 
+import java.util.List;
+
 import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.*;
 @Dependent
 @WorkbenchScreen(identifier = "Tasks List")
 public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSummary> {
+  public static String FILTER_STATUSES_PARAM_NAME = "statuses";
+  public static String FILTER_CURRENT_ROLE_PARAM_NAME = "filter";
 
   public interface TaskListView extends ListView<TaskSummary, TasksListGridPresenter> {
 
@@ -62,10 +66,12 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
 
   @Inject
   private Caller<TaskLifeCycleService> taskOperationsService;
-  
+
   private String currentRole;
 
-  
+  private List<String> currentStatuses;
+
+
 
   private TaskType currentStatusFilter = TaskUtils.TaskType.ACTIVE;
 
@@ -82,9 +88,9 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
                   visibleRange.getLength(),
                   false, "",
                   (columnSortList.size() > 0) ? columnSortList.get(0)
-                  .getColumn().getDataStoreName() : "",
+                          .getColumn().getDataStoreName() : "",
                   (columnSortList.size() > 0) ? columnSortList.get(0)
-                  .isAscending() : true);
+                          .isAscending() : true);
 
         }
         // If we are refreshing after a search action, we need to go back to offset 0
@@ -95,12 +101,16 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
           currentFilter.setFilterParams("");
         } else {
           currentFilter.setFilterParams("(LOWER(t.name) like '"+currentFilter.getParams().get("textSearch")
-                                        +"' or LOWER(t.description) like '"+currentFilter.getParams().get("textSearch")+"') ");
+                  +"' or LOWER(t.description) like '"+currentFilter.getParams().get("textSearch")+"') ");
           currentFilter.setOffset(0);
           currentFilter.setCount(view.getListGrid().getPageSize());
         }
-        
-        currentFilter.getParams().put("statuses", TaskUtils.getStatusByType(currentStatusFilter));
+
+        if(currentStatusFilter==null) {
+          currentFilter.getParams().put( "statuses", TaskUtils.getStatusByType( currentStatusFilter ) );
+        } else {
+          currentFilter.getParams().put( "statuses",  currentStatuses  );
+        }
         currentFilter.getParams().put("filter", currentStatusFilter.toString());
         currentFilter.getParams().put("userId", identity.getIdentifier());
         currentFilter.getParams().put("taskRole",currentRole);
@@ -132,6 +142,12 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
     };
   }
 
+  public void filterGrid(String currentRole, List<String> currentStatuses) {
+    this.currentRole = currentRole;
+    this.currentStatuses= currentStatuses;
+    refreshGrid();
+
+  }
 
   public void refreshActiveTasks() {
     currentRole = TASK_ROLE_POTENTIALOWNER;
@@ -158,11 +174,11 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
   }
 
   public void refreshAdminTasks() {
-     currentRole = TASK_ROLE_ADMINISTRATOR;
-     currentStatusFilter = TaskUtils.TaskType.ADMIN;
-     refreshGrid();
-    }
-  
+    currentRole = TASK_ROLE_ADMINISTRATOR;
+    currentStatusFilter = TaskUtils.TaskType.ADMIN;
+    refreshGrid();
+  }
+
   @WorkbenchPartTitle
   public String getTitle() {
     return constants.Tasks_List();

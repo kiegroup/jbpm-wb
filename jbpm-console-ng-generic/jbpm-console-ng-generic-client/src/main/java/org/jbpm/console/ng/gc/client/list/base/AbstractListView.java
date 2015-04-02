@@ -102,7 +102,7 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
     }
 
     public interface ListView<T extends GenericSummary, V> extends BasicListView<T>,
-                                                                   UberView<V> {
+            UberView<V> {
 
     }
 
@@ -125,6 +125,7 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
                 }
                 initColumns();
                 initGenericToolBar();
+                initFilters();
                 listGrid.loadPageSizePreferences();
             }
         } ).loadGridPreferences( preferences.getKey() );
@@ -173,4 +174,7 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
      *  DataGrid columns and how they must be initialized
      */
     public abstract void initColumns();
+
+    public void initFilters(){
+    }
 }

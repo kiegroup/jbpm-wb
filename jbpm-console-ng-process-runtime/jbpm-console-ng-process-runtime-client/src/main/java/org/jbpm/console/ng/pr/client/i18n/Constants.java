@@ -108,7 +108,7 @@ public interface Constants extends Messages {
     String New_Process_Instance();
 
     String View_Process_Model();
-    
+
     String Process_Definition_Id();
 
     String Process_Definition_Name();
@@ -188,7 +188,7 @@ public interface Constants extends Messages {
     String Bulk_Abort();
 
     String Process_Model();
-    
+
     String Views();
 
     String Process_Variables_Refreshed();
@@ -200,7 +200,7 @@ public interface Constants extends Messages {
     String Logs();
 
     String Get_Instance_Data();
-    
+
     String No_Documents_Available();
 
     String Documents();
@@ -212,15 +212,15 @@ public interface Constants extends Messages {
     String Size();
 
     String Technical_Log();
-    
+
     String Business_Log();
-    
+
     String Desc_Log_Order();
-    
+
     String Asc_Log_Order();
-    
+
     String Process_Instance_Name();
-    
+
     String Process_Instance_Description();
 
     String Select();
@@ -230,12 +230,14 @@ public interface Constants extends Messages {
     String Owner();
 
     String Project();
-    
+
     String Loading();
 
     String VariableValueUpdated(String variableName);
 
     String Ok();
+
+    String FilterManagement();
 
     String Close();
 
