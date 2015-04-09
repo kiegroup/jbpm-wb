@@ -17,23 +17,22 @@ package org.jbpm.console.ng.ht.forms.backend.server;
 
 import com.google.gson.Gson;
 import org.jbpm.console.ng.ht.forms.service.PlaceManagerActivityService;
-import org.jbpm.kie.services.impl.form.FormProvider;
 import org.jbpm.services.api.model.ProcessDefinition;
 import org.kie.api.task.model.Task;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.jbpm.kie.services.impl.form.provider.AbstractFormProvider;
 
 /**
  * @author salaboy
  */
 @ApplicationScoped
-public class PlaceManagerFormProvider implements FormProvider {
+public class PlaceManagerFormProvider extends AbstractFormProvider {
 
     private List<String> allActivities;
 
