@@ -39,7 +39,7 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.widgets.common.ErrorPopup;
+import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.client.workbench.widgets.split.WorkbenchSplitLayoutPanel;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
@@ -96,6 +96,9 @@ public class CMISConfigurationPresenter {
 	}
 
 	private Menus menus;
+
+	@Inject
+	private ErrorPopupPresenter errorPopup;
 
 	@Inject
 	private PlaceManager placeManager;
@@ -203,7 +206,7 @@ public class CMISConfigurationPresenter {
         }, new ErrorCallback<Message>() {
             @Override
             public boolean error(Message message, Throwable throwable) {
-                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+				errorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                 return true;
             }
         }).setConfigurationParameters(parameters);
@@ -226,7 +229,7 @@ public class CMISConfigurationPresenter {
         }, new ErrorCallback<Message>() {
             @Override
             public boolean error(Message message, Throwable throwable) {
-                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+				errorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
                 return true;
             }
         }).testConnection();

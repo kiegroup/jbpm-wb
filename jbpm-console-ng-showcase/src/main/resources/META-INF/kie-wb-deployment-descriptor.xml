@@ -38,4 +38,5 @@
   <environment-entries/>
   <configurations/>
   <required-roles/>
+  <remoteable-classes/>
 </deployment-descriptor>
