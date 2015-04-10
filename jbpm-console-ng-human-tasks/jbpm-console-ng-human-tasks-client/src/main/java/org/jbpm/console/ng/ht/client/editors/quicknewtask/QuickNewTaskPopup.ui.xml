@@ -88,6 +88,15 @@
                                 </g:HorizontalPanel>
                             </b:ControlGroup>
                             <g:FlowPanel ui:field="usersGroupsControlsPanel"/>
+                            <b:ControlGroup ui:field="taskFormNameControlGroup">
+                                <b:ControlLabel>
+                                    <ui:text from="{i18n.Task_Form_Name}"/>
+                                </b:ControlLabel>
+                                <b:Controls>
+                                    <b:TextBox ui:field="taskFormNameText"/>
+                                    <b:HelpBlock ui:field="taskFormNameHelpLabel"/>
+                                </b:Controls>
+                            </b:ControlGroup>
                         </b:Form>
 
                     </b:Fieldset>

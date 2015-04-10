@@ -58,10 +58,12 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
   public long addQuickTask(
                          final String taskName,
                          int priority,
-                         Date dueDate, final List<String> users, List<String> groups, String identity, boolean start, boolean claim){
+                         Date dueDate, final List<String> users, List<String> groups, String identity, boolean start, boolean claim,String taskformName){
         TaskFluent taskFluent = new TaskFluent().setName(taskName)
                                                 .setPriority(priority)
-                                                .setDueDate(dueDate);
+                                                .setDueDate(dueDate)
+                                                .setFormName(taskformName);
+
                 
         for(String user : users){
             taskFluent.addPotentialUser(user);
@@ -71,6 +73,8 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
         }
         taskFluent.setAdminUser("Administrator");
         taskFluent.setAdminGroup("Administrators");
+        Task task = taskFluent.getTask();
+
         long taskId = internalTaskService.addTask(taskFluent.getTask(), new HashMap<String, Object>());
         if(start){
             taskService.start(taskId, identity);

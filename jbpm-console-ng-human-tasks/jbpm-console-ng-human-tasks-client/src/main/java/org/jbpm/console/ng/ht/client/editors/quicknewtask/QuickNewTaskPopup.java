@@ -106,6 +106,16 @@ public class QuickNewTaskPopup extends BaseModal {
     @UiField
     public ControlGroup errorMessagesGroup;
 
+
+    @UiField
+    public TextBox taskFormNameText;
+
+    @UiField
+    public ControlGroup taskFormNameControlGroup;
+
+    @UiField
+    public HelpBlock taskFormNameHelpLabel;
+
     @Inject
     User identity;
 
@@ -351,7 +361,7 @@ public class QuickNewTaskPopup extends BaseModal {
         } else {
             addTask( users, groups,
                     taskNameText.getText(), taskPriorityListBox.getSelectedIndex(),
-                    dueDate.getValue(), dueDateTime.getValue() );
+                    dueDate.getValue(), dueDateTime.getValue(), taskFormNameText.getValue() );
         }
 
     }
@@ -360,7 +370,7 @@ public class QuickNewTaskPopup extends BaseModal {
     public void addTask( final List<String> users, List<String> groups,
                          final String taskName,
                          int priority,
-                         long dueDate, long dueDateTime ) {
+                         long dueDate, long dueDateTime,String taskFormName ) {
         Date due = UTCDateBox.utc2date( dueDate + dueDateTime );
 
         boolean start = false;
@@ -371,7 +381,7 @@ public class QuickNewTaskPopup extends BaseModal {
                 start = true;
             }
         }
-
+        displayNotification( "form" +taskFormName );
         taskOperationsService.call( new RemoteCallback<Long>() {
             @Override
             public void callback( Long taskId ) {
@@ -386,7 +396,7 @@ public class QuickNewTaskPopup extends BaseModal {
                 //ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                 return true;
             }
-        } ).addQuickTask( taskName, priority, due, users, groups, identity.getIdentifier(), start, claim );
+        } ).addQuickTask( taskName, priority, due, users, groups, identity.getIdentifier(), start, claim, taskFormName );
 
 
     }

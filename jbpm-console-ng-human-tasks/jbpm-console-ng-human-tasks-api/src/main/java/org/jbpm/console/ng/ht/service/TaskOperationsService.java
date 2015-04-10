@@ -35,7 +35,8 @@ public interface TaskOperationsService{
   public long addQuickTask(
                          final String taskName,
                          int priority,
-                         Date dueDate, final List<String> users, List<String> groups, String identity, boolean start, boolean claim);
+                         Date dueDate, final List<String> users, List<String> groups, String identity, boolean start,
+                         boolean claim,String taskFormName);
   
   public void updateTask(long taskId, int priority, List<String> taskDescription, Date dueDate);
   
