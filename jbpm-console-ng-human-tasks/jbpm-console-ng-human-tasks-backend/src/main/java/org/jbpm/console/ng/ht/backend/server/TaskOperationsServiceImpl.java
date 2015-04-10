@@ -58,11 +58,14 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
   public long addQuickTask(
                          final String taskName,
                          int priority,
-                         Date dueDate, final List<String> users, List<String> groups, String identity, boolean start, boolean claim,String taskformName){
+                         Date dueDate, final List<String> users, List<String> groups, String identity, boolean start,
+                         boolean claim,String taskformName,String deploymentId){
         TaskFluent taskFluent = new TaskFluent().setName(taskName)
                                                 .setPriority(priority)
                                                 .setDueDate(dueDate)
-                                                .setFormName(taskformName);
+                                                .setFormName(taskformName)
+                                                .setDeploymentID( deploymentId );
+
 
                 
         for(String user : users){

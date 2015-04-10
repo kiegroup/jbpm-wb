@@ -88,6 +88,15 @@
                                 </g:HorizontalPanel>
                             </b:ControlGroup>
                             <g:FlowPanel ui:field="usersGroupsControlsPanel"/>
+                            <b:ControlGroup ui:field="taskFormDeploymentIdControlGroup">
+                                <b:ControlLabel>
+                                    <ui:text from="{i18n.Task_Form_DeploymentId}"/>
+                                </b:ControlLabel>
+                                <b:Controls>
+                                    <b:TextBox ui:field="taskFormDeploymentIdText"/>
+                                    <b:HelpBlock ui:field="taskFormDeploymentIdHelpLabel"/>
+                                </b:Controls>
+                            </b:ControlGroup>
                             <b:ControlGroup ui:field="taskFormNameControlGroup">
                                 <b:ControlLabel>
                                     <ui:text from="{i18n.Task_Form_Name}"/>
