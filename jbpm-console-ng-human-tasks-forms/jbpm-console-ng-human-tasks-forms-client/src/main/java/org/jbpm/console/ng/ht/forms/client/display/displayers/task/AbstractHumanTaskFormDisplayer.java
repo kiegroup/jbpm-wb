@@ -16,32 +16,9 @@
 package org.jbpm.console.ng.ht.forms.client.display.displayers.task;
 
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-
-import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Panel;
-import org.jboss.errai.bus.client.api.messaging.Message;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
-import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.console.ng.ht.forms.display.FormDisplayerConfig;
-import org.jbpm.console.ng.ht.forms.display.view.FormContentResizeListener;
-import org.jbpm.console.ng.ht.forms.client.display.displayers.util.ActionRequest;
-import org.jbpm.console.ng.ht.forms.client.display.displayers.util.JSNIHelper;
-import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
-import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayer;
-import org.jbpm.console.ng.ht.model.TaskKey;
-import org.jbpm.console.ng.ht.model.TaskSummary;
-import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
-import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
-import org.jbpm.console.ng.ht.service.TaskOperationsService;
-import org.uberfire.client.workbench.widgets.common.ErrorPopup;
-import org.uberfire.mvp.Command;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
@@ -50,6 +27,27 @@ import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Panel;
+import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
+import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.security.shared.api.identity.User;
+import org.jbpm.console.ng.ht.forms.client.display.displayers.util.ActionRequest;
+import org.jbpm.console.ng.ht.forms.client.display.displayers.util.JSNIHelper;
+import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
+import org.jbpm.console.ng.ht.forms.display.FormDisplayerConfig;
+import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayer;
+import org.jbpm.console.ng.ht.forms.display.view.FormContentResizeListener;
+import org.jbpm.console.ng.ht.model.TaskKey;
+import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
+import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
+import org.jbpm.console.ng.ht.service.TaskOperationsService;
+import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
+import org.uberfire.mvp.Command;
 
 /**
  *
@@ -79,6 +77,9 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     protected FormContentResizeListener resizeListener;
 
     protected Constants constants = GWT.create(Constants.class);
+
+    @Inject
+    protected ErrorPopupPresenter errorPopup;
 
     @Inject
     protected Caller<TaskLifeCycleService> taskServices;
@@ -315,7 +316,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
                 }, getUnexpectedErrorCallback()).existInDatabase(taskId);
                 taskRefreshed.fire(new TaskRefreshedEvent(taskId));
                 jsniHelper.notifySuccessMessage(opener, "Task: " + taskId + " was completed!");
-                
+
 
             }
         };
@@ -326,7 +327,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
             @Override
             public boolean error(Message message, Throwable throwable) {
                 String notification = "Unexpected error encountered : " + throwable.getMessage();
-                ErrorPopup.showMessage(notification);
+                errorPopup.showMessage(notification);
                 jsniHelper.notifyErrorMessage(opener, notification);
                 return true;
             }

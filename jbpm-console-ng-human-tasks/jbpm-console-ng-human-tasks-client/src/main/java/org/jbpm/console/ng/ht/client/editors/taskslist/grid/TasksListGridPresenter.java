@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid;
 
+import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -40,10 +41,8 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.widgets.common.ErrorPopup;
+import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.paging.PageResponse;
-
-import java.util.List;
 
 import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.*;
 @Dependent
@@ -60,6 +59,9 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
   private TaskListView view;
 
   private Constants constants = GWT.create(Constants.class);
+
+  @Inject
+  private ErrorPopupPresenter errorPopup;
 
   @Inject
   private Caller<TaskQueryService> taskQueryService;
@@ -199,7 +201,7 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
     }, new ErrorCallback<Message>() {
       @Override
       public boolean error(Message message, Throwable throwable) {
-        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        errorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
         return true;
       }
     }).release(taskId, userId);
@@ -215,7 +217,7 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
     }, new ErrorCallback<Message>() {
       @Override
       public boolean error(Message message, Throwable throwable) {
-        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        errorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
         return true;
       }
     }).claim(taskId, userId, deploymentId);
