@@ -14,7 +14,6 @@
 ~ See the License for the specific language governing permissions and
 ~ limitations under the License.
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
@@ -30,12 +29,19 @@
     <name>jBPM Console NG - Human Task Showcase</name>
     <description>jBPM Console NG - Human Task Only Showcase</description>
 
-    <dependencies>
+    <properties>
+        <errai.version>${version.org.jboss.errai}</errai.version>
+        <as.version>8.1.0.Final</as.version>
+        <!-- Add the absolute path for $JBOSS_HOME below to manage another instance -->
+        <errai.jboss.home>${project.build.directory}/wildfly-${as.version}</errai.jboss.home>
+    </properties>
 
+    <dependencies>
         <!-- dependencies added because of new illegal transitive dependency check -->
         <dependency>
             <groupId>com.github.gwtbootstrap</groupId>
             <artifactId>gwt-bootstrap</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.lucene</groupId>
@@ -120,6 +126,7 @@
         <dependency>
             <groupId>org.uberfire</groupId>
             <artifactId>uberfire-client-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.uberfire</groupId>
@@ -140,42 +147,21 @@
         <dependency>
             <groupId>org.uberfire</groupId>
             <artifactId>uberfire-workbench-client</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.uberfire</groupId>
             <artifactId>uberfire-security-api</artifactId>
         </dependency>
-
-
         <dependency>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>jetty</artifactId>
-            <scope>runtime</scope>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-workbench-client-views-bs2</artifactId>
+            <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>jetty-plus</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>jetty-naming</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-        <!-- Hack: ANT bundled with kie-ci needs to be excluded when running on Jetty -->
-        <!-- It is added back for other Application Servers in their respective assemblies -->
         <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-ci</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.ant</groupId>
-                    <artifactId>ant</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -206,6 +192,7 @@
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-generic-client</artifactId>
+            <scope>provided</scope>
         </dependency>
         
         <dependency>
@@ -215,6 +202,7 @@
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
+            <scope>provided</scope>
         </dependency>
         
         <dependency>
@@ -237,6 +225,7 @@
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-admin-client</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -247,6 +236,7 @@
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-forms-client</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -285,6 +275,7 @@
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-process-runtime-client</artifactId>
+            <scope>provided</scope>
         </dependency>
     
         <dependency>
@@ -315,6 +306,7 @@
         <dependency>
             <groupId>org.uberfire</groupId>
             <artifactId>uberfire-widgets-commons</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.uberfire</groupId>
@@ -344,36 +336,16 @@
             <artifactId>uberfire-servlet-security</artifactId>
         </dependency>
 
-        <!-- UberFire Extension -->
-        <dependency>
-            <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-metadata-api</artifactId>
-        </dependency>
-       
-        <dependency>
-            <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-metadata-commons-io</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-metadata-backend-lucene</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-widgets-commons</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-widgets-service-backend</artifactId>
-        </dependency>
-
         <!-- Errai AS -->
         <dependency>
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-jboss-as-support</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.errai</groupId>
+            <artifactId>errai-cdi-jboss</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <!-- CDI Integration Modules -->
@@ -396,40 +368,13 @@
         <dependency>
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-ui</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-data-binding</artifactId>
-        </dependency>
-
-        <!-- CDI Development Utils -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-        </dependency>
-
-        <!-- Weld Modules -->
-        <dependency>
-            <groupId>org.jboss.weld.se</groupId>
-            <artifactId>weld-se-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.weld.servlet</groupId>
-            <artifactId>weld-servlet-core</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <!-- GWT and GWT Extensions -->
@@ -453,22 +398,21 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-xjc</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.spec.javax.transaction</groupId>
             <artifactId>jboss-transaction-api_1.1_spec</artifactId>
+            <scope>provided</scope>
         </dependency>
         <!-- it's needed for hosted mode only and will be filtered out by assembly-->
-        <dependency>
-            <groupId>org.codehaus.btm</groupId>
-            <artifactId>btm</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-shared-services</artifactId>
@@ -490,7 +434,6 @@
         <dependency>
             <groupId>org.kie.workbench.services</groupId>
             <artifactId>kie-wb-common-services-api</artifactId>
-            
         </dependency>
         
         <dependency>
@@ -522,10 +465,8 @@
         <dependency>
             <groupId>org.kie.workbench.widgets</groupId>
             <artifactId>kie-wb-common-ui</artifactId>
+            <scope>provided</scope>
             <exclusions>
-                
-               
-               
                 <exclusion>
                     <groupId>org.drools</groupId>
                     <artifactId>drools-workbench-models-datamodel-api</artifactId>
@@ -544,6 +485,7 @@
         <dependency>
             <groupId>org.guvnor</groupId>
             <artifactId>guvnor-message-console-client</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.guvnor</groupId>
@@ -553,7 +495,6 @@
             <groupId>org.guvnor</groupId>
             <artifactId>guvnor-project-api</artifactId>
             <exclusions>
-               
                 <exclusion>
                     <groupId>org.kie.uberfire</groupId>
                     <artifactId>kie-uberfire-social-activities-api</artifactId>
@@ -564,7 +505,6 @@
             <groupId>org.guvnor</groupId>
             <artifactId>guvnor-project-backend</artifactId>
             <exclusions>
-                
                 <exclusion>
                     <groupId>org.kie.uberfire</groupId>
                     <artifactId>kie-uberfire-social-activities-backend</artifactId>
@@ -578,16 +518,12 @@
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-workbench-models-datamodel-api</artifactId>
-        
-        </dependency>
-        <dependency>
-            <groupId>org.guvnor</groupId>
-            <artifactId>guvnor-structure-api</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.guvnor</groupId>
             <artifactId>guvnor-structure-client</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -599,35 +535,60 @@
         <dependency>
             <groupId>org.jboss.spec.javax.servlet.jstl</groupId>
             <artifactId>jboss-jstl-api_1.2_spec</artifactId>
+            <scope>provided</scope>
         </dependency>
      
     </dependencies>
 
     <build>
+        <finalName>${project.artifactId}</finalName>
+        <outputDirectory>src/main/webapp/WEB-INF/classes</outputDirectory>
 
-        <resources>
-            <!-- Include src/main/java in order not to break the Eclipse GWT plug-in -->
-            <resource>
-                <directory>src/main/java</directory>
-            </resource>
-            <!-- Include module descriptors from src/main/resources in order not to break the Intellij GWT plug-in -->
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
                 <configuration>
                     <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
-                    <localWorkers>4</localWorkers>
+                    <localWorkers>1</localWorkers>
+                    <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m -Xms1024m -XX:PermSize=128m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true</extraJvmArgs>
                     <module>org.jbpm.console.ng.showcase.ht.FastCompiledjBPMHTShowcase</module>
                     <logLevel>INFO</logLevel>
+                    <noServer>false</noServer>
+                    <server>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</server>
+                    <disableCastChecking>true</disableCastChecking>
+                    <runTarget>jbpm-ht-console.html</runTarget>
+                    <hostedWebapp>src/main/webapp</hostedWebapp>
+                    <!-- drools-compiler has dependency on org.eclipse.jdt.core.compiler:ecj:jar:3.5.1:compile, see http://code.google.com/p/google-web-toolkit/issues/detail?id=4479 -->
+                    <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
                     <compileSourcesArtifacts>
+                        <!-- jBPM Console -->
+                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-admin-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-admin-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-forms-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-forms-client</compileSourcesArtifact>
+
+                        <!-- Common dependencies -->
+                        <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-common-ui</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-datamodel-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-services-api</compileSourcesArtifact>
-                        
-                        
+
+                        <!-- Guvnor -->
+                        <compileSourcesArtifact>org.guvnor:guvnor-structure-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.guvnor:guvnor-workingset-api</compileSourcesArtifact>
+
+                        <!-- KIE UberFire extensions -->
+                        <compileSourcesArtifact>org.kie.uberfire:kie-uberfire-social-activities-api</compileSourcesArtifact>
+
+                        <!-- UberFire Extensions -->
+                        <compileSourcesArtifact>org.uberfire:uberfire-commons-editor-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:uberfire-commons-editor-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:uberfire-widgets-commons</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:uberfire-widgets-service-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:uberfire-widgets-core-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:uberfire-widgets-properties-editor-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:uberfire-widgets-properties-editor-client</compileSourcesArtifact>
+
                         <!-- UberFire -->
                         <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-nio2-model</compileSourcesArtifact>
@@ -639,37 +600,26 @@
                         <compileSourcesArtifact>org.uberfire:uberfire-workbench-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-backend</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-backend-api</compileSourcesArtifact>
-            
+                        <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-bs2</compileSourcesArtifact>
 
                         <!-- jBPM Console -->
-                        
-                        
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-admin-client</compileSourcesArtifact>
-            
+
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-client</compileSourcesArtifact>
-            
-            
-            
+
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-client</compileSourcesArtifact>
-            
-            
+
                         <compileSourcesArtifact>org.guvnor:guvnor-services-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.guvnor:guvnor-project-api</compileSourcesArtifact>
-            
+
                         <compileSourcesArtifact>org.guvnor:guvnor-message-console-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.guvnor:guvnor-message-console-client</compileSourcesArtifact>
-
                     </compileSourcesArtifacts>
-                    <runTarget>jbpm-ht-console.html</runTarget>
-                    <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m -Djetty.custom.sys.classes=bitronix;javax.transaction -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Djava.security.auth.login.config=./src/main/resources/login-cli.conf</extraJvmArgs>
-                    <!-- drools-compiler has dependency on org.eclipse.jdt.core.compiler:ecj:jar:3.5.1:compile,
-                    see http://code.google.com/p/google-web-toolkit/issues/detail?id=4479 -->
-                    <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
                 </configuration>
                 <executions>
                     <execution>
@@ -691,35 +641,10 @@
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
-                    <packagingExcludes>**/javax/**/*.*,**/client/**/*.class,**/*.symbolMap</packagingExcludes>
+                    <packagingExcludes>**/*.symbolMap</packagingExcludes>
                     <archive>
                         <addMavenDescriptor>false</addMavenDescriptor>
                     </archive>
-          
-                    <webResources>
-                        <resource>
-                            <directory>${basedir}/src/main/webapp/WEB-INF</directory>
-                            <filtering>true</filtering>
-                            <targetPath>WEB-INF</targetPath>
-                            <includes>
-                                <include>**/web.xml</include>
-                            </includes>
-                        </resource>
-                    </webResources>
-                    <dependentWarExcludes>
-                        WEB-INF/lib/drools-compiler*.jar,
-                        WEB-INF/lib/drools-core*.jar,
-                        WEB-INF/lib/drools-workbench-models-commons-*.jar,
-                        WEB-INF/lib/guvnor-m2repo-editor-*.jar,
-                        WEB-INF/lib/guvnor-project-*.jar,
-                        WEB-INF/lib/kie-api*.jar,
-                        WEB-INF/lib/kie-ci*.jar,
-                        WEB-INF/lib/kie-internal*.jar,
-                        WEB-INF/lib/uberfire-nio2-fs*.jar,
-                        WEB-INF/lib/kie-wb-common-*.jar,
-                        WEB-INF/lib/uberfire-*.jar,
-                        WEB-INF/lib/jbpm-form-modeler-*.war,
-                    </dependentWarExcludes>
                 </configuration>
             </plugin>
       
@@ -745,6 +670,74 @@
                         </fileset>
                     </filesets>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.wildfly</groupId>
+                                    <artifactId>wildfly-dist</artifactId>
+                                    <version>${as.version}</version>
+                                    <type>zip</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-files-to-webapp-directory</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.jbpm</groupId>
+                                    <artifactId>jbpm-form-modeler-request-dispatcher</artifactId>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>src/main/webapp</outputDirectory>
+                                    <includes>**/*.tld, **/*.gif, **/*.jpg, **/*.js, **/*.jsp, **/*.css, **/*.png</includes>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jbpm</groupId>
+                                    <artifactId>jbpm-form-modeler-form-editor</artifactId>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>src/main/webapp</outputDirectory>
+                                    <includes>**/*.tld, **/*.gif, **/*.jpg, **/*.js, **/*.jsp, **/*.css, **/*.png</includes>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jbpm</groupId>
+                                    <artifactId>jbpm-form-modeler-static-resources</artifactId>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>src/main/webapp</outputDirectory>
+                                    <includes>**/*.tld, **/*.gif, **/*.jpg, **/*.js, **/*.jsp, **/*.css, **/*.png</includes>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jbpm</groupId>
+                                    <artifactId>jbpm-form-modeler-ui</artifactId>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>src/main/webapp</outputDirectory>
+                                    <includes>**/*.tld, **/*.gif, **/*.jpg, **/*.js, **/*.jsp, **/*.css, **/*.png</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

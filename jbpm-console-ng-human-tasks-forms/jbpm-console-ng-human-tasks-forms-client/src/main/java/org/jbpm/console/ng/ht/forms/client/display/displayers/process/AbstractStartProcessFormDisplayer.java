@@ -31,10 +31,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -50,7 +48,7 @@ import org.jbpm.console.ng.ht.forms.display.view.FormContentResizeListener;
 import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
-import org.uberfire.client.workbench.widgets.common.ErrorPopup;
+import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mvp.Command;
 
 /**
@@ -80,6 +78,9 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     private Command onClose;
 
     private Command onRefresh;
+
+    @Inject
+    protected ErrorPopupPresenter errorPopup;
 
     @Inject
     private Caller<DataServiceEntryPoint> dataServices;
@@ -155,7 +156,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
             @Override
             public boolean error(Message message, Throwable throwable) {
                 String notification = "Unexpected error encountered : " + throwable.getMessage();
-                ErrorPopup.showMessage(notification);
+                errorPopup.showMessage(notification);
                 jsniHelper.notifyErrorMessage(opener, notification);
                 return true;
             }
