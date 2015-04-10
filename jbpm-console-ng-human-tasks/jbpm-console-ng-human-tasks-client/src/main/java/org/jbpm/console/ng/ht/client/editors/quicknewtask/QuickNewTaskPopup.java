@@ -244,6 +244,9 @@ public class QuickNewTaskPopup extends BaseModal {
         dueDate.setValue( day + now );
         dueDateTime.setValue( UTCTimeBox.getValueForNextHour() );
 
+        taskFormNameText.setValue( "" );
+        taskFormDeploymentIdText.setValue( "" );
+
         taskPriorityListBox.setSelectedValue( "0" );
 
         addUserControl( true );
@@ -394,7 +397,7 @@ public class QuickNewTaskPopup extends BaseModal {
                 start = true;
             }
         }
-        displayNotification( "form" +taskFormName );
+
         taskOperationsService.call( new RemoteCallback<Long>() {
             @Override
             public void callback( Long taskId ) {
