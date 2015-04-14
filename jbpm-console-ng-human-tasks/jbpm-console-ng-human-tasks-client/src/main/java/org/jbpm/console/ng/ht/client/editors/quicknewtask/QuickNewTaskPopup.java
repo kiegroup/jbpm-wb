@@ -280,9 +280,6 @@ public class QuickNewTaskPopup extends BaseModal {
         dueDate.setValue( day + now );
         dueDateTime.setValue( UTCTimeBox.getValueForNextHour() );
 
-        taskFormNameText.setValue( "" );
-        taskFormDeploymentIdText.setValue( "" );
-
         taskPriorityListBox.setSelectedValue( "0" );
 
         addUserControl( true );
