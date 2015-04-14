@@ -21,6 +21,8 @@ import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -42,9 +44,9 @@ import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
+import org.jbpm.console.ng.ht.service.TaskFormManagementService;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -106,9 +108,8 @@ public class QuickNewTaskPopup extends BaseModal {
     @UiField
     public ControlGroup errorMessagesGroup;
 
-
     @UiField
-    public TextBox taskFormDeploymentIdText;
+    public ListBox taskFormDeploymentId;
 
     @UiField
     public ControlGroup taskFormDeploymentIdControlGroup;
@@ -117,7 +118,7 @@ public class QuickNewTaskPopup extends BaseModal {
     public HelpBlock taskFormDeploymentIdHelpLabel;
 
     @UiField
-    public TextBox taskFormNameText;
+    public ListBox taskFormName;
 
     @UiField
     public ControlGroup taskFormNameControlGroup;
@@ -140,8 +141,10 @@ public class QuickNewTaskPopup extends BaseModal {
     @Inject
     Caller<TaskOperationsService> taskOperationsService;
 
-    private static Binder uiBinder = GWT.create( Binder.class );
+    @Inject
+    private Caller<TaskFormManagementService> taskFormManagementService;
 
+    private static Binder uiBinder = GWT.create( Binder.class );
 
     private HandlerRegistration textKeyPressHandler;
 
@@ -173,6 +176,7 @@ public class QuickNewTaskPopup extends BaseModal {
 
     public void show() {
         cleanForm();
+        loadFormValues();
         super.show();
     }
 
@@ -228,6 +232,38 @@ public class QuickNewTaskPopup extends BaseModal {
         } );
     }
 
+    protected void loadFormValues() {
+        taskFormManagementService.call( new RemoteCallback<List<String>>() {
+            @Override
+            public void callback( List<String> deployments ) {
+                taskFormDeploymentId.addItem( "" );
+                if (deployments != null) {
+                    for (String deployment : deployments) {
+                        taskFormDeploymentId.addItem( deployment );
+                    }
+                }
+            }
+        } ).getAvailableDeployments();
+
+        taskFormDeploymentId.addChangeHandler( new ChangeHandler() {
+            @Override
+            public void onChange( ChangeEvent event ) {
+                taskFormManagementService.call( new RemoteCallback<List<String>>() {
+                    @Override
+                    public void callback( List<String> forms ) {
+                        taskFormName.clear();
+                        taskFormName.addItem( "" );
+                        if (forms != null) {
+                            for (String form : forms) {
+                                taskFormName.addItem( form );
+                            }
+                        }
+                    }
+                } ).getFormsByDeployment( taskFormDeploymentId.getValue() );
+            }
+        } );
+    }
+
     public void cleanForm() {
         tabPanel.selectTab( 0 );
         basicTab.setActive( true );
@@ -252,6 +288,12 @@ public class QuickNewTaskPopup extends BaseModal {
         addUserControl( true );
         refreshUserGroupControls();
         taskNameText.setFocus( true );
+
+        taskFormDeploymentId.clear();
+        taskFormDeploymentId.setSelectedValue( "" );
+
+        taskFormName.clear();
+        taskFormName.setSelectedValue( "" );
     }
 
 
@@ -373,8 +415,8 @@ public class QuickNewTaskPopup extends BaseModal {
         } else {
             addTask( users, groups,
                     taskNameText.getText(), taskPriorityListBox.getSelectedIndex(),
-                    dueDate.getValue(), dueDateTime.getValue(), taskFormNameText.getValue(),
-                    taskFormDeploymentIdText.getValue() );
+                    dueDate.getValue(), dueDateTime.getValue(), taskFormName.getValue(),
+                    taskFormDeploymentId.getValue() );
         }
 
     }

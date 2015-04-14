@@ -88,28 +88,36 @@
                                 </g:HorizontalPanel>
                             </b:ControlGroup>
                             <g:FlowPanel ui:field="usersGroupsControlsPanel"/>
-                            <b:ControlGroup ui:field="taskFormDeploymentIdControlGroup">
-                                <b:ControlLabel>
-                                    <ui:text from="{i18n.Task_Form_DeploymentId}"/>
-                                </b:ControlLabel>
-                                <b:Controls>
-                                    <b:TextBox ui:field="taskFormDeploymentIdText"/>
-                                    <b:HelpBlock ui:field="taskFormDeploymentIdHelpLabel"/>
-                                </b:Controls>
-                            </b:ControlGroup>
-                            <b:ControlGroup ui:field="taskFormNameControlGroup">
-                                <b:ControlLabel>
-                                    <ui:text from="{i18n.Task_Form_Name}"/>
-                                </b:ControlLabel>
-                                <b:Controls>
-                                    <b:TextBox ui:field="taskFormNameText"/>
-                                    <b:HelpBlock ui:field="taskFormNameHelpLabel"/>
-                                </b:Controls>
-                            </b:ControlGroup>
                         </b:Form>
 
                     </b:Fieldset>
                 </b:Well>
+            </b:Tab>
+            <b:Tab heading="{i18n.Task_Form}">
+              <b:Well>
+                <b:Fieldset>
+                    <b:Form type="HORIZONTAL">
+                      <b:ControlGroup ui:field="taskFormDeploymentIdControlGroup">
+                        <b:ControlLabel>
+                          <ui:text from="{i18n.Task_Form_DeploymentId}"/>
+                        </b:ControlLabel>
+                        <b:Controls>
+                          <b:ListBox ui:field="taskFormDeploymentId"/>
+                          <b:HelpBlock ui:field="taskFormDeploymentIdHelpLabel"/>
+                        </b:Controls>
+                      </b:ControlGroup>
+                      <b:ControlGroup ui:field="taskFormNameControlGroup">
+                        <b:ControlLabel>
+                          <ui:text from="{i18n.Task_Form_Name}"/>
+                        </b:ControlLabel>
+                        <b:Controls>
+                          <b:ListBox ui:field="taskFormName"/>
+                          <b:HelpBlock ui:field="taskFormNameHelpLabel"/>
+                        </b:Controls>
+                      </b:ControlGroup>
+                    </b:Form>
+                </b:Fieldset>
+              </b:Well>
             </b:Tab>
         </b:TabPanel>
 
