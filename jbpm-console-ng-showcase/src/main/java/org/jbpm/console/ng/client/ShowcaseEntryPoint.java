@@ -39,6 +39,7 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.client.i18n.Constants;
+import org.kie.workbench.common.widgets.client.menu.WorkbenchConfigurationMenuBuilder;
 import org.jbpm.console.ng.ht.forms.service.PlaceManagerActivityService;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
 import org.guvnor.common.services.shared.security.KieWorkbenchACL;
@@ -133,10 +134,10 @@ public class ShowcaseEntryPoint {
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu()
                 .newTopLevelMenu( constants.Dashboards() ).withItems( getDashboardsViews() ).endMenu()
                 .newTopLevelMenu( constants.Experimental() ).withItems( getExperimentalViews() ).endMenu()
+                .newTopLevelCustomMenu( iocManager.lookupBean( WorkbenchConfigurationMenuBuilder.class).getInstance() ).endMenu()
                 .newTopLevelMenu( constants.User() + ": " + identity.getIdentifier() ).position( MenuPosition.RIGHT ).withItems( getRoles() ).endMenu()
 
                 .build();
-
         menubar.addMenus( menus );
     }
 
