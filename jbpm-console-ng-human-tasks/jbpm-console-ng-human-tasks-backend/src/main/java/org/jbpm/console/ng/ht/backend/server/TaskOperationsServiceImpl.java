@@ -59,14 +59,16 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
                          final String taskName,
                          int priority,
                          Date dueDate, final List<String> users, List<String> groups, String identity, boolean start,
-                         boolean claim,String taskformName,String deploymentId){
+                         boolean claim,String taskformName,String deploymentId, Long processInstanceId){
         TaskFluent taskFluent = new TaskFluent().setName(taskName)
                                                 .setPriority(priority)
                                                 .setDueDate(dueDate)
                                                 .setFormName(taskformName)
                                                 .setDeploymentID( deploymentId );
 
-
+        if(processInstanceId > 0){
+            taskFluent.setProcessInstanceId(processInstanceId);
+        }
                 
         for(String user : users){
             taskFluent.addPotentialUser(user);

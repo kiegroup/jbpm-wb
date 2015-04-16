@@ -36,7 +36,7 @@ public interface TaskOperationsService{
                          final String taskName,
                          int priority,
                          Date dueDate, final List<String> users, List<String> groups, String identity, boolean start,
-                         boolean claim,String taskFormName, String deploymentId);
+                         boolean claim,String taskFormName, String deploymentId, Long processInstanceId);
   
   public void updateTask(long taskId, int priority, List<String> taskDescription, Date dueDate);
   

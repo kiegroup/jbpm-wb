@@ -139,7 +139,7 @@ public class QuickNewTaskPopup extends BaseModal {
     private Event<NewTaskEvent> newTaskEvent;
 
     @Inject
-    Caller<TaskOperationsService> taskOperationsService;
+    private Caller<TaskOperationsService> taskOperationsService;
 
     @Inject
     private Caller<TaskFormManagementService> taskFormManagementService;
@@ -155,6 +155,8 @@ public class QuickNewTaskPopup extends BaseModal {
     private String[] priorities = { "0 - " + Constants.INSTANCE.High(),
             "1", "2", "3", "4", "5 - " + Constants.INSTANCE.Medium(),
             "6", "7", "8", "9", "10 - " + Constants.INSTANCE.Low() };
+    
+    private Long processInstanceId = -1L;
 
     public QuickNewTaskPopup() {
         setTitle( Constants.INSTANCE.New_Task() );
@@ -174,6 +176,12 @@ public class QuickNewTaskPopup extends BaseModal {
         add( footer );
     }
 
+    public void show(Long processInstanceId){
+        show();
+        this.processInstanceId = processInstanceId;
+        
+    }
+    
     public void show() {
         cleanForm();
         loadFormValues();
@@ -265,6 +273,7 @@ public class QuickNewTaskPopup extends BaseModal {
     }
 
     public void cleanForm() {
+        
         tabPanel.selectTab( 0 );
         basicTab.setActive( true );
         advancedTab.setActive(false);
@@ -291,6 +300,8 @@ public class QuickNewTaskPopup extends BaseModal {
 
         taskFormName.clear();
         taskFormName.setSelectedValue( "" );
+        
+        this.processInstanceId = -1L;
     }
 
 
@@ -413,7 +424,7 @@ public class QuickNewTaskPopup extends BaseModal {
             addTask( users, groups,
                     taskNameText.getText(), taskPriorityListBox.getSelectedIndex(),
                     dueDate.getValue(), dueDateTime.getValue(), taskFormName.getValue(),
-                    taskFormDeploymentId.getValue() );
+                    taskFormDeploymentId.getValue(), processInstanceId );
         }
 
     }
@@ -424,7 +435,8 @@ public class QuickNewTaskPopup extends BaseModal {
                          int priority,
                          long dueDate, long dueDateTime,
                          String taskFormName,
-                         String deploymentId
+                         String deploymentId, 
+                         Long processInstanceId
     ) {
         Date due = UTCDateBox.utc2date( dueDate + dueDateTime );
 
@@ -452,7 +464,7 @@ public class QuickNewTaskPopup extends BaseModal {
                 return true;
             }
         } ).addQuickTask( taskName, priority, due, users, groups, identity.getIdentifier(), start, claim,
-                taskFormName, deploymentId );
+                taskFormName, deploymentId, processInstanceId );
 
 
     }
