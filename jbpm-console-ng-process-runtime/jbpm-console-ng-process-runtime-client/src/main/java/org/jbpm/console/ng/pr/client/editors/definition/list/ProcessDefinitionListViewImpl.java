@@ -42,6 +42,7 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
+import org.kie.workbench.common.widgets.client.workbench.configuration.ContextualView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
@@ -74,6 +75,11 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     @Inject
     private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
 
+    @Inject 
+    private ContextualView contextualView;
+    
+    private String placeIdentifier;
+    
     @Override
     public void init( final ProcessDefinitionListPresenter presenter ) {
 
@@ -109,18 +115,23 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
                 selectedItem = selectionModel.getLastSelectedObject();
 
                 PlaceStatus instanceDetailsStatus = placeManager.getStatus( new DefaultPlaceRequest( "Process Instance Details Multi" ) );
-                PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( "Process Details Multi" ) );
 
                 if ( instanceDetailsStatus == PlaceStatus.OPEN ) {
                     placeManager.closePlace( "Process Instance Details Multi" );
                 }
+                placeIdentifier = "Basic Process Details Multi";
+                if ( contextualView.getViewMode( ContextualView.ALL_PERSPECTIVES ).equals( ContextualView.ADVANCED_MODE ) ){
+                	placeIdentifier = "Advanced Process Details Multi";
+                } 
+                PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( placeIdentifier ) );
+                
                 if ( status == PlaceStatus.CLOSE ) {
-                    placeManager.goTo( "Process Details Multi" );
+                    placeManager.goTo( placeIdentifier );
                     processDefSelected.fire( new ProcessDefSelectionEvent( selectedItem.getProcessDefId(), selectedItem.getDeploymentId() ) );
                 } else if ( status == PlaceStatus.OPEN && !close ) {
                     processDefSelected.fire( new ProcessDefSelectionEvent( selectedItem.getProcessDefId(), selectedItem.getDeploymentId() ) );
                 } else if ( status == PlaceStatus.OPEN && close ) {
-                    placeManager.closePlace( "Process Details Multi" );
+                    placeManager.closePlace( placeIdentifier );
                 }
 
             }
@@ -228,9 +239,9 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     }
 
     public void refreshNewProcessInstance( @Observes NewProcessInstanceEvent newProcessInstance ) {
-        PlaceStatus definitionDetailsStatus = placeManager.getStatus( new DefaultPlaceRequest( "Process Details Multi" ) );
+        PlaceStatus definitionDetailsStatus = placeManager.getStatus( new DefaultPlaceRequest( placeIdentifier ) );
         if ( definitionDetailsStatus == PlaceStatus.OPEN ) {
-            placeManager.closePlace( "Process Details Multi" );
+            placeManager.closePlace( placeIdentifier );
         }
         placeManager.goTo( "Process Instance Details Multi" );
         processInstanceSelected.fire( new ProcessInstanceSelectionEvent( newProcessInstance.getDeploymentId(),
