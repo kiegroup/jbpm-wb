@@ -18,6 +18,7 @@ import org.jbpm.services.api.DefinitionService;
 import org.jbpm.services.api.model.DeploymentUnit;
 import org.jbpm.services.cdi.impl.manager.InjectableRegisterableItemsFactory;
 import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.KieContainer;
 import org.kie.internal.identity.IdentityProvider;
 import org.kie.internal.io.ResourceFactory;
 import org.slf4j.Logger;
@@ -64,7 +65,8 @@ public class VFSDeploymentService extends AbstractDeploymentService {
         loadProcesses(vfsUnit, builder, deployedUnit);
         loadRules(vfsUnit, builder, deployedUnit); 
         
-        commonDeploy(vfsUnit, deployedUnit, builder.get());
+        
+        commonDeploy(vfsUnit, deployedUnit, builder.get(), (KieContainer)builder.get().getEnvironment().get("kieContainer") );
     }
 
 
