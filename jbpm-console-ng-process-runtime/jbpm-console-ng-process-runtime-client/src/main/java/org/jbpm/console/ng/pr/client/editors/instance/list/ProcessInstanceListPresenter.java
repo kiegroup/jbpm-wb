@@ -35,6 +35,7 @@ import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
+
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
@@ -56,7 +57,6 @@ import org.uberfire.paging.PageResponse;
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance List")
 public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<ProcessInstanceSummary> {
-
   public static String FILTER_STATE_PARAM_NAME = "states";
   public static String FILTER_PROCESS_DEFINITION_PARAM_NAME = "currentProcessDefinition";
   public static String FILTER_INITIATOR_PARAM_NAME = "initiator";
@@ -86,9 +86,10 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
     dataProvider = new AsyncDataProvider<ProcessInstanceSummary>() {
 
       @Override
-      protected void onRangeChanged(HasData<ProcessInstanceSummary> display) {  
+      protected void onRangeChanged(HasData<ProcessInstanceSummary> display) {
+
         view.showBusyIndicator(constants.Loading());
-        final Range visibleRange = display.getVisibleRange();
+        final Range visibleRange = view.getListGrid().getVisibleRange();
         ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
         if (currentFilter == null) {
           currentFilter = new PortableQueryFilter(visibleRange.getStart(),
@@ -143,7 +144,7 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
             GWT.log(throwable.toString());
             return true;
           }
-        }).getData(currentFilter); 
+        }).getData(currentFilter);
 
       }
     };
@@ -155,55 +156,14 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
     this.currentProcessDefinition = currentProcessDefinition;
     this.initiator= initiator ;
     refreshGrid(  );
-
-  }
-
-
-  public void refreshActiveProcessList(  ) {
-    List<Integer> currentActiveStates =  new ArrayList<Integer>();
-    currentActiveStates.add(ProcessInstance.STATE_ACTIVE);
-    this.currentActiveStates = currentActiveStates ;
-    this.currentProcessDefinition= place.getParameter( "processName", "" ) ;
-    this.initiator=null;
-    refreshGrid(  );
-
-  }
-
-  public void refreshRelatedToMeProcessList( String identity ) {
-    List<Integer> currentActiveStates =  new ArrayList<Integer>();
-    currentActiveStates.add( ProcessInstance.STATE_ACTIVE);
-    this.currentActiveStates = currentActiveStates ;
-    this.currentProcessDefinition= place.getParameter( "processName", "" ) ;
-    this.initiator=identity;
-    refreshGrid();
-  }
-
-  public void refreshAbortedProcessList( ) {
-    List<Integer> currentActiveStates =  new ArrayList<Integer>();
-    currentActiveStates.add(ProcessInstance.STATE_ABORTED);
-    this.currentActiveStates = currentActiveStates ;
-    this.currentProcessDefinition= place.getParameter( "processName", "" ) ;
-    this.initiator=null;
-    refreshGrid(  );
-
-  }
-
-  public void refreshCompletedProcessList(  ) {
-    List<Integer> currentActiveStates =  new ArrayList<Integer>();
-    currentActiveStates.add(ProcessInstance.STATE_COMPLETED);
-    this.currentActiveStates = currentActiveStates ;
-    this.currentProcessDefinition= place.getParameter( "processName", "" ) ;
-    this.initiator=null;
-    refreshGrid(  );
-
   }
 
   public void newInstanceCreated(@Observes NewProcessInstanceEvent pi) {
-    refreshActiveProcessList();
+    refreshGrid();
   }
-  
+
   public void newInstanceCreated(@Observes ProcessInstancesUpdateEvent pis) {
-    refreshActiveProcessList();
+    refreshGrid();
   }
 
   @OnStartup
@@ -213,21 +173,20 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
 
   @OnFocus
   public void onFocus() {
-    refreshActiveProcessList();
+    refreshGrid();
   }
 
   @OnOpen
   public void onOpen() {
     this.currentProcessDefinition = place.getParameter("processName", "");
-    refreshActiveProcessList();
+    refreshGrid();
   }
 
   public void abortProcessInstance(long processInstanceId) {
     kieSessionServices.call(new RemoteCallback<Void>() {
       @Override
       public void callback(Void v) {
-        refreshActiveProcessList();
-
+        refreshGrid(  );
       }
     }, new ErrorCallback<Message>() {
       @Override
@@ -242,8 +201,7 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
     kieSessionServices.call(new RemoteCallback<Void>() {
       @Override
       public void callback(Void v) {
-        refreshActiveProcessList();
-
+        refreshGrid();
       }
     }, new ErrorCallback<Message>() {
       @Override
@@ -259,7 +217,7 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
     kieSessionServices.call(new RemoteCallback<Void>() {
       @Override
       public void callback(Void v) {
-        refreshActiveProcessList();
+        refreshGrid(  );
 
       }
     }, new ErrorCallback<Message>() {
