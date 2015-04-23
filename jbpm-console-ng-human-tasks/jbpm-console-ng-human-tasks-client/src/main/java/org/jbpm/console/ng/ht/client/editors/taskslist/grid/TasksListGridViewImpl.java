@@ -126,7 +126,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                                 applyFilterOnPresenter( key );
                             }
                         } ) ;
-                        applyFilterOnPresenter( key,newTabFormValues );
+                        applyFilterOnPresenter( newTabFormValues );
 
 
                     }
@@ -248,6 +248,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                 quickNewTaskPopup.show();
             }
         });
+
         extendedPagedTable.getLeftToolbar().clear();
         extendedPagedTable.getLeftToolbar().add(newTaskButton);
 
@@ -609,17 +610,44 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
     public void initDefaultFilters(GridGlobalPreferences preferences ,Button createTabButton){
 
 
-        HashMap<String,Object> tabSettingsValues = new HashMap<String, Object>(  );
         List<String> states;
 
         //Filter status Active
-        String key = "TaskListGrid_0";
         states=TaskUtils.getStatusByType(TaskUtils.TaskType.ACTIVE  );
+        initTabFilter( preferences, "TaskListGrid_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states,TASK_ROLE_POTENTIALOWNER );
 
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM,Constants.INSTANCE.Active());
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, "Filter " + Constants.INSTANCE.Active());
+
+        //Filter status Personal
+        states=TaskUtils.getStatusByType(TaskUtils.TaskType.PERSONAL );
+        initTabFilter( preferences, "TaskListGrid_1", Constants.INSTANCE.Personal(), "Filter " + Constants.INSTANCE.Personal(), states, TASK_ROLE_POTENTIALOWNER );
+
+        //Filter status Group
+        states=TaskUtils.getStatusByType(TaskUtils.TaskType.GROUP );
+        initTabFilter( preferences, "TaskListGrid_2", Constants.INSTANCE.Group(), "Filter " + Constants.INSTANCE.Group(), states, TASK_ROLE_POTENTIALOWNER );
+
+        //Filter status All
+        states=TaskUtils.getStatusByType(TaskUtils.TaskType.ALL );
+        initTabFilter( preferences, "TaskListGrid_3", Constants.INSTANCE.All(), "Filter " + Constants.INSTANCE.All(), states,TASK_ROLE_POTENTIALOWNER );
+
+        //Filter status Admin
+        states=TaskUtils.getStatusByType(TaskUtils.TaskType.ADMIN );
+        initTabFilter( preferences, "TaskListGrid_4", Constants.INSTANCE.Task_Admin(), "Filter " + Constants.INSTANCE.Task_Admin(), states, TASK_ROLE_ADMINISTRATOR );
+
+        filterPagedTable.addAddTableButton( createTabButton );
+
+        filterPagedTable.setSelectedTab();
+        applyFilterOnPresenter( "TaskListGrid_4" );
+
+    }
+    private void initTabFilter(GridGlobalPreferences preferences, final String key, String tabName,
+                               String tabDesc, List<String> states, String role){
+
+        HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>(  );
+
+        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM,tabName);
+        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tabDesc);
         tabSettingsValues.put( TasksListGridPresenter.FILTER_STATUSES_PARAM_NAME, states );
-        tabSettingsValues.put( TasksListGridPresenter.FILTER_CURRENT_ROLE_PARAM_NAME, TASK_ROLE_POTENTIALOWNER );
+        tabSettingsValues.put( TasksListGridPresenter.FILTER_CURRENT_ROLE_PARAM_NAME, role );
 
         filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance(  preferences, key );
@@ -630,111 +658,13 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
             @Override
             public void execute() {
                 currentListGrid = extendedPagedTable;
-                applyFilterOnPresenter( "TaskListGrid_0"  );
+                applyFilterOnPresenter( key );
             }
         } ) ;
-        applyFilterOnPresenter( key,tabSettingsValues );
-
-        //Filter status Personal
-        key = "TaskListGrid_1";
-        tabSettingsValues = new HashMap<String, Object>(  );
-        states=TaskUtils.getStatusByType(TaskUtils.TaskType.PERSONAL );
-
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM,Constants.INSTANCE.Personal());
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, "Filter " + Constants.INSTANCE.Personal());
-        tabSettingsValues.put( TasksListGridPresenter.FILTER_STATUSES_PARAM_NAME, states );
-        tabSettingsValues.put( TasksListGridPresenter.FILTER_CURRENT_ROLE_PARAM_NAME, TASK_ROLE_POTENTIALOWNER );
-
-        filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
-        final ExtendedPagedTable<TaskSummary> extendedPagedTable1 = createGridInstance(  preferences, key );
-        currentListGrid = extendedPagedTable1;
-        presenter.addDataDisplay( extendedPagedTable1 );
-        extendedPagedTable1.setDataProvider(presenter.getDataProvider() );
-        filterPagedTable.addTab( extendedPagedTable1, key, new Command() {
-            @Override
-            public void execute() {
-                currentListGrid = extendedPagedTable1;
-                applyFilterOnPresenter( "TaskListGrid_1"  );
-            }
-        } ) ;
-        applyFilterOnPresenter( key,tabSettingsValues );
-
-        //Filter status Group
-        key = "TaskListGrid_2";
-        tabSettingsValues = new HashMap<String, Object>(  );
-        states=TaskUtils.getStatusByType(TaskUtils.TaskType.GROUP );
-
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM,Constants.INSTANCE.Group());
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, "Filter " + Constants.INSTANCE.Group());
-        tabSettingsValues.put( TasksListGridPresenter.FILTER_STATUSES_PARAM_NAME, states );
-        tabSettingsValues.put( TasksListGridPresenter.FILTER_CURRENT_ROLE_PARAM_NAME, TASK_ROLE_POTENTIALOWNER );
-
-        filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
-        final ExtendedPagedTable<TaskSummary> extendedPagedTable2 = createGridInstance(  preferences, key );
-        currentListGrid = extendedPagedTable2;
-        presenter.addDataDisplay( extendedPagedTable2 );
-        extendedPagedTable2.setDataProvider(presenter.getDataProvider() );
-        filterPagedTable.addTab( extendedPagedTable2, key, new Command() {
-            @Override
-            public void execute() {
-                currentListGrid = extendedPagedTable2;
-                applyFilterOnPresenter( "TaskListGrid_2"  );
-            }
-        } ) ;
-        applyFilterOnPresenter( key,tabSettingsValues );
-
-        //Filter status All
-        key = "TaskListGrid_3";
-        tabSettingsValues = new HashMap<String, Object>(  );
-        states=TaskUtils.getStatusByType(TaskUtils.TaskType.ALL );
-
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM,Constants.INSTANCE.All());
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, "Filter " + Constants.INSTANCE.All());
-        tabSettingsValues.put( TasksListGridPresenter.FILTER_STATUSES_PARAM_NAME, states );
-        tabSettingsValues.put( TasksListGridPresenter.FILTER_CURRENT_ROLE_PARAM_NAME, TASK_ROLE_POTENTIALOWNER );
-
-        filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
-        final ExtendedPagedTable<TaskSummary> extendedPagedTable3 = createGridInstance(  preferences, key );
-        currentListGrid = extendedPagedTable3;
-        presenter.addDataDisplay( extendedPagedTable3 );
-        extendedPagedTable3.setDataProvider(presenter.getDataProvider() );
-        filterPagedTable.addTab( extendedPagedTable3, key, new Command() {
-            @Override
-            public void execute() {
-                currentListGrid = extendedPagedTable3;
-                applyFilterOnPresenter( "TaskListGrid_3"  );
-            }
-        } ) ;
-        applyFilterOnPresenter( key,tabSettingsValues );
-
-        //Filter status Admin
-        key = "TaskListGrid_4";
-        tabSettingsValues = new HashMap<String, Object>(  );
-        states=TaskUtils.getStatusByType(TaskUtils.TaskType.ADMIN );
-
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM,Constants.INSTANCE.Task_Admin());
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, "Filter " + Constants.INSTANCE.Task_Admin());
-        tabSettingsValues.put( TasksListGridPresenter.FILTER_STATUSES_PARAM_NAME, states );
-        tabSettingsValues.put( TasksListGridPresenter.FILTER_CURRENT_ROLE_PARAM_NAME, TASK_ROLE_ADMINISTRATOR );
-
-        filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
-        final ExtendedPagedTable<TaskSummary> extendedPagedTable4 = createGridInstance(  preferences, key );
-        currentListGrid = extendedPagedTable4;
-        presenter.addDataDisplay( extendedPagedTable4 );
-        extendedPagedTable4.setDataProvider(presenter.getDataProvider() );
-        filterPagedTable.addTab( extendedPagedTable4, key, new Command() {
-            @Override
-            public void execute() {
-                currentListGrid = extendedPagedTable4;
-                applyFilterOnPresenter( "TaskListGrid_4"  );
-            }
-        } ) ;
-        filterPagedTable.addAddTableButton( createTabButton );
-        applyFilterOnPresenter( key,tabSettingsValues );
 
     }
 
-    public void applyFilterOnPresenter(String key, HashMap<String, Object> params){
+    public void applyFilterOnPresenter(HashMap<String, Object> params){
         List<String> states = (List) params.get( TasksListGridPresenter.FILTER_STATUSES_PARAM_NAME);
         String currentRole = (String) params.get( TasksListGridPresenter.FILTER_CURRENT_ROLE_PARAM_NAME);
 
@@ -743,7 +673,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
     }
     public void applyFilterOnPresenter(String key) {
         initSelectionModel();
-        applyFilterOnPresenter( key, filterPagedTable.getMultiGridPreferencesStore().getGridSettings( key ) );
+        applyFilterOnPresenter( filterPagedTable.getMultiGridPreferencesStore().getGridSettings( key ) );
     }
 
 }

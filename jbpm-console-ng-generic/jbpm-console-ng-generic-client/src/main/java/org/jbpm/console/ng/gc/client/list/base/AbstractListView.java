@@ -128,7 +128,6 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
                 }
                 initColumns();
                 initGenericToolBar();
-                initFilters();
                 listGrid.loadPageSizePreferences();
             }
         } ).loadUserPreferences(preferences.getKey() , UserPreferencesType.GRIDPREFERENCES);
@@ -178,6 +177,4 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
      */
     public abstract void initColumns();
 
-    public void initFilters(){
-    }
 }
