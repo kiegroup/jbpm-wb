@@ -35,11 +35,12 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.i18n.Constants;
+import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
+import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
-import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
-import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
+
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -99,7 +100,6 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
         void displayNotification( String text );
 
         ExtendedPagedTable<T> getListGrid();
-
     }
 
     public interface ListView<T extends GenericSummary, V> extends BasicListView<T>,
@@ -112,6 +112,8 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
         this.presenter = presenter;
         
         listGrid = new ExtendedPagedTable<T>( 10, preferences );
+        listGrid.setShowLastPagerButton( true );
+        listGrid.setShowFastFordwardPagerButton( true );
         initWidget( listGrid );
         presenter.addDataDisplay( listGrid );
         preferencesService.call( new RemoteCallback<GridPreferencesStore>() {
@@ -126,7 +128,6 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
                 }
                 initColumns();
                 initGenericToolBar();
-                initFilters();
                 listGrid.loadPageSizePreferences();
             }
         } ).loadUserPreferences(preferences.getKey() , UserPreferencesType.GRIDPREFERENCES);
@@ -176,6 +177,4 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
      */
     public abstract void initColumns();
 
-    public void initFilters(){
-    }
 }

@@ -23,6 +23,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.Button;
 import org.jbpm.console.ng.es.client.editors.jobdetails.JobDetailsPopup;
 import org.jbpm.console.ng.es.client.editors.quicknewjob.QuickNewJobPopup;
 import org.jbpm.console.ng.es.client.editors.servicesettings.JobServiceSettingsPopup;
@@ -30,12 +31,11 @@ import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
-import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 
+import org.jbpm.console.ng.gc.client.list.base.AbstractMultiGridView;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.widgets.common.client.tables.DataGridFilter;
-import org.uberfire.ext.widgets.common.client.tables.popup.NewFilterPopup;
 
+import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
@@ -66,8 +66,8 @@ import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 
 @Dependent
-public class RequestListViewImpl extends AbstractListView<RequestSummary,RequestListPresenter> implements RequestListPresenter.RequestListView{
-
+public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,RequestListPresenter>
+        implements RequestListPresenter.RequestListView {
     private Constants constants = GWT.create( Constants.class );
 
     @Inject
@@ -82,7 +82,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
     private QuickNewJobPopup quickNewJobPopup;
 
     @Inject
-    private NewFilterPopup newFilterPopup;
+    private NewTabFilterPopup newTabFilterPopup;
 
 
 
@@ -98,9 +98,42 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         initColumns.add(constants.Id());
         initColumns.add(constants.Type());
         initColumns.add(constants.Actions());
+        final Button button = new Button();
+        button.setText( "+" );
+        button.addClickHandler( new ClickHandler() {
+            public void onClick( ClickEvent event ) {
+                Command addNewGrid = new Command() {
+                    @Override
+                    public void execute() {
+                        HashMap<String,Object> newTabFormValues = newTabFilterPopup.getFormValues();
 
-        super.init(presenter, new GridGlobalPreferences("RequestListGrid", initColumns, bannedColumns));
-        initSelectionModel( listGrid );
+                        final String key = getValidKeyForAdditionalListGrid("RequestListGrid_");
+
+                        filterPagedTable.saveNewTabSettings( key, newTabFormValues );
+                        final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance(  new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
+
+                        presenter.addDataDisplay( extendedPagedTable );
+                        extendedPagedTable.setDataProvider(presenter.getDataProvider() );
+
+                        filterPagedTable.createNewTab( extendedPagedTable, key, button,new Command() {
+                            @Override
+                            public void execute() {
+                                currentListGrid = extendedPagedTable;
+                                applyFilterOnPresenter( key );
+                            }
+                        } ) ;
+                        applyFilterOnPresenter( newTabFormValues );
+
+
+                    }
+                };
+                createFilterForm();
+                newTabFilterPopup.show( addNewGrid, getMultiGridPreferencesStore() );
+
+            }
+        } );
+
+        super.init(presenter, new GridGlobalPreferences("RequestListGrid", initColumns, bannedColumns),button);
     }
 
     public void requestCreated( @Observes RequestChangedEvent event ) {
@@ -109,133 +142,16 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
 
 
     @Override
-    public void initColumns(  ) {
+    public void initColumns(ExtendedPagedTable extendedPagedTable  ) {
 
-        initJobIdColumn(listGrid);
-        initJobTypeColumn(listGrid);
-        initStatusColumn(listGrid);
-        initDueDateColumn(listGrid);
+        initJobIdColumn(extendedPagedTable);
+        initJobTypeColumn(extendedPagedTable);
+        initStatusColumn(extendedPagedTable);
+        initDueDateColumn(extendedPagedTable);
         actionsColumn = initActionsColumn();
-        listGrid.addColumn( actionsColumn, constants.Actions() );
+        extendedPagedTable.addColumn( actionsColumn, constants.Actions() );
     }
 
-    @Override
-    public void initFilters( ) {
-
-        final ExtendedPagedTable extendedPagedTable =listGrid;
-        final String dataProviderKey="base";
-
-        extendedPagedTable.setShowFilterSelector( true );
-        extendedPagedTable.addFilter( new DataGridFilter<RequestSummary>( "showAll", Constants.INSTANCE.All(), new Command() {
-            @Override
-            public void execute() {
-                presenter.refreshRequests( dataProviderKey,null );
-            }
-        } ) );
-
-        extendedPagedTable.addFilter( new DataGridFilter<RequestSummary>( "queued", Constants.INSTANCE.Queued(), new Command() {
-            @Override
-            public void execute() {
-                List<String> statuses = new ArrayList<String>();
-                statuses.add( "QUEUED" );
-                presenter.refreshRequests( dataProviderKey, statuses );
-            }
-        } ) );
-
-        extendedPagedTable.addFilter( new DataGridFilter<RequestSummary>( "running", Constants.INSTANCE.Running(), new Command() {
-            @Override
-            public void execute() {
-                List<String> statuses = new ArrayList<String>();
-                statuses.add( "RUNNING" );
-                presenter.refreshRequests(dataProviderKey, statuses );
-            }
-        } ) );
-
-        extendedPagedTable.addFilter( new DataGridFilter<RequestSummary>( "retrying", Constants.INSTANCE.Retrying(), new Command() {
-            @Override
-            public void execute() {
-                List<String> statuses = new ArrayList<String>();
-                statuses.add( "RETRYING" );
-                presenter.refreshRequests( dataProviderKey,statuses );
-            }
-        } ) );
-
-        extendedPagedTable.addFilter( new DataGridFilter<RequestSummary>( "error", Constants.INSTANCE.Error(), new Command() {
-            @Override
-            public void execute() {
-                List<String> statuses = new ArrayList<String>();
-                statuses.add( "ERROR" );
-                presenter.refreshRequests( dataProviderKey,statuses );
-            }
-        } ) );
-
-        extendedPagedTable.addFilter( new DataGridFilter<RequestSummary>( "showCompleted", Constants.INSTANCE.Completed(), new Command() {
-            @Override
-            public void execute() {
-                List<String> statuses = new ArrayList<String>();
-                statuses.add( "DONE" );
-                presenter.refreshRequests( dataProviderKey,statuses );
-            }
-        } ) );
-        extendedPagedTable.addFilter( new DataGridFilter<RequestSummary>( "showCancelled", Constants.INSTANCE.Cancelled(), new Command() {
-            @Override
-            public void execute() {
-                List<String> statuses = new ArrayList<String>();
-                statuses.add( "CANCELLED" );
-                presenter.refreshRequests( dataProviderKey, statuses );
-            }
-        } ) );
-
-        HashMap storedCustomFilters = extendedPagedTable.getStoredCustomFilters();
-        if(storedCustomFilters!=null) {
-            Set customFilterKeys = storedCustomFilters.keySet();
-            Iterator it = customFilterKeys.iterator();
-            String customFilterName;
-
-            while ( it.hasNext() ) {
-                customFilterName = ( String ) it.next();
-
-                final HashMap filterValues = ( HashMap ) storedCustomFilters.get( customFilterName );
-
-                extendedPagedTable.addFilter( new DataGridFilter<RequestSummary>( customFilterName, customFilterName,
-                        new Command() {
-                            @Override
-                            public void execute() {
-                                List<String> statuses = ( List ) filterValues.get( "states" );
-                                presenter.refreshRequests( dataProviderKey, statuses );
-                            }
-                        } ) );
-
-
-            }
-        }
-        final Command refreshFilterDropDownCommand = new Command() {
-            @Override
-            public void execute() {
-                extendedPagedTable.clearFilters();
-                initFilters( );
-            }
-        };
-        extendedPagedTable.addFilter( new DataGridFilter<RequestSummary>( "addFilter", "-- " + Constants.INSTANCE.FilterManagement() + " --",
-                new Command() {
-                    @Override
-                    public void execute() {
-                        Command addFilter = new Command() {
-                            @Override
-                            public void execute() {
-                                final String newFilterName = ( String ) newFilterPopup.getFormValues().get( NewFilterPopup.FILTER_NAME_PARAM );
-                                extendedPagedTable.storeNewCustomFilter( newFilterName, newFilterPopup.getFormValues() );
-                                extendedPagedTable.clearFilters();
-                                initFilters(  );
-                            }
-                        };
-                        createFilterForm();
-                        newFilterPopup.show( addFilter, refreshFilterDropDownCommand, extendedPagedTable.getGridPreferencesStore() );
-                    }
-                }  ));
-        extendedPagedTable.refreshFilterDropdown();
-
-    }
     private void createFilterForm(){
         HashMap<String,String> statesListBoxInfo = new HashMap<String, String>(  );
 
@@ -246,16 +162,17 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         statesListBoxInfo.put( String.valueOf( "DONE" ), Constants.INSTANCE.Completed() );
         statesListBoxInfo.put( String.valueOf( "CANCELLED" ), Constants.INSTANCE.Cancelled() );
 
-        newFilterPopup.init();
-        newFilterPopup.addListBoxToFilter( Constants.INSTANCE.Status(), "states",true,statesListBoxInfo );
+        newTabFilterPopup.init();
+        newTabFilterPopup.addListBoxToFilter( Constants.INSTANCE.Status(), "states",true,statesListBoxInfo );
 
     }
 
-
-    private void initSelectionModel( final ExtendedPagedTable extendedPagedTable){
-
-        this.initActionsDropDown(extendedPagedTable);
+    public void initSelectionModel(){
+        final ExtendedPagedTable<RequestSummary> extendedPagedTable = getListGrid();
         extendedPagedTable.setEmptyTableCaption( constants.No_Jobs_Found() );
+
+        initLeftToolbarActions( extendedPagedTable );
+
         selectionModel = new NoSelectionModel<RequestSummary>();
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             @Override
@@ -324,7 +241,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
 
     }
 
-    private void initActionsDropDown(ExtendedPagedTable extendedPagedTable) {
+    private void initLeftToolbarActions(ExtendedPagedTable extendedPagedTable) {
         SplitDropdownButton actions = new SplitDropdownButton();
         actions.setText( constants.Actions() );
         NavLink newJobNavLink = new NavLink(constants.New_Job());
@@ -332,7 +249,6 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         newJobNavLink.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
-                //placeManager.goTo( new DefaultPlaceRequest( "Quick New Job" ) );
                 quickNewJobPopup.show();
             }
         } );
@@ -343,12 +259,12 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
             @Override
             public void onClick( ClickEvent event ) {
                 jobServiceSettingsPopup.show();
-                //placeManager.goTo( new DefaultPlaceRequest( "Job Service Settings" ) );
             }
         } );
 
         actions.add( newJobNavLink );
         actions.add( settingsNavLink );
+        extendedPagedTable.getLeftToolbar().clear();
         extendedPagedTable.getLeftToolbar().add( actions );
     }
 
@@ -457,23 +373,18 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         return actionsColumn;
     }
 
-//    @Override
-//    public void displayNotification( String text ) {
-//        notification.fire( new NotificationEvent( text ) );
-//    }
-
     private class ActionHasCell implements HasCell<RequestSummary, RequestSummary> {
 
-        private final List<String> avaliableStatuses;
+        private final List<String> availableStatuses;
         private ActionCell<RequestSummary> cell;
 
-        public ActionHasCell( String text, List<String> avaliableStatusesList,
+        public ActionHasCell( String text, List<String> availableStatusesList,
                               Delegate<RequestSummary> delegate ) {
-            this.avaliableStatuses = avaliableStatusesList;
+            this.availableStatuses = availableStatusesList;
             cell = new ActionCell<RequestSummary>( text, delegate ){
                 @Override
                 public void render(Context context, RequestSummary value, SafeHtmlBuilder sb) {
-                    if (avaliableStatuses.contains(value.getStatus())){
+                    if ( availableStatuses.contains(value.getStatus())){
                         super.render(context, value, sb);
                     }
                 }
@@ -496,15 +407,85 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         }
     }
 
-    public  void initSelectionModel (final ExtendedPagedTable additionalGrid,final String key){
 
-        this.initActionsDropDown(additionalGrid);
-        additionalGrid.setEmptyTableCaption( constants.No_Jobs_Found() );
-        initSelectionModel(additionalGrid);
-        initNoActionColumnManager(additionalGrid);
 
-        additionalGrid.setSelectionModel( selectionModel, noActionColumnManager );
-        additionalGrid.setRowStyles( selectedStyles );
+
+    public void initDefaultFilters(GridGlobalPreferences preferences ,Button createTabButton){
+
+        List<String> statuses;
+
+        statuses = null;
+
+        initTabFilter( preferences, "RequestListGrid_0", Constants.INSTANCE.All(), "Filter " + Constants.INSTANCE.All(), statuses );
+
+        statuses=new ArrayList<String>(  );
+        statuses.add( "QUEUED" );
+
+        initTabFilter( preferences, "RequestListGrid_1", Constants.INSTANCE.Queued(), "Filter " + Constants.INSTANCE.Queued(), statuses );
+
+        statuses=new ArrayList<String>(  );
+        statuses.add( "RUNNING" );
+
+        initTabFilter( preferences, "RequestListGrid_2", Constants.INSTANCE.Running(), "Filter " + Constants.INSTANCE.Running(), statuses );
+
+        statuses=new ArrayList<String>(  );
+        statuses.add( "RETRYING" );
+
+        initTabFilter( preferences, "RequestListGrid_3", Constants.INSTANCE.Retrying(), "Filter " + Constants.INSTANCE.Retrying(), statuses );
+
+        statuses=new ArrayList<String>(  );
+        statuses.add( "ERROR" );
+
+        initTabFilter( preferences, "RequestListGrid_4", Constants.INSTANCE.Error(), "Filter " + Constants.INSTANCE.Error(), statuses );
+
+        statuses=new ArrayList<String>(  );
+        statuses.add( "DONE" );
+
+        initTabFilter( preferences, "RequestListGrid_5", Constants.INSTANCE.Completed(), "Filter " + Constants.INSTANCE.Completed(), statuses );
+
+        statuses=new ArrayList<String>(  );
+        statuses.add( "CANCELLED" );
+
+        initTabFilter( preferences, "RequestListGrid_6", Constants.INSTANCE.Cancelled(), "Filter " + Constants.INSTANCE.Cancelled(), statuses );
+
+        filterPagedTable.addAddTableButton( createTabButton );
+        applyFilterOnPresenter( "RequestListGrid_6" );
+
     }
+
+    private void initTabFilter(GridGlobalPreferences preferences, final String key, String tabName,
+                               String tabDesc, List<String> statuses ){
+
+        HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>(  );
+
+        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM,tabName);
+        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tabDesc);
+        tabSettingsValues.put( RequestListPresenter.FILTER_STATUSES_PARAM_NAME, statuses );
+
+        filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
+        final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance(  preferences, key );
+        currentListGrid = extendedPagedTable;
+        presenter.addDataDisplay( extendedPagedTable );
+        extendedPagedTable.setDataProvider(presenter.getDataProvider() );
+        filterPagedTable.addTab( extendedPagedTable, key, new Command() {
+            @Override
+            public void execute() {
+                currentListGrid = extendedPagedTable;
+                applyFilterOnPresenter( key  );
+            }
+        } ) ;
+
+    }
+
+    public void applyFilterOnPresenter( HashMap<String, Object> params){
+        List<String> statuses = ( List ) params.get(RequestListPresenter.FILTER_STATUSES_PARAM_NAME );
+        presenter.refreshRequests( statuses );
+
+    }
+    public void applyFilterOnPresenter(String key) {
+        initSelectionModel();
+        applyFilterOnPresenter( filterPagedTable.getMultiGridPreferencesStore().getGridSettings( key ) );
+    }
+
 
 }
