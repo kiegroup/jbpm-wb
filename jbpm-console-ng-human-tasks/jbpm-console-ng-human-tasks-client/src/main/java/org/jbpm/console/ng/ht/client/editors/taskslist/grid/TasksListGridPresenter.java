@@ -83,7 +83,7 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
       @Override
       protected void onRangeChanged(HasData<TaskSummary> display) {
         view.showBusyIndicator(constants.Loading());
-        final Range visibleRange = display.getVisibleRange();
+        final Range visibleRange = view.getListGrid().getVisibleRange();
         ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
         if (currentFilter == null) {
           currentFilter = new PortableQueryFilter(visibleRange.getStart(),

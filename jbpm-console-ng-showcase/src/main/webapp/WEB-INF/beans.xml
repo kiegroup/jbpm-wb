@@ -11,6 +11,9 @@
 
 
 
+
+
+
     <exclude name="org.jbpm.console.ng.client.**"/>
     <exclude name="org.jbpm.console.ng.showcase.ht.client.**"/>
     <exclude name="org.jbpm.console.ng.ht.client.**"/>
