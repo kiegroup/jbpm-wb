@@ -59,19 +59,7 @@ public class TaskAuditServiceImpl implements TaskAuditService {
     public PageResponse<TaskEventSummary> getData(QueryFilter filter) {
         PageResponse<TaskEventSummary> response = new PageResponse<TaskEventSummary>();
 
-        Long taskId = null;
-        if (filter.getParams() != null) {
-            taskId = (Long) filter.getParams().get("taskId");
-
-        }
-        int filterCount = 0;
-        if (filter.getCount() != 0) {
-            filterCount = filter.getCount() + 1;
-        }
-
-        org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filterCount,
-                filter.getOrderBy(), filter.isAscending());
-        List<TaskEventSummary> taskEventSummaries = TaskEventSummaryHelper.adaptCollection(runtimeDataService.getTaskEvents(taskId, qf));
+        List<TaskEventSummary> taskEventSummaries = getTaskEvents(filter);
 
         response.setStartRowIndex(filter.getOffset());
         if (filter.getCount() != 0) {
@@ -96,6 +84,22 @@ public class TaskAuditServiceImpl implements TaskAuditService {
         return response;
     }
 
+    private List<TaskEventSummary> getTaskEvents(QueryFilter filter) {
+        Long taskId = null;
+        if (filter.getParams() != null) {
+            taskId = (Long) filter.getParams().get("taskId");
+            
+        }
+        int filterCount = 0;
+        if (filter.getCount() != 0) {
+            filterCount = filter.getCount() + 1;
+        }
+        org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filterCount,
+                filter.getOrderBy(), filter.isAscending());
+        List<TaskEventSummary> taskEventSummaries = TaskEventSummaryHelper.adaptCollection(runtimeDataService.getTaskEvents(taskId, qf));
+        return taskEventSummaries;
+    }
+
     @Override
     public TaskEventSummary getItem(TaskEventKey key) {
         return null;
@@ -104,6 +108,11 @@ public class TaskAuditServiceImpl implements TaskAuditService {
     @Override
     public List<TaskEventSummary> getAllTaskEventsByProcessInstanceId(long processInstanceId, String filter) {
         return TaskEventSummaryHelper.adaptCollection(taskAuditService.getAllTaskEventsByProcessInstanceId(processInstanceId, new org.kie.internal.query.QueryFilter(0, 0)));
+    }
+
+    @Override
+    public List<TaskEventSummary> getAll(QueryFilter filter) {
+        return getTaskEvents(filter);
     }
 
 }

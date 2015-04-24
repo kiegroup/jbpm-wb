@@ -17,8 +17,8 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskDisplayerConfig;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayer;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayProvider;
-import org.jbpm.console.ng.ht.forms.display.view.FormDisplayerView;
-import org.jbpm.console.ng.ht.forms.service.FormServiceEntryPoint;
+import org.jbpm.console.ng.ga.forms.display.view.FormDisplayerView;
+import org.jbpm.console.ng.ga.forms.service.FormServiceEntryPoint;
 import org.uberfire.mvp.Command;
 
 @ApplicationScoped

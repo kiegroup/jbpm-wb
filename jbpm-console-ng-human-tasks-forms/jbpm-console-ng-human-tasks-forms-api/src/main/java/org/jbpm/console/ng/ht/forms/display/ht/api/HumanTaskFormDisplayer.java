@@ -17,7 +17,7 @@
 package org.jbpm.console.ng.ht.forms.display.ht.api;
 
 import java.util.Map;
-import org.jbpm.console.ng.ht.forms.display.GenericFormDisplayer;
+import org.jbpm.console.ng.ga.forms.display.GenericFormDisplayer;
 import org.jbpm.console.ng.ht.model.TaskKey;
 
 /**

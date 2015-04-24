@@ -19,33 +19,15 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView;
-import org.jbpm.console.ng.ht.client.editors.taskadmin.TaskAdminPresenter;
-import org.jbpm.console.ng.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
-import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter;
-import org.jbpm.console.ng.ht.client.editors.taskdetails.TaskDetailsPresenter;
-import org.jbpm.console.ng.ht.client.editors.taskdetailsmulti.TaskDetailsMultiPresenter;
-import org.jbpm.console.ng.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter;
-import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.forms.client.display.views.EmbeddedFormDisplayView;
-import org.jbpm.console.ng.ht.forms.display.view.FormDisplayerView;
 
-import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.*;
+import org.jbpm.console.ng.ga.forms.display.view.FormDisplayerView;
+import org.jbpm.console.ng.gc.forms.client.display.views.EmbeddedFormDisplayView;
 
 @Dependent
 public class TaskFormViewImpl extends Composite implements TaskFormPresenter.TaskFormView {

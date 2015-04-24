@@ -40,12 +40,12 @@ import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.client.i18n.Constants;
 import org.kie.workbench.common.widgets.client.menu.WorkbenchConfigurationMenuBuilder;
-import org.jbpm.console.ng.ht.forms.service.PlaceManagerActivityService;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
 import org.guvnor.common.services.shared.security.KieWorkbenchACL;
 import org.guvnor.common.services.shared.security.KieWorkbenchPolicy;
 import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
 import org.guvnor.common.services.shared.security.KieWorkbenchSecurityService;
+import org.jbpm.console.ng.ga.forms.service.PlaceManagerActivityService;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.mvp.PlaceManager;
@@ -130,6 +130,7 @@ public class ShowcaseEntryPoint {
                 } ).endMenu()
                 .newTopLevelMenu( constants.Authoring() ).withItems( getAuthoringViews() ).endMenu()
                 .newTopLevelMenu( constants.Deploy() ).withItems( getDeploymentViews() ).endMenu()
+                //.newTopLevelMenu( "Case Management" ).withItems( getCaseMGMTViews() ).endMenu()
                 .newTopLevelMenu( constants.Process_Management() ).withItems( getProcessMGMTViews() ).endMenu()
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu()
                 .newTopLevelMenu( constants.Dashboards() ).withItems( getDashboardsViews() ).endMenu()
@@ -169,6 +170,21 @@ public class ShowcaseEntryPoint {
 
         return result;
     }
+    
+//    private List<? extends MenuItem> getCaseMGMTViews() {
+//        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
+//
+//        result.add( MenuFactory.newSimpleItem( "Cases" ).respondsWith( new Command() {
+//            @Override
+//            public void execute() {
+//                placeManager.goTo( new DefaultPlaceRequest( "Cases" ) );
+//            }
+//        } ).endMenu().build().getItems().get( 0 ) );
+//
+//        
+//
+//        return result;
+//    }
 
     private List<? extends MenuItem> getProcessMGMTViews() {
         final List<MenuItem> result = new ArrayList<MenuItem>( 2 );

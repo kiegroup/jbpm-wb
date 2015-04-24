@@ -21,7 +21,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.ht.forms.service.PlaceManagerActivityService;
+import org.jbpm.console.ng.ga.forms.service.PlaceManagerActivityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

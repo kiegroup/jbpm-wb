@@ -133,6 +133,16 @@
       <artifactId>jbpm-console-ng-generic-client</artifactId>
       <type>jar</type>
     </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-generic-forms-api</artifactId>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-generic-forms-client</artifactId>
+      <type>jar</type>
+    </dependency>
   </dependencies>
 
   <build>

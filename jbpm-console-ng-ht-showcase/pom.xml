@@ -212,6 +212,24 @@
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-generic-api</artifactId>
         </dependency>
+         <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-generic-forms-client</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-generic-forms-api</artifactId>
+        </dependency>
+         <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-process-runtime-forms-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-process-runtime-forms-backend</artifactId>
+    </dependency>
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
@@ -344,31 +362,8 @@
             <artifactId>uberfire-servlet-security</artifactId>
         </dependency>
 
-        <!-- UberFire Extension -->
-        <dependency>
-            <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-metadata-api</artifactId>
-        </dependency>
        
-        <dependency>
-            <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-metadata-commons-io</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-metadata-backend-lucene</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-widgets-commons</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-widgets-service-backend</artifactId>
-        </dependency>
 
         <!-- Errai AS -->
         <dependency>
@@ -580,10 +575,6 @@
             <artifactId>drools-workbench-models-datamodel-api</artifactId>
         
         </dependency>
-        <dependency>
-            <groupId>org.guvnor</groupId>
-            <artifactId>guvnor-structure-api</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.guvnor</groupId>
@@ -651,12 +642,14 @@
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-forms-client</compileSourcesArtifact>
             
             
             
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-client</compileSourcesArtifact>
-            
+                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-forms-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-forms-client</compileSourcesArtifact>
             
                         <compileSourcesArtifact>org.guvnor:guvnor-services-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.guvnor:guvnor-project-api</compileSourcesArtifact>

@@ -23,7 +23,7 @@ import javax.inject.Inject;
 
 import org.jbpm.kie.services.api.FormProviderService;
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.ht.forms.service.FormServiceEntryPoint;
+import org.jbpm.console.ng.ga.forms.service.FormServiceEntryPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

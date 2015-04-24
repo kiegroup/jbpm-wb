@@ -1,6 +1,6 @@
 package org.jbpm.console.ng.ht.forms.display.ht.api;
 
-import org.jbpm.console.ng.ht.forms.display.FormDisplayerConfig;
+import org.jbpm.console.ng.ga.forms.display.FormDisplayerConfig;
 import org.jbpm.console.ng.ht.model.TaskKey;
 
 public class HumanTaskDisplayerConfig implements FormDisplayerConfig<TaskKey> {

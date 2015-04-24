@@ -272,22 +272,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
   @Override
   public PageResponse<KModuleDeploymentUnitSummary> getData(final QueryFilter filter) {
     PageResponse<KModuleDeploymentUnitSummary> response = new PageResponse<KModuleDeploymentUnitSummary>();
-    Collection<DeployedUnit> deployedUnits = deploymentService.getDeployedUnits();
-    List<KModuleDeploymentUnitSummary> unitsIds = new ArrayList<KModuleDeploymentUnitSummary>(deployedUnits.size());
-    for (DeployedUnit du : deployedUnits) {
-      KModuleDeploymentUnit kdu = (KModuleDeploymentUnit) du.getDeploymentUnit();
-      KModuleDeploymentUnitSummary duSummary = new KModuleDeploymentUnitSummary(kdu.getIdentifier(), kdu.getGroupId(),
-                kdu.getArtifactId(), kdu.getVersion(), kdu.getKbaseName(), kdu.getKsessionName(), kdu.getStrategy().toString(), kdu.getMergeMode().toString());
-      if(filter.getParams() == null || filter.getParams().get("textSearch") == null || ((String)filter.getParams().get("textSearch")).isEmpty()){
-        unitsIds.add(duSummary);
-      }else if(kdu.getIdentifier().toLowerCase().contains((String)filter.getParams().get("textSearch"))){
-        unitsIds.add(duSummary);
-      }
-
-      duSummary.setActive(du.isActive());
-    }
-    
-    sort(unitsIds, filter);
+    List<KModuleDeploymentUnitSummary> unitsIds = getDeployedUnits(filter);
     response.setStartRowIndex(filter.getOffset());
     response.setTotalRowSize(unitsIds.size());
     response.setTotalRowSizeExact(true);
@@ -302,6 +287,24 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
     }
     return response;
   }
+
+    private List<KModuleDeploymentUnitSummary> getDeployedUnits(final QueryFilter filter) {
+        Collection<DeployedUnit> deployedUnits = deploymentService.getDeployedUnits();
+        List<KModuleDeploymentUnitSummary> unitsIds = new ArrayList<KModuleDeploymentUnitSummary>(deployedUnits.size());
+        for (DeployedUnit du : deployedUnits) {
+            KModuleDeploymentUnit kdu = (KModuleDeploymentUnit) du.getDeploymentUnit();
+            KModuleDeploymentUnitSummary duSummary = new KModuleDeploymentUnitSummary(kdu.getIdentifier(), kdu.getGroupId(),
+                    kdu.getArtifactId(), kdu.getVersion(), kdu.getKbaseName(), kdu.getKsessionName(), kdu.getStrategy().toString(), kdu.getMergeMode().toString());
+            if(filter.getParams() == null || filter.getParams().get("textSearch") == null || ((String)filter.getParams().get("textSearch")).isEmpty()){
+                unitsIds.add(duSummary);
+            }else if(kdu.getIdentifier().toLowerCase().contains((String)filter.getParams().get("textSearch"))){
+                unitsIds.add(duSummary);
+            }
+            
+            duSummary.setActive(du.isActive());
+        }   sort(unitsIds, filter);
+        return unitsIds;
+    }
   
   private void sort(List<KModuleDeploymentUnitSummary> unitsIds, final QueryFilter filter){
     if(filter.getOrderBy().equals("Deployment")){
@@ -552,6 +555,11 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
   public KModuleDeploymentUnitSummary getItem(KModuleKey key) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
+
+    @Override
+    public List<KModuleDeploymentUnitSummary> getAll(QueryFilter filter) {
+        return getDeployedUnits(filter);
+    }
 
 
   

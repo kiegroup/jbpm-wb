@@ -39,65 +39,74 @@ import org.uberfire.paging.PageResponse;
 @ApplicationScoped
 public class ProcessVariablesServiceImpl implements ProcessVariablesService {
 
-  @Inject
-  private RuntimeDataService dataService;
+    @Inject
+    private RuntimeDataService dataService;
 
-  @Inject
-  private DefinitionService bpmn2Service;
+    @Inject
+    private DefinitionService bpmn2Service;
 
-  @Override
-  public PageResponse<ProcessVariableSummary> getData(QueryFilter filter) {
-    PageResponse<ProcessVariableSummary> response = new PageResponse<ProcessVariableSummary>();
-    Long processInstanceId = null;
-    String processId = "";
-    String deploymentId = "";
-    if (filter.getParams() != null) {
-      processInstanceId = Long.valueOf((String) filter.getParams().get("processInstanceId"));
-      processId = (String) filter.getParams().get("processDefId");
-      deploymentId = (String) filter.getParams().get("deploymentId");
-    }
-    // append 1 to the count to check if there are further pages
-    org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount() + 1,
-            filter.getOrderBy(), filter.isAscending());
+    @Override
+    public PageResponse<ProcessVariableSummary> getData(QueryFilter filter) {
+        PageResponse<ProcessVariableSummary> response = new PageResponse<ProcessVariableSummary>();
+        List<ProcessVariableSummary> processVariablesSums = getProcessVariables(filter);
+        response.setStartRowIndex(filter.getOffset());
+        response.setTotalRowSize(processVariablesSums.size() - 1);
+        if (processVariablesSums.size() > filter.getCount()) {
+            response.setTotalRowSizeExact(false);
+        } else {
+            response.setTotalRowSizeExact(true);
+        }
 
-    Map<String, String> properties = new HashMap<String, String>(bpmn2Service.getProcessVariables(deploymentId, processId));
-    Collection<ProcessVariableSummary> processVariables = VariableHelper.adaptCollection(dataService.getVariablesCurrentState(processInstanceId), properties,
-            processInstanceId);
+        if (!processVariablesSums.isEmpty() && processVariablesSums.size() > (filter.getCount() + filter.getOffset())) {
+            response.setPageRowList(new ArrayList<ProcessVariableSummary>(processVariablesSums.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
+            response.setLastPage(false);
 
-    List<ProcessVariableSummary> processVariablesSums = new ArrayList<ProcessVariableSummary>(processVariables.size());
-    for (ProcessVariableSummary pv : processVariables) {
+        } else {
+            response.setPageRowList(new ArrayList<ProcessVariableSummary>(processVariablesSums));
+            response.setLastPage(true);
 
-      if (filter.getParams().get("textSearch") == null || ((String) filter.getParams().get("textSearch")).isEmpty()) {
-        processVariablesSums.add(pv);
-      } else if (pv.getVariableId().toLowerCase().contains((String) filter.getParams().get("textSearch"))) {
-        processVariablesSums.add(pv);
-      }
-    }
-
-    response.setStartRowIndex(filter.getOffset());
-    response.setTotalRowSize(processVariablesSums.size() - 1);
-    if (processVariablesSums.size() > filter.getCount()) {
-      response.setTotalRowSizeExact(false);
-    } else {
-      response.setTotalRowSizeExact(true);
-    }
-
-    if (!processVariablesSums.isEmpty() && processVariablesSums.size() > (filter.getCount() + filter.getOffset())) {
-      response.setPageRowList(new ArrayList<ProcessVariableSummary>(processVariablesSums.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
-      response.setLastPage(false);
-
-    } else {
-      response.setPageRowList(new ArrayList<ProcessVariableSummary>(processVariablesSums));
-      response.setLastPage(true);
+        }
+        return response;
 
     }
-    return response;
 
-  }
+    private List<ProcessVariableSummary> getProcessVariables(QueryFilter filter) {
+        Long processInstanceId = null;
+        String processId = "";
+        String deploymentId = "";
+        if (filter.getParams() != null) {
+            processInstanceId = Long.valueOf((String) filter.getParams().get("processInstanceId"));
+            processId = (String) filter.getParams().get("processDefId");
+            deploymentId = (String) filter.getParams().get("deploymentId");
+        }
+        // append 1 to the count to check if there are further pages
+        org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount() + 1,
+                filter.getOrderBy(), filter.isAscending());
 
-  @Override
-  public ProcessVariableSummary getItem(ProcessVariableKey key) {
-    return null;
-  }
+        Map<String, String> properties = new HashMap<String, String>(bpmn2Service.getProcessVariables(deploymentId, processId));
+        Collection<ProcessVariableSummary> processVariables = VariableHelper.adaptCollection(dataService.getVariablesCurrentState(processInstanceId), properties,
+                processInstanceId);
+
+        List<ProcessVariableSummary> processVariablesSums = new ArrayList<ProcessVariableSummary>(processVariables.size());
+        for (ProcessVariableSummary pv : processVariables) {
+
+            if (filter.getParams().get("textSearch") == null || ((String) filter.getParams().get("textSearch")).isEmpty()) {
+                processVariablesSums.add(pv);
+            } else if (pv.getVariableId().toLowerCase().contains((String) filter.getParams().get("textSearch"))) {
+                processVariablesSums.add(pv);
+            }
+        }
+        return processVariablesSums;
+    }
+
+    @Override
+    public ProcessVariableSummary getItem(ProcessVariableKey key) {
+        return null;
+    }
+
+    @Override
+    public List<ProcessVariableSummary> getAll(QueryFilter filter) {
+        return getProcessVariables(filter);
+    }
 
 }

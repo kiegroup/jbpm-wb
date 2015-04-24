@@ -44,16 +44,7 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
     @Override
     public PageResponse<ProcessSummary> getData(final QueryFilter filter) {
         PageResponse<ProcessSummary> response = new PageResponse<ProcessSummary>();
-        // append 1 to the count to check if there are further pages
-        org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount()+1,
-                filter.getOrderBy(), filter.isAscending());
-        Collection<ProcessDefinition> processDefs;
-        if((String)filter.getParams().get("textSearch") != null && !((String)filter.getParams().get("textSearch")).equals("")){
-            processDefs = dataService.getProcessesByFilter(((String)filter.getParams().get("textSearch")), qf);
-        }else{
-            processDefs = dataService.getProcesses(qf);
-        }
-        List<ProcessSummary> processDefsSums = new ArrayList<ProcessSummary>(ProcessHelper.adaptCollection(processDefs));
+        List<ProcessSummary> processDefsSums = getProcessDefinitions(filter);
         
         response.setStartRowIndex(filter.getOffset());
         response.setTotalRowSize(processDefsSums.size()-1);
@@ -77,9 +68,28 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
 
     }
 
+    private List<ProcessSummary> getProcessDefinitions(final QueryFilter filter) {
+        // append 1 to the count to check if there are further pages
+        org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount()+1,
+                filter.getOrderBy(), filter.isAscending());
+        Collection<ProcessDefinition> processDefs;
+        if((String)filter.getParams().get("textSearch") != null && !((String)filter.getParams().get("textSearch")).equals("")){
+            processDefs = dataService.getProcessesByFilter(((String)filter.getParams().get("textSearch")), qf);
+        }else{
+            processDefs = dataService.getProcesses(qf);
+        }
+        List<ProcessSummary> processDefsSums = new ArrayList<ProcessSummary>(ProcessHelper.adaptCollection(processDefs));
+        return processDefsSums;
+    }
+
     @Override
     public ProcessSummary getItem(ProcessDefinitionKey key) {
         return ProcessHelper.adapt(dataService.getProcessesByDeploymentIdProcessId(key.getDeploymentId(), key.getProcessId()));
+    }
+
+    @Override
+    public List<ProcessSummary> getAll(QueryFilter qf) {
+        return getProcessDefinitions(qf);
     }
 
 }

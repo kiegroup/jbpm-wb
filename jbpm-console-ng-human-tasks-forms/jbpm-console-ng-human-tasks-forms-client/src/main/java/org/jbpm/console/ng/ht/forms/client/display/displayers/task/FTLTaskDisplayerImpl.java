@@ -17,8 +17,6 @@ package org.jbpm.console.ng.ht.forms.client.display.displayers.task;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import org.jbpm.console.ng.ht.forms.client.display.displayers.util.JSNIHelper;
-
 import javax.enterprise.context.Dependent;
 import java.util.Map;
 

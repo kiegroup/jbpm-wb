@@ -36,7 +36,7 @@
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-process-runtime-api</artifactId>
+      <artifactId>jbpm-console-ng-generic-forms-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>

@@ -29,6 +29,8 @@
   <inherits name="org.uberfire.UberfireClientAPI" />
   <inherits name="org.jbpm.formModeler.FormModelerApi"/>  
   <inherits name="org.jbpm.console.ng.ht.forms.JbpmConsoleNGHumanTasksFormsAPI" />
+  <inherits name="org.jbpm.console.ng.ga.forms.JbpmConsoleNGGenericFormsAPI"/>
+  <inherits name="org.jbpm.console.ng.gc.forms.JbpmConsoleNGGenericFormsClient"/>
 
   <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksAPI" />
 

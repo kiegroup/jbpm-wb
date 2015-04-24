@@ -7,14 +7,10 @@ import org.uberfire.workbench.model.Position;
 
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsPresenter;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView.TabbedDetailsView;
-import org.jbpm.console.ng.ht.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
-import org.jbpm.console.ng.ht.forms.client.display.views.PopupFormDisplayerView;
-import org.jbpm.console.ng.ht.forms.display.process.api.ProcessDisplayerConfig;
 import org.jbpm.console.ng.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
-import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.lifecycle.OnStartup;
@@ -24,6 +20,9 @@ import org.uberfire.workbench.model.CompassPosition;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
+import org.jbpm.console.ng.pr.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
+import org.jbpm.console.ng.pr.forms.client.display.views.PopupFormDisplayerView;
+import org.jbpm.console.ng.pr.forms.display.process.api.ProcessDisplayerConfig;
 
 public abstract class BaseProcessDefDetailsMultiPresenter extends
         AbstractTabbedDetailsPresenter {

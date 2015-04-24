@@ -62,42 +62,7 @@ public class DocumentsServiceImpl implements DocumentsService {
   @Override
   public PageResponse<DocumentSummary> getData(QueryFilter filter) {
     PageResponse<DocumentSummary> response = new PageResponse<DocumentSummary>();
-    Long processInstanceId = null;
-    String processId = "";
-    String deploymentId = "";
-    if (filter.getParams() != null) {
-      processInstanceId = Long.valueOf((String) filter.getParams().get("processInstanceId"));
-      processId = (String) filter.getParams().get("processDefId");
-      deploymentId = (String) filter.getParams().get("deploymentId");
-    }
-    // append 1 to the count to check if there are further pages
-    org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount() + 1,
-            filter.getOrderBy(), filter.isAscending());
-
-    Map<String, String> properties = new HashMap<String, String>(bpmn2Service.getProcessVariables(deploymentId, processId));
-    Collection<ProcessVariableSummary> processVariables = VariableHelper.adaptCollection(dataService.getVariablesCurrentState(processInstanceId), properties,
-            processInstanceId);
-
-    SimpleDateFormat sdf = new SimpleDateFormat( Document.DOCUMENT_DATE_PATTERN );
-
-    List<DocumentSummary> documents = new ArrayList<DocumentSummary>();
-    for (ProcessVariableSummary pv : processVariables) {
-        if ("org.jbpm.document.Document".equals(pv.getType())) {
-            if (pv.getNewValue() != null && !pv.getNewValue().isEmpty()) {
-                String[] values = pv.getNewValue().split( Document.PROPERTIES_SEPARATOR );
-                if (values.length == 4) {
-                    Date lastModified = null;
-                    try {
-                        lastModified = sdf.parse( values[ 2 ] );
-                    } catch (ParseException ex) {
-                        logger.error("Can not parse last modified date!", ex);
-                    }
-                    documents.add(new DocumentSummary(values[0], lastModified, Long.valueOf(values[1]), values[3]));
-                }
-            }
-
-        }
-    }
+        List<DocumentSummary> documents = getDocuments(filter);
 
     response.setStartRowIndex(filter.getOffset());
     response.setTotalRowSize(documents.size() - 1);
@@ -120,9 +85,49 @@ public class DocumentsServiceImpl implements DocumentsService {
 
   }
 
+    private List<DocumentSummary> getDocuments(QueryFilter filter) throws NumberFormatException {
+        Long processInstanceId = null;
+        String processId = "";
+        String deploymentId = "";
+        if (filter.getParams() != null) {
+            processInstanceId = Long.valueOf((String) filter.getParams().get("processInstanceId"));
+            processId = (String) filter.getParams().get("processDefId");
+            deploymentId = (String) filter.getParams().get("deploymentId");
+        }   // append 1 to the count to check if there are further pages
+        org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount() + 1,
+                filter.getOrderBy(), filter.isAscending());
+        Map<String, String> properties = new HashMap<String, String>(bpmn2Service.getProcessVariables(deploymentId, processId));
+        Collection<ProcessVariableSummary> processVariables = VariableHelper.adaptCollection(dataService.getVariablesCurrentState(processInstanceId), properties,
+                processInstanceId);
+        SimpleDateFormat sdf = new SimpleDateFormat( Document.DOCUMENT_DATE_PATTERN );
+        List<DocumentSummary> documents = new ArrayList<DocumentSummary>();
+        for (ProcessVariableSummary pv : processVariables) {
+            if ("org.jbpm.document.Document".equals(pv.getType())) {
+                if (pv.getNewValue() != null && !pv.getNewValue().isEmpty()) {
+                    String[] values = pv.getNewValue().split( Document.PROPERTIES_SEPARATOR );
+                    if (values.length == 4) {
+                        Date lastModified = null;
+                        try {
+                            lastModified = sdf.parse( values[ 2 ] );
+                        } catch (ParseException ex) {
+                            logger.error("Can not parse last modified date!", ex);
+                        }
+                        documents.add(new DocumentSummary(values[0], lastModified, Long.valueOf(values[1]), values[3]));
+                    }
+            }
+
+        }
+    }   return documents;
+    }
+
   @Override
   public DocumentSummary getItem(DocumentKey key) {
     return null;
   }
+
+    @Override
+    public List<DocumentSummary> getAll(QueryFilter filter) {
+        return getDocuments(filter);
+    }
 
 }

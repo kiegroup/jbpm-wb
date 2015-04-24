@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright 2012 JBoss Inc
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:c="urn:import:org.jbpm.console.ng.gc.client.util"
+        >
+
+    <ui:with field="i18n" type="org.jbpm.console.ng.pr.client.i18n.Constants"/>
+    <ui:style>
+        .mandatory-field {
+            color: red;
+        }
+        .fieldCellWidth {
+            width: 50%;
+        }
+    </ui:style>
+
+    <g:HTMLPanel>
+        <b:TabPanel ui:field="tabPanel">
+            <b:Tab heading="{i18n.Basic}" active="true" ui:field="basicTab">
+                <b:Well>
+                    <b:Fieldset>
+                        <b:Form type="HORIZONTAL">
+                             <b:Form type="HORIZONTAL">
+                      <b:ControlGroup ui:field="processDeploymentIdControlGroup">
+                        <b:ControlLabel>
+                          <ui:text from="{i18n.Process_DeploymentId}"/>
+                        </b:ControlLabel>
+                        <b:Controls>
+                          <b:ListBox ui:field="processDeploymentIdListBox"/>
+                          <b:HelpBlock ui:field="processDeploymentIdHelpLabel"/>
+                        </b:Controls>
+                      </b:ControlGroup>
+                      <b:ControlGroup ui:field="processDefinitionsControlGroup">
+                        <b:ControlLabel>
+                          <ui:text from="{i18n.Process_Definitions}"/>
+                        </b:ControlLabel>
+                        <b:Controls>
+                          <b:ListBox ui:field="processDefinitionsListBox"/>
+                          <b:HelpBlock ui:field="processDefinitionsHelpLabel"/>
+                        </b:Controls>
+                      </b:ControlGroup>
+                    </b:Form>
+                        </b:Form>
+                    </b:Fieldset>
+                </b:Well>
+            </b:Tab>
+            <b:Tab heading="{i18n.Form}" ui:field="formTab">
+                
+                <b:Well>
+                    <b:Fieldset>
+                        <b:Form type="HORIZONTAL">
+                            
+                        </b:Form>
+
+                    </b:Fieldset>
+                </b:Well>
+            </b:Tab>
+                
+        </b:TabPanel>
+
+        <b:ControlGroup ui:field="errorMessagesGroup">
+            <b:HelpBlock ui:field="errorMessages"/>
+        </b:ControlGroup>
+
+    </g:HTMLPanel>
+
+</ui:UiBinder>

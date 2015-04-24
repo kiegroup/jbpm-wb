@@ -79,7 +79,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     private ContextualView contextualView;
     
     private String placeIdentifier;
-    
+  
     @Override
     public void init( final ProcessDefinitionListPresenter presenter ) {
 
@@ -162,6 +162,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         listGrid.setSelectionModel( selectionModel, noActionColumnManager );
         listGrid.setEmptyTableCaption( constants.No_Process_Definitions_Found() );
         listGrid.setRowStyles( selectedStyles );
+
     }
 
     @Override

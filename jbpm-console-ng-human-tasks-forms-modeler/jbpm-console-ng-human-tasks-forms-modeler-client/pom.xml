@@ -48,12 +48,27 @@
 
     <dependency>
       <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-generic-forms-api</artifactId>
+    </dependency>
+    
+     <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-generic-forms-client</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-human-tasks-forms-api</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-human-tasks-forms-client</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-process-runtime-forms-client</artifactId>
     </dependency>
 
     <dependency>
