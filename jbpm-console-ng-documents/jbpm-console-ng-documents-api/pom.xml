@@ -26,12 +26,9 @@
 
   <artifactId>jbpm-console-ng-documents-api</artifactId>
   <packaging>jar</packaging>
-  <groupId>org.jbpm</groupId>
-  <version>6.3.0-SNAPSHOT</version>
   <name>jBPM Console NG - Documents API</name>
 
   <dependencies>
-
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-common</artifactId>
@@ -56,10 +53,10 @@
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-bus</artifactId>
     </dependency>
-       	<dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-document</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-document</artifactId>
+    </dependency>
   </dependencies>
 
 </project>
