@@ -75,13 +75,5 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
     dataGrid.removeColumn(col);
   }
 
-  @UiFactory
-  public UberfireSimplePager makeUberfireSimplePager () {
-    return new UberfireSimplePager(
-            UberfireSimplePager.TextLocation.CENTER,
-            UberfireSimplePagerResources.INSTANCE,
-            false,          //avoid pager FastForwardButton
-            100,
-            false );        //avoid pager LastPageButton
-  }
+
 }

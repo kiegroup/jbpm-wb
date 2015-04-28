@@ -51,6 +51,7 @@ import com.google.gwt.view.client.Range;
 @Dependent
 @WorkbenchScreen(identifier = "Requests List")
 public class RequestListPresenter extends AbstractScreenListPresenter<RequestSummary> {
+    public static String FILTER_STATUSES_PARAM_NAME = "states";
 
     public interface RequestListView extends ListView<RequestSummary, RequestListPresenter> {
 
@@ -139,9 +140,6 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         return view;
     }
 
-    public void refreshRequests(String providerkey,List<String> statuses) {
-        refreshRequests( statuses );
-    }
     public void refreshRequests(List<String> statuses) {
         currentActiveStates = statuses;
         refreshGrid();

@@ -39,9 +39,15 @@ public abstract class AbstractListPresenter<T> {
         dataProvider.addDataDisplay( display );
     }
 
+    public AsyncDataProvider<T> getDataProvider(){
+        return dataProvider;
+    }
+
     public void refreshGrid() {
-        HasData<T> next = dataProvider.getDataDisplays().iterator().next();
-        next.setVisibleRangeAndClearData( next.getVisibleRange(), true );
+        if(dataProvider.getDataDisplays().size()>0) {
+            HasData<T> next = dataProvider.getDataDisplays().iterator().next();
+            next.setVisibleRangeAndClearData( next.getVisibleRange(), true );
+        }
     }
 
     protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
