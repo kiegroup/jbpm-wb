@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+    xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'>
+<!--     <ui:with field="i18n"
+        type="org.jbpm.console.ng.pr.client.i18n.Constants" />
+    <ui:style>
+        .dataGridContainer {
+        margin: 10px;
+        }
+        .horizontalContainer {
+        height: 32px;
+        }
+        .leftToolBar {
+        float: left;
+        text-align: left
+        }
+        .rightToolBar {
+        float: right;
+        text-align: right;
+        }
+        .centerToolBar {
+
+        text-align: center
+        }
+    </ui:style> -->
+    <g:HTMLPanel>
+        <div class="control-group">
+            <strong>
+                <b:Label ui:field="processDefinitionIdLabel"></b:Label>
+            </strong>
+            <div class="controls readonly">
+                <g:HTML ui:field="processDefinitionIdText" />
+            </div>
+        </div>
+        <div class="control-group">
+            <strong>
+                <b:Label ui:field="stateLabel"></b:Label>
+            </strong>
+            <div class="controls readonly">
+                <g:HTML ui:field="stateText" />
+            </div>
+        </div>
+        <div class="control-group ">
+            <strong>
+                <b:Label ui:field="processDeploymentLabel"></b:Label>
+            </strong>
+            <div class="controls readonly">
+                <g:HTML ui:field="processDeploymentText" />
+            </div>
+        </div>
+        <div class="control-group">
+            <strong>
+                <b:Label ui:field="processVersionLabel"></b:Label>
+            </strong>
+            <div class="controls readonly">
+                <g:HTML ui:field="processVersionText" />
+            </div>
+        </div>
+        <div class="control-group">
+            <strong>
+                <b:Label ui:field="correlationKeyLabel"></b:Label>
+            </strong>
+            <div class="controls readonly">
+                <g:HTML ui:field="correlationKeyText" />
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>
