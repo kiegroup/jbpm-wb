@@ -72,7 +72,7 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-generic-client</artifactId>
@@ -113,6 +113,13 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-documents-api</artifactId>
+    </dependency>
+
+    <!-- hack to disable sisu annotation processing (that scans client side types) -->
+    <dependency>
+      <groupId>org.eclipse.sisu</groupId>
+      <artifactId>org.eclipse.sisu.inject</artifactId>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 
