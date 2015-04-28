@@ -85,7 +85,6 @@
       <artifactId>kie-wb-common-ui</artifactId>
     </dependency>
 
-  
 
     <dependency>
       <groupId>org.uberfire</groupId>
@@ -116,6 +115,12 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- hack to disable sisu annotation processing (that scans client side types) -->
+    <dependency>
+      <groupId>org.eclipse.sisu</groupId>
+      <artifactId>org.eclipse.sisu.inject</artifactId>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
 
 </project>
