@@ -5,6 +5,12 @@
   </alternatives>
 
   <scan>
+    <!-- These exclusions were added by Errai to avoid deploying client-side classes to the server -->
+    <!-- End of Errai exclusions -->
+
+
+
+
     <exclude name="org.jbpm.console.ng.client.**"/>
     <exclude name="org.jbpm.console.ng.showcase.ht.client.**"/>
     <exclude name="org.jbpm.console.ng.ht.client.**"/>
@@ -18,6 +24,8 @@
     <exclude name="org.jbpm.console.ng.ht.forms.client.**"/>
     <exclude name="org.jbpm.console.ng.ht.forms.modeler.client.**"/>
     <exclude name="org.jbpm.console.ng.pr.client.**"/>
+    <exclude name="org.jbpm.console.ng.gc.forms.client.**"/>
+    <exclude name="org.jbpm.console.ng.pr.forms.client.**"/>
     <exclude name="org.jbpm.console.ng.pr.admin.client.**"/>
     <exclude name="org.jbpm.console.ng.wi.client.**"/>
   </scan>

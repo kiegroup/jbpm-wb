@@ -21,7 +21,7 @@ import java.util.Map;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
-import org.jbpm.console.ng.ht.forms.client.display.displayers.util.PlaceManagerFormActivitySearcher;
+import org.jbpm.console.ng.gc.forms.client.display.displayers.util.PlaceManagerFormActivitySearcher;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;

@@ -59,41 +59,7 @@ public class TaskQueryServiceImpl implements TaskQueryService {
   @Override
   public PageResponse<TaskSummary> getData(QueryFilter filter) {
     PageResponse<TaskSummary> response = new PageResponse<TaskSummary>();
-    List<String> statusesString = null;
-    String userId = "";
-    String taskRole="";
-    String stringFilter = "";
-    if (filter.getParams() != null) {
-      userId = (String) filter.getParams().get("userId");
-      statusesString = (List<String>) filter.getParams().get("statuses");
-      taskRole=(String) filter.getParams().get("taskRole");
-      stringFilter =(String) filter.getParams().get("filter");
-    }
-    List<Status> statuses = new ArrayList<Status>();
-    if(statusesString != null){
-        for (String s : statusesString) {
-          statuses.add(Status.valueOf(s));
-        }
-    }
-    
-    org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount() + 1,
-                                                                    filter.getOrderBy(), filter.isAscending());
-    qf.setFilterParams(filter.getFilterParams());
-    List<TaskSummary> taskSummaries = null;
-    if (TASK_ROLE_ADMINISTRATOR.equals(taskRole)){
-        taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsBusinessAdministrator(userId,qf),true);
-    }else if(stringFilter.equals("ALL")){
-        if(qf.getOrderBy().equals("t.taskData.expirationTime")){
-            qf.setOrderBy("t.dueDate");
-        }else if(qf.getOrderBy().equals("t.taskData.createdOn")){
-            qf.setOrderBy("t.createdOn");
-        }else if(qf.getOrderBy().equals("t.taskData.status")){
-            qf.setOrderBy("t.status");
-        }
-        taskSummaries = TaskSummaryHelper.adaptAuditCollection(runtimeDataService.getAllAuditTask(userId, qf));
-    }else{
-        taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf));
-    }
+    List<TaskSummary> taskSummaries = getTasks(filter);
     
     response.setStartRowIndex(filter.getOffset());
     response.setTotalRowSize(taskSummaries.size() - 1);
@@ -114,6 +80,41 @@ public class TaskQueryServiceImpl implements TaskQueryService {
     }
     return response;
   }
+
+    private List<TaskSummary> getTasks(QueryFilter filter) {
+        List<String> statusesString = null;
+        String userId = "";
+        String taskRole="";
+        String stringFilter = "";
+        if (filter.getParams() != null) {
+            userId = (String) filter.getParams().get("userId");
+            statusesString = (List<String>) filter.getParams().get("statuses");
+            taskRole=(String) filter.getParams().get("taskRole");
+            stringFilter =(String) filter.getParams().get("filter");
+        }   List<Status> statuses = new ArrayList<Status>();
+        if(statusesString != null){
+            for (String s : statusesString) {
+                statuses.add(Status.valueOf(s));
+        }
+        }   org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount() + 1,
+                filter.getOrderBy(), filter.isAscending());
+        qf.setFilterParams(filter.getFilterParams());
+        List<TaskSummary> taskSummaries = null;
+        if (TASK_ROLE_ADMINISTRATOR.equals(taskRole)){
+            taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsBusinessAdministrator(userId,qf),true);
+        }else if(stringFilter.equals("ALL")){
+            if(qf.getOrderBy().equals("t.taskData.expirationTime")){
+                qf.setOrderBy("t.dueDate");
+            }else if(qf.getOrderBy().equals("t.taskData.createdOn")){
+                qf.setOrderBy("t.createdOn");
+            }else if(qf.getOrderBy().equals("t.taskData.status")){
+                qf.setOrderBy("t.status");
+            }
+            taskSummaries = TaskSummaryHelper.adaptAuditCollection(runtimeDataService.getAllAuditTask(userId, qf));
+        }else{
+            taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf));
+        }   return taskSummaries;
+    }
 
   @Override
   public TaskSummary getItem(TaskKey key) {
@@ -137,5 +138,10 @@ public class TaskQueryServiceImpl implements TaskQueryService {
         }
         return null;
   }
+
+    @Override
+    public List<TaskSummary> getAll(QueryFilter filter) {
+        return getTasks(filter);
+    }
 
 }

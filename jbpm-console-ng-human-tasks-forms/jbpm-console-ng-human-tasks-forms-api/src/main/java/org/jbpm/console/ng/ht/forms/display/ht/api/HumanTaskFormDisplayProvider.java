@@ -1,6 +1,6 @@
 package org.jbpm.console.ng.ht.forms.display.ht.api;
 
-import org.jbpm.console.ng.ht.forms.display.view.FormDisplayerView;
+import org.jbpm.console.ng.ga.forms.display.view.FormDisplayerView;
 
 public interface HumanTaskFormDisplayProvider {
 

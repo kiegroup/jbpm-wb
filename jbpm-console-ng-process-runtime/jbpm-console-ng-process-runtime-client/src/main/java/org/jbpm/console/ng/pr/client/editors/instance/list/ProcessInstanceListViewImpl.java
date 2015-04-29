@@ -60,6 +60,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.*;
+import org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup;
 
 @Dependent
 public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanceSummary, ProcessInstanceListPresenter>
@@ -88,6 +89,24 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
 
     private NavLink bulkAbortNavLink;
     private NavLink bulkSignalNavLink;
+    
+    @Inject
+    private QuickNewProcessInstancePopup newProcessInstancePopup;
+    
+    private void initExtraButtons() {
+        Button newInstanceButton = new Button();
+        newInstanceButton.setTitle(constants.New_Instance());
+        newInstanceButton.setIcon( IconType.PLUS_SIGN );
+        newInstanceButton.setTitle( Constants.INSTANCE.New_Instance() );
+        newInstanceButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                newProcessInstancePopup.show();
+            }
+        });
+        listGrid.getLeftToolbar().add(newInstanceButton);
+
+    }
 
     private void controlBulkOperations() {
         if ( selectedProcessInstances != null && selectedProcessInstances.size() > 0 ) {
@@ -117,6 +136,7 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
         initColumns.add( constants.Version() );
         super.init( presenter, new GridGlobalPreferences( "ProcessInstancesGrid", initColumns, bannedColumns ) );
         initSelectionModel( listGrid );
+        initExtraButtons();
     }
 
 

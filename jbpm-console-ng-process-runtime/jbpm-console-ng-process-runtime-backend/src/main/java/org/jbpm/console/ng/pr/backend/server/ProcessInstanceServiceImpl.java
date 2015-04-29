@@ -44,25 +44,7 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
     @Override
     public PageResponse<ProcessInstanceSummary> getData(QueryFilter filter) {
         PageResponse<ProcessInstanceSummary> response = new PageResponse<ProcessInstanceSummary>();
-        List<Integer> states = null;
-        String initiator = "";
-        if (filter.getParams() != null) {
-            states = (List<Integer>) filter.getParams().get("states");
-            initiator = (String) filter.getParams().get("initiator");
-        }
-        // append 1 to the count to check if there are further pages
-        org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount() + 1,
-                filter.getOrderBy(), filter.isAscending());
-        Collection<ProcessInstanceDesc> processInstances = dataService.getProcessInstances(states, initiator, qf);
-        List<ProcessInstanceSummary> processInstancesSums = new ArrayList<ProcessInstanceSummary>(processInstances.size());
-        for (ProcessInstanceDesc pi : processInstances) {
-
-            if (filter.getParams().get("textSearch") == null || ((String) filter.getParams().get("textSearch")).isEmpty()) {
-                processInstancesSums.add(ProcessInstanceHelper.adapt(pi));
-            } else if (pi.getProcessName().toLowerCase().contains((String) filter.getParams().get("textSearch"))) {
-                processInstancesSums.add(ProcessInstanceHelper.adapt(pi));
-            }
-        }
+        List<ProcessInstanceSummary> processInstancesSums = getProcessInstances(filter);
 
         response.setStartRowIndex(filter.getOffset());
         response.setTotalRowSize(processInstancesSums.size()-1);
@@ -85,9 +67,37 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
 
     }
 
+    private List<ProcessInstanceSummary> getProcessInstances(QueryFilter filter) {
+        List<Integer> states = null;
+        String initiator = "";
+        if (filter.getParams() != null) {
+            states = (List<Integer>) filter.getParams().get("states");
+            initiator = (String) filter.getParams().get("initiator");
+        }
+        // append 1 to the count to check if there are further pages
+        org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount() + 1,
+                filter.getOrderBy(), filter.isAscending());
+        Collection<ProcessInstanceDesc> processInstances = dataService.getProcessInstances(states, initiator, qf);
+        List<ProcessInstanceSummary> processInstancesSums = new ArrayList<ProcessInstanceSummary>(processInstances.size());
+        for (ProcessInstanceDesc pi : processInstances) {
+            
+            if (filter.getParams().get("textSearch") == null || ((String) filter.getParams().get("textSearch")).isEmpty()) {
+                processInstancesSums.add(ProcessInstanceHelper.adapt(pi));
+            } else if (pi.getProcessName().toLowerCase().contains((String) filter.getParams().get("textSearch"))) {
+                processInstancesSums.add(ProcessInstanceHelper.adapt(pi));
+            }
+        }
+        return processInstancesSums;
+    }
+
     @Override
     public ProcessInstanceSummary getItem(ProcessInstanceKey key) {
         return ProcessInstanceHelper.adapt(dataService.getProcessInstanceById(key.getProcessInstanceId()));
+    }
+
+    @Override
+    public List<ProcessInstanceSummary> getAll(QueryFilter filter) {
+        return getProcessInstances(filter);
     }
 
 }

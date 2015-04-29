@@ -18,7 +18,6 @@ package org.jbpm.console.ng.es.backend.server;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -220,26 +219,7 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
     @Override
     public PageResponse<RequestSummary> getData(QueryFilter filter) {
         PageResponse<RequestSummary> response = new PageResponse<RequestSummary>();
-        List<String> states = null;
-        if (filter.getParams() != null) {
-            states = (List<String>) filter.getParams().get("states");
-        }
-        Collection<RequestInfo> requestInfoList = null;
-        if (states == null || states.isEmpty()) {
-            requestInfoList = executor.getAllRequests(); 
-        }else{
-            List<STATUS> statusList = RequestSummaryHelper.adaptStatusList(states);
-            requestInfoList =executor.getRequestsByStatus(statusList);
-        }
-        List<RequestSummary> requestSummarys = new ArrayList<RequestSummary>(requestInfoList.size()); ;
-        for(RequestInfo requestInfo:requestInfoList){
-            if (filter.getParams().get("textSearch") == null || ((String) filter.getParams().get("textSearch")).isEmpty()) {
-                requestSummarys.add( RequestSummaryHelper.adaptRequest( requestInfo ) );
-            }else if(requestInfo.getCommandName().toLowerCase().contains((String) filter.getParams().get("textSearch"))){
-                requestSummarys.add( RequestSummaryHelper.adaptRequest( requestInfo ) );
-            }
-            
-        }
+        List<RequestSummary> requestSummarys = getRequests(filter);
         response.setStartRowIndex(filter.getOffset());
         response.setTotalRowSize(requestSummarys.size()-1);
         if(requestSummarys.size() > filter.getCount()){
@@ -260,6 +240,30 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
         return response;
     }
 
+    private List<RequestSummary> getRequests(QueryFilter filter) {
+        List<String> states = null;
+        if (filter.getParams() != null) {
+            states = (List<String>) filter.getParams().get("states");
+        }
+        Collection<RequestInfo> requestInfoList = null;
+        if (states == null || states.isEmpty()) {
+            requestInfoList = executor.getAllRequests();
+        }else{
+            List<STATUS> statusList = RequestSummaryHelper.adaptStatusList(states);
+            requestInfoList =executor.getRequestsByStatus(statusList);
+        }
+        List<RequestSummary> requestSummarys = new ArrayList<RequestSummary>(requestInfoList.size());
+        for(RequestInfo requestInfo:requestInfoList){
+            if (filter.getParams().get("textSearch") == null || ((String) filter.getParams().get("textSearch")).isEmpty()) {
+                requestSummarys.add( RequestSummaryHelper.adaptRequest( requestInfo ) );
+            }else if(requestInfo.getCommandName().toLowerCase().contains((String) filter.getParams().get("textSearch"))){
+                requestSummarys.add( RequestSummaryHelper.adaptRequest( requestInfo ) );
+            }
+            
+        }
+        return requestSummarys;
+    }
+
     @Override
     public RequestSummary getItem(RequestKey key) {
         // TODO Auto-generated method stub
@@ -273,5 +277,10 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
         } catch (ClassNotFoundException e) {
             return false;
         }
+    }
+
+    @Override
+    public List<RequestSummary> getAll(QueryFilter filter) {
+        return getRequests(filter);
     }
 }

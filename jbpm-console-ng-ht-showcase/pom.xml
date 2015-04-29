@@ -199,6 +199,26 @@
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-generic-api</artifactId>
         </dependency>
+         <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-generic-forms-client</artifactId>
+             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-generic-forms-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-process-runtime-forms-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-process-runtime-forms-backend</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
@@ -610,9 +630,12 @@
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-client</compileSourcesArtifact>
-
+                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-forms-client</compileSourcesArtifact>
+                        
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-forms-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-forms-client</compileSourcesArtifact>
 
                         <compileSourcesArtifact>org.guvnor:guvnor-services-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.guvnor:guvnor-project-api</compileSourcesArtifact>
