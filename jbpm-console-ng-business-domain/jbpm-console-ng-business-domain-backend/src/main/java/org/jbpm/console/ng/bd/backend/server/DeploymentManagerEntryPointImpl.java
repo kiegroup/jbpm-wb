@@ -183,6 +183,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         BuildMessage message = new BuildMessage();
         message.setLevel(BuildMessage.Level.ERROR);
         message.setText("Deployment of unit " + gav + " failed: " + e.getMessage());
+        logger.warn("Deployment of unit " + gav + " failed: " + e.getMessage(), e);
         buildResults.addBuildMessage(message);
         throw new DeploymentException(e.getMessage(), e);
       } finally {
@@ -230,6 +231,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
       BuildMessage message = new BuildMessage();
       message.setLevel(BuildMessage.Level.ERROR);
       message.setText("Undeployment of unit " + gav + " failed: " + e.getMessage());
+      logger.warn("Undeployment of unit " + gav + " failed: " + e.getMessage(), e);
       buildResults.addBuildMessage(message);
       throw new DeploymentException(e.getMessage(), e);
     } finally {
