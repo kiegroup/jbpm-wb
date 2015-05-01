@@ -133,9 +133,6 @@
           <name>full</name>
         </property>
       </activation>
-      <modules>
-        <module>jbpm-console-ng-distribution-wars</module>
-      </modules>
     </profile>
   </profiles>
 </project>
