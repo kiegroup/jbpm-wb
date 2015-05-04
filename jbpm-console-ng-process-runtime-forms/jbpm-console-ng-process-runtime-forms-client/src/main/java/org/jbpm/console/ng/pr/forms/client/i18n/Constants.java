@@ -51,9 +51,15 @@ public interface Constants extends Messages {
 
     String Start();
 
+    String Start_process_instance();
+
     String Submit();
 
     String Correlation_Key();
 
-    String Select();
+    String Select_Process();
+
+    String Process_DeploymentId();
+
+    String Process_Definition();
 }

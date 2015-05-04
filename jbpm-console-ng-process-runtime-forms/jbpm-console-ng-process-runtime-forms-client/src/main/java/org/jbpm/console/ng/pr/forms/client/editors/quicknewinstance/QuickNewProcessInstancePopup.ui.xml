@@ -23,58 +23,50 @@
              xmlns:c="urn:import:org.jbpm.console.ng.gc.client.util"
         >
 
-    <ui:with field="i18n" type="org.jbpm.console.ng.pr.client.i18n.Constants"/>
+    <ui:with field="i18n" type="org.jbpm.console.ng.pr.forms.client.i18n.Constants"/>
     <ui:style>
         .mandatory-field {
             color: red;
         }
+
         .fieldCellWidth {
             width: 50%;
         }
     </ui:style>
 
     <g:HTMLPanel>
-        <b:TabPanel ui:field="tabPanel">
-            <b:Tab heading="{i18n.Basic}" active="true" ui:field="basicTab">
-                <b:Well>
-                    <b:Fieldset>
-                        <b:Form type="HORIZONTAL">
-                             <b:Form type="HORIZONTAL">
-                      <b:ControlGroup ui:field="processDeploymentIdControlGroup">
-                        <b:ControlLabel>
-                          <ui:text from="{i18n.Process_DeploymentId}"/>
-                        </b:ControlLabel>
-                        <b:Controls>
-                          <b:ListBox ui:field="processDeploymentIdListBox"/>
-                          <b:HelpBlock ui:field="processDeploymentIdHelpLabel"/>
-                        </b:Controls>
-                      </b:ControlGroup>
-                      <b:ControlGroup ui:field="processDefinitionsControlGroup">
-                        <b:ControlLabel>
-                          <ui:text from="{i18n.Process_Definitions}"/>
-                        </b:ControlLabel>
-                        <b:Controls>
-                          <b:ListBox ui:field="processDefinitionsListBox"/>
-                          <b:HelpBlock ui:field="processDefinitionsHelpLabel"/>
-                        </b:Controls>
-                      </b:ControlGroup>
+        <g:FlowPanel ui:field="basicForm">
+
+            <b:Well>
+                <b:Fieldset>
+
+                    <b:Form type="HORIZONTAL">
+                        <b:ControlGroup ui:field="processDeploymentIdControlGroup">
+                            <b:ControlLabel>
+                                <ui:text from="{i18n.Process_DeploymentId}"/>
+                            </b:ControlLabel>
+                            <b:Controls>
+                                <b:ListBox ui:field="processDeploymentIdListBox"/>
+                                <b:HelpBlock ui:field="processDeploymentIdHelpLabel"/>
+                            </b:Controls>
+                        </b:ControlGroup>
+                        <b:ControlGroup ui:field="processDefinitionsControlGroup">
+                            <b:ControlLabel>
+                                <ui:text from="{i18n.Process_Definition}"/>
+                            </b:ControlLabel>
+                            <b:Controls>
+                                <b:ListBox ui:field="processDefinitionsListBox"/>
+                                <b:HelpBlock ui:field="processDefinitionsHelpLabel"/>
+                            </b:Controls>
+                        </b:ControlGroup>
                     </b:Form>
-                        </b:Form>
-                    </b:Fieldset>
-                </b:Well>
-            </b:Tab>
-            <b:Tab heading="{i18n.Form}" ui:field="formTab">
-                
+                </b:Fieldset>
+            </b:Well>
 
-                    <g:FlowPanel ui:field="body">
-
-
-                    </g:FlowPanel>
-
-            </b:Tab>
-                
-        </b:TabPanel>
-
+        </g:FlowPanel>
+        <g:FlowPanel ui:field="processForm">
+            <g:FlowPanel ui:field="body"/>
+        </g:FlowPanel>
         <b:ControlGroup ui:field="errorMessagesGroup">
             <b:HelpBlock ui:field="errorMessages"/>
         </b:ControlGroup>
