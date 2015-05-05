@@ -59,6 +59,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.*;
+import org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup;
 
 import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.TASK_ROLE_POTENTIALOWNER;
 
@@ -89,6 +90,10 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
     private NavLink bulkAbortNavLink;
     private NavLink bulkSignalNavLink;
+
+    @Inject
+    private QuickNewProcessInstancePopup newProcessInstancePopup;
+
 
     private void controlBulkOperations() {
         if ( selectedProcessInstances != null && selectedProcessInstances.size() > 0 ) {
@@ -158,6 +163,8 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
         final ExtendedPagedTable extendedPagedTable = getListGrid();
         extendedPagedTable.setEmptyTableCaption( constants.No_Process_Instances_Found() );
+        extendedPagedTable.getLeftToolbar().clear();
+        initExtraButtons( extendedPagedTable );
         initBulkActions(extendedPagedTable);
         selectionModel = new NoSelectionModel<ProcessInstanceSummary>();
         selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
@@ -287,7 +294,17 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     }
 
     public void initExtraButtons( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ){
-
+        Button newInstanceButton = new Button();
+        newInstanceButton.setTitle(constants.New_Instance());
+        newInstanceButton.setIcon( IconType.PLUS_SIGN );
+        newInstanceButton.setTitle( Constants.INSTANCE.New_Instance() );
+        newInstanceButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                newProcessInstancePopup.show();
+            }
+        });
+        extendedPagedTable.getLeftToolbar().add(newInstanceButton);
     }
     private void initBulkActions( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
         SplitDropdownButton bulkActions = new SplitDropdownButton();
@@ -316,7 +333,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
         bulkActions.add( bulkAbortNavLink );
         bulkActions.add( bulkSignalNavLink );
-        extendedPagedTable.getLeftToolbar().clear();
+
         extendedPagedTable.getLeftToolbar().add( bulkActions );
 
         controlBulkOperations();
@@ -645,4 +662,4 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     }
 
 
-    }
+}
