@@ -264,8 +264,8 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
 
         actions.add( newJobNavLink );
         actions.add( settingsNavLink );
-        extendedPagedTable.getLeftToolbar().clear();
-        extendedPagedTable.getLeftToolbar().add( actions );
+        extendedPagedTable.getRightActionsToolbar().clear();
+        extendedPagedTable.getRightActionsToolbar().add( actions );
     }
 
 
