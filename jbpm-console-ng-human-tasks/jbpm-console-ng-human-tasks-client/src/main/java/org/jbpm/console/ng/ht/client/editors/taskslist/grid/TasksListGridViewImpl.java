@@ -249,8 +249,8 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
             }
         });
 
-        extendedPagedTable.getLeftToolbar().clear();
-        extendedPagedTable.getLeftToolbar().add(newTaskButton);
+        extendedPagedTable.getRightActionsToolbar().clear();
+        extendedPagedTable.getRightActionsToolbar().add(newTaskButton);
 
     }
 

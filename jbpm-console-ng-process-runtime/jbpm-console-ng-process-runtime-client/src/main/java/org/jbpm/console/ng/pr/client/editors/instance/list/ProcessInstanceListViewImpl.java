@@ -163,9 +163,9 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
         final ExtendedPagedTable extendedPagedTable = getListGrid();
         extendedPagedTable.setEmptyTableCaption( constants.No_Process_Instances_Found() );
-        extendedPagedTable.getLeftToolbar().clear();
+        extendedPagedTable.getRightActionsToolbar().clear();
         initExtraButtons( extendedPagedTable );
-        initBulkActions(extendedPagedTable);
+        initBulkActions( extendedPagedTable );
         selectionModel = new NoSelectionModel<ProcessInstanceSummary>();
         selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
             @Override
@@ -304,7 +304,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                 newProcessInstancePopup.show();
             }
         });
-        extendedPagedTable.getLeftToolbar().add(newInstanceButton);
+        extendedPagedTable.getRightActionsToolbar().add(newInstanceButton);
     }
     private void initBulkActions( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
         SplitDropdownButton bulkActions = new SplitDropdownButton();
@@ -334,7 +334,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         bulkActions.add( bulkAbortNavLink );
         bulkActions.add( bulkSignalNavLink );
 
-        extendedPagedTable.getLeftToolbar().add( bulkActions );
+        extendedPagedTable.getRightActionsToolbar().add( bulkActions );
 
         controlBulkOperations();
     }
