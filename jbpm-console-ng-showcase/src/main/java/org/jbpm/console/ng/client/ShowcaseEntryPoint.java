@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.inject.Inject;
 
 import com.google.gwt.animation.client.Animation;
@@ -28,7 +29,9 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
+
 import java.util.Map;
+
 import org.guvnor.common.services.shared.config.AppConfigService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -40,6 +43,7 @@ import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.client.i18n.Constants;
 import org.kie.workbench.common.widgets.client.menu.WorkbenchConfigurationMenuBuilder;
+import org.kie.workbench.common.widgets.client.handlers.workbench.configuration.*;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
 import org.guvnor.common.services.shared.security.KieWorkbenchACL;
 import org.guvnor.common.services.shared.security.KieWorkbenchPolicy;
@@ -56,7 +60,6 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.MenuPosition;
 import org.uberfire.workbench.model.menu.Menus;
-
 @EntryPoint
 public class ShowcaseEntryPoint {
 
@@ -89,6 +92,9 @@ public class ShowcaseEntryPoint {
     @Inject
     private Caller<AppConfigService> appConfigService;
 
+    @Inject
+    private WorkbenchconfigurationMenu workbenchconfigurationMenu;
+    
     @AfterInitialization
     public void startApp() {
         kieSecurityService.call( new RemoteCallback<String>() {
@@ -137,7 +143,7 @@ public class ShowcaseEntryPoint {
                 .newTopLevelMenu( constants.Experimental() ).withItems( getExperimentalViews() ).endMenu()
                 .newTopLevelCustomMenu( iocManager.lookupBean( WorkbenchConfigurationMenuBuilder.class).getInstance() ).endMenu()
                 .newTopLevelMenu( constants.User() + ": " + identity.getIdentifier() ).position( MenuPosition.RIGHT ).withItems( getRoles() ).endMenu()
-
+                .newTopLevelMenu( "Setting" ).position( MenuPosition.RIGHT ).withItems( workbenchconfigurationMenu.getMenuItems() ).endMenu()
                 .build();
         menubar.addMenus( menus );
     }
