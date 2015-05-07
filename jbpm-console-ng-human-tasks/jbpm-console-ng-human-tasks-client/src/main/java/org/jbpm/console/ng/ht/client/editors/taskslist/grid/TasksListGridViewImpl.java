@@ -28,7 +28,6 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
@@ -39,7 +38,6 @@ import org.jbpm.console.ng.gc.client.list.base.AbstractMultiGridView;
 import org.jbpm.console.ng.gc.client.util.TaskUtils;
 import org.jbpm.console.ng.ht.client.editors.quicknewtask.QuickNewTaskPopup;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
@@ -74,7 +72,6 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
 
 
     private final Constants constants = GWT.create(Constants.class);
-    private final HumanTasksImages images = GWT.create(HumanTasksImages.class);
 
     @Inject
     private Event<TaskSelectionEvent> taskSelected;
@@ -249,8 +246,8 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
             }
         });
 
-        extendedPagedTable.getLeftToolbar().clear();
-        extendedPagedTable.getLeftToolbar().add(newTaskButton);
+        extendedPagedTable.getRightActionsToolbar().clear();
+        extendedPagedTable.getRightActionsToolbar().add(newTaskButton);
 
     }
 
@@ -495,11 +492,8 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
                     if (value.getActualOwner() != null && value.getStatus().equals("InProgress")) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.completeGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.Complete() + "' style='margin-right:5px;'>");
-                        mysb.append(imageProto.getSafeHtml());
-                        mysb.appendHtmlConstant("</span>");
+                        mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Complete()+"'>"+constants.Complete()+"</a>");
                         sb.append(mysb.toSafeHtml());
                     }
                 }
@@ -531,11 +525,8 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                 @Override
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
                     if (value.getStatus().equals("Ready")) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.releaseGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.Claim() + "' style='margin-right:5px;'>");
-                        mysb.append(imageProto.getSafeHtml());
-                        mysb.appendHtmlConstant("</span>");
+                        mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Claim()+"'>"+constants.Claim()+"</a>");
                         sb.append(mysb.toSafeHtml());
                     }
                 }
@@ -568,11 +559,8 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                 public void render(Cell.Context context, TaskSummary value, SafeHtmlBuilder sb) {
                     if (value.getActualOwner() != null && value.getActualOwner().equals(identity.getIdentifier())
                             && (value.getStatus().equals("Reserved") || value.getStatus().equals("InProgress"))) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.claimGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.Release() + "' style='margin-right:5px;'>");
-                        mysb.append(imageProto.getSafeHtml());
-                        mysb.appendHtmlConstant("</span>");
+                        mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Release()+"'>"+constants.Release()+"</a>");
                         sb.append(mysb.toSafeHtml());
                     }
                 }

@@ -36,7 +36,6 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
@@ -45,7 +44,6 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import org.kie.workbench.common.widgets.client.workbench.configuration.ContextualView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
@@ -67,7 +65,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
 
     private static Binder uiBinder = GWT.create( Binder.class );
     private Constants constants = GWT.create( Constants.class );
-    private ProcessRuntimeImages images = GWT.create( ProcessRuntimeImages.class );
+
 
     @Inject
     private Event<ProcessDefSelectionEvent> processDefSelected;
@@ -270,11 +268,8 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
                                     ProcessSummary value,
                                     SafeHtmlBuilder sb ) {
 
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create( images.startGridIcon() );
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant( "<span title='" + constants.Start() + "' style='margin-right:5px;'>" );
-                    mysb.append( imageProto.getSafeHtml() );
-                    mysb.appendHtmlConstant( "</span>" );
+                    mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Start()+"'>"+constants.Start()+"</a>");
                     sb.append( mysb.toSafeHtml() );
                 }
             };

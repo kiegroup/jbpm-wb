@@ -33,7 +33,6 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
@@ -50,7 +49,6 @@ import javax.inject.Inject;
 import org.jbpm.console.ng.bd.client.editors.deployment.newunit.NewDeploymentPopup;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
-import org.jbpm.console.ng.bd.client.resources.BusinessDomainImages;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 import org.jbpm.console.ng.bd.model.events.DeployedUnitChangedEvent;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
@@ -69,7 +67,6 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
     private Constants constants = GWT.create(Constants.class);
 
-    private BusinessDomainImages images = GWT.create(BusinessDomainImages.class);
 
     @Inject
     private NewDeploymentPopup newDeploymentPopup;
@@ -353,11 +350,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 @Override
                 public void render(Cell.Context context, KModuleDeploymentUnitSummary value, SafeHtmlBuilder sb) {
                     String title = constants.Undeploy();
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.undeployGridIcon());
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='" + title + "' style='margin-right:5px;'>");
-                    mysb.append(imageProto.getSafeHtml());
-                    mysb.appendHtmlConstant("</span>");
+                    mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+title+"'>"+title+"</a>");
                     sb.append(mysb.toSafeHtml());
                 }
             };
@@ -392,18 +386,12 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                         KModuleDeploymentUnitSummary value,
                         SafeHtmlBuilder sb) {
                     if (value.isActive()) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.deactivateGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.Deactivate() + "' style='margin-right:5px;'>");
-                        mysb.append(imageProto.getSafeHtml());
-                        mysb.appendHtmlConstant("</span>");
+                        mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Deactivate()+"'>"+constants.Deactivate()+"</a>");
                         sb.append(mysb.toSafeHtml());
                     } else {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.activateGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.Activate() + "' style='margin-right:5px;'>");
-                        mysb.append(imageProto.getSafeHtml());
-                        mysb.appendHtmlConstant("</span>");
+                        mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Activate()+"'>"+constants.Activate()+"</a>");
                         sb.append(mysb.toSafeHtml());
                     }
                 }

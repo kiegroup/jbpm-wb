@@ -250,5 +250,9 @@ public interface Constants extends Messages {
     String Advanced();
     
     String Form();
+
+    String Edit();
+
+    String History();
     
 }

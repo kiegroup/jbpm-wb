@@ -39,7 +39,6 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractMultiGridView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
@@ -61,7 +60,6 @@ import javax.inject.Inject;
 import java.util.*;
 import org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup;
 
-import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.TASK_ROLE_POTENTIALOWNER;
 
 @Dependent
 public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessInstanceSummary, ProcessInstanceListPresenter>
@@ -76,7 +74,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     private static Binder uiBinder = GWT.create( Binder.class );
 
     private Constants constants = GWT.create( Constants.class );
-    private ProcessRuntimeImages images = GWT.create( ProcessRuntimeImages.class );
 
     private List<ProcessInstanceSummary> selectedProcessInstances = new ArrayList<ProcessInstanceSummary>();
 
@@ -163,9 +160,9 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
         final ExtendedPagedTable extendedPagedTable = getListGrid();
         extendedPagedTable.setEmptyTableCaption( constants.No_Process_Instances_Found() );
-        extendedPagedTable.getLeftToolbar().clear();
+        extendedPagedTable.getRightActionsToolbar().clear();
         initExtraButtons( extendedPagedTable );
-        initBulkActions(extendedPagedTable);
+        initBulkActions( extendedPagedTable );
         selectionModel = new NoSelectionModel<ProcessInstanceSummary>();
         selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
             @Override
@@ -304,7 +301,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                 newProcessInstancePopup.show();
             }
         });
-        extendedPagedTable.getLeftToolbar().add(newInstanceButton);
+        extendedPagedTable.getRightActionsToolbar().add(newInstanceButton);
     }
     private void initBulkActions( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
         SplitDropdownButton bulkActions = new SplitDropdownButton();
@@ -334,7 +331,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         bulkActions.add( bulkAbortNavLink );
         bulkActions.add( bulkSignalNavLink );
 
-        extendedPagedTable.getLeftToolbar().add( bulkActions );
+        extendedPagedTable.getRightActionsToolbar().add( bulkActions );
 
         controlBulkOperations();
     }
@@ -533,11 +530,8 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                     ProcessInstanceSummary value,
                                     SafeHtmlBuilder sb ) {
                     if ( value.getState() == ProcessInstance.STATE_ACTIVE ) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create( images.abortGridIcon() );
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( "<span title='" + constants.Abort() + "' style='margin-right:5px;'>" );
-                        mysb.append( imageProto.getSafeHtml() );
-                        mysb.appendHtmlConstant( "</span>" );
+                        mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Abort()+"'>"+constants.Abort()+"</a>&nbsp;");
                         sb.append( mysb.toSafeHtml() );
                     }
                 }
@@ -572,11 +566,8 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                     ProcessInstanceSummary value,
                                     SafeHtmlBuilder sb ) {
                     if ( value.getState() == ProcessInstance.STATE_ACTIVE ) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create( images.signalGridIcon() );
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( "<span title='" + constants.Signal() + "' style='margin-right:5px;'>" );
-                        mysb.append( imageProto.getSafeHtml() );
-                        mysb.appendHtmlConstant( "</span>" );
+                        mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Signal()+"'>"+constants.Signal()+"</a>");
                         sb.append( mysb.toSafeHtml() );
                     }
                 }
