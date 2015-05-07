@@ -149,6 +149,10 @@
       <artifactId>org.eclipse.sisu.inject</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-human-tasks-forms-api</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

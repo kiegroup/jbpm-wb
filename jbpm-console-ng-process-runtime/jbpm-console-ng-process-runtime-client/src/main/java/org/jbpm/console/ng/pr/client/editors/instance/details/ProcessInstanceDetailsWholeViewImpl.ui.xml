@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+    xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'>
+    <g:HTMLPanel ui:field="wholeView">
+        <div class="row-fluid">
+            <div class="accordion" id="accordion">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse"
+                            data-parent="#accordion" href="#desc_collapse">
+                             <b:ControlLabel ui:field="detailsAccordionLabel"></b:ControlLabel>
+                        </a>
+                    </div>
+                    <div id="desc_collapse" class="accordion-body collapse in"
+                        style="position: relative;">
+                        <div class="accordion-inner">
+                            <g:HTMLPanel ui:field="parentsDetailsView">
+                            </g:HTMLPanel>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse"
+                            data-parent="#accordion" href="#log_collapse">
+                             <b:ControlLabel  ui:field="gridAccordionLabel"></b:ControlLabel>
+                        </a>
+                    </div>
+                    <div id="log_collapse" class="accordion-body collapse in"
+                        style="position: relative;">
+                        <div class="accordion-inner">
+                            <g:HTMLPanel ui:field="parentsLogView">
+                            </g:HTMLPanel>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>
