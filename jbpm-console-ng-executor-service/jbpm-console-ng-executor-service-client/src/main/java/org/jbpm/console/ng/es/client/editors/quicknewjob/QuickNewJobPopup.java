@@ -24,6 +24,7 @@ import com.google.gwt.cell.client.*;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.Column;
@@ -281,9 +282,16 @@ public class QuickNewJobPopup extends BaseModal {
 
         private ActionCell<RequestParameterSummary> cell;
 
-        public ActionHasCell( String text,
+        public ActionHasCell( final String text,
                               ActionCell.Delegate<RequestParameterSummary> delegate ) {
-            cell = new ActionCell<RequestParameterSummary>( text, delegate );
+            cell = new ActionCell<RequestParameterSummary>(text, delegate) {
+                @Override
+                public void render(Cell.Context context, RequestParameterSummary value, SafeHtmlBuilder sb) {
+                    SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                    mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+text+"'>"+text+"</a>");
+                    sb.append(mysb.toSafeHtml());
+                }
+            };
         }
 
         @Override
@@ -357,7 +365,7 @@ public class QuickNewJobPopup extends BaseModal {
         // actions (icons)
         List<HasCell<RequestParameterSummary, ?>> cells = new LinkedList<HasCell<RequestParameterSummary, ?>>();
 
-        cells.add( new ActionHasCell( "Remove", new ActionCell.Delegate<RequestParameterSummary>() {
+        cells.add( new ActionHasCell( Constants.INSTANCE.Remove(), new ActionCell.Delegate<RequestParameterSummary>() {
             @Override
             public void execute( RequestParameterSummary parameter ) {
                 removeParameter( parameter );

@@ -132,4 +132,9 @@ public interface Constants extends Messages {
 
     String FilterManagement();
 
+    String Remove();
+    String Details();
+    String Cancel();
+    String  Requeue();
+
 }

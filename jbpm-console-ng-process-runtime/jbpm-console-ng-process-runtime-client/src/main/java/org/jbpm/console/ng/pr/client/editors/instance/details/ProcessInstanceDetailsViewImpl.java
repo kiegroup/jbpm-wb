@@ -29,7 +29,7 @@ import com.google.gwt.user.client.ui.HTML;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
+
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.uberfire.backend.vfs.Path;
@@ -100,7 +100,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     private Event<NotificationEvent> notification;
 
     private Constants constants = GWT.create( Constants.class );
-    private ProcessRuntimeImages images = GWT.create( ProcessRuntimeImages.class );
+
     private ProcessInstanceSummary processInstance;
     private Path processAssetPath;
     private String encodedProcessSource;

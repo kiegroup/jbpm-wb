@@ -21,12 +21,10 @@ import java.util.List;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.jboss.errai.ui.shared.api.annotations.DataField;
+
 import org.jbpm.console.ng.dm.client.i18n.Constants;
-import org.jbpm.console.ng.dm.client.resources.DocumentsImages;
 import org.jbpm.console.ng.dm.model.CMSContentSummary;
 import org.jbpm.console.ng.dm.model.events.DocumentRemoveSearchEvent;
 import org.jbpm.console.ng.dm.model.events.DocumentsHomeSearchEvent;
@@ -42,7 +40,6 @@ import org.uberfire.workbench.events.NotificationEvent;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ButtonGroup;
 import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.cell.client.ActionCell;
@@ -57,11 +54,9 @@ import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -80,8 +75,6 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
     }
 
     private Constants constants = GWT.create(Constants.class);
-
-    private DocumentsImages images = GWT.create(DocumentsImages.class);
 
     private static Binder uiBinder = GWT.create(Binder.class);
 
@@ -346,14 +339,13 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
             cell = new ActionCell<CMSContentSummary>(text, delegate) {
                 @Override
                 public void render(Cell.Context context, CMSContentSummary value, SafeHtmlBuilder sb) {
-                    ImageResource detailsIcon = images.removeIcon();
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(detailsIcon);
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='" + constants.Remove() + "' style='margin-right:5px;'>"); // TODO
-                                                                                                                    // add
-                                                                                                                    // constants
-                    mysb.append(imageProto.getSafeHtml());
-                    mysb.appendHtmlConstant("</span>");
+                    mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Remove()+"'>"+constants.Remove()+"</a>");
+
+                    // TODO
+                    // add
+                    // constants
+
                     sb.append(mysb.toSafeHtml());
                 }
             };
@@ -383,12 +375,8 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
             cell = new ActionCell<CMSContentSummary>(text, delegate) {
                 @Override
                 public void render(Cell.Context context, CMSContentSummary value, SafeHtmlBuilder sb) {
-                    ImageResource detailsIcon = images.goIcon();
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(detailsIcon);
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='" + constants.Go() + "' style='margin-right:5px;'>");
-                    mysb.append(imageProto.getSafeHtml());
-                    mysb.appendHtmlConstant("</span>");
+                    mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Go()+"'>"+constants.Go()+"</a>");
                     sb.append(mysb.toSafeHtml());
                 }
             };

@@ -24,7 +24,6 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
@@ -34,19 +33,13 @@ import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.editors.variables.edit.VariableEditPopup;
 import org.jbpm.console.ng.pr.client.editors.variables.history.VariableHistoryPopup;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
 import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.events.NotificationEvent;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -67,8 +60,6 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
     private static Binder uiBinder = GWT.create(Binder.class);
 
     private Constants constants = GWT.create(Constants.class);
-
-    private ProcessRuntimeImages images = GWT.create(ProcessRuntimeImages.class);
 
     private Column actionsColumn;
 
@@ -270,11 +261,8 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
                                    ProcessVariableSummary value,
                                    SafeHtmlBuilder sb) {
                     if (presenter.getProcessInstanceStatus() == ProcessInstance.STATE_ACTIVE) {
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.editGridIcon());
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<span title='" + constants.Edit_Variable() + "'>");
-                        mysb.append(imageProto.getSafeHtml());
-                        mysb.appendHtmlConstant("</span>");
+                        mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Edit_Variable()+"'>"+constants.Edit()+"</a>");
                         sb.append(mysb.toSafeHtml());
                     }
                 }
@@ -310,11 +298,8 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
                                    ProcessVariableSummary value,
                                    SafeHtmlBuilder sb) {
 
-                    AbstractImagePrototype imageProto = AbstractImagePrototype.create(images.historyGridIcon());
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<span title='" + constants.Variables_History() + "'>");
-                    mysb.append(imageProto.getSafeHtml());
-                    mysb.appendHtmlConstant("</span>");
+                    mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Variables_History()+"'>"+constants.History()+"</a>");
                     sb.append(mysb.toSafeHtml());
                 }
             };

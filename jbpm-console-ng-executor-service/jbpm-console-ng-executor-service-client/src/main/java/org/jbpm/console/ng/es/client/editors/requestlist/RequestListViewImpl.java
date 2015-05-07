@@ -331,7 +331,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
         allStatuses.add("ERROR");
         allStatuses.add("RETRYING");
         allStatuses.add("RUNNING");
-        cells.add( new ActionHasCell( "Details", allStatuses, new Delegate<RequestSummary>() {
+        cells.add( new ActionHasCell(Constants.INSTANCE.Details(), allStatuses, new Delegate<RequestSummary>() {
             @Override
             public void execute( RequestSummary job ) {
                 jobDetailsPopup.show(String.valueOf( job.getJobId() ));
@@ -342,7 +342,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
         activeStatuses.add("QUEUED");
         activeStatuses.add("RETRYING");
         activeStatuses.add("RUNNING");
-        cells.add( new ActionHasCell( "Cancel", activeStatuses, new Delegate<RequestSummary>() {
+        cells.add( new ActionHasCell( Constants.INSTANCE.Cancel(), activeStatuses, new Delegate<RequestSummary>() {
             @Override
             public void execute( RequestSummary job ) {
                 if ( Window.confirm( "Are you sure you want to cancel this Job?" ) ) {
@@ -354,7 +354,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
         List<String> requeueStatuses = new ArrayList<String>();
         requeueStatuses.add("ERROR");
         requeueStatuses.add("RUNNING");
-        cells.add( new ActionHasCell( "Requeue", requeueStatuses, new Delegate<RequestSummary>() {
+        cells.add( new ActionHasCell( Constants.INSTANCE.Requeue(), requeueStatuses, new Delegate<RequestSummary>() {
             @Override
             public void execute( RequestSummary job ) {
                 if ( Window.confirm( "Are you sure you want to requeue this Job?" ) ) {
@@ -378,14 +378,16 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
         private final List<String> availableStatuses;
         private ActionCell<RequestSummary> cell;
 
-        public ActionHasCell( String text, List<String> availableStatusesList,
+        public ActionHasCell( final String text, List<String> availableStatusesList,
                               Delegate<RequestSummary> delegate ) {
             this.availableStatuses = availableStatusesList;
             cell = new ActionCell<RequestSummary>( text, delegate ){
                 @Override
                 public void render(Context context, RequestSummary value, SafeHtmlBuilder sb) {
                     if ( availableStatuses.contains(value.getStatus())){
-                        super.render(context, value, sb);
+                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                        mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+text+"'>"+text+"</a>");
+                        sb.append(mysb.toSafeHtml());
                     }
                 }
             };
