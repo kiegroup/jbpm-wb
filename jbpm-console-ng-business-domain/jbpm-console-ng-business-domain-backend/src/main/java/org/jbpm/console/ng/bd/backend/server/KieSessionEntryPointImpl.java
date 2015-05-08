@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
+import org.jbpm.services.api.AdHocProcessService;
 import org.jbpm.services.api.ProcessService;
 import org.kie.internal.KieInternalServices;
 import org.kie.internal.process.CorrelationKey;
@@ -36,6 +37,9 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
 
     @Inject
     private ProcessService processService;
+
+    @Inject
+    private AdHocProcessService adHocProcessService;
 
     private CorrelationKeyFactory correlationKeyFactory = KieInternalServices.Factory.get().newCorrelationKeyFactory();
 
@@ -72,6 +76,26 @@ public class KieSessionEntryPointImpl implements KieSessionEntryPoint {
             }
 
             Long processInstanceId = processService.startProcess(deploymentUnitId, processId, correlationKeyValue, params);
+
+            return processInstanceId;
+        } catch (Exception e) {
+            throw ExceptionUtilities.handleException(e);
+        }
+    }
+
+    @Override
+    public long startProcess(String deploymentUnitId, String processId, String correlationKey,
+                             Map<String, Object> params, Long parentProcessInstanceId) {
+        try {
+            CorrelationKey correlationKeyValue = null;
+            if (correlationKey != null && !correlationKey.isEmpty()) {
+                String[] correlations = correlationKey.split(",");
+
+                correlationKeyValue = correlationKeyFactory.newCorrelationKey(Arrays.asList(correlations));
+            }
+
+            Long processInstanceId = adHocProcessService.startProcess(deploymentUnitId, processId,
+                    correlationKeyValue, params, parentProcessInstanceId);
 
             return processInstanceId;
         } catch (Exception e) {

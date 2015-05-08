@@ -74,6 +74,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     protected String processName;
     protected String opener;
     protected FormContentResizeListener resizeListener;
+    protected Long parentProcessInstanceId;
 
     private Command onClose;
 
@@ -175,8 +176,14 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
 
     @Override
     public void startProcess(Map<String, Object> params) {
-        sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
-                .startProcess(deploymentId, processDefId, correlationKey.getValue(), params);
+        if(parentProcessInstanceId > 0 ){
+            sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
+                    .startProcess(deploymentId, processDefId, correlationKey.getValue(), params, parentProcessInstanceId);
+
+        }else {
+            sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
+                    .startProcess(deploymentId, processDefId, correlationKey.getValue(), params);
+        }
     }
 
     protected RemoteCallback<Long> getStartProcessRemoteCallback() {
@@ -261,5 +268,13 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
 
     protected String getCorrelationKey() {
         return correlationKey.getText();
+    }
+
+    public Long getParentProcessInstanceId() {
+        return parentProcessInstanceId;
+    }
+
+    public void setParentProcessInstanceId(Long parentProcessInstanceId) {
+        this.parentProcessInstanceId = parentProcessInstanceId;
     }
 }

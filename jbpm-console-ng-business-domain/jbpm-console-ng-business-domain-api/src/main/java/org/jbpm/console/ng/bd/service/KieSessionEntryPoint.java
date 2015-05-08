@@ -30,6 +30,9 @@ public interface KieSessionEntryPoint {
 
     long startProcess(String domainId, String processId, String correlationKey, Map<String, Object> params);
 
+    long startProcess(String domainId, String processId, String correlationKey,
+                             Map<String, Object> params, Long parentProcessInstanceId);
+
     void abortProcessInstance(long processInstanceId);
     
     void abortProcessInstances(List<Long> processInstanceIds);

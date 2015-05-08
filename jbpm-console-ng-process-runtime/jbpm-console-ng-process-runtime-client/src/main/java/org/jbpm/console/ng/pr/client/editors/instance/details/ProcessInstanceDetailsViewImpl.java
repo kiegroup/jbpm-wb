@@ -58,6 +58,14 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
     @Inject
     @DataField
+    public Label parentProcessInstanceIdLabel;
+
+    @Inject
+    @DataField
+    public HTML parentProcessInstanceIdText;
+
+    @Inject
+    @DataField
     public HTML stateText;
 
     @Inject
@@ -118,6 +126,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
         stateLabel.setText( constants.Process_Instance_State() );
         activeTasksListLabel.setText( constants.Active_Tasks() );
         currentActivitiesListLabel.setText( constants.Current_Activities() );
+        parentProcessInstanceIdLabel.setText(constants.Parent_Process_Instance());
     }
 
 
@@ -159,6 +168,11 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     @Override
     public HTML getCorrelationKeyText() {
         return correlationKeyText;
+    }
+
+    @Override
+    public HTML getParentProcessInstanceIdText() {
+        return parentProcessInstanceIdText;
     }
 
     @Override

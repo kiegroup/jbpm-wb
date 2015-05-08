@@ -42,10 +42,14 @@ public class FormModelerProcessStarterEntryPointImpl implements FormModelerProce
     @Inject
     private TaskOperationsService taskOperationsServices;
 
-    public Long startProcessFromRenderContext(String ctxUID, String domainId, String processId, String correlationKey) {
+    public Long startProcessFromRenderContext(String ctxUID, String domainId, String processId, String correlationKey, Long parentProcessInstanceId) {
         Map params = formRenderContextManager.getFormRenderContext(ctxUID).getOutputData();
         formRenderContextManager.removeContext(ctxUID);
-        return kieSessionEntryPoint.startProcess(domainId, processId, correlationKey, params);
+        if(parentProcessInstanceId > 0) {
+            return kieSessionEntryPoint.startProcess(domainId, processId, correlationKey, params, parentProcessInstanceId);
+        }else {
+            return kieSessionEntryPoint.startProcess(domainId, processId, correlationKey, params);
+        }
     }
 
     @Override

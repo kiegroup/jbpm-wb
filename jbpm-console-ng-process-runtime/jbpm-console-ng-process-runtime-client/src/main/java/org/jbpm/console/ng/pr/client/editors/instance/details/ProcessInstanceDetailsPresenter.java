@@ -78,6 +78,8 @@ public class ProcessInstanceDetailsPresenter {
 
         HTML getCorrelationKeyText();
 
+        HTML getParentProcessInstanceIdText();
+
         void setProcessAssetPath( Path processAssetPath );
 
         void setCurrentActiveNodes( List<NodeInstanceSummary> activeNodes );
@@ -171,6 +173,12 @@ public class ProcessInstanceDetailsPresenter {
             public void callback( ProcessInstanceSummary process ) {
                 view.getProcessDeploymentText().setText( process.getDeploymentId() );
                 view.getCorrelationKeyText().setText(process.getCorrelationKey());
+                if(process.getParentId() > 0){
+                    view.getParentProcessInstanceIdText().setText(process.getParentId().toString());
+                }else{
+                    view.getParentProcessInstanceIdText().setText(constants.No_Parent_Process_Instance());
+                }
+
                 view.setProcessInstance( process );
 
                 String statusStr = "Unknown";
@@ -212,7 +220,7 @@ public class ProcessInstanceDetailsPresenter {
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage());
                 return true;
             }
         } ).getItem(new ProcessInstanceKey(Long.parseLong(processId)));

@@ -250,5 +250,8 @@ public interface Constants extends Messages {
     String Advanced();
     
     String Form();
-    
+
+    String Parent_Process_Instance();
+
+    String No_Parent_Process_Instance();
 }

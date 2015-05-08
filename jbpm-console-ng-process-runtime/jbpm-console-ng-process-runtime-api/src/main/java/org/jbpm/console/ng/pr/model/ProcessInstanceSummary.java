@@ -33,13 +33,14 @@ public class ProcessInstanceSummary extends GenericSummary {
     private String deploymentId;
     private String initiator;
     private String processInstanceDescription;
+    private Long parentId;
 
     private String correlationKey;
 
     private List<UserTaskSummary> activeTasks;
     
     public ProcessInstanceSummary(long processInstanceId, String processId, String deploymentId, String processName, String processVersion,
-            int state, Date startTime, String initiator,String processInstanceDescription, String correlationKey) {
+            int state, Date startTime, String initiator,String processInstanceDescription, String correlationKey, Long parentId) {
         super();
         this.id = processInstanceId;
         this.name = processName;
@@ -53,6 +54,7 @@ public class ProcessInstanceSummary extends GenericSummary {
         this.initiator = initiator;
         this.processInstanceDescription = processInstanceDescription;
         this.correlationKey = correlationKey;
+        this.parentId = parentId;
     }
 
     public ProcessInstanceSummary() {
@@ -144,5 +146,13 @@ public class ProcessInstanceSummary extends GenericSummary {
 
     public void setCorrelationKey(String correlationKey) {
         this.correlationKey = correlationKey;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 }

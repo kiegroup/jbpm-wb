@@ -41,6 +41,7 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ga.forms.display.GenericFormDisplayer;
 import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
 import org.jbpm.console.ng.ga.forms.display.view.FormDisplayerView;
+import org.jbpm.console.ng.pr.forms.client.display.displayers.process.AbstractStartProcessFormDisplayer;
 import org.jbpm.console.ng.pr.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.console.ng.pr.forms.display.process.api.ProcessDisplayerConfig;
 import org.jbpm.console.ng.pr.forms.display.process.api.StartProcessFormDisplayProvider;
@@ -314,8 +315,9 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
         currentDisplayer = displayer;
 
         body.clear();
-        body.add( displayer.getContainer() );
-
+        body.add(displayer.getContainer());
+        ((AbstractStartProcessFormDisplayer)displayer)
+                .setParentProcessInstanceId(this.parentProcessInstanceId);
 
         remove( footer );
         footer = new GenericModalFooter();
