@@ -65,7 +65,7 @@
         </g:SimplePanel>
         <g:HorizontalPanel width="100%" addStyleNames="{style.horizontalContainer}">
             <g:cell width="50%" horizontalAlignment="left">
-                <b:ListBox ui:field="pageSizesListBox" width="100px" />
+                <b:ListBox ui:field="pageSizesSelector" width="100px" />
             </g:cell>
             <g:cell width="50%" horizontalAlignment="right">
                 <uf:UberfireSimplePager ui:field="pager"
