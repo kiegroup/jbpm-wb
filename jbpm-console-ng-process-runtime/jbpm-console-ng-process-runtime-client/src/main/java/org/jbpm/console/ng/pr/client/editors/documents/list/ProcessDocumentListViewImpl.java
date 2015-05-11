@@ -31,7 +31,7 @@ import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
+
 import org.jbpm.console.ng.pr.model.DocumentSummary;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
@@ -56,8 +56,6 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
     private static Binder uiBinder = GWT.create(Binder.class);
 
     private Constants constants = GWT.create(Constants.class);
-
-    private ProcessRuntimeImages images = GWT.create(ProcessRuntimeImages.class);
 
     final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
 
@@ -251,9 +249,7 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                                    DocumentSummary value,
                                    SafeHtmlBuilder sb) {
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<a href='" + value.getDocumentLink() + "' title='" + constants.download() + "' target='_blank'>");
-                    mysb.appendHtmlConstant(constants.download());
-                    mysb.appendHtmlConstant("</a>");
+                    mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.download()+"'>"+constants.download()+"</a>");
                     sb.append(mysb.toSafeHtml());
                 }
             };

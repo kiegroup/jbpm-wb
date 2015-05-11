@@ -89,9 +89,9 @@ public interface Constants extends Messages {
 
     String Process_Instances();
 
-    String Variable_History();
+    String History();
 
-    String Edit_Variable();
+    String Edit();
 
     String Last_Modification();
 

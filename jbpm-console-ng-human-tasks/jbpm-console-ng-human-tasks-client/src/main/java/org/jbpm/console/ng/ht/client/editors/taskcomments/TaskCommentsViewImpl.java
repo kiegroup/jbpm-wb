@@ -46,7 +46,6 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -54,14 +53,13 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.event.Event;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
+
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "TaskCommentsViewImpl.html")
 public class TaskCommentsViewImpl extends Composite implements TaskCommentsPresenter.TaskCommentsView {
     private Constants constants = GWT.create(Constants.class);
-    private HumanTasksImages images = GWT.create( HumanTasksImages.class );
 
     private TaskCommentsPresenter presenter;
 
@@ -233,12 +231,9 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
                 public void render( Cell.Context context,
                                     CommentSummary value,
                                     SafeHtmlBuilder sb ) {
-                    
-                        AbstractImagePrototype imageProto = AbstractImagePrototype.create( images.abortGridIcon() );
+
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( "<span title='" + constants.Delete() + "' style='margin-right:5px;'>");
-                        mysb.append( imageProto.getSafeHtml() );
-                        mysb.appendHtmlConstant( "</span>" );
+                        mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Delete()+"'>"+constants.Delete()+"</a>");
                         sb.append( mysb.toSafeHtml() );
                     
                 }

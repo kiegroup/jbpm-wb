@@ -53,10 +53,11 @@
             <g:cell width="33%">
                 <g:FlowPanel width="100%" ui:field="centerToolbar" addStyleNames="{style.centerToolBar}"></g:FlowPanel>
             </g:cell>
-            <g:cell width="33%">
-                <g:FlowPanel width="100%" ui:field="rightToolbar" addStyleNames="{style.rightToolBar}">
+            <g:cell width="33%" horizontalAlignment="right" verticalAlignment="bottom">
+                <g:HorizontalPanel ui:field="rightToolbar">
+                    <g:FlowPanel width="100%"  ui:field="rightActionsToolbar" addStyleNames="{style.rightToolBar}"/>
                     <b:Button ui:field="columnPickerButton" toggle="true" icon="LIST_UL"/>
-                </g:FlowPanel>
+                </g:HorizontalPanel>
             </g:cell>
         </g:HorizontalPanel>
         <g:SimplePanel>
@@ -64,7 +65,7 @@
         </g:SimplePanel>
         <g:HorizontalPanel width="100%" addStyleNames="{style.horizontalContainer}">
             <g:cell width="50%" horizontalAlignment="left">
-                <b:ListBox ui:field="pageSizesListBox" width="100px" />
+                <b:ListBox ui:field="pageSizesSelector" width="100px" />
             </g:cell>
             <g:cell width="50%" horizontalAlignment="right">
                 <uf:UberfireSimplePager ui:field="pager"

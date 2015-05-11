@@ -78,7 +78,7 @@ public class VariableEditPopup extends BaseModal {
     private long processInstanceId;
 
     public VariableEditPopup() {
-        setTitle( Constants.INSTANCE.Edit_Variable() );
+        setTitle( Constants.INSTANCE.Edit() );
 
         add( uiBinder.createAndBindUi( this ) );
         final GenericModalFooter footer = new GenericModalFooter();

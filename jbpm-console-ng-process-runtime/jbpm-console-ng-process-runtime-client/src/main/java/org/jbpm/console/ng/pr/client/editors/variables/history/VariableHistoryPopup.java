@@ -103,7 +103,7 @@ public class VariableHistoryPopup extends BaseModal {
     private long processInstanceId;
 
     public VariableHistoryPopup() {
-        setTitle( Constants.INSTANCE.Variable_History() );
+        setTitle( Constants.INSTANCE.History() );
 
         add( uiBinder.createAndBindUi( this ) );
         init();

@@ -30,12 +30,10 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RequiresResize;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.pr.client.editors.instance.details.multi.ProcessInstanceDetailsMultiViewImpl;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.client.resources.ProcessRuntimeImages;
+
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogOrder;
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogType;
 import org.uberfire.client.mvp.PlaceManager;
@@ -81,7 +79,6 @@ public class RuntimeLogViewImpl extends Composite
     private Event<NotificationEvent> notification;
 
     private Constants constants = GWT.create( Constants.class );
-    private ProcessRuntimeImages images = GWT.create( ProcessRuntimeImages.class );
 
     @Override
     public void onResize() {
