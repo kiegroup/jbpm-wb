@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.ht.forms.modeler.client.editors.taskform.standalone;
+package org.jbpm.console.ng.gc.forms.client.display.standalone;
 
 import java.util.List;
 import java.util.Map;
@@ -38,7 +38,7 @@ public class FormDisplayPerspective {
 
         perspective.setName( "FormDisplayPerspective" );
 
-        DefaultPlaceRequest request = new DefaultPlaceRequest( "Generic Form Display" );
+        DefaultPlaceRequest request;
 
         Map<String, List<String>> parameterMap = Window.Location.getParameterMap();
         String taskId = "-1";
@@ -47,8 +47,10 @@ public class FormDisplayPerspective {
         }
 
         if ( !taskId.equals( "-1" ) ) {
+            request= new DefaultPlaceRequest( "Standalone Task Form Display" );
             request.addParameter( "taskId", taskId );
         } else {
+            request = new DefaultPlaceRequest( "Standalone Process Form Display" );
             String processId = "none";
             if ( parameterMap.containsKey( "processId" ) && !parameterMap.get( "processId" ).isEmpty() ) {
                 processId = parameterMap.get( "processId" ).get( 0 );
