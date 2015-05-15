@@ -55,4 +55,5 @@ public interface Constants extends Messages {
 
     String Next();
 
+    String Loading();
 }

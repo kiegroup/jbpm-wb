@@ -29,6 +29,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
+import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.util.TaskUtils;
@@ -50,6 +51,8 @@ import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.*;
 public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSummary> {
   public static String FILTER_STATUSES_PARAM_NAME = "statuses";
   public static String FILTER_CURRENT_ROLE_PARAM_NAME = "filter";
+
+
 
   public interface TaskListView extends ListView<TaskSummary, TasksListGridPresenter> {
 
@@ -84,65 +87,73 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
       protected void onRangeChanged(HasData<TaskSummary> display) {
         view.showBusyIndicator(constants.Loading());
         final Range visibleRange = view.getListGrid().getVisibleRange();
-        ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-        if (currentFilter == null) {
-          currentFilter = new PortableQueryFilter(visibleRange.getStart(),
-                  visibleRange.getLength(),
-                  false, "",
-                  (columnSortList.size() > 0) ? columnSortList.get(0)
-                          .getColumn().getDataStoreName() : "",
-                  (columnSortList.size() > 0) ? columnSortList.get(0)
-                          .isAscending() : true);
-
-        }
-        // If we are refreshing after a search action, we need to go back to offset 0
-        if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
-                || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")) {
-          currentFilter.setOffset(visibleRange.getStart());
-          currentFilter.setCount(visibleRange.getLength());
-          currentFilter.setFilterParams("");
-        } else {
-          currentFilter.setFilterParams("(LOWER(t.name) like '"+currentFilter.getParams().get("textSearch")
-                  +"' or LOWER(t.description) like '"+currentFilter.getParams().get("textSearch")+"') ");
-          currentFilter.setOffset(0);
-          currentFilter.setCount(view.getListGrid().getPageSize());
-        }
-
-        if(currentStatusFilter==null) {
-          currentFilter.getParams().put( "statuses", TaskUtils.getStatusByType( currentStatusFilter ) );
-        } else {
-          currentFilter.getParams().put( "statuses",  currentStatuses  );
-        }
-        currentFilter.getParams().put("filter", currentStatusFilter.toString());
-        currentFilter.getParams().put("userId", identity.getIdentifier());
-        currentFilter.getParams().put("taskRole",currentRole);
-        currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
-                .getColumn().getDataStoreName() : "");
-        currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
-                .isAscending() : true);
-
-        taskQueryService.call(new RemoteCallback<PageResponse<TaskSummary>>() {
-          @Override
-          public void callback(PageResponse<TaskSummary> response) {
-            view.hideBusyIndicator();
-            dataProvider.updateRowCount(response.getTotalRowSize(),
-                    response.isTotalRowSizeExact());
-            dataProvider.updateRowData(response.getStartRowIndex(),
-                    response.getPageRowList());
-          }
-        }, new ErrorCallback<Message>() {
-          @Override
-          public boolean error(Message message, Throwable throwable) {
-            view.hideBusyIndicator();
-            view.displayNotification("Error: Getting Tasks: " + throwable.toString());
-            GWT.log(message.toString());
-            return true;
-          }
-        }).getData(currentFilter);
+        getData(visibleRange);
 
       }
     };
   }
+
+  @Override
+  protected ListView getListView() {
+    return view;
+  }
+
+  @Override
+  public void getData(Range visibleRange) {
+    ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+    if (currentFilter == null) {
+      currentFilter = new PortableQueryFilter(visibleRange.getStart(),
+              visibleRange.getLength(),
+              false, "",
+              (columnSortList.size() > 0) ? columnSortList.get(0)
+                      .getColumn().getDataStoreName() : "",
+              (columnSortList.size() > 0) ? columnSortList.get(0)
+                      .isAscending() : true);
+
+    }
+    // If we are refreshing after a search action, we need to go back to offset 0
+    if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
+            || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")) {
+      currentFilter.setOffset(visibleRange.getStart());
+      currentFilter.setCount(visibleRange.getLength());
+      currentFilter.setFilterParams("");
+    } else {
+      currentFilter.setFilterParams("(LOWER(t.name) like '"+currentFilter.getParams().get("textSearch")
+              +"' or LOWER(t.description) like '"+currentFilter.getParams().get("textSearch")+"') ");
+      currentFilter.setOffset(0);
+      currentFilter.setCount(view.getListGrid().getPageSize());
+    }
+
+    if(currentStatusFilter==null) {
+      currentFilter.getParams().put( "statuses", TaskUtils.getStatusByType( currentStatusFilter ) );
+    } else {
+      currentFilter.getParams().put( "statuses",  currentStatuses  );
+    }
+    currentFilter.getParams().put("filter", currentStatusFilter.toString());
+    currentFilter.getParams().put("userId", identity.getIdentifier());
+    currentFilter.getParams().put("taskRole",currentRole);
+    currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
+            .getColumn().getDataStoreName() : "");
+    currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
+            .isAscending() : true);
+
+    taskQueryService.call(new RemoteCallback<PageResponse<TaskSummary>>() {
+      @Override
+      public void callback(PageResponse<TaskSummary> response) {
+        updateDataOnCallback(response);
+      }
+    }, new ErrorCallback<Message>() {
+      @Override
+      public boolean error(Message message, Throwable throwable) {
+        view.hideBusyIndicator();
+        view.displayNotification("Error: Getting Tasks: " + throwable.toString());
+        GWT.log(message.toString());
+        return true;
+      }
+    }).getData(currentFilter);
+  }
+
+
 
   public void filterGrid(String currentRole, List<String> currentStatuses) {
     this.currentRole = currentRole;

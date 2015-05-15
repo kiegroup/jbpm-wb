@@ -16,6 +16,7 @@
 package org.jbpm.console.ng.bd.client.editors.deployment.list;
 
 import org.jbpm.console.ng.bd.model.DeploymentUnitSummary;
+import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
@@ -43,9 +44,6 @@ import org.uberfire.paging.PageResponse;
 @WorkbenchScreen(identifier = "Deployments List")
 public class DeploymentUnitsListPresenter extends AbstractScreenListPresenter<KModuleDeploymentUnitSummary> {
 
-  public interface DeploymentUnitsListView extends ListView<KModuleDeploymentUnitSummary,DeploymentUnitsListPresenter> {
-
-  }
 
   @Inject
   protected DeploymentUnitsListView view;
@@ -55,6 +53,10 @@ public class DeploymentUnitsListPresenter extends AbstractScreenListPresenter<KM
 
   private Constants constants = GWT.create(Constants.class);
 
+    public interface DeploymentUnitsListView extends ListView<KModuleDeploymentUnitSummary,DeploymentUnitsListPresenter> {
+
+    }
+
   public DeploymentUnitsListPresenter() {
     dataProvider = new AsyncDataProvider<KModuleDeploymentUnitSummary>() {
 
@@ -62,53 +64,60 @@ public class DeploymentUnitsListPresenter extends AbstractScreenListPresenter<KM
       protected void onRangeChanged(HasData<KModuleDeploymentUnitSummary> display) {
         view.showBusyIndicator(constants.Loading());
         final Range visibleRange = display.getVisibleRange();
+        getData(visibleRange);
+      }
+    };
+  }
+
+
+
+    @Override
+    public void getData(Range visibleRange) {
         ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
         if(currentFilter == null){
-          currentFilter = new PortableQueryFilter(visibleRange.getStart(),
-                visibleRange.getLength(),
-                false, "",
-                (columnSortList.size() > 0) ? columnSortList.get(0)
-                .getColumn().getDataStoreName() : "",
-                (columnSortList.size() > 0) ? columnSortList.get(0)
-                .isAscending() : true);
+            currentFilter = new PortableQueryFilter(visibleRange.getStart(),
+                    visibleRange.getLength(),
+                    false, "",
+                    (columnSortList.size() > 0) ? columnSortList.get(0)
+                            .getColumn().getDataStoreName() : "",
+                    (columnSortList.size() > 0) ? columnSortList.get(0)
+                            .isAscending() : true);
         }
         // If we are refreshing after a search action, we need to go back to offset 0
-        if(currentFilter.getParams() == null || currentFilter.getParams().isEmpty() 
+        if(currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
                 || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")){
-          currentFilter.setOffset(visibleRange.getStart());
-          currentFilter.setCount(visibleRange.getLength());
+            currentFilter.setOffset(visibleRange.getStart());
+            currentFilter.setCount(visibleRange.getLength());
         }else{
-          currentFilter.setOffset(0);
-          currentFilter.setCount(view.getListGrid().getPageSize());
+            currentFilter.setOffset(0);
+            currentFilter.setCount(view.getListGrid().getPageSize());
         }
-        
+
         currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
                 .getColumn().getDataStoreName() : "");
         currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
                 .isAscending() : true);
         deploymentManagerService.call(new RemoteCallback<PageResponse<KModuleDeploymentUnitSummary>>() {
-          @Override
-          public void callback(PageResponse<KModuleDeploymentUnitSummary> response) {
-            view.hideBusyIndicator();
-            dataProvider.updateRowCount( response.getTotalRowSize(),
-                                        response.isTotalRowSizeExact() );
-            dataProvider.updateRowData( response.getStartRowIndex(),
-                                       response.getPageRowList() );
-          }
+            @Override
+            public void callback(PageResponse<KModuleDeploymentUnitSummary> response) {
+                updateDataOnCallback(response);
+            }
         }, new ErrorCallback<Message>() {
-          @Override
-          public boolean error(Message message, Throwable throwable) {
-            view.hideBusyIndicator();
-            view.displayNotification("Error: Getting deployment units: " + message);
-            GWT.log(throwable.toString());
-            return true;
-          }
+            @Override
+            public boolean error(Message message, Throwable throwable) {
+                view.hideBusyIndicator();
+                view.displayNotification("Error: Getting deployment units: " + message);
+                GWT.log(throwable.toString());
+                return true;
+            }
         }).getData(currentFilter);
+    }
 
-      }
-    };
-  }
 
+    @Override
+    protected ListView getListView() {
+        return view;
+    }
 
   public void undeployUnit(final String id, final String group, final String artifact, final String version,
           final String kbaseName, final String kieSessionName) {

@@ -44,8 +44,10 @@ import org.uberfire.paging.PageResponse;
 public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessVariableSummary> {
 
     private Constants constants = GWT.create(Constants.class);
-      
-    public interface ProcessVariableListView extends AbstractListView.BasicListView<ProcessVariableSummary> {
+
+
+
+    public interface ProcessVariableListView extends AbstractListView.ListView<ProcessVariableSummary, ProcessVariableListPresenter> {
 
         void init( ProcessVariableListPresenter presenter );
     }
@@ -61,70 +63,12 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
     private String deploymentId;
     private int processInstanceStatus;
 
+    public ProcessVariableListPresenter() {
+        super();
+    }
+
     @PostConstruct
     public void init() {
-        dataProvider = new AsyncDataProvider<ProcessVariableSummary>() {
-
-            @Override
-            protected void onRangeChanged( HasData<ProcessVariableSummary> display ) {
-                view.showBusyIndicator(constants.Loading());
-                if ( processInstanceId != null && deploymentId != null ) {
-                    final Range visibleRange = display.getVisibleRange();
-                    ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                    if ( currentFilter == null ) {
-                        currentFilter = new PortableQueryFilter( visibleRange.getStart(),
-                                                                 visibleRange.getLength(),
-                                                                 false, "",
-                                                                 ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
-                                                                         .getColumn().getDataStoreName() : "",
-                                                                 ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
-                                                                         .isAscending() : true );
-                    }
-                    // If we are refreshing after a search action, we need to go back to offset 0
-                    if ( currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
-                            || currentFilter.getParams().get( "textSearch" ) == null || currentFilter.getParams().get( "textSearch" ).equals( "" ) ) {
-                        currentFilter.setOffset( visibleRange.getStart() );
-                        currentFilter.setCount( visibleRange.getLength() );
-                    } else {
-                        currentFilter.setOffset( 0 );
-                        currentFilter.setCount( view.getListGrid().getPageSize() );
-                    }
-                    //Applying screen specific filters
-                    if ( currentFilter.getParams() == null ) {
-                        currentFilter.setParams( new HashMap<String, Object>() );
-                    }
-                    currentFilter.getParams().put( "processInstanceId", processInstanceId );
-                    currentFilter.getParams().put( "processDefId", processDefId );
-                    currentFilter.getParams().put( "deploymentId", deploymentId );
-                    currentFilter.getParams().put( "processInstanceStatus", processInstanceStatus );
-
-                    currentFilter.setOrderBy( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
-                            .getColumn().getDataStoreName() : "" );
-                    currentFilter.setIsAscending( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
-                            .isAscending() : true );
-
-                    variablesServices.call( new RemoteCallback<PageResponse<ProcessVariableSummary>>() {
-                        @Override
-                        public void callback( PageResponse<ProcessVariableSummary> response ) {
-                            view.hideBusyIndicator();
-                            dataProvider.updateRowCount( response.getTotalRowSize(),
-                                                         response.isTotalRowSizeExact() );
-                            dataProvider.updateRowData( response.getStartRowIndex(),
-                                                        response.getPageRowList() );
-                        }
-                    }, new ErrorCallback<Message>() {
-                        @Override
-                        public boolean error( Message message,
-                                              Throwable throwable ) {
-                            view.hideBusyIndicator();
-                            view.displayNotification( "Error: Getting Process Definitions: " + message );
-                            GWT.log( throwable.toString() );
-                            return true;
-                        }
-                    } ).getData( currentFilter );
-                }
-            }
-        };
         view.init( this );
     }
 
@@ -142,6 +86,63 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
 
     public int getProcessInstanceStatus() {
         return processInstanceStatus;
+    }
+
+    @Override
+    protected AbstractListView.ListView getListView() {
+        return view;
+    }
+
+    @Override
+    public void getData(Range visibleRange) {
+        ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+        if ( currentFilter == null ) {
+            currentFilter = new PortableQueryFilter( visibleRange.getStart(),
+                    visibleRange.getLength(),
+                    false, "",
+                    ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                            .getColumn().getDataStoreName() : "",
+                    ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                            .isAscending() : true );
+        }
+        // If we are refreshing after a search action, we need to go back to offset 0
+        if ( currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
+                || currentFilter.getParams().get( "textSearch" ) == null || currentFilter.getParams().get( "textSearch" ).equals( "" ) ) {
+            currentFilter.setOffset( visibleRange.getStart() );
+            currentFilter.setCount( visibleRange.getLength() );
+        } else {
+            currentFilter.setOffset( 0 );
+            currentFilter.setCount( view.getListGrid().getPageSize() );
+        }
+        //Applying screen specific filters
+        if ( currentFilter.getParams() == null ) {
+            currentFilter.setParams( new HashMap<String, Object>() );
+        }
+        currentFilter.getParams().put( "processInstanceId", processInstanceId );
+        currentFilter.getParams().put( "processDefId", processDefId );
+        currentFilter.getParams().put( "deploymentId", deploymentId );
+        currentFilter.getParams().put( "processInstanceStatus", processInstanceStatus );
+
+        currentFilter.setOrderBy( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                .getColumn().getDataStoreName() : "" );
+        currentFilter.setIsAscending( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                .isAscending() : true );
+
+        variablesServices.call( new RemoteCallback<PageResponse<ProcessVariableSummary>>() {
+            @Override
+            public void callback( PageResponse<ProcessVariableSummary> response ) {
+                updateDataOnCallback(response);
+            }
+        }, new ErrorCallback<Message>() {
+            @Override
+            public boolean error( Message message,
+                                  Throwable throwable ) {
+                view.hideBusyIndicator();
+                view.displayNotification( "Error: Getting Process Definitions: " + message );
+                GWT.log( throwable.toString() );
+                return true;
+            }
+        } ).getData( currentFilter );
     }
 
 }

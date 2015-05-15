@@ -32,6 +32,7 @@ import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
+import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -70,66 +71,10 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     private List<String> currentActiveStates;
     
     public RequestListPresenter() {
-        onRangeChanged();
+        super();
     }
     
-    private void onRangeChanged(){
-        dataProvider = new AsyncDataProvider<RequestSummary>() {
-            @Override
-            protected void onRangeChanged(HasData<RequestSummary> display) {
-                view.showBusyIndicator(constants.Loading());
-                final Range visibleRange = display.getVisibleRange();
-                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                if (currentFilter == null) {
-                    currentFilter = new PortableQueryFilter(visibleRange.getStart(),
-                            visibleRange.getLength(),
-                            false, "",
-                            (columnSortList.size() > 0) ? columnSortList.get(0)
-                            .getColumn().getDataStoreName() : "",
-                            (columnSortList.size() > 0) ? columnSortList.get(0)
-                            .isAscending() : true);
-                  }
-                  // If we are refreshing after a search action, we need to go back to offset 0
-                  if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
-                          || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")) {
-                    currentFilter.setOffset(visibleRange.getStart());
-                    currentFilter.setCount(visibleRange.getLength());
-                  } else {
-                    currentFilter.setOffset(0);
-                    currentFilter.setCount(view.getListGrid().getPageSize());
-                  }
-                  //Applying screen specific filters
-                  if (currentFilter.getParams() == null) {
-                    currentFilter.setParams(new HashMap<String, Object>());
-                  }
-                  currentFilter.getParams().put("states", currentActiveStates);
-                  
-                  currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
-                      .getColumn().getDataStoreName() : "");
-                  currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
-                      .isAscending() : true);
-                  
-                  executorServices.call(new RemoteCallback<PageResponse<RequestSummary>>() {
-                      @Override
-                    public void callback(PageResponse<RequestSummary> response) {
-                        view.hideBusyIndicator();
-                        dataProvider.updateRowCount( response.getTotalRowSize(),
-                                                       response.isTotalRowSizeExact() );
-                        dataProvider.updateRowData( response.getStartRowIndex(),
-                                                      response.getPageRowList() );
-                      }
-                    }, new ErrorCallback<Message>() {
-                        @Override
-                        public boolean error(Message message, Throwable throwable) {
-                          view.hideBusyIndicator();
-                          view.displayNotification("Error: Getting Jbos Requests: " + message);
-                          GWT.log(throwable.toString());
-                          return true;
-                        }
-                }).getData(currentFilter);
-        }
-        } ;
-    }
+
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.RequestsListTitle();
@@ -164,6 +109,59 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
 
             }
         }).scheduleRequest("PrintOutCmd", ctx);
+    }
+
+    @Override
+    protected ListView getListView() {
+        return view;
+    }
+
+    @Override
+    public void getData(Range visibleRange) {
+        ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+        if (currentFilter == null) {
+            currentFilter = new PortableQueryFilter(visibleRange.getStart(),
+                    visibleRange.getLength(),
+                    false, "",
+                    (columnSortList.size() > 0) ? columnSortList.get(0)
+                            .getColumn().getDataStoreName() : "",
+                    (columnSortList.size() > 0) ? columnSortList.get(0)
+                            .isAscending() : true);
+        }
+        // If we are refreshing after a search action, we need to go back to offset 0
+        if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
+                || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")) {
+            currentFilter.setOffset(visibleRange.getStart());
+            currentFilter.setCount(visibleRange.getLength());
+        } else {
+            currentFilter.setOffset(0);
+            currentFilter.setCount(view.getListGrid().getPageSize());
+        }
+        //Applying screen specific filters
+        if (currentFilter.getParams() == null) {
+            currentFilter.setParams(new HashMap<String, Object>());
+        }
+        currentFilter.getParams().put("states", currentActiveStates);
+
+        currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
+                .getColumn().getDataStoreName() : "");
+        currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
+                .isAscending() : true);
+
+        executorServices.call(new RemoteCallback<PageResponse<RequestSummary>>() {
+            @Override
+            public void callback(PageResponse<RequestSummary> response) {
+                updateDataOnCallback(response);
+            }
+        }, new ErrorCallback<Message>() {
+            @Override
+            public boolean error(Message message, Throwable throwable) {
+                view.hideBusyIndicator();
+                view.displayNotification("Error: Getting Jbos Requests: " + message);
+                GWT.log(throwable.toString());
+                return true;
+            }
+        }).getData(currentFilter);
     }
 
     public void addDataDisplay(HasData<RequestSummary> display) {

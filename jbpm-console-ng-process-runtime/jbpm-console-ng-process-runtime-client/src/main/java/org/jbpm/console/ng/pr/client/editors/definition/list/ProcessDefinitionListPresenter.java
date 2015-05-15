@@ -28,6 +28,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
+import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
@@ -53,6 +54,8 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     @Inject
     StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
 
+
+
     public interface ProcessDefinitionListView extends ListView<ProcessSummary, ProcessDefinitionListPresenter> {
 
     }
@@ -66,59 +69,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     private Constants constants = GWT.create( Constants.class );
 
     public ProcessDefinitionListPresenter() {
-        dataProvider = new AsyncDataProvider<ProcessSummary>() {
-
-            @Override
-            protected void onRangeChanged( HasData<ProcessSummary> display ) {
-                view.showBusyIndicator(constants.Loading());
-                final Range visibleRange = display.getVisibleRange();
-                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                if ( currentFilter == null ) {
-                    currentFilter = new PortableQueryFilter( visibleRange.getStart(),
-                                                             visibleRange.getLength(),
-                                                             false, "",
-                                                             ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
-                                                                     .getColumn().getDataStoreName() : "",
-                                                             ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
-                                                                     .isAscending() : true );
-                }
-                // If we are refreshing after a search action, we need to go back to offset 0
-                if ( currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
-                        || currentFilter.getParams().get( "textSearch" ) == null || currentFilter.getParams().get( "textSearch" ).equals( "" ) ) {
-                    currentFilter.setOffset( visibleRange.getStart() );
-                    currentFilter.setCount( visibleRange.getLength() );
-                } else {
-                    currentFilter.setOffset( 0 );
-                    currentFilter.setCount( view.getListGrid().getPageSize() );
-                }
-
-                currentFilter.setOrderBy( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
-                        .getColumn().getDataStoreName() : "" );
-                currentFilter.setIsAscending( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
-                        .isAscending() : true );
-
-                processDefinitionService.call( new RemoteCallback<PageResponse<ProcessSummary>>() {
-                    @Override
-                    public void callback( PageResponse<ProcessSummary> response ) {
-                        view.hideBusyIndicator();
-                        dataProvider.updateRowCount( response.getTotalRowSize(),
-                                                     response.isTotalRowSizeExact() );
-                        dataProvider.updateRowData( response.getStartRowIndex(),
-                                                    response.getPageRowList() );
-                    }
-                }, new ErrorCallback<Message>() {
-                    @Override
-                    public boolean error( Message message,
-                                          Throwable throwable ) {
-                        view.hideBusyIndicator();
-                        view.displayNotification( "Error: Getting Process Definitions: " + message );
-                        GWT.log( throwable.toString() );
-                        return true;
-                    }
-                } ).getData( currentFilter );
-
-            }
-        };
+        super();
     }
 
     @WorkbenchPartTitle
@@ -140,6 +91,55 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
         formDisplayPopUp.setTitle(processDefName);
 
         startProcessDisplayProvider.setup(config, formDisplayPopUp);
+    }
+
+    @Override
+    protected ListView getListView() {
+        return view;
+    }
+
+    @Override
+    public void getData(Range visibleRange) {
+        ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+        if ( currentFilter == null ) {
+            currentFilter = new PortableQueryFilter( visibleRange.getStart(),
+                    visibleRange.getLength(),
+                    false, "",
+                    ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                            .getColumn().getDataStoreName() : "",
+                    ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                            .isAscending() : true );
+        }
+        // If we are refreshing after a search action, we need to go back to offset 0
+        if ( currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
+                || currentFilter.getParams().get( "textSearch" ) == null || currentFilter.getParams().get( "textSearch" ).equals( "" ) ) {
+            currentFilter.setOffset( visibleRange.getStart() );
+            currentFilter.setCount( visibleRange.getLength() );
+        } else {
+            currentFilter.setOffset( 0 );
+            currentFilter.setCount( view.getListGrid().getPageSize() );
+        }
+
+        currentFilter.setOrderBy( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                .getColumn().getDataStoreName() : "" );
+        currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
+                .isAscending() : true);
+
+        processDefinitionService.call( new RemoteCallback<PageResponse<ProcessSummary>>() {
+            @Override
+            public void callback( PageResponse<ProcessSummary> response ) {
+                updateDataOnCallback(response);
+            }
+        }, new ErrorCallback<Message>() {
+            @Override
+            public boolean error( Message message,
+                                  Throwable throwable ) {
+                view.hideBusyIndicator();
+                view.displayNotification( "Error: Getting Process Definitions: " + message );
+                GWT.log( throwable.toString() );
+                return true;
+            }
+        } ).getData(currentFilter);
     }
 
 }

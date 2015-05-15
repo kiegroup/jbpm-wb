@@ -38,6 +38,7 @@ import org.jbpm.console.ng.dm.model.events.DocumentsParentSearchEvent;
 import org.jbpm.console.ng.dm.model.events.NewDocumentEvent;
 import org.jbpm.console.ng.dm.service.DocumentServiceEntryPoint;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
+import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -60,6 +61,8 @@ import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 @Dependent
 @WorkbenchScreen(identifier = "Documents Presenter")
 public class DocumentListPresenter extends AbstractScreenListPresenter<CMSContentSummary> {
+
+
 
     public interface DocumentListView extends ListView<CMSContentSummary, DocumentListPresenter> {
 
@@ -85,72 +88,74 @@ public class DocumentListPresenter extends AbstractScreenListPresenter<CMSConten
     private Constants constants = GWT.create(Constants.class);
 
     public DocumentListPresenter() {
-        dataProvider = new AsyncDataProvider<CMSContentSummary>() {
+        super();
+    }
 
+    @Override
+    protected ListView getListView() {
+        return view;
+    }
+
+    @Override
+    public void getData(Range visibleRange) {
+        ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+        if (currentFilter == null) {
+            currentFilter = new PortableQueryFilter(visibleRange.getStart(), visibleRange.getLength(), false, "",
+                    (columnSortList.size() > 0) ? columnSortList.get(0).getColumn().getDataStoreName() : "",
+                    (columnSortList.size() > 0) ? columnSortList.get(0).isAscending() : true);
+        }
+        // If we are refreshing after a search action, we need to go
+        // back to offset 0
+        if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
+                || currentFilter.getParams().get("textSearch") == null
+                || currentFilter.getParams().get("textSearch").equals("")) {
+            currentFilter.setOffset(visibleRange.getStart());
+            currentFilter.setCount(visibleRange.getLength());
+        } else {
+            currentFilter.setOffset(0);
+            currentFilter.setCount(view.getListGrid().getPageSize());
+        }
+        currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0).getColumn().getDataStoreName()
+                : "");
+        currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0).isAscending() : true);
+        if (id != null) {
+            Map<String, Object> params = currentFilter.getParams();
+            if (params == null){
+                params = new HashMap<String, Object>();
+                currentFilter.setParams(params);
+            }
+            currentFilter.getParams().put("id", id);
+        }
+
+        dataServices.call(new RemoteCallback<List<CMSContentSummary>>() {
             @Override
-            protected void onRangeChanged(HasData<CMSContentSummary> display) {
-                
-                view.showBusyIndicator(constants.Loading());  
-                final Range visibleRange = display.getVisibleRange();
-                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                if (currentFilter == null) {
-                    currentFilter = new PortableQueryFilter(visibleRange.getStart(), visibleRange.getLength(), false, "",
-                            (columnSortList.size() > 0) ? columnSortList.get(0).getColumn().getDataStoreName() : "",
-                            (columnSortList.size() > 0) ? columnSortList.get(0).isAscending() : true);
-                }
-                // If we are refreshing after a search action, we need to go
-                // back to offset 0
-                if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
-                        || currentFilter.getParams().get("textSearch") == null
-                        || currentFilter.getParams().get("textSearch").equals("")) {
-                    currentFilter.setOffset(visibleRange.getStart());
-                    currentFilter.setCount(visibleRange.getLength());
-                } else {
-                    currentFilter.setOffset(0);
-                    currentFilter.setCount(view.getListGrid().getPageSize());
-                }
-                currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0).getColumn().getDataStoreName()
-                        : "");
-                currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0).isAscending() : true);
-                if (id != null) {
-                    Map<String, Object> params = currentFilter.getParams();
-                    if (params == null){
-                        params = new HashMap<String, Object>();
-                        currentFilter.setParams(params);
-                    }
-                    currentFilter.getParams().put("id", id);
-                }
+            public void callback(List<CMSContentSummary> response) {
+                view.hideBusyIndicator();
+                dataProvider.updateRowCount(response.size(), true);
+                dataProvider.updateRowData(0, response);
+                updateRefreshTimer();
 
-                dataServices.call(new RemoteCallback<List<CMSContentSummary>>() {
-                    @Override
-                    public void callback(List<CMSContentSummary> response) {
-                        view.hideBusyIndicator();
-                        dataProvider.updateRowCount(response.size(), true);
-                        dataProvider.updateRowData(0, response);
-
-                        List<CMSContentSummary> documents = response;
-                        if (documents.size() > 0) {
-                            CMSContentSummary first = documents.get(0);
-                            if (first != null) {
-                                currentCMSContentSummary = first.getParent();
-                            }
-                        }
-                        view.updatePathLink();
-
+                List<CMSContentSummary> documents = response;
+                if (documents.size() > 0) {
+                    CMSContentSummary first = documents.get(0);
+                    if (first != null) {
+                        currentCMSContentSummary = first.getParent();
                     }
-                }, new ErrorCallback<Message>() {
-                    @Override
-                    public boolean error(Message message, Throwable throwable) {
-                        view.hideBusyIndicator();
-                        view.displayNotification("Error: Getting documents from CMIS Server: " + message);
-                        GWT.log(throwable.toString());
-                        return true;
-                    }
-                }).getDocuments(id);
+                }
+                view.updatePathLink();
 
             }
-        };
+        }, new ErrorCallback<Message>() {
+            @Override
+            public boolean error(Message message, Throwable throwable) {
+                view.hideBusyIndicator();
+                view.displayNotification("Error: Getting documents from CMIS Server: " + message);
+                GWT.log(throwable.toString());
+                return true;
+            }
+        }).getDocuments(id);
     }
+
 
     private void refreshDocumentList(String id) {
         this.id = id;
