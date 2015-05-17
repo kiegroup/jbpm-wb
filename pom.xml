@@ -31,6 +31,10 @@
   <name>jBPM Console NG</name>
   <description>jBPM Console NG Modules</description>
 
+  <properties>
+    <jdk.min.version>1.7.0</jdk.min.version>
+  </properties>
+
   <modules>
     <module>jbpm-console-ng-human-tasks-admin</module>
     <module>jbpm-console-ng-human-tasks-forms</module>
@@ -69,28 +73,6 @@
   </repositories>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <artifactId>maven-enforcer-plugin</artifactId>
-          <executions>
-            <execution>
-              <goals>
-                <goal>enforce</goal>
-              </goals>
-              <inherited>true</inherited>
-              <configuration>
-                <rules>
-                  <requireJavaVersion>
-                    <version>[1.7.0,)</version>
-                  </requireJavaVersion>
-                </rules>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <!-- Zanata - translations -->
       <plugin>
