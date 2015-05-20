@@ -25,10 +25,14 @@ import org.guvnor.asset.management.model.ExecuteOperationEvent;
 import org.guvnor.asset.management.model.PromoteChangesEvent;
 import org.guvnor.asset.management.model.ReleaseProjectEvent;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 public class AdvancedAssetManagementImpl {
 
+    private static final Logger logger = LoggerFactory.getLogger(AdvancedAssetManagementImpl.class);
+    
     @Inject
     private KieSessionEntryPoint sessionServices;
 
@@ -38,22 +42,27 @@ public class AdvancedAssetManagementImpl {
     }
 
     public void configureRepository(@Observes ConfigureRepositoryEvent event) {
+        logger.error("OCRAM: advanced start process [{}]", deploymentId);
         sessionServices.startProcess(deploymentId, "guvnor-asset-management.ConfigureRepository", event.getParams());
     }
 
     public void buildProject(@Observes BuildProjectStructureEvent event) {
+        logger.error("OCRAM: advanced build project [{}]", deploymentId);
         sessionServices.startProcess(deploymentId, "guvnor-asset-management.BuildProject", event.getParams());
     }
 
     public void promoteChanges(@Observes PromoteChangesEvent event) {
+        logger.error("OCRAM: advanced promote changes [{}]", deploymentId);
         sessionServices.startProcess(deploymentId, "guvnor-asset-management.PromoteAssets", event.getParams());
     }
 
     public void releaseProject(@Observes ReleaseProjectEvent event) {
+        logger.error("OCRAM: advanced release project [{}]", deploymentId);
         sessionServices.startProcess(deploymentId, "guvnor-asset-management.ReleaseProject", event.getParams());
     }
 
     public void executeOperation(@Observes ExecuteOperationEvent event) {
+        logger.error("OCRAM: advanced execute operation [{}]", deploymentId);
         sessionServices.startProcess(deploymentId, "guvnor-asset-management.ExecuteOperation", event.getParams());
     }
 }

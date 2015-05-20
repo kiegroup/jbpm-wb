@@ -32,6 +32,10 @@ public class AssetMgmtDeploymentUnitProvider implements DeploymentUnitProvider<D
     @Inject
     private GuvnorM2Repository m2repository;
 
+    public void setM2Repository(GuvnorM2Repository m2Repository) { 
+        this.m2repository = m2Repository;
+    }
+    
     @Override
     public Set<DeploymentUnit> getDeploymentUnits() {
         Set<DeploymentUnit> units = new HashSet<DeploymentUnit>();
