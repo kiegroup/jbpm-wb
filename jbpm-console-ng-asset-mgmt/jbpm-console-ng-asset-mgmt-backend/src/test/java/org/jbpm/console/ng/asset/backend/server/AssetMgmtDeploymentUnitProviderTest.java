@@ -1,6 +1,7 @@
 package org.jbpm.console.ng.asset.backend.server;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -12,7 +13,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-public class AssetMgmtDeploymentUnitProviderTest extends GuvnorM2Repository {
+public class AssetMgmtDeploymentUnitProviderTest {
 
     /**
      * This test makes sure that the {@link AssetMgmtDeploymentUnitProvider#getDeploymentUnits()}
