@@ -24,7 +24,15 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
+import org.dashbuilder.common.client.StringUtils;
+import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.client.DataSetClientServiceError;
+import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.dataset.sort.SortOrder;
+import org.dashbuilder.displayer.client.DataSetHandler;
+import org.dashbuilder.renderer.client.resources.i18n.CommonConstants;
 import org.jbpm.console.ng.ga.model.QueryFilter;
+import org.jbpm.console.ng.gc.client.displayer.TableSettings;
 import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.uberfire.paging.AbstractPageRow;
@@ -40,6 +48,18 @@ public abstract class AbstractListPresenter<T> {
     protected AsyncDataProvider<T> dataProvider;
 
     protected QueryFilter currentFilter;
+
+    protected TableSettings currentTableSetting;
+
+    protected int numberOfRows = 0;
+
+    protected String lastOrderedColumn = null;
+
+    protected SortOrder lastSortOrder = null;
+
+    protected DataSet dataSet;
+
+    protected DataSetHandler dataSetHandler;
 
     private Constants constants = GWT.create(Constants.class);
 
@@ -121,4 +141,59 @@ public abstract class AbstractListPresenter<T> {
         }
 
     }
+
+    public TableSettings getCurrentTableSettings(){
+      return currentTableSetting;
+    }
+
+    public void lookupDataSet(Integer offset, final DataSetReadyCallback callback) {
+        try {
+            GWT.log("AbstractListPresenter.lookupDataset 1 "+ currentTableSetting);
+            // Get the sort settings
+            if (lastOrderedColumn == null) {
+                String defaultSortColumn = currentTableSetting.getTableDefaultSortColumnId();
+                if (!StringUtils.isBlank( defaultSortColumn )) {
+                    lastOrderedColumn = defaultSortColumn;
+                    lastSortOrder = currentTableSetting.getTableDefaultSortOrder();
+                }
+            }
+            // Apply the sort order specified (if any)
+            if (lastOrderedColumn != null) {
+                dataSetHandler.sort( lastOrderedColumn, lastSortOrder );
+            }
+            // Lookup only the target rows
+            dataSetHandler.limitDataSetRows(offset, currentTableSetting.getTablePageSize());
+
+            // Do the lookup
+            GWT.log("AbstractListPresenter.lookupDataset 2 do the lookup ");
+
+            dataSetHandler.lookupDataSet(
+                    new DataSetReadyCallback() {
+
+                        public void callback( DataSet dataSet ) {
+                            AbstractListPresenter.this.dataSet = dataSet;
+                            numberOfRows = dataSet.getRowCountNonTrimmed();
+                            GWT.log("AbstractListPresenter.lookupDataset 3.1 number Of rows "+ numberOfRows);
+                            callback.callback( dataSet );
+                        }
+                        public void notFound() {
+                            GWT.log("AbstractListPresenter.lookupDataset 3 NOTFOUND ");
+
+                            callback.notFound();
+                        }
+
+                        @Override
+                        public boolean onError(DataSetClientServiceError error) {
+                            GWT.log("AbstractListPresenter.lookupDataset 4 error "+error.getMessage());
+                            callback.onError(error);
+                            return false;
+                        }
+                    }
+            );
+        } catch ( Exception e ) {
+            GWT.log("AbstractListPresenter: lookuDataserError"+e.getMessage());
+
+        }
+    }
+
 }

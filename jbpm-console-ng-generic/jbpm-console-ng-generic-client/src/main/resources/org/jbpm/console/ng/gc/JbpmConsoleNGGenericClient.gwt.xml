@@ -35,7 +35,9 @@
 
   <inherits name="com.github.gwtbootstrap.datetimepicker.Datetimepicker" />
   <inherits name="com.github.gwtbootstrap.datepicker.Datepicker" />
-  
+
+  <inherits name="org.dashbuilder.DashbuilderClientAll"/>
+
   <source path="client"/>
   <source path="shared"/>
 
