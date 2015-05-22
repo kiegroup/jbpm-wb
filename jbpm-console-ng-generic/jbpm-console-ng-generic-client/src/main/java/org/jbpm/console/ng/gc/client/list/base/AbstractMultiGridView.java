@@ -17,6 +17,7 @@ package org.jbpm.console.ng.gc.client.list.base;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.Column;
@@ -32,10 +33,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ga.model.GenericSummary;
-import org.jbpm.console.ng.gc.client.displayer.TableDisplayerEditor;
-import org.jbpm.console.ng.gc.client.displayer.TableDisplayerEditorPopup;
-import org.jbpm.console.ng.gc.client.displayer.TableSettings;
-import org.jbpm.console.ng.gc.client.displayer.TableSettingsBuilder;
+import org.jbpm.console.ng.gc.client.displayer.*;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.uberfire.client.mvp.PlaceManager;
@@ -63,6 +61,8 @@ import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
 public abstract class AbstractMultiGridView<T extends GenericSummary, V extends AbstractListPresenter>
         extends Composite implements RequiresResize {
 
+    public static String FILTER_TABLE_SETTINGS = "tableSettings";
+
     @Inject
     public User identity;
 
@@ -78,7 +78,10 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     @Inject
     TableDisplayerEditorPopup tableDisplayerEditorPopup;
 
-    HashMap<String, TableSettings> tableSettingsHashMap = new HashMap<String, TableSettings>(  );
+    @Inject
+    TableSettingsJSONMarshaller tableSettingsJSONMarshaller;
+
+    //HashMap<String, TableSettings> tableSettingsHashMap = new HashMap<String, TableSettings>(  );
 
     protected V presenter;
 
@@ -261,7 +264,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public void applyFilterOnPresenter( String key ) {
     }
 
-    public void showTableSettingsEditor(String popupTitle, TableSettings tableSettings,final Command drawCommand) {
+    public void showTableSettingsEditor(String popupTitle, final TableSettings tableSettings,final Command drawCommand) {
         TableSettings clone = tableSettings.cloneInstance();
         tableDisplayerEditorPopup.setTitle( popupTitle );
         tableDisplayerEditorPopup.show( clone, new TableDisplayerEditor.Listener() {
@@ -275,7 +278,12 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                 HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
 
                 tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, modifiedSettings.getTableName() );
+                GWT.log( "------------showTableSettingsEditor onSave name: "+modifiedSettings.getTableName());
+
                 tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, modifiedSettings.getTableDescription() );
+                GWT.log( "------------showTableSettingsEditor onSave desc: "+modifiedSettings.getTableDescription());
+
+                tabSettingsValues.put( FILTER_TABLE_SETTINGS, getTableSettingsToStr( modifiedSettings ) );
 
                 filterPagedTable.saveNewTabSettings( modifiedSettings.getKey(), new HashMap<String, Object>() );
                 drawCommand.execute();
@@ -294,12 +302,12 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
 
-    public TableSettings getTableSettingsByKey(String key) {
-        return tableSettingsHashMap.get( key );
-    }
+ //   public TableSettings getTableSettingsByKey(String key) {
+ //       return tableSettingsHashMap.get( key );
+ //   }
 
     public void addTableSettings(TableSettings settings) {
-        tableSettingsHashMap.put(settings.getKey(),settings);
+//        tableSettingsHashMap.put(settings.getKey(),settings);
 
         // Take the first registered settings as the default one
         if (presenter.getCurrentTableSettings() == null) {
@@ -318,9 +326,9 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public void updateTableSettings(TableSettings tableSettings) {
         addTableSettings( tableSettings );
     }
-    public void clearTableSettingsList() {
-        tableSettingsHashMap.clear();
-    }
+//    public void clearTableSettingsList() {
+//        tableSettingsHashMap.clear();
+//    }
 
     public DisplayerConstraints createDisplayerConstraints(){
         return null;
@@ -328,6 +336,15 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     public TableSettings createTableSettingsPrototype() {
         return null;
+    }
+
+    public String getTableSettingsToStr(TableSettings tableSettings){
+        GWT.log( "------------getTableSettingToStr(TableSettings): "+tableSettingsJSONMarshaller.toJsonString( tableSettings ));
+        return tableSettingsJSONMarshaller.toJsonString( tableSettings );
+    }
+    public TableSettings getStrToTableSettings(String json){
+        GWT.log( "----------getStrToTableSettings(String json): "+json);
+        return tableSettingsJSONMarshaller.fromJsonString( json );
     }
 
 }

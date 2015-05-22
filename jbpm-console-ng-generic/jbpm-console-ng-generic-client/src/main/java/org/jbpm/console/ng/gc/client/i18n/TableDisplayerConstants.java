@@ -15,4 +15,8 @@ public interface TableDisplayerConstants extends Messages {
 
     String table_displayer_editor_tab_display();
 
+    String Name();
+
+    String Description();
+
 }

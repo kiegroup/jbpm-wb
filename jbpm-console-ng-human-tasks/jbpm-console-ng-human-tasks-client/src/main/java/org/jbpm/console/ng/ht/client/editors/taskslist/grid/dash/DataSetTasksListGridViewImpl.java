@@ -52,6 +52,7 @@ import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.mvp.Command;
@@ -77,6 +78,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             UiBinder<Widget, DataSetTasksListGridViewImpl> {
 
     }
+    public static String DATASET_TASK_LIST_PREFIX = "DataSetTaskListGrid" ;
+
     public static final String COLUMN_ACTIVATIONTIME = "activationTime";
     public static final String COLUMN_ACTUALOWNER = "actualOwner";
     public static final String COLUMN_CREATEDBY = "createdBy";
@@ -120,7 +123,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         button.setText( "+" );
         button.addClickHandler( new ClickHandler() {
             public void onClick( ClickEvent event ) {
-                final String key = getValidKeyForAdditionalListGrid("TaskListGrid_");
+                final String key = getValidKeyForAdditionalListGrid(DATASET_TASK_LIST_PREFIX+"_");
 
                 Command addNewGrid = new Command() {
                     @Override
@@ -151,7 +154,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
             }
         } );
-        super.init(presenter, new GridGlobalPreferences("DataSetTaskListGrid", initColumns, bannedColumns),button);
+        super.init(presenter, new GridGlobalPreferences(DATASET_TASK_LIST_PREFIX, initColumns, bannedColumns),button);
 
     }
 
@@ -591,61 +594,69 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         //Filter status Active
         states= TaskUtils.getStatusByType( TaskUtils.TaskType.ACTIVE );
-        initTabFilter( preferences, "TaskListGrid_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states,TASK_ROLE_POTENTIALOWNER );
+        initTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states,TASK_ROLE_POTENTIALOWNER );
 
 
         //Filter status Personal
         states= TaskUtils.getStatusByType( TaskUtils.TaskType.PERSONAL );
-        initTabFilter( preferences, "TaskListGrid_1", Constants.INSTANCE.Personal(), "Filter " + Constants.INSTANCE.Personal(), states, TASK_ROLE_POTENTIALOWNER );
+        initTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_1", Constants.INSTANCE.Personal(), "Filter " + Constants.INSTANCE.Personal(), states, TASK_ROLE_POTENTIALOWNER );
 
         //Filter status Group
-//        states= TaskUtils.getStatusByType( TaskUtils.TaskType.GROUP );
-//        initTabFilter( preferences, "TaskListGrid_2", Constants.INSTANCE.Group(), "Filter " + Constants.INSTANCE.Group(), states, TASK_ROLE_POTENTIALOWNER );
+        states= TaskUtils.getStatusByType( TaskUtils.TaskType.GROUP );
+        initTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_2", Constants.INSTANCE.Group(), "Filter " + Constants.INSTANCE.Group(), states, TASK_ROLE_POTENTIALOWNER );
 
         //Filter status All
-//        states= TaskUtils.getStatusByType( TaskUtils.TaskType.ALL );
-//        initTabFilter( preferences, "TaskListGrid_3", Constants.INSTANCE.All(), "Filter " + Constants.INSTANCE.All(), states,TASK_ROLE_POTENTIALOWNER );
+        states= TaskUtils.getStatusByType( TaskUtils.TaskType.ALL );
+        initTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_3", Constants.INSTANCE.All(), "Filter " + Constants.INSTANCE.All(), states,TASK_ROLE_POTENTIALOWNER );
 
         //Filter status Admin
-//        states= TaskUtils.getStatusByType( TaskUtils.TaskType.ADMIN );
-//        initTabFilter( preferences, "TaskListGrid_4", Constants.INSTANCE.Task_Admin(), "Filter " + Constants.INSTANCE.Task_Admin(), states, TASK_ROLE_ADMINISTRATOR );
+        states= TaskUtils.getStatusByType( TaskUtils.TaskType.ADMIN );
+        initTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_4", Constants.INSTANCE.Task_Admin(), "Filter " + Constants.INSTANCE.Task_Admin(), states, TASK_ROLE_ADMINISTRATOR );
 
         filterPagedTable.addAddTableButton( createTabButton );
 
         filterPagedTable.setSelectedTab();
-        applyFilterOnPresenter( "TaskListGrid_4" );
+        applyFilterOnPresenter( DATASET_TASK_LIST_PREFIX + "_4" );
 
     }
     private void initTabFilter(GridGlobalPreferences preferences, final String key, String tabName,
                                String tabDesc, List<String> states, String role){
 
-        TableSettings tableSettings =
-                ( TableSettings ) TableSettingsBuilder.init()
-                        .dataset("jbpmHumanTasks")
-                        .filter(COLUMN_ACTUALOWNER, equalsTo(identity.getIdentifier())) //.filter(expression)
-                        .column( COLUMN_TASKID ).format(constants.Id())
-                        .column(COLUMN_NAME).format(constants.Task())
-                        .column(COLUMN_ACTUALOWNER).format("Owner")
-                        .column(COLUMN_CREATEDON).format("Created on", "MMM dd E, yyyy")
-                        .column(COLUMN_STATUS).format(constants.Status()).expression("value.toUpperCase()")
-                        .column(COLUMN_DESCRIPTION).format(constants.Description())
-                        .filterOn(true, true, true)
-                        .tableWidth(1000)
-                        .tableOrderEnabled(true)
-                        .tableOrderDefault(COLUMN_CREATEDON, DESCENDING)
-                        .buildSettings();
+        TableSettingsBuilder builder = TableSettingsBuilder.init();
+        TableSettings tableSettings = ( TableSettings ) builder.buildSettings();
+        builder.dataset("jbpmHumanTasks");
+        for(String s : states){
+            builder.filter(COLUMN_STATUS, equalsTo(s));
+        }
+
+        builder.filter(COLUMN_ACTUALOWNER, equalsTo(identity.getIdentifier()))
+                .column( COLUMN_TASKID ).format(constants.Id())
+                .column( COLUMN_NAME ).format( constants.Task() )
+                .column( COLUMN_ACTUALOWNER ).format( "Owner" )
+                .column( COLUMN_DUEDATE ).format( "Due Date", "MMM dd E, yyyy" )
+                .column( COLUMN_PRIORITY )
+                .column( COLUMN_CREATEDON ).format("Created on", "MMM dd E, yyyy")
+                .column(COLUMN_STATUS).format(constants.Status()).expression("value.toUpperCase()")
+                .column(COLUMN_DESCRIPTION).format(constants.Description())
+                .filterOn(true, true, true)
+                .tableOrderEnabled(true)
+                .tableOrderDefault(COLUMN_CREATEDON, DESCENDING);
+
         tableSettings.setKey( key );
         tableSettings.setTableName( tabName );
         tableSettings.setTableDescription( tabDesc );
+
         addTableSettings( tableSettings );
 
 
         HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>(  );
 
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM,tabName);
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tabDesc);
-        tabSettingsValues.put( DataSetTasksListGridPresenter.FILTER_STATUSES_PARAM_NAME, states );
-        tabSettingsValues.put( DataSetTasksListGridPresenter.FILTER_CURRENT_ROLE_PARAM_NAME, role );
+        TableSettings tab = getStrToTableSettings( getTableSettingsToStr( tableSettings ) );
+
+        tabSettingsValues.put( FILTER_TABLE_SETTINGS, getTableSettingsToStr(tableSettings  ));
+        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName() );
+        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription() );
+
 
         filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance(  preferences, key );
@@ -664,17 +675,24 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     }
 
     public void applyFilterOnPresenter(HashMap<String, Object> params){
-        List<String> states = (List) params.get( DataSetTasksListGridPresenter.FILTER_STATUSES_PARAM_NAME);
-        String currentRole = (String) params.get( DataSetTasksListGridPresenter.FILTER_CURRENT_ROLE_PARAM_NAME);
 
-        //presenter.filterGrid( currentRole ,states);
+        String tableSettingsJSON = (String) params.get( FILTER_TABLE_SETTINGS );
+        TableSettings tableSettings = getStrToTableSettings( tableSettingsJSON );
+
+        presenter.filterGrid( tableSettings);
 
     }
+
     public void applyFilterOnPresenter(String key) {
+        initSelectionModel();
+        applyFilterOnPresenter( filterPagedTable.getMultiGridPreferencesStore().getGridSettings( key ) );
+    }
+
+ /*   public void applyFilterOnPresenter(String key) {
         initSelectionModel();
         presenter.filterGrid( getTableSettingsByKey( key ));
     }
-
+*/
     /*-------------------------------------------------*/
     /*---              DashBuilder                   --*/
     /*-------------------------------------------------*/
@@ -695,9 +713,11 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     public TableSettings createTableSettingsPrototype() {
         return (TableSettings ) TableSettingsBuilder.init()
                 .dataset("jbpmHumanTasks")
-                .column(COLUMN_TASKID).format(constants.Id())
-                .column(COLUMN_NAME).format(constants.Task())
-                .column(COLUMN_ACTUALOWNER).format("Owner")
+                .column(COLUMN_TASKID).format( constants.Id() )
+                .column( COLUMN_NAME ).format( constants.Task() )
+                .column( COLUMN_DUEDATE ).format( "Due Date", "MMM dd E, yyyy" )
+                .column( COLUMN_PRIORITY )
+                .column( COLUMN_ACTUALOWNER ).format("Owner")
                 .column(COLUMN_CREATEDON).format("Created on", "MMM dd E, yyyy")
                 .column(COLUMN_STATUS).format(constants.Status())
                 .column(COLUMN_DESCRIPTION).format(constants.Description())

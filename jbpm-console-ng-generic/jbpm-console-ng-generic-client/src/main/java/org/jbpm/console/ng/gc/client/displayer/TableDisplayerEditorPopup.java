@@ -15,6 +15,10 @@
  */
 package org.jbpm.console.ng.gc.client.displayer;
 
+import com.github.gwtbootstrap.client.ui.ControlGroup;
+import com.github.gwtbootstrap.client.ui.ControlLabel;
+import com.github.gwtbootstrap.client.ui.HelpInline;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.core.client.GWT;
@@ -24,11 +28,14 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import org.jbpm.console.ng.gc.client.i18n.TableDisplayerConstants;
+import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
+import org.uberfire.ext.widgets.common.client.resources.i18n.CommonConstants;
 import org.uberfire.mvp.Command;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 @Dependent
 public class TableDisplayerEditorPopup extends BaseModal {
@@ -39,7 +46,26 @@ public class TableDisplayerEditorPopup extends BaseModal {
     @UiField
     public FlowPanel editorPanel;
 
-    //TableDisplayerEditor editor;
+    @UiField
+    public ControlGroup tableNameControlGroup;
+
+    @UiField
+    public TextBox tableNameText;
+
+    @UiField
+    HelpInline tableNameHelpInline;
+
+    @UiField
+    public ControlGroup tableDescControlGroup;
+
+    @UiField
+    public TextBox tableDescText;
+
+    @UiField
+    HelpInline tableDescHelpInline;
+
+    //@Inject
+    TableDisplayerEditor editor;
 
     public TableDisplayerEditorPopup() {
         this(new TableDisplayerEditor());
@@ -48,10 +74,11 @@ public class TableDisplayerEditorPopup extends BaseModal {
 
  //public TableDisplayerEditorPopup() {
     public TableDisplayerEditorPopup(TableDisplayerEditor editor) {
-      //  this.editor = editor;
+        //GWT.log( " TableDisplayerEditorPopup (TableDisplayerEditor)" );
+        this.editor = editor;
         add( uiBinder.createAndBindUi( this ) );
-        //editorPanel.add(editor.asWidget());//init();
-        editorPanel.add( new HTML( "HELLO" ) );
+        editorPanel.add(editor.asWidget());//init();
+        //editorPanel.add( new HTML( "HELLO" ) );
         final GenericModalFooter footer = new GenericModalFooter();
         footer.addButton( TableDisplayerConstants.INSTANCE.ok(),
                 new Command() {
@@ -84,20 +111,27 @@ public class TableDisplayerEditorPopup extends BaseModal {
     }
 */
     public void show(TableSettings settings, TableDisplayerEditor.Listener editorListener) {
-        //editor.init(settings, editorListener);
+        editor.init(settings, editorListener);
         super.show();
     }
 
    // @UiHandler("cancelButton")
     void cancel() {
         hide();
-        //editor.close();
+        editor.close();
     }
 
   //  @UiHandler("okButton")
     void ok() {
         hide();
-        //editor.save();
+        editor.setTableName( tableNameText.getValue() );
+        GWT.log( "------------Editor Popup name: "+editor.getTableSettings().getTableName());
+
+        editor.setTableDesc( tableDescText.getValue() );
+        GWT.log( "------------Editor Popup desc : "+editor.getTableSettings().getTableDescription());
+        editor.save();
     }
+
+
 }
 

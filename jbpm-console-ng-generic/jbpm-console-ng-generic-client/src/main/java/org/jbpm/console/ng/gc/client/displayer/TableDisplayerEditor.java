@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.gc.client.displayer;
 
+import com.google.gwt.core.client.GWT;
 import org.dashbuilder.displayer.client.widgets.DataSetLookupEditor;
 import org.dashbuilder.displayer.client.widgets.DisplayerEditor;
 import org.dashbuilder.displayer.client.widgets.DisplayerSettingsEditor;
@@ -38,18 +39,29 @@ public class TableDisplayerEditor extends DisplayerEditor {
     private TableSettings tableSettings;
 
     public TableDisplayerEditor() {
+        //GWT.log( "TableDisplayerEditor constructor" );
+
         SyncBeanManager beanManager = IOC.getBeanManager();
         IOCBeanDef iocBeanDef = beanManager.lookupBean(DisplayerSettingsEditor.class);
         DisplayerSettingsEditor settingsEditor = (DisplayerSettingsEditor) iocBeanDef.getInstance();
 
         iocBeanDef = beanManager.lookupBean(DataSetLookupEditor.class);
         DataSetLookupEditor lookupEditor = (DataSetLookupEditor) iocBeanDef.getInstance();
+        //GWT.log( "TaleDisplayerEditor constuctor before newTableDisplayerEditor" );
 
         super.view = new TableDisplayerEditorView(lookupEditor, settingsEditor);
     }
 
     public TableSettings getTableSettings() {
         return tableSettings;
+    }
+
+    public void setTableName(String tableName){
+        this.tableSettings.setTableName( tableName );
+    }
+
+    public void setTableDesc(String tableDesc){
+        this.tableSettings.setTableDescription( tableDesc );
     }
 
     public void init(TableSettings tableSettings, final Listener listener) {

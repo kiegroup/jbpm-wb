@@ -36,6 +36,7 @@ public class TableDisplayerEditorView  extends DisplayerEditorView
     protected TableSettings settings;
 
     public TableDisplayerEditorView() {
+
 //        initWidget( uiBinder.createAndBindUi( this ) );
     }
 
@@ -46,12 +47,15 @@ public class TableDisplayerEditorView  extends DisplayerEditorView
     }*/
     public TableDisplayerEditorView(DataSetLookupEditor lookupEditor, DisplayerSettingsEditor settingsEditor) {
         this();
+        //GWT.log( "TableDisplayerEditorView. TableDisplayerEditorView(DataSetLookupEditor lookupEditor, DisplayerSettingsEditor settingsEditor)" );
         this.lookupEditor = lookupEditor;
         this.settingsEditor = settingsEditor;
     }
 
     @Override
     public void init(TableSettings settings, TableDisplayerEditor presenter) {
+        //GWT.log("TableDisplayerEditorView.init ");
+
         super.init(settings, presenter);
         this.settings = settings;
         this.presenter = presenter;

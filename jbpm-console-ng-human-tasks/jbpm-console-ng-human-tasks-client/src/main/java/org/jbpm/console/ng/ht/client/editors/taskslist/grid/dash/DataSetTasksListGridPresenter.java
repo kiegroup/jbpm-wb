@@ -43,6 +43,7 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
+import org.uberfire.paging.PageResponse;
 
 
 import javax.enterprise.context.Dependent;
@@ -100,10 +101,11 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
     }
 
     @Override
-    public void getData(Range visibleRange) {
+    public void getData(final Range visibleRange) {
         try {
 
             if(currentTableSetting==null) {
+                // We should Load this from the settings?
                 currentTableSetting = (TableSettings ) TableSettingsBuilder.init()
                         .dataset("jbpmHumanTasks")
                         .column(DataSetTasksListGridViewImpl.COLUMN_TASKID).format(constants.Id())
@@ -113,11 +115,10 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                         .column(DataSetTasksListGridViewImpl.COLUMN_STATUS).format(constants.Status())
                         .column(DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION).format(constants.Description())
                         .filterOn(true, true, true)
-                        .tableWidth(1000)
                         .tableOrderEnabled(true)
                         .tableOrderDefault(DataSetTasksListGridViewImpl.COLUMN_CREATEDON, DESCENDING)
                         .buildSettings();
-               // currentTableSetting = view.createTableSettingsPrototype();
+
                 GWT.log("DataSetTaskListGridPresenter.getData  currentTableSetting is null");
             }
             GWT.log("DataSetTaskListGridPresenter.getData 1 "+ currentTableSetting);
@@ -126,27 +127,28 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
             dataSetHandler = new DataSetHandlerImpl(currentTableSetting.getDataSetLookup());
             GWT.log("DataSetTaskListGridPresenter.getData 3 datasetHandler "+ dataSetHandler);
 
-            lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
+            super.lookupDataSet(visibleRange.getStart(), new DataSetReadyCallback() {
                 @Override
-                public void callback( DataSet dataSet ) {
-                    if ( dataSet != null && dataSet.getRowCount() > 0 ) {
+                public void callback(DataSet dataSet) {
+                    if (dataSet != null && dataSet.getRowCount() > 0) {
+
                         List<TaskSummary> myTasksFromDataSet = new ArrayList<TaskSummary>();
 
-                        for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
-                            myTasksFromDataSet.add( new TaskSummary(
-                                            ( Long ) dataSet.getColumnByIndex( 0 ).getValues().get( i ),
-                                            ( String ) dataSet.getColumnByIndex( 1 ).getValues().get( i ),
-                                            ( String ) dataSet.getColumnByIndex( 5 ).getValues().get( i ),
-                                            ( String ) dataSet.getColumnByIndex( 4 ).getValues().get( i ),
-                                            0, ( String ) dataSet.getColumnByIndex( 2 ).getValues().get( i ),
-                                            "", ( Date ) dataSet.getColumnByIndex( 3 ).getValues().get( i ), null, null, "", -1, -1, "", -1 )
+                        for (int i = 0; i < dataSet.getRowCount(); i++) {
+                            myTasksFromDataSet.add(new TaskSummary(
+                                            (Long) dataSet.getColumnByIndex(0).getValues().get(i),
+                                            (String) dataSet.getColumnByIndex(1).getValues().get(i),
+                                            (String) dataSet.getColumnByIndex(5).getValues().get(i),
+                                            (String) dataSet.getColumnByIndex(4).getValues().get(i),
+                                            0, (String) dataSet.getColumnByIndex(2).getValues().get(i),
+                                            "", (Date) dataSet.getColumnByIndex(3).getValues().get(i), null, null, "", -1, -1, "", -1)
                             );
                         }
-
-                        dataProvider.updateRowCount( dataSet.getRowCount(),
-                                true ); // true ??
-                        dataProvider.updateRowData( 0,///dataSet.getStartRowIndex() ???
-                                myTasksFromDataSet );
+                        PageResponse<TaskSummary> taskSummaryPageResponse = new PageResponse<TaskSummary>();
+                        taskSummaryPageResponse.setPageRowList(myTasksFromDataSet);
+                        taskSummaryPageResponse.setStartRowIndex(visibleRange.getStart());
+                        taskSummaryPageResponse.setTotalRowSize(dataSet.getRowCountNonTrimmed());
+                        DataSetTasksListGridPresenter.this.updateDataOnCallback(taskSummaryPageResponse);
                     }
                     view.hideBusyIndicator();
                 }
@@ -154,15 +156,15 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                 @Override
                 public void notFound() {
                     view.hideBusyIndicator();
-                    errorPopup.showMessage( "Not found DataSet with UUID [  jbpmHumanTasks ] " );
-                    GWT.log( "DataSet with UUID [  jbpmHumanTasks ] not found." );
+                    errorPopup.showMessage("Not found DataSet with UUID [  jbpmHumanTasks ] ");
+                    GWT.log("DataSet with UUID [  jbpmHumanTasks ] not found.");
                 }
 
                 @Override
-                public boolean onError( DataSetClientServiceError error ) {
+                public boolean onError(DataSetClientServiceError error) {
                     view.hideBusyIndicator();
-                    errorPopup.showMessage( "DataSet with UUID [  jbpmHumanTasks ] error: " + error.getThrowable() );
-                    GWT.log( "DataSet with UUID [  jbpmHumanTasks ] error: ", error.getThrowable() );
+                    errorPopup.showMessage("DataSet with UUID [  jbpmHumanTasks ] error: " + error.getThrowable());
+                    GWT.log("DataSet with UUID [  jbpmHumanTasks ] error: ", error.getThrowable());
                     return false;
                 }
             } );
