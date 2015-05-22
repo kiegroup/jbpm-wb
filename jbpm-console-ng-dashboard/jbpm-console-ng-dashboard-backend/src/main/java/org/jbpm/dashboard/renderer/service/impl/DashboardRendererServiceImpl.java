@@ -1,6 +1,6 @@
 package org.jbpm.dashboard.renderer.service.impl;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.dashboard.renderer.service.DashboardRendererService;
 import org.jbpm.dashboard.renderer.service.ConnectionStatus;
