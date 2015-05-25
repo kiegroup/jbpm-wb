@@ -651,8 +651,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>(  );
 
-        TableSettings tab = getStrToTableSettings( getTableSettingsToStr( tableSettings ) );
-
         tabSettingsValues.put( FILTER_TABLE_SETTINGS, getTableSettingsToStr(tableSettings  ));
         tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName() );
         tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription() );
@@ -677,8 +675,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     public void applyFilterOnPresenter(HashMap<String, Object> params){
 
         String tableSettingsJSON = (String) params.get( FILTER_TABLE_SETTINGS );
-        TableSettings tableSettings = getStrToTableSettings( tableSettingsJSON );
 
+        TableSettings tableSettings = getStrToTableSettings( tableSettingsJSON );
         presenter.filterGrid( tableSettings);
 
     }

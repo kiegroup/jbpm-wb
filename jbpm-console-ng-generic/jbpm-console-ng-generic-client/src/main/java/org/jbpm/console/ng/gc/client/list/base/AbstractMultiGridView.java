@@ -266,6 +266,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     public void showTableSettingsEditor(String popupTitle, final TableSettings tableSettings,final Command drawCommand) {
         TableSettings clone = tableSettings.cloneInstance();
+        clone.setKey( tableSettings.getKey() );
+
         tableDisplayerEditorPopup.setTitle( popupTitle );
         tableDisplayerEditorPopup.show( clone, new TableDisplayerEditor.Listener() {
 
@@ -278,14 +280,10 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                 HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
 
                 tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, modifiedSettings.getTableName() );
-                GWT.log( "------------showTableSettingsEditor onSave name: "+modifiedSettings.getTableName());
-
                 tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, modifiedSettings.getTableDescription() );
-                GWT.log( "------------showTableSettingsEditor onSave desc: "+modifiedSettings.getTableDescription());
-
                 tabSettingsValues.put( FILTER_TABLE_SETTINGS, getTableSettingsToStr( modifiedSettings ) );
 
-                filterPagedTable.saveNewTabSettings( modifiedSettings.getKey(), new HashMap<String, Object>() );
+                filterPagedTable.saveNewTabSettings( modifiedSettings.getKey(),tabSettingsValues );
                 drawCommand.execute();
             }
         } );
