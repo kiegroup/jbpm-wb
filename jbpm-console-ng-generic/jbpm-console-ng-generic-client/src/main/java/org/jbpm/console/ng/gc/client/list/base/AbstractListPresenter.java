@@ -20,6 +20,7 @@ import java.util.Map;
 import javax.enterprise.event.Observes;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
@@ -30,12 +31,11 @@ import org.dashbuilder.dataset.client.DataSetClientServiceError;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.dashbuilder.displayer.client.DataSetHandler;
-import org.dashbuilder.renderer.client.resources.i18n.CommonConstants;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.gc.client.displayer.TableSettings;
+import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
-import org.uberfire.paging.AbstractPageRow;
 import org.uberfire.paging.PageResponse;
 
 
@@ -92,6 +92,7 @@ public abstract class AbstractListPresenter<T> {
     public abstract void getData(Range visibleRange);
 
     protected void initDataProvider(){
+
         dataProvider = new AsyncDataProvider<T>() {
             @Override
             protected void onRangeChanged(HasData<T> display) {
@@ -100,14 +101,15 @@ public abstract class AbstractListPresenter<T> {
                 getData(visibleRange);
             }
         } ;
+
     }
 
     public void updateDataOnCallback(PageResponse response){
         getListView().hideBusyIndicator();
-        dataProvider.updateRowCount(response.getTotalRowSize(),
-                response.isTotalRowSizeExact());
-        dataProvider.updateRowData(response.getStartRowIndex(),
-                response.getPageRowList());
+        dataProvider.updateRowCount( response.getTotalRowSize(),
+                response.isTotalRowSizeExact() );
+        dataProvider.updateRowData( response.getStartRowIndex(),
+                response.getPageRowList() );
         updateRefreshTimer();
     }
 
@@ -148,8 +150,7 @@ public abstract class AbstractListPresenter<T> {
 
     public void lookupDataSet(Integer offset, final DataSetReadyCallback callback) {
         try {
-            GWT.log("AbstractListPresenter.lookupDataset 1 "+ currentTableSetting);
-            // Get the sort settings
+           // Get the sort settings
             if (lastOrderedColumn == null) {
                 String defaultSortColumn = currentTableSetting.getTableDefaultSortColumnId();
                 if (!StringUtils.isBlank( defaultSortColumn )) {
@@ -165,26 +166,20 @@ public abstract class AbstractListPresenter<T> {
             dataSetHandler.limitDataSetRows(offset, currentTableSetting.getTablePageSize());
 
             // Do the lookup
-            GWT.log("AbstractListPresenter.lookupDataset 2 do the lookup ");
-
             dataSetHandler.lookupDataSet(
                     new DataSetReadyCallback() {
 
                         public void callback( DataSet dataSet ) {
                             AbstractListPresenter.this.dataSet = dataSet;
                             numberOfRows = dataSet.getRowCountNonTrimmed();
-                            GWT.log("AbstractListPresenter.lookupDataset 3.1 number Of rows "+ numberOfRows);
                             callback.callback( dataSet );
                         }
                         public void notFound() {
-                            GWT.log("AbstractListPresenter.lookupDataset 3 NOTFOUND ");
-
                             callback.notFound();
                         }
 
                         @Override
                         public boolean onError(DataSetClientServiceError error) {
-                            GWT.log("AbstractListPresenter.lookupDataset 4 error "+error.getMessage());
                             callback.onError(error);
                             return false;
                         }
@@ -195,5 +190,16 @@ public abstract class AbstractListPresenter<T> {
 
         }
     }
+
+    public void setSortHandler(ExtendedPagedTable pagedTable){
+        pagedTable.addColumnSortHandler(new ColumnSortEvent.AsyncHandler( pagedTable ) {
+            public void onColumnSort( ColumnSortEvent event ) {
+                lastOrderedColumn =  event.getColumn().getDataStoreName();
+                lastSortOrder = event.isSortAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING;
+                refreshGrid();
+            }
+        });
+    }
+
 
 }

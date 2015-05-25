@@ -39,15 +39,12 @@ public class TableDisplayerEditor extends DisplayerEditor {
     private TableSettings tableSettings;
 
     public TableDisplayerEditor() {
-        //GWT.log( "TableDisplayerEditor constructor" );
-
         SyncBeanManager beanManager = IOC.getBeanManager();
         IOCBeanDef iocBeanDef = beanManager.lookupBean(DisplayerSettingsEditor.class);
         DisplayerSettingsEditor settingsEditor = (DisplayerSettingsEditor) iocBeanDef.getInstance();
 
         iocBeanDef = beanManager.lookupBean(DataSetLookupEditor.class);
         DataSetLookupEditor lookupEditor = (DataSetLookupEditor) iocBeanDef.getInstance();
-        //GWT.log( "TaleDisplayerEditor constuctor before newTableDisplayerEditor" );
 
         super.view = new TableDisplayerEditorView(lookupEditor, settingsEditor);
     }

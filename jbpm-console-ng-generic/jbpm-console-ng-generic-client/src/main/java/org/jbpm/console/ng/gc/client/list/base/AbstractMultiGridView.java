@@ -21,12 +21,14 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import org.dashbuilder.dataset.ValidationError;
+import org.dashbuilder.dataset.sort.SortOrder;
 import org.dashbuilder.displayer.DisplayerConstraints;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.jboss.errai.common.client.api.Caller;
@@ -144,6 +146,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                         final ExtendedPagedTable<T> extendedPagedTable = createGridInstance( preferences, key );
                         currentListGrid = extendedPagedTable;
                         presenter.addDataDisplay( extendedPagedTable );
+                        presenter.setSortHandler( extendedPagedTable );
                         extendedPagedTable.setDataProvider( presenter.dataProvider );
                         final String filterKey = key;
                         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
@@ -224,6 +227,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
             }
         } ).loadUserPreferences( key, UserPreferencesType.GRIDPREFERENCES );
         initExtraButtons( newListGrid );
+
         return newListGrid;
     }
 
@@ -267,7 +271,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public void showTableSettingsEditor(String popupTitle, final TableSettings tableSettings,final Command drawCommand) {
         TableSettings clone = tableSettings.cloneInstance();
         clone.setKey( tableSettings.getKey() );
-
+        clone.setDataSet( tableSettings.getDataSet());
         tableDisplayerEditorPopup.setTitle( popupTitle );
         tableDisplayerEditorPopup.show( clone, new TableDisplayerEditor.Listener() {
 
@@ -279,24 +283,16 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                 updateTableSettings( modifiedSettings );
                 HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
 
+
                 tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, modifiedSettings.getTableName() );
                 tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, modifiedSettings.getTableDescription() );
                 tabSettingsValues.put( FILTER_TABLE_SETTINGS, getTableSettingsToStr( modifiedSettings ) );
+                GWT.log( "AbstractMultiGridView json .........." + getTableSettingsToStr( tableSettings ) );
 
                 filterPagedTable.saveNewTabSettings( modifiedSettings.getKey(),tabSettingsValues );
                 drawCommand.execute();
             }
         } );
-/*      TableSettings modifiedSettings =tableSettings;
-        updateTableSettings( modifiedSettings );
-        HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
-
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, modifiedSettings.getTableName() );
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, modifiedSettings.getTableDescription() );
-
-        filterPagedTable.saveNewTabSettings( modifiedSettings.getKey(), new HashMap<String, Object>() );
-        drawCommand.execute();
-*/
     }
 
 
@@ -324,9 +320,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public void updateTableSettings(TableSettings tableSettings) {
         addTableSettings( tableSettings );
     }
-//    public void clearTableSettingsList() {
-//        tableSettingsHashMap.clear();
-//    }
 
     public DisplayerConstraints createDisplayerConstraints(){
         return null;
@@ -337,11 +330,9 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     public String getTableSettingsToStr(TableSettings tableSettings){
-        GWT.log( "------------getTableSettingToStr(TableSettings): "+tableSettingsJSONMarshaller.toJsonString( tableSettings ));
         return tableSettingsJSONMarshaller.toJsonString( tableSettings );
     }
     public TableSettings getStrToTableSettings(String json){
-        GWT.log( "----------getStrToTableSettings(String json): "+json);
         return tableSettingsJSONMarshaller.fromJsonString( json );
     }
 

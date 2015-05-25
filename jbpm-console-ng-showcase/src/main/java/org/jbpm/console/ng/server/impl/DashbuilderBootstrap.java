@@ -17,6 +17,7 @@ package org.jbpm.console.ng.server.impl;
 
 import org.dashbuilder.dataset.DataSetFactory;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
+import org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash.DataSetTasksListGridViewImpl;
 import org.uberfire.commons.services.cdi.Startup;
 
 import javax.annotation.PostConstruct;
@@ -42,26 +43,26 @@ public class DashbuilderBootstrap {
         System.out.println("Bootstrapping Dashbuilder stuff.....");
         dataSetDefRegistry.registerDataSetDef(
                 DataSetFactory.newSQLDataSetDef()
-                .uuid(HUMAN_TASKS_DATASET)
-                .name("Human tasks")
-                .dataSource(JBPM_DATASOURCE)
-                .dbTable(HUMAN_TASKS_TABLE, false)
-                .date("activationTime")
-                .label("actualOwner")
-                .label("createdBy")
-                .date("createdOn")
-                .label("deploymentId")
-                .text("description")
-                .date("dueDate")
-                .label("name")
-                .label("parentId")
-                .label("priority")
-                .label("processId")
-                .label("processInstanceId")
-                .label("processSessionId")
-                .label("status")
-                .label("taskId")
-                .label("workItemId")
+                .uuid( HUMAN_TASKS_DATASET )
+                .name( "Human tasks" )
+                .dataSource( JBPM_DATASOURCE )
+                .dbTable( HUMAN_TASKS_TABLE, false )
+                .date( DataSetTasksListGridViewImpl.COLUMN_ACTIVATIONTIME )
+                .label( DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER )
+                .label( DataSetTasksListGridViewImpl.COLUMN_CREATEDBY )
+                .date( DataSetTasksListGridViewImpl.COLUMN_CREATEDON )
+                .label( DataSetTasksListGridViewImpl.COLUMN_DEPLOYMENTID )
+                .text( DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION )
+                .date( DataSetTasksListGridViewImpl.COLUMN_DUEDATE )
+                .label( DataSetTasksListGridViewImpl.COLUMN_NAME )
+                .label( DataSetTasksListGridViewImpl.COLUMN_PARENTID )
+                .label( DataSetTasksListGridViewImpl.COLUMN_PRIORITY )
+                .label( DataSetTasksListGridViewImpl.COLUMN_PROCESSID )
+                .label( DataSetTasksListGridViewImpl.COLUMN_PROCESSINSTANCEID )
+                .label( DataSetTasksListGridViewImpl.COLUMN_PROCESSSESSIONID )
+                .label( DataSetTasksListGridViewImpl.COLUMN_STATUS )
+                .label( DataSetTasksListGridViewImpl.COLUMN_TASKID )
+                .label( DataSetTasksListGridViewImpl.COLUMN_WORKITEMID )
                 .buildDef());
     }
 }

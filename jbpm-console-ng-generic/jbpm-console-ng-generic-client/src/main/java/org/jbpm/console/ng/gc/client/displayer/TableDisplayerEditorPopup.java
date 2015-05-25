@@ -72,13 +72,10 @@ public class TableDisplayerEditorPopup extends BaseModal {
     }
 
 
- //public TableDisplayerEditorPopup() {
     public TableDisplayerEditorPopup(TableDisplayerEditor editor) {
-        //GWT.log( " TableDisplayerEditorPopup (TableDisplayerEditor)" );
         this.editor = editor;
         add( uiBinder.createAndBindUi( this ) );
-        editorPanel.add(editor.asWidget());//init();
-        //editorPanel.add( new HTML( "HELLO" ) );
+        editorPanel.add(editor.asWidget());
         final GenericModalFooter footer = new GenericModalFooter();
         footer.addButton( TableDisplayerConstants.INSTANCE.ok(),
                 new Command() {
@@ -102,36 +99,28 @@ public class TableDisplayerEditorPopup extends BaseModal {
         setWidth(950);
     }
 
- /*   @Inject
-    public TableDisplayerEditorPopup(TableDisplayerEditor editor) {
-        this.editor = editor;
-        add(uiBinder.createAndBindUi(this));
-        setMaxHeigth("550px");
-        setWidth(950);
-    }
-*/
     public void show(TableSettings settings, TableDisplayerEditor.Listener editorListener) {
+        clean();
         editor.init(settings, editorListener);
         super.show();
     }
 
-   // @UiHandler("cancelButton")
     void cancel() {
         hide();
         editor.close();
     }
 
-  //  @UiHandler("okButton")
     void ok() {
         hide();
         editor.setTableName( tableNameText.getValue() );
-        GWT.log( "------------Editor Popup name: "+editor.getTableSettings().getTableName());
-
         editor.setTableDesc( tableDescText.getValue() );
-        GWT.log( "------------Editor Popup desc : "+editor.getTableSettings().getTableDescription());
         editor.save();
     }
+    private void clean(){
+        tableDescText.setValue( "" );
+        tableNameText.setValue( "" );
 
+    }
 
 }
 

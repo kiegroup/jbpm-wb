@@ -16,6 +16,7 @@
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
 
 import com.google.gwt.core.client.GWT;
+
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
@@ -30,7 +31,6 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
 import org.jbpm.console.ng.gc.client.displayer.TableSettings;
-import org.jbpm.console.ng.gc.client.displayer.TableSettingsBuilder;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 
@@ -52,15 +52,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
-
 
 @Dependent
 @WorkbenchScreen(identifier = "DataSet Tasks List")
 public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<TaskSummary> {
-
-    public static String FILTER_STATUSES_PARAM_NAME = "statuses";
-    public static String FILTER_CURRENT_ROLE_PARAM_NAME = "filter";
 
     public interface DataSetTaskListView extends ListView<TaskSummary, DataSetTasksListGridPresenter> {
 
@@ -103,72 +98,63 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
     @Override
     public void getData(final Range visibleRange) {
         try {
+            if(currentTableSetting!=null) {
+                currentTableSetting.setTablePageSize( view.getListGrid().getPageSize() );
+                dataSetHandler = new DataSetHandlerImpl( currentTableSetting.getDataSetLookup() );
+                super.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
+                    @Override
+                    public void callback( DataSet dataSet ) {
+                        if ( dataSet != null && dataSet.getRowCount() > 0 ) {
+                            List<TaskSummary> myTasksFromDataSet = new ArrayList<TaskSummary>();
 
-            if(currentTableSetting==null) {
-                // We should Load this from the settings?
-                currentTableSetting = (TableSettings ) TableSettingsBuilder.init()
-                        .dataset("jbpmHumanTasks")
-                        .column(DataSetTasksListGridViewImpl.COLUMN_TASKID).format(constants.Id())
-                        .column(DataSetTasksListGridViewImpl.COLUMN_NAME).format(constants.Task())
-                        .column(DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER).format("Owner")
-                        .column(DataSetTasksListGridViewImpl.COLUMN_CREATEDON).format("Created on", "MMM dd E, yyyy")
-                        .column(DataSetTasksListGridViewImpl.COLUMN_STATUS).format(constants.Status())
-                        .column(DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION).format(constants.Description())
-                        .filterOn(true, true, true)
-                        .tableOrderEnabled(true)
-                        .tableOrderDefault(DataSetTasksListGridViewImpl.COLUMN_CREATEDON, DESCENDING)
-                        .buildSettings();
+                            for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
+                                myTasksFromDataSet.add( new TaskSummary(
+                                                getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_TASKID, i ),
+                                                getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_NAME, i ),
+                                                getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION, i ),
+                                                getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_STATUS, i ),
+                                                getColumnIntValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PRIORITY, i ),
+                                                getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, i ),
+                                                getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_CREATEDBY, i ),
+                                                getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_CREATEDON, i ),
+                                                getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_ACTIVATIONTIME, i ),
+                                                getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DUEDATE, i ),
+                                                getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSID, i ),
+                                                getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSSESSIONID, i ),
+                                                getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSINSTANCEID, i ),
+                                                getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DEPLOYMENTID, i ),
+                                                getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PARENTID, i ) )
+                                );
 
-                GWT.log("DataSetTaskListGridPresenter.getData  currentTableSetting is null");
-            }
-            GWT.log("DataSetTaskListGridPresenter.getData 1 "+ currentTableSetting);
-            currentTableSetting.setTablePageSize( view.getListGrid().getPageSize() );
-            GWT.log("DataSetTaskListGridPresenter.getData 2 "+ currentTableSetting.getTableName());
-            dataSetHandler = new DataSetHandlerImpl(currentTableSetting.getDataSetLookup());
-            GWT.log("DataSetTaskListGridPresenter.getData 3 datasetHandler "+ dataSetHandler);
+                            }
+                            PageResponse<TaskSummary> taskSummaryPageResponse = new PageResponse<TaskSummary>();
+                            taskSummaryPageResponse.setPageRowList( myTasksFromDataSet );
+                            taskSummaryPageResponse.setStartRowIndex( visibleRange.getStart() );
+                            taskSummaryPageResponse.setTotalRowSize( dataSet.getRowCountNonTrimmed() );
 
-            super.lookupDataSet(visibleRange.getStart(), new DataSetReadyCallback() {
-                @Override
-                public void callback(DataSet dataSet) {
-                    if (dataSet != null && dataSet.getRowCount() > 0) {
-
-                        List<TaskSummary> myTasksFromDataSet = new ArrayList<TaskSummary>();
-
-                        for (int i = 0; i < dataSet.getRowCount(); i++) {
-                            myTasksFromDataSet.add(new TaskSummary(
-                                            (Long) dataSet.getColumnByIndex(0).getValues().get(i),
-                                            (String) dataSet.getColumnByIndex(1).getValues().get(i),
-                                            (String) dataSet.getColumnByIndex(5).getValues().get(i),
-                                            (String) dataSet.getColumnByIndex(4).getValues().get(i),
-                                            0, (String) dataSet.getColumnByIndex(2).getValues().get(i),
-                                            "", (Date) dataSet.getColumnByIndex(3).getValues().get(i), null, null, "", -1, -1, "", -1)
-                            );
+                            DataSetTasksListGridPresenter.this.updateDataOnCallback( taskSummaryPageResponse );
                         }
-                        PageResponse<TaskSummary> taskSummaryPageResponse = new PageResponse<TaskSummary>();
-                        taskSummaryPageResponse.setPageRowList(myTasksFromDataSet);
-                        taskSummaryPageResponse.setStartRowIndex(visibleRange.getStart());
-                        taskSummaryPageResponse.setTotalRowSize(dataSet.getRowCountNonTrimmed());
-                        DataSetTasksListGridPresenter.this.updateDataOnCallback(taskSummaryPageResponse);
+                        view.hideBusyIndicator();
                     }
-                    view.hideBusyIndicator();
-                }
 
-                @Override
-                public void notFound() {
-                    view.hideBusyIndicator();
-                    errorPopup.showMessage("Not found DataSet with UUID [  jbpmHumanTasks ] ");
-                    GWT.log("DataSet with UUID [  jbpmHumanTasks ] not found.");
-                }
+                    @Override
+                    public void notFound() {
+                        view.hideBusyIndicator();
+                        errorPopup.showMessage( "Not found DataSet with UUID [  jbpmHumanTasks ] " );
+                        GWT.log( "DataSet with UUID [  jbpmHumanTasks ] not found." );
+                    }
 
-                @Override
-                public boolean onError(DataSetClientServiceError error) {
-                    view.hideBusyIndicator();
-                    errorPopup.showMessage("DataSet with UUID [  jbpmHumanTasks ] error: " + error.getThrowable());
-                    GWT.log("DataSet with UUID [  jbpmHumanTasks ] error: ", error.getThrowable());
-                    return false;
-                }
-            } );
-
+                    @Override
+                    public boolean onError( DataSetClientServiceError error ) {
+                        view.hideBusyIndicator();
+                        errorPopup.showMessage( "DataSet with UUID [  jbpmHumanTasks ] error: " + error.getThrowable() );
+                        GWT.log( "DataSet with UUID [  jbpmHumanTasks ] error: ", error.getThrowable() );
+                        return false;
+                    }
+                } );
+            }else {
+                view.hideBusyIndicator();
+            }
         } catch (Exception e) {
             GWT.log("Error looking up dataset with UUID [ jbpmHumanTasks ]");
         }
@@ -221,6 +207,41 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                 return true;
             }
         }).claim(taskId, userId, deploymentId);
+    }
+
+    public Long getColumnLongValue (DataSet currentDataSet, String columnId, int index){
+        try{
+            return (Long)currentDataSet.getColumnById( columnId ).getValues().get( index );
+        } catch ( Exception e ){
+
+        }
+        return null;
+    }
+
+    public String getColumnStringValue(DataSet currentDataSet, String columnId, int index){
+        try{
+            return (String)currentDataSet.getColumnById( columnId ).getValues().get( index );
+        } catch ( Exception e ){
+
+        }
+        return null;
+    }
+
+    public Date getColumnDateValue(DataSet currentDataSet,String columnId, int index){
+        try{
+            return (Date) currentDataSet.getColumnById( columnId ).getValues().get( index );
+        } catch ( Exception e ){
+
+        }
+        return null;
+    }
+    public int getColumnIntValue(DataSet currentDataSet,String columnId, int index){
+        try{
+            return Integer.parseInt((String)currentDataSet.getColumnById( columnId ).getValues().get( index) );
+        } catch ( Exception e ){
+
+        }
+        return -1;
     }
 
 

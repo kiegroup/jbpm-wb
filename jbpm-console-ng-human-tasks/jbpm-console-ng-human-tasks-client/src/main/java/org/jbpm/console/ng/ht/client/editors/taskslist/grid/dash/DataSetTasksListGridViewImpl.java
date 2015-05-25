@@ -33,7 +33,15 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
+import org.dashbuilder.common.client.StringUtils;
+import org.dashbuilder.dataset.ColumnType;
+import org.dashbuilder.dataset.DataColumn;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.FilterFactory;
+import org.dashbuilder.dataset.group.ColumnGroup;
+import org.dashbuilder.dataset.group.DateIntervalType;
+import org.dashbuilder.displayer.ColumnSettings;
 import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
 import org.jbpm.console.ng.gc.client.displayer.TableSettings;
@@ -52,7 +60,6 @@ import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.mvp.Command;
@@ -132,6 +139,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance(  new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
 
                         presenter.addDataDisplay( extendedPagedTable );
+                        presenter.setSortHandler( extendedPagedTable );
                         extendedPagedTable.setDataProvider(presenter.getDataProvider() );
 
                         filterPagedTable.createNewTab( extendedPagedTable, key, button,new Command() {
@@ -149,8 +157,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                 TableSettings tableSettings = createTableSettingsPrototype();
                 tableSettings.setKey( key );
                 showTableSettingsEditor(Constants.INSTANCE.New_TaskList(), tableSettings, addNewGrid );
-
-                //newTabFilterPopup.show( addNewGrid, getMultiGridPreferencesStore() );
 
             }
         } );
@@ -327,7 +333,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         };
         taskIdColumn.setSortable(true);
-        taskIdColumn.setDataStoreName("t.id");
+        taskIdColumn.setDataStoreName(COLUMN_TASKID);
         return taskIdColumn;
     }
 
@@ -339,7 +345,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         };
         taskNameColumn.setSortable(true);
-        taskNameColumn.setDataStoreName("t.name");
+        taskNameColumn.setDataStoreName(COLUMN_NAME);
         return taskNameColumn;
     }
 
@@ -351,7 +357,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         };
         descriptionColumn.setSortable(true);
-        descriptionColumn.setDataStoreName("t.description");
+        descriptionColumn.setDataStoreName( COLUMN_DESCRIPTION );
         return descriptionColumn;
     }
 
@@ -363,7 +369,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         };
         taskPriorityColumn.setSortable(true);
-        taskPriorityColumn.setDataStoreName("t.priority");
+        taskPriorityColumn.setDataStoreName(COLUMN_PRIORITY);
         return taskPriorityColumn;
     }
 
@@ -375,7 +381,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         };
         statusColumn.setSortable(true);
-        statusColumn.setDataStoreName("t.taskData.status");
+        statusColumn.setDataStoreName(COLUMN_STATUS);
         return statusColumn;
     }
 
@@ -392,7 +398,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         };
         createdOnDateColumn.setSortable(true);
-        createdOnDateColumn.setDataStoreName("t.taskData.createdOn");
+        createdOnDateColumn.setDataStoreName(COLUMN_CREATEDON);
         return createdOnDateColumn;
     }
 
@@ -409,7 +415,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         };
         dueDateColumn.setSortable(true);
-        dueDateColumn.setDataStoreName("t.taskData.expirationTime");
+        dueDateColumn.setDataStoreName(COLUMN_DUEDATE);
         return dueDateColumn;
     }
 
@@ -623,25 +629,36 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                                String tabDesc, List<String> states, String role){
 
         TableSettingsBuilder builder = TableSettingsBuilder.init();
-        TableSettings tableSettings = ( TableSettings ) builder.buildSettings();
+
         builder.dataset("jbpmHumanTasks");
-        for(String s : states){
-            builder.filter(COLUMN_STATUS, equalsTo(s));
+        List<Comparable> names = new ArrayList<Comparable>();
+
+        for(String s :states){
+            names.add(s);
         }
+        builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names )  );
 
         builder.filter(COLUMN_ACTUALOWNER, equalsTo(identity.getIdentifier()))
-                .column( COLUMN_TASKID ).format(constants.Id())
-                .column( COLUMN_NAME ).format( constants.Task() )
-                .column( COLUMN_ACTUALOWNER ).format( "Owner" )
+                .column( COLUMN_ACTIVATIONTIME ).format( "Due Date", "MMM dd E, yyyy" )
+                .column( COLUMN_ACTUALOWNER ).format( constants.Actual_Owner() )
+                .column( COLUMN_CREATEDBY ).format( "CreatedBy" )
+                .column( COLUMN_CREATEDON ).format( "Created on", "MMM dd E, yyyy" )
+                .column( COLUMN_DEPLOYMENTID ).format( "DeploymentId" )
+                .column( COLUMN_DESCRIPTION ).format( constants.Description() )
                 .column( COLUMN_DUEDATE ).format( "Due Date", "MMM dd E, yyyy" )
-                .column( COLUMN_PRIORITY )
-                .column( COLUMN_CREATEDON ).format("Created on", "MMM dd E, yyyy")
-                .column(COLUMN_STATUS).format(constants.Status()).expression("value.toUpperCase()")
-                .column(COLUMN_DESCRIPTION).format(constants.Description())
+                .column( COLUMN_NAME ).format( constants.Task() )
+                .column( COLUMN_PARENTID ).format( "ParentId")
+                .column( COLUMN_PRIORITY ).format( "Priority" )
+                .column( COLUMN_PROCESSID ).format( "ProcessId" )
+                .column( COLUMN_PROCESSINSTANCEID ).format( "ProcessInstanceId" )
+                .column( COLUMN_PROCESSSESSIONID ).format( "ProcessSesionId" )
+                .column( COLUMN_STATUS ).format( constants.Status() )
+                .column( COLUMN_TASKID ).format( constants.Id() )
+                .column( COLUMN_WORKITEMID ).format( "WorkItemId" )
                 .filterOn(true, true, true)
                 .tableOrderEnabled(true)
                 .tableOrderDefault(COLUMN_CREATEDON, DESCENDING);
-
+        TableSettings tableSettings = ( TableSettings ) builder.buildSettings();
         tableSettings.setKey( key );
         tableSettings.setTableName( tabName );
         tableSettings.setTableDescription( tabDesc );
@@ -654,12 +671,13 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         tabSettingsValues.put( FILTER_TABLE_SETTINGS, getTableSettingsToStr(tableSettings  ));
         tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName() );
         tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription() );
-
+        //GWT.log("DataSetTaskListGridView json .........." +getTableSettingsToStr(tableSettings  ) );
 
         filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance(  preferences, key );
         currentListGrid = extendedPagedTable;
         presenter.addDataDisplay( extendedPagedTable );
+        presenter.setSortHandler( currentListGrid );
         extendedPagedTable.setDataProvider(presenter.getDataProvider() );
 
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
@@ -675,7 +693,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     public void applyFilterOnPresenter(HashMap<String, Object> params){
 
         String tableSettingsJSON = (String) params.get( FILTER_TABLE_SETTINGS );
-
         TableSettings tableSettings = getStrToTableSettings( tableSettingsJSON );
         presenter.filterGrid( tableSettings);
 
@@ -710,16 +727,24 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     }
     public TableSettings createTableSettingsPrototype() {
         return (TableSettings ) TableSettingsBuilder.init()
-                .dataset("jbpmHumanTasks")
-                .column(COLUMN_TASKID).format( constants.Id() )
-                .column( COLUMN_NAME ).format( constants.Task() )
+                .dataset( "jbpmHumanTasks" )
+                .column( COLUMN_ACTIVATIONTIME ).format( "Due Date", "MMM dd E, yyyy" )
+                .column( COLUMN_ACTUALOWNER ).format( constants.Actual_Owner() )
+                .column( COLUMN_CREATEDBY ).format( "CreatedBy" )
+                .column( COLUMN_CREATEDON ).format( "Created on", "MMM dd E, yyyy" )
+                .column( COLUMN_DEPLOYMENTID ).format( "DeploymentId" )
+                .column( COLUMN_DESCRIPTION ).format( constants.Description() )
                 .column( COLUMN_DUEDATE ).format( "Due Date", "MMM dd E, yyyy" )
-                .column( COLUMN_PRIORITY )
-                .column( COLUMN_ACTUALOWNER ).format("Owner")
-                .column(COLUMN_CREATEDON).format("Created on", "MMM dd E, yyyy")
-                .column(COLUMN_STATUS).format(constants.Status())
-                .column(COLUMN_DESCRIPTION).format(constants.Description())
-                .filterOn(true, true, true)
+                .column( COLUMN_NAME ).format( constants.Task() )
+                .column( COLUMN_PARENTID ).format( "ParentId")
+                .column( COLUMN_PRIORITY ).format( "Priority" )
+                .column( COLUMN_PROCESSID ).format( "ProcessId" )
+                .column( COLUMN_PROCESSINSTANCEID ).format( "ProcessInstanceId" )
+                .column( COLUMN_PROCESSSESSIONID ).format("ProcessSesionId")
+                .column( COLUMN_STATUS ).format( constants.Status() )
+                .column( COLUMN_TASKID ).format( constants.Id() )
+                .column( COLUMN_WORKITEMID ).format( "WorkItemId" )
+                .filterOn( true, true, true )
                 .tableWidth(1000)
                 .tableOrderEnabled(true)
                 .tableOrderDefault(COLUMN_CREATEDON, DESCENDING)
