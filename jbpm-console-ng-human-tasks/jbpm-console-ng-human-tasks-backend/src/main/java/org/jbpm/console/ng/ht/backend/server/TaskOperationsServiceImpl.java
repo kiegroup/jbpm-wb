@@ -63,9 +63,12 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
         TaskFluent taskFluent = new TaskFluent().setName(taskName)
                                                 .setPriority(priority)
                                                 .setDueDate(dueDate)
-                                                .setFormName(taskformName)
-                                                .setDeploymentID( deploymentId );
-
+                                                .setFormName(taskformName);
+        if(deploymentId != null && !deploymentId.equals("")){
+            taskFluent.setDeploymentID( deploymentId );
+        }else{
+            taskFluent.setDeploymentID(null);
+        }
         if(processInstanceId > 0){
             taskFluent.setProcessInstanceId(processInstanceId);
         }

@@ -32,11 +32,12 @@ public class TaskEventSummary extends GenericSummary {
   private String userId;
   private Date logTime;
   private Long workItemId;
+  private String message;
 
   public TaskEventSummary() {
   }
 
-  public TaskEventSummary(Long eventId, Long taskId, String type, String userId, Long workItemId, Date logTime) {
+  public TaskEventSummary(Long eventId, Long taskId, String type, String userId, Long workItemId, Date logTime, String message) {
     this.id = eventId;
     this.name = taskId + type;
     this.eventId = eventId;
@@ -45,6 +46,7 @@ public class TaskEventSummary extends GenericSummary {
     this.userId = userId;
     this.logTime = logTime;
     this.workItemId = workItemId;
+    this.message = message;
   }
 
   public Long getEventId() {
@@ -69,6 +71,10 @@ public class TaskEventSummary extends GenericSummary {
 
   public Long getWorkItemId() {
     return workItemId;
+  }
+
+  public String getMessage() {
+    return message;
   }
 
   @Override

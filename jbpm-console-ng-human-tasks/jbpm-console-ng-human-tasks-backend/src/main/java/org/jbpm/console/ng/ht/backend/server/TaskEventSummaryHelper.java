@@ -37,7 +37,8 @@ public class TaskEventSummaryHelper {
                     taskEventSum.getType().name(), 
                     taskEventSum.getUserId(), 
                     taskEventSum.getWorkItemId(),
-                    taskEventSum.getLogTime());
+                    taskEventSum.getLogTime(),
+                    taskEventSum.getMessage());
     
     }
 

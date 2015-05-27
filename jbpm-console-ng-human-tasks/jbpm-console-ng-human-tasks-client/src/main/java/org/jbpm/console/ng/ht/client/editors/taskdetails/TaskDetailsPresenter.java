@@ -237,7 +237,11 @@ public class TaskDetailsPresenter {
                 DateTimeFormat format = DateTimeFormat.getFormat( "dd/MM/yyyy HH:mm" );
                 for ( TaskEventSummary tes : events.getPageRowList() ) {
                     String timeStamp = format.format( tes.getLogTime() );
-                    safeHtmlBuilder.appendEscapedLines( timeStamp + ": Task - " + tes.getType() + " (" + tes.getUserId() + ") \n" );
+                    if(tes.getType().equals("UPDATED")){
+                        safeHtmlBuilder.appendEscapedLines(timeStamp + ": Task " + tes.getType() + " (" + tes.getMessage() + ") \n");
+                    }else {
+                        safeHtmlBuilder.appendEscapedLines(timeStamp + ": Task - " + tes.getType() + " (" + tes.getUserId() + ") \n");
+                    }
                 }
                 view.getLogTextArea().setHTML( safeHtmlBuilder.toSafeHtml() );
             }
