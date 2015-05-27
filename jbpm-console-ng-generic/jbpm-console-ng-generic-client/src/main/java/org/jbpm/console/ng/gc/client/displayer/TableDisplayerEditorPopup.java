@@ -15,11 +15,9 @@
  */
 package org.jbpm.console.ng.gc.client.displayer;
 
-import com.github.gwtbootstrap.client.ui.ControlGroup;
-import com.github.gwtbootstrap.client.ui.ControlLabel;
-import com.github.gwtbootstrap.client.ui.HelpInline;
-import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.*;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
+import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -64,11 +62,17 @@ public class TableDisplayerEditorPopup extends BaseModal {
     @UiField
     HelpInline tableDescHelpInline;
 
+    @UiField
+    public HelpBlock errorMessages;
+
+    @UiField
+    public ControlGroup errorMessagesGroup;
+
     //@Inject
     TableDisplayerEditor editor;
 
     public TableDisplayerEditorPopup() {
-        this(new TableDisplayerEditor());
+        this( new TableDisplayerEditor() );
     }
 
 
@@ -101,7 +105,10 @@ public class TableDisplayerEditorPopup extends BaseModal {
 
     public void show(TableSettings settings, TableDisplayerEditor.Listener editorListener) {
         clean();
-        editor.init(settings, editorListener);
+        editor= new TableDisplayerEditor();
+        editorPanel.clear();
+        editorPanel.add(editor.asWidget());
+        editor.init( settings, editorListener );
         super.show();
     }
 
@@ -111,15 +118,45 @@ public class TableDisplayerEditorPopup extends BaseModal {
     }
 
     void ok() {
-        hide();
-        editor.setTableName( tableNameText.getValue() );
-        editor.setTableDesc( tableDescText.getValue() );
-        editor.save();
+        if(validateForm()) {
+            hide();
+            editor.setTableName( tableNameText.getValue() );
+            editor.setTableDesc( tableDescText.getValue() );
+            editor.save();
+        }else {
+            errorMessages.setText( TableDisplayerConstants.INSTANCE.Required_fields_must_be_defined() );
+            errorMessagesGroup.setType( ControlGroupType.ERROR );
+        }
     }
     private void clean(){
-        tableDescText.setValue( "" );
-        tableNameText.setValue( "" );
+        clearErrorMessages();
+    }
+    private boolean validateForm() {
+        boolean valid = true;
+        clearErrorMessages();
 
+        if ( tableNameText.getText() != null && tableNameText.getText().trim().length() == 0 ) {
+            tableNameHelpInline.setText( TableDisplayerConstants.INSTANCE.Name_must_be_defined() );
+            tableNameControlGroup.setType( ControlGroupType.ERROR );
+            valid = false;
+        } else {
+            tableNameControlGroup.setType( ControlGroupType.SUCCESS );
+        }
+        if ( tableDescText.getText() != null && tableDescText.getText().trim().length() == 0 ) {
+            tableDescHelpInline.setText( TableDisplayerConstants.INSTANCE.Description_must_be_defined() );
+            tableDescControlGroup.setType( ControlGroupType.ERROR );
+            valid = false;
+        } else {
+            tableDescControlGroup.setType( ControlGroupType.SUCCESS );
+        }
+        return valid;
+    }
+    private void clearErrorMessages(){
+        errorMessages.setText( "" );
+        tableNameHelpInline.setText( "" );
+        tableDescHelpInline.setText( "" );
+        tableDescControlGroup.setType( ControlGroupType.NONE );
+        tableDescControlGroup.setType( ControlGroupType.NONE );
     }
 
 }

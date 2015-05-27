@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.gc.client.displayer;
 
+import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.displayer.ColumnSettings;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.DisplayerType;
@@ -105,5 +106,8 @@ public class TableSettings extends DisplayerSettings {
         if (dataSet != null) clone.dataSet = dataSet.cloneInstance();
         if (dataSetLookup != null) clone.dataSetLookup = dataSetLookup.cloneInstance();
         return clone;
+    }
+    public DataSet getDataSet(){
+        return super.getDataSet();
     }
 }

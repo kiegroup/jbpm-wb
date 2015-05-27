@@ -22,17 +22,23 @@
              xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
         >
     <ui:with field="i18n" type="org.jbpm.console.ng.gc.client.i18n.TableDisplayerConstants"/>
+
     <ui:style>
+        .sectionLabel {
+            font-weight: bold;
+        }
+
         .mandatory-field {
             color: red;
         }
     </ui:style>
+
     <g:VerticalPanel>
         <g:FlowPanel>
-            <b:Fieldset>
-                <b:Form type="HORIZONTAL">
+            <!--b:Fieldset>
+                <b:Form type="HORIZONTAL"-->
                     <b:ControlGroup ui:field="tableNameControlGroup">
-                        <b:ControlLabel for="tableNameText">
+                        <b:ControlLabel for="tableNameText" styleName="{style.sectionLabel}">
                             <span class="{style.mandatory-field}">*</span>
                             <ui:text from="{i18n.Name}"/>
                         </b:ControlLabel>
@@ -42,7 +48,7 @@
                         </b:Controls>
                     </b:ControlGroup>
                     <b:ControlGroup ui:field="tableDescControlGroup">
-                        <b:ControlLabel for="tableDescText">
+                        <b:ControlLabel for="tableDescText" styleName="{style.sectionLabel}">
                             <span class="{style.mandatory-field}">*</span>
                             <ui:text from="{i18n.Description}"/>
                         </b:ControlLabel>
@@ -51,11 +57,13 @@
                             <b:HelpInline ui:field="tableDescHelpInline"/>
                         </b:Controls>
                     </b:ControlGroup>
-                </b:Form>
-            </b:Fieldset>
+                <!--/b:Form -->
+            <!--/b:Fieldset-->
         </g:FlowPanel>
-
-            <g:FlowPanel ui:field="editorPanel"/>
+        <b:ControlGroup ui:field="errorMessagesGroup">
+            <b:HelpBlock ui:field="errorMessages"/>
+        </b:ControlGroup>
+        <g:FlowPanel ui:field="editorPanel"/>
 
     </g:VerticalPanel>
 

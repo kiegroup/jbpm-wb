@@ -51,7 +51,13 @@
   </ui:style>
 
   <g:HTMLPanel>
-    <b:TabPanel ui:field="optionsPanel">
+
+    <b:TabPanel ui:field="optionsPanel" visible="false">
+      <b:Tab heading="1"><g:HTML>---</g:HTML></b:Tab>
+      <!--b:Tab ui:field="optionData" heading="{i18n.table_displayer_editor_tab_data}" /-->
+      <b:Tab heading="2"><g:HTML>---</g:HTML></b:Tab>
+    </b:TabPanel>
+    <b:TabPanel visible="false">
       <b:Tab ui:field="optionType" />
       <b:Tab ui:field="optionData" heading="{i18n.table_displayer_editor_tab_data}" />
       <b:Tab ui:field="optionSettings" heading="{i18n.table_displayer_editor_tab_display}" />

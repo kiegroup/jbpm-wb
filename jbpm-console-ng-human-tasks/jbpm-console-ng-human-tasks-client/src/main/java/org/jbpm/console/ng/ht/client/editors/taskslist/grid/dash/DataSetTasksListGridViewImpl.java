@@ -722,11 +722,12 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                 .setColumnsTitle("Columns");
 
         return new DisplayerConstraints(lookupConstraints)
-                .supportsAttribute( DisplayerAttributeGroupDef.COLUMNS_GROUP)
+                .supportsAttribute( DisplayerAttributeGroupDef.COLUMNS_GROUP )
                 .supportsAttribute( DisplayerAttributeGroupDef.TABLE_GROUP);
+
     }
     public TableSettings createTableSettingsPrototype() {
-        return (TableSettings ) TableSettingsBuilder.init()
+        TableSettings tab = (TableSettings ) TableSettingsBuilder.init()
                 .dataset( "jbpmHumanTasks" )
                 .column( COLUMN_ACTIVATIONTIME ).format( "Due Date", "MMM dd E, yyyy" )
                 .column( COLUMN_ACTUALOWNER ).format( constants.Actual_Owner() )
@@ -749,6 +750,15 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                 .tableOrderEnabled(true)
                 .tableOrderDefault(COLUMN_CREATEDON, DESCENDING)
                 .buildSettings();
+        GWT.log( "createTableSettingsPrototipe. settings"+tab);
+        GWT.log( "createTableSettingsPrototipe key"+tab.getKey());
+        GWT.log( "createTableSettingsPrototipe settings tableName"+tab.getTableName());
+        GWT.log( "createTableSettingsPrototipe settings dataset" + tab.getDataSet() );
+        GWT.log( "createTableSettingsPrototipe settings uid" + tab.getUUID() );
+        GWT.log( "createTableSettingsPrototipe settings lookup" + tab.getDataSetLookup().toString() );
+
+        return tab;
+
     }
 
 

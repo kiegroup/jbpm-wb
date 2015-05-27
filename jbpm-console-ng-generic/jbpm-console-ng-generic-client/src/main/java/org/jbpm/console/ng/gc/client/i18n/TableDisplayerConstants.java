@@ -19,4 +19,10 @@ public interface TableDisplayerConstants extends Messages {
 
     String Description();
 
+    String Name_must_be_defined();
+
+    String Description_must_be_defined();
+
+    String Required_fields_must_be_defined();
+
 }
