@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright 2012 JBoss Inc
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+
+  <ui:with field="i18n" type="org.jbpm.console.ng.gc.client.i18n.TableDisplayerConstants"/>
+
+  <ui:style>
+    .leftPanel {
+      font-size: 12pt;
+      float: left;
+      margin-right: 25px;
+      width: 250px;
+      max-width: 250px;
+      height: 400px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .centerPanel {
+      font-size: 12pt;
+      float: left;
+      margin-right: 25px;
+      width: 630px;
+      height: 400px;
+      max-width: 620px;
+      max-height: 390px;
+      overflow: auto;
+    }
+    .dataTablePanel {
+      font-size: 12pt;
+      float: left;
+    }
+  </ui:style>
+
+  <g:HTMLPanel>
+
+    <b:TabPanel ui:field="optionsPanel" visible="false">
+      <b:Tab heading="1"><g:HTML>---</g:HTML></b:Tab>
+      <!--b:Tab ui:field="optionData" heading="{i18n.table_displayer_editor_tab_data}" /-->
+      <b:Tab heading="2"><g:HTML>---</g:HTML></b:Tab>
+    </b:TabPanel>
+    <b:TabPanel visible="false">
+      <b:Tab ui:field="optionType" />
+      <b:Tab ui:field="optionData" heading="{i18n.table_displayer_editor_tab_data}" />
+      <b:Tab ui:field="optionSettings" heading="{i18n.table_displayer_editor_tab_display}" />
+    </b:TabPanel>
+    <g:HorizontalPanel>
+      <g:VerticalPanel>
+        <g:HorizontalPanel ui:field="dataTablePanel" styleName="{style.dataTablePanel}" visible="false">
+          <b:CheckBox ui:field="viewAsTable" />
+        </g:HorizontalPanel>
+        <g:SimplePanel ui:field="leftPanel" styleName="{style.leftPanel}" />
+      </g:VerticalPanel>
+      <g:FlowPanel ui:field="centerPanel" styleName="{style.centerPanel}" />
+    </g:HorizontalPanel>
+  </g:HTMLPanel>
+</ui:UiBinder>

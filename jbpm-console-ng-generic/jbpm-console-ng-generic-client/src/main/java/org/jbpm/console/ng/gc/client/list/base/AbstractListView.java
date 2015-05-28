@@ -15,9 +15,6 @@
  */
 package org.jbpm.console.ng.gc.client.list.base;
 
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -35,15 +32,17 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.i18n.Constants;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.UberView;
+import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
-import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
-
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.UberView;
 import org.uberfire.workbench.events.NotificationEvent;
+
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 
 /**
  * @param <T>
