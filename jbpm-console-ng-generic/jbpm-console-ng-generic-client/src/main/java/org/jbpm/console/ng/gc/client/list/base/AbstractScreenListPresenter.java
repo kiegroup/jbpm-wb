@@ -15,14 +15,14 @@
  */
 package org.jbpm.console.ng.gc.client.list.base;
 
-import javax.inject.Inject;
-
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.lifecycle.OnFocus;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
+
+import javax.inject.Inject;
 
 /**
  * @param <T> data type for the AsyncDataProvider

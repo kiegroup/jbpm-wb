@@ -65,7 +65,7 @@
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-common</artifactId>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-marshalling</artifactId>
         </dependency>
@@ -186,23 +186,23 @@
             <artifactId>jbpm-services-cdi</artifactId>
         </dependency>
 
-   
+
         <!-- jBPM Console Panels -->
-    
+
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-generic-client</artifactId>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-generic-api</artifactId>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-generic-forms-client</artifactId>
-             <scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jbpm</groupId>
@@ -224,7 +224,7 @@
             <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
@@ -252,7 +252,7 @@
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-admin-backend</artifactId>
         </dependency>
-     
+
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-forms-client</artifactId>
@@ -263,7 +263,7 @@
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-forms-backend</artifactId>
         </dependency>
-    
+
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-business-domain-backend</artifactId>
@@ -286,28 +286,28 @@
                 </exclusion>
             </exclusions>
         </dependency>
-    
+
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-business-domain-api</artifactId>
-            
+
         </dependency>
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-process-runtime-client</artifactId>
             <scope>provided</scope>
         </dependency>
-    
+
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-process-runtime-backend</artifactId>
         </dependency>
-   
+
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-process-runtime-api</artifactId>
         </dependency>
- 
+
         <!-- UberFire Extension -->
         <dependency>
             <groupId>org.uberfire</groupId>
@@ -448,14 +448,47 @@
             <artifactId>org.eclipse.bpmn2</artifactId>
         </dependency>
 
-       
+        <!-- Dashbuilder-->
+        <dependency>
+            <groupId>org.dashbuilder</groupId>
+            <artifactId>dashbuilder-client-all</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.dashbuilder</groupId>
+            <artifactId>dashbuilder-displayer-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.dashbuilder</groupId>
+            <artifactId>dashbuilder-displayer-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.dashbuilder</groupId>
+            <artifactId>dashbuilder-dataset-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.dashbuilder</groupId>
+            <artifactId>dashbuilder-dataset-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.dashbuilder</groupId>
+            <artifactId>dashbuilder-renderer-google</artifactId>
+        </dependency>
+
 
         <!-- Guvnor -->
         <dependency>
             <groupId>org.kie.workbench.services</groupId>
             <artifactId>kie-wb-common-services-api</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.kie.uberfire</groupId>
             <artifactId>kie-uberfire-social-activities-api</artifactId>
@@ -493,7 +526,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-   
+
         <dependency>
             <groupId>org.guvnor</groupId>
             <artifactId>guvnor-message-console-api</artifactId>
@@ -550,14 +583,14 @@
             <groupId>org.guvnor</groupId>
             <artifactId>guvnor-project-builder</artifactId>
         </dependency>
-       
-        
+
+
         <dependency>
             <groupId>org.jboss.spec.javax.servlet.jstl</groupId>
             <artifactId>jboss-jstl-api_1.2_spec</artifactId>
             <scope>provided</scope>
         </dependency>
-     
+
     </dependencies>
 
     <build>
@@ -631,11 +664,26 @@
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-forms-client</compileSourcesArtifact>
-                        
+
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-forms-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-forms-client</compileSourcesArtifact>
+
+                        <!-- Dashbuilder -->
+                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-widgets</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-validations</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-common-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-shared</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-screen</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-editor</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-renderer-default</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-renderer-google</compileSourcesArtifact>
+
 
                         <compileSourcesArtifact>org.guvnor:guvnor-services-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.guvnor:guvnor-project-api</compileSourcesArtifact>
@@ -670,7 +718,7 @@
                     </archive>
                 </configuration>
             </plugin>
-      
+
             <!-- Tests are skipped by default because they require additional GWT
             dependencies. Run mvn with -Pintegration-test to enable testing. -->
             <plugin>
