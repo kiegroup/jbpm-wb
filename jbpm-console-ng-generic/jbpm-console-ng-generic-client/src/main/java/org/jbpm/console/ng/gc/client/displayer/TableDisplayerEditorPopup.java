@@ -129,6 +129,8 @@ public class TableDisplayerEditorPopup extends BaseModal {
         }
     }
     private void clean(){
+        tableNameText.setValue( "" );
+        tableDescText.setValue( "" );
         clearErrorMessages();
     }
     private boolean validateForm() {
