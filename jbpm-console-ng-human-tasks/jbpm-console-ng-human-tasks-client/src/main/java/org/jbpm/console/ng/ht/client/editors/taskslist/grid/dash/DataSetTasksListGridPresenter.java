@@ -131,7 +131,12 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                             taskSummaryPageResponse.setPageRowList( myTasksFromDataSet );
                             taskSummaryPageResponse.setStartRowIndex( visibleRange.getStart() );
                             taskSummaryPageResponse.setTotalRowSize( dataSet.getRowCountNonTrimmed() );
-
+                            taskSummaryPageResponse.setTotalRowSizeExact(true);
+                            if(visibleRange.getStart()+dataSet.getRowCount() == dataSet.getRowCountNonTrimmed()){
+                                taskSummaryPageResponse.setLastPage( true );
+                            } else {
+                                taskSummaryPageResponse.setLastPage( false );
+                            }
                             DataSetTasksListGridPresenter.this.updateDataOnCallback( taskSummaryPageResponse );
                         }
                         view.hideBusyIndicator();

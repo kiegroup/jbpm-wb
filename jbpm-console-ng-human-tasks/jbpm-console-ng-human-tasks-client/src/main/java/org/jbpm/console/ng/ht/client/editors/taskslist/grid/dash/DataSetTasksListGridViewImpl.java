@@ -608,16 +608,16 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         initTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_1", Constants.INSTANCE.Personal(), "Filter " + Constants.INSTANCE.Personal(), states, TASK_ROLE_POTENTIALOWNER );
 
         //Filter status Group
-        states= TaskUtils.getStatusByType( TaskUtils.TaskType.GROUP );
-        initTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_2", Constants.INSTANCE.Group(), "Filter " + Constants.INSTANCE.Group(), states, TASK_ROLE_POTENTIALOWNER );
+     //   states= TaskUtils.getStatusByType( TaskUtils.TaskType.GROUP );
+     //   initTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_2", Constants.INSTANCE.Group(), "Filter " + Constants.INSTANCE.Group(), states, TASK_ROLE_POTENTIALOWNER );
 
         //Filter status All
         states= TaskUtils.getStatusByType( TaskUtils.TaskType.ALL );
         initTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_3", Constants.INSTANCE.All(), "Filter " + Constants.INSTANCE.All(), states,TASK_ROLE_POTENTIALOWNER );
 
         //Filter status Admin
-        states= TaskUtils.getStatusByType( TaskUtils.TaskType.ADMIN );
-        initTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_4", Constants.INSTANCE.Task_Admin(), "Filter " + Constants.INSTANCE.Task_Admin(), states, TASK_ROLE_ADMINISTRATOR );
+    //    states= TaskUtils.getStatusByType( TaskUtils.TaskType.ADMIN );
+    //    initTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_4", Constants.INSTANCE.Task_Admin(), "Filter " + Constants.INSTANCE.Task_Admin(), states, TASK_ROLE_ADMINISTRATOR );
 
         filterPagedTable.addAddTableButton( createTabButton );
 

@@ -141,15 +141,11 @@ public class TableDisplayerEditorPopup extends BaseModal {
             tableNameHelpInline.setText( TableDisplayerConstants.INSTANCE.Name_must_be_defined() );
             tableNameControlGroup.setType( ControlGroupType.ERROR );
             valid = false;
-        } else {
-            tableNameControlGroup.setType( ControlGroupType.SUCCESS );
         }
         if ( tableDescText.getText() != null && tableDescText.getText().trim().length() == 0 ) {
             tableDescHelpInline.setText( TableDisplayerConstants.INSTANCE.Description_must_be_defined() );
             tableDescControlGroup.setType( ControlGroupType.ERROR );
             valid = false;
-        } else {
-            tableDescControlGroup.setType( ControlGroupType.SUCCESS );
         }
         return valid;
     }
