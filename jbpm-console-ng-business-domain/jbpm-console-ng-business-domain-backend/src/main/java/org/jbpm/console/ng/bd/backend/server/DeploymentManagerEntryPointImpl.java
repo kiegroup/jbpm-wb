@@ -66,7 +66,6 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
   private DeploymentService deploymentService;
 
   @Inject
-  @RequestScoped
   @Named("DeployList")
   private Set<DeploymentUnit> deploymentUnits;
 
