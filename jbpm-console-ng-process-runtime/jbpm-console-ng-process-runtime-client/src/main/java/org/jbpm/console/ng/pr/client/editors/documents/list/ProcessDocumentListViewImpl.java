@@ -249,7 +249,9 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                                    DocumentSummary value,
                                    SafeHtmlBuilder sb) {
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.download()+"'>"+constants.download()+"</a>");
+                    mysb.appendHtmlConstant("<a href='" + value.getDocumentLink() + "' class='btn btn-mini' style='margin-right:5px; title='" + constants.download() + "' target='_blank'>");
+                    mysb.appendHtmlConstant(constants.download());
+                    mysb.appendHtmlConstant("</a>");
                     sb.append(mysb.toSafeHtml());
                 }
             };
