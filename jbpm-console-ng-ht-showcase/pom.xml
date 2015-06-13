@@ -191,6 +191,12 @@
 
         <dependency>
             <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-dataset-integration-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-generic-client</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -449,11 +455,11 @@
         </dependency>
 
         <!-- Dashbuilder-->
-        <dependency>
+        <!--dependency>
             <groupId>org.dashbuilder</groupId>
             <artifactId>dashbuilder-client-all</artifactId>
             <scope>provided</scope>
-        </dependency>
+        </dependency -->
 
         <dependency>
             <groupId>org.dashbuilder</groupId>
@@ -477,10 +483,10 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
+        <!--dependency>
             <groupId>org.dashbuilder</groupId>
             <artifactId>dashbuilder-renderer-google</artifactId>
-        </dependency>
+        </dependency-->
 
 
         <!-- Guvnor -->
@@ -665,24 +671,26 @@
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-forms-client</compileSourcesArtifact>
 
+                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-dataset-integration-client</compileSourcesArtifact>
+
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-forms-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-forms-client</compileSourcesArtifact>
 
                         <!-- Dashbuilder -->
-                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-widgets</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-validations</compileSourcesArtifact>
+                        <!--compileSourcesArtifact>org.dashbuilder:dashbuilder-widgets</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-validations</compileSourcesArtifact-->
                         <compileSourcesArtifact>org.dashbuilder:dashbuilder-common-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-shared</compileSourcesArtifact>
                         <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-client</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-screen</compileSourcesArtifact>
+                        <!--compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-screen</compileSourcesArtifact>
                         <compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-editor</compileSourcesArtifact>
                         <compileSourcesArtifact>org.dashbuilder:dashbuilder-renderer-default</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-renderer-google</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.dashbuilder:dashbuilder-renderer-google</compileSourcesArtifact-->
 
 
                         <compileSourcesArtifact>org.guvnor:guvnor-services-api</compileSourcesArtifact>

@@ -17,7 +17,6 @@ package org.jbpm.console.ng.gc.client.list.base;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.Column;
@@ -26,37 +25,24 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
-import org.dashbuilder.dataset.ValidationError;
-import org.dashbuilder.displayer.DisplayerConstraints;
-import org.dashbuilder.displayer.DisplayerSettings;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.console.ng.ga.model.GenericSummary;
-import org.jbpm.console.ng.gc.client.displayer.TableDisplayerEditor;
-import org.jbpm.console.ng.gc.client.displayer.TableDisplayerEditorPopup;
-import org.jbpm.console.ng.gc.client.displayer.TableSettings;
-import org.jbpm.console.ng.gc.client.displayer.TableSettingsJSONMarshaller;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.i18n.Constants;
+import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.services.shared.preferences.*;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
-import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-/**
- * @param <T>
- * @param <V>
- * @author salaboy
- */
+
 public abstract class AbstractMultiGridView<T extends GenericSummary, V extends AbstractListPresenter>
         extends Composite implements RequiresResize {
 
@@ -74,23 +60,12 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     @Inject
     private Caller<UserPreferencesService> preferencesService;
 
-    @Inject
-    TableDisplayerEditorPopup tableDisplayerEditorPopup;
-
-    @Inject
-    TableSettingsJSONMarshaller tableSettingsJSONMarshaller;
-
-    //HashMap<String, TableSettings> tableSettingsHashMap = new HashMap<String, TableSettings>(  );
 
     protected V presenter;
 
     protected FilterPagedTable<T> filterPagedTable;
 
     protected ExtendedPagedTable<T> currentListGrid;
-
-
-    public DisplayerConstraints displayerConstraints;
-
 
     protected RowStyles<T> selectedStyles = new RowStyles<T>() {
 
@@ -143,7 +118,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                         final ExtendedPagedTable<T> extendedPagedTable = createGridInstance( preferences, key );
                         currentListGrid = extendedPagedTable;
                         presenter.addDataDisplay( extendedPagedTable );
-                        presenter.setSortHandler( extendedPagedTable );
                         extendedPagedTable.setDataProvider( presenter.dataProvider );
                         final String filterKey = key;
                         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
@@ -265,72 +239,5 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public void applyFilterOnPresenter( String key ) {
     }
 
-    public void showTableSettingsEditor(String popupTitle, final TableSettings tableSettings,final Command drawCommand) {
-        TableSettings clone = tableSettings.cloneInstance();
-        clone.setKey( tableSettings.getKey() );
-        clone.setDataSet( tableSettings.getDataSet());
-        tableDisplayerEditorPopup.setTitle( popupTitle );
-        tableDisplayerEditorPopup.show( clone, new TableDisplayerEditor.Listener() {
-
-            public void onClose( TableDisplayerEditor editor ) {
-            }
-
-            public void onSave( TableDisplayerEditor editor ) {
-                TableSettings modifiedSettings = editor.getTableSettings();
-                updateTableSettings( modifiedSettings );
-                HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
-
-
-                tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, modifiedSettings.getTableName() );
-                tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, modifiedSettings.getTableDescription() );
-                tabSettingsValues.put( FILTER_TABLE_SETTINGS, getTableSettingsToStr( modifiedSettings ) );
-                GWT.log( "AbstractMultiGridView json .........." + getTableSettingsToStr( tableSettings ) );
-
-                filterPagedTable.saveNewTabSettings( modifiedSettings.getKey(),tabSettingsValues );
-                drawCommand.execute();
-            }
-        } );
-    }
-
-
- //   public TableSettings getTableSettingsByKey(String key) {
- //       return tableSettingsHashMap.get( key );
- //   }
-
-    public void addTableSettings(TableSettings settings) {
-//        tableSettingsHashMap.put(settings.getKey(),settings);
-
-        // Take the first registered settings as the default one
-        if (presenter.getCurrentTableSettings() == null) {
-            checkDisplayerSettings( settings );
-        }
-    }
-    public void checkDisplayerSettings(DisplayerSettings displayerSettings) {
-        if(displayerConstraints== null){
-            displayerConstraints = createDisplayerConstraints();
-        }
-        if (displayerConstraints != null) {
-            ValidationError error = displayerConstraints.check(displayerSettings);
-            if (error != null) throw error;
-        }
-    }
-    public void updateTableSettings(TableSettings tableSettings) {
-        addTableSettings( tableSettings );
-    }
-
-    public DisplayerConstraints createDisplayerConstraints(){
-        return null;
-    }
-
-    public TableSettings createTableSettingsPrototype() {
-        return null;
-    }
-
-    public String getTableSettingsToStr(TableSettings tableSettings){
-        return tableSettingsJSONMarshaller.toJsonString( tableSettings );
-    }
-    public TableSettings getStrToTableSettings(String json){
-        return tableSettingsJSONMarshaller.fromJsonString( json );
-    }
 
 }

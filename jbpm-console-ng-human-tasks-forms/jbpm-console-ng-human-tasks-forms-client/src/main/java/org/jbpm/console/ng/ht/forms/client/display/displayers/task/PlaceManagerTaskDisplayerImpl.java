@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.ht.forms.client.display.displayers.task;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gwt.json.client.JSONObject;

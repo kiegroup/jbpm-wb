@@ -33,13 +33,14 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import org.dashbuilder.dataset.DataSetLookupConstraints;
-import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
-import org.dashbuilder.displayer.DisplayerConstraints;
-import org.jbpm.console.ng.gc.client.displayer.TableSettings;
-import org.jbpm.console.ng.gc.client.displayer.TableSettingsBuilder;
+
+
+import org.jbpm.console.ng.di.client.displayer.TableSettings;
+import org.jbpm.console.ng.di.client.displayer.TableSettingsBuilder;
+import org.jbpm.console.ng.di.client.displayer.TableSettingsBuilderHelper;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractMultiGridView;
+import org.jbpm.console.ng.di.client.list.base.DataSetEditorManager;
 import org.jbpm.console.ng.gc.client.util.TaskUtils;
 import org.jbpm.console.ng.ht.client.editors.quicknewtask.QuickNewTaskPopup;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
@@ -105,6 +106,9 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     @Inject
     private NewTabFilterPopup newTabFilterPopup;
 
+    @Inject
+    private DataSetEditorManager dataSetEditorManager;
+
 
     @Override
     public void init(final DataSetTasksListGridPresenter presenter) {
@@ -127,7 +131,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance(  new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
 
                         presenter.addDataDisplay( extendedPagedTable );
-                        presenter.setSortHandler( extendedPagedTable );
                         extendedPagedTable.setDataProvider(presenter.getDataProvider() );
 
                         filterPagedTable.createNewTab( extendedPagedTable, key, button,new Command() {
@@ -144,7 +147,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                 };
                 TableSettings tableSettings = createTableSettingsPrototype();
                 tableSettings.setKey( key );
-                showTableSettingsEditor( Constants.INSTANCE.New_TaskList(), tableSettings, addNewGrid );
+                dataSetEditorManager.showTableSettingsEditor( filterPagedTable, Constants.INSTANCE.New_TaskList(), tableSettings, addNewGrid );
 
             }
         } );
@@ -616,7 +619,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     private void initTabFilter(GridGlobalPreferences preferences, final String key, String tabName,
                                String tabDesc, List<String> states, String role){
 
-        TableSettingsBuilder builder = TableSettingsBuilder.init();
+        TableSettingsBuilderHelper builder = TableSettingsBuilderHelper.init();
+        builder.initBuilder();
 
         builder.dataset("jbpmHumanTasks");
         List<Comparable> names = new ArrayList<Comparable>();
@@ -626,37 +630,49 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         }
         builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names )  );
 
-        builder.filter(COLUMN_ACTUALOWNER, equalsTo(identity.getIdentifier()))
-                .column( COLUMN_ACTIVATIONTIME ).format( "Due Date", "MMM dd E, yyyy" )
-                .column( COLUMN_ACTUALOWNER ).format( constants.Actual_Owner() )
-                .column( COLUMN_CREATEDBY ).format( "CreatedBy" )
-                .column( COLUMN_CREATEDON ).format( "Created on", "MMM dd E, yyyy" )
-                .column( COLUMN_DEPLOYMENTID ).format( "DeploymentId" )
-                .column( COLUMN_DESCRIPTION ).format( constants.Description() )
-                .column( COLUMN_DUEDATE ).format( "Due Date", "MMM dd E, yyyy" )
-                .column( COLUMN_NAME ).format( constants.Task() )
-                .column( COLUMN_PARENTID ).format( "ParentId")
-                .column( COLUMN_PRIORITY ).format( "Priority" )
-                .column( COLUMN_PROCESSID ).format( "ProcessId" )
-                .column( COLUMN_PROCESSINSTANCEID ).format( "ProcessInstanceId" )
-                .column( COLUMN_PROCESSSESSIONID ).format( "ProcessSesionId" )
-                .column( COLUMN_STATUS ).format( constants.Status() )
-                .column( COLUMN_TASKID ).format( constants.Id() )
-                .column( COLUMN_WORKITEMID ).format( "WorkItemId" )
-                .filterOn(true, true, true)
-                .tableOrderEnabled(true)
-                .tableOrderDefault(COLUMN_CREATEDON, DESCENDING);
-        TableSettings tableSettings = ( TableSettings ) builder.buildSettings();
+     /*   builder.filter(COLUMN_ACTUALOWNER, equalsTo(identity.getIdentifier()));
+        builder.setColumn( COLUMN_TASKID, constants.Id() );
+        builder.setColumn( COLUMN_NAME, constants.Task() );
+        builder.setColumn( COLUMN_DESCRIPTION, constants.Description() );
+        builder.setColumn( COLUMN_PRIORITY, "Priority" );
+        builder.setColumn( COLUMN_STATUS, constants.Status() );
+        builder.setColumn( COLUMN_CREATEDON , "Created on", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy" );
+     */
+
+
+        builder.setColumn( COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_ACTUALOWNER, constants.Actual_Owner());
+        builder.setColumn( COLUMN_CREATEDBY,"CreatedBy" );
+        builder.setColumn( COLUMN_CREATEDON , "Created on", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_DEPLOYMENTID, "DeploymentId" );
+        builder.setColumn( COLUMN_DESCRIPTION, constants.Description() );
+        builder.setColumn( COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_NAME, constants.Task() );
+        builder.setColumn( COLUMN_PARENTID,  "ParentId");
+        builder.setColumn( COLUMN_PRIORITY, "Priority" );
+        builder.setColumn( COLUMN_PROCESSID, "ProcessId" );
+        builder.setColumn( COLUMN_PROCESSINSTANCEID, "ProcessInstanceId" );
+        builder.setColumn( COLUMN_PROCESSSESSIONID, "ProcessSesionId" );
+        builder.setColumn( COLUMN_STATUS, constants.Status() );
+        builder.setColumn( COLUMN_TASKID, constants.Id() );
+        builder.setColumn( COLUMN_WORKITEMID, "WorkItemId" );
+
+        builder.filterOn( true, true, true);
+        builder.tableOrderEnabled(true);
+        builder.tableOrderDefault( COLUMN_CREATEDON, DESCENDING );
+
+        TableSettings tableSettings = builder.buildSettings();
         tableSettings.setKey( key );
         tableSettings.setTableName( tabName );
         tableSettings.setTableDescription( tabDesc );
 
-        addTableSettings( tableSettings );
+        //addTableSettings( tableSettings );
 
 
         HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>(  );
 
-        tabSettingsValues.put( FILTER_TABLE_SETTINGS, getTableSettingsToStr(tableSettings  ));
+        tabSettingsValues.put( FILTER_TABLE_SETTINGS, dataSetEditorManager.getTableSettingsToStr(tableSettings  ));
         tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName() );
         tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription() );
         //GWT.log("DataSetTaskListGridView json .........." +getTableSettingsToStr(tableSettings  ) );
@@ -665,7 +681,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance(  preferences, key );
         currentListGrid = extendedPagedTable;
         presenter.addDataDisplay( extendedPagedTable );
-        presenter.setSortHandler( currentListGrid );
         extendedPagedTable.setDataProvider(presenter.getDataProvider() );
 
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
@@ -681,7 +696,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     public void applyFilterOnPresenter(HashMap<String, Object> params){
 
         String tableSettingsJSON = (String) params.get( FILTER_TABLE_SETTINGS );
-        TableSettings tableSettings = getStrToTableSettings( tableSettingsJSON );
+        TableSettings tableSettings = dataSetEditorManager.getStrToTableSettings( tableSettingsJSON );
         presenter.filterGrid( tableSettings);
 
     }
@@ -700,52 +715,46 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     /*---              DashBuilder                   --*/
     /*-------------------------------------------------*/
 
-    public DisplayerConstraints createDisplayerConstraints() {
 
-        DataSetLookupConstraints lookupConstraints = new DataSetLookupConstraints()
-                .setGroupAllowed(false)
-                .setMaxColumns(-1)
-                .setMinColumns(1)
-                .setExtraColumnsAllowed(true)
-                .setColumnsTitle("Columns");
-
-        return new DisplayerConstraints(lookupConstraints)
-                .supportsAttribute( DisplayerAttributeGroupDef.COLUMNS_GROUP )
-                .supportsAttribute( DisplayerAttributeGroupDef.TABLE_GROUP);
-
-    }
     public TableSettings createTableSettingsPrototype() {
-        TableSettings tab = (TableSettings ) TableSettingsBuilder.init()
-                .dataset( "jbpmHumanTasks" )
-                .column( COLUMN_ACTIVATIONTIME ).format( "Due Date", "MMM dd E, yyyy" )
-                .column( COLUMN_ACTUALOWNER ).format( constants.Actual_Owner() )
-                .column( COLUMN_CREATEDBY ).format( "CreatedBy" )
-                .column( COLUMN_CREATEDON ).format( "Created on", "MMM dd E, yyyy" )
-                .column( COLUMN_DEPLOYMENTID ).format( "DeploymentId" )
-                .column( COLUMN_DESCRIPTION ).format( constants.Description() )
-                .column( COLUMN_DUEDATE ).format( "Due Date", "MMM dd E, yyyy" )
-                .column( COLUMN_NAME ).format( constants.Task() )
-                .column( COLUMN_PARENTID ).format( "ParentId")
-                .column( COLUMN_PRIORITY ).format( "Priority" )
-                .column( COLUMN_PROCESSID ).format( "ProcessId" )
-                .column( COLUMN_PROCESSINSTANCEID ).format( "ProcessInstanceId" )
-                .column( COLUMN_PROCESSSESSIONID ).format("ProcessSesionId")
-                .column( COLUMN_STATUS ).format( constants.Status() )
-                .column( COLUMN_TASKID ).format( constants.Id() )
-                .column( COLUMN_WORKITEMID ).format( "WorkItemId" )
-                .filterOn( true, true, true )
-                .tableWidth(1000)
-                .tableOrderEnabled(true)
-                .tableOrderDefault(COLUMN_CREATEDON, DESCENDING)
-                .buildSettings();
-        GWT.log( "createTableSettingsPrototipe. settings"+tab);
-        GWT.log( "createTableSettingsPrototipe key"+tab.getKey());
-        GWT.log( "createTableSettingsPrototipe settings tableName"+tab.getTableName());
-        GWT.log( "createTableSettingsPrototipe settings dataset" + tab.getDataSet() );
-        GWT.log( "createTableSettingsPrototipe settings uid" + tab.getUUID() );
-        GWT.log( "createTableSettingsPrototipe settings lookup" + tab.getDataSetLookup().toString() );
+        TableSettingsBuilderHelper builder = TableSettingsBuilderHelper.init();
+        builder.initBuilder();
 
-        return tab;
+        builder.dataset("jbpmHumanTasks");
+
+      /*  builder.setColumn( COLUMN_TASKID, constants.Id() );
+        builder.setColumn( COLUMN_NAME, constants.Task() );
+        builder.setColumn( COLUMN_DESCRIPTION, constants.Description() );
+        builder.setColumn( COLUMN_PRIORITY, "Priority" );
+        builder.setColumn( COLUMN_STATUS, constants.Status() );
+        builder.setColumn( COLUMN_CREATEDON , "Created on", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy" );
+       */
+
+        builder.setColumn( COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_ACTUALOWNER, constants.Actual_Owner());
+        builder.setColumn( COLUMN_CREATEDBY,"CreatedBy" );
+        builder.setColumn( COLUMN_CREATEDON , "Created on", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_DEPLOYMENTID, "DeploymentId" );
+        builder.setColumn( COLUMN_DESCRIPTION, constants.Description() );
+        builder.setColumn( COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_NAME, constants.Task() );
+        builder.setColumn( COLUMN_PARENTID,  "ParentId");
+        builder.setColumn( COLUMN_PRIORITY, "Priority" );
+        builder.setColumn( COLUMN_PROCESSID, "ProcessId" );
+        builder.setColumn( COLUMN_PROCESSINSTANCEID, "ProcessInstanceId" );
+        builder.setColumn( COLUMN_PROCESSSESSIONID, "ProcessSesionId" );
+        builder.setColumn( COLUMN_STATUS, constants.Status() );
+        builder.setColumn( COLUMN_TASKID, constants.Id() );
+        builder.setColumn( COLUMN_WORKITEMID, "WorkItemId" );
+
+        builder.filterOn( true, true, true);
+        builder.tableOrderEnabled(true);
+        builder.tableOrderDefault( COLUMN_CREATEDON, DESCENDING );
+        builder.tableWidth(1000);
+
+
+        return  builder.buildSettings();
 
     }
 

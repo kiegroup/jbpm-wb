@@ -15,21 +15,27 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
 
+
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetClientServiceError;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
-import org.dashbuilder.displayer.client.DataSetHandlerImpl;
+import org.dashbuilder.dataset.sort.SortOrder;
+
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.gc.client.displayer.TableSettings;
+import org.jbpm.console.ng.di.client.displayer.TableSettings;
+
+
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
+import org.jbpm.console.ng.di.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
@@ -67,12 +73,17 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
     @Inject
     private Caller<TaskLifeCycleService> taskOperationsService;
 
+    @Inject
+    DataSetQueryHelper dataSetQueryHelper;
+
 
     @Inject
     private ErrorPopupPresenter errorPopup;
 
 
     public DataSetTasksListGridPresenter() {
+
+
         dataProvider = new AsyncDataProvider<TaskSummary>() {
 
             @Override
@@ -93,10 +104,20 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
     @Override
     public void getData(final Range visibleRange) {
         try {
-            if(currentTableSetting!=null) {
-                currentTableSetting.setTablePageSize( view.getListGrid().getPageSize() );
-                dataSetHandler = new DataSetHandlerImpl( currentTableSetting.getDataSetLookup() );
-                super.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
+            TableSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
+            if(currentTableSettings!=null) {
+                currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
+                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+                GWT.log( "getData "+columnSortList.size() );
+                if(columnSortList!=null &&  columnSortList.size()>0) {
+                    dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
+                    dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
+                }else {
+                    dataSetQueryHelper.setLastOrderedColumn( DataSetTasksListGridViewImpl.COLUMN_CREATEDON );
+                    dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
+                }
+                dataSetQueryHelper.setDataSetHandler(   currentTableSettings );
+                dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
                     @Override
                     public void callback( DataSet dataSet ) {
                         if ( dataSet != null && dataSet.getRowCount() > 0 ) {
@@ -126,8 +147,8 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                             taskSummaryPageResponse.setPageRowList( myTasksFromDataSet );
                             taskSummaryPageResponse.setStartRowIndex( visibleRange.getStart() );
                             taskSummaryPageResponse.setTotalRowSize( dataSet.getRowCountNonTrimmed() );
-                            taskSummaryPageResponse.setTotalRowSizeExact(true);
-                            if(visibleRange.getStart()+dataSet.getRowCount() == dataSet.getRowCountNonTrimmed()){
+                            taskSummaryPageResponse.setTotalRowSizeExact( true );
+                            if ( visibleRange.getStart() + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed() ) {
                                 taskSummaryPageResponse.setLastPage( true );
                             } else {
                                 taskSummaryPageResponse.setLastPage( false );
@@ -162,10 +183,9 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
     }
 
     public void filterGrid(TableSettings tableSettings) {
-        this.currentTableSetting = tableSettings;
+        dataSetQueryHelper.setCurrentTableSetting( tableSettings);
         refreshGrid();
     }
-
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -235,6 +255,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
         }
         return null;
     }
+
     public int getColumnIntValue(DataSet currentDataSet,String columnId, int index){
         try{
             return Integer.parseInt((String)currentDataSet.getColumnById( columnId ).getValues().get( index) );
@@ -243,7 +264,6 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
         }
         return -1;
     }
-
 
 
 }

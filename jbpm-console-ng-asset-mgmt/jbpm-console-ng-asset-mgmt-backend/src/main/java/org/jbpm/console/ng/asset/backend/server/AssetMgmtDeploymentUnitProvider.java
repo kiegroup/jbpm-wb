@@ -103,8 +103,8 @@ public class AssetMgmtDeploymentUnitProvider implements DeploymentUnitProvider<D
             m2Location.append(properties.getProperty("artifactId") + "-" + properties.getProperty("version") + ".jar");
 
 
-
-            File artifactInRepo = new File(m2repository.getFileName(m2Location.toString()));
+            GAV auxGav = new GAV(properties.getProperty("groupId"), properties.getProperty("artifactId"), properties.getProperty("version"));
+            File artifactInRepo = m2repository.getArtifactFileFromRepository( auxGav );
 
             if (!artifactInRepo.exists() && inputStream != null) {
                 GAV gav = new GAV(properties.getProperty("groupId"), properties.getProperty("artifactId"), properties.getProperty("version"));
