@@ -114,9 +114,10 @@
       <artifactId>jbpm-console-ng-human-tasks-forms-client</artifactId>
     </dependency>
 
+    <!-- jBPM Console Panels -->
     <dependency>
-      <groupId>org.dashbuilder</groupId>
-      <artifactId>dashbuilder-client-all</artifactId>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-dataset-integration-client</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -125,26 +126,21 @@
       <artifactId>dashbuilder-displayer-api</artifactId>
     </dependency>
 
-    <dependency>
+    <!--dependency>
       <groupId>org.dashbuilder</groupId>
       <artifactId>dashbuilder-displayer-client</artifactId>
-      <scope>provided</scope>
-    </dependency>
+    </dependency-->
 
     <dependency>
       <groupId>org.dashbuilder</groupId>
       <artifactId>dashbuilder-dataset-api</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.dashbuilder</groupId>
       <artifactId>dashbuilder-dataset-client</artifactId>
       <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.dashbuilder</groupId>
-      <artifactId>dashbuilder-renderer-google</artifactId>
     </dependency>
 
     <dependency>

@@ -63,10 +63,11 @@
   <inherits name="org.jbpm.console.ng.gc.JbpmConsoleNGGenericClient"/>
   <inherits name="org.jbpm.console.ng.dm.JbpmConsoleNGDocumentsClient"/>
   <inherits name="org.jbpm.console.ng.wi.JbpmConsoleNGWorkbenchIntegrationClient"/>
+  <inherits name="org.jbpm.console.ng.di.JbpmConsoleNGDataSetIntegrationClient"/>
 
   <!-- asset mgmt -->
 
-  
+
 
   <!-- designer -->
   <inherits name="org.jbpm.designer.jBPMDesignerAPI"/>
@@ -79,6 +80,8 @@
   <!-- Dashbuilder -->
   <inherits name="org.jbpm.dashboard.renderer.DashboardRendererApi"/>
   <inherits name="org.jbpm.dashboard.renderer.client.DashboardRendererClient"/>
+
+  <inherits name="org.dashbuilder.CommonWidgets"/>
 
   <!-- Specify the application specific style sheet. -->
   <stylesheet src='css/uberfire-showcase.css'/>

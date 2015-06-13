@@ -32,10 +32,10 @@ public class AssetMgmtDeploymentUnitProvider implements DeploymentUnitProvider<D
     @Inject
     private GuvnorM2Repository m2repository;
 
-    public void setM2Repository(GuvnorM2Repository m2Repository) {
+    public void setM2Repository(GuvnorM2Repository m2Repository) { 
         this.m2repository = m2Repository;
     }
-
+    
     @Override
     public Set<DeploymentUnit> getDeploymentUnits() {
         Set<DeploymentUnit> units = new HashSet<DeploymentUnit>();
@@ -69,7 +69,7 @@ public class AssetMgmtDeploymentUnitProvider implements DeploymentUnitProvider<D
     private void deployToLocalMavenIfNeeded(String artifactLocation, Properties properties) {
         try {
             InputStream inputStream = null;
-            if ( artifactLocation.contains( "!" ) ) {
+            if (artifactLocation.indexOf("!") != -1) {
                 artifactLocation = artifactLocation.substring(0, artifactLocation.indexOf("!"));
 
                 if (artifactLocation.startsWith("jar:")) {
@@ -93,11 +93,22 @@ public class AssetMgmtDeploymentUnitProvider implements DeploymentUnitProvider<D
                 inputStream = new FileInputStream(physicalFile);
             }
 
-            final GAV gav = new GAV(properties.getProperty("groupId"), properties.getProperty("artifactId"), properties.getProperty("version"));
+            StringBuffer m2Location = new StringBuffer("/");
+            m2Location.append(properties.getProperty("groupId").replaceAll("\\.", "/"));
+            m2Location.append("/");
+            m2Location.append(properties.getProperty("artifactId"));
+            m2Location.append("/");
+            m2Location.append(properties.getProperty("version"));
+            m2Location.append("/");
+            m2Location.append(properties.getProperty("artifactId") + "-" + properties.getProperty("version") + ".jar");
 
-            final File artifactInRepo = m2repository.getArtifactFileFromRepository(gav);
 
-            if (artifactInRepo == null && inputStream != null) {
+            GAV auxGav = new GAV(properties.getProperty("groupId"), properties.getProperty("artifactId"), properties.getProperty("version"));
+            File artifactInRepo = m2repository.getArtifactFileFromRepository( auxGav );
+
+            if (!artifactInRepo.exists() && inputStream != null) {
+                GAV gav = new GAV(properties.getProperty("groupId"), properties.getProperty("artifactId"), properties.getProperty("version"));
+
                 m2repository.deployArtifact(inputStream, gav, false);
             }
         } catch (Exception e) {
