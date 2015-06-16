@@ -81,7 +81,7 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
         }
         taskFluent.setAdminUser("Administrator");
         taskFluent.setAdminGroup("Administrators");
-        Task task = taskFluent.getTask();
+        
 
         long taskId = internalTaskService.addTask(taskFluent.getTask(), new HashMap<String, Object>());
         if(start){

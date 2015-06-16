@@ -37,6 +37,7 @@ import org.kie.api.task.model.Task;
 import org.kie.internal.task.api.InternalTaskService;
 import org.uberfire.paging.PageResponse;
 import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.*;
+import org.kie.internal.task.api.AuditTask;
 /**
  *
  * @author salaboy
@@ -101,8 +102,9 @@ public class TaskQueryServiceImpl implements TaskQueryService {
         qf.setFilterParams(filter.getFilterParams());
         List<TaskSummary> taskSummaries = null;
         if (TASK_ROLE_ADMINISTRATOR.equals(taskRole)){
-            taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsBusinessAdministrator(userId,qf),true);
-        }else if(stringFilter.equals("ALL")){
+            List<AuditTask> allAdminAuditTask = runtimeDataService.getAllAdminAuditTask(userId, qf);
+            taskSummaries = TaskSummaryHelper.adaptAuditCollection(allAdminAuditTask);
+        }else if("ALL".equals(stringFilter)){
             if(qf.getOrderBy().equals("t.taskData.expirationTime")){
                 qf.setOrderBy("t.dueDate");
             }else if(qf.getOrderBy().equals("t.taskData.createdOn")){
@@ -112,8 +114,16 @@ public class TaskQueryServiceImpl implements TaskQueryService {
             }
             taskSummaries = TaskSummaryHelper.adaptAuditCollection(runtimeDataService.getAllAuditTask(userId, qf));
         }else{
-            taskSummaries = TaskSummaryHelper.adaptCollection(runtimeDataService.getTasksAssignedAsPotentialOwner(userId, null, statuses, qf));
-        }   return taskSummaries;
+            List<AuditTask> allAuditTask;
+            if(statuses.size() == 1 && statuses.get(0).equals(Status.Ready)){
+                 allAuditTask = runtimeDataService.getAllGroupAuditTask(userId, qf);
+            }else{
+                allAuditTask = runtimeDataService.getAllAuditTask(userId, qf);
+            }
+            taskSummaries = TaskSummaryHelper.adaptAuditCollection(allAuditTask);
+
+        }   
+        return taskSummaries;
     }
 
   @Override

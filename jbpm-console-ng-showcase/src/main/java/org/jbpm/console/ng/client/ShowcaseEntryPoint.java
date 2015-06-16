@@ -130,7 +130,7 @@ public class ShowcaseEntryPoint {
                 } ).endMenu()
                 .newTopLevelMenu( constants.Authoring() ).withItems( getAuthoringViews() ).endMenu()
                 .newTopLevelMenu( constants.Deploy() ).withItems( getDeploymentViews() ).endMenu()
-                //.newTopLevelMenu( "Case Management" ).withItems( getCaseMGMTViews() ).endMenu()
+                .newTopLevelMenu( "Case Management" ).withItems( getCaseMGMTViews() ).endMenu()
                 .newTopLevelMenu( constants.Process_Management() ).withItems( getProcessMGMTViews() ).endMenu()
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu()
                 .newTopLevelMenu( constants.Dashboards() ).withItems( getDashboardsViews() ).endMenu()
@@ -171,20 +171,20 @@ public class ShowcaseEntryPoint {
         return result;
     }
     
-//    private List<? extends MenuItem> getCaseMGMTViews() {
-//        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
-//
-//        result.add( MenuFactory.newSimpleItem( "Cases" ).respondsWith( new Command() {
-//            @Override
-//            public void execute() {
-//                placeManager.goTo( new DefaultPlaceRequest( "Cases" ) );
-//            }
-//        } ).endMenu().build().getItems().get( 0 ) );
-//
-//        
-//
-//        return result;
-//    }
+    private List<? extends MenuItem> getCaseMGMTViews() {
+        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
+
+        result.add( MenuFactory.newSimpleItem( "Cases" ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "Cases" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+
+        
+
+        return result;
+    }
 
     private List<? extends MenuItem> getProcessMGMTViews() {
         final List<MenuItem> result = new ArrayList<MenuItem>( 2 );
@@ -270,7 +270,7 @@ public class ShowcaseEntryPoint {
     }
 
     private List<? extends MenuItem> getWorkViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>( 2 );
+        final List<MenuItem> result = new ArrayList<MenuItem>( 4 );
 
         result.add( MenuFactory.newSimpleItem( constants.Tasks_List() ).respondsWith( new Command() {
             @Override
@@ -286,6 +286,20 @@ public class ShowcaseEntryPoint {
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
+
+        result.add( MenuFactory.newSimpleItem( "Data Sets (new)" ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "DataSetAuthoringPerspective" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+
+        result.add( MenuFactory.newSimpleItem( "DataSet Task List" ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "DataSet Tasks" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
         return result;
     }
 
