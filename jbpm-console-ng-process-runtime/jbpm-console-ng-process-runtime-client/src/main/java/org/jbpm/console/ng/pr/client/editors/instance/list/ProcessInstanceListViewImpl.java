@@ -625,7 +625,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
         filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
 
-        final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable = createGridInstance(  preferences, key );
+        final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable = createGridInstance(  new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns()), key );
         currentListGrid = extendedPagedTable;
         presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider( presenter.getDataProvider() );

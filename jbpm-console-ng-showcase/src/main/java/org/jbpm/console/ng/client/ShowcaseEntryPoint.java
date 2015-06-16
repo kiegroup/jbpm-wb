@@ -270,7 +270,7 @@ public class ShowcaseEntryPoint {
     }
 
     private List<? extends MenuItem> getWorkViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>( 2 );
+        final List<MenuItem> result = new ArrayList<MenuItem>( 3 );
 
         result.add( MenuFactory.newSimpleItem( constants.Tasks_List() ).respondsWith( new Command() {
             @Override
@@ -286,6 +286,20 @@ public class ShowcaseEntryPoint {
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
+
+       /* result.add( MenuFactory.newSimpleItem( "Data Sets (new)" ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "DataSetAuthoringPerspective" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+        */
+        result.add( MenuFactory.newSimpleItem( "DataSet Task List" ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "DataSet Tasks" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
         return result;
     }
 

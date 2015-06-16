@@ -24,8 +24,6 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.view.client.AsyncDataProvider;
-import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;

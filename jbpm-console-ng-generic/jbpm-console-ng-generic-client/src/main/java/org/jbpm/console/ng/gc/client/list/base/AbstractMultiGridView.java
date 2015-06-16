@@ -28,30 +28,25 @@ import com.google.gwt.view.client.NoSelectionModel;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.i18n.Constants;
+import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.uberfire.client.mvp.PlaceManager;
-
 import org.uberfire.ext.services.shared.preferences.*;
-
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
-
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
 
-/**
- * @param <T>
- * @param <V>
- * @author salaboy
- */
+
 public abstract class AbstractMultiGridView<T extends GenericSummary, V extends AbstractListPresenter>
         extends Composite implements RequiresResize {
+
+    public static String FILTER_TABLE_SETTINGS = "tableSettings";
 
     @Inject
     public User identity;
@@ -65,11 +60,12 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     @Inject
     private Caller<UserPreferencesService> preferencesService;
 
+
     protected V presenter;
 
     protected FilterPagedTable<T> filterPagedTable;
-    protected ExtendedPagedTable<T> currentListGrid;
 
+    protected ExtendedPagedTable<T> currentListGrid;
 
     protected RowStyles<T> selectedStyles = new RowStyles<T>() {
 
@@ -202,6 +198,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
             }
         } ).loadUserPreferences( key, UserPreferencesType.GRIDPREFERENCES );
         initExtraButtons( newListGrid );
+
         return newListGrid;
     }
 

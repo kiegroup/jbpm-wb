@@ -63,10 +63,11 @@
   <inherits name="org.jbpm.console.ng.gc.JbpmConsoleNGGenericClient"/>
   <inherits name="org.jbpm.console.ng.dm.JbpmConsoleNGDocumentsClient"/>
   <inherits name="org.jbpm.console.ng.wi.JbpmConsoleNGWorkbenchIntegrationClient"/>
+  <inherits name="org.jbpm.console.ng.di.JbpmConsoleNGDataSetIntegrationClient"/>
 
   <!-- asset mgmt -->
 
-  
+
 
   <!-- designer -->
   <inherits name="org.jbpm.designer.jBPMDesignerAPI"/>

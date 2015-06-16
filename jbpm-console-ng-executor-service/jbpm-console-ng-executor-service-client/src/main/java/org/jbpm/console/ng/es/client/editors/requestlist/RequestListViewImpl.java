@@ -465,7 +465,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
         tabSettingsValues.put( RequestListPresenter.FILTER_STATUSES_PARAM_NAME, statuses );
 
         filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
-        final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance(  preferences, key );
+        final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance(  new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns()), key );
         currentListGrid = extendedPagedTable;
         presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider(presenter.getDataProvider() );
