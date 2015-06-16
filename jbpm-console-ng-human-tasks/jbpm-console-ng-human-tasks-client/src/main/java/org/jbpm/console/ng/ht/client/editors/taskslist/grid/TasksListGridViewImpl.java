@@ -638,7 +638,8 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
         tabSettingsValues.put( TasksListGridPresenter.FILTER_CURRENT_ROLE_PARAM_NAME, role );
 
         filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
-        final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance(  preferences, key );
+
+        final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns()), key );
         currentListGrid = extendedPagedTable;
         presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider(presenter.getDataProvider() );

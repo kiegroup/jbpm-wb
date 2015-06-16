@@ -15,20 +15,21 @@
  */
 package org.jbpm.console.ng.gc.client.list.base;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.enterprise.event.Observes;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
+
 import org.jbpm.console.ng.ga.model.QueryFilter;
+
 import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
-import org.uberfire.paging.AbstractPageRow;
 import org.uberfire.paging.PageResponse;
+
+import javax.enterprise.event.Observes;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -39,11 +40,12 @@ public abstract class AbstractListPresenter<T> {
 
     protected AsyncDataProvider<T> dataProvider;
 
+
     protected QueryFilter currentFilter;
 
     private Constants constants = GWT.create(Constants.class);
 
-    protected com.google.gwt.user.client.Timer refreshTimer = null;
+    protected Timer refreshTimer = null;
     protected boolean autoRefreshEnabled = true;
     protected int autoRefreshSeconds = 10; // This should be loaded from the grid settings (probably the filters)
 
@@ -58,7 +60,7 @@ public abstract class AbstractListPresenter<T> {
             if (refreshTimer == null) {
                 refreshTimer = new Timer() {
                     public void run() {
-                        getData(dataProvider.getDataDisplays().iterator().next().getVisibleRange()); // arghhhh
+                        getData(dataProvider.getDataDisplays().iterator().next().getVisibleRange());
                     }
                 };
             }
@@ -72,6 +74,7 @@ public abstract class AbstractListPresenter<T> {
     public abstract void getData(Range visibleRange);
 
     protected void initDataProvider(){
+
         dataProvider = new AsyncDataProvider<T>() {
             @Override
             protected void onRangeChanged(HasData<T> display) {
@@ -80,14 +83,15 @@ public abstract class AbstractListPresenter<T> {
                 getData(visibleRange);
             }
         } ;
+
     }
 
     public void updateDataOnCallback(PageResponse response){
         getListView().hideBusyIndicator();
-        dataProvider.updateRowCount(response.getTotalRowSize(),
-                response.isTotalRowSizeExact());
-        dataProvider.updateRowData(response.getStartRowIndex(),
-                response.getPageRowList());
+        dataProvider.updateRowCount( response.getTotalRowSize(),
+                response.isTotalRowSizeExact() );
+        dataProvider.updateRowData( response.getStartRowIndex(),
+                response.getPageRowList() );
         updateRefreshTimer();
     }
 
@@ -121,4 +125,5 @@ public abstract class AbstractListPresenter<T> {
         }
 
     }
+
 }

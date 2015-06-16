@@ -32,7 +32,6 @@ import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
-import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
