@@ -765,28 +765,4 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>fullProfile</id>
-            <activation>
-                <property>
-                    <name>full</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin><!-- Keep in sync with soa profile -->
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>gwt-maven-plugin</artifactId>
-                        <configuration>
-                            <!-- Build all GWT permutations and optimize them -->
-                            <module>org.jbpm.console.ng.showcase.ht.jBPMHTShowcase</module>
-                            <draftCompile>false</draftCompile>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
 </project>
