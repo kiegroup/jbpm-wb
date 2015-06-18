@@ -44,6 +44,8 @@ public class TaskSummary extends GenericSummary {
     private boolean isLogOnly;
     private Long parentId;
     private List<String> potOwnersString = new ArrayList<String>();
+    private String potentialOwners;
+    private String businessAdministrators;
     
     public TaskSummary(long taskId, String taskName, String description, String status,
             int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
@@ -67,6 +69,19 @@ public class TaskSummary extends GenericSummary {
         this.deploymentId = deploymentId;
         this.parentId = parentId;
     }
+    
+    public TaskSummary(long taskId, String taskName, String description, String status,
+            int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
+            Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId,
+            String potentialOwners, String businessAdministrators) {
+        this(taskId, taskName, description, status, priority,
+                actualOwner, createdBy, createdOn, activationTime,
+                expirationTime, processId, processSessionId,
+                processInstanceId, deploymentId, parentId);
+        this.potentialOwners = potentialOwners;
+        this.businessAdministrators = businessAdministrators;
+
+    }
 
     public TaskSummary(long taskId, String taskName, String description, String status,
             int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
@@ -79,12 +94,16 @@ public class TaskSummary extends GenericSummary {
     }
     public TaskSummary(long taskId, String taskName, String description, String status,
             int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
-            Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId,boolean isForAdmin, boolean isLogOnly) {
+            Date expirationTime, String processId, long processSessionId, long processInstanceId, 
+            String deploymentId, long parentId,boolean isForAdmin, boolean isLogOnly,
+            String potentialOwners, String businessAdministrators) {
          this(taskId, taskName, description, status, priority, 
                  actualOwner, createdBy, createdOn, activationTime, 
                  expirationTime, processId, processSessionId, 
                  processInstanceId, deploymentId, parentId, isForAdmin);
          this.isLogOnly = isLogOnly;
+         this.potentialOwners = potentialOwners;
+         this.businessAdministrators = businessAdministrators;
     }
     
     public TaskSummary(long taskId, String taskName, String description, String status,
@@ -186,15 +205,18 @@ public class TaskSummary extends GenericSummary {
     public boolean isLogOnly() {
         return isLogOnly;
     }
-    
-    
-    @Override
-    public String toString() {
-        return "TaskSummary [id=" + taskId + ", name=" + taskName + ", description=" + description + ", deploymentId=" + deploymentId
-                + ", status=" + status + ", priority=" + priority + ", parentId=" + parentId
-                + ", actualOwner=" + actualOwner + ", createdBy=" + createdBy + ", createdOn=" + createdOn
-                + ", activationTime=" + activationTime + ", expirationTime=" + expirationTime + ", processInstanceId="
-                + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", isForAdmin="+ isForAdmin+ ", isLogOnly="+ isLogOnly+ ", potOwnersString + "+potOwnersString.toString()+"]";
+
+    public String getPotentialOwners() {
+        return potentialOwners;
     }
 
+    public String getBusinessAdministrators() {
+        return businessAdministrators;
+    }
+
+    @Override
+    public String toString() {
+        return "TaskSummary{" + "taskId=" + taskId + ", taskName=" + taskName + ", description=" + description + ", status=" + status + ", priority=" + priority + ", actualOwner=" + actualOwner + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", activationTime=" + activationTime + ", expirationTime=" + expirationTime + ", processInstanceId=" + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", deploymentId=" + deploymentId + ", isForAdmin=" + isForAdmin + ", isLogOnly=" + isLogOnly + ", parentId=" + parentId + ", potOwnersString=" + potOwnersString + ", potentialOwners=" + potentialOwners + ", businessAdministrators=" + businessAdministrators + '}';
+    }
+    
 }

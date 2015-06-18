@@ -45,6 +45,7 @@ import org.guvnor.common.services.shared.security.KieWorkbenchACL;
 import org.guvnor.common.services.shared.security.KieWorkbenchPolicy;
 import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
 import org.guvnor.common.services.shared.security.KieWorkbenchSecurityService;
+import org.jboss.errai.security.shared.api.Group;
 import org.jbpm.console.ng.ga.forms.service.PlaceManagerActivityService;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityBeansCache;
@@ -136,6 +137,7 @@ public class ShowcaseEntryPoint {
                 .newTopLevelMenu( constants.Dashboards() ).withItems( getDashboardsViews() ).endMenu()
                 .newTopLevelMenu( constants.Experimental() ).withItems( getExperimentalViews() ).endMenu()
                 .newTopLevelCustomMenu( iocManager.lookupBean( WorkbenchConfigurationMenuBuilder.class).getInstance() ).endMenu()
+                .newTopLevelMenu( constants.Groups() ).position( MenuPosition.RIGHT ).withItems( getGroups()).endMenu()
                 .newTopLevelMenu( constants.User() + ": " + identity.getIdentifier() ).position( MenuPosition.RIGHT ).withItems( getRoles() ).endMenu()
 
                 .build();
@@ -155,6 +157,17 @@ public class ShowcaseEntryPoint {
                 redirect( GWT.getModuleBaseURL() + "uf_logout" );
             }
         } ).endMenu().build().getItems().get( 0 ) );
+        return result;
+    }
+    
+    private List<? extends MenuItem> getGroups() {
+        final List<MenuItem> result = new ArrayList<MenuItem>( identity.getGroups().size() );
+        for ( final Group group : identity.getGroups() ) {
+            
+                result.add( MenuFactory.newSimpleItem( constants.Group() + ": " + group.getName() ).endMenu().build().getItems().get( 0 ) );
+            
+        }
+        
         return result;
     }
 
@@ -266,6 +279,20 @@ public class ShowcaseEntryPoint {
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
+
+       /* result.add( MenuFactory.newSimpleItem( "Data Sets (new)" ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "DataSetAuthoringPerspective" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+        */
+        result.add( MenuFactory.newSimpleItem( "DataSet Task List" ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "DataSet Tasks" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
         return result;
     }
 

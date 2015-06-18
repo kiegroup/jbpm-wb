@@ -88,5 +88,9 @@ public interface Constants extends Messages {
 
     String DeploymentDescriptor();
 
+    String Groups();
+
+    String Group();
+
 
 }

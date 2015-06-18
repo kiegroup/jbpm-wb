@@ -32,7 +32,6 @@
 
   <dependencies>
 
-    <!-- dependencies added because of new illegal transitive dependency check -->
     <dependency>
       <groupId>com.github.gwtbootstrap</groupId>
       <artifactId>gwt-bootstrap</artifactId>
@@ -44,6 +43,10 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-ioc</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jboss.errai</groupId>
@@ -79,6 +82,9 @@
       <groupId>org.kie.workbench.widgets</groupId>
       <artifactId>kie-wb-common-ui</artifactId>
     </dependency>
+
+
+
     <!-- Errai UI -->
     <dependency>
       <groupId>org.jboss.errai</groupId>

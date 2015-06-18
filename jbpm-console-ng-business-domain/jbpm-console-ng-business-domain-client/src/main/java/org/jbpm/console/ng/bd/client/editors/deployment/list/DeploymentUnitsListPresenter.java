@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.bd.client.editors.deployment.list;
 
 import org.jbpm.console.ng.bd.model.DeploymentUnitSummary;
-import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;

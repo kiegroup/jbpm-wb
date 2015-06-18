@@ -17,7 +17,6 @@ package org.jbpm.console.ng.gc.forms.client.display.displayers.util;
 
 import java.util.HashMap;
 import java.util.IdentityHashMap;
-import java.util.Map;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;

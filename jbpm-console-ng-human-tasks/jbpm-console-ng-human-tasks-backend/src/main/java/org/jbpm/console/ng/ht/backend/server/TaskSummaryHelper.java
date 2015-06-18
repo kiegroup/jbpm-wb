@@ -53,7 +53,7 @@ public class TaskSummaryHelper {
                     taskSum.getProcessInstanceId(),
                     taskSum.getDeploymentId(), 
                     taskSum.getParentId(),
-                    isForAdmin, false);
+                    isForAdmin, false, "", "");
     
     }
 
@@ -65,24 +65,26 @@ public class TaskSummaryHelper {
         return taskSummaries;
     }
     
-    public static TaskSummary adaptAudit(AuditTask taskSum) {
+    public static TaskSummary adaptAudit(AuditTask auditTask) {
         return new TaskSummary(
-                    taskSum.getTaskId(),
-                    taskSum.getName(),
-                    taskSum.getDescription(),
-                    taskSum.getStatus(),
-                    taskSum.getPriority(),
-                    taskSum.getActualOwner(),
-                    taskSum.getCreatedBy(),
-                    taskSum.getCreatedOn(),
-                    taskSum.getActivationTime(),
-                    taskSum.getDueDate(),
-                    taskSum.getProcessId(),
-                    taskSum.getProcessSessionId(),
-                    taskSum.getProcessInstanceId(),
-                    taskSum.getDeploymentId(), 
-                    taskSum.getParentId(),
-                    false, true);
+                    auditTask.getTaskId(),
+                    auditTask.getName(),
+                    auditTask.getDescription(),
+                    auditTask.getStatus(),
+                    auditTask.getPriority(),
+                    auditTask.getActualOwner(),
+                    auditTask.getCreatedBy(),
+                    auditTask.getCreatedOn(),
+                    auditTask.getActivationTime(),
+                    auditTask.getDueDate(),
+                    auditTask.getProcessId(),
+                    auditTask.getProcessSessionId(),
+                    auditTask.getProcessInstanceId(),
+                    auditTask.getDeploymentId(), 
+                    auditTask.getParentId(),
+                    false, true,
+                    auditTask.getPotentialOwners(), 
+                    auditTask.getBusinessAdministrators());
     
     }
 }

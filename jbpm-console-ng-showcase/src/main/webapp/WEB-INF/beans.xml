@@ -23,6 +23,7 @@
     <exclude name="org.jbpm.console.ng.dm.client.**"/>
     <exclude name="org.jbpm.console.ng.es.client.**"/>
     <exclude name="org.jbpm.console.ng.gc.client.**"/>
+    <exclude name="org.jbpm.console.ng.di.client.**"/>
     <exclude name="org.jbpm.console.ng.ht.admin.client.**"/>
     <exclude name="org.jbpm.console.ng.ht.forms.client.**"/>
     <exclude name="org.jbpm.console.ng.ht.forms.modeler.client.**"/>
