@@ -37,7 +37,7 @@
   <inherits name="org.jbpm.console.ng.ht.forms.JbpmConsoleNGHumanTasksFormsClient"/>
   <inherits name="org.jbpm.console.ng.ht.admin.JbpmConsoleNGHumanTasksAdminClient"/>
   <inherits name="org.jbpm.console.ng.pr.JbpmConsoleNGProcessRuntimeClient"/>
-  <inherits name="org.jbpm.console.ng.di.JbpmConsoleNGDataSetIntegrationClient"/>
+  <inherits name="org.jbpm.console.ng.df.JbpmConsoleNGDataFiltersClient"/>
   
   
   
