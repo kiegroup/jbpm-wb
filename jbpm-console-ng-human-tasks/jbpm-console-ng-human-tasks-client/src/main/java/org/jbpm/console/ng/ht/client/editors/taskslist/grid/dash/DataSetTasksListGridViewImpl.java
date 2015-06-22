@@ -76,6 +76,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
     }
     public static String DATASET_TASK_LIST_PREFIX = "DataSetTaskListGrid" ;
+    public static String HUMAN_TASKS_DATASET ="jbpmHumanTasks";
 
     public static final String COLUMN_ACTIVATIONTIME = "activationTime";
     public static final String COLUMN_ACTUALOWNER = "actualOwner";
@@ -121,6 +122,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         final List<String> initColumns = new ArrayList<String>();
         initColumns.add(constants.Task());
         initColumns.add(constants.Description());
+        initColumns.add( constants.Actions() );
         final Button button = new Button();
         button.setText( "+" );
         button.addClickHandler(new ClickHandler() {
@@ -803,7 +805,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset("jbpmHumanTasks");
+        builder.dataset(HUMAN_TASKS_DATASET);
         List<Comparable> names = new ArrayList<Comparable>();
 
         for(String s :states){
@@ -890,7 +892,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset("jbpmHumanTasks");
+        builder.dataset(HUMAN_TASKS_DATASET);
 
       /*  builder.setColumn( COLUMN_TASKID, constants.Id() );
         builder.setColumn( COLUMN_NAME, constants.Task() );
