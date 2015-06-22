@@ -28,6 +28,7 @@ import org.jbpm.console.ng.df.client.filter.dataset.DataSetHandler;
 import org.jbpm.console.ng.df.client.filter.dataset.DataSetHandlerImpl;
 
 import javax.enterprise.context.Dependent;
+import java.util.Date;
 
 
 @Dependent
@@ -175,5 +176,41 @@ public class DataSetQueryHelper<T> {
 
     public void setAutoRefreshSeconds( int autoRefreshSeconds ) {
         this.autoRefreshSeconds = autoRefreshSeconds;
+    }
+
+    public Long getColumnLongValue (DataSet currentDataSet, String columnId, int index){
+        try{
+            return (Long)currentDataSet.getColumnById( columnId ).getValues().get( index );
+        } catch ( Exception e ){
+
+        }
+        return null;
+    }
+
+    public String getColumnStringValue(DataSet currentDataSet, String columnId, int index){
+        try{
+            return (String)currentDataSet.getColumnById( columnId ).getValues().get( index );
+        } catch ( Exception e ){
+
+        }
+        return null;
+    }
+
+    public Date getColumnDateValue(DataSet currentDataSet,String columnId, int index){
+        try{
+            return (Date) currentDataSet.getColumnById( columnId ).getValues().get( index );
+        } catch ( Exception e ){
+
+        }
+        return null;
+    }
+
+    public int getColumnIntValue(DataSet currentDataSet,String columnId, int index){
+        try{
+            return ((Integer)currentDataSet.getColumnById( columnId ).getValues().get( index) ).intValue();
+        } catch ( Exception e ){
+
+        }
+        return -1;
     }
 }

@@ -254,4 +254,6 @@ public interface Constants extends Messages {
     String Parent_Process_Instance();
 
     String No_Parent_Process_Instance();
+
+    String New_Process_InstanceList();
 }
