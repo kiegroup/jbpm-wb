@@ -18,6 +18,7 @@ package org.jbpm.console.ng.server.impl;
 import org.dashbuilder.dataset.DataSetFactory;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash.DataSetTasksListGridViewImpl;
+import org.jbpm.console.ng.pr.client.editors.instance.list.dash.DataSetProcessInstanceListViewImpl;
 import org.uberfire.commons.services.cdi.Startup;
 
 import javax.annotation.PostConstruct;
@@ -27,10 +28,12 @@ import javax.inject.Inject;
 @Startup
 @ApplicationScoped
 public class DashbuilderBootstrap {
-
-    public static final String HUMAN_TASKS_DATASET = "jbpmHumanTasks";
     public static final String JBPM_DATASOURCE = "java:jboss/datasources/ExampleDS";
+    public static final String HUMAN_TASKS_DATASET = "jbpmHumanTasks";
     public static final String HUMAN_TASKS_TABLE = "AuditTaskImpl";
+
+    public static final String PROCESS_INSTANCE_DATASET = "jbpmProcessInstances";
+    public static final String PROCESS_INSTANCE_TABLE = "ProcessInstanceLog";
     @Inject
     protected DataSetDefRegistry dataSetDefRegistry;
 
@@ -40,31 +43,53 @@ public class DashbuilderBootstrap {
     }
 
     protected void registerDataSetDefinitions() {
-        System.out.println("Bootstrapping Dashbuilder stuff.....");
         dataSetDefRegistry.registerDataSetDef(
                 DataSetFactory.newSQLDataSetDef()
-                .uuid( HUMAN_TASKS_DATASET )
-                .name( "Human tasks" )
-                .dataSource( JBPM_DATASOURCE )
-                .dbTable( HUMAN_TASKS_TABLE, false )
-                .date( DataSetTasksListGridViewImpl.COLUMN_ACTIVATIONTIME )
-                .label( DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER )
-                .label( DataSetTasksListGridViewImpl.COLUMN_CREATEDBY )
-                .date( DataSetTasksListGridViewImpl.COLUMN_CREATEDON )
-                .label( DataSetTasksListGridViewImpl.COLUMN_DEPLOYMENTID )
-                .text( DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION )
-                .date( DataSetTasksListGridViewImpl.COLUMN_DUEDATE )
-                .label( DataSetTasksListGridViewImpl.COLUMN_NAME )
-                .label( DataSetTasksListGridViewImpl.COLUMN_PARENTID )
-                .label( DataSetTasksListGridViewImpl.COLUMN_PRIORITY )
-                .label( DataSetTasksListGridViewImpl.COLUMN_PROCESSID )
-                .label( DataSetTasksListGridViewImpl.COLUMN_PROCESSINSTANCEID )
-                .label( DataSetTasksListGridViewImpl.COLUMN_PROCESSSESSIONID )
-                .label( DataSetTasksListGridViewImpl.COLUMN_STATUS )
-                .label( DataSetTasksListGridViewImpl.COLUMN_TASKID )
-                .label( DataSetTasksListGridViewImpl.COLUMN_WORKITEMID )
-                .label( DataSetTasksListGridViewImpl.COLUMN_POTENTIALOWNERS )
-                .label( DataSetTasksListGridViewImpl.COLUMN_BUSINESSADMINISTRATORS )
-                .buildDef());
+                        .uuid( HUMAN_TASKS_DATASET )
+                        .name( "Human tasks" )
+                        .dataSource( JBPM_DATASOURCE )
+                        .dbTable( HUMAN_TASKS_TABLE, false )
+                        .date( DataSetTasksListGridViewImpl.COLUMN_ACTIVATIONTIME )
+                        .label( DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER )
+                        .label( DataSetTasksListGridViewImpl.COLUMN_CREATEDBY )
+                        .date( DataSetTasksListGridViewImpl.COLUMN_CREATEDON )
+                        .label( DataSetTasksListGridViewImpl.COLUMN_DEPLOYMENTID )
+                        .text( DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION )
+                        .date( DataSetTasksListGridViewImpl.COLUMN_DUEDATE )
+                        .label( DataSetTasksListGridViewImpl.COLUMN_NAME )
+                        .label( DataSetTasksListGridViewImpl.COLUMN_PARENTID )
+                        .label( DataSetTasksListGridViewImpl.COLUMN_PRIORITY )
+                        .label( DataSetTasksListGridViewImpl.COLUMN_PROCESSID )
+                        .label( DataSetTasksListGridViewImpl.COLUMN_PROCESSINSTANCEID )
+                        .label( DataSetTasksListGridViewImpl.COLUMN_PROCESSSESSIONID )
+                        .label( DataSetTasksListGridViewImpl.COLUMN_STATUS )
+                        .label( DataSetTasksListGridViewImpl.COLUMN_TASKID )
+                        .label( DataSetTasksListGridViewImpl.COLUMN_WORKITEMID )
+                        .label( DataSetTasksListGridViewImpl.COLUMN_POTENTIALOWNERS )
+                        .label( DataSetTasksListGridViewImpl.COLUMN_BUSINESSADMINISTRATORS )
+                        .buildDef() );
+
+        dataSetDefRegistry.registerDataSetDef(
+                DataSetFactory.newSQLDataSetDef()
+                        .uuid( PROCESS_INSTANCE_DATASET)
+                        .name( "Process Instances" )
+                        .dataSource( JBPM_DATASOURCE )
+                        .dbTable( PROCESS_INSTANCE_TABLE, false )
+                        .label( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSINSTANCEID )
+                        .label( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSID )
+                        .date( DataSetProcessInstanceListViewImpl.COLUMN_START )
+                        .date( DataSetProcessInstanceListViewImpl.COLUMN_END )
+                        .label( DataSetProcessInstanceListViewImpl.COLUMN_STATUS )
+                        .label( DataSetProcessInstanceListViewImpl.COLUMN_PARENTPROCESSINSTANCEID )
+                        .label( DataSetProcessInstanceListViewImpl.COLUMN_OUTCOME )
+                        .label( DataSetProcessInstanceListViewImpl.COLUMN_DURATION )
+                        .label( DataSetProcessInstanceListViewImpl.COLUMN_IDENTITY )
+                        .label( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSVERSION )
+                        .label( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSNAME )
+                        .label( DataSetProcessInstanceListViewImpl.COLUMN_CORRELATIONKEY )
+                        .label( DataSetProcessInstanceListViewImpl.COLUMN_EXTERNALID )
+                        .label( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSINSTANCEDESCRIPTION )
+                        .buildDef() );
+
     }
 }

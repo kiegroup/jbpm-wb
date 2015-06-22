@@ -125,23 +125,23 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
                             for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
                                 myTasksFromDataSet.add( new TaskSummary(
-                                                getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_TASKID, i ),
-                                                getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_NAME, i ),
-                                                getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION, i ),
-                                                getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_STATUS, i ),
-                                                getColumnIntValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PRIORITY, i ),
-                                                getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, i ),
-                                                getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_CREATEDBY, i ),
-                                                getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_CREATEDON, i ),
-                                                getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_ACTIVATIONTIME, i ),
-                                                getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DUEDATE, i ),
-                                                getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSID, i ),
-                                                getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSSESSIONID, i ),
-                                                getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSINSTANCEID, i ),
-                                                getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DEPLOYMENTID, i ),
-                                                getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PARENTID, i ) ,
-                                                getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_POTENTIALOWNERS, i ),
-                                                getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_BUSINESSADMINISTRATORS, i ))
+                                                dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_TASKID, i ),
+                                                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_NAME, i ),
+                                                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION, i ),
+                                                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_STATUS, i ),
+                                                dataSetQueryHelper.getColumnIntValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PRIORITY, i ),
+                                                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, i ),
+                                                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_CREATEDBY, i ),
+                                                dataSetQueryHelper.getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_CREATEDON, i ),
+                                                dataSetQueryHelper.getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_ACTIVATIONTIME, i ),
+                                                dataSetQueryHelper.getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DUEDATE, i ),
+                                                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSID, i ),
+                                                dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSSESSIONID, i ),
+                                                dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSINSTANCEID, i ),
+                                                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DEPLOYMENTID, i ),
+                                                dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PARENTID, i ) ,
+                                                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_POTENTIALOWNERS, i ),
+                                                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_BUSINESSADMINISTRATORS, i ))
                                 );
 
                             }
@@ -229,42 +229,6 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                 return true;
             }
         }).claim(taskId, userId, deploymentId);
-    }
-
-    public Long getColumnLongValue (DataSet currentDataSet, String columnId, int index){
-        try{
-            return (Long)currentDataSet.getColumnById( columnId ).getValues().get( index );
-        } catch ( Exception e ){
-
-        }
-        return null;
-    }
-
-    public String getColumnStringValue(DataSet currentDataSet, String columnId, int index){
-        try{
-            return (String)currentDataSet.getColumnById( columnId ).getValues().get( index );
-        } catch ( Exception e ){
-
-        }
-        return null;
-    }
-
-    public Date getColumnDateValue(DataSet currentDataSet,String columnId, int index){
-        try{
-            return (Date) currentDataSet.getColumnById( columnId ).getValues().get( index );
-        } catch ( Exception e ){
-
-        }
-        return null;
-    }
-
-    public int getColumnIntValue(DataSet currentDataSet,String columnId, int index){
-        try{
-            return Integer.parseInt((String)currentDataSet.getColumnById( columnId ).getValues().get( index) );
-        } catch ( Exception e ){
-
-        }
-        return -1;
     }
 
 
