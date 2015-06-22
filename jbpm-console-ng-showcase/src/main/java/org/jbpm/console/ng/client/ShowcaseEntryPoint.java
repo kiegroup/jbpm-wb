@@ -200,7 +200,7 @@ public class ShowcaseEntryPoint {
     }
 
     private List<? extends MenuItem> getProcessMGMTViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>( 4 );
+        final List<MenuItem> result = new ArrayList<MenuItem>( 3 );
 
         result.add( MenuFactory.newSimpleItem( constants.Process_Definitions() ).respondsWith( new Command() {
             @Override
@@ -209,14 +209,14 @@ public class ShowcaseEntryPoint {
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
-        result.add( MenuFactory.newSimpleItem( constants.Process_Instances() ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Process Instances" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
+//        result.add( MenuFactory.newSimpleItem( constants.Process_Instances() ).respondsWith( new Command() {
+//            @Override
+//            public void execute() {
+//                placeManager.goTo( new DefaultPlaceRequest( "Process Instances" ) );
+//            }
+//        } ).endMenu().build().getItems().get( 0 ) );
 
-        result.add( MenuFactory.newSimpleItem( "DS " +constants.Process_Instances() ).respondsWith( new Command() {
+        result.add( MenuFactory.newSimpleItem( constants.Process_Instances() ).respondsWith( new Command() {
             @Override
             public void execute() {
                 placeManager.goTo( new DefaultPlaceRequest( "DataSet Process Instances" ) );
