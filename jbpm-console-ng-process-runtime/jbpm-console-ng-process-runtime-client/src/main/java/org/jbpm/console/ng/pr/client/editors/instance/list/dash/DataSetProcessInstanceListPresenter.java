@@ -297,7 +297,7 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
 
   @WorkbenchPartTitle
   public String getTitle() {
-    return "DB " + constants.Process_Instances();
+    return constants.Process_Instances();
   }
 
   @WorkbenchPartView
