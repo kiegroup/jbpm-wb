@@ -50,7 +50,6 @@ import org.uberfire.paging.PageResponse;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -108,7 +107,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
             if(currentTableSettings!=null) {
                 currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
                 ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                GWT.log( "getData "+columnSortList.size() );
+                //GWT.log( "taskList getData "+columnSortList.size() +"currentTableSettings table name "+ currentTableSettings.getTableName() );
                 if(columnSortList!=null &&  columnSortList.size()>0) {
                     dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
                     dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );

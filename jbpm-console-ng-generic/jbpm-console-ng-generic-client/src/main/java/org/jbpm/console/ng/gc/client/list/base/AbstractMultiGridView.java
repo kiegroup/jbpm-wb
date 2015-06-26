@@ -16,13 +16,19 @@
 package org.jbpm.console.ng.gc.client.list.base;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.RadioButton;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import org.jboss.errai.common.client.api.Caller;
@@ -66,6 +72,9 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     protected FilterPagedTable<T> filterPagedTable;
 
     protected ExtendedPagedTable<T> currentListGrid;
+
+    private PopupPanel popup = new PopupPanel(true);
+
 
     protected RowStyles<T> selectedStyles = new RowStyles<T>() {
 
@@ -171,6 +180,12 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
             }
         } );
         extendedPagedTable.getRightToolbar().add( refreshButton );
+
+        Button refreshDropDownButton = new Button();
+        createRefreshToggleButton(refreshDropDownButton);
+        extendedPagedTable.getRightToolbar().add( refreshDropDownButton );
+
+
     }
 
     public String getValidKeyForAdditionalListGrid( String baseName ) {
@@ -237,6 +252,79 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     public void applyFilterOnPresenter( String key ) {
+    }
+
+    public void createRefreshToggleButton(final Button refreshIntervalSelector) {
+
+        refreshIntervalSelector.setToggle(true);
+        refreshIntervalSelector.setIcon( IconType.LIST_ALT);
+        refreshIntervalSelector.setTitle( "Refresh tooltip" );
+
+        popup.getElement().getStyle().setZIndex(Integer.MAX_VALUE);
+        popup.addAutoHidePartner(refreshIntervalSelector.getElement());
+        popup.addCloseHandler(new CloseHandler<PopupPanel>() {
+            public void onClose(CloseEvent<PopupPanel> popupPanelCloseEvent) {
+                if (popupPanelCloseEvent.isAutoClosed()) {
+                    refreshIntervalSelector.setActive(false);
+                }
+            }
+        });
+
+        refreshIntervalSelector.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                if (!refreshIntervalSelector.isActive() ) {
+                    showSelectPageSizePopup( refreshIntervalSelector.getAbsoluteLeft() + refreshIntervalSelector.getOffsetWidth(),
+                            refreshIntervalSelector.getAbsoluteTop() + refreshIntervalSelector.getOffsetHeight(),refreshIntervalSelector);
+                } else {
+                    popup.hide(false);
+                }
+            }
+        });
+
+    }
+
+    private void showSelectPageSizePopup(final int left,
+                                         final int top,
+                                         final Button refreshIntervalSelector) {
+        VerticalPanel popupContent = new VerticalPanel();
+        RadioButton rb;
+        int configuredSeconds = presenter.getAutoRefreshSeconds();
+        for (int i=5;i<20;i=i+5) {
+            rb = new RadioButton("refreshInterval", String.valueOf( i ));
+            rb.setText( String.valueOf( i ) + " s"  );
+            if(i==configuredSeconds) rb.setValue( true );
+            final int selectedPageSize =i;
+            rb.addClickHandler( new ClickHandler() {
+                @Override
+                public void onClick( ClickEvent event ) {
+                    presenter.updateRefreshInterval(true, selectedPageSize );
+                    refreshIntervalSelector.setActive( false );
+                    popup.hide();
+
+                }
+            } );
+            popupContent.add(rb);
+        }
+        Button resetButton = new Button( "Disable Autorefresh" );
+        resetButton.setSize( ButtonSize.MINI );
+        resetButton.addClickHandler( new ClickHandler() {
+
+            @Override
+            public void onClick( ClickEvent event ) {
+                presenter.updateRefreshInterval( false,0 );
+                refreshIntervalSelector.setActive( false );
+                popup.hide();
+            }
+        } );
+
+        popupContent.add( resetButton );
+
+
+        popup.setWidget(popupContent);
+        popup.show();
+        int finalLeft = left - popup.getOffsetWidth();
+        popup.setPopupPosition(finalLeft, top);
+
     }
 
 
