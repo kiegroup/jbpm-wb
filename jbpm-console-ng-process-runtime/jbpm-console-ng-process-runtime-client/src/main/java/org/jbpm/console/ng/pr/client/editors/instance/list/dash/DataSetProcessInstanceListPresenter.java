@@ -20,7 +20,6 @@ import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.view.client.Range;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
@@ -37,11 +36,9 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
-import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 
-import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
@@ -107,7 +104,7 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
       if(currentTableSettings!=null) {
         currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
         ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-        GWT.log( "getData "+columnSortList.size() );
+        //GWT.log( "processInstances getData "+columnSortList.size() +"currentTableSettings table name "+ currentTableSettings.getTableName() );
         if(columnSortList!=null &&  columnSortList.size()>0) {
           dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
           dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );

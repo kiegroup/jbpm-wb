@@ -125,5 +125,14 @@ public abstract class AbstractListPresenter<T> {
         }
 
     }
+    protected void updateRefreshInterval(boolean enableAutoRefresh, int newInterval){
+        this.autoRefreshEnabled = enableAutoRefresh;
+        autoRefreshSeconds =newInterval;
+        updateRefreshTimer();
+    }
+
+    protected int getAutoRefreshSeconds(){
+        return autoRefreshSeconds;
+    }
 
 }
