@@ -288,8 +288,13 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                          final Button refreshIntervalSelector) {
         VerticalPanel popupContent = new VerticalPanel();
         
-        int configuredSeconds = presenter.getAutoRefreshSeconds();
-        
+        int configuredSeconds = getMultiGridPreferencesStore().getRefreshInterval();
+        if(configuredSeconds>0) {
+            presenter.updateRefreshInterval( true,configuredSeconds );
+        } else {
+            presenter.updateRefreshInterval( false, 0 );
+        }
+
         RadioButton oneMinuteRadioButton = createTimeSelectorRadioButton(10000, "1 Minute", configuredSeconds, refreshIntervalSelector, popupContent);
         RadioButton fiveMinuteRadioButton = createTimeSelectorRadioButton(50000, "5 Minutes", configuredSeconds, refreshIntervalSelector, popupContent);
         RadioButton tenMinuteRadioButton = createTimeSelectorRadioButton(100000, "10 Minutes", configuredSeconds, refreshIntervalSelector, popupContent);
@@ -304,6 +309,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
             @Override
             public void onClick( ClickEvent event ) {
+                filterPagedTable.saveNewRegreshInterval( 0 );
                 presenter.updateRefreshInterval( false,0 );
                 refreshIntervalSelector.setActive( false );
                 popup.hide();
@@ -331,6 +337,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         oneMinuteRadioButton.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
+                filterPagedTable.saveNewRegreshInterval( selectedRefreshTime );
                 presenter.updateRefreshInterval(true, selectedRefreshTime );
                 refreshIntervalSelector.setActive( false );
                 popup.hide();
