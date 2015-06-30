@@ -77,7 +77,11 @@ public interface Constants extends Messages {
 
     String User();
 
+    String Process_Id();
+
     String Process_Instance_Id();
+
+    String Process_Name();
 
     String Process_Definition_Id();
 

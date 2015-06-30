@@ -279,6 +279,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         Column taskIdColumn = initTaskIdColumn();
         Column taskNameColumn = initTaskNameColumn();
         Column descriptionColumn = initTaskDescriptionColumn();
+        Column processIdColumn = initProcesIdColumn();
+        Column processInstanceIdColumn = initProcessInstanceIdColumn();
         Column taskPriorityColumn = initTaskPriorityColumn();
         Column statusColumn = initTaskStatusColumn();
         Column createdOnDateColumn = initTaskCreatedOnColumn();
@@ -291,6 +293,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         columnMetas.add(new ColumnMeta<TaskSummary>(taskIdColumn, constants.Id()));
         columnMetas.add(new ColumnMeta<TaskSummary>(taskNameColumn, constants.Task()));
         columnMetas.add(new ColumnMeta<TaskSummary>(descriptionColumn, constants.Description()));
+        columnMetas.add(new ColumnMeta<TaskSummary>(processIdColumn, constants.Process_Name()));
+        columnMetas.add(new ColumnMeta<TaskSummary>(processInstanceIdColumn, constants.Process_Id()));
         columnMetas.add(new ColumnMeta<TaskSummary>(taskPriorityColumn, constants.Priority()));
         columnMetas.add(new ColumnMeta<TaskSummary>(statusColumn, constants.Status()));
         columnMetas.add(new ColumnMeta<TaskSummary>(createdOnDateColumn, "CreatedOn"));
@@ -443,6 +447,28 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return dueDateColumn;
     }
 
+    private Column initProcesIdColumn() {
+        Column<TaskSummary, String> taskProcessIdColumn = new Column<TaskSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(TaskSummary object) {
+                return object.getProcessId();
+            }
+        };
+        taskProcessIdColumn.setSortable(true);
+        taskProcessIdColumn.setDataStoreName( COLUMN_PROCESSID );
+        return taskProcessIdColumn;
+    }
+    private Column initProcessInstanceIdColumn() {
+        Column<TaskSummary, Number> taskProcessInstanceIdColumn = new Column<TaskSummary, Number>(new NumberCell( )) {
+            @Override
+            public Number getValue(TaskSummary object) {
+                return object.getProcessInstanceId();
+            }
+        };
+        taskProcessInstanceIdColumn.setSortable(true);
+        taskProcessInstanceIdColumn.setDataStoreName(COLUMN_PROCESSINSTANCEID);
+        return taskProcessInstanceIdColumn;
+    }
 
     public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
         presenter.refreshGrid();
