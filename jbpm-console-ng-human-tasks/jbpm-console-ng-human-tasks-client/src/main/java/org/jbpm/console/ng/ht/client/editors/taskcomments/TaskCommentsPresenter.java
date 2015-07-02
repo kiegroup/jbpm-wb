@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.ht.client.editors.taskcomments;
 
 import java.util.Date;
@@ -23,10 +22,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.SimplePager;
-import com.github.gwtbootstrap.client.ui.TextArea;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
@@ -39,24 +34,21 @@ import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskCommentsService;
+import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 
 @Dependent
 public class TaskCommentsPresenter {
 
-    public interface TaskCommentsView extends IsWidget {
+    public interface TaskCommentsView extends UberView<TaskCommentsPresenter> {
 
-        void init( TaskCommentsPresenter presenter );
+        void clearCommentInput();
 
-        TextArea getNewTaskCommentTextArea();
+        void redrawDataGrid();
 
-        Button addCommentButton();
+        void adjustDisplayForListOfSize(int size);
 
-        DataGrid<CommentSummary> getDataGrid();
-
-        SimplePager getPager();
-
-        void displayNotification( String text );
+        void displayNotification(String text);
     }
 
     @Inject
@@ -67,7 +59,6 @@ public class TaskCommentsPresenter {
 
     private long currentTaskId = 0;
 
-    
     @Inject
     Caller<TaskCommentsService> taskCommentsServices;
 
@@ -75,7 +66,7 @@ public class TaskCommentsPresenter {
 
     @PostConstruct
     public void init() {
-        view.init( this );
+        view.init(this);
     }
 
     public IsWidget getView() {
@@ -87,81 +78,79 @@ public class TaskCommentsPresenter {
     }
 
     public void refreshComments() {
-        taskCommentsServices.call( new RemoteCallback<List<CommentSummary>>() {
-
-            @Override
-            public void callback( List<CommentSummary> comments ) {
-                dataProvider.getList().clear();
-                dataProvider.getList().addAll( comments );
-                if ( comments.size() > 0 ) {
-                    view.getDataGrid().setHeight( "350px" );
-                    view.getPager().setVisible( true );
-                }
-                dataProvider.refresh();
-                view.getDataGrid().redraw();
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
-                return true;
-            }
-        } ).getAllCommentsByTaskId( currentTaskId );
-
+        taskCommentsServices.call(
+                new RemoteCallback<List<CommentSummary>>() {
+                    @Override
+                    public void callback(List<CommentSummary> comments) {
+                        dataProvider.getList().clear();
+                        dataProvider.getList().addAll(comments);
+                        dataProvider.refresh();
+                        view.adjustDisplayForListOfSize(comments.size());
+                        view.redrawDataGrid();
+                    }
+                },
+                new ShowErrorInModalCallback()
+        ).getAllCommentsByTaskId(currentTaskId);
     }
 
-    public void addTaskComment( final String text,
-                                final Date addedOn ) {
-        taskCommentsServices.call( new RemoteCallback<Long>() {
-
-            @Override
-            public void callback( Long response ) {
-                refreshComments();
-                view.getNewTaskCommentTextArea().setText( "" );
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
-                return true;
-            }
-        } ).addComment( currentTaskId, text, identity.getIdentifier(), addedOn );
+    public void addTaskComment(final String text) {
+        if ("".equals(text.trim())) {
+            view.displayNotification("The Comment cannot be empty!");
+        } else {
+            addTaskComment(text, new Date());
+        }
     }
 
-    public void removeTaskComment( long commentId ) {
-        taskCommentsServices.call( new RemoteCallback<Long>() {
-            @Override
-            public void callback( Long response ) {
-                refreshComments();
-                view.getNewTaskCommentTextArea().setText( "" );
-                view.displayNotification( "Comment Deleted!" );
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
-                return true;
-            }
-        } ).deleteComment( currentTaskId, commentId );
+    private void addTaskComment(final String text, final Date addedOn) {
+        taskCommentsServices.call(
+                new RemoteCallback<Long>() {
+                    @Override
+                    public void callback(Long response) {
+                        refreshComments();
+                        view.clearCommentInput();
+                    }
+                },
+                new ShowErrorInModalCallback()
+        ).addComment(currentTaskId, text, identity.getIdentifier(), addedOn);
     }
 
-    public void addDataDisplay( final HasData<CommentSummary> display ) {
-        dataProvider.addDataDisplay( display );
+    public void removeTaskComment(long commentId) {
+        taskCommentsServices.call(
+                new RemoteCallback<Long>() {
+                    @Override
+                    public void callback(Long response) {
+                        refreshComments();
+                        view.clearCommentInput();
+                        view.displayNotification("Comment Deleted!");
+                    }
+                },
+                new ShowErrorInModalCallback()
+        ).deleteComment(currentTaskId, commentId);
     }
 
-    public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
-        this.currentTaskId = event.getTaskId();
+    public void addDataDisplay(final HasData<CommentSummary> display) {
+        dataProvider.addDataDisplay(display);
+    }
+
+    public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
+        currentTaskId = event.getTaskId();
         refreshComments();
-        view.getDataGrid().redraw();
+        view.redrawDataGrid();
     }
 
-    public void onTaskRefreshedEvent( @Observes final TaskRefreshedEvent event ) {
-        if ( currentTaskId == event.getTaskId() ) {
+    public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {
+        if (currentTaskId == event.getTaskId()) {
             refreshComments();
-            view.getDataGrid().redraw();
+            view.redrawDataGrid();
+        }
+    }
+
+    private static class ShowErrorInModalCallback implements ErrorCallback<Message> {
+
+        @Override
+        public boolean error(Message message, Throwable throwable) {
+            ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+            return true;
         }
     }
 }
