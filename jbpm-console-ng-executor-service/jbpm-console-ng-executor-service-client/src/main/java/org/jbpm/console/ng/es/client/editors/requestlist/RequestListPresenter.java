@@ -130,8 +130,8 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         // If we are refreshing after a search action, we need to go back to offset 0
         if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
                 || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")) {
-            currentFilter.setOffset(visibleRange.getStart());
-            currentFilter.setCount(visibleRange.getLength());
+            currentFilter.setOffset(view.getListGrid().getPageStart());
+            currentFilter.setCount(view.getListGrid().getPageSize());
         } else {
             currentFilter.setOffset(0);
             currentFilter.setCount(view.getListGrid().getPageSize());

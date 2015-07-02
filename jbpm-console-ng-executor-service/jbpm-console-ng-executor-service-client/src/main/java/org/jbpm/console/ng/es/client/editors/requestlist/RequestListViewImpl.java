@@ -280,7 +280,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
         };
         taskIdColumn.setSortable( true );
         extendedPagedTable.addColumn(taskIdColumn, constants.Id());
-        taskIdColumn.setDataStoreName( "Id" );
+        taskIdColumn.setDataStoreName( "r.id" );
     }
 
     private void initJobTypeColumn(ExtendedPagedTable extendedPagedTable){
@@ -293,7 +293,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
         };
         jobTypeColumn.setSortable( true );
         extendedPagedTable.addColumn(jobTypeColumn, constants.Type());
-        jobTypeColumn.setDataStoreName( "CommandName" );
+        jobTypeColumn.setDataStoreName( "r.commandName" );
     }
 
     private void initStatusColumn(ExtendedPagedTable extendedPagedTable){
@@ -306,7 +306,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
         };
         statusColumn.setSortable( true );
         extendedPagedTable.addColumn(statusColumn, constants.Status());
-        statusColumn.setDataStoreName( "Status" );
+        statusColumn.setDataStoreName( "r.status" );
     }
 
     private void initDueDateColumn(ExtendedPagedTable extendedPagedTable){
@@ -319,7 +319,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
         };
         taskNameColumn.setSortable( true );
         extendedPagedTable.addColumn(taskNameColumn, constants.Due_On());
-        taskNameColumn.setDataStoreName( "Time" );
+        taskNameColumn.setDataStoreName( "r.time" );
     }
 
     private Column<RequestSummary, RequestSummary> initActionsColumn(){

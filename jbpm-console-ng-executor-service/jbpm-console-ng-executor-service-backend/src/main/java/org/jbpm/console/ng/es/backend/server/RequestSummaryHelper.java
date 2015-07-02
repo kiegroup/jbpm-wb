@@ -25,10 +25,10 @@ import java.util.Map;
 import org.jbpm.console.ng.es.model.ErrorSummary;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.RequestSummary;
-import org.kie.internal.executor.api.CommandContext;
-import org.kie.internal.executor.api.ErrorInfo;
-import org.kie.internal.executor.api.RequestInfo;
-import org.kie.internal.executor.api.STATUS;
+import org.kie.api.executor.CommandContext;
+import org.kie.api.executor.ErrorInfo;
+import org.kie.api.executor.RequestInfo;
+import org.kie.api.executor.STATUS;
 
 public class RequestSummaryHelper {
 
