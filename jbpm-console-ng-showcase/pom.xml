@@ -276,6 +276,11 @@
 
     <dependency>
       <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-executor-service-api</artifactId>
+     </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-executor-service-client</artifactId>
       <scope>provided</scope>
     </dependency>
@@ -978,6 +983,8 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-documents-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-workbench-integration-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-workbench-integration-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-executor-service-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-executor-service-api</compileSourcesArtifact>
 
 
             <!-- Dashbuilder -->
