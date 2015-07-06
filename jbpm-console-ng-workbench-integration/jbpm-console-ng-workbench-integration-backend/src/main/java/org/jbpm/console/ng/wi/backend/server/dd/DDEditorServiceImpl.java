@@ -7,7 +7,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.guvnor.common.services.shared.metadata.model.Overview;
@@ -100,7 +99,7 @@ public class DDEditorServiceImpl
     @Override
     public String toSource(Path path, DeploymentDescriptorModel model) {
         try {
-            return StringEscapeUtils.escapeXml(unmarshal(path, model).toXml());
+            return unmarshal(path, model).toXml();
 
         } catch ( Exception e ) {
             throw ExceptionUtilities.handleException( e );
