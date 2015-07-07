@@ -18,8 +18,8 @@ package org.jbpm.console.ng.df.client.list.base;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import org.dashbuilder.common.client.StringUtils;
+import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
-import org.dashbuilder.dataset.client.DataSetClientServiceError;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.sort.SortOrder;
 
@@ -94,7 +94,7 @@ public class DataSetQueryHelper<T> {
                         }
 
                         @Override
-                        public boolean onError(DataSetClientServiceError error) {
+                        public boolean onError(final ClientRuntimeError error) {
                             callback.onError(error);
                             return false;
                         }

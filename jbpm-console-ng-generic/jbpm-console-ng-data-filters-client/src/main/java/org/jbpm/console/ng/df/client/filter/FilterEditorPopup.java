@@ -25,11 +25,11 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Widget;
+import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
 import org.dashbuilder.dataset.DataSetMetadata;
 import org.dashbuilder.dataset.DataSetOpType;
-import org.dashbuilder.dataset.client.DataSetClientServiceError;
 import org.dashbuilder.dataset.client.DataSetClientServices;
 import org.dashbuilder.dataset.client.DataSetMetadataCallback;
 import org.dashbuilder.dataset.def.DataSetDef;
@@ -221,7 +221,7 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
                 }
 
                 @Override
-                public boolean onError( DataSetClientServiceError error ) {
+                public boolean onError( final ClientRuntimeError error ) {
                     error( error );
                     return false;
                 }
@@ -238,7 +238,7 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
         else GWT.log( message );
     }
 
-    public void error( final DataSetClientServiceError error ) {
+    public void error( final ClientRuntimeError error ) {
         String message = error.getThrowable() != null ? error.getThrowable().getMessage() : error.getMessage().toString();
         Throwable e = error.getThrowable();
         if ( e.getCause() != null ) e = e.getCause();

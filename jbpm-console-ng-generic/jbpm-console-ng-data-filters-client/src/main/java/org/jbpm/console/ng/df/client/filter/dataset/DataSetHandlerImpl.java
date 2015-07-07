@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.df.client.filter.dataset;
 
 import org.dashbuilder.dataset.*;
-import org.dashbuilder.dataset.client.DataSetClientServiceError;
 import org.dashbuilder.dataset.client.DataSetClientServices;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.engine.group.IntervalBuilder;
@@ -172,9 +171,10 @@ public class DataSetHandlerImpl implements DataSetHandler {
             }
 
             @Override
-            public boolean onError( final DataSetClientServiceError error ) {
+            public boolean onError(org.dashbuilder.common.client.error.ClientRuntimeError error) {
                 return callback.onError( error );
             }
+
         } );
     }
 

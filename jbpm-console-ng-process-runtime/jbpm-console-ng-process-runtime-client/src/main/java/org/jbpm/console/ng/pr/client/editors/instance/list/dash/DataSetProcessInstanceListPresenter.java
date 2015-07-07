@@ -25,8 +25,8 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
-import org.dashbuilder.dataset.client.DataSetClientServiceError;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.bus.client.api.messaging.Message;
@@ -158,7 +158,7 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
           }
 
           @Override
-          public boolean onError( DataSetClientServiceError error ) {
+          public boolean onError( final ClientRuntimeError error ) {
             view.hideBusyIndicator();
             errorPopup.showMessage( "DataSet with UUID [  jbpmProcessInstances ] error: " + error.getThrowable() );
             GWT.log( "DataSet with UUID [  jbpmProcessInstances ] error: ", error.getThrowable() );

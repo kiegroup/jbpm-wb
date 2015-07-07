@@ -21,8 +21,8 @@ import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
+import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
-import org.dashbuilder.dataset.client.DataSetClientServiceError;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.sort.SortOrder;
 
@@ -167,7 +167,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                     }
 
                     @Override
-                    public boolean onError( DataSetClientServiceError error ) {
+                    public boolean onError( final ClientRuntimeError error ) {
                         view.hideBusyIndicator();
                         errorPopup.showMessage( "DataSet with UUID [  jbpmHumanTasks ] error: " + error.getThrowable() );
                         GWT.log( "DataSet with UUID [  jbpmHumanTasks ] error: ", error.getThrowable() );
