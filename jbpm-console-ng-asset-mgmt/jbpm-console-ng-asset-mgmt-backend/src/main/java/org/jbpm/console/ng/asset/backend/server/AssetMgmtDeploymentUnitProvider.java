@@ -60,6 +60,12 @@ public class AssetMgmtDeploymentUnitProvider implements DeploymentUnitProvider<D
                     }
                 } catch (IOException e) {
                     logger.warn("Unable to read guvnor asset mgmt deployment unit properties due to {}", e.getMessage());
+                } finally {
+                    try {
+                        in.close();
+                    } catch (IOException ignore) {
+                        // Nothing to do
+                    }
                 }
             }
         }
@@ -67,8 +73,8 @@ public class AssetMgmtDeploymentUnitProvider implements DeploymentUnitProvider<D
     }
 
     private void deployToLocalMavenIfNeeded(String artifactLocation, Properties properties) {
+        InputStream inputStream = null;
         try {
-            InputStream inputStream = null;
             if ( artifactLocation.contains( "!" ) ) {
                 artifactLocation = artifactLocation.substring(0, artifactLocation.indexOf("!"));
 
@@ -102,6 +108,14 @@ public class AssetMgmtDeploymentUnitProvider implements DeploymentUnitProvider<D
             }
         } catch (Exception e) {
             logger.warn("Unable to deploy asset mgmt kjar into maven repo", e);
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException ignore) {
+                    // Nothing to do
+                }
+            }
         }
     }
 }
