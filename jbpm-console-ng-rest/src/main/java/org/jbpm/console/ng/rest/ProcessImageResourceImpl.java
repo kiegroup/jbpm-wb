@@ -73,9 +73,10 @@ public class ProcessImageResourceImpl {
         // Get kjar and see if svg file is present in it.
         String [] depIdParts = deploymentId.split(":");
         File depFile = repository.getArtifactFileFromRepository(new GAV(depIdParts[0], depIdParts[1], depIdParts[2]));
-        if( depFile != null ) { 
+        if( depFile != null ) {
+            JarFile depJarFile = null;
             try {
-                JarFile depJarFile = new JarFile(depFile);
+                depJarFile = new JarFile(depFile);
                 Enumeration<JarEntry> entries = depJarFile.entries();
                 while( entries.hasMoreElements() ) { 
                     JarEntry jarEntry = entries.nextElement();
@@ -88,6 +89,14 @@ public class ProcessImageResourceImpl {
                 }
             } catch( IOException e ) {
                 // no-op: could not retrieve file from deployment
+            } finally {
+                if (depJarFile != null) {
+                    try {
+                        depJarFile.close();
+                    } catch (IOException ignore) {
+                        // Nothing to do
+                    }
+                }
             }
         }
         
