@@ -1,31 +1,31 @@
 <div>
-
   <div class="accordion" id="accordion">
     <!-- GROUP -->
     <div class="accordion-group">
       <div class="accordion-heading">
-        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#desc_comments"> <label data-field="commentsAccordionLabel"></label>
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#desc_comments">
+          <label data-field="commentsAccordionLabel"/></label>
         </a>
       </div>
-        <div id="desc_comments" class="accordion-body collapse" style="position: relative;">
-      <div class="accordion-inner">
+
+      <div id="desc_comments" class="accordion-body collapse" style="position: relative;">
+        <div class="accordion-inner">
           <div class="form-horizontal">
-              <fieldset>
-                <div class="control-group">
-                  <label class="control-label" for="newTaskCommentTextArea" data-field="newTaskCommentLabel"></label>
-                  <div class="controls">
-                    <input type="text" data-field="newTaskCommentTextArea" id="newTaskCommentTextArea" placeholder="" />
-                  </div>
+            <fieldset>
+              <div class="control-group">
+                <label class="control-label" for="newTaskCommentTextArea" data-field="newTaskCommentLabel"></label>
+                <div class="controls">
+                  <input type="text" data-field="newTaskCommentTextArea" id="newTaskCommentTextArea" placeholder=""/>
                 </div>
-              </fieldset>
-              <div class="form-actions">
-                  <button class="btn btn-primary" data-field="addCommentButton" id="addCommentButton"></button>
               </div>
+            </fieldset>
+            <div class="form-actions">
+              <button class="btn btn-primary" data-field="addCommentButton" id="addCommentButton"></button>
+            </div>
           </div>
+        </div>
       </div>
-          
-        
-      </div>
+
       <div data-field="listContainer">
         <table id="commentsListGrid" data-field="commentsListGrid" class="table table-bordered table-striped table-hover">
         </table>

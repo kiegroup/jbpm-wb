@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.ht.client.editors.taskcomments;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ControlLabel;
 import java.util.Comparator;
-import java.util.Date;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -53,12 +51,12 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.event.Event;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "TaskCommentsViewImpl.html")
 public class TaskCommentsViewImpl extends Composite implements TaskCommentsPresenter.TaskCommentsView {
+
     private Constants constants = GWT.create(Constants.class);
 
     private TaskCommentsPresenter presenter;
@@ -70,7 +68,7 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
     @Inject
     @DataField
     public TextArea newTaskCommentTextArea;
-    
+
     @Inject
     @DataField
     public Label newTaskCommentLabel;
@@ -78,8 +76,6 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
     @Inject
     @DataField
     public Button addCommentButton;
-
-   
 
     @Inject
     @DataField
@@ -93,29 +89,21 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
     @DataField
     public FlowPanel listContainer;
 
-    private ListHandler<CommentSummary> sortHandler;
-
     @Inject
     private Event<NotificationEvent> notification;
 
+    private ListHandler<CommentSummary> sortHandler;
+
+    private static final int COMMENTS_PER_PAGE = 6;
+
     @Override
-    public TextArea getNewTaskCommentTextArea() {
-        return newTaskCommentTextArea;
+    public void clearCommentInput() {
+        newTaskCommentTextArea.setText("");
     }
 
     @Override
-    public Button addCommentButton() {
-        return addCommentButton;
-    }
-
-    @Override
-    public DataGrid<CommentSummary> getDataGrid() {
-        return commentsListGrid;
-    }
-
-    @Override
-    public SimplePager getPager() {
-        return pager;
+    public void redrawDataGrid() {
+        commentsListGrid.redraw();
     }
 
     @Override
@@ -123,10 +111,8 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
         this.presenter = presenter;
         listContainer.add(commentsListGrid);
         listContainer.add(pager);
-        commentsListGrid.setHeight("100px");
-        
-        commentsAccordionLabel.add(new HTMLPanel( constants.Add_Comment()) );
-        
+        commentsAccordionLabel.add(new HTMLPanel(constants.Add_Comment()));
+        commentsListGrid.setHeight("350px");
         commentsListGrid.setEmptyTableWidget(new HTMLPanel(constants.No_Comments_For_This_Task()));
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler = new ListHandler<CommentSummary>(presenter.getDataProvider().getList());
@@ -134,26 +120,32 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
         initTableColumns();
         presenter.addDataDisplay(commentsListGrid);
         // Create a Pager to control the table.
-        pager.setVisible(false);
         pager.setDisplay(commentsListGrid);
-        pager.setPageSize(6);
+        pager.setPageSize(COMMENTS_PER_PAGE);
+        adjustDisplayForListOfSize(1);
+
         newTaskCommentTextArea.setWidth("300px");
         addCommentButton.setText(constants.Add_Comment());
         newTaskCommentLabel.setText(constants.Comment());
     }
 
-    @EventHandler("addCommentButton")
-    public void addCommentButton(ClickEvent e) {
-        if(!newTaskCommentTextArea.getText().equals("")){
-            presenter.addTaskComment(newTaskCommentTextArea.getText(), new Date());
-        }else{
-            displayNotification("The Comment cannot be empty!");
+    @Override
+    public void adjustDisplayForListOfSize(int size) {
+        if (size > COMMENTS_PER_PAGE) {
+            pager.setVisible(true);
+        } else {
+            pager.setVisible(false);
         }
     }
-    
+
+    @EventHandler("addCommentButton")
+    public void addCommentButton(ClickEvent e) {
+        presenter.addTaskComment(newTaskCommentTextArea.getText());
+    }
+
     @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     private void initTableColumns() {
@@ -198,44 +190,45 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
         };
         addedByColumn.setSortable(false);
         commentsListGrid.addColumn(commentTextColumn, constants.Comment());
-        
-        List<HasCell<CommentSummary, ?>> cells = new LinkedList<HasCell<CommentSummary, ?>>();
-        
-        cells.add( new DeleteCommentActionHasCell( "Delete", new Delegate<CommentSummary>() {
-            @Override
-            public void execute( CommentSummary comment ) {
 
+        List<HasCell<CommentSummary, ?>> cells = new LinkedList<HasCell<CommentSummary, ?>>();
+
+        cells.add(new DeleteCommentActionHasCell(constants.Delete(), new Delegate<CommentSummary>() {
+            @Override
+            public void execute(CommentSummary comment) {
                 presenter.removeTaskComment(comment.getId());
             }
-        } ) );
+        }));
 
-        CompositeCell<CommentSummary> cell = new CompositeCell<CommentSummary>( cells );
+        CompositeCell<CommentSummary> cell = new CompositeCell<CommentSummary>(cells);
         Column<CommentSummary, CommentSummary> actionsColumn = new Column<CommentSummary, CommentSummary>(
-                cell ) {
-            @Override
-            public CommentSummary getValue( CommentSummary object ) {
-                return object;
-            }
-        };
-        commentsListGrid.addColumn( actionsColumn,"" );
+                cell) {
+                    @Override
+                    public CommentSummary getValue(CommentSummary object) {
+                        return object;
+                    }
+                };
+        commentsListGrid.addColumn(actionsColumn, "");
     }
-    
+
     private class DeleteCommentActionHasCell implements HasCell<CommentSummary, CommentSummary> {
 
         private ActionCell<CommentSummary> cell;
 
-        public DeleteCommentActionHasCell( String text,
-                                   Delegate<CommentSummary> delegate ) {
-            cell = new ActionCell<CommentSummary>( text, delegate ) {
+        public DeleteCommentActionHasCell(String text,
+                Delegate<CommentSummary> delegate) {
+            cell = new ActionCell<CommentSummary>(text, delegate) {
                 @Override
-                public void render( Cell.Context context,
-                                    CommentSummary value,
-                                    SafeHtmlBuilder sb ) {
+                public void render(Cell.Context context,
+                        CommentSummary value,
+                        SafeHtmlBuilder sb) {
 
-                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Delete()+"'>"+constants.Delete()+"</a>");
-                        sb.append( mysb.toSafeHtml() );
-                    
+                    SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                    mysb.appendHtmlConstant(
+                            "<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='" + constants.
+                            Delete() + "'>" + constants.Delete() + "</a>");
+                    sb.append(mysb.toSafeHtml());
+
                 }
             };
         }
@@ -251,7 +244,7 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
         }
 
         @Override
-        public CommentSummary getValue( CommentSummary object ) {
+        public CommentSummary getValue(CommentSummary object) {
             return object;
         }
     }
