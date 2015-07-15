@@ -32,6 +32,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
+import org.jbpm.console.ng.gc.client.util.TaskUtils;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
@@ -93,25 +94,31 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
 
     @Override
     public void getData(Range visibleRange) {
+        /*-----------------------------------------------------------*/
         ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-        if ( currentFilter == null ) {
-            currentFilter = new PortableQueryFilter( visibleRange.getStart(),
+        if (currentFilter == null) {
+            currentFilter = new PortableQueryFilter(visibleRange.getStart(),
                     visibleRange.getLength(),
                     false, "",
-                    ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                    (columnSortList.size() > 0) ? columnSortList.get(0)
                             .getColumn().getDataStoreName() : "",
-                    ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
-                            .isAscending() : true );
+                    (columnSortList.size() > 0) ? columnSortList.get(0)
+                            .isAscending() : true);
+
         }
         // If we are refreshing after a search action, we need to go back to offset 0
-        if ( currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
-                || currentFilter.getParams().get( "textSearch" ) == null || currentFilter.getParams().get( "textSearch" ).equals( "" ) ) {
-            currentFilter.setOffset( visibleRange.getStart() );
-            currentFilter.setCount( visibleRange.getLength() );
+        if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
+                || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")) {
+            currentFilter.setOffset(visibleRange.getStart());
+            currentFilter.setCount(visibleRange.getLength());
+            currentFilter.setFilterParams("");
         } else {
-            currentFilter.setOffset( 0 );
-            currentFilter.setCount( view.getListGrid().getPageSize() );
+            currentFilter.setFilterParams("(LOWER(t.name) like '"+currentFilter.getParams().get("textSearch")
+                    +"' or LOWER(t.description) like '"+currentFilter.getParams().get("textSearch")+"') ");
+            currentFilter.setOffset(0);
+            currentFilter.setCount(view.getListGrid().getPageSize());
         }
+
         //Applying screen specific filters
         if ( currentFilter.getParams() == null ) {
             currentFilter.setParams( new HashMap<String, Object>() );
@@ -126,6 +133,9 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
         currentFilter.setIsAscending( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
                 .isAscending() : true );
 
+        GWT.log( "ProcessVariableCurrentFilter 1:count" + currentFilter.getCount() );
+        GWT.log( "                             2:ofset" + currentFilter.getOffset() );
+
         variablesServices.call( new RemoteCallback<PageResponse<ProcessVariableSummary>>() {
             @Override
             public void callback( PageResponse<ProcessVariableSummary> response ) {
@@ -136,7 +146,7 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
             public boolean error( Message message,
                                   Throwable throwable ) {
                 view.hideBusyIndicator();
-                view.displayNotification( "Error: Getting Process Definitions: " + message );
+                view.displayNotification( "Error: Getting Process Variables List: " + message );
                 GWT.log( throwable.toString() );
                 return true;
             }

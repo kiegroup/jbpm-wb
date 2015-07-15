@@ -103,6 +103,12 @@ public interface Constants extends Messages {
 
     String Refresh();
 
+    String AutoRefresh();
+
+    String RestoreDefaultFilters();
+
+    String Disable();
+
     String View_Process_Instances();
 
     String New_Process_Instance();

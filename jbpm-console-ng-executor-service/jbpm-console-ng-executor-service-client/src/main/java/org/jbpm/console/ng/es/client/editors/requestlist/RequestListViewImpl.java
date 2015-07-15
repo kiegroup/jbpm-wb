@@ -78,16 +78,16 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
     @Inject
     private JobDetailsPopup jobDetailsPopup;
 
-    @Inject
-    private QuickNewJobPopup quickNewJobPopup;
+    //@Inject
+    //private QuickNewJobPopup quickNewJobPopup;
 
     @Inject
     private NewTabFilterPopup newTabFilterPopup;
 
 
 
-    @Inject
-    private JobServiceSettingsPopup jobServiceSettingsPopup;
+    //@Inject
+    //private JobServiceSettingsPopup jobServiceSettingsPopup;
 
     @Override
     public void init(final RequestListPresenter presenter ) {
@@ -242,7 +242,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
     }
 
     private void initLeftToolbarActions(ExtendedPagedTable extendedPagedTable) {
-        SplitDropdownButton actions = new SplitDropdownButton();
+ /*       SplitDropdownButton actions = new SplitDropdownButton();
         actions.setText( constants.Actions() );
         NavLink newJobNavLink = new NavLink(constants.New_Job());
         newJobNavLink.setIcon(IconType.PLUS_SIGN);
@@ -266,6 +266,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
         actions.add( settingsNavLink );
         extendedPagedTable.getRightActionsToolbar().clear();
         extendedPagedTable.getRightActionsToolbar().add( actions );
+  */
     }
 
 
@@ -488,6 +489,34 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
         initSelectionModel();
         applyFilterOnPresenter( filterPagedTable.getMultiGridPreferencesStore().getGridSettings( key ) );
     }
+    public int getRefreshValue(){
+        return getMultiGridPreferencesStore().getRefreshInterval();
+    }
+
+    public void saveRefreshValue(int newValue){
+        filterPagedTable.saveNewRefreshInterval( newValue );
+    }
+
+    public void restoreTabs() {
+        ArrayList<String> existingGrids = getMultiGridPreferencesStore().getGridsId();
+        ArrayList<String> allTabs= new ArrayList<String>( existingGrids.size() );
+
+
+        if ( existingGrids != null && existingGrids.size() > 0 ) {
+
+            for ( int i = 0; i < existingGrids.size(); i++ ) {
+                allTabs.add( existingGrids.get( i ) );
+            }
+
+            for ( int i = 0; i < allTabs.size(); i++ ) {
+                filterPagedTable.removeTab( allTabs.get(i) );
+            }
+
+        }
+        filterPagedTable.tabPanel.remove( 0 );
+        initDefaultFilters( currentGlobalPreferences, createTabButton );
+    }
+
 
 
 }

@@ -257,7 +257,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
     @Override
     public void initExtraButtons(ExtendedPagedTable extendedPagedTable) {
-        Button newTaskButton = new Button();
+     /*   Button newTaskButton = new Button();
         newTaskButton.setTitle(constants.New_Task());
         newTaskButton.setIcon( IconType.PLUS_SIGN );
         newTaskButton.setTitle( Constants.INSTANCE.New_Task() );
@@ -270,6 +270,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         extendedPagedTable.getRightActionsToolbar().clear();
         extendedPagedTable.getRightActionsToolbar().add(newTaskButton);
+        */
 
     }
 
@@ -931,8 +932,33 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return  builder.buildSettings();
 
     }
+    public int getRefreshValue(){
+        return getMultiGridPreferencesStore().getRefreshInterval();
+    }
+
+    public void saveRefreshValue(int newValue){
+        filterPagedTable.saveNewRefreshInterval( newValue );
+    }
+
+    public void restoreTabs() {
+        ArrayList<String> existingGrids = getMultiGridPreferencesStore().getGridsId();
+        ArrayList<String> allTabs= new ArrayList<String>( existingGrids.size() );
 
 
+        if ( existingGrids != null && existingGrids.size() > 0 ) {
+
+            for ( int i = 0; i < existingGrids.size(); i++ ) {
+                allTabs.add( existingGrids.get( i ) );
+            }
+
+            for ( int i = 0; i < allTabs.size(); i++ ) {
+                filterPagedTable.removeTab( allTabs.get(i) );
+            }
+
+        }
+        filterPagedTable.tabPanel.remove( 0 );
+        initDefaultFilters(currentGlobalPreferences,createTabButton );
+    }
 
 
 }

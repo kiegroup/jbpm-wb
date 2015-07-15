@@ -25,6 +25,7 @@ import org.jbpm.console.ng.ga.model.QueryFilter;
 
 import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
+//import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 import org.uberfire.paging.PageResponse;
 
 import javax.enterprise.event.Observes;
@@ -40,6 +41,7 @@ public abstract class AbstractListPresenter<T> {
 
     protected AsyncDataProvider<T> dataProvider;
 
+   // private FilterPagedTable filterPagedTable;
 
     protected QueryFilter currentFilter;
 
@@ -47,7 +49,7 @@ public abstract class AbstractListPresenter<T> {
 
     protected Timer refreshTimer = null;
     protected boolean autoRefreshEnabled = true;
-    protected int autoRefreshSeconds = 10; // This should be loaded from the grid settings (probably the filters)
+    protected int autoRefreshSeconds = 7; // This should be loaded from the grid settings (probably the filters)
 
     protected abstract AbstractListView.ListView getListView();
 
@@ -125,14 +127,43 @@ public abstract class AbstractListPresenter<T> {
         }
 
     }
+
+ /*   protected void onNewItemEvent( @Observes NewItemEvent newItemEvent ) {
+        newItemEventAction();
+    }
+
+    protected void onRefreshIntervalChangeEvent( @Observes RefreshIntervalEvent refreshIntervalEvent ) {
+        int refreshInterval = refreshIntervalEvent.getRefreshInterval();
+        if(refreshInterval == 0 ) {
+            refreshGrid();
+        } else if(refreshInterval == -1){
+            updateRefreshInterval( false, -1 );
+        } else{
+            updateRefreshInterval( true, refreshInterval );
+        }
+    }
+ */
     protected void updateRefreshInterval(boolean enableAutoRefresh, int newInterval){
         this.autoRefreshEnabled = enableAutoRefresh;
-        autoRefreshSeconds =newInterval;
+        setAutoRefreshSeconds( newInterval);
         updateRefreshTimer();
     }
 
     protected int getAutoRefreshSeconds(){
+     //   autoRefreshSeconds = filterPagedTable.getMultiGridPreferencesStore().getRefreshInterval();
         return autoRefreshSeconds;
     }
+
+    protected void setAutoRefreshSeconds(int refreshSeconds){
+    //    filterPagedTable.saveNewRefreshInterval(refreshSeconds);
+        autoRefreshSeconds = refreshSeconds;
+    }
+   /* public FilterPagedTable getFilterPagedTable() {
+        return filterPagedTable;
+    }
+
+    public void setFilterPagedTable( FilterPagedTable filterPagedTable ) {
+        this.filterPagedTable = filterPagedTable;
+    }*/
 
 }

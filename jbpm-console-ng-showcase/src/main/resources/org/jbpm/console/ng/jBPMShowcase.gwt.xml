@@ -61,6 +61,7 @@
   <inherits name="org.jbpm.console.ng.es.JbpmConsoleNGExecutorServiceClient"/>
   <inherits name="org.jbpm.console.ng.gc.JbpmConsoleNGGenericClient"/>
   <inherits name="org.jbpm.console.ng.dm.JbpmConsoleNGDocumentsClient"/>
+  <inherits name="org.jbpm.console.ng.dm.JbpmConsoleNGDocumentsAPI"/>
   <inherits name="org.jbpm.console.ng.wi.JbpmConsoleNGWorkbenchIntegrationClient"/>
   <inherits name="org.jbpm.console.ng.df.JbpmConsoleNGDataFiltersClient"/>
 

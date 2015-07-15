@@ -50,6 +50,12 @@ public interface Constants extends Messages {
 
     String Refresh();
 
+    String AutoRefresh();
+
+    String RestoreDefaultFilters();
+
+    String Disable();
+
     String Settings();
 
     String New_Job();
