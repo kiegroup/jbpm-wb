@@ -27,6 +27,7 @@ import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.console.ng.df.client.i18n.FiltersConstants;
 
 import java.util.*;
+import org.dashbuilder.common.client.error.ClientRuntimeError;
 
 public class DataSetHandlerImpl implements DataSetHandler {
 

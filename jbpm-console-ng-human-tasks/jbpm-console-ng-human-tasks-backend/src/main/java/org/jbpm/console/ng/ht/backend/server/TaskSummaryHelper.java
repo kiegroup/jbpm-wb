@@ -53,7 +53,7 @@ public class TaskSummaryHelper {
                     taskSum.getProcessInstanceId(),
                     taskSum.getDeploymentId(), 
                     taskSum.getParentId(),
-                    isForAdmin, false, "", "");
+                    isForAdmin, false);
     
     }
 
@@ -82,9 +82,7 @@ public class TaskSummaryHelper {
                     auditTask.getProcessInstanceId(),
                     auditTask.getDeploymentId(), 
                     auditTask.getParentId(),
-                    false, true,
-                    auditTask.getPotentialOwners(), 
-                    auditTask.getBusinessAdministrators());
+                    false, true);
     
     }
 }

@@ -261,8 +261,6 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
         Column statusColumn = initTaskStatusColumn();
         Column createdOnDateColumn = initTaskCreatedOnColumn();
         Column dueDateColumn = initTaskDueColumn();
-        Column potOwnersColumn = initTaskPotentialOwnersColumn();
-        Column businessAdminColumn = initTaskBusinessAdministratorsColumn();
         actionsColumn = initActionsColumn(extendedPagedTable);
 
         List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
@@ -273,8 +271,6 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
         columnMetas.add(new ColumnMeta<TaskSummary>(statusColumn, constants.Status()));
         columnMetas.add(new ColumnMeta<TaskSummary>(createdOnDateColumn, "CreatedOn"));
         columnMetas.add(new ColumnMeta<TaskSummary>(dueDateColumn, "DueOn"));
-        columnMetas.add(new ColumnMeta<TaskSummary>(potOwnersColumn, constants.Potential_Owners()));
-        columnMetas.add(new ColumnMeta<TaskSummary>(businessAdminColumn, constants.Administrators()));
         columnMetas.add(new ColumnMeta<TaskSummary>(actionsColumn, constants.Actions()));
         extendedPagedTable.addColumns(columnMetas);
     }
@@ -367,29 +363,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
         return descriptionColumn;
     }
 
-     private Column initTaskPotentialOwnersColumn() {
-        Column<TaskSummary, String> potentialOwnersColumn = new Column<TaskSummary, String>(new TextCell()) {
-            @Override
-            public String getValue(TaskSummary object) {
-                return object.getPotentialOwners();
-            }
-        };
-        potentialOwnersColumn.setSortable(true);
-        potentialOwnersColumn.setDataStoreName( "t.potentialOwners" );
-        return potentialOwnersColumn;
-    }
-    
-    private Column initTaskBusinessAdministratorsColumn() {
-        Column<TaskSummary, String> businessAdministratorsColumn = new Column<TaskSummary, String>(new TextCell()) {
-            @Override
-            public String getValue(TaskSummary object) {
-                return object.getBusinessAdministrators();
-            }
-        };
-        businessAdministratorsColumn.setSortable(true);
-        businessAdministratorsColumn.setDataStoreName( "t.businessAdministrators" );
-        return businessAdministratorsColumn;
-    }
+     
     private Column initTaskPriorityColumn() {
         Column<TaskSummary, Number> taskPriorityColumn = new Column<TaskSummary, Number>(new NumberCell()) {
             @Override

@@ -44,9 +44,7 @@ public class TaskSummary extends GenericSummary {
     private boolean isLogOnly;
     private Long parentId;
     private List<String> potOwnersString = new ArrayList<String>();
-    private String potentialOwners;
-    private String businessAdministrators;
-    
+
     public TaskSummary(long taskId, String taskName, String description, String status,
             int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
             Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId) {
@@ -69,70 +67,55 @@ public class TaskSummary extends GenericSummary {
         this.deploymentId = deploymentId;
         this.parentId = parentId;
     }
-    
+
     public TaskSummary(long taskId, String taskName, String description, String status,
             int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
-            Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId,
-            String potentialOwners, String businessAdministrators) {
+            Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId, boolean isForAdmin) {
         this(taskId, taskName, description, status, priority,
                 actualOwner, createdBy, createdOn, activationTime,
                 expirationTime, processId, processSessionId,
                 processInstanceId, deploymentId, parentId);
-        this.potentialOwners = potentialOwners;
-        this.businessAdministrators = businessAdministrators;
+        this.isForAdmin = isForAdmin;
+    }
+
+    public TaskSummary(long taskId, String taskName, String description, String status,
+            int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
+            Date expirationTime, String processId, long processSessionId, long processInstanceId,
+            String deploymentId, long parentId, boolean isForAdmin, boolean isLogOnly) {
+        this(taskId, taskName, description, status, priority,
+                actualOwner, createdBy, createdOn, activationTime,
+                expirationTime, processId, processSessionId,
+                processInstanceId, deploymentId, parentId, isForAdmin);
+        this.isLogOnly = isLogOnly;
 
     }
 
     public TaskSummary(long taskId, String taskName, String description, String status,
             int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
-            Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId,boolean isForAdmin) {
-         this(taskId, taskName, description, status, priority, 
-                 actualOwner, createdBy, createdOn, activationTime, 
-                 expirationTime, processId, processSessionId, 
-                 processInstanceId, deploymentId, parentId);
-         this.isForAdmin = isForAdmin;
+            Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId, boolean isForAdmin, List<String> potOwnersString) {
+        this(taskId, taskName, description, status, priority,
+                actualOwner, createdBy, createdOn, activationTime,
+                expirationTime, processId, processSessionId,
+                processInstanceId, deploymentId, parentId);
+        this.isForAdmin = isForAdmin;
+        this.potOwnersString.clear();
+        this.potOwnersString.addAll(potOwnersString);
     }
-    public TaskSummary(long taskId, String taskName, String description, String status,
-            int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
-            Date expirationTime, String processId, long processSessionId, long processInstanceId, 
-            String deploymentId, long parentId,boolean isForAdmin, boolean isLogOnly,
-            String potentialOwners, String businessAdministrators) {
-         this(taskId, taskName, description, status, priority, 
-                 actualOwner, createdBy, createdOn, activationTime, 
-                 expirationTime, processId, processSessionId, 
-                 processInstanceId, deploymentId, parentId, isForAdmin);
-         this.isLogOnly = isLogOnly;
-         this.potentialOwners = potentialOwners;
-         this.businessAdministrators = businessAdministrators;
-    }
-    
-    public TaskSummary(long taskId, String taskName, String description, String status,
-                       int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
-                       Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId,boolean isForAdmin,List<String> potOwnersString) {
-                    this(taskId, taskName, description, status, priority, 
-                            actualOwner, createdBy, createdOn, activationTime, 
-                            expirationTime, processId, processSessionId, 
-                            processInstanceId, deploymentId, parentId);
-                    this.isForAdmin = isForAdmin;
-                    this.potOwnersString.clear();
-                    this.potOwnersString.addAll( potOwnersString );
-    }
+
     public TaskSummary() {
     }
 
-  public TaskSummary(Long taskId, String taskName) {
-    this.taskId = taskId;
-    this.taskName = taskName;
-  }
-    
-    
+    public TaskSummary(Long taskId, String taskName) {
+        this.taskId = taskId;
+        this.taskName = taskName;
+    }
 
     public Long getTaskId() {
-      return taskId;
+        return taskId;
     }
 
     public String getTaskName() {
-      return taskName;
+        return taskName;
     }
 
     public long getProcessInstanceId() {
@@ -194,6 +177,7 @@ public class TaskSummary extends GenericSummary {
     public void setForAdmin(boolean isForAdmin) {
         this.isForAdmin = isForAdmin;
     }
+
     public List<String> getPotOwnersString() {
         return potOwnersString;
     }
@@ -206,17 +190,9 @@ public class TaskSummary extends GenericSummary {
         return isLogOnly;
     }
 
-    public String getPotentialOwners() {
-        return potentialOwners;
-    }
-
-    public String getBusinessAdministrators() {
-        return businessAdministrators;
-    }
-
     @Override
     public String toString() {
-        return "TaskSummary{" + "taskId=" + taskId + ", taskName=" + taskName + ", description=" + description + ", status=" + status + ", priority=" + priority + ", actualOwner=" + actualOwner + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", activationTime=" + activationTime + ", expirationTime=" + expirationTime + ", processInstanceId=" + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", deploymentId=" + deploymentId + ", isForAdmin=" + isForAdmin + ", isLogOnly=" + isLogOnly + ", parentId=" + parentId + ", potOwnersString=" + potOwnersString + ", potentialOwners=" + potentialOwners + ", businessAdministrators=" + businessAdministrators + '}';
+        return "TaskSummary{" + "taskId=" + taskId + ", taskName=" + taskName + ", description=" + description + ", status=" + status + ", priority=" + priority + ", actualOwner=" + actualOwner + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", activationTime=" + activationTime + ", expirationTime=" + expirationTime + ", processInstanceId=" + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", deploymentId=" + deploymentId + ", isForAdmin=" + isForAdmin + ", isLogOnly=" + isLogOnly + ", parentId=" + parentId + ", potOwnersString=" + potOwnersString + '}';
     }
-    
+
 }

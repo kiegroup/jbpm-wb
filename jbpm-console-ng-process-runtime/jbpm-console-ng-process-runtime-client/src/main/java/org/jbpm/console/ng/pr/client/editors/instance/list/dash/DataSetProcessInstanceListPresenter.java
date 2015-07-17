@@ -24,6 +24,7 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import org.dashbuilder.common.client.error.ClientRuntimeError;
 
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;

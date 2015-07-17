@@ -59,8 +59,10 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.*;
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.FilterFactory;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
 import org.jboss.errai.security.shared.api.Group;
 import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.TASK_ROLE_ADMINISTRATOR;
@@ -77,6 +79,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     }
     public static String DATASET_TASK_LIST_PREFIX = "DataSetTaskListGrid" ;
     public static String HUMAN_TASKS_DATASET ="jbpmHumanTasks";
+    public static String HUMAN_TASKS_WITH_USERS_DATASET ="jbpmHumanTasksWithUser";
+    public static String HUMAN_TASKS_WITH_ADMINS_DATASET ="jbpmHumanTasksWithAdmin";
 
     public static final String COLUMN_ACTIVATIONTIME = "activationTime";
     public static final String COLUMN_ACTUALOWNER = "actualOwner";
@@ -94,8 +98,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     public static final String COLUMN_STATUS = "status";
     public static final String COLUMN_TASKID = "taskId";
     public static final String COLUMN_WORKITEMID = "workItemId";
-    public static final String COLUMN_POTENTIALOWNERS = "potentialOwners";
-    public static final String COLUMN_BUSINESSADMINISTRATORS = "businessAdministrators";
+    public static final String COLUMN_ORGANIZATIONAL_ENTITY = "oeid";
+    
 
     private static Binder uiBinder = GWT.create(Binder.class);
 
@@ -283,8 +287,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         Column statusColumn = initTaskStatusColumn();
         Column createdOnDateColumn = initTaskCreatedOnColumn();
         Column dueDateColumn = initTaskDueColumn();
-        Column potOwnersColumn = initTaskPotentialOwnersColumn();
-        Column businessAdminColumn = initTaskBusinessAdministratorsColumn();
+        
         actionsColumn = initActionsColumn(extendedPagedTable);
 
         List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
@@ -295,8 +298,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         columnMetas.add(new ColumnMeta<TaskSummary>(statusColumn, constants.Status()));
         columnMetas.add(new ColumnMeta<TaskSummary>(createdOnDateColumn, "CreatedOn"));
         columnMetas.add(new ColumnMeta<TaskSummary>(dueDateColumn, "DueOn"));
-        columnMetas.add(new ColumnMeta<TaskSummary>(potOwnersColumn, constants.Potential_Owners()));
-        columnMetas.add(new ColumnMeta<TaskSummary>(businessAdminColumn, constants.Administrators()));
+
         columnMetas.add(new ColumnMeta<TaskSummary>(actionsColumn, constants.Actions()));
         extendedPagedTable.addColumns(columnMetas);
     }
@@ -361,29 +363,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return descriptionColumn;
     }
     
-    private Column initTaskPotentialOwnersColumn() {
-        Column<TaskSummary, String> potentialOwnersColumn = new Column<TaskSummary, String>(new TextCell()) {
-            @Override
-            public String getValue(TaskSummary object) {
-                return object.getPotentialOwners();
-            }
-        };
-        potentialOwnersColumn.setSortable(true);
-        potentialOwnersColumn.setDataStoreName( COLUMN_POTENTIALOWNERS );
-        return potentialOwnersColumn;
-    }
     
-    private Column initTaskBusinessAdministratorsColumn() {
-        Column<TaskSummary, String> businessAdministratorsColumn = new Column<TaskSummary, String>(new TextCell()) {
-            @Override
-            public String getValue(TaskSummary object) {
-                return object.getBusinessAdministrators();
-            }
-        };
-        businessAdministratorsColumn.setSortable(true);
-        businessAdministratorsColumn.setDataStoreName( COLUMN_BUSINESSADMINISTRATORS );
-        return businessAdministratorsColumn;
-    }
 
     private Column initTaskPriorityColumn() {
         Column<TaskSummary, Number> taskPriorityColumn = new Column<TaskSummary, Number>(new NumberCell()) {
@@ -618,6 +598,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         }
     }
 
+    @Override
     public void initDefaultFilters(GridGlobalPreferences preferences ,Button createTabButton){
 
         List<String> states;
@@ -632,14 +613,14 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         initGenericTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_1", Constants.INSTANCE.Personal(), "Filter " + Constants.INSTANCE.Personal(), states, TASK_ROLE_POTENTIALOWNER );
 
         //Filter status Group
-        states= TaskUtils.getStatusByType( TaskUtils.TaskType.GROUP );
+       states= TaskUtils.getStatusByType( TaskUtils.TaskType.GROUP );
        initGroupTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_2", Constants.INSTANCE.Group(), "Filter " + Constants.INSTANCE.Group(), states, TASK_ROLE_POTENTIALOWNER );
 
         //Filter status All
         states= TaskUtils.getStatusByType( TaskUtils.TaskType.ALL );
         initGenericTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_3", Constants.INSTANCE.All(), "Filter " + Constants.INSTANCE.All(), states,TASK_ROLE_POTENTIALOWNER );
 
-        //Filter status Admin
+//        //Filter status Admin
         states= TaskUtils.getStatusByType( TaskUtils.TaskType.ADMIN );
         initAdminTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_4", Constants.INSTANCE.Task_Admin(), "Filter " + Constants.INSTANCE.Task_Admin(), states, TASK_ROLE_ADMINISTRATOR );
 
@@ -656,7 +637,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset("jbpmHumanTasks");
+        builder.dataset(HUMAN_TASKS_WITH_USERS_DATASET);
         List<Comparable> names = new ArrayList<Comparable>();
 
         for(String s : states){
@@ -665,24 +646,23 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names )  );
         
         Set<Group> groups = identity.getGroups();
-
+        
         
         builder.filter( COLUMN_ACTUALOWNER, equalsTo("") );
-        List<Comparable> gs = new ArrayList<Comparable>();
+        List<ColumnFilter> condList = new  ArrayList<ColumnFilter>();
         for(Group g : groups){
-            gs.add(g.getName());
+            condList.add( FilterFactory.equalsTo(g.getName()));
+            
         }
-        builder.filter( COLUMN_POTENTIALOWNERS, equalsTo(COLUMN_POTENTIALOWNERS, gs) );
-       
-
+        builder.filter( COLUMN_ORGANIZATIONAL_ENTITY, OR(condList) );
+        builder.group(COLUMN_TASKID);
+        
         builder.setColumn( COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_ACTUALOWNER, constants.Actual_Owner());
         builder.setColumn( COLUMN_CREATEDBY,"CreatedBy" );
         builder.setColumn( COLUMN_CREATEDON , "Created on", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_DEPLOYMENTID, "DeploymentId" );
         builder.setColumn( COLUMN_DESCRIPTION, constants.Description() );
-        builder.setColumn( COLUMN_POTENTIALOWNERS, constants.Potential_Owners());
-        builder.setColumn( COLUMN_BUSINESSADMINISTRATORS, constants.Administrators() );
         builder.setColumn( COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_NAME, constants.Task() );
         builder.setColumn( COLUMN_PARENTID,  "ParentId");
@@ -730,7 +710,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset("jbpmHumanTasks");
+        builder.dataset(HUMAN_TASKS_WITH_ADMINS_DATASET);
         List<Comparable> names = new ArrayList<Comparable>();
 
         for(String s : states){
@@ -741,22 +721,23 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         Set<Group> groups = identity.getGroups();
         
 
-        List<Comparable> gs = new ArrayList<Comparable>();
+        List<ColumnFilter> condList = new  ArrayList<ColumnFilter>();
         for(Group g : groups){
-            gs.add(g.getName());
-        }
-        gs.add(identity.getIdentifier());
+            condList.add( FilterFactory.equalsTo(g.getName()));
         
-        builder.filter( equalsTo(COLUMN_BUSINESSADMINISTRATORS, gs) );
-
+        }
+        condList.add( FilterFactory.equalsTo(identity.getIdentifier()));
+        
+        builder.filter( COLUMN_ORGANIZATIONAL_ENTITY, OR(condList) );
+        
+        builder.group(COLUMN_TASKID);
+        
         builder.setColumn( COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_ACTUALOWNER, constants.Actual_Owner());
         builder.setColumn( COLUMN_CREATEDBY,"CreatedBy" );
         builder.setColumn( COLUMN_CREATEDON , "Created on", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_DEPLOYMENTID, "DeploymentId" );
         builder.setColumn( COLUMN_DESCRIPTION, constants.Description() );
-        builder.setColumn( COLUMN_POTENTIALOWNERS, constants.Potential_Owners());
-        builder.setColumn( COLUMN_BUSINESSADMINISTRATORS, constants.Administrators() );
         builder.setColumn( COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_NAME, constants.Task() );
         builder.setColumn( COLUMN_PARENTID,  "ParentId");
@@ -820,8 +801,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.setColumn( COLUMN_CREATEDON , "Created on", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_DEPLOYMENTID, "DeploymentId" );
         builder.setColumn( COLUMN_DESCRIPTION, constants.Description() );
-        builder.setColumn( COLUMN_POTENTIALOWNERS, constants.Potential_Owners());
-        builder.setColumn( COLUMN_BUSINESSADMINISTRATORS, constants.Administrators() );
         builder.setColumn( COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_NAME, constants.Task() );
         builder.setColumn( COLUMN_PARENTID,  "ParentId");
@@ -877,12 +856,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         initSelectionModel();
         applyFilterOnPresenter( filterPagedTable.getMultiGridPreferencesStore().getGridSettings( key ) );
     }
-
- /*   public void applyFilterOnPresenter(String key) {
-        initSelectionModel();
-        presenter.filterGrid( getTableSettingsByKey( key ));
-    }
-*/
     /*-------------------------------------------------*/
     /*---              DashBuilder                   --*/
     /*-------------------------------------------------*/
@@ -894,14 +867,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         builder.dataset(HUMAN_TASKS_DATASET);
 
-      /*  builder.setColumn( COLUMN_TASKID, constants.Id() );
-        builder.setColumn( COLUMN_NAME, constants.Task() );
-        builder.setColumn( COLUMN_DESCRIPTION, constants.Description() );
-        builder.setColumn( COLUMN_PRIORITY, "Priority" );
-        builder.setColumn( COLUMN_STATUS, constants.Status() );
-        builder.setColumn( COLUMN_CREATEDON , "Created on", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy" );
-       */
+  
 
         builder.setColumn( COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_ACTUALOWNER, constants.Actual_Owner());
@@ -909,8 +875,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.setColumn( COLUMN_CREATEDON , "Created on", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_DEPLOYMENTID, "DeploymentId" );
         builder.setColumn( COLUMN_DESCRIPTION, constants.Description() );
-        builder.setColumn( COLUMN_POTENTIALOWNERS, constants.Potential_Owners());
-        builder.setColumn( COLUMN_BUSINESSADMINISTRATORS, constants.Administrators() );
         builder.setColumn( COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_NAME, constants.Task() );
         builder.setColumn( COLUMN_PARENTID,  "ParentId");

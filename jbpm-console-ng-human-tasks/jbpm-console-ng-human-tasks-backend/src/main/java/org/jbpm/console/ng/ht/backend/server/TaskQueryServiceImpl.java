@@ -17,15 +17,15 @@ package org.jbpm.console.ng.ht.backend.server;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import javax.annotation.PostConstruct;
+import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ga.model.QueryFilter;
-import org.jbpm.console.ng.ht.model.AuditTaskSummary;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
@@ -92,14 +92,13 @@ public class TaskQueryServiceImpl implements TaskQueryService {
             statusesString = (List<String>) filter.getParams().get("statuses");
             taskRole=(String) filter.getParams().get("taskRole");
             stringFilter =(String) filter.getParams().get("filter");
-        }   List<Status> statuses = new ArrayList<Status>();
-        if(statusesString != null){
-            for (String s : statusesString) {
-                statuses.add(Status.valueOf(s));
-        }
-        }   org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount() + 1,
+        }   
+        
+        
+        org.kie.internal.query.QueryFilter qf = new org.kie.internal.query.QueryFilter(filter.getOffset(), filter.getCount() + 1,
                 filter.getOrderBy(), filter.isAscending());
         qf.setFilterParams(filter.getFilterParams());
+        
         List<TaskSummary> taskSummaries = null;
         if (TASK_ROLE_ADMINISTRATOR.equals(taskRole)){
             List<AuditTask> allAdminAuditTask = runtimeDataService.getAllAdminAuditTask(userId, qf);
@@ -115,10 +114,13 @@ public class TaskQueryServiceImpl implements TaskQueryService {
             taskSummaries = TaskSummaryHelper.adaptAuditCollection(runtimeDataService.getAllAuditTask(userId, qf));
         }else{
             List<AuditTask> allAuditTask;
-            if(statuses.size() == 1 && statuses.get(0).equals(Status.Ready)){
+            if(statusesString.size() == 1 && statusesString.get(0).equals("Ready")){
                  allAuditTask = runtimeDataService.getAllGroupAuditTask(userId, qf);
             }else{
-                allAuditTask = runtimeDataService.getAllAuditTask(userId, qf);
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("statuses", statusesString);
+                qf.setParams(params);
+                allAuditTask = runtimeDataService.getAllAuditTaskByStatus(userId, qf);
             }
             taskSummaries = TaskSummaryHelper.adaptAuditCollection(allAuditTask);
 

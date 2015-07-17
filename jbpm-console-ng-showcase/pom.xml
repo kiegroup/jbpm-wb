@@ -688,6 +688,11 @@
 
     <!-- Dashboard -->
     <dependency>
+        <groupId>org.dashbuilder</groupId>
+        <artifactId>dashbuilder-renderer-default</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-dashboard-client</artifactId>
       <scope>provided</scope>
@@ -771,11 +776,26 @@
     <dependency>
       <groupId>org.dashbuilder</groupId>
       <artifactId>dashbuilder-widgets</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.dashbuilder</groupId>
       <artifactId>dashbuilder-displayer-api</artifactId>
+    </dependency>
+   
+
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-dataset-editor</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-displayer-client</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -882,10 +902,11 @@
         <configuration>
           <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
           <localWorkers>1</localWorkers>
-          <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m -Xms1024m -XX:PermSize=128m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.marshalling.server.classOutput=${project.build.outputDirectory} -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true</extraJvmArgs>
+          <extraJvmArgs>-Xmx4048m -XX:MaxPermSize=512m -Xms1024m -XX:PermSize=128m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true</extraJvmArgs>
           <module>org.jbpm.console.ng.FastCompiledjBPMShowcase</module>
           <logLevel>INFO</logLevel>
           <noServer>false</noServer>
+          <draftCompile>true</draftCompile>
           <server>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</server>
           <disableCastChecking>true</disableCastChecking>
           <runTarget>jbpm-console.html</runTarget>
@@ -988,12 +1009,17 @@
 
 
             <!-- Dashbuilder -->
-            <!--compileSourcesArtifact>org.dashbuilder:dashbuilder-widgets</compileSourcesArtifact-->
+            
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-common-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-shared</compileSourcesArtifact>
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-api</compileSourcesArtifact>
+            <!-- these dependencies are not required by the BPM SIde only by the DataSet Editor -->
+            <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-editor</compileSourcesArtifact>
+            <compileSourcesArtifact>org.dashbuilder:dashbuilder-widgets</compileSourcesArtifact>
+            <compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.dashbuilder:dashbuilder-renderer-default</compileSourcesArtifact>
 
 
 

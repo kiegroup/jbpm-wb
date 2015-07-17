@@ -115,6 +115,12 @@
       <artifactId>dashbuilder-dataset-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    
+     <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-common-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.dashbuilder</groupId>

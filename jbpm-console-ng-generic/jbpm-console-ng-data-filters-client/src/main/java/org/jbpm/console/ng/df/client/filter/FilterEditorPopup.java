@@ -43,6 +43,7 @@ import org.uberfire.mvp.Command;
 
 import javax.enterprise.context.Dependent;
 import java.util.List;
+import org.dashbuilder.common.client.error.ClientRuntimeError;
 
 @Dependent
 public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.Listener {

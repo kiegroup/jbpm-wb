@@ -18,11 +18,11 @@ package org.jbpm.console.ng.df.client.filter;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 
-
 /**
  * Table settings builder
  */
 public final class FilterSettingsBuilderHelper {
+
     FilterSettingsBuilder builder = FilterSettingsBuilder.init();
 
     public static FilterSettingsBuilderHelper init() {
@@ -33,44 +33,48 @@ public final class FilterSettingsBuilderHelper {
         builder = FilterSettingsBuilder.init();
     }
 
-    public void dataset( String dataSetId ) {
-        builder.dataset( dataSetId );
+    public void dataset(String dataSetId) {
+        builder.dataset(dataSetId);
     }
 
-     public void filter(  ColumnFilter... filter ) {
-        builder.filter(  filter );
-    }
-    
-    public void filter( String column_name, ColumnFilter... filter ) {
-        builder.filter( column_name, filter );
+    public void filter(ColumnFilter... filter) {
+        builder.filter(filter);
     }
 
-    public void setColumn( String columnId, String columnHeader, String formatStr ) {
-        builder.column( columnId ).format( columnHeader, formatStr );
+    public void filter(String column_name, ColumnFilter... filter) {
+        builder.filter(column_name, filter);
     }
 
-    public void setColumn( String columnId, String columnHeader ) {
-        builder.column( columnId ).format( columnHeader );
+    public void setColumn(String columnId, String columnHeader, String formatStr) {
+        builder.column(columnId).format(columnHeader, formatStr);
     }
 
-    public void filterOn( boolean applySelf, boolean notifyOthers, boolean receiveFromOthers ) {
-        builder.filterOn( applySelf, notifyOthers, receiveFromOthers );
+    public void setColumn(String columnId, String columnHeader) {
+        builder.column(columnId).format(columnHeader);
     }
 
-    public void tableOrderEnabled( boolean orderEnabled ) {
-        builder.tableOrderEnabled( orderEnabled );
+    public void filterOn(boolean applySelf, boolean notifyOthers, boolean receiveFromOthers) {
+        builder.filterOn(applySelf, notifyOthers, receiveFromOthers);
     }
 
-    public void tableOrderDefault( String defaultColumnId, SortOrder sortOrder ) {
-        builder.tableOrderDefault( defaultColumnId, sortOrder );
+    public void tableOrderEnabled(boolean orderEnabled) {
+        builder.tableOrderEnabled(orderEnabled);
     }
 
-    public void tableWidth( int width ) {
-        builder.tableWidth( width );
+    public void tableOrderDefault(String defaultColumnId, SortOrder sortOrder) {
+        builder.tableOrderDefault(defaultColumnId, sortOrder);
+    }
+
+    public void tableWidth(int width) {
+        builder.tableWidth(width);
+    }
+
+    public void group(String columnId) {
+        builder.group(columnId);
     }
 
     public FilterSettings buildSettings() {
-        return ( FilterSettings ) builder.buildSettings();
+        return (FilterSettings) builder.buildSettings();
     }
 
 }
