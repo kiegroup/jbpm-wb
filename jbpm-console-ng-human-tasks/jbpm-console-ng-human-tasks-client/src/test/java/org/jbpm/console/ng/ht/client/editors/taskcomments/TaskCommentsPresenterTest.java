@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskcomments;
 
+import com.google.gwtmockito.GwtMockitoTestRunner;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
@@ -24,54 +25,61 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter.TaskCommentsView;
+import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskCommentsService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import static org.mockito.Mockito.times;
+import org.uberfire.mocks.CallerMock;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(GwtMockitoTestRunner.class)
 public class TaskCommentsPresenterTest {
-
-    @Mock
-    TaskCommentsService commentsServiceMock;
-    @Mock
-    Caller<TaskCommentsService> callerMock;
-    @Mock
-    TaskCommentsView viewMock;
-    @Mock
-    User userMock;
-
-    @InjectMocks
-    TaskCommentsPresenter presenter = new TaskCommentsPresenter();
 
     private static final Long TASK_ID = 1L;
     private static final String USR_ID = "Jan";
 
+    private CallerMock<TaskCommentsService> callerMock;
+    @Mock
+    private TaskCommentsService commentsServiceMock;
+    @Mock
+    private TaskCommentsView viewMock;
+    @Mock
+    private User userMock;
+
+    //Thing under test
+    private TaskCommentsPresenter presenter;
+
     @Before
     public void setupMocks() {
-        when(callerMock.call(any(RemoteCallback.class), any(ErrorCallback.class)))
-                .thenReturn(commentsServiceMock);
         when(userMock.getIdentifier())
                 .thenReturn(USR_ID);
+
+        //Mock that actually calls the callbacks
+        callerMock = new CallerMock<TaskCommentsService>(commentsServiceMock);
+
+        presenter = new TaskCommentsPresenter(viewMock, callerMock, userMock);
     }
 
     @Test
-    public void commentsUpdatedWhenTaskSelected() {
+    public void commentsUpdatedWhenTaskSelectedOrRefreshed() {
         //When task selected
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_ID));
 
         //Then comments for given task loaded & comment grid refreshed
         verify(commentsServiceMock).getAllCommentsByTaskId(TASK_ID);
         verify(viewMock).redrawDataGrid();
+
+        //When task Refreshed
+        presenter.onTaskRefreshedEvent(new TaskRefreshedEvent(TASK_ID));
+
+        //Then comments for given task loaded & comment grid refreshed
+        verify(commentsServiceMock, times(2)).getAllCommentsByTaskId(TASK_ID);
+        verify(viewMock, times(2)).redrawDataGrid();
     }
 
     @Test
@@ -95,6 +103,6 @@ public class TaskCommentsPresenterTest {
         verify(commentsServiceMock)
                 .addComment(anyLong(), eq(comment), eq(USR_ID), any(Date.class));
         // Input cleared
-        //verify(viewMock).clearCommentInput(); //TODO - will fail, because callback actually never called
+        verify(viewMock).clearCommentInput();
     }
 }
