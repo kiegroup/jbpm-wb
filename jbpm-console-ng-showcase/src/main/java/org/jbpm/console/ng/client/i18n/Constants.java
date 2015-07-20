@@ -92,5 +92,5 @@ public interface Constants extends Messages {
 
     String Group();
 
-
+    String Setting();
 }
