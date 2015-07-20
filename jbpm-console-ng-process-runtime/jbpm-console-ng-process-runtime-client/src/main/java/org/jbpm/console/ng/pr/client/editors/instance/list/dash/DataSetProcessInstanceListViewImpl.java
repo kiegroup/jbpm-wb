@@ -303,7 +303,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
 
 
     public void initExtraButtons( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ){
-        Button newInstanceButton = new Button();
+     /*   Button newInstanceButton = new Button();
         newInstanceButton.setTitle(constants.New_Instance());
         newInstanceButton.setIcon( IconType.PLUS_SIGN );
         newInstanceButton.setTitle( Constants.INSTANCE.New_Instance() );
@@ -313,7 +313,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
                 newProcessInstancePopup.show();
             }
         });
-        extendedPagedTable.getRightActionsToolbar().add(newInstanceButton);
+        extendedPagedTable.getRightActionsToolbar().add(newInstanceButton);*/
     }
     private void initBulkActions( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
         SplitDropdownButton bulkActions = new SplitDropdownButton();
@@ -751,6 +751,34 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
         return  builder.buildSettings();
 
     }
+    public int getRefreshValue(){
+        return getMultiGridPreferencesStore().getRefreshInterval();
+    }
+
+    public void saveRefreshValue(int newValue){
+        filterPagedTable.saveNewRefreshInterval( newValue );
+    }
+
+    public void restoreTabs() {
+        ArrayList<String> existingGrids = getMultiGridPreferencesStore().getGridsId();
+        ArrayList<String> allTabs= new ArrayList<String>( existingGrids.size() );
+
+
+        if ( existingGrids != null && existingGrids.size() > 0 ) {
+
+            for ( int i = 0; i < existingGrids.size(); i++ ) {
+                allTabs.add( existingGrids.get( i ) );
+            }
+
+            for ( int i = 0; i < allTabs.size(); i++ ) {
+                filterPagedTable.removeTab( allTabs.get(i) );
+            }
+
+        }
+        filterPagedTable.tabPanel.remove( 0 );
+        initDefaultFilters( currentGlobalPreferences, createTabButton );
+    }
+
 
 
 }

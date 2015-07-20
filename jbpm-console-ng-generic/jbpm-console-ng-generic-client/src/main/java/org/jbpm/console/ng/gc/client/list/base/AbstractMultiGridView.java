@@ -98,11 +98,16 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     protected DefaultSelectionEventManager<T> noActionColumnManager;
 
+    public GridGlobalPreferences currentGlobalPreferences;
+    public Button createTabButton;
+
 
     public void init( final V presenter,
                       final GridGlobalPreferences preferences,
                       final Button createNewGridButton ) {
         this.presenter = presenter;
+        this.currentGlobalPreferences = preferences;
+        this.createTabButton = createNewGridButton;
 
         filterPagedTable = new FilterPagedTable<T>();
         initWidget( filterPagedTable.makeWidget() );
@@ -154,7 +159,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
             }
 
         } ).loadUserPreferences( preferences.getKey(), UserPreferencesType.MULTIGRIDPREFERENCES );
-
+        //presenter.setFilterPagedTable( filterPagedTable );
+       // presenter.autoRefreshSeconds =  getMultiGridPreferencesStore().getRefreshInterval();
     }
 
     @Override
@@ -170,22 +176,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
    */
 
     public void initGenericToolBar( ExtendedPagedTable<T> extendedPagedTable ) {
-        Button refreshButton = new Button();
-        refreshButton.setIcon( IconType.REFRESH );
-        refreshButton.setTitle( Constants.INSTANCE.Refresh() );
-        refreshButton.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                presenter.refreshGrid();
-            }
-        } );
-        extendedPagedTable.getRightToolbar().add( refreshButton );
-
-        Button refreshDropDownButton = new Button();
-        createRefreshToggleButton(refreshDropDownButton);
-        extendedPagedTable.getRightToolbar().add( refreshDropDownButton );
-
-
     }
 
     public String getValidKeyForAdditionalListGrid( String baseName ) {
@@ -284,10 +274,10 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     private void showSelectRefreshIntervalPopup(final int left,
-                                         final int top,
-                                         final Button refreshIntervalSelector) {
+            final int top,
+            final Button refreshIntervalSelector) {
         VerticalPanel popupContent = new VerticalPanel();
-        
+
         int configuredSeconds = getMultiGridPreferencesStore().getRefreshInterval();
         if(configuredSeconds>0) {
             presenter.updateRefreshInterval( true,configuredSeconds );
@@ -298,18 +288,18 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         RadioButton oneMinuteRadioButton = createTimeSelectorRadioButton(10000, "1 Minute", configuredSeconds, refreshIntervalSelector, popupContent);
         RadioButton fiveMinuteRadioButton = createTimeSelectorRadioButton(50000, "5 Minutes", configuredSeconds, refreshIntervalSelector, popupContent);
         RadioButton tenMinuteRadioButton = createTimeSelectorRadioButton(100000, "10 Minutes", configuredSeconds, refreshIntervalSelector, popupContent);
-        
+
         popupContent.add(oneMinuteRadioButton);
         popupContent.add(fiveMinuteRadioButton);
         popupContent.add(tenMinuteRadioButton);
-        
+
         Button resetButton = new Button( "Disable Autorefresh" );
         resetButton.setSize( ButtonSize.MINI );
         resetButton.addClickHandler( new ClickHandler() {
 
             @Override
             public void onClick( ClickEvent event ) {
-                filterPagedTable.saveNewRegreshInterval( 0 );
+                filterPagedTable.saveNewRefreshInterval( 0 );
                 presenter.updateRefreshInterval( false,0 );
                 refreshIntervalSelector.setActive( false );
                 popup.hide();
@@ -318,14 +308,12 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
         popupContent.add( resetButton );
 
-
         popup.setWidget(popupContent);
         popup.show();
         int finalLeft = left - popup.getOffsetWidth();
         popup.setPopupPosition(finalLeft, top);
 
     }
-
     private RadioButton createTimeSelectorRadioButton(int time, String name, int configuredSeconds, final Button refreshIntervalSelector, VerticalPanel popupContent) {
         RadioButton oneMinuteRadioButton = new RadioButton("refreshInterval",name);
         oneMinuteRadioButton.setText( name  );
@@ -333,15 +321,15 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         if(configuredSeconds == selectedRefreshTime ) {
             oneMinuteRadioButton.setValue( true );
         }
-        
+
         oneMinuteRadioButton.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
-                filterPagedTable.saveNewRegreshInterval( selectedRefreshTime );
+                filterPagedTable.saveNewRefreshInterval( selectedRefreshTime );
                 presenter.updateRefreshInterval(true, selectedRefreshTime );
                 refreshIntervalSelector.setActive( false );
                 popup.hide();
-                
+
             }
         } );
         return oneMinuteRadioButton;

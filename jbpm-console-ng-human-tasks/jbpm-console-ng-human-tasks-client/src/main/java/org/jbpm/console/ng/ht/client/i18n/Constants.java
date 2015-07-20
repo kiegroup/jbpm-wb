@@ -123,6 +123,12 @@ public interface Constants extends Messages {
 
     String Refresh();
 
+    String AutoRefresh();
+
+    String RestoreDefaultFilters();
+
+    String Disable();
+
     String Tasks_Refreshed();
 
     String Add_User();
