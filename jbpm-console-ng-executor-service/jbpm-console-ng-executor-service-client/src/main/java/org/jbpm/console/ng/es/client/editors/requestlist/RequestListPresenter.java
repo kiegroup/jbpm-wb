@@ -16,6 +16,7 @@
 
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,10 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.dashbuilder.common.client.error.ClientRuntimeError;
+import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.dataset.sort.SortOrder;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.RadioButton;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
@@ -38,6 +43,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jbpm.console.ng.df.client.filter.FilterSettings;
+import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.es.client.editors.quicknewjob.QuickNewJobPopup;
 import org.jbpm.console.ng.es.client.editors.servicesettings.JobServiceSettingsPopup;
 import org.jbpm.console.ng.es.client.i18n.Constants;
@@ -53,6 +60,7 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.mvp.Command;
+import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.paging.PageResponse;
 
 
@@ -78,15 +86,17 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         public void saveRefreshValue(int newValue);
     }
     private Constants constants = GWT.create( Constants.class );
-    
+
     @Inject
     private RequestListView view;
-    
+
     @Inject
     private Caller<ExecutorServiceEntryPoint> executorServices;
     @Inject
     private Event<RequestChangedEvent> requestChangedEvent;
 
+    @Inject
+    DataSetQueryHelper dataSetQueryHelper;
 
     private List<String> currentActiveStates;
 
@@ -103,10 +113,14 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     public Button menuResetTabsButton = new Button();
 
 
+    @Inject
+    private ErrorPopupPresenter errorPopup;
+
+
     public RequestListPresenter() {
         super();
     }
-    
+
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -118,8 +132,8 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         return view;
     }
 
-    public void refreshRequests(List<String> statuses) {
-        currentActiveStates = statuses;
+    public void filterGrid(FilterSettings tableSettings) {
+        dataSetQueryHelper.setCurrentTableSetting( tableSettings);
         refreshGrid();
     }
 
@@ -150,51 +164,80 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     }
 
     @Override
-    public void getData(Range visibleRange) {
-        ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-        if (currentFilter == null) {
-            currentFilter = new PortableQueryFilter(visibleRange.getStart(),
-                    visibleRange.getLength(),
-                    false, "",
-                    (columnSortList.size() > 0) ? columnSortList.get(0)
-                            .getColumn().getDataStoreName() : "",
-                    (columnSortList.size() > 0) ? columnSortList.get(0)
-                            .isAscending() : true);
-        }
-        // If we are refreshing after a search action, we need to go back to offset 0
-        if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
-                || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")) {
-            currentFilter.setOffset(view.getListGrid().getPageStart());
-            currentFilter.setCount(view.getListGrid().getPageSize());
-        } else {
-            currentFilter.setOffset(0);
-            currentFilter.setCount(view.getListGrid().getPageSize());
-        }
-        //Applying screen specific filters
-        if (currentFilter.getParams() == null) {
-            currentFilter.setParams(new HashMap<String, Object>());
-        }
-        currentFilter.getParams().put("states", currentActiveStates);
+    public void getData(final Range visibleRange) {
+        try {
+            FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
+            if(currentTableSettings!=null) {
+                currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
+                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+                //GWT.log( "processInstances getData "+columnSortList.size() +"currentTableSettings table name "+ currentTableSettings.getTableName() );
+                if(columnSortList!=null &&  columnSortList.size()>0) {
+                    dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
+                    dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
+                }else {
+                    dataSetQueryHelper.setLastOrderedColumn( RequestListViewImpl.COLUMN_TIMESTAMP );
+                    dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
+                }
+                dataSetQueryHelper.setDataSetHandler(   currentTableSettings );
+                dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
+                    @Override
+                    public void callback( DataSet dataSet ) {
+                        if ( dataSet != null) {
+                            List<RequestSummary> myRequestSumaryFromDataSet = new ArrayList<RequestSummary>();
 
-        currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
-                .getColumn().getDataStoreName() : "");
-        currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
-                .isAscending() : true);
+                            for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
 
-        executorServices.call(new RemoteCallback<PageResponse<RequestSummary>>() {
-            @Override
-            public void callback(PageResponse<RequestSummary> response) {
-                updateDataOnCallback(response);
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error(Message message, Throwable throwable) {
+                                myRequestSumaryFromDataSet.add( new RequestSummary(
+                                        dataSetQueryHelper.getColumnLongValue( dataSet, RequestListViewImpl.COLUMN_ID, i ),
+                                        dataSetQueryHelper.getColumnDateValue( dataSet, RequestListViewImpl.COLUMN_TIMESTAMP, i ),
+                                        dataSetQueryHelper.getColumnStringValue( dataSet, RequestListViewImpl.COLUMN_STATUS, i ),
+                                        dataSetQueryHelper.getColumnStringValue( dataSet, RequestListViewImpl.COLUMN_COMMANDNAME, i ),
+                                        dataSetQueryHelper.getColumnStringValue( dataSet, RequestListViewImpl.COLUMN_MESSAGE, i ),
+                                        dataSetQueryHelper.getColumnStringValue( dataSet, RequestListViewImpl.COLUMN_BUSINESSKEY, i ) ) );
+
+                            }
+                            PageResponse<RequestSummary> requestSummaryPageResponse = new PageResponse<RequestSummary>();
+                            requestSummaryPageResponse.setPageRowList( myRequestSumaryFromDataSet );
+                            requestSummaryPageResponse.setStartRowIndex( visibleRange.getStart() );
+                            requestSummaryPageResponse.setTotalRowSize( dataSet.getRowCountNonTrimmed() );
+                            requestSummaryPageResponse.setTotalRowSizeExact( true );
+                            if ( visibleRange.getStart() + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed() ) {
+                                requestSummaryPageResponse.setLastPage( true );
+                            } else {
+                                requestSummaryPageResponse.setLastPage( false );
+                            }
+                            updateDataOnCallback( requestSummaryPageResponse );
+                        }
+                        view.hideBusyIndicator();
+                    }
+
+                    @Override
+                    public void notFound() {
+                        view.hideBusyIndicator();
+                        errorPopup.showMessage( "Not found DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] " );
+                        GWT.log( "DataSet with UUID [  "+RequestListViewImpl.REQUEST_LIST_DATASET_ID+ " ] not found." );
+                    }
+
+                    @Override
+                    public boolean onError( final ClientRuntimeError error ) {
+                        view.hideBusyIndicator();
+                        errorPopup.showMessage( "DataSet with UUID [  "+RequestListViewImpl.REQUEST_LIST_DATASET_ID+ " ] error: " + error.getThrowable() );
+                        GWT.log( "DataSet with UUID [  "+RequestListViewImpl.REQUEST_LIST_DATASET_ID+ " ] error: ", error.getThrowable() );
+                        return false;
+                    }
+                } );
+            }else {
                 view.hideBusyIndicator();
-                view.displayNotification("Error: Getting Jbos Requests: " + message);
-                GWT.log(throwable.toString());
-                return true;
             }
-        }).getData(currentFilter);
+        } catch (Exception e) {
+            GWT.log("Error looking up dataset with UUID [ " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ]");
+        }
+
+
+
+
+
+
     }
 
     public void addDataDisplay(HasData<RequestSummary> display) {
@@ -418,9 +461,9 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
             updateRefreshInterval( false, 0 );
         }
 
-        RadioButton oneMinuteRadioButton = createTimeSelectorRadioButton(60, "1 Minute", configuredSeconds, refreshIntervalSelector, popupContent);
-        RadioButton fiveMinuteRadioButton = createTimeSelectorRadioButton(300, "5 Minutes", configuredSeconds, refreshIntervalSelector, popupContent);
-        RadioButton tenMinuteRadioButton = createTimeSelectorRadioButton(600, "10 Minutes", configuredSeconds, refreshIntervalSelector, popupContent);
+        RadioButton oneMinuteRadioButton = createTimeSelectorRadioButton(60, "1 "+Constants.INSTANCE.Minute(), configuredSeconds, refreshIntervalSelector, popupContent);
+        RadioButton fiveMinuteRadioButton = createTimeSelectorRadioButton(300, "5 "+Constants.INSTANCE.Minutes(), configuredSeconds, refreshIntervalSelector, popupContent);
+        RadioButton tenMinuteRadioButton = createTimeSelectorRadioButton(600, "10 "+Constants.INSTANCE.Minutes(), configuredSeconds, refreshIntervalSelector, popupContent);
 
         popupContent.add(oneMinuteRadioButton);
         popupContent.add(fiveMinuteRadioButton);

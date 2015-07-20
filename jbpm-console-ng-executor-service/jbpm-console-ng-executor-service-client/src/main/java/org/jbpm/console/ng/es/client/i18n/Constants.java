@@ -143,4 +143,9 @@ public interface Constants extends Messages {
     String Cancel();
     String  Requeue();
 
+    String New_JobList();
+    String Minutes();
+    String Minute();
+
+
 }

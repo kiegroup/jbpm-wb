@@ -29,7 +29,7 @@
   <name>jBPM Console NG - Executor Service Client</name>
 
   <dependencies>
-      
+
     <!-- dependencies added because of new illegal transitive dependency check -->
     <dependency>
       <groupId>com.github.gwtbootstrap</groupId>
@@ -97,6 +97,30 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-data-binding</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-data-filters-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-dataset-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-common-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-dataset-client</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- GWT and GWT Extensions -->
