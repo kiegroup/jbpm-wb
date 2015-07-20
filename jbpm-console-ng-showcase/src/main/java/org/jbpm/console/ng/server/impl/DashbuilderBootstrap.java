@@ -18,7 +18,7 @@ package org.jbpm.console.ng.server.impl;
 import org.dashbuilder.dataset.DataSetFactory;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash.DataSetTasksListGridViewImpl;
-import org.jbpm.console.ng.pr.client.editors.instance.list.dash.DataSetProcessInstanceListViewImpl;
+import org.jbpm.console.ng.pr.client.editors.instance.list.dash.BaseDataSetProcessInstanceListViewImpl;
 import org.uberfire.commons.services.cdi.Startup;
 
 import javax.annotation.PostConstruct;
@@ -78,20 +78,20 @@ public class DashbuilderBootstrap {
                         .name( "Process Instances" )
                         .dataSource( JBPM_DATASOURCE )
                         .dbTable( PROCESS_INSTANCE_TABLE, false )
-                        .label( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSINSTANCEID )
-                        .label( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSID )
-                        .date( DataSetProcessInstanceListViewImpl.COLUMN_START )
-                        .date( DataSetProcessInstanceListViewImpl.COLUMN_END )
-                        .label( DataSetProcessInstanceListViewImpl.COLUMN_STATUS )
-                        .label( DataSetProcessInstanceListViewImpl.COLUMN_PARENTPROCESSINSTANCEID )
-                        .label( DataSetProcessInstanceListViewImpl.COLUMN_OUTCOME )
-                        .label( DataSetProcessInstanceListViewImpl.COLUMN_DURATION )
-                        .label( DataSetProcessInstanceListViewImpl.COLUMN_IDENTITY )
-                        .label( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSVERSION )
-                        .label( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSNAME )
-                        .label( DataSetProcessInstanceListViewImpl.COLUMN_CORRELATIONKEY )
-                        .label( DataSetProcessInstanceListViewImpl.COLUMN_EXTERNALID )
-                        .label( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSINSTANCEDESCRIPTION )
+                        .label( BaseDataSetProcessInstanceListViewImpl.COLUMN_PROCESSINSTANCEID )
+                        .label( BaseDataSetProcessInstanceListViewImpl.COLUMN_PROCESSID )
+                        .date( BaseDataSetProcessInstanceListViewImpl.COLUMN_START )
+                        .date( BaseDataSetProcessInstanceListViewImpl.COLUMN_END )
+                        .label( BaseDataSetProcessInstanceListViewImpl.COLUMN_STATUS )
+                        .label( BaseDataSetProcessInstanceListViewImpl.COLUMN_PARENTPROCESSINSTANCEID )
+                        .label( BaseDataSetProcessInstanceListViewImpl.COLUMN_OUTCOME )
+                        .label( BaseDataSetProcessInstanceListViewImpl.COLUMN_DURATION )
+                        .label( BaseDataSetProcessInstanceListViewImpl.COLUMN_IDENTITY )
+                        .label( BaseDataSetProcessInstanceListViewImpl.COLUMN_PROCESSVERSION )
+                        .label( BaseDataSetProcessInstanceListViewImpl.COLUMN_PROCESSNAME )
+                        .label( BaseDataSetProcessInstanceListViewImpl.COLUMN_CORRELATIONKEY )
+                        .label( BaseDataSetProcessInstanceListViewImpl.COLUMN_EXTERNALID )
+                        .label( BaseDataSetProcessInstanceListViewImpl.COLUMN_PROCESSINSTANCEDESCRIPTION )
                         .buildDef() );
        
         dataSetDefRegistry.registerDataSetDef(

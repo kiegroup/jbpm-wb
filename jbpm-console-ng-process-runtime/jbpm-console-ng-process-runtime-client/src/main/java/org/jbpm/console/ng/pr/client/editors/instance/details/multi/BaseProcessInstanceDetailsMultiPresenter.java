@@ -1,29 +1,11 @@
-/*
- * Copyright 2012 JBoss Inc
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.jbpm.console.ng.pr.client.editors.instance.details.multi;
 
 import java.util.List;
-import javax.enterprise.context.Dependent;
+
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -33,20 +15,17 @@ import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsPresenter;
 import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView.TabbedDetailsView;
 import org.jbpm.console.ng.pr.client.editors.diagram.ProcessDiagramUtil;
+import org.jbpm.console.ng.pr.client.editors.instance.list.BaseProcessInstanceListPresenter;
+import org.jbpm.console.ng.pr.client.editors.instance.list.BaseProcessInstanceListPresenter.BaseProcessInstanceListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
-import org.uberfire.client.annotations.DefaultPosition;
-import org.uberfire.client.annotations.WorkbenchMenu;
-import org.uberfire.client.annotations.WorkbenchPartTitle;
-import org.uberfire.client.annotations.WorkbenchPartView;
-import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnClose;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
@@ -58,12 +37,14 @@ import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
-@Dependent
-@WorkbenchScreen(identifier = "Process Instance Details Multi", preferredWidth = 500)
-public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.IsWidget;
 
-    public interface ProcessInstanceDetailsMultiView
-            extends TabbedDetailsView<ProcessInstanceDetailsMultiPresenter> {
+public abstract class BaseProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
+
+    public interface BaseProcessInstanceDetailsMultiView
+            extends TabbedDetailsView<BaseProcessInstanceDetailsMultiPresenter> {
 
         IsWidget getOptionsButton();
 
@@ -73,46 +54,30 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
     }
 
     @Inject
-    public ProcessInstanceDetailsMultiView view;
-
-    private Constants constants = GWT.create( Constants.class );
-
-    @Inject
     private Caller<KieSessionEntryPoint> kieSessionServices;
 
     @Inject
-    private Caller<DataServiceEntryPoint> dataServices;
+    protected Caller<DataServiceEntryPoint> dataServices;
 
     @Inject
     private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
-    
+
     @Inject
     private Event<ProcessInstancesUpdateEvent> processInstancesUpdatedEvent;
 
     @Inject
-    private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
+    protected Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
 
-    private String selectedDeploymentId = "";
+    protected String selectedDeploymentId = "";
 
-    private int selectedProcessInstanceStatus = 0;
+    protected int selectedProcessInstanceStatus = 0;
 
-    private String selectedProcessDefName = "";
+    protected String selectedProcessDefName = "";
 
-    @WorkbenchPartView
-    public UberView<ProcessInstanceDetailsMultiPresenter> getView() {
-        return view;
-    }
+    protected Constants constants = GWT.create( Constants.class );
 
-    @DefaultPosition
-    public Position getPosition() {
+    protected Position getPosition() {
         return CompassPosition.EAST;
-    }
-
-
-
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.Details();
     }
 
     @OnStartup
@@ -127,39 +92,35 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
         selectedProcessInstanceStatus = event.getProcessInstanceStatus();
         selectedProcessDefName = event.getProcessDefName();
 
-        changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf(deploymentId) + " - " + selectedProcessDefName ) );
+        changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( deploymentId ) + " - " + selectedProcessDefName ) );
 
-        view.getTabPanel().selectTab( 0 );
+        getSpecificView().getTabPanel().selectTab( 0 );
     }
 
     public void refresh() {
-        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedDeploymentId, Long.valueOf(deploymentId), processId, selectedProcessDefName, selectedProcessInstanceStatus ) );
-    }
-
-    public void signalProcessInstance() {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Signal Process Popup" );
-        placeRequestImpl.addParameter( "processInstanceId", deploymentId);
-        placeManager.goTo( placeRequestImpl );
-
+        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedDeploymentId, Long.valueOf( deploymentId ), processId, selectedProcessDefName, selectedProcessInstanceStatus ) );
     }
 
     public void abortProcessInstance() {
         dataServices.call( new RemoteCallback<ProcessInstanceSummary>() {
+
             @Override
             public void callback( ProcessInstanceSummary processInstance ) {
                 if ( processInstance.getState() == ProcessInstance.STATE_ACTIVE ||
                         processInstance.getState() == ProcessInstance.STATE_PENDING ) {
                     if ( Window.confirm( "Are you sure that you want to abort the process instance?" ) ) {
-                        final long processInstanceId = Long.parseLong(deploymentId);
+                        final long processInstanceId = Long.parseLong( deploymentId );
                         kieSessionServices.call( new RemoteCallback<Void>() {
+
                             @Override
                             public void callback( Void v ) {
-                                processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
+                                processInstancesUpdatedEvent.fire( new ProcessInstancesUpdateEvent( 0L ) );
                             }
                         }, new ErrorCallback<Message>() {
+
                             @Override
                             public boolean error( Message message,
-                                                  Throwable throwable ) {
+                                    Throwable throwable ) {
                                 ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                                 return true;
                             }
@@ -170,18 +131,20 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
                 }
             }
         }, new ErrorCallback<Message>() {
+
             @Override
             public boolean error( Message message,
-                                  Throwable throwable ) {
+                    Throwable throwable ) {
                 ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                 return true;
             }
-        } ).getProcessInstanceById( Long.parseLong(deploymentId) );
+        } ).getProcessInstanceById( Long.parseLong( deploymentId ) );
     }
 
     public void goToProcessInstanceModelPopup() {
         if ( place != null && !deploymentId.equals( "" ) ) {
             dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
+
                 @Override
                 public void callback( List<NodeInstanceSummary> activeNodes ) {
                     final StringBuffer nodeParam = new StringBuffer();
@@ -193,6 +156,7 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
                     }
 
                     dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
+
                         @Override
                         public void callback( List<NodeInstanceSummary> completedNodes ) {
                             StringBuffer completedNodeParam = new StringBuffer();
@@ -209,31 +173,33 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
                             completedNodeParam.deleteCharAt( completedNodeParam.length() - 1 );
 
                             placeManager.goTo( ProcessDiagramUtil.buildPlaceRequest( new DefaultPlaceRequest( "" )
-                                                                                             .addParameter( "activeNodes", nodeParam.toString() )
-                                                                                             .addParameter( "completedNodes", completedNodeParam.toString() )
-                                                                                             .addParameter( "readOnly", "true" )
-                                                                                             .addParameter( "processId", processId)
-                                                                                             .addParameter( "deploymentId", selectedDeploymentId ) ) );
+                                    .addParameter( "activeNodes", nodeParam.toString() )
+                                    .addParameter( "completedNodes", completedNodeParam.toString() )
+                                    .addParameter( "readOnly", "true" )
+                                    .addParameter( "processId", processId )
+                                    .addParameter( "deploymentId", selectedDeploymentId ) ) );
 
                         }
                     }, new ErrorCallback<Message>() {
+
                         @Override
                         public boolean error( Message message,
-                                              Throwable throwable ) {
+                                Throwable throwable ) {
                             ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                             return true;
                         }
-                    } ).getProcessInstanceCompletedNodes( Long.parseLong(deploymentId) );
+                    } ).getProcessInstanceCompletedNodes( Long.parseLong( deploymentId ) );
 
                 }
             }, new ErrorCallback<Message>() {
+
                 @Override
                 public boolean error( Message message,
-                                      Throwable throwable ) {
+                        Throwable throwable ) {
                     ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                     return true;
                 }
-            } ).getProcessInstanceActiveNodes( Long.parseLong(deploymentId) );
+            } ).getProcessInstanceActiveNodes( Long.parseLong( deploymentId ) );
 
         }
     }
@@ -243,10 +209,10 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
         super.onClose();
     }
 
-    @WorkbenchMenu
-    public Menus buildMenu() {
+    protected Menus buildMenu() {
         return MenuFactory
                 .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+
                     @Override
                     public void push( MenuFactory.CustomMenuBuilder element ) {
                     }
@@ -254,15 +220,17 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
                     @Override
                     public MenuItem build() {
                         return new BaseMenuCustom<IsWidget>() {
+
                             @Override
                             public IsWidget build() {
-                                return view.getOptionsButton();
+                                return getSpecificView().getOptionsButton();
                             }
                         };
                     }
                 } ).endMenu()
 
                 .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+
                     @Override
                     public void push( MenuFactory.CustomMenuBuilder element ) {
                     }
@@ -270,15 +238,17 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
                     @Override
                     public MenuItem build() {
                         return new BaseMenuCustom<IsWidget>() {
+
                             @Override
                             public IsWidget build() {
-                                return view.getRefreshButton();
+                                return getSpecificView().getRefreshButton();
                             }
                         };
                     }
                 } ).endMenu()
 
                 .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+
                     @Override
                     public void push( MenuFactory.CustomMenuBuilder element ) {
                     }
@@ -286,13 +256,21 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
                     @Override
                     public MenuItem build() {
                         return new BaseMenuCustom<IsWidget>() {
+
                             @Override
                             public IsWidget build() {
-                                return view.getCloseButton();
+                                return getSpecificView().getCloseButton();
                             }
                         };
                     }
                 } ).endMenu().build();
     }
 
+    public abstract Menus buildSpecificMenu();
+
+    protected abstract BaseProcessInstanceDetailsMultiView getSpecificView();
+
+    public abstract String getTitle();
+
+    public abstract UberView<BaseProcessInstanceDetailsMultiPresenter> getView();
 }

@@ -188,6 +188,10 @@
     </dependency>
     
     <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-generic-preferences</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
       <scope>provided</scope>
@@ -1022,6 +1026,7 @@
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-renderer-default</compileSourcesArtifact>
 
 
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-preferences</compileSourcesArtifact>
 
             <!-- jBPM Designer -->
             <compileSourcesArtifact>org.jbpm:jbpm-designer-api</compileSourcesArtifact>
