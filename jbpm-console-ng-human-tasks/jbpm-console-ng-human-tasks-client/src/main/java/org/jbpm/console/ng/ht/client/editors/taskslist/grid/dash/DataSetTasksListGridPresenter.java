@@ -16,8 +16,20 @@
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
 
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.DropdownButton;
+import com.github.gwtbootstrap.client.ui.RadioButton;
+import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
@@ -36,20 +48,28 @@ import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.console.ng.ht.client.editors.quicknewtask.QuickNewTaskPopup;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
+import org.uberfire.mvp.Command;
 import org.uberfire.paging.PageResponse;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.MenuItem;
+import org.uberfire.workbench.model.menu.Menus;
+import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 
@@ -59,11 +79,16 @@ import org.dashbuilder.common.client.error.ClientRuntimeError;
 public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<TaskSummary> {
 
     public interface DataSetTaskListView extends ListView<TaskSummary, DataSetTasksListGridPresenter> {
-
+        public int getRefreshValue();
+        public void restoreTabs();
+        public void saveRefreshValue(int newValue);
     }
 
     @Inject
     private DataSetTaskListView view;
+
+    @Inject
+    private QuickNewTaskPopup quickNewTaskPopup;
 
     private Constants constants = GWT.create(Constants.class);
 
@@ -75,8 +100,18 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
     DataSetQueryHelper dataSetQueryHelper;
 
 
+
+
     @Inject
     private ErrorPopupPresenter errorPopup;
+
+    public Button menuActionsButton;
+    private PopupPanel popup = new PopupPanel(true);
+
+    public Button menuRefreshButton = new Button();
+    public Button menuResetTabsButton = new Button();
+
+    private final List<MenuItem> items = new ArrayList<MenuItem>();
 
 
     public DataSetTasksListGridPresenter() {
@@ -106,7 +141,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
             if(currentTableSettings!=null) {
                 currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
                 ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                //GWT.log( "taskList getData "+columnSortList.size() +"currentTableSettings table name "+ currentTableSettings.getTableName() );
+                GWT.log( "-----taskList getData "+columnSortList.size() +"currentTableSettings table name "+ currentTableSettings.getTableName() );
                 if(columnSortList!=null &&  columnSortList.size()>0) {
                     dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
                     dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
@@ -226,6 +261,244 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
             }
         }).claim(taskId, userId, deploymentId);
     }
+
+    @WorkbenchMenu
+    public Menus getMenus() {
+        GWT.log( "get menus DatasetTasklist presenter " + autoRefreshSeconds );
+        setupButtons();
+
+        return MenuFactory
+
+                .newTopLevelMenu( Constants.INSTANCE.New_Task() )
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        quickNewTaskPopup.show();
+                    }
+                } )
+                .endMenu()
+
+                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+                    @Override
+                    public void push( MenuFactory.CustomMenuBuilder element ) {
+                    }
+
+                    @Override
+                    public MenuItem build() {
+                        return new BaseMenuCustom<IsWidget>() {
+                            @Override
+                            public IsWidget build() {
+                                menuRefreshButton.addClickHandler( new ClickHandler() {
+                                    @Override
+                                    public void onClick( ClickEvent clickEvent ) {
+                                        refreshGrid();
+                                    }
+                                } );
+                                return menuRefreshButton;
+                            }
+
+                            @Override
+                            public boolean isEnabled() {
+                                return true;
+                            }
+
+                            @Override
+                            public void setEnabled( boolean enabled ) {
+
+                            }
+
+                            @Override
+                            public String getSignatureId() {
+                                return "org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash.DataSetTaskListGridPresenter#menuRefreshButton";
+                            }
+
+                        };
+                    }
+                } ).endMenu()
+
+
+                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+                    @Override
+                    public void push( MenuFactory.CustomMenuBuilder element ) {
+                    }
+
+                    @Override
+                    public MenuItem build() {
+                        return new BaseMenuCustom<IsWidget>() {
+                            @Override
+                            public IsWidget build() {
+                                return menuActionsButton;
+                            }
+
+                            @Override
+                            public boolean isEnabled() {
+                                return true;
+                            }
+
+                            @Override
+                            public void setEnabled( boolean enabled ) {
+
+                            }
+
+                            @Override
+                            public String getSignatureId() {
+                                return "org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash.DataSetTaskListGridPresenter#menuActionsButton";
+                            }
+
+                        };
+                    }
+                } ).endMenu()
+
+                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+                    @Override
+                    public void push( MenuFactory.CustomMenuBuilder element ) {
+                    }
+
+                    @Override
+                    public MenuItem build() {
+                        return new BaseMenuCustom<IsWidget>() {
+                            @Override
+                            public IsWidget build() {
+                                menuResetTabsButton.addClickHandler( new ClickHandler() {
+                                    @Override
+                                    public void onClick( ClickEvent clickEvent ) {
+                                        view.restoreTabs();
+                                    }
+                                } );
+                                return menuResetTabsButton;
+                            }
+
+                            @Override
+                            public boolean isEnabled() {
+                                return true;
+                            }
+
+                            @Override
+                            public void setEnabled( boolean enabled ) {
+
+                            }
+
+                            @Override
+                            public String getSignatureId() {
+                                return "org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash.DataSetTaskListGridPresenter#menuResetTabsButton";
+                            }
+
+                        };
+                    }
+                } ).endMenu()
+                .build();
+
+
+    }
+
+    public void setupButtons( ) {
+        menuActionsButton = new Button();
+        createRefreshToggleButton(menuActionsButton);
+
+        menuRefreshButton.setIcon( IconType.REFRESH );
+        menuRefreshButton.setSize( ButtonSize.MINI );
+        menuRefreshButton.setTitle(Constants.INSTANCE.Refresh() );
+
+        menuResetTabsButton.setIcon( IconType.TH_LIST );
+        menuResetTabsButton.setSize( ButtonSize.MINI );
+        menuResetTabsButton.setTitle(Constants.INSTANCE.RestoreDefaultFilters() );
+    }
+
+    public void createRefreshToggleButton(final Button refreshIntervalSelector) {
+
+        refreshIntervalSelector.setToggle(true);
+        refreshIntervalSelector.setIcon( IconType.COG);
+        refreshIntervalSelector.setTitle( Constants.INSTANCE.AutoRefresh() );
+        refreshIntervalSelector.setSize( ButtonSize.MINI );
+
+        popup.getElement().getStyle().setZIndex(Integer.MAX_VALUE);
+        popup.addAutoHidePartner(refreshIntervalSelector.getElement());
+        popup.addCloseHandler(new CloseHandler<PopupPanel>() {
+            public void onClose(CloseEvent<PopupPanel> popupPanelCloseEvent) {
+                if (popupPanelCloseEvent.isAutoClosed()) {
+                    refreshIntervalSelector.setActive(false);
+                }
+            }
+        });
+
+        refreshIntervalSelector.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                if (!refreshIntervalSelector.isActive() ) {
+                    showSelectRefreshIntervalPopup( refreshIntervalSelector.getAbsoluteLeft() + refreshIntervalSelector.getOffsetWidth(),
+                            refreshIntervalSelector.getAbsoluteTop() + refreshIntervalSelector.getOffsetHeight(),refreshIntervalSelector);
+                } else {
+                    popup.hide(false);
+                }
+            }
+        });
+
+    }
+
+    private void showSelectRefreshIntervalPopup(final int left,
+                                                final int top,
+                                                final Button refreshIntervalSelector) {
+        VerticalPanel popupContent = new VerticalPanel();
+
+        //int configuredSeconds = presenter.getAutoRefreshSeconds();
+        int configuredSeconds = view.getRefreshValue();
+        if(configuredSeconds>0) {
+            updateRefreshInterval( true,configuredSeconds );
+        } else {
+            updateRefreshInterval( false, 0 );
+        }
+
+        RadioButton oneMinuteRadioButton = createTimeSelectorRadioButton(60, "1 Minute", configuredSeconds, refreshIntervalSelector, popupContent);
+        RadioButton fiveMinuteRadioButton = createTimeSelectorRadioButton(300, "5 Minutes", configuredSeconds, refreshIntervalSelector, popupContent);
+        RadioButton tenMinuteRadioButton = createTimeSelectorRadioButton(600, "10 Minutes", configuredSeconds, refreshIntervalSelector, popupContent);
+
+        popupContent.add(oneMinuteRadioButton);
+        popupContent.add(fiveMinuteRadioButton);
+        popupContent.add(tenMinuteRadioButton);
+
+        Button resetButton = new Button( "Disable Autorefresh" );
+        resetButton.setSize( ButtonSize.MINI );
+        resetButton.addClickHandler( new ClickHandler() {
+
+            @Override
+            public void onClick( ClickEvent event ) {
+                updateRefreshInterval( false,0 );
+                view.saveRefreshValue(  0 );
+                refreshIntervalSelector.setActive( false );
+                popup.hide();
+            }
+        } );
+
+        popupContent.add( resetButton );
+
+
+        popup.setWidget(popupContent);
+        popup.show();
+        int finalLeft = left - popup.getOffsetWidth();
+        popup.setPopupPosition(finalLeft, top);
+
+    }
+
+    private RadioButton createTimeSelectorRadioButton(int time, String name, int configuredSeconds, final Button refreshIntervalSelector, VerticalPanel popupContent) {
+        RadioButton oneMinuteRadioButton = new RadioButton("refreshInterval",name);
+        oneMinuteRadioButton.setText( name  );
+        final int selectedRefreshTime = time;
+        if(configuredSeconds == selectedRefreshTime ) {
+            oneMinuteRadioButton.setValue( true );
+        }
+
+        oneMinuteRadioButton.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                updateRefreshInterval(true, selectedRefreshTime );
+                view.saveRefreshValue( selectedRefreshTime);
+                refreshIntervalSelector.setActive( false );
+                popup.hide();
+
+            }
+        } );
+        return oneMinuteRadioButton;
+    }
+
 
 
 }

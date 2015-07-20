@@ -130,7 +130,7 @@ public class DocumentListPresenter extends AbstractScreenListPresenter<CMSConten
                 view.hideBusyIndicator();
                 dataProvider.updateRowCount(response.size(), true);
                 dataProvider.updateRowData(0, response);
-                updateRefreshTimer();
+                //updateRefreshTimer();
 
                 List<CMSContentSummary> documents = response;
                 if (documents.size() > 0) {

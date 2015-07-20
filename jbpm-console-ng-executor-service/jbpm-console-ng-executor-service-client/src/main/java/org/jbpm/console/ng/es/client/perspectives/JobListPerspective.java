@@ -40,7 +40,7 @@ public class JobListPerspective {
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl( MultiListWorkbenchPanelPresenter.class.getName() );
-        p.setName( "Deployments" );
+        p.setName( "Jobs" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Requests List" ) ) );
         return p;
     }
