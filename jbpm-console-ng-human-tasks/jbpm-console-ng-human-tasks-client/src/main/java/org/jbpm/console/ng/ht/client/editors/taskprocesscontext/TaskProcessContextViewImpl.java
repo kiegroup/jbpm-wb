@@ -11,8 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
-
+ */
 package org.jbpm.console.ng.ht.client.editors.taskprocesscontext;
 
 import javax.enterprise.context.Dependent;
@@ -37,17 +36,17 @@ import com.google.gwt.user.client.ui.TextBox;
 @Dependent
 @Templated(value = "TaskProcessContextViewImpl.html")
 public class TaskProcessContextViewImpl extends Composite implements TaskProcessContextPresenter.TaskProcessContextView {
-    
+
     private TaskProcessContextPresenter presenter;
-    
+
     @Inject
     @DataField
     public Label processContextLabel;
-    
+
     @Inject
     @DataField
     public Button pIDetailsButton;
-    
+
     @Inject
     @DataField
     public ControlLabel processInstanceIdLabel;
@@ -59,7 +58,7 @@ public class TaskProcessContextViewImpl extends Composite implements TaskProcess
     @Inject
     @DataField
     public ControlLabel pIDetailsLabel;
-    
+
     @Inject
     @DataField
     public TextBox processInstanceIdText;
@@ -67,50 +66,54 @@ public class TaskProcessContextViewImpl extends Composite implements TaskProcess
     @Inject
     @DataField
     public TextBox processIdText;
-    
+
     @Inject
     private Event<NotificationEvent> notification;
 
-    private Constants constants = GWT.create( Constants.class );
-    
-    
+    private Constants constants = GWT.create(Constants.class);
+
     @Override
-    public void init( TaskProcessContextPresenter presenter ) {
+    public void init(TaskProcessContextPresenter presenter) {
         this.presenter = presenter;
-        processInstanceIdLabel.add( new HTMLPanel( constants.Process_Instance_Id() ) );
-        processIdLabel.add( new HTMLPanel( constants.Process_Definition_Id() ) );
-        pIDetailsLabel.add( new HTMLPanel( constants.Process_Instance_Details() ) );
-        processContextLabel.setText( constants.Process_Context() );
-        processContextLabel.setStyleName( "" );
-        
-        pIDetailsButton.setText( constants.Process_Instance_Details() );
-        
+        // Instance id
+        processInstanceIdLabel.add(new HTMLPanel(constants.Process_Instance_Id()));
+        processInstanceIdText.setReadOnly(true);
+        processInstanceIdText.setEnabled(false);
+
+        //Process Id
+        processIdLabel.add(new HTMLPanel(constants.Process_Definition_Id()));
         processIdText.setReadOnly(true);
+        processIdText.setEnabled(false);
+
+        processContextLabel.setText(constants.Process_Context());
+        processContextLabel.setStyleName("");
+
+        pIDetailsLabel.add(new HTMLPanel(constants.Process_Instance_Details()));
+        pIDetailsButton.setText(constants.Process_Instance_Details());
     }
-    
+
     @EventHandler("pIDetailsButton")
-    public void pIDetailsButton( ClickEvent e ) {
+    public void pIDetailsButton(ClickEvent e) {
         presenter.goToProcessInstanceDetails();
     }
 
-
     @Override
-    public TextBox getProcessInstanceIdText() {
-        return this.processInstanceIdText;
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     @Override
-    public TextBox getProcessIdText() {
-        return this.processIdText;
+    public void setProcessInstanceId(String piid) {
+        processInstanceIdText.setText(piid);
     }
 
     @Override
-    public Button getpIDetailsButton() {
-        return this.pIDetailsButton;
+    public void setProcessId(String pid) {
+        processIdText.setText(pid);
     }
-    
+
     @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void enablePIDetailsButton(boolean enable) {
+        pIDetailsButton.setEnabled(enable);
     }
 }
