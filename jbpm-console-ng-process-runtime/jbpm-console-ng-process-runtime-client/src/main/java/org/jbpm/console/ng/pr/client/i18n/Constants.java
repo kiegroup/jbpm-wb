@@ -262,4 +262,12 @@ public interface Constants extends Messages {
     String No_Parent_Process_Instance();
 
     String New_Process_InstanceList();
+
+    String Minutes();
+
+    String Minute();
+
+    String Disable_autorefresh();
+
+    String Autorefresh_Disabled();
 }
