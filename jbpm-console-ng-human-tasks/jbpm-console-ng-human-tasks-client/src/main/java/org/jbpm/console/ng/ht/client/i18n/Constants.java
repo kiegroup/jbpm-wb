@@ -234,4 +234,9 @@ public interface Constants extends Messages {
     String New_TaskList();
 
     String Administrators();
+
+    String Minutes();
+    String Minute();
+    String Disable_autorefresh();
+    String Autorefresh_Disabled();
 }

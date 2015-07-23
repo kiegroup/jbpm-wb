@@ -453,31 +453,41 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                                                 final Button refreshIntervalSelector) {
         VerticalPanel popupContent = new VerticalPanel();
 
+        final Button resetButton = new Button( Constants.INSTANCE.Disable_autorefresh() );
+
         //int configuredSeconds = presenter.getAutoRefreshSeconds();
         int configuredSeconds = view.getRefreshValue();
-        if(configuredSeconds>0) {
+        if(configuredSeconds>10) {
             updateRefreshInterval( true,configuredSeconds );
+            resetButton.setActive( false );
+            resetButton.setEnabled( true );
         } else {
             updateRefreshInterval( false, 0 );
+            resetButton.setActive(true );
+            resetButton.setEnabled(false);
+            resetButton.setText( Constants.INSTANCE.Autorefresh_Disabled() );
         }
 
-        RadioButton oneMinuteRadioButton = createTimeSelectorRadioButton(60, "1 "+Constants.INSTANCE.Minute(), configuredSeconds, refreshIntervalSelector, popupContent);
-        RadioButton fiveMinuteRadioButton = createTimeSelectorRadioButton(300, "5 "+Constants.INSTANCE.Minutes(), configuredSeconds, refreshIntervalSelector, popupContent);
-        RadioButton tenMinuteRadioButton = createTimeSelectorRadioButton(600, "10 "+Constants.INSTANCE.Minutes(), configuredSeconds, refreshIntervalSelector, popupContent);
+
+        RadioButton oneMinuteRadioButton = createTimeSelectorRadioButton(60, "1 "+Constants.INSTANCE.Minute(), configuredSeconds, refreshIntervalSelector, popupContent,resetButton);
+        RadioButton fiveMinuteRadioButton = createTimeSelectorRadioButton(300, "5 "+Constants.INSTANCE.Minutes(), configuredSeconds, refreshIntervalSelector, popupContent,resetButton);
+        RadioButton tenMinuteRadioButton = createTimeSelectorRadioButton(600, "10 "+Constants.INSTANCE.Minutes(), configuredSeconds, refreshIntervalSelector, popupContent,resetButton);
 
         popupContent.add(oneMinuteRadioButton);
         popupContent.add(fiveMinuteRadioButton);
         popupContent.add(tenMinuteRadioButton);
 
-        Button resetButton = new Button( Constants.INSTANCE.Disable() );
         resetButton.setSize( ButtonSize.MINI );
         resetButton.addClickHandler( new ClickHandler() {
 
             @Override
             public void onClick( ClickEvent event ) {
                 updateRefreshInterval( false,0 );
-                view.saveRefreshValue(  0 );
+                view.saveRefreshValue( 0 );
                 refreshIntervalSelector.setActive( false );
+                resetButton.setActive( false );
+                resetButton.setEnabled( false );
+                resetButton.setText( Constants.INSTANCE.Autorefresh_Disabled() );
                 popup.hide();
             }
         } );
@@ -492,7 +502,9 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
 
     }
 
-    private RadioButton createTimeSelectorRadioButton(int time, String name, int configuredSeconds, final Button refreshIntervalSelector, VerticalPanel popupContent) {
+    private RadioButton createTimeSelectorRadioButton(int time, String name, int configuredSeconds,
+                                                      final Button refreshIntervalSelector,
+                                                      VerticalPanel popupContent,final Button refreshDisableButton) {
         RadioButton oneMinuteRadioButton = new RadioButton("refreshInterval",name);
         oneMinuteRadioButton.setText( name  );
         final int selectedRefreshTime = time;
@@ -504,13 +516,15 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
             @Override
             public void onClick( ClickEvent event ) {
                 updateRefreshInterval(true, selectedRefreshTime );
-                view.saveRefreshValue( selectedRefreshTime);
+                view.saveRefreshValue( selectedRefreshTime );
                 refreshIntervalSelector.setActive( false );
+                refreshDisableButton.setActive( false );
+                refreshDisableButton.setEnabled( true );
+                refreshDisableButton.setText( Constants.INSTANCE.Disable_autorefresh() );
                 popup.hide();
 
             }
         } );
         return oneMinuteRadioButton;
     }
-
 }
