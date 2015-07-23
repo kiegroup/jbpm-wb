@@ -21,7 +21,6 @@ import org.jbpm.console.ng.ht.client.editors.taskprocesscontext.TaskProcessConte
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
 import org.junit.Before;
@@ -44,8 +43,6 @@ public class TaskProcessContextPresenterTest {
     private PlaceManager placeManager;
     @Mock
     Event<ProcessInstancesWithDetailsRequestEvent> procNavigationMock;
-    @Mock
-    private Event<TaskStyleEvent> taskStyleEventMock;
 
     private TaskProcessContextPresenter presenter;
     private static final Long TASK_ID_NO_PROCESS = 1L;
@@ -74,8 +71,7 @@ public class TaskProcessContextPresenterTest {
                 placeManager,
                 taskQueryServiceMock,
                 dataServiceCallerMock,
-                procNavigationMock,
-                taskStyleEventMock);
+                procNavigationMock);
     }
 
     @Test

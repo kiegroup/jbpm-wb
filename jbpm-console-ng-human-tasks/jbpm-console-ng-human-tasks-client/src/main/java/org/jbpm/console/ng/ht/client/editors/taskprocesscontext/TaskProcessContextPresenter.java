@@ -27,7 +27,6 @@ import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
@@ -57,8 +56,6 @@ public class TaskProcessContextPresenter {
 
     private Event<ProcessInstancesWithDetailsRequestEvent> processInstanceSelected;
 
-    private Event<TaskStyleEvent> taskStyleEvent;
-
     private Caller<TaskQueryService> taskQueryService;
 
     private Caller<DataServiceEntryPoint> dataServices;
@@ -72,15 +69,13 @@ public class TaskProcessContextPresenter {
             PlaceManager placeManager,
             Caller<TaskQueryService> taskQueryService,
             Caller<DataServiceEntryPoint> dataServices,
-            Event<ProcessInstancesWithDetailsRequestEvent> processInstanceSelected,
-            Event<TaskStyleEvent> taskStyleEvent
+            Event<ProcessInstancesWithDetailsRequestEvent> processInstanceSelected
     ) {
         this.view = view;
         this.taskQueryService = taskQueryService;
         this.dataServices = dataServices;
         this.placeManager = placeManager;
         this.processInstanceSelected = processInstanceSelected;
-        this.taskStyleEvent = taskStyleEvent;
     }
 
     @PostConstruct
@@ -125,16 +120,10 @@ public class TaskProcessContextPresenter {
                 view.setProcessInstanceId(String.valueOf(currentProcessInstanceId));
                 view.setProcessId(details.getProcessId());
                 view.enablePIDetailsButton(true);
-
-                changeStyleRow(details.getTaskId());
             }
         },
                 new DefaultErrorCallback()
         ).getItem(new TaskKey(currentTaskId));
-    }
-
-    private void changeStyleRow(final long idTask) {
-        taskStyleEvent.fire(new TaskStyleEvent(idTask));
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
