@@ -49,7 +49,6 @@ import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.model.events.TaskStyleEvent;
 import org.jbpm.console.ng.ht.service.TaskAuditService;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
@@ -115,14 +114,9 @@ public class TaskDetailsPresenter {
     private Event<TaskRefreshedEvent> taskRefreshed;
 
     @Inject
-    private Event<TaskStyleEvent> taskStyleEvent;
-
-    @Inject
     private Event<TaskCalendarEvent> taskCalendarEvent;
 
     private long currentTaskId = 0;
-
-    private String currentTaskName = "";
 
     @PostConstruct
     public void init() {
@@ -213,9 +207,6 @@ public class TaskDetailsPresenter {
                     }
                     i++;
                 }
-
-                changeStyleRow( details.getTaskId() );
-
             }
         }, new ErrorCallback<Message>() {
             @Override
@@ -256,13 +247,8 @@ public class TaskDetailsPresenter {
 
     }
 
-    private void changeStyleRow( final long idTask ) {
-        taskStyleEvent.fire( new TaskStyleEvent( idTask ) );
-    }
-
     public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
         this.currentTaskId = event.getTaskId();
-        this.currentTaskName = event.getTaskName();
         refreshTask();
     }
 
