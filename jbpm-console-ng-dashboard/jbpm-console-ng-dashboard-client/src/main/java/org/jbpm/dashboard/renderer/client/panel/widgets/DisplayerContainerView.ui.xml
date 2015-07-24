@@ -1,0 +1,55 @@
+<!--
+  ~ Copyright 2015 JBoss Inc
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+
+  <ui:style>
+    .header {
+      padding: 20px;
+      height: 30px;
+    }
+    .separator {
+      height: 2px;
+      width: 100%;
+    }
+    .title  {
+      font-size: large;
+    }
+    .selector {
+      float: right;
+      position: relative;
+      width: 150px;
+    }
+    .content {
+    }
+
+  </ui:style>
+
+  <g:FlowPanel ui:field="rootPanel">
+    <g:FlowPanel ui:field="headerPanel">
+      <g:FlowPanel addStyleNames="{style.header}">
+        <b:ListBox ui:field="displayerList" addStyleNames="{style.selector}" />
+        <g:Label ui:field="titleLabel" addStyleNames="{style.title}" />
+      </g:FlowPanel>
+    </g:FlowPanel>
+    <g:FlowPanel ui:field="separatorPanel" addStyleNames="{style.separator}" />
+    <g:FlowPanel ui:field="displayerPanel" addStyleNames="{style.content}" />
+  </g:FlowPanel>
+
+</ui:UiBinder>

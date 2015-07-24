@@ -15,7 +15,21 @@
   <name>jBPM Console NG - Dashboard API</name>
 
   <dependencies>
-    <!-- Errai bus -->
+
+    <!-- Dashbuilder -->
+
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-dataset-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-displayer-api</artifactId>
+    </dependency>
+
+    <!-- Errai -->
+
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-bus</artifactId>

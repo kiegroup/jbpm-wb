@@ -1,0 +1,125 @@
+<!--
+  ~ Copyright 2015 JBoss Inc
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:j="urn:import:org.jbpm.dashboard.renderer.client.panel.widgets"
+             xmlns:d="urn:import:org.dashbuilder.displayer.client"
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+
+  <ui:with field='i18n' type='org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants'/>
+
+  <ui:style>
+    .root {
+      max-width: 1400px;
+    }
+    .body {
+      padding: 20px;
+      background-color: #E9E9E9;
+    }
+    .title {
+      font-size: large;
+    }
+    .header {
+      padding-left: 10px;
+      padding-bottom: 20px;
+      background-color: white;
+    }
+    .metricsRow {
+      margin-left: 10px;
+      margin-right: 10px;
+      margin-top: 10px;
+      margin-bottom: 30px;
+    }
+    .chartsRow {
+      margin: 10px;
+    }
+    .separator {
+      height: 1px;
+      background-color: #E9E9E9;
+    }
+    .instancesAnchor {
+      float: right;
+      position: relative;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+  </ui:style>
+
+  <g:FlowPanel addStyleNames="{style.root}">
+    <g:FlowPanel addStyleNames="{style.header}">
+      <g:Anchor ui:field="instancesAnchor" addStyleNames="{style.instancesAnchor}" text="{i18n.showInstances}" />
+      <g:Label ui:field="headerLabel" addStyleNames="{style.title}" text="{i18n.allProcesses}" />
+    </g:FlowPanel>
+    <g:FlowPanel addStyleNames="{style.separator}" />
+
+    <!-- Dashboard -->
+    <b:FluidContainer addStyleNames="{style.body}" ui:field="dashboardPanel">
+      <b:FluidRow ui:field="processBreadCrumbRow" visible="false">
+        <j:ProcessBreadCrumb ui:field="processBreadCrumb" />
+      </b:FluidRow>
+      <b:FluidRow addStyleNames="{style.metricsRow}">
+        <b:Column size="2">
+          <j:DisplayerContainer ui:field="totalContainer" />
+        </b:Column>
+        <b:Column size="2">
+          <j:DisplayerContainer ui:field="activeContainer" />
+        </b:Column>
+        <b:Column size="2">
+          <j:DisplayerContainer ui:field="pendingContainer" />
+        </b:Column>
+        <b:Column size="2">
+          <j:DisplayerContainer ui:field="suspendedContainer" />
+        </b:Column>
+        <b:Column size="2">
+          <j:DisplayerContainer ui:field="abortedContainer" />
+        </b:Column>
+        <b:Column size="2">
+          <j:DisplayerContainer ui:field="completedContainer" />
+        </b:Column>
+      </b:FluidRow>
+      <b:FluidRow addStyleNames="{style.chartsRow}">
+        <b:Column size="4">
+          <j:DisplayerContainer ui:field="container1" />
+        </b:Column>
+        <b:Column size="4">
+          <j:DisplayerContainer ui:field="container2" />
+        </b:Column>
+        <b:Column size="4">
+          <j:DisplayerContainer ui:field="container3" />
+        </b:Column>
+      </b:FluidRow>
+      <b:FluidRow addStyleNames="{style.chartsRow}">
+        <b:Column size="4">
+          <j:DisplayerContainer ui:field="container4" />
+        </b:Column>
+        <b:Column size="4">
+          <j:DisplayerContainer ui:field="container5" />
+        </b:Column>
+        <b:Column size="4">
+          <j:DisplayerContainer ui:field="container6" />
+        </b:Column>
+      </b:FluidRow>
+    </b:FluidContainer>
+
+    <!-- Instances table -->
+    <g:FlowPanel ui:field="instancesPanel" visible="false">
+      <d:Displayer ui:field="processesTable" />
+    </g:FlowPanel>
+
+  </g:FlowPanel>
+</ui:UiBinder>
