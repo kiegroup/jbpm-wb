@@ -713,11 +713,7 @@
     </dependency>
 
     <!-- Dashboard -->
-    <dependency>
-        <groupId>org.dashbuilder</groupId>
-        <artifactId>dashbuilder-renderer-default</artifactId>
-        <scope>provided</scope>
-    </dependency>
+
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-dashboard-client</artifactId>
@@ -801,32 +797,13 @@
 
     <dependency>
       <groupId>org.dashbuilder</groupId>
-      <artifactId>dashbuilder-widgets</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.dashbuilder</groupId>
-      <artifactId>dashbuilder-displayer-api</artifactId>
-    </dependency>
-   
-
-    <dependency>
-      <groupId>org.dashbuilder</groupId>
-      <artifactId>dashbuilder-dataset-editor</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    
-    
-    <dependency>
-      <groupId>org.dashbuilder</groupId>
-      <artifactId>dashbuilder-displayer-client</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.dashbuilder</groupId>
       <artifactId>dashbuilder-server-all</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-client-all</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -836,12 +813,42 @@
 
     <dependency>
       <groupId>org.dashbuilder</groupId>
-      <artifactId>dashbuilder-dataset-core</artifactId>
+      <artifactId>dashbuilder-dataset-client</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.dashbuilder</groupId>
-      <artifactId>dashbuilder-dataset-client</artifactId>
+      <artifactId>dashbuilder-displayer-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-displayer-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-displayer-screen</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-dataset-editor</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-renderer-default</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-renderer-google</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -1039,21 +1046,19 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-executor-service-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-executor-service-api</compileSourcesArtifact>
 
-
             <!-- Dashbuilder -->
-            
+            <compileSourcesArtifact>org.dashbuilder:dashbuilder-widgets</compileSourcesArtifact>
+            <compileSourcesArtifact>org.dashbuilder:dashbuilder-validations</compileSourcesArtifact>
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-common-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-shared</compileSourcesArtifact>
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-client</compileSourcesArtifact>
-            <compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-api</compileSourcesArtifact>
-            <!-- these dependencies are not required by the BPM SIde only by the DataSet Editor -->
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-editor</compileSourcesArtifact>
-            <compileSourcesArtifact>org.dashbuilder:dashbuilder-widgets</compileSourcesArtifact>
+            <compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-screen</compileSourcesArtifact>
+            <compileSourcesArtifact>org.dashbuilder:dashbuilder-renderer-google</compileSourcesArtifact>
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-renderer-default</compileSourcesArtifact>
-
-
 
             <!-- jBPM Designer -->
             <compileSourcesArtifact>org.jbpm:jbpm-designer-api</compileSourcesArtifact>
