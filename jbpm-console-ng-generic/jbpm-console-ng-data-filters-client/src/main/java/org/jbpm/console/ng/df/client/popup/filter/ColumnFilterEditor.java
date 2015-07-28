@@ -298,6 +298,10 @@ public class ColumnFilterEditor extends Composite {
             out.append(columnId).append(" = ");
             formatParameters(out, f.getParameters());
         }
+        else if (CoreFunctionType.LIKE_TO.equals(type)) {
+            out.append(columnId).append(" like ");
+            formatParameters(out, f.getParameters());
+        }
 //        else if ( CoreFunctionType.LIKE.equals(type)) {
 //            out.append(columnId).append(" like ");
 //            formatParameters(out, f.getParameters());
