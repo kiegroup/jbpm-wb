@@ -87,53 +87,55 @@ public class ProcessDocumentListPresenter extends AbstractListPresenter<Document
 
     @Override
     public void getData(Range visibleRange) {
-        ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-        if ( currentFilter == null ) {
-            currentFilter = new PortableQueryFilter( visibleRange.getStart(),
-                    visibleRange.getLength(),
-                    false, "",
-                    ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
-                            .getColumn().getDataStoreName() : "",
-                    ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
-                            .isAscending() : true );
-        }
-        // If we are refreshing after a search action, we need to go back to offset 0
-        if ( currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
-                || currentFilter.getParams().get( "textSearch" ) == null || currentFilter.getParams().get( "textSearch" ).equals( "" ) ) {
-            currentFilter.setOffset( visibleRange.getStart() );
-            currentFilter.setCount( visibleRange.getLength() );
-        } else {
-            currentFilter.setOffset( 0 );
-            currentFilter.setCount( view.getListGrid().getPageSize() );
-        }
-        //Applying screen specific filters
-        if ( currentFilter.getParams() == null ) {
-            currentFilter.setParams( new HashMap<String, Object>() );
-        }
-        currentFilter.getParams().put( "processInstanceId", processInstanceId );
-        currentFilter.getParams().put( "processDefId", processDefId );
-        currentFilter.getParams().put( "deploymentId", deploymentId );
-
-        currentFilter.setOrderBy( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
-                .getColumn().getDataStoreName() : "" );
-        currentFilter.setIsAscending( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
-                .isAscending() : true );
-
-        documentsServices.call( new RemoteCallback<PageResponse<DocumentSummary>>() {
-            @Override
-            public void callback( PageResponse<DocumentSummary> response ) {
-                updateDataOnCallback(response);
+        if(processInstanceId!=null) {
+            ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+            if ( currentFilter == null ) {
+                currentFilter = new PortableQueryFilter( visibleRange.getStart(),
+                        visibleRange.getLength(),
+                        false, "",
+                        ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                                .getColumn().getDataStoreName() : "",
+                        ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                                .isAscending() : true );
             }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                view.hideBusyIndicator();
-                view.displayNotification( "Error: Getting Process DocumentList: " + message );
-                GWT.log( throwable.toString() );
-                return true;
+            // If we are refreshing after a search action, we need to go back to offset 0
+            if ( currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
+                    || currentFilter.getParams().get( "textSearch" ) == null || currentFilter.getParams().get( "textSearch" ).equals( "" ) ) {
+                currentFilter.setOffset( visibleRange.getStart() );
+                currentFilter.setCount( visibleRange.getLength() );
+            } else {
+                currentFilter.setOffset( 0 );
+                currentFilter.setCount( view.getListGrid().getPageSize() );
             }
-        } ).getData(currentFilter);
+            //Applying screen specific filters
+            if ( currentFilter.getParams() == null ) {
+                currentFilter.setParams( new HashMap<String, Object>() );
+            }
+            currentFilter.getParams().put( "processInstanceId", processInstanceId );
+            currentFilter.getParams().put( "processDefId", processDefId );
+            currentFilter.getParams().put( "deploymentId", deploymentId );
+
+            currentFilter.setOrderBy( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                    .getColumn().getDataStoreName() : "" );
+            currentFilter.setIsAscending( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                    .isAscending() : true );
+
+            documentsServices.call( new RemoteCallback<PageResponse<DocumentSummary>>() {
+                @Override
+                public void callback( PageResponse<DocumentSummary> response ) {
+                    updateDataOnCallback( response );
+                }
+            }, new ErrorCallback<Message>() {
+                @Override
+                public boolean error( Message message,
+                                      Throwable throwable ) {
+                    view.hideBusyIndicator();
+                    view.displayNotification( "Error: Getting Process DocumentList: " + message );
+                    GWT.log( throwable.toString() );
+                    return true;
+                }
+            } ).getData( currentFilter );
+        }
     }
 
 }
