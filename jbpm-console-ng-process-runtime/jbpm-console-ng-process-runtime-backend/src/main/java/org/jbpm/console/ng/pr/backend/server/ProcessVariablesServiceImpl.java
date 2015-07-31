@@ -56,10 +56,16 @@ public class ProcessVariablesServiceImpl implements ProcessVariablesService {
         } else {
             response.setTotalRowSizeExact(true);
         }
-
-        if (!processVariablesSums.isEmpty() && processVariablesSums.size() > (filter.getCount() + filter.getOffset())) {
-            response.setPageRowList(new ArrayList<ProcessVariableSummary>(processVariablesSums.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
-            response.setLastPage(false);
+        response.setTotalRowSizeExact( true );
+        response.setTotalRowSize( processVariablesSums.size() );
+        if (!processVariablesSums.isEmpty()){
+            if (processVariablesSums.size() > (filter.getCount() + filter.getOffset())) {
+                response.setPageRowList( new ArrayList<ProcessVariableSummary>( processVariablesSums.subList( filter.getOffset(), filter.getOffset() + filter.getCount() ) ) );
+                response.setLastPage( false );
+            } else {
+                response.setPageRowList( new ArrayList<ProcessVariableSummary>( processVariablesSums.subList( filter.getOffset(),processVariablesSums.size()) ) );
+                response.setLastPage( true );
+            }
 
         } else {
             response.setPageRowList(new ArrayList<ProcessVariableSummary>(processVariablesSums));

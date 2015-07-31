@@ -156,7 +156,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                 };
                 FilterSettings tableSettings = createTableSettingsPrototype();
                 tableSettings.setKey( key );
-                dataSetEditorManager.showTableSettingsEditor( filterPagedTable, Constants.INSTANCE.New_TaskList(), tableSettings, addNewGrid );
+                dataSetEditorManager.showTableSettingsEditor( filterPagedTable, Constants.INSTANCE.New_FilteredList(), tableSettings, addNewGrid );
 
             }
         } );

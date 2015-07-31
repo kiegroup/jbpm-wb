@@ -40,7 +40,7 @@
     <g:HTMLPanel>
 
         <b:TabPanel ui:field="tabPanel">
-            <b:Tab heading="{i18n.Basic_Properties}" active="true" ui:field="basictab">
+            <b:Tab heading="{i18n.Labels}" active="true" ui:field="basictab">
                 <b:Well>
                     <b:Fieldset>
                         <g:FlowPanel>
@@ -57,7 +57,6 @@
                             </b:ControlGroup>
                             <b:ControlGroup ui:field="tableDescControlGroup">
                                 <b:ControlLabel for="tableDescText" styleName="{style.sectionLabel}">
-                                    <span class="{style.mandatory-field}">*</span>
                                     <ui:text from="{i18n.Description}"/>
                                 </b:ControlLabel>
                                 <b:Controls>

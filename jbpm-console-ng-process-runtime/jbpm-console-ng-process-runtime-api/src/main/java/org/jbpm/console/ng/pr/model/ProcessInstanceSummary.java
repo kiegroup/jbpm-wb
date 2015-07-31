@@ -17,7 +17,9 @@
 package org.jbpm.console.ng.pr.model;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.console.ng.ga.model.GenericSummary;
@@ -36,6 +38,8 @@ public class ProcessInstanceSummary extends GenericSummary {
     private Long parentId;
 
     private String correlationKey;
+    
+    private Map<String, String> domainData = new HashMap<String, String>();
 
     private List<UserTaskSummary> activeTasks;
     
@@ -58,6 +62,18 @@ public class ProcessInstanceSummary extends GenericSummary {
     }
 
     public ProcessInstanceSummary() {
+    }
+    
+    public void addDomainData(String key, String value){
+        domainData.put(key, value);
+    }
+    
+    public String getDomainDataValue(String key){
+        return domainData.get(key);
+    }
+    
+    public Map<String, String> getDomainData(){
+        return domainData;
     }
 
     public Long getProcessInstanceId() {
