@@ -82,7 +82,7 @@ public interface FiltersConstants extends Messages {
 
     String datasethandler_groupops_no_groupintervals();
 
-    String Basic_Properties();
+    String Labels();
 
     String Filter_parameters();
 

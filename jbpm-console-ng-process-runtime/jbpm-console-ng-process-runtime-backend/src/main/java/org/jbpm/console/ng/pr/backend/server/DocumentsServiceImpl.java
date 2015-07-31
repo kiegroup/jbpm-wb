@@ -62,25 +62,28 @@ public class DocumentsServiceImpl implements DocumentsService {
   @Override
   public PageResponse<DocumentSummary> getData(QueryFilter filter) {
     PageResponse<DocumentSummary> response = new PageResponse<DocumentSummary>();
-        List<DocumentSummary> documents = getDocuments(filter);
+    List<DocumentSummary> documents = getDocuments(filter);
 
     response.setStartRowIndex(filter.getOffset());
     response.setTotalRowSize(documents.size() - 1);
-    if (documents.size() > filter.getCount()) {
-      response.setTotalRowSizeExact(false);
-    } else {
-      response.setTotalRowSizeExact(true);
-    }
 
-    if (!documents.isEmpty() && documents.size() > (filter.getCount() + filter.getOffset())) {
-      response.setPageRowList(new ArrayList<DocumentSummary>(documents.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
-      response.setLastPage(false);
+    response.setTotalRowSizeExact( true );
+    response.setTotalRowSize( documents.size() );
 
-    } else {
+    if (!documents.isEmpty()){
+      if (documents.size() > (filter.getCount() + filter.getOffset())) {
+          response.setPageRowList( new ArrayList<DocumentSummary>( documents.subList( filter.getOffset(), filter.getOffset() + filter.getCount() ) ) );
+          response.setLastPage( false );
+      } else {
+          response.setPageRowList( new ArrayList<DocumentSummary>( documents.subList( filter.getOffset(),documents.size()) ) );
+          response.setLastPage( true );
+      }
+
+  } else {
       response.setPageRowList(new ArrayList<DocumentSummary>(documents));
       response.setLastPage(true);
 
-    }
+  }
     return response;
 
   }

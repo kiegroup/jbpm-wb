@@ -186,11 +186,6 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
             tableNameControlGroup.setType( ControlGroupType.ERROR );
             valid = false;
         }
-        if ( tableDescText.getText() != null && tableDescText.getText().trim().length() == 0 ) {
-            tableDescHelpInline.setText(FiltersConstants.INSTANCE.Description_must_be_defined() );
-            tableDescControlGroup.setType( ControlGroupType.ERROR );
-            valid = false;
-        }
         if(!valid) {
             errorMessages.setText(FiltersConstants.INSTANCE.Required_fields_must_be_defined() );
             errorMessagesGroup.setType( ControlGroupType.ERROR );

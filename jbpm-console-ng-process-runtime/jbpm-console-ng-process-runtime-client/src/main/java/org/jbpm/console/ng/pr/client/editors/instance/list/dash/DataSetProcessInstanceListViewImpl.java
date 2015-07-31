@@ -77,7 +77,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
 
     }
 
-    public static String PROCESS_INSTANCES_LIST_PREFIX = "DS_ProcessInstancesGrid" ;
+    public static final String PROCESS_INSTANCES_LIST_PREFIX = "DS_ProcessInstancesGrid" ;
     public static final String PROCESS_INSTANCES_DATASET_ID = "jbpmProcessInstances";
 
     public static final String COLUMN_PROCESSINSTANCEID = "processInstanceId";

@@ -17,17 +17,17 @@ package org.jbpm.console.ng.gc.client.experimental.grid.base;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.google.gwt.view.client.ProvidesKey;
+import java.util.Collection;
 import org.jbpm.console.ng.ga.model.GenericSummary;
-import org.uberfire.ext.widgets.common.client.resources.UberfireSimplePagerResources;
 import org.uberfire.ext.widgets.common.client.tables.PagedTable;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.widgets.common.client.tables.UberfireSimplePager;
+import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.common.client.tables.ColumnPicker;
 
 /**
  *
@@ -75,5 +75,17 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
     dataGrid.removeColumn(col);
   }
 
+  public void removeColumnMeta(ColumnMeta<T> columnMeta){
+      columnPicker.removeColumn(columnMeta);
+  }
+  
+  public Collection<ColumnMeta<T>> getColumnMetaList(){
+      return columnPicker.getColumnMetaList();
+  }
+  
+
+    
+  
+  
 
 }
