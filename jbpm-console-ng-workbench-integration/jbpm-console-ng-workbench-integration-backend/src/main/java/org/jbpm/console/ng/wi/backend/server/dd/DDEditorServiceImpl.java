@@ -44,6 +44,7 @@ import org.kie.workbench.common.services.backend.service.KieService;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
+import org.uberfire.java.nio.base.options.CommentedOption;
 
 @Service
 @ApplicationScoped
@@ -54,6 +55,9 @@ public class DDEditorServiceImpl
     @Inject
     @Named("ioStrategy")
     private IOService ioService;
+
+    @Inject
+    private DDConfigUpdaterHelper configUpdaterHelper;
 
     @Override
     public DeploymentDescriptorModel load(Path path) {
@@ -78,14 +82,25 @@ public class DDEditorServiceImpl
     public Path save(Path path, DeploymentDescriptorModel content, Metadata metadata, String comment) {
 
         try {
+            save( path, content, metadata, makeCommentedOption( comment ) );
+            return path;
+        } catch (Exception e) {
+            throw ExceptionUtilities.handleException(e);
+        }
+    }
+
+    //Don't expose this method in the service API just in case we wants to remove the automatic updates for the descriptor.
+    public Path save( Path path, DeploymentDescriptorModel content, Metadata metadata, CommentedOption commentedOption ) {
+
+        try {
             String deploymentContent = unmarshal(path, content).toXml();
 
             Metadata currentMetadata = metadataService.getMetadata( path );
             ioService.write(Paths.convert(path),
-                            deploymentContent,
-                            metadataService.setUpAttributes(path,
-                                                            metadata),
-                            makeCommentedOption(comment));
+                    deploymentContent,
+                    metadataService.setUpAttributes(path,
+                            metadata),
+                    commentedOption);
 
             fireMetadataSocialEvents( path, currentMetadata, metadata );
 
@@ -310,8 +325,15 @@ public class DDEditorServiceImpl
         if (!ioService.exists(converted)) {
             // create descriptor
             DeploymentDescriptor dd = new DeploymentDescriptorManager( "org.jbpm.domain" ).getDefaultDescriptor();
+
+            if ( configUpdaterHelper.hasPersistenceFile( path ) ) {
+                //if current project has a persistence.xml file configured add the JPAMarshalling strategy.
+                configUpdaterHelper.addJPAMarshallingStrategy( dd, path );
+            }
+
             String xmlDescriptor = dd.toXml();
             ioService.write( converted, xmlDescriptor );
         }
     }
+
 }
