@@ -47,6 +47,10 @@ public class DDConfigUpdater {
 
     private DDConfigUpdaterHelper configUpdaterHelper;
 
+    public DDConfigUpdater() {
+    }
+    
+
     @Inject
     public DDConfigUpdater( DDEditorService ddEditorService,
                             KieProjectService projectService,
