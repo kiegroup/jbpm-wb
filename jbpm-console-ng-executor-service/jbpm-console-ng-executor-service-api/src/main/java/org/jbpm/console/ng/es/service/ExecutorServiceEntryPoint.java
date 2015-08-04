@@ -88,4 +88,6 @@ public interface ExecutorServiceEntryPoint {
     
     public PageResponse<RequestSummary> getData(QueryFilter filter);
 
+    public boolean isExecutorDisabled();
+
 }
