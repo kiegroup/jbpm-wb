@@ -49,6 +49,8 @@ import org.uberfire.paging.PageResponse;
 @ApplicationScoped
 public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint ,GenericServiceEntryPoint<RequestKey, RequestSummary> {
 
+    private boolean executorDisabled = "true".equalsIgnoreCase(System.getProperty("org.kie.executor.disabled"));
+
     @Inject
     ExecutorService executor;
 
@@ -283,6 +285,11 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
         } catch (ClassNotFoundException e) {
             return false;
         }
+    }
+
+    @Override
+    public boolean isExecutorDisabled() {
+        return executorDisabled;
     }
 
     @Override
