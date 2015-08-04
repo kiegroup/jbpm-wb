@@ -224,7 +224,17 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                 .respondsWith( new Command() {
                     @Override
                     public void execute() {
-                        quickNewJobPopup.show();
+                        executorServices.call(new RemoteCallback<Boolean>() {
+                            @Override
+                            public void callback(Boolean isDisabled) {
+                                if (isDisabled) {
+                                    view.displayNotification("Executor service is disabled");
+                                } else {
+                                    quickNewJobPopup.show();
+                                }
+                            }
+                        }).isExecutorDisabled();
+
                     }
                 } )
                 .endMenu()
@@ -233,7 +243,17 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                 .respondsWith( new Command() {
                     @Override
                     public void execute() {
-                        jobServiceSettingsPopup.show();
+                        executorServices.call(new RemoteCallback<Boolean>() {
+                            @Override
+                            public void callback(Boolean isDisabled) {
+                                if (isDisabled) {
+                                    view.displayNotification("Executor service is disabled");
+                                } else {
+                                    jobServiceSettingsPopup.show();
+                                }
+                            }
+                        }).isExecutorDisabled();
+
                     }
                 } )
                 .endMenu()
