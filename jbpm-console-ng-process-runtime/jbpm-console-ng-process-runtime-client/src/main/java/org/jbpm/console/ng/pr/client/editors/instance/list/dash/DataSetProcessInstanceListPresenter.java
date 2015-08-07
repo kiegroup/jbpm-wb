@@ -31,7 +31,9 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.Range;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -39,6 +41,8 @@ import javax.inject.Inject;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
@@ -50,6 +54,7 @@ import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 
+import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
@@ -76,6 +81,9 @@ import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
+import static org.dashbuilder.dataset.filter.FilterFactory.OR;
+import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
+
 @Dependent
 @WorkbenchScreen(identifier = "DataSet Process Instance List")
 public class DataSetProcessInstanceListPresenter extends AbstractScreenListPresenter<ProcessInstanceSummary> {
@@ -87,6 +95,8 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
         public void restoreTabs();
 
         public void saveRefreshValue(int newValue);
+
+        public void applyFilterOnPresenter(String key);
     }
 
     @Inject
@@ -122,7 +132,7 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
     }
 
     public void filterGrid(FilterSettings tableSettings) {
-        dataSetQueryHelper.setCurrentTableSetting(tableSettings);
+        dataSetQueryHelper.setCurrentTableSettings( tableSettings );
         refreshGrid();
     }
 
@@ -147,6 +157,23 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
                     dataSetQueryHelper.setLastSortOrder(SortOrder.ASCENDING);
                 }
                 dataSetQueryHelper.setDataSetHandler(currentTableSettings);
+                if(textSearchStr!=null && textSearchStr.trim().length()>0){
+
+                    DataSetFilter filter = new DataSetFilter();
+                    List<ColumnFilter> filters =new ArrayList<ColumnFilter>(  );
+                    filters.add(likeTo( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSINSTANCEDESCRIPTION, "%" + textSearchStr + "%" ) );
+                    filters.add(likeTo( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSNAME, "%" + textSearchStr + "%" ) );
+                    filters.add(likeTo( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSID, "%" + textSearchStr + "%" ) );
+                    filter.addFilterColumn( OR(filters));
+
+                    if(currentTableSettings.getDataSetLookup().getFirstFilterOp()!=null) {
+                        currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
+                    }else {
+                        currentTableSettings.getDataSetLookup().addOperation( filter );
+                    }
+                    textSearchStr="";
+
+                }
                 dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), new DataSetReadyCallback() {
                     @Override
                     public void callback(DataSet dataSet) {
@@ -571,5 +598,18 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
             }
         });
         return oneMinuteRadioButton;
+    }
+
+    @Override
+    protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
+        String filterString = searchEvent.getFilter();
+        if(filterString!=null && filterString.trim().length()>0){
+            textSearchStr=filterString.toLowerCase();
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put( "textSearch", textSearchStr );
+            dataSetQueryHelper.getCurrentTableSettings().getKey();
+
+            view.applyFilterOnPresenter( dataSetQueryHelper.getCurrentTableSettings().getKey() );
+        }
     }
 }

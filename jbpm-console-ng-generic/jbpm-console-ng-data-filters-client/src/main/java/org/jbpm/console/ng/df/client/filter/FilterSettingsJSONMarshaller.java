@@ -24,6 +24,7 @@ import org.jbpm.console.ng.df.client.filter.json.DisplayerSettingsJSONMarshaller
 
 public class FilterSettingsJSONMarshaller {
 
+    private static final String TABLE_KEY = "tableKey";
     private static final String TABLE_NAME = "tableName";
     private static final String TABLE_DESCR = "tableDescription";
     private static final String EDIT_ENABLED = "tableEditEnabled";
@@ -32,6 +33,7 @@ public class FilterSettingsJSONMarshaller {
 
     public String toJsonString( FilterSettings settings ) {
         JSONObject json = _displayerJsonMarshaller.toJsonObject( settings );
+        json.put( TABLE_KEY, settings.getKey() != null ? new JSONString( settings.getKey() ) : null );
         json.put( TABLE_NAME, settings.getTableName() != null ? new JSONString( settings.getTableName() ) : null );
         json.put( TABLE_DESCR, settings.getTableDescription() != null ? new JSONString( settings.getTableDescription() ) : null );
         json.put( EDIT_ENABLED, new JSONString( Boolean.toString( settings.isEditable() ) ) );
@@ -47,6 +49,9 @@ public class FilterSettingsJSONMarshaller {
 
             JSONValue value = parseResult.get( TABLE_NAME );
             tableSettings.setTableName( value != null && value.isString() != null ? value.isString().stringValue() : null );
+
+            value = parseResult.get( TABLE_KEY );
+            tableSettings.setKey( value != null && value.isString() != null ? value.isString().stringValue() : null );
 
             value = parseResult.get( TABLE_DESCR );
             tableSettings.setTableDescription( value != null && value.isString() != null ? value.isString().stringValue() : null );
