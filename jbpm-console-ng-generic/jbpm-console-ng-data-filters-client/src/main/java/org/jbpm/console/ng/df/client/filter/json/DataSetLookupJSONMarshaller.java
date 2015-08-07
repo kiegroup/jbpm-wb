@@ -127,7 +127,9 @@ public class DataSetLookupJSONMarshaller {
         // LogicalExprFilter o CoreFunctionFilter
         if ( columnFilter instanceof LogicalExprFilter ) {
             LogicalExprFilter lef = ( LogicalExprFilter ) columnFilter;
-            colFilterJson.put( COLUMNID, new JSONString( lef.getColumnId() ) );
+            if(lef.getColumnId()!=null) {
+                colFilterJson.put( COLUMNID, new JSONString( lef.getColumnId() ) );
+            }
             colFilterJson.put( FUNCTION_TYPE, new JSONString( lef.getLogicalOperator().toString() ) );
             colFilterJson.put( FUNCTION_TERMS, formatColumnFilters( lef.getLogicalTerms() ) );
 
@@ -298,8 +300,8 @@ public class DataSetLookupJSONMarshaller {
         String functionType = null;
 
         JSONValue value = columnFilterJson.get( COLUMNID );
-        if ( checkNotNull(value, false, FiltersConstants.INSTANCE.json_datasetlookup_columnfilter_null_columnid() ) ) {
-            columnId = value.isString() != null ? value.isString().stringValue() : null;
+        if (value!=null && checkNotNull(value, false, FiltersConstants.INSTANCE.json_datasetlookup_columnfilter_null_columnid() ) ) {
+            columnId = (value!=null && value.isString() != null )? value.isString().stringValue() : null;
         }
 
         value = columnFilterJson.get( FUNCTION_TYPE );
