@@ -23,11 +23,14 @@ import java.util.Map;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.RadioButton;
@@ -54,6 +57,7 @@ import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
+import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -65,7 +69,6 @@ import org.uberfire.paging.PageResponse;
 
 
 import com.google.gwt.core.client.GWT;
-import org.jboss.errai.bus.client.api.messaging.Message;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
@@ -74,6 +77,9 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
+
+import static org.dashbuilder.dataset.filter.FilterFactory.OR;
+import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
 
 @Dependent
 @WorkbenchScreen(identifier = "Requests List")
@@ -84,6 +90,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         public int getRefreshValue();
         public void restoreTabs();
         public void saveRefreshValue(int newValue);
+        public void applyFilterOnPresenter(String key);
     }
     private Constants constants = GWT.create( Constants.class );
 
@@ -133,7 +140,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     }
 
     public void filterGrid(FilterSettings tableSettings) {
-        dataSetQueryHelper.setCurrentTableSetting( tableSettings);
+        dataSetQueryHelper.setCurrentTableSettings( tableSettings);
         refreshGrid();
     }
 
@@ -179,6 +186,22 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                     dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                 }
                 dataSetQueryHelper.setDataSetHandler(   currentTableSettings );
+                if(textSearchStr!=null && textSearchStr.trim().length()>0){
+
+                    DataSetFilter filter = new DataSetFilter();
+                    List<ColumnFilter> filters =new ArrayList<ColumnFilter>(  );
+                    filters.add(likeTo( RequestListViewImpl.COLUMN_COMMANDNAME, "%" + textSearchStr + "%" ) );
+                    filters.add(likeTo( RequestListViewImpl.COLUMN_MESSAGE, "%" + textSearchStr + "%" ) );
+                    filters.add(likeTo( RequestListViewImpl.COLUMN_BUSINESSKEY, "%" + textSearchStr + "%" ) );
+                    filter.addFilterColumn( OR(filters));
+
+                    if(currentTableSettings.getDataSetLookup().getFirstFilterOp()!=null) {
+                        currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
+                    }else {
+                        currentTableSettings.getDataSetLookup().addOperation( filter );
+                    }
+                    textSearchStr="";
+                }
                 dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
                     @Override
                     public void callback( DataSet dataSet ) {
@@ -526,5 +549,18 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
             }
         } );
         return oneMinuteRadioButton;
+    }
+
+    @Override
+    protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
+        String filterString = searchEvent.getFilter();
+        if(filterString!=null && filterString.trim().length()>0){
+            textSearchStr=filterString.toLowerCase();
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put( "textSearch", textSearchStr );
+            dataSetQueryHelper.getCurrentTableSettings().getKey();
+
+            view.applyFilterOnPresenter( dataSetQueryHelper.getCurrentTableSettings().getKey() );
+        }
     }
 }

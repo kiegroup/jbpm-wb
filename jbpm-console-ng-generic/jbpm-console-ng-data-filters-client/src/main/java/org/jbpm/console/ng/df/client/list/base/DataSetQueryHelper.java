@@ -56,14 +56,6 @@ public class DataSetQueryHelper<T> {
     public DataSetQueryHelper() {
     }
 
-    public FilterSettings getCurrentTableSettings(){
-      return currentTableSetting;
-    }
-
-    public void setCurrentTableSettings(FilterSettings tableSettings){
-        this.currentTableSetting=tableSettings;
-    }
-
     public void lookupDataSet(Integer offset, final DataSetReadyCallback callback) {
         try {
            // Get the sort settings
@@ -115,11 +107,11 @@ public class DataSetQueryHelper<T> {
         this.lastSortOrder = lastSortOrder;
     }
 
-    public FilterSettings getCurrentTableSetting() {
+    public FilterSettings getCurrentTableSettings() {
         return currentTableSetting;
     }
 
-    public void setCurrentTableSetting( FilterSettings currentTableSetting ) {
+    public void setCurrentTableSettings( FilterSettings currentTableSetting ) {
         this.currentTableSetting = currentTableSetting;
     }
 
