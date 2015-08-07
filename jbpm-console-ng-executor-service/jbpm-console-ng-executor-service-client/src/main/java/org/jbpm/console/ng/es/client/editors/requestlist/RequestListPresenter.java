@@ -140,7 +140,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     }
 
     public void filterGrid(FilterSettings tableSettings) {
-        dataSetQueryHelper.setCurrentTableSettings( tableSettings);
+        dataSetQueryHelper.setCurrentTableSettings( tableSettings );
         refreshGrid();
     }
 
@@ -190,10 +190,10 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
 
                     DataSetFilter filter = new DataSetFilter();
                     List<ColumnFilter> filters =new ArrayList<ColumnFilter>(  );
-                    filters.add(likeTo( RequestListViewImpl.COLUMN_COMMANDNAME, "%" + textSearchStr + "%" ) );
-                    filters.add(likeTo( RequestListViewImpl.COLUMN_MESSAGE, "%" + textSearchStr + "%" ) );
-                    filters.add(likeTo( RequestListViewImpl.COLUMN_BUSINESSKEY, "%" + textSearchStr + "%" ) );
-                    filter.addFilterColumn( OR(filters));
+                    filters.add(likeTo( RequestListViewImpl.COLUMN_COMMANDNAME,  textSearchStr  ) );
+                    filters.add(likeTo( RequestListViewImpl.COLUMN_MESSAGE,  textSearchStr  ) );
+                    filters.add(likeTo( RequestListViewImpl.COLUMN_BUSINESSKEY, textSearchStr  ) );
+                    filter.addFilterColumn( OR( filters ) );
 
                     if(currentTableSettings.getDataSetLookup().getFirstFilterOp()!=null) {
                         currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
@@ -444,30 +444,30 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     public void createRefreshToggleButton(final Button refreshIntervalSelector) {
 
         refreshIntervalSelector.setToggle(true);
-        refreshIntervalSelector.setIcon( IconType.COG);
+        refreshIntervalSelector.setIcon( IconType.COG );
         refreshIntervalSelector.setTitle( Constants.INSTANCE.AutoRefresh() );
         refreshIntervalSelector.setSize( ButtonSize.MINI );
 
-        popup.getElement().getStyle().setZIndex(Integer.MAX_VALUE);
-        popup.addAutoHidePartner(refreshIntervalSelector.getElement());
-        popup.addCloseHandler(new CloseHandler<PopupPanel>() {
-            public void onClose(CloseEvent<PopupPanel> popupPanelCloseEvent) {
-                if (popupPanelCloseEvent.isAutoClosed()) {
-                    refreshIntervalSelector.setActive(false);
+        popup.getElement().getStyle().setZIndex( Integer.MAX_VALUE );
+        popup.addAutoHidePartner( refreshIntervalSelector.getElement() );
+        popup.addCloseHandler( new CloseHandler<PopupPanel>() {
+            public void onClose( CloseEvent<PopupPanel> popupPanelCloseEvent ) {
+                if ( popupPanelCloseEvent.isAutoClosed() ) {
+                    refreshIntervalSelector.setActive( false );
                 }
             }
-        });
+        } );
 
-        refreshIntervalSelector.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                if (!refreshIntervalSelector.isActive() ) {
+        refreshIntervalSelector.addClickHandler( new ClickHandler() {
+            public void onClick( ClickEvent event ) {
+                if ( !refreshIntervalSelector.isActive() ) {
                     showSelectRefreshIntervalPopup( refreshIntervalSelector.getAbsoluteLeft() + refreshIntervalSelector.getOffsetWidth(),
-                            refreshIntervalSelector.getAbsoluteTop() + refreshIntervalSelector.getOffsetHeight(),refreshIntervalSelector);
+                            refreshIntervalSelector.getAbsoluteTop() + refreshIntervalSelector.getOffsetHeight(), refreshIntervalSelector );
                 } else {
-                    popup.hide(false);
+                    popup.hide( false );
                 }
             }
-        });
+        } );
 
     }
 
@@ -521,7 +521,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         popup.setWidget(popupContent);
         popup.show();
         int finalLeft = left - popup.getOffsetWidth();
-        popup.setPopupPosition(finalLeft, top);
+        popup.setPopupPosition( finalLeft, top );
 
     }
 
@@ -553,9 +553,8 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
 
     @Override
     protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
-        String filterString = searchEvent.getFilter();
-        if(filterString!=null && filterString.trim().length()>0){
-            textSearchStr=filterString.toLowerCase();
+        textSearchStr = searchEvent.getFilter();
+        if(textSearchStr!=null && textSearchStr.trim().length()>0){
             Map<String, Object> params = new HashMap<String, Object>();
             params.put( "textSearch", textSearchStr );
             dataSetQueryHelper.getCurrentTableSettings().getKey();
