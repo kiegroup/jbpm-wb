@@ -155,10 +155,10 @@ public class DataSetProcessInstanceVariableListPresenter extends AbstractScreenL
 
           DataSetFilter filter = new DataSetFilter();
           List<ColumnFilter> filters =new ArrayList<ColumnFilter>(  );
-          filters.add(likeTo( DataSetProcessInstanceListVariableViewImpl.PROCESS_NAME, "%" + textSearchStr + "%" ) );
-          filters.add(likeTo( DataSetProcessInstanceListVariableViewImpl.PROCESS_INSTANCE_ID, "%" + textSearchStr + "%" ) );
-          filters.add(likeTo( DataSetProcessInstanceListVariableViewImpl.VARIABLE_VALUE, "%" + textSearchStr + "%" ) );
-          filter.addFilterColumn( OR(filters));
+          filters.add(likeTo( DataSetProcessInstanceListVariableViewImpl.PROCESS_NAME,  textSearchStr  ) );
+          filters.add(likeTo( DataSetProcessInstanceListVariableViewImpl.PROCESS_INSTANCE_ID, textSearchStr ) );
+          filters.add(likeTo( DataSetProcessInstanceListVariableViewImpl.VARIABLE_VALUE, textSearchStr  ) );
+          filter.addFilterColumn( OR( filters ) );
 
           if(currentTableSettings.getDataSetLookup().getFirstFilterOp()!=null) {
             currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
@@ -594,9 +594,8 @@ public class DataSetProcessInstanceVariableListPresenter extends AbstractScreenL
 
   @Override
   protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
-    String filterString = searchEvent.getFilter();
-    if(filterString!=null && filterString.trim().length()>0){
-      textSearchStr=filterString.toLowerCase();
+    textSearchStr = searchEvent.getFilter();
+    if(textSearchStr!=null && textSearchStr.trim().length()>0){
       Map<String, Object> params = new HashMap<String, Object>();
       params.put( "textSearch", textSearchStr );
       dataSetQueryHelper.getCurrentTableSettings().getKey();
