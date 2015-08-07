@@ -632,12 +632,12 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         //Filter status Active
         states= TaskUtils.getStatusByType( TaskUtils.TaskType.ACTIVE );
-        initGenericTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states,TASK_ROLE_POTENTIALOWNER );
+        initOwnTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states, TASK_ROLE_POTENTIALOWNER );
 
 
         //Filter status Personal
         states= TaskUtils.getStatusByType( TaskUtils.TaskType.PERSONAL );
-        initGenericTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_1", Constants.INSTANCE.Personal(), "Filter " + Constants.INSTANCE.Personal(), states, TASK_ROLE_POTENTIALOWNER );
+        initPersonalTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_1", Constants.INSTANCE.Personal(), "Filter " + Constants.INSTANCE.Personal(), states, TASK_ROLE_POTENTIALOWNER );
 
         //Filter status Group
        states= TaskUtils.getStatusByType( TaskUtils.TaskType.GROUP );
@@ -645,7 +645,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         //Filter status All
         states= TaskUtils.getStatusByType( TaskUtils.TaskType.ALL );
-        initGenericTabFilter( preferences, DATASET_TASK_LIST_PREFIX+"_3", Constants.INSTANCE.All(), "Filter " + Constants.INSTANCE.All(), states,TASK_ROLE_POTENTIALOWNER );
+        initOwnTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_3", Constants.INSTANCE.All(), "Filter " + Constants.INSTANCE.All(), states, TASK_ROLE_POTENTIALOWNER );
 
 //        //Filter status Admin
         states= TaskUtils.getStatusByType( TaskUtils.TaskType.ADMIN );
@@ -807,7 +807,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         } ) ;
     }
     
-    private void initGenericTabFilter(GridGlobalPreferences preferences, final String key, String tabName,
+    private void initPersonalTabFilter(GridGlobalPreferences preferences, final String key, String tabName,
                                String tabDesc, List<String> states, String role){
 
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
@@ -820,7 +820,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             names.add(s);
         }
         builder.filter( equalsTo( COLUMN_STATUS, names )  );
-
+        builder.filter( equalsTo( COLUMN_ACTUALOWNER, identity.getIdentifier() )  );
 
         builder.setColumn( COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_ACTUALOWNER, constants.Actual_Owner());
@@ -869,6 +869,78 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         } ) ;
 
+    }
+
+    private void initOwnTabFilter(GridGlobalPreferences preferences, final String key, String tabName,
+                                    String tabDesc, List<String> states, String role){
+        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
+        builder.initBuilder();
+
+        builder.dataset(HUMAN_TASKS_WITH_USERS_DATASET);
+        List<Comparable> names = new ArrayList<Comparable>();
+
+        for(String s : states){
+            names.add(s);
+        }
+        builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names )  );
+
+        Set<Group> groups = identity.getGroups();
+        List<ColumnFilter> condList = new  ArrayList<ColumnFilter>();
+        for(Group g : groups){
+            condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY,g.getName()));
+
+        }
+        ColumnFilter myGroupFilter = FilterFactory.AND( FilterFactory.OR( condList ),FilterFactory.equalsTo( COLUMN_ACTUALOWNER, "" ));
+
+        builder.filter( OR( myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUALOWNER, identity.getIdentifier() )) );
+        builder.group( COLUMN_TASKID );
+
+        builder.setColumn( COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_ACTUALOWNER, constants.Actual_Owner());
+        builder.setColumn( COLUMN_CREATEDBY,"CreatedBy" );
+        builder.setColumn( COLUMN_CREATEDON , "Created on", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_DEPLOYMENTID, "DeploymentId" );
+        builder.setColumn( COLUMN_DESCRIPTION, constants.Description() );
+        builder.setColumn( COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_NAME, constants.Task() );
+        builder.setColumn( COLUMN_PARENTID,  "ParentId");
+        builder.setColumn( COLUMN_PRIORITY, "Priority" );
+        builder.setColumn( COLUMN_PROCESSID, "ProcessId" );
+        builder.setColumn( COLUMN_PROCESSINSTANCEID, "ProcessInstanceId" );
+        builder.setColumn( COLUMN_PROCESSSESSIONID, "ProcessSesionId" );
+        builder.setColumn( COLUMN_STATUS, constants.Status() );
+        builder.setColumn( COLUMN_TASKID, constants.Id() );
+        builder.setColumn( COLUMN_WORKITEMID, "WorkItemId" );
+
+        builder.filterOn( true, true, true );
+        builder.tableOrderEnabled(true);
+        builder.tableOrderDefault( COLUMN_CREATEDON, DESCENDING );
+
+        FilterSettings tableSettings = builder.buildSettings();
+        tableSettings.setKey( key );
+        tableSettings.setTableName( tabName );
+        tableSettings.setTableDescription( tabDesc );
+
+        HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>(  );
+
+        tabSettingsValues.put( FILTER_TABLE_SETTINGS, dataSetEditorManager.getTableSettingsToStr( tableSettings ) );
+        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName() );
+        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription() );
+
+        filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
+
+        final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns()), key );
+        currentListGrid = extendedPagedTable;
+        presenter.addDataDisplay( extendedPagedTable );
+        extendedPagedTable.setDataProvider(presenter.getDataProvider() );
+
+        filterPagedTable.addTab( extendedPagedTable, key, new Command() {
+            @Override
+            public void execute() {
+                currentListGrid = extendedPagedTable;
+                applyFilterOnPresenter( key );
+            }
+        } ) ;
     }
 
     public void applyFilterOnPresenter(HashMap<String, Object> params){
