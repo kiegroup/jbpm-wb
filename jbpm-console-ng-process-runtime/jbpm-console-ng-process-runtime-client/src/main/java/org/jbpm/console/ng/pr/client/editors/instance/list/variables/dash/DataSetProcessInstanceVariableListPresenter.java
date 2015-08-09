@@ -80,7 +80,7 @@ import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 @WorkbenchScreen(identifier = "DataSet Process Instance Variable List")
 public class DataSetProcessInstanceVariableListPresenter extends AbstractScreenListPresenter<ProcessInstanceVariableSummary> {
 
-  public interface DataSetProcessInstanceVariableListView extends ListView<ProcessInstanceVariableSummary, DataSetProcessInstanceVariableListPresenter> {
+  public interface DataSetProcessInstanceVariableListView extends ListView<org.jbpm.console.ng.pr.model.ProcessInstanceVariableSummary, DataSetProcessInstanceVariableListPresenter> {
     public int getRefreshValue();
     public void restoreTabs();
     public void saveRefreshValue(int newValue);
