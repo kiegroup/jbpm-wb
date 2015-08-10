@@ -1,62 +1,79 @@
-<div class="row-fluid">
-  <div class="accordion" id="accordion">
-    <!-- GROUP -->
-    <div class="accordion-group">
-      <div class="accordion-heading">
-        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#desc_admin"> <label data-field="adminDetailsAccordionLabel"></label>
-        </a>
-      </div>
-      <div id="desc_admin" class="accordion-body collapse in" style="position: relative;">
-        <div class="accordion-inner">
-          <div class="form-horizontal">
-            <fieldset>
-                <div class="control-group">
-                  <label class="control-label" for="adminUsersGroupsControlsPanel" data-field="adminUsersGroupsControlsLabel"></label>
-                  <div class="controls" style="padding-top: 5px;">
-                    <input type="text" data-field="adminUsersGroupsControlsPanel"/>
-                  </div>
-                </div>
-                 <div class="control-group">
-                  <label class="control-label" for="adminUserOrGroupText" data-field="adminUserOrGroupLabel"></label>
-                  <div class="controls">
-                    <input type="text" data-field="adminUserOrGroupText" id="adminUserOrGroupText" placeholder="" />
-                  </div>
-                </div>
-            </fieldset>
-            <div class="form-actions">
-                <button class="btn" data-field="adminForwardButton" id="adminForwardButton"></button>
+<div>
+    <div class="panel-group col-md-12" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="desc_admin_header">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#desc_admin_collapse" aria-expanded="true" aria-controls="desc_admin_collapse">
+                        <label data-field="adminDetailsAccordionLabel"></label>
+                    </a>
+                </h4>
             </div>
-          </div>
-            
-        </div>
-      </div>
-    </div>
-    
-	<div class="accordion-group">
-      <div class="accordion-heading">
-        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#desc_reminder"> <label data-field="reminderDetailsAccordionLabel"></label>
-        </a>
-      </div>
-      <div id="desc_reminder" class="accordion-body collapse in" style="position: relative;">
-        <div class="accordion-inner">
-          <div class="form-horizontal">
-            <fieldset>
-                <div class="control-group">
-                  <label class="control-label" for="actualOwnerPanel" data-field="actualOwnerLabel"></label>
-                  <div class="controls" style="padding-top: 5px;">
-                    <input type="text" data-field="actualOwnerPanel"/>
-                  </div>
+            <div id="desc_admin_collapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="desc_admin_header">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="col-md-12">
+                            <div class="form-horizontal">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-2" for="adminUsersGroupsControlsPanel" data-field="adminUsersGroupsControlsLabel"></label>
+
+                                        <div class="col-md-10">
+                                            <input type="text" id="adminUsersGroupsControlsPanel" data-field="adminUsersGroupsControlsPanel" class="form-control"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-2" for="adminUserOrGroupText" data-field="adminUserOrGroupLabel"></label>
+
+                                        <div class="col-md-10">
+                                            <input type="text" data-field="adminUserOrGroupText" id="adminUserOrGroupText" placeholder="" class="form-control"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-md-offset-2 col-md-10">
+                                            <button class="btn btn-default" data-field="adminForwardButton" id="adminForwardButton"></button>
+                                        </div>
+                                    </div>
+
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </fieldset>
-            <div class="form-actions">
-                <button class="btn" data-field="adminReminderButton" id="adminReminderButton"></button>
             </div>
-          </div>
-            
         </div>
-      </div>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="desc_reminder_header">
+                <h4 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#desc_reminder_collapse" aria-expanded="true" aria-controls="desc_reminder_collapse">
+                        <label data-field="reminderDetailsAccordionLabel"></label>
+                    </a>
+                </h4>
+            </div>
+            <div id="desc_reminder_collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="desc_reminder_header">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="col-md-12">
+                            <div class="form-horizontal">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-2" for="actualOwnerPanel" data-field="actualOwnerLabel"></label>
+
+                                        <div class="col-md-10">
+                                            <input type="text" id="actualOwnerPanel" data-field="actualOwnerPanel" class="form-control"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-offset-2 col-md-10">
+                                            <button class="btn btn-default" data-field="adminReminderButton" id="adminReminderButton"></button>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    
-  </div>
-  
 </div>

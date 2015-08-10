@@ -16,25 +16,26 @@
 
 package org.jbpm.console.ng.es.client.editors.jobdetails;
 
-import com.github.gwtbootstrap.client.ui.*;
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.github.gwtbootstrap.client.ui.event.ShownEvent;
-import com.github.gwtbootstrap.client.ui.event.ShownHandler;
-import com.google.gwt.cell.client.*;
+import java.util.List;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
+import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.cellview.client.*;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
+import org.gwtbootstrap3.client.shared.event.ModalShownEvent;
+import org.gwtbootstrap3.client.shared.event.ModalShownHandler;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.gwt.DataGrid;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.es.client.i18n.Constants;
@@ -48,13 +49,9 @@ import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.mvp.Command;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import java.util.*;
-
 @Dependent
 public class JobDetailsPopup extends BaseModal {
+
     interface Binder
             extends
             UiBinder<Widget, JobDetailsPopup> {
@@ -65,13 +62,13 @@ public class JobDetailsPopup extends BaseModal {
     public Label jobRetries;
 
     @UiField
-    public com.google.gwt.user.cellview.client.DataGrid<RequestParameterSummary> executionParametersGrid;
+    public DataGrid<RequestParameterSummary> executionParametersGrid;
 
     @UiField
     public VerticalPanel errorsOccurredList;
 
     @UiField
-    public ControlGroup errorControlGroup;
+    public FormGroup errorControlGroup;
 
     @Inject
     private Caller<ExecutorServiceEntryPoint> executorServices;
@@ -80,64 +77,62 @@ public class JobDetailsPopup extends BaseModal {
 
     private static Binder uiBinder = GWT.create( Binder.class );
 
-
     public JobDetailsPopup() {
         setTitle( Constants.INSTANCE.Job_Request_Details() );
 
-        add( uiBinder.createAndBindUi( this ) );
+        setBody( uiBinder.createAndBindUi( this ) );
         init();
         final GenericModalFooter footer = new GenericModalFooter();
         footer.addButton( Constants.INSTANCE.Ok(),
-                new Command() {
-                    @Override
-                    public void execute() {
-                        closePopup();
-                    }
-                }, null,
-                ButtonType.PRIMARY );
+                          new Command() {
+                              @Override
+                              public void execute() {
+                                  closePopup();
+                              }
+                          }, null,
+                          ButtonType.PRIMARY );
 
         add( footer );
     }
 
-    public void show(String jobId) {
-        cleanForm(jobId);
+    public void show( String jobId ) {
+        cleanForm( jobId );
         super.show();
     }
 
-
     public void init() {
-        Column<RequestParameterSummary, String> paramKeyColumn = new Column<RequestParameterSummary, String>(new TextCell()) {
+        Column<RequestParameterSummary, String> paramKeyColumn = new Column<RequestParameterSummary, String>( new TextCell() ) {
             @Override
-            public String getValue(RequestParameterSummary rowObject) {
+            public String getValue( RequestParameterSummary rowObject ) {
                 return rowObject.getKey();
             }
         };
-        executionParametersGrid.setHeight("200px");
+        executionParametersGrid.setHeight( "200px" );
 
         // Set the message to display when the table is empty.
-        executionParametersGrid.setEmptyTableWidget(new com.google.gwt.user.client.ui.Label(Constants.INSTANCE.No_Parameters_added_yet()));
-        executionParametersGrid.addColumn(paramKeyColumn, new ResizableHeader<RequestParameterSummary>("Key",
-                executionParametersGrid, paramKeyColumn));
+        executionParametersGrid.setEmptyTableWidget( new com.google.gwt.user.client.ui.Label( Constants.INSTANCE.No_Parameters_added_yet() ) );
+        executionParametersGrid.addColumn( paramKeyColumn, new ResizableHeader<RequestParameterSummary>( "Key",
+                                                                                                         executionParametersGrid, paramKeyColumn ) );
 
-        Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>(new TextCell()) {
+        Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>( new TextCell() ) {
             @Override
-            public String getValue(RequestParameterSummary rowObject) {
+            public String getValue( RequestParameterSummary rowObject ) {
                 return rowObject.getValue();
             }
         };
-        executionParametersGrid.addColumn(paramValueColumn, new ResizableHeader<RequestParameterSummary>("Value",
-                executionParametersGrid, paramValueColumn));
+        executionParametersGrid.addColumn( paramValueColumn, new ResizableHeader<RequestParameterSummary>( "Value",
+                                                                                                           executionParametersGrid, paramValueColumn ) );
 
-        this.dataProvider.addDataDisplay(executionParametersGrid);
+        this.dataProvider.addDataDisplay( executionParametersGrid );
     }
 
-    public void cleanForm(String requestId) {
-        this.addShownHandler( new ShownHandler() {
+    public void cleanForm( String requestId ) {
+        this.addShownHandler( new ModalShownHandler() {
             @Override
-            public void onShown(ShownEvent shownEvent) {
+            public void onShown( ModalShownEvent shownEvent ) {
                 refreshTable();
             }
-        });
+        } );
         this.executorServices.call( new RemoteCallback<RequestDetails>() {
             @Override
             public void callback( RequestDetails response ) {
@@ -151,21 +146,23 @@ public class JobDetailsPopup extends BaseModal {
         super.hide();
     }
 
-    public void setRequest(RequestSummary r, List<ErrorSummary> errors, List<RequestParameterSummary> params) {
-        this.jobRetries.setText(String.valueOf(r.getExecutions()));
-        if ((errors != null) && errors.size()>0){
+    public void setRequest( RequestSummary r,
+                            List<ErrorSummary> errors,
+                            List<RequestParameterSummary> params ) {
+        this.jobRetries.setText( String.valueOf( r.getExecutions() ) );
+        if ( ( errors != null ) && errors.size() > 0 ) {
             errorsOccurredList.clear();
             errorControlGroup.setVisible( true );
-            for (ErrorSummary error : errors) {
+            for ( ErrorSummary error : errors ) {
                 String html = "<strong>" + error.getMessage() + "</strong><br/>" + error.getStacktrace();
-                this.errorsOccurredList.add(new HTML( SafeHtmlUtils.fromTrustedString( html )));
+                this.errorsOccurredList.add( new HTML( SafeHtmlUtils.fromTrustedString( html ) ) );
             }
-        }else {
+        } else {
             errorControlGroup.setVisible( false );
         }
-        if (params != null) {
+        if ( params != null ) {
             this.dataProvider.getList().clear();
-            this.dataProvider.getList().addAll(params);
+            this.dataProvider.getList().addAll( params );
             this.dataProvider.refresh();
         }
     }
@@ -173,6 +170,5 @@ public class JobDetailsPopup extends BaseModal {
     public void refreshTable() {
         executionParametersGrid.redraw();
     }
-
 
 }

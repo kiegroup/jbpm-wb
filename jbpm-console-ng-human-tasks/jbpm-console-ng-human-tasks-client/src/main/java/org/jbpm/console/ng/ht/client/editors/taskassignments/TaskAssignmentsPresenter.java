@@ -21,9 +21,11 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.*;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Label;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -64,7 +66,7 @@ public class TaskAssignmentsPresenter {
 
     @Inject
     Caller<TaskLifeCycleService> taskServices;
-    
+
     @Inject
     Caller<TaskOperationsService> taskOperationsServices;
 
@@ -107,28 +109,28 @@ public class TaskAssignmentsPresenter {
     }
 
     public void refreshTaskPotentialOwners() {
-        if(currentTaskId != 0){
+        if ( currentTaskId != 0 ) {
             taskOperationsServices.call( new RemoteCallback<TaskSummary>() {
 
                 @Override
-                public void callback(TaskSummary response) {
-                     if ( response == null ) {
+                public void callback( TaskSummary response ) {
+                    if ( response == null ) {
                         view.getDelegateButton().setEnabled( false );
                         view.getUserOrGroupText().setEnabled( false );
                         return;
                     }
-                    if(response.getStatus().equals("Completed") || response.getActualOwner().equals( "" ) 
-                            || !response.getActualOwner().equals( identity.getIdentifier() )  ){
+                    if ( response.getStatus().equals( "Completed" ) || response.getActualOwner().equals( "" )
+                            || !response.getActualOwner().equals( identity.getIdentifier() ) ) {
                         view.getDelegateButton().setEnabled( false );
                         view.getUserOrGroupText().setEnabled( false );
-                    }else{
+                    } else {
                         view.getDelegateButton().setEnabled( true );
                         view.getUserOrGroupText().setEnabled( true );
                     }
 
                 }
 
-            }).getTaskDetails(currentTaskId);
+            } ).getTaskDetails( currentTaskId );
 
             taskOperationsServices.call( new RemoteCallback<TaskAssignmentSummary>() {
                 @Override
@@ -136,13 +138,13 @@ public class TaskAssignmentsPresenter {
                     if ( ts == null ) {
                         return;
                     }
-                    
-                    if( ts.getPotOwnersString() != null && ts.getPotOwnersString().size() == 0 ){
+
+                    if ( ts.getPotOwnersString() != null && ts.getPotOwnersString().size() == 0 ) {
                         view.getUsersGroupsControlsPanel().setText( Constants.INSTANCE.No_Potential_Owners() );
                     } else {
-                           view.getUsersGroupsControlsPanel().setText("" + ts.getPotOwnersString().toString() );
+                        view.getUsersGroupsControlsPanel().setText( "" + ts.getPotOwnersString().toString() );
                     }
-                   
+
                 }
             }, new ErrorCallback<Message>() {
                 @Override

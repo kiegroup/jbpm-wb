@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 
-import com.github.gwtbootstrap.client.ui.FluidRow;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -32,6 +31,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.displayer.client.Displayer;
+import org.gwtbootstrap3.client.ui.Container;
+import org.gwtbootstrap3.client.ui.Row;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
 import org.jbpm.dashboard.renderer.client.panel.widgets.DisplayerContainer;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
@@ -47,7 +48,7 @@ public class ProcessDashboardViewImpl extends Composite implements ProcessDashbo
     Label headerLabel;
 
     @UiField
-    Panel dashboardPanel;
+    Container dashboardPanel;
 
     @UiField
     Panel instancesPanel;
@@ -56,7 +57,7 @@ public class ProcessDashboardViewImpl extends Composite implements ProcessDashbo
     Anchor instancesAnchor;
 
     @UiField
-    FluidRow processBreadCrumbRow;
+    Row processBreadCrumbRow;
 
     @UiField
     ProcessBreadCrumb processBreadCrumb;

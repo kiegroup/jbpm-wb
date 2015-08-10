@@ -15,58 +15,53 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.list.variables.dash;
 
-import com.github.gwtbootstrap.client.ui.*;
-import com.github.gwtbootstrap.client.ui.Button;
-import com.google.gwt.cell.client.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
+import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.*;
+import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-
-import com.google.gwt.uibinder.client.UiBinder;
-
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.console.ng.df.client.list.base.DataSetEditorManager;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractMultiGridView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
+import org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup;
 import org.jbpm.console.ng.pr.model.ProcessInstanceVariableSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-
-import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
-
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import java.util.*;
-import org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup;
+import static org.dashbuilder.dataset.sort.SortOrder.*;
 
 @Dependent
 public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGridView<ProcessInstanceVariableSummary, DataSetProcessInstanceVariableListPresenter>
         implements DataSetProcessInstanceVariableListPresenter.DataSetProcessInstanceVariableListView {
-
-    interface Binder
-            extends
-            UiBinder<Widget, DataSetProcessInstanceListVariableViewImpl> {
-
-    }
 
     public static final String PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX = "DS_ProcessInstancesVariableGrid";
 
@@ -78,7 +73,7 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
     public static final String VARIABLE_NAME = "varname";
     public static final String VARIABLE_VALUE = "varvalue";
 
-    private Constants constants = GWT.create(Constants.class);
+    private Constants constants = GWT.create( Constants.class );
 
     private List<ProcessInstanceVariableSummary> selectedProcessInstances = new ArrayList<ProcessInstanceVariableSummary>();
 
@@ -93,75 +88,60 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
 
     private Column actionsColumn;
 
-    private NavLink bulkAbortNavLink;
-    private NavLink bulkSignalNavLink;
-
     @Inject
     private QuickNewProcessInstancePopup newProcessInstancePopup;
 
-    private void controlBulkOperations() {
-        if (selectedProcessInstances != null && selectedProcessInstances.size() > 0) {
-            bulkAbortNavLink.setDisabled(false);
-            bulkSignalNavLink.setDisabled(false);
-        } else {
-            bulkAbortNavLink.setDisabled(true);
-            bulkSignalNavLink.setDisabled(true);
-        }
-    }
-
     @Override
-    public void init(final DataSetProcessInstanceVariableListPresenter presenter) {
+    public void init( final DataSetProcessInstanceVariableListPresenter presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
-        
-        bannedColumns.add(constants.Id());
-        bannedColumns.add(constants.Name());
 
-        bannedColumns.add(constants.Actions());
+        bannedColumns.add( constants.Id() );
+        bannedColumns.add( constants.Name() );
+
+        bannedColumns.add( constants.Actions() );
         final List<String> initColumns = new ArrayList<String>();
-        initColumns.add(constants.Process_Instance_ID());
-        initColumns.add(constants.Process_Instance_Name());
-        initColumns.add(constants.Id());
-        initColumns.add(constants.Variables_Name());
-        initColumns.add(constants.Variable_Value());
-        
-
-        
+        initColumns.add( constants.Process_Instance_ID() );
+        initColumns.add( constants.Process_Instance_Name() );
+        initColumns.add( constants.Id() );
+        initColumns.add( constants.Variables_Name() );
+        initColumns.add( constants.Variable_Value() );
 
         final Button button = new Button();
-        button.setText("+");
+        button.setIcon( IconType.PLUS );
+        button.setSize( ButtonSize.SMALL );
 
-        button.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                final String key = getValidKeyForAdditionalListGrid(PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_");
+        button.addClickHandler( new ClickHandler() {
+            public void onClick( ClickEvent event ) {
+                final String key = getValidKeyForAdditionalListGrid( PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_" );
 
                 Command addNewGrid = new Command() {
                     @Override
                     public void execute() {
 
-                        final ExtendedPagedTable<ProcessInstanceVariableSummary> extendedPagedTable = createGridInstance(new GridGlobalPreferences(key, initColumns, bannedColumns), key);
+                        final ExtendedPagedTable<ProcessInstanceVariableSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
 
-                        presenter.addDataDisplay(extendedPagedTable);
-                        extendedPagedTable.setDataProvider(presenter.getDataProvider());
+                        presenter.addDataDisplay( extendedPagedTable );
+                        extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
-                        filterPagedTable.createNewTab(extendedPagedTable, key, button, new Command() {
+                        filterPagedTable.createNewTab( extendedPagedTable, key, button, new Command() {
                             @Override
                             public void execute() {
                                 currentListGrid = extendedPagedTable;
-                                applyFilterOnPresenter(key);
+                                applyFilterOnPresenter( key );
                             }
-                        });
-                        applyFilterOnPresenter(key);
+                        } );
+                        applyFilterOnPresenter( key );
 
                     }
                 };
                 FilterSettings tableSettings = createTableSettingsPrototype();
-                tableSettings.setKey(key);
-                dataSetEditorManager.showTableSettingsEditor(filterPagedTable, Constants.INSTANCE.New_Process_InstanceList(), tableSettings, addNewGrid);
+                tableSettings.setKey( key );
+                dataSetEditorManager.showTableSettingsEditor( filterPagedTable, Constants.INSTANCE.New_Process_InstanceList(), tableSettings, addNewGrid );
 
             }
-        });
+        } );
 
-        super.init(presenter, new GridGlobalPreferences(PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX, initColumns, bannedColumns), button);
+        super.init( presenter, new GridGlobalPreferences( PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX, initColumns, bannedColumns ), button );
 
     }
 
@@ -169,23 +149,23 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
     public void initSelectionModel() {
 
         final ExtendedPagedTable extendedPagedTable = getListGrid();
-        extendedPagedTable.setEmptyTableCaption(constants.No_Process_Instances_Found());
+        extendedPagedTable.setEmptyTableCaption( constants.No_Process_Instances_Found() );
         extendedPagedTable.getRightActionsToolbar().clear();
-        initExtraButtons(extendedPagedTable);
-        initBulkActions(extendedPagedTable);
+        initExtraButtons( extendedPagedTable );
+        initBulkActions( extendedPagedTable );
         selectionModel = new NoSelectionModel<ProcessInstanceVariableSummary>();
-        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+        selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
             @Override
-            public void onSelectionChange(SelectionChangeEvent event) {
+            public void onSelectionChange( SelectionChangeEvent event ) {
 
                 boolean close = false;
-                if (selectedRow == -1) {
-                    extendedPagedTable.setRowStyles(selectedStyles);
+                if ( selectedRow == -1 ) {
+                    extendedPagedTable.setRowStyles( selectedStyles );
                     selectedRow = extendedPagedTable.getKeyboardSelectedRow();
                     extendedPagedTable.redraw();
 
-                } else if (extendedPagedTable.getKeyboardSelectedRow() != selectedRow) {
-                    extendedPagedTable.setRowStyles(selectedStyles);
+                } else if ( extendedPagedTable.getKeyboardSelectedRow() != selectedRow ) {
+                    extendedPagedTable.setRowStyles( selectedStyles );
                     selectedRow = extendedPagedTable.getKeyboardSelectedRow();
                     extendedPagedTable.redraw();
                 } else {
@@ -194,41 +174,40 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
 
                 selectedItem = selectionModel.getLastSelectedObject();
 
-                PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details Multi"));
+                PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( "Process Instance Details Multi" ) );
 
             }
-        });
+        } );
 
         noActionColumnManager = DefaultSelectionEventManager
-                .createCustomManager(new DefaultSelectionEventManager.EventTranslator<ProcessInstanceVariableSummary>() {
+                .createCustomManager( new DefaultSelectionEventManager.EventTranslator<ProcessInstanceVariableSummary>() {
 
                     @Override
-                    public boolean clearCurrentSelection(CellPreviewEvent<ProcessInstanceVariableSummary> event) {
+                    public boolean clearCurrentSelection( CellPreviewEvent<ProcessInstanceVariableSummary> event ) {
                         return false;
                     }
 
                     @Override
-                    public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<ProcessInstanceVariableSummary> event) {
+                    public DefaultSelectionEventManager.SelectAction translateSelectionEvent( CellPreviewEvent<ProcessInstanceVariableSummary> event ) {
                         NativeEvent nativeEvent = event.getNativeEvent();
-                        if (BrowserEvents.CLICK.equals(nativeEvent.getType())) {
+                        if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) ) {
                             // Ignore if the event didn't occur in the correct column.
-                            if (extendedPagedTable.getColumnIndex(actionsColumn) == event.getColumn()) {
+                            if ( extendedPagedTable.getColumnIndex( actionsColumn ) == event.getColumn() ) {
                                 return DefaultSelectionEventManager.SelectAction.IGNORE;
                             }
                             //Extension for checkboxes
                             Element target = nativeEvent.getEventTarget().cast();
-                            if ("input".equals(target.getTagName().toLowerCase())) {
+                            if ( "input".equals( target.getTagName().toLowerCase() ) ) {
                                 final InputElement input = target.cast();
-                                if ("checkbox".equals(input.getType().toLowerCase())) {
+                                if ( "checkbox".equals( input.getType().toLowerCase() ) ) {
                                     // Synchronize the checkbox with the current selection state.
-                                    if (!selectedProcessInstances.contains(event.getValue())) {
-                                        selectedProcessInstances.add(event.getValue());
-                                        input.setChecked(true);
+                                    if ( !selectedProcessInstances.contains( event.getValue() ) ) {
+                                        selectedProcessInstances.add( event.getValue() );
+                                        input.setChecked( true );
                                     } else {
-                                        selectedProcessInstances.remove(event.getValue());
-                                        input.setChecked(false);
+                                        selectedProcessInstances.remove( event.getValue() );
+                                        input.setChecked( false );
                                     }
-                                    controlBulkOperations();
                                     return DefaultSelectionEventManager.SelectAction.IGNORE;
                                 }
                             }
@@ -237,16 +216,15 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
                         return DefaultSelectionEventManager.SelectAction.DEFAULT;
                     }
 
-                });
+                } );
 
-        extendedPagedTable.setSelectionModel(selectionModel, noActionColumnManager);
-        extendedPagedTable.setRowStyles(selectedStyles);
+        extendedPagedTable.setSelectionModel( selectionModel, noActionColumnManager );
+        extendedPagedTable.setRowStyles( selectedStyles );
     }
 
     @Override
-    public void initColumns(ExtendedPagedTable<ProcessInstanceVariableSummary> extendedPagedTable) {
+    public void initColumns( ExtendedPagedTable<ProcessInstanceVariableSummary> extendedPagedTable ) {
 
-        
         Column processInstanceIdColumn = initProcessInstanceIdColumn();
 
         Column processNameColumn = initProcessNameColumn();
@@ -255,187 +233,194 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
         Column variableValueColumn = initVariableValueColumn();
 
         List<ColumnMeta<ProcessInstanceVariableSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessInstanceVariableSummary>>();
-        
-        columnMetas.add(new ColumnMeta<ProcessInstanceVariableSummary>(processInstanceIdColumn, constants.Process_Instance_ID()));
-        columnMetas.add(new ColumnMeta<ProcessInstanceVariableSummary>(processNameColumn, constants.Process_Instance_Name()));
-        columnMetas.add(new ColumnMeta<ProcessInstanceVariableSummary>(variableIdColumn, constants.Id()));
-        columnMetas.add(new ColumnMeta<ProcessInstanceVariableSummary>(variableNameColumn, constants.Variables_Name()));
-        columnMetas.add(new ColumnMeta<ProcessInstanceVariableSummary>(variableValueColumn, constants.Variable_Value()));
 
-        extendedPagedTable.addColumns(columnMetas);
+        columnMetas.add( new ColumnMeta<ProcessInstanceVariableSummary>( processInstanceIdColumn, constants.Process_Instance_ID() ) );
+        columnMetas.add( new ColumnMeta<ProcessInstanceVariableSummary>( processNameColumn, constants.Process_Instance_Name() ) );
+        columnMetas.add( new ColumnMeta<ProcessInstanceVariableSummary>( variableIdColumn, constants.Id() ) );
+        columnMetas.add( new ColumnMeta<ProcessInstanceVariableSummary>( variableNameColumn, constants.Variables_Name() ) );
+        columnMetas.add( new ColumnMeta<ProcessInstanceVariableSummary>( variableValueColumn, constants.Variable_Value() ) );
+
+        extendedPagedTable.addColumns( columnMetas );
     }
 
-    public void initExtraButtons(final ExtendedPagedTable<ProcessInstanceVariableSummary> extendedPagedTable) {
+    public void initExtraButtons( final ExtendedPagedTable<ProcessInstanceVariableSummary> extendedPagedTable ) {
 
     }
 
-    private void initBulkActions(final ExtendedPagedTable<ProcessInstanceVariableSummary> extendedPagedTable) {
+    private void initBulkActions( final ExtendedPagedTable<ProcessInstanceVariableSummary> extendedPagedTable ) {
 
     }
 
     private Column initProcessInstanceIdColumn() {
         // Process Instance Id.
-        Column<ProcessInstanceVariableSummary, String> processInstanceIdColumn = new Column<ProcessInstanceVariableSummary, String>(new TextCell()) {
+        Column<ProcessInstanceVariableSummary, String> processInstanceIdColumn = new Column<ProcessInstanceVariableSummary, String>( new TextCell() ) {
             @Override
-            public String getValue(ProcessInstanceVariableSummary object) {
-                return String.valueOf(object.getProcessInstanceId());
+            public String getValue( ProcessInstanceVariableSummary object ) {
+                return String.valueOf( object.getProcessInstanceId() );
             }
         };
-        processInstanceIdColumn.setSortable(true);
-        processInstanceIdColumn.setDataStoreName(PROCESS_INSTANCE_ID);
+        processInstanceIdColumn.setSortable( true );
+        processInstanceIdColumn.setDataStoreName( PROCESS_INSTANCE_ID );
 
         return processInstanceIdColumn;
     }
-     private Column initVariableIdColumn() {
+
+    private Column initVariableIdColumn() {
         // Process Instance Id.
-        Column<ProcessInstanceVariableSummary, String> vairableIdColumn = new Column<ProcessInstanceVariableSummary, String>(new TextCell()) {
+        Column<ProcessInstanceVariableSummary, String> vairableIdColumn = new Column<ProcessInstanceVariableSummary, String>( new TextCell() ) {
             @Override
-            public String getValue(ProcessInstanceVariableSummary object) {
-                return String.valueOf(object.getVariableId());
+            public String getValue( ProcessInstanceVariableSummary object ) {
+                return String.valueOf( object.getVariableId() );
             }
         };
-        vairableIdColumn.setSortable(true);
-        vairableIdColumn.setDataStoreName(VARIABLE_ID);
+        vairableIdColumn.setSortable( true );
+        vairableIdColumn.setDataStoreName( VARIABLE_ID );
 
         return vairableIdColumn;
     }
-    
+
     private Column initProcessNameColumn() {
         // Process Instance Id.
-        Column<ProcessInstanceVariableSummary, String> processNameColumn = new Column<ProcessInstanceVariableSummary, String>(new TextCell()) {
+        Column<ProcessInstanceVariableSummary, String> processNameColumn = new Column<ProcessInstanceVariableSummary, String>( new TextCell() ) {
             @Override
-            public String getValue(ProcessInstanceVariableSummary object) {
-                return String.valueOf(object.getProcessName());
+            public String getValue( ProcessInstanceVariableSummary object ) {
+                return String.valueOf( object.getProcessName() );
             }
         };
-        processNameColumn.setSortable(true);
-        processNameColumn.setDataStoreName(PROCESS_NAME);
+        processNameColumn.setSortable( true );
+        processNameColumn.setDataStoreName( PROCESS_NAME );
 
         return processNameColumn;
     }
 
     private Column initVariableNameColumn() {
         // Process Name.
-        Column<ProcessInstanceVariableSummary, String> variableNameColumn = new Column<ProcessInstanceVariableSummary, String>(new TextCell()) {
+        Column<ProcessInstanceVariableSummary, String> variableNameColumn = new Column<ProcessInstanceVariableSummary, String>( new TextCell() ) {
             @Override
-            public String getValue(ProcessInstanceVariableSummary object) {
+            public String getValue( ProcessInstanceVariableSummary object ) {
                 return object.getVariableName();
             }
         };
-        variableNameColumn.setSortable(true);
-        variableNameColumn.setDataStoreName(VARIABLE_NAME);
+        variableNameColumn.setSortable( true );
+        variableNameColumn.setDataStoreName( VARIABLE_NAME );
 
         return variableNameColumn;
     }
 
     private Column initVariableValueColumn() {
         // Process Name.
-        Column<ProcessInstanceVariableSummary, String> variableNameColumn = new Column<ProcessInstanceVariableSummary, String>(new TextCell()) {
+        Column<ProcessInstanceVariableSummary, String> variableNameColumn = new Column<ProcessInstanceVariableSummary, String>( new TextCell() ) {
             @Override
-            public String getValue(ProcessInstanceVariableSummary object) {
+            public String getValue( ProcessInstanceVariableSummary object ) {
                 return object.getVariableValue();
             }
         };
-        variableNameColumn.setSortable(true);
-        variableNameColumn.setDataStoreName(VARIABLE_VALUE);
+        variableNameColumn.setSortable( true );
+        variableNameColumn.setDataStoreName( VARIABLE_VALUE );
 
         return variableNameColumn;
     }
 
-    public void onProcessInstanceSelectionEvent(@Observes ProcessInstancesWithDetailsRequestEvent event) {
+    public void onProcessInstanceSelectionEvent( @Observes ProcessInstancesWithDetailsRequestEvent event ) {
 
     }
 
-    public void initDefaultFilters(GridGlobalPreferences preferences, Button createTabButton) {
+    public void initDefaultFilters( GridGlobalPreferences preferences,
+                                    Button createTabButton ) {
 
         List<String> states = new ArrayList<String>();
 
         //Filter status Active
-        states.add(String.valueOf(ProcessInstance.STATE_ACTIVE));
-        initGenericTabFilter(preferences, PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states, "", "");
+        states.add( String.valueOf( ProcessInstance.STATE_ACTIVE ) );
+        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states, "", "" );
 
-        filterPagedTable.addAddTableButton(createTabButton);
-        getMultiGridPreferencesStore().setSelectedGrid(PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_0");
+        filterPagedTable.addAddTableButton( createTabButton );
+        getMultiGridPreferencesStore().setSelectedGrid( PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_0" );
         filterPagedTable.setSelectedTab();
-        applyFilterOnPresenter(PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_0");
+        applyFilterOnPresenter( PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_0" );
 
     }
 
-    private void initGenericTabFilter(GridGlobalPreferences preferences, final String key, String tabName,
-            String tabDesc, List<String> states, String processDefinition, String initiator) {
+    private void initGenericTabFilter( GridGlobalPreferences preferences,
+                                       final String key,
+                                       String tabName,
+                                       String tabDesc,
+                                       List<String> states,
+                                       String processDefinition,
+                                       String initiator ) {
 
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset(PROCESS_INSTANCE_WITH_VARIABLES_DATASET);
+        builder.dataset( PROCESS_INSTANCE_WITH_VARIABLES_DATASET );
 
-        builder.setColumn(PROCESS_INSTANCE_ID, "processInstanceId");
-        builder.setColumn(PROCESS_NAME, "processName");
-        builder.setColumn(VARIABLE_ID, "variableID");
-        builder.setColumn(VARIABLE_NAME, "variableName");
-        builder.setColumn(VARIABLE_VALUE, "variableValue");
+        builder.setColumn( PROCESS_INSTANCE_ID, "processInstanceId" );
+        builder.setColumn( PROCESS_NAME, "processName" );
+        builder.setColumn( VARIABLE_ID, "variableID" );
+        builder.setColumn( VARIABLE_NAME, "variableName" );
+        builder.setColumn( VARIABLE_VALUE, "variableValue" );
 
-        builder.filterOn(true, true, true);
-        builder.tableOrderEnabled(true);
-        builder.tableOrderDefault(VARIABLE_NAME, DESCENDING);
+        builder.filterOn( true, true, true );
+        builder.tableOrderEnabled( true );
+        builder.tableOrderDefault( VARIABLE_NAME, DESCENDING );
 
         FilterSettings tableSettings = builder.buildSettings();
-        tableSettings.setKey(key);
-        tableSettings.setTableName(tabName);
-        tableSettings.setTableDescription(tabDesc);
+        tableSettings.setKey( key );
+        tableSettings.setTableName( tabName );
+        tableSettings.setTableDescription( tabDesc );
 
         HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
 
-        tabSettingsValues.put(FILTER_TABLE_SETTINGS, dataSetEditorManager.getTableSettingsToStr(tableSettings));
-        tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName());
-        tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription());
+        tabSettingsValues.put( FILTER_TABLE_SETTINGS, dataSetEditorManager.getTableSettingsToStr( tableSettings ) );
+        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName() );
+        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription() );
 
-        filterPagedTable.saveNewTabSettings(key, tabSettingsValues);
+        filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
 
-        final ExtendedPagedTable<ProcessInstanceVariableSummary> extendedPagedTable = createGridInstance(new GridGlobalPreferences(key, preferences.getInitialColumns(), preferences.getBannedColumns()), key);
+        final ExtendedPagedTable<ProcessInstanceVariableSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay(extendedPagedTable);
-        extendedPagedTable.setDataProvider(presenter.getDataProvider());
+        presenter.addDataDisplay( extendedPagedTable );
+        extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
-        filterPagedTable.addTab(extendedPagedTable, key, new Command() {
+        filterPagedTable.addTab( extendedPagedTable, key, new Command() {
             @Override
             public void execute() {
                 currentListGrid = extendedPagedTable;
-                applyFilterOnPresenter(key);
+                applyFilterOnPresenter( key );
             }
-        });
+        } );
 
     }
 
-    public void applyFilterOnPresenter(HashMap<String, Object> params) {
+    public void applyFilterOnPresenter( HashMap<String, Object> params ) {
 
-        String tableSettingsJSON = (String) params.get(FILTER_TABLE_SETTINGS);
-        FilterSettings tableSettings = dataSetEditorManager.getStrToTableSettings(tableSettingsJSON);
-        presenter.filterGrid(tableSettings);
+        String tableSettingsJSON = (String) params.get( FILTER_TABLE_SETTINGS );
+        FilterSettings tableSettings = dataSetEditorManager.getStrToTableSettings( tableSettingsJSON );
+        presenter.filterGrid( tableSettings );
 
     }
 
-    public void applyFilterOnPresenter(String key) {
+    public void applyFilterOnPresenter( String key ) {
         initSelectionModel();
-        applyFilterOnPresenter(filterPagedTable.getMultiGridPreferencesStore().getGridSettings(key));
+        applyFilterOnPresenter( filterPagedTable.getMultiGridPreferencesStore().getGridSettings( key ) );
     }
 
     public FilterSettings createTableSettingsPrototype() {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset(PROCESS_INSTANCE_WITH_VARIABLES_DATASET);
+        builder.dataset( PROCESS_INSTANCE_WITH_VARIABLES_DATASET );
 
-        builder.setColumn(PROCESS_INSTANCE_ID, "processInstanceId");
-        builder.setColumn(PROCESS_NAME, "processName");
-        builder.setColumn(VARIABLE_ID, "variableId");
-        builder.setColumn(VARIABLE_NAME, "variableName");
-        builder.setColumn(VARIABLE_VALUE, "variableValue");
+        builder.setColumn( PROCESS_INSTANCE_ID, "processInstanceId" );
+        builder.setColumn( PROCESS_NAME, "processName" );
+        builder.setColumn( VARIABLE_ID, "variableId" );
+        builder.setColumn( VARIABLE_NAME, "variableName" );
+        builder.setColumn( VARIABLE_VALUE, "variableValue" );
 
-        builder.filterOn(true, true, true);
-        builder.tableOrderEnabled(true);
-        builder.tableOrderDefault(VARIABLE_NAME, DESCENDING);
-        builder.tableWidth(1000);
+        builder.filterOn( true, true, true );
+        builder.tableOrderEnabled( true );
+        builder.tableOrderDefault( VARIABLE_NAME, DESCENDING );
+        builder.tableWidth( 1000 );
 
         return builder.buildSettings();
 
@@ -445,27 +430,26 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
         return getMultiGridPreferencesStore().getRefreshInterval();
     }
 
-    public void saveRefreshValue(int newValue) {
-        filterPagedTable.saveNewRefreshInterval(newValue);
+    public void saveRefreshValue( int newValue ) {
+        filterPagedTable.saveNewRefreshInterval( newValue );
     }
 
     public void restoreTabs() {
         ArrayList<String> existingGrids = getMultiGridPreferencesStore().getGridsId();
-        ArrayList<String> allTabs = new ArrayList<String>(existingGrids.size());
+        ArrayList<String> allTabs = new ArrayList<String>( existingGrids.size() );
 
-        if (existingGrids != null && existingGrids.size() > 0) {
+        if ( existingGrids != null && existingGrids.size() > 0 ) {
 
-            for (int i = 0; i < existingGrids.size(); i++) {
-                allTabs.add(existingGrids.get(i));
+            for ( int i = 0; i < existingGrids.size(); i++ ) {
+                allTabs.add( existingGrids.get( i ) );
             }
 
-            for (int i = 0; i < allTabs.size(); i++) {
-                filterPagedTable.removeTab(allTabs.get(i));
+            for ( int i = 0; i < allTabs.size(); i++ ) {
+                filterPagedTable.removeTab( allTabs.get( i ) );
             }
 
         }
-        filterPagedTable.tabPanel.remove(0);
-        initDefaultFilters(currentGlobalPreferences, createTabButton);
+        filterPagedTable.removeTab( 0 );
+        initDefaultFilters( currentGlobalPreferences, createTabButton );
     }
-
 }

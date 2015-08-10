@@ -18,20 +18,18 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.uberfire.workbench.events.NotificationEvent;
-
-import com.github.gwtbootstrap.client.ui.ControlLabel;
-import com.github.gwtbootstrap.client.ui.Label;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.TextBox;
 
 @Dependent
 @Templated(value = "TaskProcessContextViewImpl.html")
@@ -49,15 +47,11 @@ public class TaskProcessContextViewImpl extends Composite implements TaskProcess
 
     @Inject
     @DataField
-    public ControlLabel processInstanceIdLabel;
+    public FormLabel processInstanceIdLabel;
 
     @Inject
     @DataField
-    public ControlLabel processIdLabel;
-
-    @Inject
-    @DataField
-    public ControlLabel pIDetailsLabel;
+    public FormLabel processIdLabel;
 
     @Inject
     @DataField
@@ -70,50 +64,49 @@ public class TaskProcessContextViewImpl extends Composite implements TaskProcess
     @Inject
     private Event<NotificationEvent> notification;
 
-    private Constants constants = GWT.create(Constants.class);
+    private Constants constants = GWT.create( Constants.class );
 
     @Override
-    public void init(TaskProcessContextPresenter presenter) {
+    public void init( TaskProcessContextPresenter presenter ) {
         this.presenter = presenter;
         // Instance id
-        processInstanceIdLabel.add(new HTMLPanel(constants.Process_Instance_Id()));
-        processInstanceIdText.setReadOnly(true);
-        processInstanceIdText.setEnabled(false);
+        processInstanceIdLabel.setText( constants.Process_Instance_Id() );
+        processInstanceIdText.setReadOnly( true );
+        processInstanceIdText.setEnabled( false );
 
         //Process Id
-        processIdLabel.add(new HTMLPanel(constants.Process_Definition_Id()));
-        processIdText.setReadOnly(true);
-        processIdText.setEnabled(false);
+        processIdLabel.setText( constants.Process_Definition_Id() );
+        processIdText.setReadOnly( true );
+        processIdText.setEnabled( false );
 
-        processContextLabel.setText(constants.Process_Context());
-        processContextLabel.setStyleName("");
+        processContextLabel.setText( constants.Process_Context() );
+        processContextLabel.setStyleName( "" );
 
-        pIDetailsLabel.add(new HTMLPanel(constants.Process_Instance_Details()));
-        pIDetailsButton.setText(constants.Process_Instance_Details());
+        pIDetailsButton.setText( constants.Process_Instance_Details() );
     }
 
     @EventHandler("pIDetailsButton")
-    public void pIDetailsButton(ClickEvent e) {
+    public void pIDetailsButton( ClickEvent e ) {
         presenter.goToProcessInstanceDetails();
     }
 
     @Override
-    public void displayNotification(String text) {
-        notification.fire(new NotificationEvent(text));
+    public void displayNotification( String text ) {
+        notification.fire( new NotificationEvent( text ) );
     }
 
     @Override
-    public void setProcessInstanceId(String piid) {
-        processInstanceIdText.setText(piid);
+    public void setProcessInstanceId( String piid ) {
+        processInstanceIdText.setText( piid );
     }
 
     @Override
-    public void setProcessId(String pid) {
-        processIdText.setText(pid);
+    public void setProcessId( String pid ) {
+        processIdText.setText( pid );
     }
 
     @Override
-    public void enablePIDetailsButton(boolean enable) {
-        pIDetailsButton.setEnabled(enable);
+    public void enablePIDetailsButton( boolean enable ) {
+        pIDetailsButton.setEnabled( enable );
     }
 }

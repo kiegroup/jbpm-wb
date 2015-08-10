@@ -1,31 +1,18 @@
-<div class="row-fluid">
-    <div class="accordion" id="accordion">
-        <!-- GROUP -->
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#log_collapse"> <label data-field="logTextLabel"></label>
-                </a>
-            </div>
-            <div id="log_collapse" class="accordion-body collapse in" style="position: relative;">
-                <div class="accordion-inner">
-                    <div class="form-horizontal">
-                        <fieldset>
-                            <div class="btn-group">
-                                <button class="btn btn-small active" data-field="showBusinessLogButton"></button>                          
-                                <button class="btn btn-small" data-field="showTechnicalLogButton"></button>                       
-                            </div>
-                            <div class="btn-group">
-                                <button class="btn btn-small active" data-field="showAscLogButton"></button>                          
-                                <button class="btn btn-small" data-field="showDescLogButton"></button>                         
-                            </div>
-                        </fieldset>
-                    </div>
-                    <strong><label class="control-label" for="logTextArea" data-field="logTextLabel"></label></strong>
-                    <div data-field="logTextArea" ></div>
-
+<div class="row" style="padding: 15px;">
+    <div class="col-md-12">
+        <div class="form-horizontal">
+            <fieldset>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-default btn-sm active" data-field="showBusinessLogButton"></button>
+                    <button class="btn btn-default btn-sm" data-field="showTechnicalLogButton"></button>
                 </div>
-                    
-            </div>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-default btn-sm active" data-field="showAscLogButton"></button>
+                    <button class="btn btn-default btn-sm" data-field="showDescLogButton"></button>
+                </div>
+            </fieldset>
         </div>
+
+        <div data-field="logTextArea" id="logTextArea" style="padding-top: 15px;"></div>
     </div>
 </div>

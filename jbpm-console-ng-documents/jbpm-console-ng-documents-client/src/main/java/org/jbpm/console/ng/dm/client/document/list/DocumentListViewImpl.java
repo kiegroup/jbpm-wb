@@ -18,30 +18,10 @@ package org.jbpm.console.ng.dm.client.document.list;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-
-import org.jbpm.console.ng.dm.client.i18n.Constants;
-import org.jbpm.console.ng.dm.model.CMSContentSummary;
-import org.jbpm.console.ng.dm.model.events.DocumentRemoveSearchEvent;
-import org.jbpm.console.ng.dm.model.events.DocumentsHomeSearchEvent;
-import org.jbpm.console.ng.dm.model.events.DocumentsListSearchEvent;
-import org.jbpm.console.ng.dm.model.events.DocumentsParentSearchEvent;
-import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
-import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.client.mvp.PlaceStatus;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.events.NotificationEvent;
-
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.ButtonGroup;
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
@@ -52,31 +32,41 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.ButtonGroup;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.jbpm.console.ng.dm.client.i18n.Constants;
+import org.jbpm.console.ng.dm.model.CMSContentSummary;
+import org.jbpm.console.ng.dm.model.events.DocumentRemoveSearchEvent;
+import org.jbpm.console.ng.dm.model.events.DocumentsHomeSearchEvent;
+import org.jbpm.console.ng.dm.model.events.DocumentsListSearchEvent;
+import org.jbpm.console.ng.dm.model.events.DocumentsParentSearchEvent;
+import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
+import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, DocumentListPresenter> implements
         DocumentListPresenter.DocumentListView {
 
-    interface Binder extends UiBinder<Widget, DocumentListViewImpl> {
-
-    }
-
     private Constants constants = GWT.create(Constants.class);
-
-    private static Binder uiBinder = GWT.create(Binder.class);
 
     private Column actionsColumn;
 
@@ -301,7 +291,11 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
             }
         });
 
-        filtersButtonGroup = new ButtonGroup(parentLink, homeLink, newLink);
+        filtersButtonGroup = new ButtonGroup() {{
+            add( parentLink );
+            add( homeLink );
+            add( newLink );
+        }};
 
         filtersBar.add(filtersButtonGroup);
         listGrid.getCenterToolbar().add(filtersBar);
@@ -340,7 +334,10 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
                 @Override
                 public void render(Cell.Context context, CMSContentSummary value, SafeHtmlBuilder sb) {
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Remove()+"'>"+constants.Remove()+"</a>");
+                    mysb.appendHtmlConstant( new Button( constants.Remove() ) {{
+                        setSize( ButtonSize.SMALL );
+                        getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
+                    }}.getElement().toString());
 
                     // TODO
                     // add
@@ -376,7 +373,10 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
                 @Override
                 public void render(Cell.Context context, CMSContentSummary value, SafeHtmlBuilder sb) {
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Go()+"'>"+constants.Go()+"</a>");
+                    mysb.appendHtmlConstant( new Button( constants.Go() ) {{
+                        setSize( ButtonSize.SMALL );
+                        getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
+                    }}.getElement().toString());
                     sb.append(mysb.toSafeHtml());
                 }
             };

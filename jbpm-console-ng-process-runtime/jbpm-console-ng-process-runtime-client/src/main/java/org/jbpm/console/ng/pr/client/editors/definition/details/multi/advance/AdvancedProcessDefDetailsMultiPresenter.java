@@ -17,12 +17,15 @@ package org.jbpm.console.ng.pr.client.editors.definition.details.multi.advance;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+
+import org.jbpm.console.ng.pr.client.editors.definition.details.advance.AdvancedViewProcessDefDetailsPresenter;
 import org.jbpm.console.ng.pr.client.editors.definition.details.multi.BaseProcessDefDetailsMultiPresenter;
 import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
@@ -35,7 +38,8 @@ import com.google.gwt.user.client.ui.IsWidget;
 public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetailsMultiPresenter {
 
     public interface AdvancedProcessDefDetailsMultiView extends
-            BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView {
+                                                        UberView<AdvancedProcessDefDetailsMultiPresenter>,
+                                                        BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView {
 
         IsWidget getOptionsButton();
     }
@@ -43,19 +47,17 @@ public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetai
     @Inject
     public AdvancedProcessDefDetailsMultiView view;
 
+    @Inject
+    private AdvancedViewProcessDefDetailsPresenter detailPresenter;
+
     @DefaultPosition
     public Position getPosition() {
-        return super.getDefaultPosition();
+        return CompassPosition.EAST;
     }
 
     @WorkbenchPartView
-    public UberView<BaseProcessDefDetailsMultiPresenter> getView() {
+    public UberView<AdvancedProcessDefDetailsMultiPresenter> getView() {
         return view;
-    }
-
-    @Override
-    protected void setDefaultTab() {
-        view.getTabPanel().selectTab( 0 );
     }
 
     @WorkbenchMenu
@@ -133,4 +135,9 @@ public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetai
                     }
                 } ).endMenu().build();
     }
+
+    public IsWidget getTabView() {
+        return detailPresenter.getWidget();
+    }
+
 }

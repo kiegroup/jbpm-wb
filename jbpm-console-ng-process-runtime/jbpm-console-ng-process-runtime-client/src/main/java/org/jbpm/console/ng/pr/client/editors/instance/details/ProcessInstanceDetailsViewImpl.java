@@ -22,14 +22,13 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Label;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
+import org.gwtbootstrap3.client.ui.FormLabel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.uberfire.backend.vfs.Path;
@@ -58,7 +57,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
     @Inject
     @DataField
-    public Label parentProcessInstanceIdLabel;
+    public FormLabel parentProcessInstanceIdLabel;
 
     @Inject
     @DataField
@@ -74,27 +73,27 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
     @Inject
     @DataField
-    public Label processDefinitionIdLabel;
+    public FormLabel processDefinitionIdLabel;
 
     @Inject
     @DataField
-    public Label processDeploymentLabel;
+    public FormLabel processDeploymentLabel;
 
     @Inject
     @DataField
-    public Label processVersionLabel;
+    public FormLabel processVersionLabel;
 
     @Inject
     @DataField
-    public Label correlationKeyLabel;
+    public FormLabel correlationKeyLabel;
 
     @Inject
     @DataField
-    public Label stateLabel;
+    public FormLabel stateLabel;
 
     @Inject
     @DataField
-    public Label currentActivitiesListLabel;
+    public FormLabel currentActivitiesListLabel;
 
     @Inject
     @DataField
@@ -102,7 +101,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
 
     @Inject
     @DataField
-    public Label activeTasksListLabel;
+    public FormLabel activeTasksListLabel;
 
     @Inject
     private Event<NotificationEvent> notification;

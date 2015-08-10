@@ -21,7 +21,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.datepicker.client.DateBox;
+import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
 
 /**
  * Uses an HTML5 input type=date control to implement the UTCDateBox
@@ -154,7 +154,7 @@ public class UTCDateBoxImplHtml5 extends UTCDateBoxImplShared {
     }
 
     @Override
-    public DateBox getDateBox() {
+    public DatePicker getDateBox() {
         return null;
     }
 }

@@ -15,35 +15,31 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.list.variables.dash;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.RadioButton;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.view.client.Range;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.view.client.Range;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -51,13 +47,9 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
-import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
-
-import static org.dashbuilder.dataset.filter.FilterFactory.OR;
-import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
-import static org.jbpm.console.ng.pr.client.editors.instance.list.variables.dash.DataSetProcessInstanceListVariableViewImpl.PROCESS_INSTANCE_WITH_VARIABLES_DATASET;
-
+import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
+import org.jbpm.console.ng.gc.client.list.base.RefreshSelectorMenuBuilder;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup;
@@ -69,9 +61,9 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
-import org.uberfire.client.mvp.UberView;
 import org.uberfire.lifecycle.OnFocus;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
@@ -84,523 +76,396 @@ import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
+import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.jbpm.console.ng.pr.client.editors.instance.list.variables.dash.DataSetProcessInstanceListVariableViewImpl.*;
+
 @Dependent
 @WorkbenchScreen(identifier = "DataSet Process Instance Variable List")
 public class DataSetProcessInstanceVariableListPresenter extends AbstractScreenListPresenter<ProcessInstanceVariableSummary> {
 
-  public interface DataSetProcessInstanceVariableListView extends ListView<org.jbpm.console.ng.pr.model.ProcessInstanceVariableSummary, DataSetProcessInstanceVariableListPresenter> {
-    public int getRefreshValue();
-    public void restoreTabs();
-    public void saveRefreshValue(int newValue);
-    public void applyFilterOnPresenter(String key);
-  }
+    public interface DataSetProcessInstanceVariableListView extends ListView<org.jbpm.console.ng.pr.model.ProcessInstanceVariableSummary, DataSetProcessInstanceVariableListPresenter> {
 
-  @Inject
-  private DataSetProcessInstanceVariableListView view;
+        public int getRefreshValue();
 
-  @Inject
-  private Caller<ProcessInstanceService> processInstanceService;
+        public void restoreTabs();
 
-  @Inject
-  private Caller<KieSessionEntryPoint> kieSessionServices;
+        public void saveRefreshValue( int newValue );
 
-  @Inject
-  DataSetQueryHelper dataSetQueryHelper;
-
-  @Inject
-  private ErrorPopupPresenter errorPopup;
-
-  public Button menuActionsButton;
-  private PopupPanel popup = new PopupPanel(true);
-
-  public Button menuRefreshButton = new Button();
-  public Button menuResetTabsButton = new Button();
-
-  @Inject
-  private QuickNewProcessInstancePopup newProcessInstancePopup;
-
-  private Constants constants = GWT.create(Constants.class);
-
-  public DataSetProcessInstanceVariableListPresenter() {
-   super();
-  }
-
-  public void filterGrid(FilterSettings tableSettings) {
-    dataSetQueryHelper.setCurrentTableSettings( tableSettings );
-    refreshGrid();
-  }
-
-  @Override
-  protected ListView getListView() {
-    return view;
-  }
-
-  @Override
-  public void getData(final Range visibleRange) {
-    try {
-      FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
-      if(currentTableSettings!=null) {
-        currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
-        ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-        //GWT.log( "processInstances getData "+columnSortList.size() +"currentTableSettings table name "+ currentTableSettings.getTableName() );
-        if(columnSortList!=null &&  columnSortList.size()>0) {
-          dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
-          dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
-        }else {
-          dataSetQueryHelper.setLastOrderedColumn( DataSetProcessInstanceListVariableViewImpl.VARIABLE_NAME );
-          dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
-        }
-        dataSetQueryHelper.setDataSetHandler(   currentTableSettings );
-        if(textSearchStr!=null && textSearchStr.trim().length()>0){
-
-          DataSetFilter filter = new DataSetFilter();
-          List<ColumnFilter> filters =new ArrayList<ColumnFilter>(  );
-          filters.add(likeTo( DataSetProcessInstanceListVariableViewImpl.PROCESS_NAME,  textSearchStr.toLowerCase(), false  ) );
-          filters.add(likeTo( DataSetProcessInstanceListVariableViewImpl.PROCESS_INSTANCE_ID, textSearchStr.toLowerCase(), false ) );
-          filters.add(likeTo( DataSetProcessInstanceListVariableViewImpl.VARIABLE_VALUE, textSearchStr.toLowerCase(), false  ) );
-          filter.addFilterColumn( OR( filters ) );
-
-          if(currentTableSettings.getDataSetLookup().getFirstFilterOp()!=null) {
-            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
-          }else {
-            currentTableSettings.getDataSetLookup().addOperation( filter );
-          }
-          textSearchStr="";
-        }
-        dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), new DataSetReadyCallback() {
-          @Override
-          public void callback( DataSet dataSet ) {
-            if ( dataSet != null) {
-              List<ProcessInstanceVariableSummary> myProcessInstancesFromDataSet = new ArrayList<ProcessInstanceVariableSummary>();
-
-              for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
-                myProcessInstancesFromDataSet.add( new ProcessInstanceVariableSummary(
-                                dataSetQueryHelper.getColumnLongValue( dataSet, DataSetProcessInstanceListVariableViewImpl.PROCESS_INSTANCE_ID, i ),
-                                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceListVariableViewImpl.PROCESS_NAME, i ),
-                                dataSetQueryHelper.getColumnLongValue( dataSet, DataSetProcessInstanceListVariableViewImpl.VARIABLE_ID, i ),
-                                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceListVariableViewImpl.VARIABLE_NAME, i ),
-                                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceListVariableViewImpl.VARIABLE_VALUE, i )
-                               ));
-
-
-              }
-              PageResponse<ProcessInstanceVariableSummary> processInstanceSummaryPageResponse = new PageResponse<ProcessInstanceVariableSummary>();
-              processInstanceSummaryPageResponse.setPageRowList( myProcessInstancesFromDataSet );
-              processInstanceSummaryPageResponse.setStartRowIndex( visibleRange.getStart() );
-              processInstanceSummaryPageResponse.setTotalRowSize( dataSet.getRowCountNonTrimmed() );
-              processInstanceSummaryPageResponse.setTotalRowSizeExact( true );
-              if ( visibleRange.getStart() + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed() ) {
-                processInstanceSummaryPageResponse.setLastPage( true );
-              } else {
-                processInstanceSummaryPageResponse.setLastPage( false );
-              }
-              DataSetProcessInstanceVariableListPresenter.this.updateDataOnCallback( processInstanceSummaryPageResponse );
-            }
-            view.hideBusyIndicator();
-          }
-
-          @Override
-          public void notFound() {
-            view.hideBusyIndicator();
-            errorPopup.showMessage( "Not found DataSet with UUID [  "+PROCESS_INSTANCE_WITH_VARIABLES_DATASET+" ] " );
-            GWT.log( "DataSet with UUID [  "+PROCESS_INSTANCE_WITH_VARIABLES_DATASET+" ] not found." );
-          }
-
-          @Override
-          public boolean onError( final ClientRuntimeError error ) {
-            view.hideBusyIndicator();
-            errorPopup.showMessage( "DataSet with UUID [  "+PROCESS_INSTANCE_WITH_VARIABLES_DATASET+" ] error: " + error.getThrowable() );
-            GWT.log( "DataSet with UUID [  "+PROCESS_INSTANCE_WITH_VARIABLES_DATASET+" ] error: ", error.getThrowable() );
-            return false;
-          }
-        } );
-      }else {
-        view.hideBusyIndicator();
-      }
-    } catch (Exception e) {
-      GWT.log("Error looking up dataset with UUID [ "+PROCESS_INSTANCE_WITH_VARIABLES_DATASET+" ]");
+        public void applyFilterOnPresenter( String key );
     }
 
-  }
+    @Inject
+    private DataSetProcessInstanceVariableListView view;
 
-  public void newInstanceCreated(@Observes NewProcessInstanceEvent pi) {
-    refreshGrid();
-  }
+    @Inject
+    private Caller<ProcessInstanceService> processInstanceService;
 
-  public void newInstanceCreated(@Observes ProcessInstancesUpdateEvent pis) {
-    refreshGrid();
-  }
+    @Inject
+    private Caller<KieSessionEntryPoint> kieSessionServices;
 
-  @OnStartup
-  public void onStartup(final PlaceRequest place) {
-    this.place = place;
-  }
+    @Inject
+    DataSetQueryHelper dataSetQueryHelper;
 
-  @OnFocus
-  public void onFocus() {
-    refreshGrid();
-  }
+    @Inject
+    private ErrorPopupPresenter errorPopup;
 
-  @OnOpen
-  public void onOpen() {
-    refreshGrid();
-  }
+    private RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder( this );
 
-  public void abortProcessInstance(long processInstanceId) {
-    kieSessionServices.call(new RemoteCallback<Void>() {
-      @Override
-      public void callback(Void v) {
-        refreshGrid(  );
-      }
-    }, new ErrorCallback<Message>() {
-      @Override
-      public boolean error(Message message, Throwable throwable) {
-        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-        return true;
-      }
-    }).abortProcessInstance(processInstanceId);
-  }
+    public Button menuRefreshButton = new Button();
+    public Button menuResetTabsButton = new Button();
 
-  public void abortProcessInstance(List<Long> processInstanceIds) {
-    kieSessionServices.call(new RemoteCallback<Void>() {
-      @Override
-      public void callback(Void v) {
+    @Inject
+    private QuickNewProcessInstancePopup newProcessInstancePopup;
+
+    private Constants constants = GWT.create( Constants.class );
+
+    public DataSetProcessInstanceVariableListPresenter() {
+        super();
+    }
+
+    public void filterGrid( FilterSettings tableSettings ) {
+        dataSetQueryHelper.setCurrentTableSettings( tableSettings );
         refreshGrid();
-      }
-    }, new ErrorCallback<Message>() {
-      @Override
-      public boolean error(Message message, Throwable throwable) {
-        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-        return true;
-      }
-    }).abortProcessInstances(processInstanceIds);
-  }
-
-  public void suspendProcessInstance(String processDefId,
-          long processInstanceId) {
-    kieSessionServices.call(new RemoteCallback<Void>() {
-      @Override
-      public void callback(Void v) {
-        refreshGrid(  );
-
-      }
-    }, new ErrorCallback<Message>() {
-      @Override
-      public boolean error(Message message, Throwable throwable) {
-        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-        return true;
-      }
-    }).suspendProcessInstance(processInstanceId);
-  }
-
-  public void bulkSignal(List<ProcessInstanceVariableSummary> processInstances) {
-    StringBuilder processIdsParam = new StringBuilder();
-    if (processInstances != null) {
-
-      for (ProcessInstanceVariableSummary selected : processInstances) {
-        
-      }
-      // remove last ,
-      if (processIdsParam.length() > 0) {
-        processIdsParam.deleteCharAt(processIdsParam.length() - 1);
-      }
-    } else {
-      processIdsParam.append("-1");
     }
-    PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Signal Process Popup");
-    placeRequestImpl.addParameter("processInstanceId", processIdsParam.toString());
 
-    placeManager.goTo(placeRequestImpl);
-    view.displayNotification(constants.Signaling_Process_Instance());
-
-  }
-
-  public void bulkAbort(List<ProcessInstanceVariableSummary> processInstances) {
-    if (processInstances != null) {
-      if (Window.confirm("Are you sure that you want to abort the selected process instances?")) {
-        List<Long> ids = new ArrayList<Long>();
-        for (ProcessInstanceVariableSummary selected : processInstances) {
-          
-          ids.add(selected.getProcessInstanceId());
-
-          view.displayNotification(constants.Aborting_Process_Instance() + "(id=" + selected.getId() + ")");
-        }
-        abortProcessInstance(ids);
-
-      }
+    @Override
+    protected ListView getListView() {
+        return view;
     }
-  }
 
+    @Override
+    public void getData( final Range visibleRange ) {
+        try {
+            FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
+            if ( currentTableSettings != null ) {
+                currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
+                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+                //GWT.log( "processInstances getData "+columnSortList.size() +"currentTableSettings table name "+ currentTableSettings.getTableName() );
+                if ( columnSortList != null && columnSortList.size() > 0 ) {
+                    dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
+                    dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
+                } else {
+                    dataSetQueryHelper.setLastOrderedColumn( DataSetProcessInstanceListVariableViewImpl.VARIABLE_NAME );
+                    dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
+                }
+                dataSetQueryHelper.setDataSetHandler( currentTableSettings );
+                if ( textSearchStr != null && textSearchStr.trim().length() > 0 ) {
 
-  @WorkbenchPartTitle
-  public String getTitle() {
-    return "Process Instances And Variables";
-  }
+                    DataSetFilter filter = new DataSetFilter();
+                    List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
+                    filters.add( likeTo( DataSetProcessInstanceListVariableViewImpl.PROCESS_NAME, textSearchStr.toLowerCase(), false ) );
+                    filters.add( likeTo( DataSetProcessInstanceListVariableViewImpl.PROCESS_INSTANCE_ID, textSearchStr.toLowerCase(), false ) );
+                    filters.add( likeTo( DataSetProcessInstanceListVariableViewImpl.VARIABLE_VALUE, textSearchStr.toLowerCase(), false ) );
+                    filter.addFilterColumn( OR( filters ) );
 
-  @WorkbenchPartView
-  public UberView<DataSetProcessInstanceVariableListPresenter> getView() {
-    return view;
-  }
+                    if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {
+                        currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
+                    } else {
+                        currentTableSettings.getDataSetLookup().addOperation( filter );
+                    }
+                    textSearchStr = "";
+                }
+                dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
+                    @Override
+                    public void callback( DataSet dataSet ) {
+                        if ( dataSet != null ) {
+                            List<ProcessInstanceVariableSummary> myProcessInstancesFromDataSet = new ArrayList<ProcessInstanceVariableSummary>();
 
-  @WorkbenchMenu
-  public Menus getMenus() {
-    setupButtons();
+                            for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
+                                myProcessInstancesFromDataSet.add( new ProcessInstanceVariableSummary(
+                                        dataSetQueryHelper.getColumnLongValue( dataSet, DataSetProcessInstanceListVariableViewImpl.PROCESS_INSTANCE_ID, i ),
+                                        dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceListVariableViewImpl.PROCESS_NAME, i ),
+                                        dataSetQueryHelper.getColumnLongValue( dataSet, DataSetProcessInstanceListVariableViewImpl.VARIABLE_ID, i ),
+                                        dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceListVariableViewImpl.VARIABLE_NAME, i ),
+                                        dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceListVariableViewImpl.VARIABLE_VALUE, i )
+                                ) );
 
-    return MenuFactory
+                            }
+                            PageResponse<ProcessInstanceVariableSummary> processInstanceSummaryPageResponse = new PageResponse<ProcessInstanceVariableSummary>();
+                            processInstanceSummaryPageResponse.setPageRowList( myProcessInstancesFromDataSet );
+                            processInstanceSummaryPageResponse.setStartRowIndex( visibleRange.getStart() );
+                            processInstanceSummaryPageResponse.setTotalRowSize( dataSet.getRowCountNonTrimmed() );
+                            processInstanceSummaryPageResponse.setTotalRowSizeExact( true );
+                            if ( visibleRange.getStart() + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed() ) {
+                                processInstanceSummaryPageResponse.setLastPage( true );
+                            } else {
+                                processInstanceSummaryPageResponse.setLastPage( false );
+                            }
+                            DataSetProcessInstanceVariableListPresenter.this.updateDataOnCallback( processInstanceSummaryPageResponse );
+                        }
+                        view.hideBusyIndicator();
+                    }
 
-            .newTopLevelMenu( Constants.INSTANCE.New_Process_Instance() )
-            .respondsWith( new Command() {
-              @Override
-              public void execute() {
-                newProcessInstancePopup.show();
-              }
-            } )
-            .endMenu()
+                    @Override
+                    public void notFound() {
+                        view.hideBusyIndicator();
+                        errorPopup.showMessage( "Not found DataSet with UUID [  " + PROCESS_INSTANCE_WITH_VARIABLES_DATASET + " ] " );
+                        GWT.log( "DataSet with UUID [  " + PROCESS_INSTANCE_WITH_VARIABLES_DATASET + " ] not found." );
+                    }
 
-            .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
-              @Override
-              public void push( MenuFactory.CustomMenuBuilder element ) {
-              }
-
-              @Override
-              public MenuItem build() {
-                return new BaseMenuCustom<IsWidget>() {
-                  @Override
-                  public IsWidget build() {
-                    menuRefreshButton.addClickHandler( new ClickHandler() {
-                      @Override
-                      public void onClick( ClickEvent clickEvent ) {
-                        refreshGrid();
-                      }
-                    } );
-                    return menuRefreshButton;
-                  }
-
-                  @Override
-                  public boolean isEnabled() {
-                    return true;
-                  }
-
-                  @Override
-                  public void setEnabled( boolean enabled ) {
-
-                  }
-
-                  @Override
-                  public String getSignatureId() {
-                    return "org.jbpm.console.ng.pr.client.editors.instance.list.ProcessInstanceListPresenter#menuRefreshButton";
-                  }
-
-                };
-              }
-            } ).endMenu()
-
-
-            .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
-              @Override
-              public void push( MenuFactory.CustomMenuBuilder element ) {
-              }
-
-              @Override
-              public MenuItem build() {
-                return new BaseMenuCustom<IsWidget>() {
-                  @Override
-                  public IsWidget build() {
-                    return menuActionsButton;
-                  }
-
-                  @Override
-                  public boolean isEnabled() {
-                    return true;
-                  }
-
-                  @Override
-                  public void setEnabled( boolean enabled ) {
-
-                  }
-
-                  @Override
-                  public String getSignatureId() {
-                    return "org.jbpm.console.ng.pr.client.editors.instance.list.ProcessInstanceList#menuActionsButton";
-                  }
-
-                };
-              }
-            } ).endMenu()
-
-            .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
-              @Override
-              public void push( MenuFactory.CustomMenuBuilder element ) {
-              }
-
-              @Override
-              public MenuItem build() {
-                return new BaseMenuCustom<IsWidget>() {
-                  @Override
-                  public IsWidget build() {
-                    menuResetTabsButton.addClickHandler( new ClickHandler() {
-                      @Override
-                      public void onClick( ClickEvent clickEvent ) {
-                        view.restoreTabs();
-                      }
-                    } );
-                    return menuResetTabsButton;
-                  }
-
-                  @Override
-                  public boolean isEnabled() {
-                    return true;
-                  }
-
-                  @Override
-                  public void setEnabled( boolean enabled ) {
-
-                  }
-
-                  @Override
-                  public String getSignatureId() {
-                    return "org.jbpm.console.ng.pr.client.editors.instance.list.ProcessInstanceList#menuResetTabsButton";
-                  }
-
-                };
-              }
-            } ).endMenu()
-            .build();
-
-
-  }
-  public void setupButtons( ) {
-    menuActionsButton = new Button();
-    createRefreshToggleButton(menuActionsButton);
-
-    menuRefreshButton.setIcon( IconType.REFRESH );
-    menuRefreshButton.setSize( ButtonSize.MINI );
-    menuRefreshButton.setTitle(Constants.INSTANCE.Refresh() );
-
-    menuResetTabsButton.setIcon( IconType.TH_LIST );
-    menuResetTabsButton.setSize( ButtonSize.MINI );
-    menuResetTabsButton.setTitle(Constants.INSTANCE.RestoreDefaultFilters() );
-  }
-
-  public void createRefreshToggleButton(final Button refreshIntervalSelector) {
-
-    refreshIntervalSelector.setToggle(true);
-    refreshIntervalSelector.setIcon( IconType.COG);
-    refreshIntervalSelector.setTitle( Constants.INSTANCE.AutoRefresh() );
-    refreshIntervalSelector.setSize( ButtonSize.MINI );
-
-    popup.getElement().getStyle().setZIndex(Integer.MAX_VALUE);
-    popup.addAutoHidePartner(refreshIntervalSelector.getElement());
-    popup.addCloseHandler(new CloseHandler<PopupPanel>() {
-      public void onClose(CloseEvent<PopupPanel> popupPanelCloseEvent) {
-        if (popupPanelCloseEvent.isAutoClosed()) {
-          refreshIntervalSelector.setActive(false);
+                    @Override
+                    public boolean onError( final ClientRuntimeError error ) {
+                        view.hideBusyIndicator();
+                        errorPopup.showMessage( "DataSet with UUID [  " + PROCESS_INSTANCE_WITH_VARIABLES_DATASET + " ] error: " + error.getThrowable() );
+                        GWT.log( "DataSet with UUID [  " + PROCESS_INSTANCE_WITH_VARIABLES_DATASET + " ] error: ", error.getThrowable() );
+                        return false;
+                    }
+                } );
+            } else {
+                view.hideBusyIndicator();
+            }
+        } catch ( Exception e ) {
+            GWT.log( "Error looking up dataset with UUID [ " + PROCESS_INSTANCE_WITH_VARIABLES_DATASET + " ]" );
         }
-      }
-    });
 
-    refreshIntervalSelector.addClickHandler(new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        if (!refreshIntervalSelector.isActive() ) {
-          showSelectRefreshIntervalPopup( refreshIntervalSelector.getAbsoluteLeft() + refreshIntervalSelector.getOffsetWidth(),
-                  refreshIntervalSelector.getAbsoluteTop() + refreshIntervalSelector.getOffsetHeight(),refreshIntervalSelector);
+    }
+
+    public void newInstanceCreated( @Observes NewProcessInstanceEvent pi ) {
+        refreshGrid();
+    }
+
+    public void newInstanceCreated( @Observes ProcessInstancesUpdateEvent pis ) {
+        refreshGrid();
+    }
+
+    @OnStartup
+    public void onStartup( final PlaceRequest place ) {
+        this.place = place;
+    }
+
+    @OnFocus
+    public void onFocus() {
+        refreshGrid();
+    }
+
+    @OnOpen
+    public void onOpen() {
+        refreshGrid();
+    }
+
+    public void abortProcessInstance( long processInstanceId ) {
+        kieSessionServices.call( new RemoteCallback<Void>() {
+            @Override
+            public void callback( Void v ) {
+                refreshGrid();
+            }
+        }, new ErrorCallback<Message>() {
+            @Override
+            public boolean error( Message message,
+                                  Throwable throwable ) {
+                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                return true;
+            }
+        } ).abortProcessInstance( processInstanceId );
+    }
+
+    public void abortProcessInstance( List<Long> processInstanceIds ) {
+        kieSessionServices.call( new RemoteCallback<Void>() {
+            @Override
+            public void callback( Void v ) {
+                refreshGrid();
+            }
+        }, new ErrorCallback<Message>() {
+            @Override
+            public boolean error( Message message,
+                                  Throwable throwable ) {
+                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                return true;
+            }
+        } ).abortProcessInstances( processInstanceIds );
+    }
+
+    public void suspendProcessInstance( String processDefId,
+                                        long processInstanceId ) {
+        kieSessionServices.call( new RemoteCallback<Void>() {
+            @Override
+            public void callback( Void v ) {
+                refreshGrid();
+
+            }
+        }, new ErrorCallback<Message>() {
+            @Override
+            public boolean error( Message message,
+                                  Throwable throwable ) {
+                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                return true;
+            }
+        } ).suspendProcessInstance( processInstanceId );
+    }
+
+    public void bulkSignal( List<ProcessInstanceVariableSummary> processInstances ) {
+        StringBuilder processIdsParam = new StringBuilder();
+        if ( processInstances != null ) {
+
+            for ( ProcessInstanceVariableSummary selected : processInstances ) {
+
+            }
+            // remove last ,
+            if ( processIdsParam.length() > 0 ) {
+                processIdsParam.deleteCharAt( processIdsParam.length() - 1 );
+            }
         } else {
-          popup.hide(false);
+            processIdsParam.append( "-1" );
         }
-      }
-    });
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Signal Process Popup" );
+        placeRequestImpl.addParameter( "processInstanceId", processIdsParam.toString() );
 
-  }
+        placeManager.goTo( placeRequestImpl );
+        view.displayNotification( constants.Signaling_Process_Instance() );
 
-  private void showSelectRefreshIntervalPopup(final int left,
-                                              final int top,
-                                              final Button refreshIntervalSelector) {
-    VerticalPanel popupContent = new VerticalPanel();
-
-    final Button resetButton = new Button( Constants.INSTANCE.Disable_autorefresh() );
-
-    //int configuredSeconds = presenter.getAutoRefreshSeconds();
-    int configuredSeconds = view.getRefreshValue();
-    if(configuredSeconds>10) {
-      updateRefreshInterval( true,configuredSeconds );
-      resetButton.setActive( false );
-      resetButton.setEnabled( true );
-    } else {
-      updateRefreshInterval( false, 0 );
-      resetButton.setActive(true );
-      resetButton.setEnabled(false);
-      resetButton.setText( Constants.INSTANCE.Autorefresh_Disabled() );
     }
 
+    public void bulkAbort( List<ProcessInstanceVariableSummary> processInstances ) {
+        if ( processInstances != null ) {
+            if ( Window.confirm( "Are you sure that you want to abort the selected process instances?" ) ) {
+                List<Long> ids = new ArrayList<Long>();
+                for ( ProcessInstanceVariableSummary selected : processInstances ) {
 
-    RadioButton oneMinuteRadioButton = createTimeSelectorRadioButton(60, "1 "+Constants.INSTANCE.Minute(), configuredSeconds, refreshIntervalSelector, popupContent,resetButton);
-    RadioButton fiveMinuteRadioButton = createTimeSelectorRadioButton(300, "5 "+Constants.INSTANCE.Minutes(), configuredSeconds, refreshIntervalSelector, popupContent,resetButton);
-    RadioButton tenMinuteRadioButton = createTimeSelectorRadioButton(600, "10 "+Constants.INSTANCE.Minutes(), configuredSeconds, refreshIntervalSelector, popupContent,resetButton);
+                    ids.add( selected.getProcessInstanceId() );
 
-    popupContent.add(oneMinuteRadioButton);
-    popupContent.add(fiveMinuteRadioButton);
-    popupContent.add(tenMinuteRadioButton);
+                    view.displayNotification( constants.Aborting_Process_Instance() + "(id=" + selected.getId() + ")" );
+                }
+                abortProcessInstance( ids );
 
-    resetButton.setSize( ButtonSize.MINI );
-    resetButton.addClickHandler( new ClickHandler() {
-
-      @Override
-      public void onClick( ClickEvent event ) {
-        updateRefreshInterval( false,0 );
-        view.saveRefreshValue( 0 );
-        refreshIntervalSelector.setActive( false );
-        resetButton.setActive( false );
-        resetButton.setEnabled( false );
-        resetButton.setText( Constants.INSTANCE.Autorefresh_Disabled() );
-        popup.hide();
-      }
-    } );
-
-    popupContent.add( resetButton );
-
-
-    popup.setWidget(popupContent);
-    popup.show();
-    int finalLeft = left - popup.getOffsetWidth();
-    popup.setPopupPosition(finalLeft, top);
-
-  }
-
-  private RadioButton createTimeSelectorRadioButton(int time, String name, int configuredSeconds,
-                                                    final Button refreshIntervalSelector,
-                                                    VerticalPanel popupContent,final Button refreshDisableButton) {
-    RadioButton oneMinuteRadioButton = new RadioButton("refreshInterval",name);
-    oneMinuteRadioButton.setText( name  );
-    final int selectedRefreshTime = time;
-    if(configuredSeconds == selectedRefreshTime ) {
-      oneMinuteRadioButton.setValue( true );
+            }
+        }
     }
 
-    oneMinuteRadioButton.addClickHandler( new ClickHandler() {
-      @Override
-      public void onClick( ClickEvent event ) {
-        updateRefreshInterval(true, selectedRefreshTime );
-        view.saveRefreshValue( selectedRefreshTime );
-        refreshIntervalSelector.setActive( false );
-        refreshDisableButton.setActive( false );
-        refreshDisableButton.setEnabled( true );
-        refreshDisableButton.setText( Constants.INSTANCE.Disable_autorefresh() );
-        popup.hide();
-
-      }
-    } );
-    return oneMinuteRadioButton;
-  }
-
-  @Override
-  protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
-    textSearchStr = searchEvent.getFilter();
-    if(textSearchStr!=null && textSearchStr.trim().length()>0){
-      Map<String, Object> params = new HashMap<String, Object>();
-      params.put( "textSearch", textSearchStr );
-      dataSetQueryHelper.getCurrentTableSettings().getKey();
-
-      view.applyFilterOnPresenter( dataSetQueryHelper.getCurrentTableSettings().getKey() );
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return "Process Instances And Variables";
     }
-  }
+
+    @WorkbenchPartView
+    public UberView<DataSetProcessInstanceVariableListPresenter> getView() {
+        return view;
+    }
+
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return MenuFactory
+
+                .newTopLevelMenu( Constants.INSTANCE.New_Process_Instance() )
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        newProcessInstancePopup.show();
+                    }
+                } )
+                .endMenu()
+
+                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+                    @Override
+                    public void push( MenuFactory.CustomMenuBuilder element ) {
+                    }
+
+                    @Override
+                    public MenuItem build() {
+                        return new BaseMenuCustom<IsWidget>() {
+                            @Override
+                            public IsWidget build() {
+                                menuRefreshButton.addClickHandler( new ClickHandler() {
+                                    @Override
+                                    public void onClick( ClickEvent clickEvent ) {
+                                        refreshGrid();
+                                    }
+                                } );
+                                return menuRefreshButton;
+                            }
+
+                            @Override
+                            public boolean isEnabled() {
+                                return true;
+                            }
+
+                            @Override
+                            public void setEnabled( boolean enabled ) {
+
+                            }
+
+                            @Override
+                            public String getSignatureId() {
+                                return "org.jbpm.console.ng.pr.client.editors.instance.list.ProcessInstanceListPresenter#menuRefreshButton";
+                            }
+
+                        };
+                    }
+                } ).endMenu()
+
+                .newTopLevelCustomMenu( refreshSelectorMenuBuilder ).endMenu()
+
+                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+                    @Override
+                    public void push( MenuFactory.CustomMenuBuilder element ) {
+                    }
+
+                    @Override
+                    public MenuItem build() {
+                        return new BaseMenuCustom<IsWidget>() {
+                            @Override
+                            public IsWidget build() {
+                                menuResetTabsButton.addClickHandler( new ClickHandler() {
+                                    @Override
+                                    public void onClick( ClickEvent clickEvent ) {
+                                        view.restoreTabs();
+                                    }
+                                } );
+                                return menuResetTabsButton;
+                            }
+
+                            @Override
+                            public boolean isEnabled() {
+                                return true;
+                            }
+
+                            @Override
+                            public void setEnabled( boolean enabled ) {
+
+                            }
+
+                            @Override
+                            public String getSignatureId() {
+                                return "org.jbpm.console.ng.pr.client.editors.instance.list.ProcessInstanceList#menuResetTabsButton";
+                            }
+
+                        };
+                    }
+                } ).endMenu()
+                .build();
+
+    }
+
+    @PostConstruct
+    public void setupButtons() {
+        menuRefreshButton.setIcon( IconType.REFRESH );
+        menuRefreshButton.setSize( ButtonSize.SMALL );
+        menuRefreshButton.setTitle( Constants.INSTANCE.Refresh() );
+
+        menuResetTabsButton.setIcon( IconType.TH_LIST );
+        menuResetTabsButton.setSize( ButtonSize.SMALL );
+        menuResetTabsButton.setTitle( Constants.INSTANCE.RestoreDefaultFilters() );
+    }
+
+    @Override
+    public void onGridPreferencesStoreLoaded() {
+        refreshSelectorMenuBuilder.loadOptions( view.getRefreshValue() );
+    }
+
+    @Override
+    protected void updateRefreshInterval( boolean enableAutoRefresh, int newInterval ) {
+        super.updateRefreshInterval( enableAutoRefresh, newInterval );
+        view.saveRefreshValue( newInterval );
+    }
+
+    @Override
+    protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
+        textSearchStr = searchEvent.getFilter();
+        if ( textSearchStr != null && textSearchStr.trim().length() > 0 ) {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put( "textSearch", textSearchStr );
+            dataSetQueryHelper.getCurrentTableSettings().getKey();
+
+            view.applyFilterOnPresenter( dataSetQueryHelper.getCurrentTableSettings().getKey() );
+        }
+    }
 }

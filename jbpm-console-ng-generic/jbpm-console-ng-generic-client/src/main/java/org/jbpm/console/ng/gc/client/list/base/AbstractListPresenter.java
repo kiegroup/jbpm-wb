@@ -77,6 +77,8 @@ public abstract class AbstractListPresenter<T> {
 
     public abstract void getData(Range visibleRange);
 
+    public void onGridPreferencesStoreLoaded(){};
+
     protected void initDataProvider(){
 
         dataProvider = new AsyncDataProvider<T>() {
@@ -151,7 +153,7 @@ public abstract class AbstractListPresenter<T> {
  */
     protected void updateRefreshInterval(boolean enableAutoRefresh, int newInterval){
         this.autoRefreshEnabled = enableAutoRefresh;
-        setAutoRefreshSeconds( newInterval);
+        setAutoRefreshSeconds( newInterval );
         updateRefreshTimer();
     }
 

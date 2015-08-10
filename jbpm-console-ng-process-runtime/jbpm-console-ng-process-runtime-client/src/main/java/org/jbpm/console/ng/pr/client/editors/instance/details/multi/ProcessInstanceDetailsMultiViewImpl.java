@@ -16,36 +16,34 @@
 package org.jbpm.console.ng.pr.client.editors.instance.details.multi;
 
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.DropdownButton;
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
-import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView;
-import org.jbpm.console.ng.pr.client.editors.documents.list.ProcessDocumentListPresenter;
-import org.jbpm.console.ng.pr.client.editors.instance.details.ProcessInstanceDetailsPresenter;
-import org.jbpm.console.ng.pr.client.editors.instance.log.RuntimeLogPresenter;
-import org.jbpm.console.ng.pr.client.editors.variables.list.ProcessVariableListPresenter;
+import org.gwtbootstrap3.client.shared.event.TabShowEvent;
+import org.gwtbootstrap3.client.shared.event.TabShowHandler;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.ButtonGroup;
+import org.gwtbootstrap3.client.ui.DropDownMenu;
+import org.gwtbootstrap3.client.ui.NavTabs;
+import org.gwtbootstrap3.client.ui.TabContent;
+import org.gwtbootstrap3.client.ui.TabListItem;
+import org.gwtbootstrap3.client.ui.TabPane;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.constants.Styles;
+import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 
-import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.*;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.user.client.ui.RequiresResize;
-import com.google.gwt.user.client.ui.ScrollPanel;
-
 @Dependent
-public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsView<ProcessInstanceDetailsMultiPresenter>
-        implements ProcessInstanceDetailsMultiPresenter.ProcessInstanceDetailsMultiView, RequiresResize {
+public class ProcessInstanceDetailsMultiViewImpl extends Composite
+        implements ProcessInstanceDetailsMultiPresenter.ProcessInstanceDetailsMultiView {
 
     interface Binder
             extends
@@ -55,113 +53,129 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
 
     private static Binder uiBinder = GWT.create( Binder.class );
 
-    @Inject
-    private ProcessInstanceDetailsPresenter detailsPresenter;
+    @UiField
+    NavTabs navTabs;
 
-    @Inject
-    private ProcessVariableListPresenter variableListPresenter;
+    @UiField
+    TabContent tabContent;
 
-    @Inject
-    private ProcessDocumentListPresenter documentListPresenter;
+    private TabListItem instanceDetailsTab;
+    private TabPane instanceDetailsPane;
 
-    @Inject
-    private RuntimeLogPresenter runtimeLogPresenter;
-    
-    private ScrollPanel detailsScrollPanel = new ScrollPanel();
-    private ScrollPanel variablesScrollPanel = new ScrollPanel();
-    private ScrollPanel documentScrollPanel = new ScrollPanel();
-    private ScrollPanel runtimeScrollPanel = new ScrollPanel();
+    private TabListItem processVariablesTab;
+    private TabPane processVariablesPane;
+
+    private TabListItem documentTab;
+    private TabPane documentPane;
+
+    private TabListItem logsTab;
+    private TabPane logsPane;
+
+    private ProcessInstanceDetailsMultiPresenter presenter;
 
     @Override
     public void init( final ProcessInstanceDetailsMultiPresenter presenter ) {
-        super.init( presenter );
-        uiBinder.createAndBindUi( this );
-    }
-    
-    @Override
-    public void onResize() {
-        super.onResize();
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-               tabPanel.setHeight(ProcessInstanceDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
-               detailsScrollPanel.setHeight(ProcessInstanceDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
-               variablesScrollPanel.setHeight(ProcessInstanceDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
-               documentScrollPanel.setHeight(ProcessInstanceDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
-               runtimeScrollPanel.setHeight(ProcessInstanceDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
-            }
-        });
+        initWidget( uiBinder.createAndBindUi( this ) );
+        this.presenter = presenter;
+        initTabs();
     }
 
-    @Override
-    public void initTabs() {
+    private void initTabs() {
+        {
+            instanceDetailsPane = new TabPane() {{
+                add( presenter.getProcessIntanceView() );
+            }};
+            instanceDetailsTab = new TabListItem( Constants.INSTANCE.Process_Instance_Details() ) {{
+                setDataTargetWidget( instanceDetailsPane );
+                addStyleName( "uf-dropdown-tab-list-item" );
+            }};
+            tabContent.add( instanceDetailsPane );
+            navTabs.add( instanceDetailsTab );
+        }
 
-        tabPanel.addTab( "Instance Details", Constants.INSTANCE.Process_Instance_Details() );
-
-        tabPanel.addTab( "Process Variables", Constants.INSTANCE.Process_Variables() );
-
-        tabPanel.addTab( "Documents", "Documents" );
-
-        tabPanel.addTab( "Process Logs", Constants.INSTANCE.Logs() );
-
-
-        tabPanel.addSelectionHandler( new SelectionHandler<Integer>() {
-
-            @Override
-            public void onSelection( SelectionEvent<Integer> event ) {
-                if ( event.getSelectedItem() == 1 ) {
-                    variableListPresenter.refreshGrid();
-                } else if ( event.getSelectedItem() == 2 ) {
-                    documentListPresenter.refreshGrid();
+        {
+            processVariablesPane = new TabPane() {{
+                add( presenter.getProcessVariablesView() );
+            }};
+            processVariablesTab = new TabListItem( Constants.INSTANCE.Process_Variables() ) {{
+                setDataTargetWidget( processVariablesPane );
+                addStyleName( "uf-dropdown-tab-list-item" );
+            }};
+            tabContent.add( processVariablesPane );
+            navTabs.add( processVariablesTab );
+            processVariablesTab.addShowHandler( new TabShowHandler() {
+                @Override
+                public void onShow( final TabShowEvent event ) {
+                    presenter.variableListRefreshGrid();
                 }
-            }
-        } );
+            } );
 
-        detailsScrollPanel.add(detailsPresenter.getWidget());
-        
-        variablesScrollPanel.add(variableListPresenter.getWidget().asWidget());
-        
-        documentScrollPanel.add(documentListPresenter.getWidget().asWidget());
-        
-        runtimeScrollPanel.add(runtimeLogPresenter.getWidget().asWidget());
-        
-        
-        ( (HTMLPanel) tabPanel.getWidget( 0 ) ).add( detailsScrollPanel );
-        ( (HTMLPanel) tabPanel.getWidget( 1 ) ).add( variablesScrollPanel );
-        ( (HTMLPanel) tabPanel.getWidget( 2 ) ).add( documentScrollPanel );
-        ( (HTMLPanel) tabPanel.getWidget( 3 ) ).add( runtimeScrollPanel );
+        }
+
+        {
+            documentPane = new TabPane() {{
+                add( presenter.getDocumentView() );
+            }};
+            documentTab = new TabListItem( "Documents" ) {{
+                setDataTargetWidget( documentPane );
+                addStyleName( "uf-dropdown-tab-list-item" );
+            }};
+            tabContent.add( documentPane );
+            navTabs.add( documentTab );
+            documentTab.addShowHandler( new TabShowHandler() {
+                @Override
+                public void onShow( final TabShowEvent event ) {
+                    presenter.documentListRefreshGrid();
+                }
+            } );
+        }
+
+        {
+            logsPane = new TabPane() {{
+                add( presenter.getLogsView() );
+            }};
+            logsTab = new TabListItem( Constants.INSTANCE.Logs() ) {{
+                setDataTargetWidget( logsPane );
+                addStyleName( "uf-dropdown-tab-list-item" );
+            }};
+            tabContent.add( logsPane );
+            navTabs.add( logsTab );
+        }
     }
 
     @Override
     public IsWidget getOptionsButton() {
-        return new DropdownButton( Constants.INSTANCE.Options() ) {{
-            setSize( MINI );
-            setRightDropdown( true );
-            add( new NavLink( Constants.INSTANCE.Signal() ) {{
-                addClickHandler( new ClickHandler() {
-                    @Override
-                    public void onClick( ClickEvent event ) {
-                        presenter.signalProcessInstance();
-                    }
-                } );
+        return new ButtonGroup() {{
+            addStyleName( Styles.PULL_RIGHT );
+            add( new Button( Constants.INSTANCE.Options() ) {{
+                setSize( ButtonSize.SMALL );
+                setDataToggle( Toggle.DROPDOWN );
             }} );
-
-            add( new NavLink( Constants.INSTANCE.Abort() ) {{
-                addClickHandler( new ClickHandler() {
-                    @Override
-                    public void onClick( ClickEvent event ) {
-                        presenter.abortProcessInstance();
-                    }
-                } );
-            }} );
-
-            add( new NavLink( Constants.INSTANCE.View_Process_Model() ) {{
-                addClickHandler( new ClickHandler() {
-                    @Override
-                    public void onClick( ClickEvent event ) {
-                        presenter.goToProcessInstanceModelPopup();
-                    }
-                } );
+            add( new DropDownMenu() {{
+                add( new AnchorListItem( Constants.INSTANCE.Signal() ) {{
+                    addClickHandler( new ClickHandler() {
+                        @Override
+                        public void onClick( final ClickEvent clickEvent ) {
+                            presenter.signalProcessInstance();
+                        }
+                    } );
+                }} );
+                add( new AnchorListItem( Constants.INSTANCE.Abort() ) {{
+                    addClickHandler( new ClickHandler() {
+                        @Override
+                        public void onClick( final ClickEvent clickEvent ) {
+                            presenter.abortProcessInstance();
+                        }
+                    } );
+                }} );
+                add( new AnchorListItem( Constants.INSTANCE.View_Process_Model() ) {{
+                    addClickHandler( new ClickHandler() {
+                        @Override
+                        public void onClick( final ClickEvent clickEvent ) {
+                            presenter.goToProcessInstanceModelPopup();
+                        }
+                    } );
+                }} );
             }} );
         }};
     }
@@ -172,7 +186,7 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
             {
                 setIcon( IconType.REFRESH );
                 setTitle( Constants.INSTANCE.Refresh() );
-                setSize( MINI );
+                setSize( ButtonSize.SMALL );
                 addClickHandler( new ClickHandler() {
                     @Override
                     public void onClick( ClickEvent event ) {
@@ -189,7 +203,7 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
             {
                 setIcon( IconType.REMOVE );
                 setTitle( Constants.INSTANCE.Close() );
-                setSize( MINI );
+                setSize( ButtonSize.SMALL );
                 addClickHandler( new ClickHandler() {
                     @Override
                     public void onClick( ClickEvent event ) {
@@ -198,6 +212,11 @@ public class ProcessInstanceDetailsMultiViewImpl extends AbstractTabbedDetailsVi
                 } );
             }
         };
+    }
+
+    @Override
+    public void selectInstanceDetailsTab() {
+        instanceDetailsTab.showTab();
     }
 
 }

@@ -16,21 +16,18 @@
 
 package org.jbpm.console.ng.ht.client.editors.taskassignments;
 
-import com.github.gwtbootstrap.client.ui.*;
-
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -45,13 +42,12 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
 
     @Inject
     @DataField
-    public ControlLabel detailsAccordionLabel;
-
+    public FormLabel assignmentsAccordionLabel;
 
     @Inject
     @DataField
     public Label userOrGroupLabel;
-    
+
     @Inject
     @DataField
     public Label usersGroupsControlsLabel;
@@ -59,7 +55,7 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
     @Inject
     @DataField
     public TextBox userOrGroupText;
-    
+
     @Inject
     @DataField
     public Button delegateButton;
@@ -67,7 +63,6 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
     @Inject
     @DataField
     public Label usersGroupsControlsPanel;
-
 
     @Inject
     @DataField
@@ -82,10 +77,10 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
     public void init( TaskAssignmentsPresenter presenter ) {
         this.presenter = presenter;
 
-        userOrGroupLabel.setText(constants.Delegate_User());
-        detailsAccordionLabel.add( new HTMLPanel( constants.Details() ) );
+        userOrGroupLabel.setText( constants.Delegate_User() );
+        assignmentsAccordionLabel.setText( constants.Assignments() );
         delegateButton.setText( constants.Delegate() );
-        usersGroupsControlsLabel.setText(constants.Potential_Owners());
+        usersGroupsControlsLabel.setText( constants.Potential_Owners() );
         usersGroupsControlsPanel.setStyleName( "" );
         userOrGroupHelpBlock.setText( "" );
     }
@@ -93,10 +88,10 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
     @EventHandler("delegateButton")
     public void delegateButton( ClickEvent e ) {
         String userOrGroup = userOrGroupText.getText();
-        if(userOrGroup.equals("")){
+        if ( userOrGroup.equals( "" ) ) {
             userOrGroupHelpBlock.setText( Constants.INSTANCE.DelegationUserInputRequired() );
-        }else {
-            presenter.delegateTask( userOrGroup);
+        } else {
+            presenter.delegateTask( userOrGroup );
         }
     }
 
@@ -111,10 +106,10 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
     }
 
     @Override
-    public Button getDelegateButton(){
+    public Button getDelegateButton() {
         return delegateButton;
     }
-    
+
     @Override
     public TextBox getUserOrGroupText() {
         return userOrGroupText;
@@ -124,6 +119,5 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
     public HelpBlock getUserOrGroupHelpBlock() {
         return userOrGroupHelpBlock;
     }
-
 
 }

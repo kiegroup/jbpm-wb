@@ -15,7 +15,7 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.log;
 
-import com.google.gwt.dom.client.Style.Unit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -23,11 +23,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -50,7 +46,7 @@ public class RuntimeLogPresenter {
 
         void displayNotification( final String text );
 
-        HTML getLogTextArea();
+        void setLogs( List<String> logs );
     }
 
     @Inject
@@ -71,24 +67,22 @@ public class RuntimeLogPresenter {
     public void refreshProcessInstanceData( final LogOrder logOrder,
                                             final LogType logType ) {
 
-        view.getLogTextArea().setHTML("");
-        
         if ( LogType.TECHNICAL.equals( logType ) ) {
             dataServices.call( new RemoteCallback<List<RuntimeLogSummary>>() {
                 @Override
                 public void callback( List<RuntimeLogSummary> logs ) {
-                    SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+                    final List<String> logsLine = new ArrayList<String>();
 
                     if ( logOrder == LogOrder.DESC ) {
                         Collections.reverse( logs );
                     }
 
                     for ( RuntimeLogSummary rls : logs ) {
-                        safeHtmlBuilder.appendEscapedLines( rls.getTime() + ": " + rls.getLogLine() + " - " + rls.getType() + "\n" );
+                        logsLine.add( rls.getTime() + ": " + rls.getLogLine() + " - " + rls.getType() );
                     }
-                    
-                   
-                    view.getLogTextArea().setHTML(safeHtmlBuilder.toSafeHtml());
+
+
+                    view.setLogs( logsLine );
                 }
             }, new ErrorCallback<Message>() {
                 @Override
@@ -102,15 +96,15 @@ public class RuntimeLogPresenter {
             dataServices.call( new RemoteCallback<List<RuntimeLogSummary>>() {
                 @Override
                 public void callback( List<RuntimeLogSummary> logs ) {
-                    SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+                    final List<String> logsLine = new ArrayList<String>();
                     if ( logOrder == LogOrder.DESC ) {
                         Collections.reverse( logs );
                     }
 
                     for ( RuntimeLogSummary rls : logs ) {
-                        safeHtmlBuilder.appendEscapedLines( rls.getTime() + ": " + rls.getLogLine() + "\n" );
+                        logsLine.add( rls.getTime() + ": " + rls.getLogLine() );
                     }
-                    view.getLogTextArea().setHTML(safeHtmlBuilder.toSafeHtml());
+                    view.setLogs( logsLine );
                 }
             }, new ErrorCallback<Message>() {
                 @Override

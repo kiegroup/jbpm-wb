@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.datepicker.client.DateBox;
-import com.google.gwt.user.datepicker.client.DatePicker;
+import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
 
 /**
  * A wrapper around a DateBox that implements HasValue<Long> where the value is
@@ -172,7 +172,7 @@ public class UTCDateBox extends Composite implements HasValue<Long>, HasValueCha
         impl.setTabIndex(tabIndex);
     }
 
-    public DateBox getDateBox() {
+    public DatePicker getDateBox() {
         return impl.getDateBox();
     }
     

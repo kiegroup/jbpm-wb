@@ -15,9 +15,10 @@
  */
 package org.jbpm.console.ng.df.client.popup.filter;
 
-import com.github.gwtbootstrap.client.ui.Icon;
-import com.github.gwtbootstrap.client.ui.ListBox;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
+import java.util.Date;
+import java.util.List;
+import javax.enterprise.context.Dependent;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -38,11 +39,9 @@ import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionType;
 import org.dashbuilder.dataset.filter.FilterFactory;
-
-
-import javax.enterprise.context.Dependent;
-import java.util.Date;
-import java.util.List;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.ListBox;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 
 @Dependent
 public class ColumnFilterEditor extends Composite {
@@ -66,10 +65,10 @@ public class ColumnFilterEditor extends Composite {
     ListBox filterListBox;
 
     @UiField
-    Icon filterDeleteIcon;
+    Button filterDeleteIcon;
 
     @UiField
-    Icon filterExpandIcon;
+    Button filterExpandIcon;
 
     @UiField
     Panel filterDetailsPanel;
@@ -93,7 +92,7 @@ public class ColumnFilterEditor extends Composite {
         this.listener = listener;
         this.metadata = metadata;
 
-        filterExpandIcon.setType(IconType.ARROW_DOWN);
+        filterExpandIcon.setIcon( IconType.PLUS );
         filterExpandIcon.setVisible(hasDetails());
         initFilterListBox();
     }
@@ -118,8 +117,8 @@ public class ColumnFilterEditor extends Composite {
 
     public void expand() {
         if (hasDetails()) {
-            filterExpandIcon.setVisible(true);
-            filterExpandIcon.setType(IconType.ARROW_UP);
+            filterExpandIcon.setVisible( true );
+            filterExpandIcon.setIcon( IconType.MINUS );
             filterDetailsPanel.setVisible(true);
             initFilterDetailsPanel();
         }
@@ -127,7 +126,7 @@ public class ColumnFilterEditor extends Composite {
 
     public void collapse() {
         filterDetailsPanel.setVisible(false);
-        filterExpandIcon.setType(IconType.ARROW_DOWN);
+        filterExpandIcon.setIcon( IconType.PLUS );
         filterExpandIcon.setVisible(hasDetails());
     }
 

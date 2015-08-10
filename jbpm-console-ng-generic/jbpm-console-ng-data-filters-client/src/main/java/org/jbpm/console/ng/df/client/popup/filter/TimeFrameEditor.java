@@ -15,23 +15,22 @@
  */
 package org.jbpm.console.ng.df.client.popup.filter;
 
-import com.github.gwtbootstrap.client.ui.ListBox;
+import javax.enterprise.context.Dependent;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.dataset.client.resources.i18n.MonthConstants;
 import org.dashbuilder.dataset.date.Month;
 import org.dashbuilder.dataset.date.TimeFrame;
 import org.dashbuilder.dataset.date.TimeInstant;
 import org.dashbuilder.dataset.group.DateIntervalType;
-
-
-import javax.enterprise.context.Dependent;
+import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.ListBox;
 
 @Dependent
 public class TimeFrameEditor extends Composite {
@@ -53,7 +52,7 @@ public class TimeFrameEditor extends Composite {
     TimeInstantEditor toEditor;
 
     @UiField
-    Label firstMonthLabel;
+    FormLabel firstMonthLabel;
 
     @UiField
     ListBox firstMonthList;

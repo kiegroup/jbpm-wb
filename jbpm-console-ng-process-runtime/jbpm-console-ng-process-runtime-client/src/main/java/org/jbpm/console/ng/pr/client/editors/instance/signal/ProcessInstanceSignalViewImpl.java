@@ -23,14 +23,14 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Label;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
-import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.SuggestBox;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -98,7 +98,7 @@ public class ProcessInstanceSignalViewImpl extends Composite implements ProcessI
     public void signalButton( ClickEvent e ) {
 
         for ( Long processInstanceId : this.processInstanceIds ) {
-            
+
             displayNotification( constants.Signalling_Process_Instance() + processInstanceId + " " + constants.Signal() + " = "
                                          + signalRefText.getText() + " - " + constants.Signal_Data() + " = " + eventText.getText() );
         }

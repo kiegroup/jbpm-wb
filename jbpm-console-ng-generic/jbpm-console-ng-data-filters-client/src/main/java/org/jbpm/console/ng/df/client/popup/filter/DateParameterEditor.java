@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.df.client.popup.filter;
 
-import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -23,6 +22,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.extras.datetimepicker.client.ui.DateTimePicker;
 
 import javax.enterprise.context.Dependent;
 import java.util.Date;
@@ -40,7 +40,7 @@ public class DateParameterEditor extends Composite {
     Listener listener = null;
 
     @UiField
-    DateTimeBox input;
+    DateTimePicker input;
 
     public DateParameterEditor() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -57,7 +57,7 @@ public class DateParameterEditor extends Composite {
         input.setAutoClose(true); // hide datepicker when time selected
     }
 
-    public DateTimeBox getInput() {
+    public DateTimePicker getInput() {
         return input;
     }
 }

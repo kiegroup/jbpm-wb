@@ -17,63 +17,53 @@
 -->
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:gwt='urn:import:com.google.gwt.user.client.ui'
-             xmlns:bootstrap='urn:import:com.github.gwtbootstrap.client.ui'
-             xmlns:c="urn:import:org.jbpm.console.ng.gc.client.util"
-        >
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'>
 
     <ui:with field="i18n"
              type="org.jbpm.console.ng.es.client.i18n.Constants"/>
 
-
-    <ui:style>
-        .mandatory-field {
-            color: red;
-        }
-    </ui:style>
-
-    <gwt:HTMLPanel>
-        <bootstrap:Well>
-            <bootstrap:Fieldset>
-                <bootstrap:Form type="HORIZONTAL">
-                <bootstrap:ControlGroup ui:field="startedControlGroup">
-                    <bootstrap:ControlLabel for="startedLabel">
-                        <ui:text from="{i18n.Status}"/>
-                    </bootstrap:ControlLabel>
-                    <bootstrap:Controls>
-                        <bootstrap:Label ui:field="startedLabel"/>
-                    </bootstrap:Controls>
-                </bootstrap:ControlGroup>
+    <b:Container fluid="true">
+        <b:Row>
+            <b:Column size="MD_12">
+                <b:Form type="HORIZONTAL">
+                    <b:FieldSet>
+                        <b:FormGroup ui:field="startedControlGroup">
+                            <b:FormLabel for="startedLabel" addStyleNames="col-md-4">
+                                <ui:text from="{i18n.Status}"/>
+                            </b:FormLabel>
+                            <b:Column size="MD_8">
+                                <b:Label ui:field="startedLabel"/>
+                            </b:Column>
+                        </b:FormGroup>
 
 
-                <bootstrap:ControlGroup ui:field="numberOfExecutorsControlGroup">
-                    <bootstrap:ControlLabel for="numberOfExecutorsText">
-                        <span class="{style.mandatory-field}">*</span>
-                        <ui:text from="{i18n.Number_of_Threads}"/>
-                    </bootstrap:ControlLabel>
-                    <bootstrap:Controls>
-                        <bootstrap:IntegerBox ui:field="numberOfExecutorsIntegerText"/>
-                        <bootstrap:HelpBlock ui:field="numberOfExecutorsHelpInline"/>
-                    </bootstrap:Controls>
-                </bootstrap:ControlGroup>
+                        <b:FormGroup ui:field="numberOfExecutorsControlGroup">
+                            <b:FormLabel for="numberOfExecutorsText" showRequiredIndicator="true" addStyleNames="col-md-4">
+                                <ui:text from="{i18n.Number_of_Threads}"/>
+                            </b:FormLabel>
+                            <b:Column size="MD_8">
+                                <b:IntegerBox ui:field="numberOfExecutorsIntegerText"/>
+                                <b:HelpBlock ui:field="numberOfExecutorsHelpInline"/>
+                            </b:Column>
+                        </b:FormGroup>
 
-                <bootstrap:ControlGroup ui:field="frequencyControlGroup">
-                    <bootstrap:ControlLabel for="frequencyText">
-                        <span class="{style.mandatory-field}">*</span>
-                        <ui:text from="{i18n.Frequency}"/>
-                    </bootstrap:ControlLabel>
-                    <bootstrap:Controls>
-                        <bootstrap:TextBox ui:field="frequencyText" placeholder="{i18n.Frequency}"/>
-                        <bootstrap:HelpBlock ui:field="frequencyHelpInline"/>
-                    </bootstrap:Controls>
-                </bootstrap:ControlGroup>
-                </bootstrap:Form>
-            </bootstrap:Fieldset>
-        </bootstrap:Well>
+                        <b:FormGroup ui:field="frequencyControlGroup">
+                            <b:FormLabel for="frequencyText" showRequiredIndicator="true" addStyleNames="col-md-4">
+                                <ui:text from="{i18n.Frequency}"/>
+                            </b:FormLabel>
+                            <b:Column size="MD_8">
+                                <b:TextBox ui:field="frequencyText" placeholder="{i18n.Frequency}"/>
+                                <b:HelpBlock ui:field="frequencyHelpInline"/>
+                            </b:Column>
+                        </b:FormGroup>
+                    </b:FieldSet>
+                </b:Form>
 
-        <bootstrap:ControlGroup ui:field="errorMessagesGroup">
-            <bootstrap:HelpBlock ui:field="errorMessages"/>
-        </bootstrap:ControlGroup>
-    </gwt:HTMLPanel>
+                <b:FormGroup ui:field="errorMessagesGroup">
+                    <b:HelpBlock ui:field="errorMessages"/>
+                </b:FormGroup>
+            </b:Column>
+        </b:Row>
+    </b:Container>
 
 </ui:UiBinder>

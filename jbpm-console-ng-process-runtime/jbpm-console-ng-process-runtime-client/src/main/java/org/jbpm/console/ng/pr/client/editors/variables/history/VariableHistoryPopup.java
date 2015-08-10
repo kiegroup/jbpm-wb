@@ -16,14 +16,13 @@
 
 package org.jbpm.console.ng.pr.client.editors.variables.history;
 
-import com.github.gwtbootstrap.client.ui.*;
-import com.github.gwtbootstrap.client.ui.Column;
-import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.SimplePager;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
-import com.github.gwtbootstrap.client.ui.event.ShownEvent;
-import com.github.gwtbootstrap.client.ui.event.ShownHandler;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
@@ -31,36 +30,38 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.cellview.client.*;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.cellview.client.ColumnSortEvent;
+import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.RangeChangeEvent;
+import org.gwtbootstrap3.client.shared.event.ModalShownEvent;
+import org.gwtbootstrap3.client.shared.event.ModalShownHandler;
+import org.gwtbootstrap3.client.ui.FormControlStatic;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.Pagination;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.ValidationState;
+import org.gwtbootstrap3.client.ui.gwt.DataGrid;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
-import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.util.DataGridUtils;
 import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
-import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-
 @Dependent
 public class VariableHistoryPopup extends BaseModal {
+
     interface Binder
             extends
             UiBinder<Widget, VariableHistoryPopup> {
@@ -68,21 +69,19 @@ public class VariableHistoryPopup extends BaseModal {
     }
 
     @UiField
-    public TextBox variableNameTextBox;
-
+    public FormControlStatic variableNameTextBox;
 
     @UiField
     public HelpBlock errorMessages;
 
     @UiField
-    public ControlGroup errorMessagesGroup;
+    public FormGroup errorMessagesGroup;
 
     @UiField
     public DataGrid<ProcessVariableSummary> processVarListGrid;
 
     @UiField
-    public FlowPanel listContainer;
-
+    public Pagination pagination;
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -92,11 +91,9 @@ public class VariableHistoryPopup extends BaseModal {
 
     private ListDataProvider<ProcessVariableSummary> dataProvider = new ListDataProvider<ProcessVariableSummary>();
 
-
     public SimplePager pager;
 
     private ColumnSortEvent.ListHandler<ProcessVariableSummary> sortHandler;
-
 
     private static Binder uiBinder = GWT.create( Binder.class );
 
@@ -105,32 +102,27 @@ public class VariableHistoryPopup extends BaseModal {
     public VariableHistoryPopup() {
         setTitle( Constants.INSTANCE.History() );
 
-        add( uiBinder.createAndBindUi( this ) );
+        setBody( uiBinder.createAndBindUi( this ) );
         init();
         final GenericModalFooter footer = new GenericModalFooter();
 
         footer.addButton( Constants.INSTANCE.Ok(),
-                new Command() {
-                    @Override
-                    public void execute() {
-                        closePopup();
-                    }
-                }, null,
-                ButtonType.PRIMARY );
+                          new Command() {
+                              @Override
+                              public void execute() {
+                                  closePopup();
+                              }
+                          }, null,
+                          ButtonType.PRIMARY );
 
         add( footer );
     }
 
     public void init() {
-
-        listContainer.add( processVarListGrid );
         pager = new SimplePager( SimplePager.TextLocation.CENTER, false, true );
-        pager.setStyleName( "pagination pagination-right pull-right" );
-        listContainer.add( pager );
+        pagination.rebuild( pager );
 
-        processVarListGrid.setHeight( "200px" );
         // Set the message to display when the table is empty.
-
         processVarListGrid.setEmptyTableWidget( new HTMLPanel( Constants.INSTANCE.No_History_For_This_Variable() ) );
 
         sortHandler = new ColumnSortEvent.ListHandler<ProcessVariableSummary>( dataProvider.getList() );
@@ -141,11 +133,21 @@ public class VariableHistoryPopup extends BaseModal {
         pager.setDisplay( processVarListGrid );
         pager.setPageSize( 5 );
 
+        // Setting the RangeChangeHandler
+        processVarListGrid.addRangeChangeHandler( new RangeChangeEvent.Handler() {
+            @Override
+            public void onRangeChange( RangeChangeEvent event ) {
+                pagination.rebuild( pager );
+            }
+        } );
+
         // Value.
         com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String> valueColumn = new com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String>( new TextCell() ) {
 
             @Override
-            public void render( Cell.Context context, ProcessVariableSummary variableSummary, SafeHtmlBuilder sb ) {
+            public void render( Cell.Context context,
+                                ProcessVariableSummary variableSummary,
+                                SafeHtmlBuilder sb ) {
                 String title = variableSummary.getNewValue();
                 sb.append( DataGridUtils.createDivStart( title ) );
                 super.render( context, variableSummary, sb );
@@ -168,12 +170,13 @@ public class VariableHistoryPopup extends BaseModal {
             }
         } );
 
-
         // Old Value.
         com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String> oldValueColumn = new com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String>( new TextCell() ) {
 
             @Override
-            public void render( Cell.Context context, ProcessVariableSummary variableSummary, SafeHtmlBuilder sb ) {
+            public void render( Cell.Context context,
+                                ProcessVariableSummary variableSummary,
+                                SafeHtmlBuilder sb ) {
                 String title = variableSummary.getOldValue();
                 sb.append( DataGridUtils.createDivStart( title ) );
                 super.render( context, variableSummary, sb );
@@ -186,7 +189,6 @@ public class VariableHistoryPopup extends BaseModal {
             }
         };
         oldValueColumn.setSortable( true );
-
 
         processVarListGrid.addColumn( oldValueColumn, Constants.INSTANCE.Previous_Value() );
         sortHandler.setComparator( oldValueColumn, new Comparator<ProcessVariableSummary>() {
@@ -201,7 +203,9 @@ public class VariableHistoryPopup extends BaseModal {
         com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String> lastTimeChangedColumn = new com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String>( new TextCell() ) {
 
             @Override
-            public void render( Cell.Context context, ProcessVariableSummary variableSummary, SafeHtmlBuilder sb ) {
+            public void render( Cell.Context context,
+                                ProcessVariableSummary variableSummary,
+                                SafeHtmlBuilder sb ) {
                 Date lastModification = new Date( variableSummary.getTimestamp() );
                 DateTimeFormat format = DateTimeFormat.getFormat( "dd/MM/yyyy HH:mm" );
 
@@ -230,9 +234,11 @@ public class VariableHistoryPopup extends BaseModal {
         processVarListGrid.addColumn( lastTimeChangedColumn, Constants.INSTANCE.Last_Modification() );
 
         dataProvider.addDataDisplay( processVarListGrid );
+
     }
 
-    public void show( long processInstanceId, String variableId ) {
+    public void show( long processInstanceId,
+                      String variableId ) {
         this.processInstanceId = processInstanceId;
         this.variableNameTextBox.setText( variableId );
 
@@ -242,9 +248,9 @@ public class VariableHistoryPopup extends BaseModal {
 
     public void cleanForm() {
         cleanErrorMessages();
-        this.addShownHandler( new ShownHandler() {
+        this.addShownHandler( new ModalShownHandler() {
             @Override
-            public void onShown( ShownEvent shownEvent ) {
+            public void onShown( ModalShownEvent shownEvent ) {
                 refreshTable();
             }
         } );
@@ -253,12 +259,11 @@ public class VariableHistoryPopup extends BaseModal {
 
     private void cleanErrorMessages() {
         errorMessages.setText( "" );
-        errorMessagesGroup.setType( ControlGroupType.NONE );
+        errorMessagesGroup.setValidationState( ValidationState.NONE );
     }
 
     public void closePopup() {
         hide();
-        super.hide();
     }
 
     public void refreshTable() {
@@ -272,18 +277,19 @@ public class VariableHistoryPopup extends BaseModal {
             public void callback( List<ProcessVariableSummary> processInstances ) {
                 dataProvider.getList().clear();
                 dataProvider.getList().addAll( processInstances );
-                dataProvider.refresh();
+                dataProvider.flush();
+                pagination.rebuild( pager );
             }
         }, new ErrorCallback<Message>() {
             @Override
-            public boolean error( Message message, Throwable throwable ) {
+            public boolean error( Message message,
+                                  Throwable throwable ) {
                 errorMessages.setText( throwable.getMessage() );
-                errorMessagesGroup.setType( ControlGroupType.ERROR );
+                errorMessagesGroup.setValidationState( ValidationState.ERROR );
                 //ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                 return true;
             }
         } ).getVariableHistory( processInstanceId, variableNameTextBox.getText() );
     }
-
 
 }

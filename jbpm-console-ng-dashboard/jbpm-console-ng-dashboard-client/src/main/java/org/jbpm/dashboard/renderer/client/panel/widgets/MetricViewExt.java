@@ -15,8 +15,6 @@
  */
 package org.jbpm.dashboard.renderer.client.panel.widgets;
 
-import com.github.gwtbootstrap.client.ui.Heading;
-import com.github.gwtbootstrap.client.ui.Paragraph;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -30,6 +28,8 @@ import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.common.client.StringUtils;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.renderer.client.metric.MetricView;
+import org.gwtbootstrap3.client.ui.Heading;
+import org.gwtbootstrap3.client.ui.html.Paragraph;
 
 public class MetricViewExt extends Composite implements MetricView {
 

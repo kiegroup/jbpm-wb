@@ -19,112 +19,103 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
              xmlns:c="urn:import:org.jbpm.console.ng.gc.client.util"
-        >
+             xmlns:p="urn:import:org.uberfire.client.views.pfly.widgets">
 
-    <ui:with field="i18n" type="org.jbpm.console.ng.ht.client.i18n.Constants"/>
-    <ui:style>
-        .mandatory-field {
-            color: red;
-        }
-        .fieldCellWidth {
-            width: 50%;
-        }
-    </ui:style>
+  <ui:with field="i18n" type="org.jbpm.console.ng.ht.client.i18n.Constants"/>
 
-    <g:HTMLPanel>
-        <b:TabPanel ui:field="tabPanel">
-            <b:Tab heading="{i18n.Basic}" active="true" ui:field="basicTab">
-                <b:Well>
-                    <b:Fieldset>
-                        <b:Form type="HORIZONTAL">
-                            <b:ControlGroup ui:field="taskNameControlGroup">
-                                <b:ControlLabel>
-                                    <span class="{style.mandatory-field}">*</span>
-                                    <ui:text from="{i18n.Task_Name}"/>
-                                </b:ControlLabel>
-                                <b:Controls>
-                                    <b:TextBox ui:field="taskNameText"/>
-                                    <b:HelpBlock ui:field="taskNameHelpLabel"/>
-                                </b:Controls>
-                            </b:ControlGroup>
-                        </b:Form>
-                    </b:Fieldset>
-                </b:Well>
-            </b:Tab>
-            <b:Tab heading="{i18n.Advanced}" ui:field="advancedTab">
-                <!--b:Button ui:field="advancedButton" text="{i18n.Advanced}" styleName="page-header"/ -->
-                <!--b:Fieldset ui:field="advancedFieldset"-->
-                <b:Well>
-                    <b:Fieldset>
-                        <b:Form type="HORIZONTAL">
-                            <b:ControlGroup>
-                                <b:ControlLabel>
-                                    <g:Label text="{i18n.Due_On}"/>
-                                </b:ControlLabel>
-                                <b:Controls styleName="controls row-fluid {style.fieldCellWidth}">
-                                    <c:UTCDateBox ui:field="dueDate" styleName="span5"/>
-                                    <c:UTCTimeBox ui:field="dueDateTime" styleName="span3"/>
-                                </b:Controls>
-                            </b:ControlGroup>
-                            <b:ControlGroup>
-                                <b:ControlLabel>
-                                    <g:Label text="{i18n.Priority}"/>
-                                </b:ControlLabel>
-                                <b:Controls>
-                                    <b:ListBox ui:field="taskPriorityListBox"/>
-                                </b:Controls>
+  <ui:style>
+    .spacer {
+      padding-top: 15px;
+    }
+  </ui:style>
 
-                            </b:ControlGroup>
-                            <b:ControlGroup>
-                                <g:HorizontalPanel>
-                                    <g:cell width="250px" horizontalAlignment="right">
-                                        <b:Button ui:field="addUserButton" text="{i18n.Add_User}"/>
-                                    </g:cell>
-                                    <g:cell horizontalAlignment="left">
-                                        <b:Button ui:field="addGroupButton" text="{i18n.Add_Group}"/>
-                                    </g:cell>
-                                </g:HorizontalPanel>
-                            </b:ControlGroup>
-                            <g:FlowPanel ui:field="usersGroupsControlsPanel"/>
-                        </b:Form>
+  <g:HTMLPanel>
+    <b:TabPanel ui:field="tabPanel" addStyleNames="uf-tabbar-panel">
+      <b:NavTabs addStyleNames="uf-tabbar-panel-nav-tabs nav-tabs-pf">
+        <b:TabListItem active="true" text="{i18n.Basic}" ui:field="basicTab" addStyleNames="uf-dropdown-tab-list-item"/>
+        <b:TabListItem text="{i18n.Advanced}" ui:field="advancedTab" addStyleNames="uf-dropdown-tab-list-item"/>
+        <b:TabListItem text="{i18n.Task_Form}" ui:field="taskformTab" addStyleNames="uf-dropdown-tab-list-item"/>
+      </b:NavTabs>
+      <b:TabContent>
+        <b:TabPane active="true" ui:field="basicTabPane" addStyleNames="{style.spacer}">
+          <b:Container fluid="true">
+            <b:Column size="MD_12">
+              <b:Form type="HORIZONTAL">
+                <b:FieldSet>
+                  <b:FormGroup ui:field="taskNameControlGroup">
+                    <p:FormLabelHelp text="{i18n.Task_Name}" addStyleNames="col-md-3" showRequiredIndicator="true"/>
+                    <b:Column size="MD_9">
+                      <b:TextBox ui:field="taskNameText"/>
+                      <b:HelpBlock ui:field="taskNameHelpLabel"/>
+                    </b:Column>
+                  </b:FormGroup>
+                </b:FieldSet>
+              </b:Form>
+            </b:Column>
+          </b:Container>
+        </b:TabPane>
+        <b:TabPane ui:field="advancedTabPane" addStyleNames="{style.spacer}">
+          <b:Container fluid="true">
+            <b:Column size="MD_12">
+              <b:Form type="HORIZONTAL">
+                <b:FieldSet ui:field="controlsPanel">
+                  <b:FormGroup>
+                    <p:FormLabelHelp text="{i18n.Due_On}" addStyleNames="col-md-3"/>
+                    <b:Column size="MD_9">
+                      <c:UTCDateBox ui:field="dueDate" styleName="col-md-8"/>
+                      <c:UTCTimeBox ui:field="dueDateTime" styleName="col-md-4"/>
+                    </b:Column>
+                  </b:FormGroup>
+                  <b:FormGroup>
+                    <p:FormLabelHelp text="{i18n.Priority}" addStyleNames="col-md-3"/>
+                    <b:Column size="MD_9">
+                      <b:ListBox ui:field="taskPriorityListBox"/>
+                    </b:Column>
+                  </b:FormGroup>
+                  <b:FormGroup>
+                    <b:Column size="MD_9" offset="MD_3">
+                      <b:Button ui:field="addUserButton" text="{i18n.Add_User}"/>
+                      <b:Button ui:field="addGroupButton" text="{i18n.Add_Group}"/>
+                    </b:Column>
+                  </b:FormGroup>
+                </b:FieldSet>
+              </b:Form>
+            </b:Column>
+          </b:Container>
+        </b:TabPane>
+        <b:TabPane ui:field="taskformTabPane" addStyleNames="{style.spacer}">
+          <b:Container fluid="true">
+            <b:Column size="MD_12">
+              <b:Form type="HORIZONTAL">
+                <b:FieldSet>
+                  <b:FormGroup ui:field="taskFormDeploymentIdControlGroup">
+                    <p:FormLabelHelp text="{i18n.Task_Form_DeploymentId}" addStyleNames="col-md-3"/>
+                    <b:Column size="MD_9">
+                      <b:ListBox ui:field="taskFormDeploymentId"/>
+                      <b:HelpBlock ui:field="taskFormDeploymentIdHelpLabel"/>
+                    </b:Column>
+                  </b:FormGroup>
+                  <b:FormGroup ui:field="taskFormNameControlGroup">
+                    <p:FormLabelHelp text="{i18n.Task_Form_Name}" addStyleNames="col-md-3"/>
+                    <b:Column size="MD_9">
+                      <b:ListBox ui:field="taskFormName"/>
+                      <b:HelpBlock ui:field="taskFormNameHelpLabel"/>
+                    </b:Column>
+                  </b:FormGroup>
+                </b:FieldSet>
+              </b:Form>
+            </b:Column>
+          </b:Container>
+        </b:TabPane>
+      </b:TabContent>
+    </b:TabPanel>
 
-                    </b:Fieldset>
-                </b:Well>
-            </b:Tab>
-            <b:Tab heading="{i18n.Task_Form}">
-              <b:Well>
-                <b:Fieldset>
-                    <b:Form type="HORIZONTAL">
-                      <b:ControlGroup ui:field="taskFormDeploymentIdControlGroup">
-                        <b:ControlLabel>
-                          <ui:text from="{i18n.Task_Form_DeploymentId}"/>
-                        </b:ControlLabel>
-                        <b:Controls>
-                          <b:ListBox ui:field="taskFormDeploymentId"/>
-                          <b:HelpBlock ui:field="taskFormDeploymentIdHelpLabel"/>
-                        </b:Controls>
-                      </b:ControlGroup>
-                      <b:ControlGroup ui:field="taskFormNameControlGroup">
-                        <b:ControlLabel>
-                          <ui:text from="{i18n.Task_Form_Name}"/>
-                        </b:ControlLabel>
-                        <b:Controls>
-                          <b:ListBox ui:field="taskFormName"/>
-                          <b:HelpBlock ui:field="taskFormNameHelpLabel"/>
-                        </b:Controls>
-                      </b:ControlGroup>
-                    </b:Form>
-                </b:Fieldset>
-              </b:Well>
-            </b:Tab>
-        </b:TabPanel>
+    <b:FormGroup ui:field="errorMessagesGroup">
+      <b:HelpBlock ui:field="errorMessages"/>
+    </b:FormGroup>
 
-        <b:ControlGroup ui:field="errorMessagesGroup">
-            <b:HelpBlock ui:field="errorMessages"/>
-        </b:ControlGroup>
-
-    </g:HTMLPanel>
+  </g:HTMLPanel>
 
 </ui:UiBinder>

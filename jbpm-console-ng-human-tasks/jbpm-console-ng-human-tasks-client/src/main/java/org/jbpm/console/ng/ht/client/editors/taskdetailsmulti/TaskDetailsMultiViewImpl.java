@@ -15,37 +15,30 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskdetailsmulti;
 
-import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.MINI;
-
 import javax.enterprise.context.Dependent;
-import org.jbpm.console.ng.ht.client.editors.taskform.TaskFormPresenter;
-import org.jbpm.console.ng.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
-
-import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView;
-import org.jbpm.console.ng.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
-import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter;
-import org.jbpm.console.ng.ht.client.editors.taskdetails.TaskDetailsPresenter;
+import org.gwtbootstrap3.client.shared.event.TabShowEvent;
+import org.gwtbootstrap3.client.shared.event.TabShowHandler;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.NavTabs;
+import org.gwtbootstrap3.client.ui.TabContent;
+import org.gwtbootstrap3.client.ui.TabListItem;
+import org.gwtbootstrap3.client.ui.TabPane;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import org.jbpm.console.ng.ht.client.editors.taskadmin.TaskAdminPresenter;
-
 
 @Dependent
-public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDetailsMultiPresenter>
-        implements TaskDetailsMultiPresenter.TaskDetailsMultiView, RequiresResize {
+public class TaskDetailsMultiViewImpl extends Composite
+        implements TaskDetailsMultiPresenter.TaskDetailsMultiView {
 
     interface Binder
             extends
@@ -53,97 +46,182 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
 
     }
 
-    private TaskFormPresenter taskFormPresenter;
+    private static Binder uiBinder = GWT.create( Binder.class );
 
-    private TaskDetailsPresenter taskDetailsPresenter;
+    @UiField
+    NavTabs navTabs;
 
-    private TaskAssignmentsPresenter taskAssignmentsPresenter;
+    @UiField
+    TabContent tabContent;
 
-    private TaskCommentsPresenter taskCommentsPresenter;
-    
-    private TaskAdminPresenter taskAdminPresenter;
+    private TaskDetailsMultiPresenter presenter;
 
-    private TaskProcessContextPresenter taskProcessContextPresenter;
-    
-    private ScrollPanel formScrollPanel = new ScrollPanel();
-    
-    private ScrollPanel taskDetailsScrollPanel = new ScrollPanel();
-    
-    private ScrollPanel taskProcessContextScrollPanel = new ScrollPanel();
-    
-    private ScrollPanel assignmentsScrollPanel = new ScrollPanel();
-    
-    private ScrollPanel commentsScrollPanel = new ScrollPanel();
-    
-    private ScrollPanel taskAdminScrollPanel = new ScrollPanel();
-    
+    private TabPane genericFormDisplayPane;
+    private TabListItem genericFormDisplayTab;
+
+    private TabPane taskDetailsPane;
+    private TabListItem taskDetailsTab;
+
+    private TabPane processContextPane;
+    private TabListItem processContextTab;
+
+    private TabPane taskAssignmentsPane;
+    private TabListItem taskAssignmentsTab;
+
+    private TabPane taskCommentsPane;
+    private TabListItem taskCommentsTab;
+
+    private TabPane taskAdminPane;
+    private TabListItem taskAdminTab;
+
     @Override
     public void init( final TaskDetailsMultiPresenter presenter ) {
-        super.init( presenter );
+        initWidget( uiBinder.createAndBindUi( this ) );
+        this.presenter = presenter;
+        initTabs();
     }
 
-    @Override
-    public void initTabs() {
-        tabPanel.addTab( "Generic Form Display", Constants.INSTANCE.Work() );
-        tabPanel.addTab( "Task Details", Constants.INSTANCE.Details() );
-        tabPanel.addTab( "Process Context", Constants.INSTANCE.Process_Context());
-        tabPanel.addTab( "Task Assignments", Constants.INSTANCE.Assignments() );
-        tabPanel.addTab( "Task Comments", Constants.INSTANCE.Comments() );
-        tabPanel.addTab( "Task Admin", Constants.INSTANCE.Task_Admin());
-        
-       
-        formScrollPanel.add(taskFormPresenter.getView());
-        
-        taskDetailsScrollPanel.add(taskDetailsPresenter.getView());
-        
-        taskProcessContextScrollPanel.add(taskProcessContextPresenter.getView());
-        
-        assignmentsScrollPanel.add(taskAssignmentsPresenter.getView());
-        
-        commentsScrollPanel.add(taskCommentsPresenter.getView());
-        
-        taskAdminScrollPanel.add( taskAdminPresenter.getView().asWidget());
-        
-        
-        
-        
-        ( (HTMLPanel) tabPanel.getWidget( 0 ) ).add( formScrollPanel );
-        ( (HTMLPanel) tabPanel.getWidget( 1 ) ).add( taskDetailsScrollPanel );
-        ( (HTMLPanel) tabPanel.getWidget( 2 ) ).add( taskProcessContextScrollPanel );
-        ( (HTMLPanel) tabPanel.getWidget( 3 ) ).add( assignmentsScrollPanel );
-        ( (HTMLPanel) tabPanel.getWidget( 4 ) ).add( commentsScrollPanel );
-        ( (HTMLPanel) tabPanel.getWidget( 5 ) ).add( taskAdminScrollPanel );
+    private void initTabs() {
+        {
+            genericFormDisplayPane = new TabPane() {{
+                add( presenter.getGenericFormView() );
+            }};
+            genericFormDisplayTab = new TabListItem( Constants.INSTANCE.Work() ) {{
+                setDataTargetWidget( genericFormDisplayPane );
+                addStyleName( "uf-dropdown-tab-list-item" );
+            }};
+            navTabs.add( genericFormDisplayTab );
+            tabContent.add( genericFormDisplayPane );
+        }
 
-
-        tabPanel.addSelectionHandler( new SelectionHandler<Integer>() {
-
-            @Override
-            public void onSelection( SelectionEvent<Integer> event ) {
-                if ( event.getSelectedItem() == 0 ) {
-                    
-                } else if ( event.getSelectedItem() == 1 ) {
-                    taskDetailsPresenter.refreshTask();
-                } else if ( event.getSelectedItem() == 2 ) {
-                    taskProcessContextPresenter.refreshProcessContextOfTask();
-                }else if ( event.getSelectedItem() == 3 ) {
-                    taskAssignmentsPresenter.refreshTaskPotentialOwners();
-                } else if ( event.getSelectedItem() == 4 ) {
-                    taskCommentsPresenter.refreshComments();
-                }else if ( event.getSelectedItem() == 5 ) {
-                    taskAdminPresenter.refreshTaskPotentialOwners();
+        {
+            taskDetailsPane = new TabPane() {{
+                add( presenter.getTaskDetailsView() );
+            }};
+            taskDetailsTab = new TabListItem( Constants.INSTANCE.Details() ) {{
+                setDataTargetWidget( taskDetailsPane );
+                addStyleName( "uf-dropdown-tab-list-item" );
+            }};
+            navTabs.add( taskDetailsTab );
+            tabContent.add( taskDetailsPane );
+            taskDetailsTab.addShowHandler( new TabShowHandler() {
+                @Override
+                public void onShow( final TabShowEvent event ) {
+                    presenter.taskDetailsRefresh();
                 }
-                
-            }
-        } );
+            } );
+        }
+
+        {
+            processContextPane = new TabPane() {{
+                add( presenter.getProcessContextView() );
+            }};
+            processContextTab = new TabListItem( Constants.INSTANCE.Process_Context() ) {{
+                setDataTargetWidget( processContextPane );
+                addStyleName( "uf-dropdown-tab-list-item" );
+            }};
+            navTabs.add( processContextTab );
+            tabContent.add( processContextPane );
+            processContextTab.addShowHandler( new TabShowHandler() {
+                @Override
+                public void onShow( final TabShowEvent event ) {
+                    presenter.taskProcessContextRefresh();
+                }
+            } );
+        }
+
+        {
+            taskAssignmentsPane = new TabPane() {{
+                add( presenter.getTaskAssignmentsView() );
+            }};
+            taskAssignmentsTab = new TabListItem( Constants.INSTANCE.Assignments() ) {{
+                setDataTargetWidget( taskAssignmentsPane );
+                addStyleName( "uf-dropdown-tab-list-item" );
+            }};
+            navTabs.add( taskAssignmentsTab );
+            tabContent.add( taskAssignmentsPane );
+            taskAssignmentsTab.addShowHandler( new TabShowHandler() {
+                @Override
+                public void onShow( final TabShowEvent event ) {
+                    presenter.taskAssignmentsRefresh();
+                }
+            } );
+        }
+
+        {
+            taskCommentsPane = new TabPane() {{
+                add( presenter.getTaskCommentsView() );
+            }};
+            taskCommentsTab = new TabListItem( Constants.INSTANCE.Comments() ) {{
+                setDataTargetWidget( taskCommentsPane );
+                addStyleName( "uf-dropdown-tab-list-item" );
+            }};
+            navTabs.add( taskCommentsTab );
+            tabContent.add( taskCommentsPane );
+            taskCommentsTab.addShowHandler( new TabShowHandler() {
+                @Override
+                public void onShow( final TabShowEvent event ) {
+                    presenter.taskCommentsRefresh();
+                }
+            } );
+        }
+
+        {
+            taskAdminPane = new TabPane() {{
+                add( presenter.getTaskAdminView() );
+            }};
+            taskAdminTab = new TabListItem( Constants.INSTANCE.Task_Admin() ) {{
+                setDataTargetWidget( taskAdminPane );
+                addStyleName( "uf-dropdown-tab-list-item" );
+            }};
+            navTabs.add( taskAdminTab );
+            tabContent.add( taskAdminPane );
+            taskAdminTab.addShowHandler( new TabShowHandler() {
+                @Override
+                public void onShow( final TabShowEvent event ) {
+                    presenter.taskAdminRefresh();
+                }
+            } );
+        }
     }
 
     @Override
-    public Button getCloseButton() {
+    public void setAdminTabVisible( final boolean value ) {
+        taskAdminTab.setVisible( value );
+        taskAdminPane.setVisible( value );
+    }
+
+    @Override
+    public void displayAllTabs() {
+        for ( Widget active : navTabs ) {
+            active.setVisible( true );
+        }
+        for ( Widget active : tabContent ) {
+            active.setVisible( true );
+        }
+        ( (TabListItem) navTabs.getWidget( 0 ) ).showTab();
+    }
+
+    @Override
+    public void displayOnlyLogTab() {
+        for ( Widget active : navTabs ) {
+            active.setVisible( false );
+        }
+        for ( Widget active : tabContent ) {
+            active.setVisible( false );
+        }
+        taskDetailsPane.setVisible( true );
+        taskDetailsTab.setVisible( true );
+        taskDetailsTab.showTab();
+    }
+
+    @Override
+    public IsWidget getCloseButton() {
         return new Button() {
             {
                 setIcon( IconType.REMOVE );
                 setTitle( Constants.INSTANCE.Close() );
-                setSize( MINI );
+                setSize( ButtonSize.EXTRA_SMALL );
                 addClickHandler( new ClickHandler() {
                     @Override
                     public void onClick( ClickEvent event ) {
@@ -155,27 +233,12 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
     }
 
     @Override
-    public void setupPresenters( final TaskFormPresenter taskFormPresenter,
-                                 final TaskDetailsPresenter taskDetailsPresenter,
-                                 final TaskAssignmentsPresenter taskAssignmentsPresenter,
-                                 final TaskCommentsPresenter taskCommentsPresenter,
-                                 final TaskAdminPresenter taskAdminPresenter,
-                                 final TaskProcessContextPresenter taskProcessContextPresenter) {
-        this.taskFormPresenter = taskFormPresenter;
-        this.taskDetailsPresenter = taskDetailsPresenter;
-        this.taskAssignmentsPresenter = taskAssignmentsPresenter;
-        this.taskCommentsPresenter = taskCommentsPresenter;
-        this.taskAdminPresenter = taskAdminPresenter;
-        this.taskProcessContextPresenter =taskProcessContextPresenter;
-    }
-
-    @Override
     public IsWidget getRefreshButton() {
         return new Button() {
             {
                 setIcon( IconType.REFRESH );
                 setTitle( Constants.INSTANCE.Refresh() );
-                setSize( MINI );
+                setSize( ButtonSize.EXTRA_SMALL );
                 addClickHandler( new ClickHandler() {
                     @Override
                     public void onClick( ClickEvent event ) {
@@ -185,25 +248,5 @@ public class TaskDetailsMultiViewImpl extends AbstractTabbedDetailsView<TaskDeta
             }
         };
     }
-
-    @Override
-    public void onResize() {
-        super.onResize(); 
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-               tabPanel.setHeight(TaskDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
-              
-               formScrollPanel.setHeight(TaskDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
-               taskDetailsScrollPanel.setHeight(TaskDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
-               taskProcessContextScrollPanel.setHeight(TaskDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
-               assignmentsScrollPanel.setHeight(TaskDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
-               commentsScrollPanel.setHeight(TaskDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
-               taskAdminScrollPanel.setHeight(TaskDetailsMultiViewImpl.this.getParent().getOffsetHeight()-30+"px");
-            }
-        });
-    }
-    
-    
 
 }

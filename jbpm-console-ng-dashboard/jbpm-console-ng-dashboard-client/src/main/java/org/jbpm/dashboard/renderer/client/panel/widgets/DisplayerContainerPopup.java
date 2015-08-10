@@ -32,10 +32,9 @@ public class DisplayerContainerPopup extends BaseModal {
     public DisplayerContainerPopup(DisplayerContainer container) {
         super();
         this.container = container;
-        Widget content = uiBinder.createAndBindUi(this);
-        add(content);
-        content.getParent().setHeight("550px");
-        setMaxHeigth("550px");
-        setWidth(800);
+        setBody( uiBinder.createAndBindUi(this));
+//        content.getParent().setHeight("550px");
+//        setMaxHeigth("550px");
+//        setWidth(800);
     }
 }

@@ -1,52 +1,49 @@
-<div class="row-fluid">
-    <div class="accordion" id="accordion">
-        <!-- GROUP -->
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#desc_collapse"> <label data-field="detailsAccordionLabel"></label>
-                </a>
-            </div>
-            <div id="desc_collapse" class="accordion-body collapse in" style="position: relative;">
-                <div class="accordion-inner">
-                    <div class="form-horizontal">
-                        <fieldset>
-
-                            <div class="control-group">
-                                <label class="control-label" for="deploymentIdText" data-field="deploymentIdLabel"></label>
-                                <div class="controls">
-
-                                    <input type="text" id="deploymentIdtext" data-field="deploymentIdText" />
-
-                                </div>
-                            </div>
-                            <div class="control-group">
-                                <label class="control-label" for="processIdText" data-field="processIdLabel"></label>
-                                <div class="controls">
-
-                                    <input type="text" id="processIdtext" data-field="processIdText" />
-
-                                </div>
-                            </div>
-                            <div class="control-group">
-                                <label class="control-label" for="amountOfTasksText" data-field="amountOfTasksLabel"></label>
-                                <div class="controls">
-
-                                    <input type="text" id="amountOfTasksText" data-field="amountOfTasksText" />
-
-                                </div>
-                            </div>
-
-                        </fieldset>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="desc_header">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#desc_collapse" aria-expanded="true" aria-controls="desc_collapse">
+                                <span data-field="detailsAccordionLabel"></span>
+                            </a>
+                        </h4>
                     </div>
+                    <div id="desc_collapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="desc_header">
+                        <div class="panel-body">
+                            <div class="form-horizontal">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4" for="deploymentIdText" data-field="deploymentIdLabel"></label>
 
+                                        <div class="col-md-8">
+                                            <input type="text" id="deploymentIdtext" data-field="deploymentIdText" class="form-control"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4" for="processIdText" data-field="processIdLabel"></label>
 
-                    <div class="form-horizontal">
-                        <fieldset>
-                            <div class="form-actions">
-                                <button class="btn btn-primary" data-field="generateMockInstancesButton" id="generateMockInstancesButton"></button>
+                                        <div class="col-md-8">
+                                            <input type="text" id="processIdtext" data-field="processIdText" class="form-control"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4" for="amountOfTasksText" data-field="amountOfTasksLabel"></label>
+
+                                        <div class="col-md-8">
+                                            <input type="text" id="amountOfTasksText" data-field="amountOfTasksText" class="form-control"/>
+                                        </div>
+                                    </div>
+                                </fieldset>
                             </div>
-                        </fieldset>
 
+                            <div class="form-horizontal">
+                                <div class="col-md-offset-4 col-md-8">
+                                    <button class="btn btn-primary" data-field="generateMockInstancesButton" id="generateMockInstancesButton"></button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

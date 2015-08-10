@@ -21,7 +21,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:uf="urn:import:org.uberfire.ext.widgets.common.client.common">
 
-    <g:HorizontalPanel>
-      <uf:NumericDoubleTextBox ui:field="input" width="150px" />
-    </g:HorizontalPanel>
+    <g:FlowPanel>
+      <uf:NumericDoubleTextBox ui:field="input" />
+    </g:FlowPanel>
 </ui:UiBinder>

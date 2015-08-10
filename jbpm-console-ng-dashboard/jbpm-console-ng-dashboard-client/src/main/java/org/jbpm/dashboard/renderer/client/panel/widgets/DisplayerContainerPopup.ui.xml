@@ -17,11 +17,8 @@
 
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-             xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:j="urn:import:org.jbpm.dashboard.renderer.client.panel.widgets">
 
-  <g:FlowPanel>
-    <j:DisplayerContainer ui:field="container" />
-  </g:FlowPanel>
+  <j:DisplayerContainer ui:field="container"/>
 
 </ui:UiBinder>

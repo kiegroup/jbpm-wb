@@ -365,7 +365,7 @@
     top: 0px; 
 }
 
-.month .day-tasks-container .row-fluid .span12 {
+.month .day-tasks-container .row-fluid .col-md-12 {
     height: 100% !important;
 }
 

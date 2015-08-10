@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
+import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.guvnor.common.services.shared.metadata.model.Overview;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
@@ -118,7 +119,7 @@ public class DDEditorServiceImpl
         } catch (Exception e) {
             final ValidationMessage msg = new ValidationMessage();
             msg.setPath(path);
-            msg.setLevel(ValidationMessage.Level.ERROR);
+            msg.setLevel(Level.ERROR);
             msg.setText(e.getMessage());
             validationMessages.add(msg);
         }

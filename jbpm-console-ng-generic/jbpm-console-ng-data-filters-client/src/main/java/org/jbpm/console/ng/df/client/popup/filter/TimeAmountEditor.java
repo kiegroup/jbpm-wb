@@ -15,10 +15,6 @@
  */
 package org.jbpm.console.ng.df.client.popup.filter;
 
-import com.github.gwtbootstrap.client.ui.Icon;
-import com.github.gwtbootstrap.client.ui.InputAddOn;
-import com.github.gwtbootstrap.client.ui.ListBox;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -34,6 +30,8 @@ import org.dashbuilder.common.client.StringUtils;
 import org.dashbuilder.dataset.client.resources.i18n.DateIntervalTypeConstants;
 import org.dashbuilder.dataset.date.TimeAmount;
 import org.dashbuilder.dataset.group.DateIntervalType;
+import org.gwtbootstrap3.client.ui.InputGroupAddon;
+import org.gwtbootstrap3.client.ui.ListBox;
 import org.uberfire.ext.widgets.common.client.common.NumericLongTextBox;
 
 import javax.enterprise.context.Dependent;
@@ -42,6 +40,7 @@ import java.util.List;
 
 @Dependent
 public class TimeAmountEditor extends Composite {
+
 
     interface Listener {
         void valueChanged( TimeAmount timeAmount );
@@ -57,7 +56,10 @@ public class TimeAmountEditor extends Composite {
     NumericLongTextBox input;
 
     @UiField
-    InputAddOn inputAddOn;
+    InputGroupAddon minusIcon;
+
+    @UiField
+    InputGroupAddon plusIcon;
 
     @UiField
     ListBox typeList;
@@ -76,9 +78,6 @@ public class TimeAmountEditor extends Composite {
     public TimeAmountEditor() {
         initWidget(uiBinder.createAndBindUi(this));
 
-        Icon plusIcon = new Icon(IconType.PLUS);
-        Icon minusIcon = new Icon(IconType.MINUS);
-
         plusIcon.addDomHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 increaseQuantity();
@@ -90,10 +89,6 @@ public class TimeAmountEditor extends Composite {
                 decreaseQuantity();
             }
         }, ClickEvent.getType());
-
-
-        inputAddOn.addPrependWidget(minusIcon);
-        inputAddOn.addAppendWidget(plusIcon);
     }
 
     public void init(final TimeAmount amount, final Listener listener) {

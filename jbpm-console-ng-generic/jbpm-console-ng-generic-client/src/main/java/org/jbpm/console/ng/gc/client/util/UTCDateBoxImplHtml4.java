@@ -17,6 +17,7 @@ package org.jbpm.console.ng.gc.client.util;
 
 import java.util.Date;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.GwtEvent;
@@ -24,7 +25,7 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.datepicker.client.DateBox;
+import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
 
 /**
  * @author andy
@@ -32,12 +33,12 @@ import com.google.gwt.user.datepicker.client.DateBox;
 public class UTCDateBoxImplHtml4 extends UTCDateBoxImplShared {
 
     private HandlerManager handlerManager;
-    private DateBox datebox;
+    private DatePicker datebox;
 
     public UTCDateBoxImplHtml4() {
         handlerManager = new HandlerManager(this);
-        datebox = new DateBox();
-        
+        datebox = new DatePicker();
+        datebox.setAutoClose( true );
         datebox.addValueChangeHandler(new ValueChangeHandler<Date>() {
 
             @Override
@@ -95,23 +96,24 @@ public class UTCDateBoxImplHtml4 extends UTCDateBoxImplShared {
 
     @Override
     public void fireEvent(GwtEvent<?> event) {
-        handlerManager.fireEvent(event);
+        handlerManager.fireEvent( event );
     }
     
     public void fireValueChangeEvent(long value) {
-        ValueChangeEvent.fire(this, new Long(value));             
+        ValueChangeEvent.fire( this, new Long( value ) );
     }
 
     // ----------------------------------------------------------------------    
     
     @Override
-    public void setDateFormat(DateTimeFormat dateFormat) {
-        datebox.setFormat(new DateBox.DefaultFormat(dateFormat));
-    }
-
-    @Override
-    public void setVisibleLength(int length) {
-        datebox.getTextBox().setVisibleLength(length);
+    public void setDateFormat( final DateTimeFormat dateFormat ) {
+        datebox.setFormat( dateFormat.getPattern() );
+        Scheduler.get().scheduleDeferred( new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                datebox.reload();
+            }
+        } );
     }
 
     @Override
@@ -120,7 +122,7 @@ public class UTCDateBoxImplHtml4 extends UTCDateBoxImplShared {
     }
 
     @Override
-    public DateBox getDateBox() {
+    public DatePicker getDateBox() {
         return datebox;
     }
 

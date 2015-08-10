@@ -18,15 +18,16 @@ package org.jbpm.console.ng.pr.client.editors.definition.details;
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
+import org.gwtbootstrap3.client.ui.Label;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.workbench.events.NotificationEvent;
-import com.github.gwtbootstrap.client.ui.Label;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
 
 public abstract class BaseProcessDefDetailsViewImpl extends Composite implements
-        BaseProcessDefDetailsPresenter.BaseProcessDefDetailsView {
+                                                                      BaseProcessDefDetailsPresenter.BaseProcessDefDetailsView {
 
     @Inject
     @DataField

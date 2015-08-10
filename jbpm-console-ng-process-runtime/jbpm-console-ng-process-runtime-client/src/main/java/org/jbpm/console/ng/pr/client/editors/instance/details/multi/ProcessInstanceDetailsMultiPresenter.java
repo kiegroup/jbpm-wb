@@ -30,24 +30,26 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
-import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsPresenter;
-import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView.TabbedDetailsView;
 import org.jbpm.console.ng.pr.client.editors.diagram.ProcessDiagramUtil;
+import org.jbpm.console.ng.pr.client.editors.documents.list.ProcessDocumentListPresenter;
+import org.jbpm.console.ng.pr.client.editors.instance.details.ProcessInstanceDetailsPresenter;
+import org.jbpm.console.ng.pr.client.editors.instance.log.RuntimeLogPresenter;
+import org.jbpm.console.ng.pr.client.editors.variables.list.ProcessVariableListPresenter;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
-import org.uberfire.lifecycle.OnClose;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -60,22 +62,27 @@ import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance Details Multi", preferredWidth = 500)
-public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
+public class ProcessInstanceDetailsMultiPresenter {
 
     public interface ProcessInstanceDetailsMultiView
-            extends TabbedDetailsView<ProcessInstanceDetailsMultiPresenter> {
+            extends UberView<ProcessInstanceDetailsMultiPresenter> {
 
         IsWidget getOptionsButton();
 
         IsWidget getRefreshButton();
 
         IsWidget getCloseButton();
+
+        void selectInstanceDetailsTab();
     }
 
     @Inject
     public ProcessInstanceDetailsMultiView view;
 
     private Constants constants = GWT.create( Constants.class );
+
+    @Inject
+    private PlaceManager placeManager;
 
     @Inject
     private Caller<KieSessionEntryPoint> kieSessionServices;
@@ -92,11 +99,29 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
     @Inject
     private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
 
+    @Inject
+    private ProcessInstanceDetailsPresenter detailsPresenter;
+
+    @Inject
+    private ProcessVariableListPresenter variableListPresenter;
+
+    @Inject
+    private ProcessDocumentListPresenter documentListPresenter;
+
+    @Inject
+    private RuntimeLogPresenter runtimeLogPresenter;
+
     private String selectedDeploymentId = "";
 
     private int selectedProcessInstanceStatus = 0;
 
     private String selectedProcessDefName = "";
+
+    private PlaceRequest place;
+
+    private String deploymentId = "";
+
+    private String processId = "";
 
     @WorkbenchPartView
     public UberView<ProcessInstanceDetailsMultiPresenter> getView() {
@@ -117,7 +142,7 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
 
     @OnStartup
     public void onStartup( final PlaceRequest place ) {
-        super.onStartup( place );
+        this.place = place;
     }
 
     public void onProcessSelectionEvent( @Observes ProcessInstanceSelectionEvent event ) {
@@ -129,16 +154,16 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
 
         changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf(deploymentId) + " - " + selectedProcessDefName ) );
 
-        view.getTabPanel().selectTab( 0 );
+        view.selectInstanceDetailsTab();
     }
 
     public void refresh() {
-        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedDeploymentId, Long.valueOf(deploymentId), processId, selectedProcessDefName, selectedProcessInstanceStatus ) );
+        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedDeploymentId, Long.valueOf( deploymentId ), processId, selectedProcessDefName, selectedProcessInstanceStatus ) );
     }
 
     public void signalProcessInstance() {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Signal Process Popup" );
-        placeRequestImpl.addParameter( "processInstanceId", deploymentId);
+        placeRequestImpl.addParameter( "processInstanceId", deploymentId );
         placeManager.goTo( placeRequestImpl );
 
     }
@@ -176,7 +201,7 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
                 ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                 return true;
             }
-        } ).getProcessInstanceById( Long.parseLong(deploymentId) );
+        } ).getProcessInstanceById( Long.parseLong( deploymentId ) );
     }
 
     public void goToProcessInstanceModelPopup() {
@@ -238,11 +263,6 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
         }
     }
 
-    @OnClose
-    public void onClose() {
-        super.onClose();
-    }
-
     @WorkbenchMenu
     public Menus buildMenu() {
         return MenuFactory
@@ -279,6 +299,34 @@ public class ProcessInstanceDetailsMultiPresenter extends AbstractTabbedDetailsP
                 } ).endMenu()
 
                 .build();
+    }
+
+    public void closeDetails() {
+        placeManager.closePlace( place );
+    }
+
+    public void variableListRefreshGrid() {
+        variableListPresenter.refreshGrid();
+    }
+
+    public void documentListRefreshGrid() {
+        documentListPresenter.refreshGrid();
+    }
+
+    public IsWidget getProcessIntanceView() {
+        return detailsPresenter.getWidget();
+    }
+
+    public IsWidget getProcessVariablesView() {
+        return variableListPresenter.getWidget();
+    }
+
+    public IsWidget getDocumentView() {
+        return documentListPresenter.getWidget();
+    }
+
+    public IsWidget getLogsView() {
+        return runtimeLogPresenter.getWidget();
     }
 
 }

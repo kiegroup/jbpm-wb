@@ -36,6 +36,7 @@ import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 import org.guvnor.common.services.project.builder.service.PostBuildHandler;
 import org.guvnor.common.services.project.model.GAV;
+import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.structure.backend.config.Added;
 import org.guvnor.structure.backend.config.Removed;
@@ -157,7 +158,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         boolean deployed = deploy(unit);
         if (!deployed) {
           BuildResults error = prepareBuildResults(unitSummary, "Deployment of unit " + unitSummary.getId()
-                  + " failed due to it is already deployed!", BuildMessage.Level.ERROR);
+                  + " failed due to it is already deployed!", Level.ERROR);
           buildResultsEvent.fire(error);
           throw new DeploymentException("unit already deployed!", null);
         }
@@ -165,18 +166,18 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
 
         BuildResults error = prepareBuildResults(unitSummary,
               "Deployment of unit " + unitSummary.getId() + " failed: "
-               + "unit already deployed! (override deployment: "+overrideDeploymentsEnabled+")", BuildMessage.Level.ERROR);
+               + "unit already deployed! (override deployment: "+overrideDeploymentsEnabled+")", Level.ERROR);
         buildResultsEvent.fire(error);
         throw new DeploymentException("unit already deployed!", null);
     }
   }
 
-  private BuildResults prepareBuildResults(DeploymentUnitSummary unitSummary, String messageText, BuildMessage.Level level) {
+  private BuildResults prepareBuildResults(DeploymentUnitSummary unitSummary, String messageText, Level level) {
     String[] gavElemes = unitSummary.getId().split(":");
     GAV gav = new GAV(gavElemes[0], gavElemes[1], gavElemes[2]);
     BuildResults buildResults = new BuildResults(gav);
     BuildMessage message = new BuildMessage();
-    message.setLevel(BuildMessage.Level.ERROR);
+    message.setLevel(Level.ERROR);
     message.setText(messageText);
     buildResults.addBuildMessage(message);
 
@@ -195,7 +196,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         return true;
       } catch (Exception e) {
         BuildMessage message = new BuildMessage();
-        message.setLevel(BuildMessage.Level.ERROR);
+        message.setLevel(Level.ERROR);
         message.setText("Deployment of unit " + gav + " failed: " + e.getMessage());
         logger.warn("Deployment of unit " + gav + " failed: " + e.getMessage(), e);
         buildResults.addBuildMessage(message);
@@ -243,7 +244,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
       }
     } catch (Exception e) {
       BuildMessage message = new BuildMessage();
-      message.setLevel(BuildMessage.Level.ERROR);
+      message.setLevel(Level.ERROR);
       message.setText("Undeployment of unit " + gav + " failed: " + e.getMessage());
       logger.warn("Undeployment of unit " + gav + " failed: " + e.getMessage(), e);
       buildResults.addBuildMessage(message);
@@ -519,7 +520,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
         GAV gav = new GAV(gavElemes[0], gavElemes[1], gavElemes[2]);
         
         BuildMessage message = new BuildMessage();
-        message.setLevel(BuildMessage.Level.ERROR);
+        message.setLevel(Level.ERROR);
         message.setText("Deployment of unit " + gav + " failed: " + "unit already deployed! (override deployment: "+overrideDeploymentsEnabled+")");
         buildResults.addBuildMessage(message);
          buildResultsEvent.fire(buildResults);
@@ -527,7 +528,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
       }
     } catch (Exception e) {
       BuildMessage message = new BuildMessage();
-      message.setLevel(BuildMessage.Level.ERROR);
+      message.setLevel(Level.ERROR);
       message.setText("Deployment of unit " + buildResults.getGAV() + " failed: " + e.getMessage());
       buildResults.addBuildMessage(message);
       // always catch exceptions to not break originator of the event

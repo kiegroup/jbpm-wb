@@ -21,7 +21,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.datepicker.client.DateBox;
+import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
 
 /**
  * Interface for UTCDateBox implementations that are quite different
@@ -53,6 +53,6 @@ public interface UTCDateBoxImpl extends IsWidget, HasValue<Long>, HasValueChange
      * HTML5, this will return null. This was only added to make my
      * r52 tree compile and I don't intend to check it in.
      */
-    public DateBox getDateBox();
+    public DatePicker getDateBox();
 
 }

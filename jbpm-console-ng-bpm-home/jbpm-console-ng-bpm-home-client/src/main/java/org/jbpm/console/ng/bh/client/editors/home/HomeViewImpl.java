@@ -21,8 +21,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -30,6 +28,8 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
+import org.gwtbootstrap3.client.ui.Anchor;
+import org.gwtbootstrap3.client.ui.Label;
 import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -77,47 +77,47 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
 
     @Inject
     @DataField
-    public IconAnchor authoringLabel;
+    public Anchor authoringLabel;
 
     // @Inject
     // @DataField
     // public IconAnchor deployLabel;
     @Inject
     @DataField
-    public IconAnchor workLabel;
+    public Anchor workLabel;
 
     @Inject
     @DataField
-    public IconAnchor dashboardsLabel;
+    public Anchor dashboardsLabel;
     // @Inject
     // @DataField
-    // public IconAnchor improveLabel;
+    // public Anchor improveLabel;
 
     @Inject
     @DataField
-    public IconAnchor modelProcessAnchor;
+    public Anchor modelProcessAnchor;
 
     @Inject
     @DataField
-    public IconAnchor workTaskListAnchor;
+    public Anchor workTaskListAnchor;
 
     @Inject
     @DataField
-    public IconAnchor workProcessDefinitionsAnchor;
+    public Anchor workProcessDefinitionsAnchor;
 
     @Inject
     @DataField
-    public IconAnchor workProcessInstancesAnchor;
+    public Anchor workProcessInstancesAnchor;
     // @Inject
     // @DataField
-    // public IconAnchor deployIdentityAnchor;
+    // public Anchor deployIdentityAnchor;
     @Inject
     @DataField
-    public IconAnchor processDashboardsAnchor;
+    public Anchor processDashboardsAnchor;
 
     @Inject
     @DataField
-    public IconAnchor businessDashboardsAnchor;
+    public Anchor businessDashboardsAnchor;
 
     @Inject
     @DataField
@@ -173,7 +173,7 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
 
     // @Inject
     // @DataField
-    // public IconAnchor deployJobsAnchor;
+    // public Anchor deployJobsAnchor;
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -193,7 +193,7 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
     @Override
     public void init( final HomePresenter presenter ) {
         this.presenter = presenter;
-        String url = GWT.getHostPageBaseURL();
+        String url = GWT.getModuleBaseURL();
         // avatar.setUrl(url + "images/avatars/" + identity.getName() + ".png");
         // avatar.setSize("64px", "64px");
         Collection<Role> roles = identity.getRoles();
@@ -212,8 +212,8 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
         workProcessDefinitionsAnchor.setText( constants.Process_Definitions() );
         workProcessInstancesAnchor.setText( constants.Process_Instances() );
         dashboardsLabel.setText( constants.Dashboards() );
-        processDashboardsAnchor.setText(constants.Process_Dashboard());
-        businessDashboardsAnchor.setText(constants.Business_Dashboard());
+        processDashboardsAnchor.setText( constants.Process_Dashboard() );
+        businessDashboardsAnchor.setText( constants.Business_Dashboard() );
         thejBPMCycle.setText( constants.The_jBPM_Cycle() );
         thejBPMCycle.setStyleName( "" );
 
@@ -274,21 +274,21 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
             }
         } );
 
-        processDashboardsAnchor.addClickHandler(new ClickHandler() {
+        processDashboardsAnchor.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
+            public void onClick( ClickEvent event ) {
                 PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "DashboardPerspective" );
                 placeManager.goTo( placeRequestImpl );
             }
-        });
+        } );
 
-        final String dashbuilderURL = DashboardURLBuilder.getDashboardURL("/dashbuilder/workspace", null, LocaleInfo.getCurrentLocale().getLocaleName());
-        businessDashboardsAnchor.addClickHandler(new ClickHandler() {
+        final String dashbuilderURL = DashboardURLBuilder.getDashboardURL( "/dashbuilder/workspace", null, LocaleInfo.getCurrentLocale().getLocaleName() );
+        businessDashboardsAnchor.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
+            public void onClick( ClickEvent event ) {
                 Window.open( dashbuilderURL, "_blank", "" );
             }
-        });
+        } );
 
     }
 

@@ -16,20 +16,40 @@
 
 package org.jbpm.console.ng.es.client.editors.quicknewjob;
 
-import com.github.gwtbootstrap.client.ui.*;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.google.gwt.cell.client.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
+import com.google.gwt.cell.client.EditTextCell;
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.IntegerBox;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.TabListItem;
+import org.gwtbootstrap3.client.ui.TabPane;
+import org.gwtbootstrap3.client.ui.TabPanel;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.constants.ValidationState;
+import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
+import org.gwtbootstrap3.client.ui.gwt.DataGrid;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -41,19 +61,14 @@ import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.jbpm.console.ng.gc.client.util.UTCDateBox;
 import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
-
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import java.util.*;
-
 @Dependent
 public class QuickNewJobPopup extends BaseModal {
+
     interface Binder
             extends
             UiBinder<Widget, QuickNewJobPopup> {
@@ -64,23 +79,28 @@ public class QuickNewJobPopup extends BaseModal {
     public TabPanel tabPanel;
 
     @UiField
-    public Tab basicTab;
+    public TabListItem basicTab;
 
     @UiField
-    public Tab advancedTab;
-
+    public TabListItem advancedTab;
 
     @UiField
-    public ControlGroup jobNameControlGroup;
+    public TabPane basicTabPane;
+
+    @UiField
+    public TabPane advancedTabPane;
+
+    @UiField
+    public FormGroup jobNameControlGroup;
 
     @UiField
     public TextBox jobNameText;
 
     @UiField
-    HelpInline jobNameHelpInline;
+    HelpBlock jobNameHelpInline;
 
     @UiField
-    public ControlGroup jobDueDateControlGroup;
+    public FormGroup jobDueDateControlGroup;
 
     @UiField
     public UTCDateBox jobDueDate;
@@ -92,39 +112,34 @@ public class QuickNewJobPopup extends BaseModal {
     HelpBlock jobDueDateHelpBlock;
 
     @UiField
-    public ControlGroup jobTypeControlGroup;
-
+    public FormGroup jobTypeControlGroup;
 
     @UiField
     public TextBox jobTypeText;
 
+    @UiField
+    HelpBlock jobTypeHelpInline;
 
     @UiField
-    HelpInline jobTypeHelpInline;
-
-
-    @UiField
-    public ControlGroup jobRetriesControlGroup;
-
+    public FormGroup jobRetriesControlGroup;
 
     @UiField
     public IntegerBox jobRetriesNumber;
 
     @UiField
-    HelpInline jobRetriesHelpInline;
-
+    HelpBlock jobRetriesHelpInline;
 
     @UiField
     public Button newParametersButton;
 
     @UiField
-    public com.google.gwt.user.cellview.client.DataGrid<RequestParameterSummary> myParametersGrid;
+    public DataGrid<RequestParameterSummary> myParametersGrid;
 
     @UiField
     public HelpBlock errorMessages;
 
     @UiField
-    public ControlGroup errorMessagesGroup;
+    public FormGroup errorMessagesGroup;
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -139,11 +154,16 @@ public class QuickNewJobPopup extends BaseModal {
 
     private static Binder uiBinder = GWT.create( Binder.class );
 
-
     public QuickNewJobPopup() {
         setTitle( Constants.INSTANCE.New_Job() );
 
-        add( uiBinder.createAndBindUi( this ) );
+        setBody( uiBinder.createAndBindUi( QuickNewJobPopup.this ) );
+
+        basicTab.setDataTargetWidget( basicTabPane );
+        advancedTab.setDataTargetWidget( advancedTabPane );
+
+        jobDueDate.getDateBox().setContainer( this );
+
         init();
         final GenericModalFooter footer = new GenericModalFooter();
         footer.addButton( Constants.INSTANCE.Create(),
@@ -152,7 +172,7 @@ public class QuickNewJobPopup extends BaseModal {
                     public void execute() {
                         okButton();
                     }
-                }, IconType.PLUS_SIGN,
+                }, IconType.PLUS,
                 ButtonType.PRIMARY );
 
         add( footer );
@@ -196,13 +216,14 @@ public class QuickNewJobPopup extends BaseModal {
             }
         } );
 
-
     }
 
     public void cleanForm() {
-        tabPanel.selectTab( 0 );
         basicTab.setActive( true );
-        advancedTab.setActive(false);
+        basicTabPane.setActive( true );
+        advancedTab.setActive( false );
+        advancedTabPane.setActive( false );
+        basicTab.showTab();
 
         long now = System.currentTimeMillis() + 120 * 1000;
         jobDueDate.setEnabled( true );
@@ -216,109 +237,75 @@ public class QuickNewJobPopup extends BaseModal {
         dataProvider.getList().clear();
     }
 
-    private void cleanErrorMessages(){
-        jobNameControlGroup.setType( ControlGroupType.NONE );
+    private void cleanErrorMessages() {
+        jobNameControlGroup.setValidationState( ValidationState.NONE );
         jobNameHelpInline.setText( "" );
-        jobDueDateControlGroup.setType( ControlGroupType.NONE );
+        jobDueDateControlGroup.setValidationState( ValidationState.NONE );
         jobDueDateHelpBlock.setText( "" );
-        jobTypeControlGroup.setType( ControlGroupType.NONE );
+        jobTypeControlGroup.setValidationState( ValidationState.NONE );
         jobTypeHelpInline.setText( "" );
-        jobRetriesControlGroup.setType( ControlGroupType.NONE );
+        jobRetriesControlGroup.setValidationState( ValidationState.NONE );
         jobRetriesHelpInline.setText( "" );
     }
 
     public void closePopup() {
         cleanForm();
         hide();
-        super.hide();
     }
 
     private boolean validateForm() {
         boolean valid = true;
         cleanErrorMessages();
         if ( jobNameText.getText() == null || jobNameText.getText().trim().isEmpty() ) {
-            jobNameControlGroup.setType( ControlGroupType.ERROR );
+            jobNameControlGroup.setValidationState( ValidationState.ERROR );
             jobNameHelpInline.setText( Constants.INSTANCE.The_Job_Must_Have_A_Name() );
             valid = false;
         } else {
-            jobNameControlGroup.setType( ControlGroupType.SUCCESS );
+            jobNameControlGroup.setValidationState( ValidationState.SUCCESS );
 
         }
 
         if ( UTCDateBox.utc2date( jobDueDate.getValue() + jobDueDateTime.getValue() ).before( new Date() ) ) {
-            jobDueDateControlGroup.setType( ControlGroupType.ERROR );
+            jobDueDateControlGroup.setValidationState( ValidationState.ERROR );
             jobDueDateHelpBlock.setText( Constants.INSTANCE.The_Job_Must_Have_A_Due_Date_In_The_Future() );
             valid = false;
         } else {
-            jobDueDateControlGroup.setType( ControlGroupType.SUCCESS );
+            jobDueDateControlGroup.setValidationState( ValidationState.SUCCESS );
 
         }
         if ( jobTypeText.getText() == null || jobTypeText.getText().trim().isEmpty() ) {
-            jobTypeControlGroup.setType( ControlGroupType.ERROR );
+            jobTypeControlGroup.setValidationState( ValidationState.ERROR );
             jobTypeHelpInline.setText( Constants.INSTANCE.The_Job_Must_Have_A_Type() );
             valid = false;
         } else {
-            jobTypeControlGroup.setType( ControlGroupType.SUCCESS );
+            jobTypeControlGroup.setValidationState( ValidationState.SUCCESS );
 
         }
         if ( jobRetriesNumber.getValue() == null || jobRetriesNumber.getValue() < 0 ) {
-            jobRetriesControlGroup.setType( ControlGroupType.ERROR );
+            jobRetriesControlGroup.setValidationState( ValidationState.ERROR );
             jobRetriesHelpInline.setText( Constants.INSTANCE.The_Job_Must_Have_A_Positive_Number_Of_Reties() );
             valid = false;
         } else {
-            jobRetriesControlGroup.setType( ControlGroupType.SUCCESS );
+            jobRetriesControlGroup.setValidationState( ValidationState.SUCCESS );
 
         }
-        if ( !valid ) tabPanel.selectTab( 0 );
+        if ( !valid ) {
+            basicTab.showTab();
+        }
         return valid;
     }
 
-
     public void displayNotification( String text ) {
         notification.fire( new NotificationEvent( text ) );
-    }
-
-    private class ActionHasCell implements HasCell<RequestParameterSummary, RequestParameterSummary> {
-
-        private ActionCell<RequestParameterSummary> cell;
-
-        public ActionHasCell( final String text,
-                              ActionCell.Delegate<RequestParameterSummary> delegate ) {
-            cell = new ActionCell<RequestParameterSummary>(text, delegate) {
-                @Override
-                public void render(Cell.Context context, RequestParameterSummary value, SafeHtmlBuilder sb) {
-                    SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+text+"'>"+text+"</a>");
-                    sb.append(mysb.toSafeHtml());
-                }
-            };
-        }
-
-        @Override
-        public Cell<RequestParameterSummary> getCell() {
-            return cell;
-        }
-
-        @Override
-        public FieldUpdater<RequestParameterSummary, RequestParameterSummary> getFieldUpdater() {
-            return null;
-        }
-
-        @Override
-        public RequestParameterSummary getValue( RequestParameterSummary object ) {
-            return object;
-        }
     }
 
     public void makeRowEditable( RequestParameterSummary parameter ) {
         myParametersGrid.getSelectionModel().setSelected( parameter, true );
     }
 
-
     public void removeRow( RequestParameterSummary parameter ) {
         dataProvider.getList().remove( parameter );
     }
-
 
     public void addRow( RequestParameterSummary parameter ) {
         dataProvider.getList().add( parameter );
@@ -341,7 +328,7 @@ public class QuickNewJobPopup extends BaseModal {
             }
         } );
         myParametersGrid.addColumn( paramKeyColumn, new ResizableHeader<RequestParameterSummary>( "Key", myParametersGrid,
-                paramKeyColumn ) );
+                                                                                                  paramKeyColumn ) );
 
         Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>(
                 new EditTextCell() ) {
@@ -360,28 +347,26 @@ public class QuickNewJobPopup extends BaseModal {
             }
         } );
         myParametersGrid.addColumn( paramValueColumn, new ResizableHeader<RequestParameterSummary>( "Value", myParametersGrid,
-                paramValueColumn ) );
+                                                                                                    paramValueColumn ) );
 
         // actions (icons)
-        List<HasCell<RequestParameterSummary, ?>> cells = new LinkedList<HasCell<RequestParameterSummary, ?>>();
-
-        cells.add( new ActionHasCell( Constants.INSTANCE.Remove(), new ActionCell.Delegate<RequestParameterSummary>() {
+        final ButtonCell buttonCell = new ButtonCell( ButtonType.DANGER, IconType.TRASH );
+        final Column<RequestParameterSummary, String> actionsColumn = new Column<RequestParameterSummary, String>( buttonCell ) {
             @Override
-            public void execute( RequestParameterSummary parameter ) {
-                removeParameter( parameter );
-            }
-        } ) );
-
-        CompositeCell<RequestParameterSummary> cell = new CompositeCell<RequestParameterSummary>( cells );
-        Column<RequestParameterSummary, RequestParameterSummary> actionsColumn = new Column<RequestParameterSummary, RequestParameterSummary>(
-                cell ) {
-            @Override
-            public RequestParameterSummary getValue( RequestParameterSummary object ) {
-                return object;
+            public String getValue( final RequestParameterSummary object ) {
+                return Constants.INSTANCE.Remove();
             }
         };
+        actionsColumn.setFieldUpdater( new FieldUpdater<RequestParameterSummary, String>() {
+            @Override
+            public void update( int index, RequestParameterSummary object, String value ) {
+                removeParameter( object );
+            }
+        });
+        actionsColumn.setHorizontalAlignment( HasHorizontalAlignment.ALIGN_CENTER );
+
         myParametersGrid.addColumn( actionsColumn, "Actions" );
-        myParametersGrid.setColumnWidth( actionsColumn, "70px" );
+        myParametersGrid.setColumnWidth( actionsColumn, 90, Style.Unit.PX );
 
         dataProvider.addDataDisplay( myParametersGrid );
     }
@@ -393,7 +378,6 @@ public class QuickNewJobPopup extends BaseModal {
     public void addNewParameter() {
         addRow( new RequestParameterSummary( "click to edit", "click to edit" ) );
     }
-
 
     public void createJob() {
         createJob( jobNameText.getText(), UTCDateBox.utc2date( jobDueDate.getValue() + jobDueDateTime.getValue() ),
@@ -419,28 +403,27 @@ public class QuickNewJobPopup extends BaseModal {
             @Override
             public void callback( Long requestId ) {
                 cleanForm();
-                displayNotification( "Request Schedulled: " + requestId );
+                displayNotification( "Request Scheduled: " + requestId );
                 requestCreatedEvent.fire( new RequestChangedEvent( requestId ) );
                 closePopup();
             }
         }, new ErrorCallback<Message>() {
             @Override
-            public boolean error( Message message, Throwable throwable ) {
+            public boolean error( Message message,
+                                  Throwable throwable ) {
 
                 if ( throwable instanceof IllegalArgumentException ) {
-                    jobTypeControlGroup.setType( ControlGroupType.ERROR );
+                    jobTypeControlGroup.setValidationState( ValidationState.ERROR );
                     jobTypeHelpInline.setText( Constants.INSTANCE.The_Job_Must_Have_A_Valid_Type() );
                     return true;
                 }
                 errorMessages.setText( throwable.getMessage() );
-                errorMessagesGroup.setType( ControlGroupType.ERROR );
-                tabPanel.selectTab( 0 );
-                //ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                errorMessagesGroup.setValidationState( ValidationState.ERROR );
+                basicTab.showTab();
                 return true;
             }
         } ).scheduleRequest( jobType, dueDate, ctx );
 
     }
-
 
 }

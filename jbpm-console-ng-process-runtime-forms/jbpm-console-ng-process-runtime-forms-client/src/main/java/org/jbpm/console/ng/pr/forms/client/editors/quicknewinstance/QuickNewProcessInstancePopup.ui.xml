@@ -19,58 +19,45 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
-             xmlns:c="urn:import:org.jbpm.console.ng.gc.client.util"
-        >
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
     <ui:with field="i18n" type="org.jbpm.console.ng.pr.forms.client.i18n.Constants"/>
-    <ui:style>
-        .mandatory-field {
-            color: red;
-        }
 
-        .fieldCellWidth {
-            width: 50%;
-        }
-    </ui:style>
-
-    <g:HTMLPanel>
-        <g:FlowPanel ui:field="basicForm">
-
-            <b:Well>
-                <b:Fieldset>
-
+    <b:Container fluid="true">
+        <b:Row>
+            <b:Column size="MD_12">
+                <g:FlowPanel ui:field="basicForm">
                     <b:Form type="HORIZONTAL">
-                        <b:ControlGroup ui:field="processDeploymentIdControlGroup">
-                            <b:ControlLabel>
-                                <ui:text from="{i18n.Process_DeploymentId}"/>
-                            </b:ControlLabel>
-                            <b:Controls>
-                                <b:ListBox ui:field="processDeploymentIdListBox"/>
-                                <b:HelpBlock ui:field="processDeploymentIdHelpLabel"/>
-                            </b:Controls>
-                        </b:ControlGroup>
-                        <b:ControlGroup ui:field="processDefinitionsControlGroup">
-                            <b:ControlLabel>
-                                <ui:text from="{i18n.Process_Definition}"/>
-                            </b:ControlLabel>
-                            <b:Controls>
-                                <b:ListBox ui:field="processDefinitionsListBox"/>
-                                <b:HelpBlock ui:field="processDefinitionsHelpLabel"/>
-                            </b:Controls>
-                        </b:ControlGroup>
+                        <b:FieldSet>
+                            <b:FormGroup ui:field="processDeploymentIdControlGroup">
+                                <b:FormLabel addStyleNames="col-md-4">
+                                    <ui:text from="{i18n.Process_DeploymentId}"/>
+                                </b:FormLabel>
+                                <b:Column size="MD_8">
+                                    <b:ListBox ui:field="processDeploymentIdListBox"/>
+                                    <b:HelpBlock ui:field="processDeploymentIdHelpLabel"/>
+                                </b:Column>
+                            </b:FormGroup>
+                            <b:FormGroup ui:field="processDefinitionsControlGroup">
+                                <b:FormLabel addStyleNames="col-md-4">
+                                    <ui:text from="{i18n.Process_Definition}"/>
+                                </b:FormLabel>
+                                <b:Column size="MD_8">
+                                    <b:ListBox ui:field="processDefinitionsListBox"/>
+                                    <b:HelpBlock ui:field="processDefinitionsHelpLabel"/>
+                                </b:Column>
+                            </b:FormGroup>
+                        </b:FieldSet>
                     </b:Form>
-                </b:Fieldset>
-            </b:Well>
-
-        </g:FlowPanel>
-        <g:FlowPanel ui:field="processForm">
-            <g:FlowPanel ui:field="body"/>
-        </g:FlowPanel>
-        <b:ControlGroup ui:field="errorMessagesGroup">
-            <b:HelpBlock ui:field="errorMessages"/>
-        </b:ControlGroup>
-
-    </g:HTMLPanel>
+                </g:FlowPanel>
+                <g:FlowPanel ui:field="processForm">
+                    <g:FlowPanel ui:field="body"/>
+                </g:FlowPanel>
+                <b:FormGroup ui:field="errorMessagesGroup">
+                    <b:HelpBlock ui:field="errorMessages"/>
+                </b:FormGroup>
+            </b:Column>
+        </b:Row>
+    </b:Container>
 
 </ui:UiBinder>

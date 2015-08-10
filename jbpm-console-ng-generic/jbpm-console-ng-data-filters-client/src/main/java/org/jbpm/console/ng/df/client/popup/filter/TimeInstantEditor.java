@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.df.client.popup.filter;
 
-import com.github.gwtbootstrap.client.ui.ListBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -28,6 +27,7 @@ import org.dashbuilder.dataset.client.resources.i18n.TimeModeConstants;
 import org.dashbuilder.dataset.date.TimeAmount;
 import org.dashbuilder.dataset.date.TimeInstant;
 import org.dashbuilder.dataset.group.DateIntervalType;
+import org.gwtbootstrap3.client.ui.ListBox;
 import org.jbpm.console.ng.df.client.i18n.FiltersConstants;
 
 

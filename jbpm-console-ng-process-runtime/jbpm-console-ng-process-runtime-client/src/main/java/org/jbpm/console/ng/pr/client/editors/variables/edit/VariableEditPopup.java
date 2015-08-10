@@ -16,13 +16,20 @@
 
 package org.jbpm.console.ng.pr.client.editors.variables.edit;
 
-import com.github.gwtbootstrap.client.ui.*;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.FormControlStatic;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -30,39 +37,31 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
-import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
 @Dependent
 public class VariableEditPopup extends BaseModal {
+
     interface Binder
             extends
             UiBinder<Widget, VariableEditPopup> {
 
     }
 
-
     @UiField
-    public TextBox variableNameTextBox;
-
+    public FormControlStatic variableNameTextBox;
 
     @UiField
     public TextBox variableValueTextBox;
-
 
     @UiField
     public HelpBlock errorMessages;
 
     @UiField
-    public ControlGroup errorMessagesGroup;
+    public FormGroup errorMessagesGroup;
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -80,30 +79,32 @@ public class VariableEditPopup extends BaseModal {
     public VariableEditPopup() {
         setTitle( Constants.INSTANCE.Edit() );
 
-        add( uiBinder.createAndBindUi( this ) );
+        setBody( uiBinder.createAndBindUi( this ) );
         final GenericModalFooter footer = new GenericModalFooter();
         footer.addButton( Constants.INSTANCE.Clear(),
-                new Command() {
-                    @Override
-                    public void execute() {
-                        variableValueTextBox.setText( "" );
-                    }
-                }, null,
-                ButtonType.PRIMARY );
+                          new Command() {
+                              @Override
+                              public void execute() {
+                                  variableValueTextBox.setText( "" );
+                              }
+                          }, null,
+                          ButtonType.DEFAULT );
 
         footer.addButton( Constants.INSTANCE.Save(),
-                new Command() {
-                    @Override
-                    public void execute() {
-                        setProcessVariable();
-                    }
-                }, null,
-                ButtonType.PRIMARY );
+                          new Command() {
+                              @Override
+                              public void execute() {
+                                  setProcessVariable();
+                              }
+                          }, null,
+                          ButtonType.PRIMARY );
 
         add( footer );
     }
 
-    public void show(long processInstanceId, String variableId, String variableValue) {
+    public void show( long processInstanceId,
+                      String variableId,
+                      String variableValue ) {
         this.processInstanceId = processInstanceId;
         this.variableNameTextBox.setText( variableId );
         this.variableValueTextBox.setText( variableValue );
@@ -111,45 +112,39 @@ public class VariableEditPopup extends BaseModal {
         super.show();
     }
 
-
-
     private void cleanErrorMessages() {
         errorMessages.setText( "" );
-        errorMessagesGroup.setType( ControlGroupType.NONE );
+        errorMessagesGroup.setValidationState( ValidationState.NONE );
     }
 
     public void closePopup() {
         hide();
         super.hide();
-        processInstancesUpdateEvent.fire( new ProcessInstancesUpdateEvent(  ) );
+        processInstancesUpdateEvent.fire( new ProcessInstancesUpdateEvent() );
     }
-
 
     public void displayNotification( String text ) {
         notification.fire( new NotificationEvent( text ) );
     }
 
-
-
-    public void setProcessVariable(  ) {
+    public void setProcessVariable() {
 
         kieSessionServices.call( new RemoteCallback<Void>() {
             @Override
             public void callback( Void v ) {
-                displayNotification( Constants.INSTANCE.VariableValueUpdated(variableNameTextBox.getValue()) );
+                displayNotification( Constants.INSTANCE.VariableValueUpdated( variableNameTextBox.getText() ) );
                 closePopup();
             }
         }, new ErrorCallback<Message>() {
             @Override
-            public boolean error( Message message, Throwable throwable ) {
+            public boolean error( Message message,
+                                  Throwable throwable ) {
                 errorMessages.setText( throwable.getMessage() );
-                errorMessagesGroup.setType( ControlGroupType.ERROR );
+                errorMessagesGroup.setValidationState( ValidationState.ERROR );
                 //ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                 return true;
             }
-        } ).setProcessVariable(processInstanceId, variableNameTextBox.getValue(), variableValueTextBox.getValue() );
+        } ).setProcessVariable( processInstanceId, variableNameTextBox.getText(), variableValueTextBox.getValue() );
     }
-
-
 
 }

@@ -15,77 +15,62 @@
  */
 package org.jbpm.console.ng.gc.client.experimental.grid.base;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.uibinder.client.UiBinder;
+import java.util.Collection;
+
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
-import com.google.gwt.user.client.ui.Widget;
-
 import com.google.gwt.view.client.ProvidesKey;
-import java.util.Collection;
 import org.jbpm.console.ng.ga.model.GenericSummary;
-import org.uberfire.ext.widgets.common.client.tables.PagedTable;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
-import org.uberfire.ext.widgets.common.client.tables.ColumnPicker;
+import org.uberfire.ext.widgets.common.client.tables.PagedTable;
 
 /**
- *
  * @author salaboy
  */
 public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> {
 
-  interface Binder
-          extends
-          UiBinder<Widget, ExtendedPagedTable> {
+    public ExtendedPagedTable( int pageSize,
+                               GridGlobalPreferences gridPreferences ) {
+        super( pageSize, new ProvidesKey<T>() {
 
-  }
+            @Override
+            public Object getKey( T item ) {
+                return ( item == null ) ? null : item.getId();
+            }
+        }, gridPreferences, true );
 
-  private static Binder uiBinder = GWT.create(Binder.class);
+        dataGrid.addColumnSortHandler( new AsyncHandler( dataGrid ) );
+    }
 
-  public ExtendedPagedTable(int pageSize, GridGlobalPreferences gridPreferences) {
-    super(pageSize, new ProvidesKey<T>() {
+    public void setTooltip( int row,
+                            int column,
+                            String description ) {
+        dataGrid.getRowElement( row ).getCells().getItem( column ).setTitle( description );
+    }
 
-      @Override
-      public Object getKey(T item) {
-        return (item == null) ? null : item.getId();
-      }
-    }, gridPreferences, true);
+    public int getKeyboardSelectedColumn() {
+        return dataGrid.getKeyboardSelectedColumn();
+    }
 
-    dataGrid.addColumnSortHandler( new AsyncHandler( dataGrid ) );
-  }
+    public int getKeyboardSelectedRow() {
+        return dataGrid.getKeyboardSelectedRow();
+    }
 
-  public void setTooltip(int row, int column, String description) {
-    dataGrid.getRowElement(row).getCells().getItem(column).setTitle(description);
-  }
+    public int getColumnCount() {
+        return dataGrid.getColumnCount();
+    }
 
-  public int getKeyboardSelectedColumn() {
-    return dataGrid.getKeyboardSelectedColumn();
-  }
+    public void removeColumn( Column<T, ?> col ) {
+        dataGrid.removeColumn( col );
+    }
 
-  public int getKeyboardSelectedRow() {
-    return dataGrid.getKeyboardSelectedRow();
-  }
+    public void removeColumnMeta( ColumnMeta<T> columnMeta ) {
+        columnPicker.removeColumn( columnMeta );
+    }
 
-  public int getColumnCount() {
-    return dataGrid.getColumnCount();
-  }
-
-  public void removeColumn(Column<T, ?> col) {
-    dataGrid.removeColumn(col);
-  }
-
-  public void removeColumnMeta(ColumnMeta<T> columnMeta){
-      columnPicker.removeColumn(columnMeta);
-  }
-  
-  public Collection<ColumnMeta<T>> getColumnMetaList(){
-      return columnPicker.getColumnMetaList();
-  }
-  
-
-    
-  
-  
+    public Collection<ColumnMeta<T>> getColumnMetaList() {
+        return columnPicker.getColumnMetaList();
+    }
 
 }

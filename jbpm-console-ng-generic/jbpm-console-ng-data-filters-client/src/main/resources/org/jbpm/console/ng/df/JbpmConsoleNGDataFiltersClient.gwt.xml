@@ -33,8 +33,7 @@
   
   <inherits name="org.uberfire.ext.widgets.common.UberfireWidgetsCommons"/>
 
-  <inherits name="com.github.gwtbootstrap.datetimepicker.Datetimepicker" />
-  <inherits name="com.github.gwtbootstrap.datepicker.Datepicker" />
+  <inherits name="org.gwtbootstrap3.extras.datetimepicker.DateTimePicker" />
 
   <inherits name="org.dashbuilder.DatasetShared"/>
   <inherits name="org.dashbuilder.CommonClient" />

@@ -20,20 +20,19 @@
     "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
 <module>
 
-    <!-- Inherit the core Web Toolkit stuff. -->
-  <inherits name="com.google.gwt.i18n.I18N" />
-  <inherits name="com.google.gwt.http.HTTP" />
-  <inherits name="com.google.gwt.user.User" />
+  <!-- Inherit the core Web Toolkit stuff. -->
+  <inherits name="com.google.gwt.i18n.I18N"/>
+  <inherits name="com.google.gwt.http.HTTP"/>
+  <inherits name="com.google.gwt.user.User"/>
 
-  <inherits name="org.jboss.errai.ui.UI" />
-  <inherits name="org.uberfire.UberfireClientAPI" />
+  <inherits name="org.jboss.errai.ui.UI"/>
+  <inherits name="org.uberfire.UberfireClientAPI"/>
 
-  <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksAPI" />
+  <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksAPI"/>
 
-  <inherits name="com.github.gwtbootstrap.datetimepicker.Datetimepicker" />
-  <inherits name="com.github.gwtbootstrap.datepicker.Datepicker" />
   <inherits name="org.kie.workbench.common.widgets.KieWorkbenchWidgetsCommon"/>
   <inherits name="org.dashbuilder.CommonClient"/>
-  
+
+  <inherits name="org.gwtbootstrap3.extras.datepicker.DatePicker"/>
 
 </module>

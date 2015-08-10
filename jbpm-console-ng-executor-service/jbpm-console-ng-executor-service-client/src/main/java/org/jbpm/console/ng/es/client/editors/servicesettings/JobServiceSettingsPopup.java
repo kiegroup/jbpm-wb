@@ -16,13 +16,22 @@
 
 package org.jbpm.console.ng.es.client.editors.servicesettings;
 
-import com.github.gwtbootstrap.client.ui.*;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.IntegerBox;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.es.client.i18n.Constants;
@@ -32,12 +41,9 @@ import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModal
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
 @Dependent
 public class JobServiceSettingsPopup extends BaseModal {
+
     interface Binder
             extends
             UiBinder<Widget, JobServiceSettingsPopup> {
@@ -54,13 +60,13 @@ public class JobServiceSettingsPopup extends BaseModal {
     public Label startedLabel;
 
     @UiField
-    public ControlGroup numberOfExecutorsControlGroup;
+    public FormGroup numberOfExecutorsControlGroup;
 
     @UiField
-    public ControlGroup frequencyControlGroup;
+    public FormGroup frequencyControlGroup;
 
     @UiField
-    public ControlGroup startedControlGroup;
+    public FormGroup startedControlGroup;
 
     @UiField
     public HelpBlock frequencyHelpInline;
@@ -72,7 +78,7 @@ public class JobServiceSettingsPopup extends BaseModal {
     public HelpBlock errorMessages;
 
     @UiField
-    public ControlGroup errorMessagesGroup;
+    public FormGroup errorMessagesGroup;
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -89,7 +95,7 @@ public class JobServiceSettingsPopup extends BaseModal {
     public JobServiceSettingsPopup() {
         setTitle( Constants.INSTANCE.Job_Service_Settings() );
 
-        add( uiBinder.createAndBindUi( this ) );
+        setBody( uiBinder.createAndBindUi( this ) );
 
         footer.addButton( Constants.INSTANCE.Start(),
                 new Command() {
@@ -117,55 +123,53 @@ public class JobServiceSettingsPopup extends BaseModal {
 
     private void cleanErrorMessages() {
         numberOfExecutorsHelpInline.setText( "" );
-        numberOfExecutorsControlGroup.setType( ControlGroupType.NONE );
+        numberOfExecutorsControlGroup.setValidationState( ValidationState.NONE );
         frequencyHelpInline.setText( "" );
-        frequencyControlGroup.setType( ControlGroupType.NONE );
+        frequencyControlGroup.setValidationState( ValidationState.NONE );
         errorMessages.setText( "" );
-        errorMessagesGroup.setType( ControlGroupType.NONE );
+        errorMessagesGroup.setValidationState( ValidationState.NONE );
     }
 
     public void closePopup() {
         cleanForm();
         hide();
-        super.hide();
     }
 
     private boolean validateForm() {
         boolean valid = true;
         cleanErrorMessages();
         if ( !serviceStarted ) {
-            numberOfExecutorsControlGroup.setType( ControlGroupType.SUCCESS );
-            frequencyControlGroup.setType( ControlGroupType.SUCCESS );
+            numberOfExecutorsControlGroup.setValidationState( ValidationState.SUCCESS );
+            frequencyControlGroup.setValidationState( ValidationState.SUCCESS );
 
             if ( numberOfExecutorsIntegerText.getText() == null || numberOfExecutorsIntegerText.getText().trim().isEmpty() ) {
-                numberOfExecutorsControlGroup.setType( ControlGroupType.ERROR );
+                numberOfExecutorsControlGroup.setValidationState( ValidationState.ERROR );
                 numberOfExecutorsHelpInline.setText( Constants.INSTANCE.Please_Provide_The_Number_Of_Executors() );
                 valid = false;
             } else {
-                 if (!(numberOfExecutorsIntegerText.getValue() != null && numberOfExecutorsIntegerText.getValue() > 0 )){
-                    numberOfExecutorsControlGroup.setType( ControlGroupType.ERROR );
+                if ( !( numberOfExecutorsIntegerText.getValue() != null && numberOfExecutorsIntegerText.getValue() > 0 ) ) {
+                    numberOfExecutorsControlGroup.setValidationState( ValidationState.ERROR );
                     numberOfExecutorsHelpInline.setText( Constants.INSTANCE.Please_Provide_A_Valid_Number_Of_Executors() );
                     valid = false;
                 }
             }
             if ( frequencyText.getText() == null || frequencyText.getText().trim().isEmpty() ) {
-                frequencyControlGroup.setType( ControlGroupType.ERROR );
+                frequencyControlGroup.setValidationState( ValidationState.ERROR );
                 frequencyHelpInline.setText( Constants.INSTANCE.Please_Provide_A_Valid_Frequency() );
                 valid = false;
             } else {
-                try{
-                    if( fromFrequencyToInterval( frequencyText.getText())< 0){
+                try {
+                    if ( fromFrequencyToInterval( frequencyText.getText() ) < 0 ) {
                         throw new NumberFormatException();
                     }
-                }catch (Exception e ){
-                    frequencyControlGroup.setType( ControlGroupType.ERROR );
+                } catch ( Exception e ) {
+                    frequencyControlGroup.setValidationState( ValidationState.ERROR );
                     frequencyHelpInline.setText( Constants.INSTANCE.Please_Provide_A_Valid_Frequency() );
                 }
             }
         }
         return valid;
     }
-
 
     public void displayNotification( String text ) {
         notification.fire( new NotificationEvent( text ) );
@@ -190,18 +194,17 @@ public class JobServiceSettingsPopup extends BaseModal {
                 setStartedLabel( started );
 
                 if ( started ) {
-                    ( ( Button ) ( ( ModalFooter ) footer.getWidget( 0 ) ).getWidget( 0 ) ).setText( Constants.INSTANCE.Stop() );
+                    ( (Button) footer.getWidget( 0 ) ).setText( Constants.INSTANCE.Stop() );
                     frequencyText.setEnabled( false );
                     numberOfExecutorsIntegerText.setEnabled( false );
                 } else {
                     frequencyText.setEnabled( true );
                     numberOfExecutorsIntegerText.setEnabled( true );
-                    ( ( Button ) ( ( ModalFooter ) footer.getWidget( 0 ) ).getWidget( 0 ) ).setText( Constants.INSTANCE.Start() );
+                    ( (Button) footer.getWidget( 0 ) ).setText( Constants.INSTANCE.Start() );
                 }
             }
         } ).isActive();
     }
-
 
     public void startStopService() {
         Integer frequency = fromFrequencyToInterval( frequencyText.getText() );
@@ -266,6 +269,5 @@ public class JobServiceSettingsPopup extends BaseModal {
         this.startedLabel.setText( started ? Constants.INSTANCE.Started() : Constants.INSTANCE.Stopped() );
         this.serviceStarted = started;
     }
-
 
 }

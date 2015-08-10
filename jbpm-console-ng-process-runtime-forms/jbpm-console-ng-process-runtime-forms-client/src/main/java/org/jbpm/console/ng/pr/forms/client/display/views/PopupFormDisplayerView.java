@@ -15,25 +15,25 @@
 
 package org.jbpm.console.ng.pr.forms.client.display.views;
 
-import com.github.gwtbootstrap.client.ui.ModalFooter;
-import com.github.gwtbootstrap.client.ui.constants.BackdropType;
-import com.github.gwtbootstrap.client.ui.event.HiddenEvent;
-import com.github.gwtbootstrap.client.ui.event.HiddenHandler;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.ui.FlowPanel;
-import org.jbpm.console.ng.ga.forms.display.GenericFormDisplayer;
-import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
-import org.jbpm.console.ng.ga.forms.display.view.FormDisplayerView;
-import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
-import org.uberfire.mvp.Command;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.FlowPanel;
+import org.gwtbootstrap3.client.shared.event.ModalHiddenEvent;
+import org.gwtbootstrap3.client.shared.event.ModalHiddenHandler;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.jbpm.console.ng.ga.forms.display.GenericFormDisplayer;
+import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
+import org.jbpm.console.ng.ga.forms.display.view.FormDisplayerView;
 import org.jbpm.console.ng.pr.forms.display.process.api.StartProcessFormDisplayProvider;
+import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
+import org.uberfire.mvp.Command;
 
 @Dependent
 public class PopupFormDisplayerView extends BaseModal implements FormDisplayerView {
+
     @Inject
     private StartProcessFormDisplayProvider widgetPresenter;
 
@@ -62,51 +62,58 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
             }
         };
 
-        formContentResizeListener = new FormContentResizeListener () {
+        formContentResizeListener = new FormContentResizeListener() {
             @Override
-            public void resize(int width, int height) {
-                if (initialWidth == -1 && getOffsetWidth() > 0) initialWidth = getOffsetWidth();
-                if (width > getOffsetWidth()) setWidth(width + 20);
-                else if (initialWidth != -1) setWidth(initialWidth);
-                centerVertically(getElement());
+            public void resize( int width,
+                                int height ) {
+                if ( initialWidth == -1 && getWidget( 0 ).getOffsetWidth() > 0 ) {
+                    initialWidth = getWidget( 0 ).getOffsetWidth();
+                }
+                if ( width > getWidget( 0 ).getOffsetWidth() ) {
+                    setWidth( width + 40 + "px" );
+                } else if ( initialWidth != -1 ) {
+                    setWidth( initialWidth + "px" );
+                }
             }
         };
-        add(body);
-        add(footer);
-        this.addHiddenHandler(new HiddenHandler() {
+        setBody( body );
+        add( footer );
+        this.addHiddenHandler( new ModalHiddenHandler() {
             @Override
-            public void onHidden(HiddenEvent hiddenEvent) {
-                if (initialized) closePopup();
+            public void onHidden( ModalHiddenEvent hiddenEvent ) {
+                if ( initialized ) {
+                    closePopup();
+                }
             }
-        });
+        } );
     }
 
     @Override
-    public void display(GenericFormDisplayer displayer) {
-        setBackdrop(BackdropType.NORMAL);
-        setKeyboard(true);
-        setAnimation(true);
-        setDynamicSafe(true);
+    public void display( GenericFormDisplayer displayer ) {
+//        setDataBackdrop( null );
+//        setDataKeyboard( true );
+//        setFade( true );
+//        setRemoveOnHide( true );
         currentDisplayer = displayer;
         body.clear();
         footer.clear();
-        body.add(displayer.getContainer());
-        if (displayer.getOpener() == null) footer.add(displayer.getFooter());
-        centerVertically(getElement());
+        body.add( displayer.getContainer() );
+        if ( displayer.getOpener() == null ) {
+            footer.add( displayer.getFooter() );
+        }
+        //centerVertically( getElement() );
         initialized = true;
         show();
     }
 
     public void closePopup() {
         hide();
-        if (childCloseCommand != null) childCloseCommand.execute();
-        setWidth("");
+        if ( childCloseCommand != null ) {
+            childCloseCommand.execute();
+        }
+        setWidth( "" );
         initialized = false;
     }
-
-    private native void centerVertically(Element e) /*-{
-        $wnd.jQuery(e).css("margin-top", (-1 * $wnd.jQuery(e).outerHeight() / 2) + "px");
-    }-*/;
 
     @Override
     public Command getOnCloseCommand() {
@@ -114,7 +121,7 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
     }
 
     @Override
-    public void setOnCloseCommand(Command onCloseCommand) {
+    public void setOnCloseCommand( Command onCloseCommand ) {
         this.childCloseCommand = onCloseCommand;
     }
 
@@ -124,7 +131,7 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
     }
 
     @Override
-    public void setResizeListener(FormContentResizeListener resizeListener) {
+    public void setResizeListener( FormContentResizeListener resizeListener ) {
         formContentResizeListener = resizeListener;
     }
 

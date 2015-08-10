@@ -15,16 +15,12 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskdetailsmulti;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-
-import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsPresenter;
-import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView.TabbedDetailsView;
 import org.jbpm.console.ng.ht.client.editors.taskadmin.TaskAdminPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter;
@@ -32,8 +28,8 @@ import org.jbpm.console.ng.ht.client.editors.taskdetails.TaskDetailsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskform.TaskFormPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayProvider;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskDisplayerConfig;
+import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayProvider;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.uberfire.client.annotations.DefaultPosition;
@@ -41,6 +37,7 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.lifecycle.OnStartup;
@@ -55,28 +52,27 @@ import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @Dependent
 @WorkbenchScreen(identifier = "Task Details Multi", preferredWidth = 500)
-public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
+public class TaskDetailsMultiPresenter {
 
     public interface TaskDetailsMultiView
-            extends TabbedDetailsView<TaskDetailsMultiPresenter> {
-
-        void setupPresenters( final TaskFormPresenter taskFormPresenter,
-                              final TaskDetailsPresenter taskDetailsPresenter,
-                              final TaskAssignmentsPresenter taskAssignmentsPresenter,
-                              final TaskCommentsPresenter taskCommentsPresenter,
-                              final TaskAdminPresenter taskAdminPresenter,
-                              final TaskProcessContextPresenter taskProcessContextPresenter);
+            extends UberView<TaskDetailsMultiPresenter> {
 
         IsWidget getRefreshButton();
 
         IsWidget getCloseButton();
+
+        void setAdminTabVisible( boolean value );
+
+        void displayAllTabs();
+
+        void displayOnlyLogTab();
     }
 
     @Inject
-    private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
+    private TaskDetailsMultiView view;
 
     @Inject
-    private Event<TaskSelectionEvent> taskSelected;
+    private PlaceManager placeManager;
 
     @Inject
     private HumanTaskFormDisplayProvider taskFormDisplayProvider;
@@ -94,18 +90,22 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
     private TaskCommentsPresenter taskCommentsPresenter;
 
     @Inject
-    private TaskDetailsMultiView view;
-    
-    @Inject
     private TaskAdminPresenter taskAdminPresenter;
-    
+
     @Inject
     private TaskProcessContextPresenter taskProcessContextPresenter;
 
-    @PostConstruct
-    public void init() {
-        view.setupPresenters( taskFormPresenter, taskDetailsPresenter, taskAssignmentsPresenter, taskCommentsPresenter, taskAdminPresenter ,taskProcessContextPresenter);
-    }
+    @Inject
+    private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
+
+    @Inject
+    private Event<TaskSelectionEvent> taskSelected;
+
+    private PlaceRequest place;
+
+    private String deploymentId = "";
+
+    private String processId = "";
 
     @WorkbenchPartView
     public UberView<TaskDetailsMultiPresenter> getView() {
@@ -117,7 +117,6 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
         return CompassPosition.EAST;
     }
 
-
     @WorkbenchPartTitle
     public String getTitle() {
         return Constants.INSTANCE.Details();
@@ -125,50 +124,41 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
 
     @OnStartup
     public void onStartup( final PlaceRequest place ) {
-        super.onStartup( place );
+        this.place = place;
     }
 
     public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
         deploymentId = String.valueOf( event.getTaskId() );
         processId = event.getTaskName();
 
-        taskFormPresenter.getTaskFormView().getDisplayerView().setOnCloseCommand(new Command() {
+        taskFormPresenter.getTaskFormView().getDisplayerView().setOnCloseCommand( new Command() {
             @Override
             public void execute() {
                 closeDetails();
             }
-        });
-        taskFormDisplayProvider.setup(new HumanTaskDisplayerConfig(new TaskKey(event.getTaskId())), taskFormPresenter.getTaskFormView().getDisplayerView());
+        } );
+        taskFormDisplayProvider.setup( new HumanTaskDisplayerConfig( new TaskKey( event.getTaskId() ) ), taskFormPresenter.getTaskFormView().getDisplayerView() );
 
-        
-        
-        if(event.isForLog() ){
-            view.getTabPanel().getTabWidget(0).getParent().setVisible(false);
-            view.getTabPanel().getTabWidget(2).getParent().setVisible(false);
-            view.getTabPanel().getTabWidget(3).getParent().setVisible(false);
-            view.getTabPanel().getTabWidget(4).getParent().setVisible(false);
-            view.getTabPanel().selectTab(1);
-            changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( deploymentId ) + " - " + processId   + " (Log)"));
-        }else {
-            view.getTabPanel().getTabWidget(0).getParent().setVisible(true);
-            view.getTabPanel().getTabWidget(2).getParent().setVisible(true);
-            view.getTabPanel().getTabWidget(3).getParent().setVisible(true);
-             view.getTabPanel().getTabWidget(4).getParent().setVisible(true);
-            view.getTabPanel().selectTab(0);
+        if ( event.isForLog() ) {
+            view.displayOnlyLogTab();
+            changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( deploymentId ) + " - " + processId + " (Log)" ) );
+        } else {
+            view.displayAllTabs();
             changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( deploymentId ) + " - " + processId ) );
         }
-        if (event.isForAdmin()) {
-            view.getTabPanel().getTabWidget(5).getParent().setVisible(true);
-         } else {
+        if ( event.isForAdmin() ) {
+            view.setAdminTabVisible( true );
+        } else {
+            view.setAdminTabVisible( false );
+        }
+    }
 
-            view.getTabPanel().getTabWidget(5).getParent().setVisible(false);
-         }
-        
-        
+    public void closeDetails() {
+        placeManager.closePlace( place );
     }
 
     public void refresh() {
-        taskSelected.fire( new TaskSelectionEvent( Long.valueOf(deploymentId), processId) );
+        taskSelected.fire( new TaskSelectionEvent( Long.valueOf( deploymentId ), processId ) );
     }
 
     @WorkbenchMenu
@@ -191,4 +181,49 @@ public class TaskDetailsMultiPresenter extends AbstractTabbedDetailsPresenter {
                 } ).endMenu()
                 .build();
     }
+
+    public IsWidget getGenericFormView() {
+        return taskFormPresenter.getView();
+    }
+
+    public IsWidget getTaskDetailsView() {
+        return taskDetailsPresenter.getView();
+    }
+
+    public IsWidget getProcessContextView() {
+        return taskProcessContextPresenter.getView();
+    }
+
+    public IsWidget getTaskAssignmentsView() {
+        return taskAssignmentsPresenter.getView();
+    }
+
+    public IsWidget getTaskCommentsView() {
+        return taskCommentsPresenter.getView();
+    }
+
+    public IsWidget getTaskAdminView() {
+        return taskAdminPresenter.getView();
+    }
+
+    public void taskDetailsRefresh() {
+        taskDetailsPresenter.refreshTask();
+    }
+
+    public void taskProcessContextRefresh() {
+        taskProcessContextPresenter.refreshProcessContextOfTask();
+    }
+
+    public void taskAssignmentsRefresh() {
+        taskAssignmentsPresenter.refreshTaskPotentialOwners();
+    }
+
+    public void taskCommentsRefresh() {
+        taskCommentsPresenter.refreshComments();
+    }
+
+    public void taskAdminRefresh() {
+        taskAdminPresenter.refreshTaskPotentialOwners();
+    }
+
 }

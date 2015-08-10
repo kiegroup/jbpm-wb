@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 JBoss Inc
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,10 +15,9 @@
  */
 package org.jbpm.console.ng.df.client.filter;
 
-import com.github.gwtbootstrap.client.ui.*;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
+import java.util.List;
+import javax.enterprise.context.Dependent;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -34,6 +33,14 @@ import org.dashbuilder.dataset.client.DataSetClientServices;
 import org.dashbuilder.dataset.client.DataSetMetadataCallback;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.TabListItem;
+import org.gwtbootstrap3.client.ui.TabPane;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.df.client.i18n.FiltersConstants;
 import org.jbpm.console.ng.df.client.popup.filter.DataSetFilterEditor;
@@ -41,57 +48,57 @@ import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.mvp.Command;
 
-import javax.enterprise.context.Dependent;
-import java.util.List;
-import org.dashbuilder.common.client.error.ClientRuntimeError;
-
 @Dependent
 public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.Listener {
 
     interface Binder extends UiBinder<Widget, FilterEditorPopup> {
+
     }
 
     private static Binder uiBinder = GWT.create( Binder.class );
 
     public interface Listener {
+
         void onClose( FilterEditorPopup editor );
 
         void onSave( FilterEditorPopup editor );
     }
 
     @UiField
-    public TabPanel tabPanel;
+    public TabListItem basictab;
 
     @UiField
-    public Tab basictab;
+    public TabListItem filtertab;
 
     @UiField
-    public Tab filtertab;
+    public TabPane basictabPane;
 
     @UiField
-    public ControlGroup tableNameControlGroup;
+    public TabPane filtertabPane;
+
+    @UiField
+    public FormGroup tableNameControlGroup;
 
     @UiField
     public TextBox tableNameText;
 
     @UiField
-    HelpInline tableNameHelpInline;
+    HelpBlock tableNameHelpInline;
 
     @UiField
-    public ControlGroup tableDescControlGroup;
+    public FormGroup tableDescControlGroup;
 
     @UiField
     public TextBox tableDescText;
 
     @UiField
-    HelpInline tableDescHelpInline;
+    HelpBlock tableDescHelpInline;
 
     @UiField
     public HelpBlock errorMessages;
 
     @UiField
-    public ControlGroup errorMessagesGroup;
-
+    public FormGroup errorMessagesGroup;
 
     @UiField
     DataSetFilterEditor filterEditor;
@@ -102,10 +109,12 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
     DataSetMetadata metadata;
     DataSetLookup dataSetLookup;
 
-
     public FilterEditorPopup() {
+        setBody( uiBinder.createAndBindUi( FilterEditorPopup.this ) );
 
-        add( uiBinder.createAndBindUi( this ) );
+        basictab.setDataTargetWidget( basictabPane );
+        filtertab.setDataTargetWidget( filtertabPane );
+
         tableNameText.addChangeHandler( new ChangeHandler() {
             @Override
             public void onChange( ChangeEvent changeEvent ) {
@@ -119,33 +128,35 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
             }
         } );
         final GenericModalFooter footer = new GenericModalFooter();
-        footer.addButton(FiltersConstants.INSTANCE.ok(),
-                new Command() {
-                    @Override
-                    public void execute() {
-                        ok();
-                    }
-                }, IconType.PLUS_SIGN,
-                ButtonType.PRIMARY );
-        footer.addButton(FiltersConstants.INSTANCE.cancel(),
-                new Command() {
-                    @Override
-                    public void execute() {
-                        cancel();
-                    }
-                }, IconType.PLUS_SIGN,
-                ButtonType.PRIMARY );
+        footer.addButton( FiltersConstants.INSTANCE.ok(),
+                          new Command() {
+                              @Override
+                              public void execute() {
+                                  ok();
+                              }
+                          }, IconType.PLUS,
+                          ButtonType.PRIMARY );
+        footer.addButton( FiltersConstants.INSTANCE.cancel(),
+                          new Command() {
+                              @Override
+                              public void execute() {
+                                  cancel();
+                              }
+                          }, IconType.ERASER,
+                          ButtonType.DEFAULT );
 
         add( footer );
-        setMaxHeigth( "550px" );
-        setWidth( 400 );
+        setWidth( 500 + "px" );
     }
 
-    public void show( FilterSettings settings, FilterEditorPopup.Listener editorListener ) {
+    public void show( FilterSettings settings,
+                      FilterEditorPopup.Listener editorListener ) {
         clean();
-        tabPanel.selectTab( 0 );
         basictab.setActive( true );
+        basictabPane.setActive( true );
         filtertab.setActive( false );
+        filtertabPane.setActive( false );
+        basictab.showTab();
 
         this.editorListener = editorListener;
         tableDisplayerSettings = settings;
@@ -182,13 +193,13 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
         clearErrorMessages();
 
         if ( tableNameText.getText() != null && tableNameText.getText().trim().length() == 0 ) {
-            tableNameHelpInline.setText(FiltersConstants.INSTANCE.Name_must_be_defined() );
-            tableNameControlGroup.setType( ControlGroupType.ERROR );
+            tableNameHelpInline.setText( FiltersConstants.INSTANCE.Name_must_be_defined() );
+            tableNameControlGroup.setValidationState( ValidationState.ERROR );
             valid = false;
         }
-        if(!valid) {
-            errorMessages.setText(FiltersConstants.INSTANCE.Required_fields_must_be_defined() );
-            errorMessagesGroup.setType( ControlGroupType.ERROR );
+        if ( !valid ) {
+            errorMessages.setText( FiltersConstants.INSTANCE.Required_fields_must_be_defined() );
+            errorMessagesGroup.setValidationState( ValidationState.ERROR );
         }
 
         return valid;
@@ -198,14 +209,14 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
         errorMessages.setText( "" );
         tableNameHelpInline.setText( "" );
         tableDescHelpInline.setText( "" );
-        tableNameControlGroup.setType( ControlGroupType.NONE );
-        tableDescControlGroup.setType( ControlGroupType.NONE );
+        tableNameControlGroup.setValidationState( ValidationState.NONE );
+        tableDescControlGroup.setValidationState( ValidationState.NONE );
     }
 
     public void fetchDataSetLookup() {
         try {
             String uuid = tableDisplayerSettings.getDataSetLookup().getDataSetUUID();
-            DataSetClientServices.get().fetchMetadata(uuid, new DataSetMetadataCallback() {
+            DataSetClientServices.get().fetchMetadata( uuid, new DataSetMetadataCallback() {
 
                 public void callback( DataSetMetadata metadata ) {
                     updateDataSetLookup( null, metadata );
@@ -213,7 +224,7 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
 
                 public void notFound() {
                     // Very unlikely since this data set has been selected from a list provided by the backend.
-                    error(FiltersConstants.INSTANCE.displayer_editor_dataset_notfound(), null );
+                    error( FiltersConstants.INSTANCE.displayer_editor_dataset_notfound(), null );
                 }
 
                 @Override
@@ -223,30 +234,37 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
                 }
             } );
         } catch ( Exception e ) {
-            error(FiltersConstants.INSTANCE.displayer_editor_datasetmetadata_fetcherror(), e );
+            error( FiltersConstants.INSTANCE.displayer_editor_datasetmetadata_fetcherror(), e );
         }
     }
 
-    public void error( String message, Throwable e ) {
+    public void error( String message,
+                       Throwable e ) {
         String cause = e != null ? e.getMessage() : null;
 
-        if ( e != null ) GWT.log( message, e );
-        else GWT.log( message );
+        if ( e != null ) {
+            GWT.log( message, e );
+        } else {
+            GWT.log( message );
+        }
     }
 
     public void error( final ClientRuntimeError error ) {
         String message = error.getThrowable() != null ? error.getThrowable().getMessage() : error.getMessage().toString();
         Throwable e = error.getThrowable();
-        if ( e.getCause() != null ) e = e.getCause();
+        if ( e.getCause() != null ) {
+            e = e.getCause();
+        }
         error( message, e );
     }
 
-    public void updateDataSetLookup( DataSetLookupConstraints constraints, DataSetMetadata metadata ) {
+    public void updateDataSetLookup( DataSetLookupConstraints constraints,
+                                     DataSetMetadata metadata ) {
 
         this.dataSetLookup = tableDisplayerSettings.getDataSetLookup();
         this.metadata = metadata;
 
-        DataSetClientServices.get().getRemoteSharedDataSetDefs(new RemoteCallback<List<DataSetDef>>() {
+        DataSetClientServices.get().getRemoteSharedDataSetDefs( new RemoteCallback<List<DataSetDef>>() {
             public void callback( List<DataSetDef> dataSetDefs ) {
                 updateFilterControls();
             }
@@ -256,8 +274,8 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
 
     private void updateFilterControls() {
         filterEditor.init( metadata,
-                dataSetLookup.getFirstFilterOp(),
-                this );
+                           dataSetLookup.getFirstFilterOp(),
+                           this );
     }
 
     public void filterChanged( DataSetFilter filterOp ) {
@@ -269,7 +287,6 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
         if ( filterOp != null ) {
             tableDisplayerSettings.getDataSetLookup().addOperation( 0, filterOp );
         }
-
 
     }
 

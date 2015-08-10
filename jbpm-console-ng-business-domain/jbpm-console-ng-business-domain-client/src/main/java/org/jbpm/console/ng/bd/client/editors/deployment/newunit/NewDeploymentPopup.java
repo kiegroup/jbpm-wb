@@ -16,14 +16,24 @@
 
 package org.jbpm.console.ng.bd.client.editors.deployment.newunit;
 
-import com.github.gwtbootstrap.client.ui.*;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.ListBox;
+import org.gwtbootstrap3.client.ui.TabListItem;
+import org.gwtbootstrap3.client.ui.TabPane;
+import org.gwtbootstrap3.client.ui.TabPanel;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -37,29 +47,31 @@ import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.mvp.Command;
-import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.events.NotificationEvent;
-
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 
 @Dependent
 public class NewDeploymentPopup extends BaseModal {
+
     interface Binder
             extends
             UiBinder<Widget, NewDeploymentPopup> {
 
     }
+
     @UiField
     public TabPanel tabPanel;
 
     @UiField
-    public Tab basicTab;
+    public TabListItem basicTab;
 
     @UiField
-    public Tab advancedTab;
+    public TabListItem advancedTab;
+
+    @UiField
+    public TabPane basicTabPane;
+
+    @UiField
+    public TabPane advancedTabPane;
 
     @UiField
     public TextBox groupText;
@@ -68,7 +80,7 @@ public class NewDeploymentPopup extends BaseModal {
     public HelpBlock groupTextErrorMessage;
 
     @UiField
-    public ControlGroup groupControlGroup;
+    public FormGroup groupControlGroup;
 
     @UiField
     public TextBox artifactText;
@@ -77,7 +89,7 @@ public class NewDeploymentPopup extends BaseModal {
     public HelpBlock artifactTextErrorMessage;
 
     @UiField
-    public ControlGroup artifactControlGroup;
+    public FormGroup artifactControlGroup;
 
     @UiField
     public TextBox versionText;
@@ -86,7 +98,7 @@ public class NewDeploymentPopup extends BaseModal {
     public HelpBlock versionTextErrorMessage;
 
     @UiField
-    public ControlGroup versionControlGroup;
+    public FormGroup versionControlGroup;
 
     @UiField
     public TextBox kbaseNameText;
@@ -94,7 +106,7 @@ public class NewDeploymentPopup extends BaseModal {
     @UiField
     public TextBox kieSessionNameText;
 
-   @UiField
+    @UiField
     public ListBox strategyListBox;
 
     @UiField
@@ -104,16 +116,13 @@ public class NewDeploymentPopup extends BaseModal {
     public HelpBlock errorMessages;
 
     @UiField
-    public ControlGroup errorMessagesGroup;
-
+    public FormGroup errorMessagesGroup;
 
     @Inject
     private Event<NotificationEvent> notification;
 
     @Inject
     private Event<DeployedUnitChangedEvent> unitChanged;
-
-    private PlaceRequest place;
 
     @Inject
     private PlaceManager placeManager;
@@ -126,17 +135,21 @@ public class NewDeploymentPopup extends BaseModal {
     public NewDeploymentPopup() {
         setTitle( Constants.INSTANCE.New_Deployment_Unit() );
 
-        add( uiBinder.createAndBindUi( this ) );
+        setBody( uiBinder.createAndBindUi( this ) );
+
+        basicTab.setDataTargetWidget( basicTabPane );
+        advancedTab.setDataTargetWidget( advancedTabPane );
+
         init();
         final GenericModalFooter footer = new GenericModalFooter();
         footer.addButton( Constants.INSTANCE.Deploy_Unit(),
-                new Command() {
-                    @Override
-                    public void execute() {
-                        okButton();
-                    }
-                },IconType.PLUS_SIGN,
-                ButtonType.PRIMARY );
+                          new Command() {
+                              @Override
+                              public void execute() {
+                                  okButton();
+                              }
+                          }, IconType.PLUS,
+                          ButtonType.PRIMARY );
 
         add( footer );
     }
@@ -146,35 +159,34 @@ public class NewDeploymentPopup extends BaseModal {
         super.show();
     }
 
-    private void cancelButton() {
-        closePopup();
-    }
-
     private void okButton() {
-        if(validateForm()) {
+        if ( validateForm() ) {
             String strategy = strategyListBox.getValue( strategyListBox.getSelectedIndex() );
             String mergeMode = mergeModeListBox.getValue( mergeModeListBox.getSelectedIndex() );
 
             deployUnit( groupText.getText(), artifactText.getText(), versionText.getText(),
-                    kbaseNameText.getText(), kieSessionNameText.getText(), strategy, mergeMode );
+                        kbaseNameText.getText(), kieSessionNameText.getText(), strategy, mergeMode );
         }
     }
 
     public void init() {
         cleanForm();
 
-        if(strategyListBox==null) strategyListBox=new ListBox(  );
+        if ( strategyListBox == null ) {
+            strategyListBox = new ListBox();
+        }
         strategyListBox.addItem( Constants.INSTANCE.Singleton(), "SINGLETON" );
         strategyListBox.addItem( Constants.INSTANCE.Request(), "PER_REQUEST" );
         strategyListBox.addItem( Constants.INSTANCE.ProcessInstance(), "PER_PROCESS_INSTANCE" );
 
-        if(mergeModeListBox==null) mergeModeListBox=new ListBox(  );
+        if ( mergeModeListBox == null ) {
+            mergeModeListBox = new ListBox();
+        }
         mergeModeListBox.addItem( Constants.INSTANCE.MergeCollections(), "MERGE_COLLECTIONS" );
         mergeModeListBox.addItem( Constants.INSTANCE.KeepAll(), "KEEP_ALL" );
         mergeModeListBox.addItem( Constants.INSTANCE.OverrideAll(), "OVERRIDE_ALL" );
         mergeModeListBox.addItem( Constants.INSTANCE.OverrideEmpty(), "OVERRIDE_EMPTY" );
     }
-
 
     public void displayNotification( String text ) {
         notification.fire( new NotificationEvent( text ) );
@@ -189,22 +201,21 @@ public class NewDeploymentPopup extends BaseModal {
     }
 
     public void cleanForm() {
-        tabPanel.selectTab( 0 );
+        basicTab.showTab();
         basicTab.setActive( true );
-        advancedTab.setActive(false);
+        advancedTab.setActive( false );
 
         groupTextErrorMessage.setText( "" );
-        groupControlGroup.setType( ControlGroupType.NONE );
+        groupControlGroup.setValidationState( ValidationState.NONE );
 
         artifactTextErrorMessage.setText( "" );
-        artifactControlGroup.setType( ControlGroupType.NONE );
+        artifactControlGroup.setValidationState( ValidationState.NONE );
 
         versionTextErrorMessage.setText( "" );
-        versionControlGroup.setType( ControlGroupType.NONE );
+        versionControlGroup.setValidationState( ValidationState.NONE );
 
         errorMessages.setText( "" );
-        errorMessagesGroup.setType( ControlGroupType.NONE );
-
+        errorMessagesGroup.setValidationState( ValidationState.NONE );
 
         this.artifactText.setText( "" );
         this.groupText.setText( "" );
@@ -214,43 +225,43 @@ public class NewDeploymentPopup extends BaseModal {
 
     }
 
-
     public void closePopup() {
         cleanForm();
         hide();
         super.hide();
     }
 
-    private boolean validateForm(){
-        boolean valid=true;
-        if(groupText.getText()!=null && groupText.getText().trim().length()==0){
-            groupControlGroup.setType( ControlGroupType.ERROR );
+    private boolean validateForm() {
+        boolean valid = true;
+        if ( groupText.getText() != null && groupText.getText().trim().length() == 0 ) {
+            groupControlGroup.setValidationState( ValidationState.ERROR );
             groupTextErrorMessage.setText( Constants.INSTANCE.ShouldProvide( Constants.INSTANCE.GroupID() ) );
-            valid=false;
-        }else{
-            groupControlGroup.setType( ControlGroupType.SUCCESS );
+            valid = false;
+        } else {
+            groupControlGroup.setValidationState( ValidationState.SUCCESS );
             groupTextErrorMessage.setText( "" );
         }
-        if(artifactText.getText()!=null && artifactText.getText().trim().length()==0){
-            artifactControlGroup.setType( ControlGroupType.ERROR );
+        if ( artifactText.getText() != null && artifactText.getText().trim().length() == 0 ) {
+            artifactControlGroup.setValidationState( ValidationState.ERROR );
             artifactTextErrorMessage.setText( Constants.INSTANCE.ShouldProvide( Constants.INSTANCE.Artifact() ) );
-            valid=false;
-        }else{
-            artifactControlGroup.setType( ControlGroupType.SUCCESS );
+            valid = false;
+        } else {
+            artifactControlGroup.setValidationState( ValidationState.SUCCESS );
             artifactTextErrorMessage.setText( "" );
         }
-        if(versionText.getText()!=null && versionText.getText().trim().length()==0){
-            versionControlGroup.setType( ControlGroupType.ERROR );
+        if ( versionText.getText() != null && versionText.getText().trim().length() == 0 ) {
+            versionControlGroup.setValidationState( ValidationState.ERROR );
             versionTextErrorMessage.setText( Constants.INSTANCE.ShouldProvide( Constants.INSTANCE.Version() ) );
-            valid=false;
-        }else{
-            versionControlGroup.setType( ControlGroupType.SUCCESS );
+            valid = false;
+        } else {
+            versionControlGroup.setValidationState( ValidationState.SUCCESS );
             versionTextErrorMessage.setText( "" );
         }
-        if(!valid) tabPanel.selectTab( 0 );
+        if ( !valid ) {
+            basicTab.showTab();
+        }
         return valid;
     }
-
 
     public void deployUnit( final String group,
                             final String artifact,
@@ -258,7 +269,7 @@ public class NewDeploymentPopup extends BaseModal {
                             final String kbaseName,
                             final String kieSessionName,
                             final String strategy,
-                            final String mergeMode) {
+                            final String mergeMode ) {
         showBusyIndicator( Constants.INSTANCE.Please_Wait() );
 
         deploymentManager.call( new RemoteCallback<Void>() {
@@ -277,14 +288,14 @@ public class NewDeploymentPopup extends BaseModal {
                                         //cleanForm();
                                         hideBusyIndicator();
                                         //closePopup();
-                                        errorMessagesGroup.setType( ControlGroupType.ERROR );
+                                        errorMessagesGroup.setValidationState( ValidationState.ERROR );
                                         errorMessages.setText( Constants.INSTANCE.UnableCreateDeploymentUnit() );
 
                                         //displayNotification( Constants.INSTANCE.DeploymentFailed() );
                                         return true;
                                     }
                                 }
-        ).deploy( new KModuleDeploymentUnitSummary( group + ":" + artifact + ":" + version, group, artifact, version, kbaseName, kieSessionName, strategy, mergeMode ) );
+                              ).deploy( new KModuleDeploymentUnitSummary( group + ":" + artifact + ":" + version, group, artifact, version, kbaseName, kieSessionName, strategy, mergeMode ) );
     }
 
 }

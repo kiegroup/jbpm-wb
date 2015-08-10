@@ -19,16 +19,24 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
-  <ui:with field="i18n" type="org.jbpm.console.ng.df.client.i18n.FiltersConstants"/>
+    <ui:with field="i18n" type="org.jbpm.console.ng.df.client.i18n.FiltersConstants"/>
 
-  <g:FlowPanel>
-    <g:FlowPanel ui:field="filterListPanel" />
-    <g:HorizontalPanel ui:field="addFilterPanel" visible="false">
-      <b:ListBox ui:field="newFilterListBox" width="180px" />
-      <b:Icon type="REMOVE" ui:field="filterDeleteIcon" iconSize="LARGE"/>
-    </g:HorizontalPanel>
-    <b:Button ui:field="addFilterButton" type="LINK" text="{i18n.common_button_addnew}"/>
-  </g:FlowPanel>
+    <ui:style>
+        .spacer {
+            margin-top: 15px;
+        }
+    </ui:style>
+
+    <g:FlowPanel>
+        <g:FlowPanel ui:field="filterListPanel"/>
+        <b:InputGroup ui:field="addFilterPanel" visible="false" addStyleNames="{style.spacer}">
+            <b:ListBox ui:field="newFilterListBox"/>
+            <b:InputGroupButton>
+                <b:Button icon="TRASH" ui:field="filterDeleteIcon" type="DANGER"/>
+            </b:InputGroupButton>
+        </b:InputGroup>
+        <b:Button ui:field="addFilterButton" type="PRIMARY" icon="PLUS" text="{i18n.common_button_addnew}" addStyleNames="{style.spacer}"/>
+    </g:FlowPanel>
 </ui:UiBinder>

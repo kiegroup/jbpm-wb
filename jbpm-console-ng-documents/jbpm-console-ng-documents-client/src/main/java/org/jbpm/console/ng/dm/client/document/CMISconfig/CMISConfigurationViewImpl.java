@@ -20,6 +20,13 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.Composite;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -27,13 +34,6 @@ import org.jbpm.console.ng.dm.client.i18n.Constants;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
 import org.uberfire.workbench.events.NotificationEvent.NotificationType;
-
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Composite;
 
 @Dependent
 @Templated(value = "CMISConfigurationViewImpl.html")
@@ -44,116 +44,116 @@ public class CMISConfigurationViewImpl extends Composite implements
 	private PlaceManager placeManager;
 
 	private CMISConfigurationPresenter presenter;
-	
+
 	private Constants constants = GWT.create(Constants.class);
-	
+
 	@Inject
 	private Event<NotificationEvent> notification;
 
 	@Inject
     @DataField
     public Label accordionLabel;
-    
+
     @Inject
     @DataField
     public Label webServicesACLLabel;
-    
+
     @Inject
     @DataField
     public TextBox webServicesACLBox;
-    
+
     @Inject
     @DataField
     public Label webServicesDiscoveryLabel;
-    
+
     @Inject
     @DataField
     public TextBox webServicesDiscoveryBox;
-    
+
     @Inject
     @DataField
     public Label webServicesMultifilingLabel;
-    
+
     @Inject
     @DataField
     public TextBox webServicesMultifilingBox;
-    
+
     @Inject
     @DataField
     public Label webServicesNavigationLabel;
-    
+
     @Inject
     @DataField
     public TextBox webServicesNavigationBox;
-    
+
     @Inject
     @DataField
     public Label webServicesObjectLabel;
-    
+
     @Inject
     @DataField
     public TextBox webServicesObjectBox;
-    
+
     @Inject
     @DataField
     public Label webServicesPolicyLabel;
-    
+
     @Inject
     @DataField
     public TextBox webServicesPolicyBox;
-    
+
     @Inject
     @DataField
     public Label webServicesRelationshipLabel;
-    
+
     @Inject
     @DataField
     public TextBox webServicesRelationshipBox;
-    
+
     @Inject
     @DataField
     public Label webServicesRepositoryLabel;
-    
+
     @Inject
     @DataField
     public TextBox webServicesRepositoryBox;
-    
+
     @Inject
     @DataField
     public Label webServicesVersioningLabel;
-    
+
     @Inject
     @DataField
     public TextBox webServicesVersioningBox;
-    
+
     @Inject
     @DataField
     public Label repositoryIDLabel;
-    
+
     @Inject
     @DataField
     public TextBox repositoryIDBox;
-    
+
     @Inject
     @DataField
     public Label userLabel;
-    
+
     @Inject
     @DataField
     public TextBox userBox;
-    
+
     @Inject
     @DataField
     public Label passwordLabel;
-    
+
     @Inject
     @DataField
     public TextBox passwordBox;
-    
+
     @Inject
     @DataField
     public Button configureButton;
-    
+
     @Inject
     @DataField
     public Button testButton;
@@ -162,7 +162,7 @@ public class CMISConfigurationViewImpl extends Composite implements
 	public void init(final CMISConfigurationPresenter presenter) {
 		this.presenter = presenter;
         accordionLabel.setText("CMIS Configuration");
-        
+
         webServicesACLLabel.setText("Webservices ACL");
         webServicesDiscoveryLabel.setText("Webservices Discovery");
         webServicesMultifilingLabel.setText("Webservices Multifiling");
@@ -175,8 +175,8 @@ public class CMISConfigurationViewImpl extends Composite implements
         repositoryIDLabel.setText("Repository ID");
         userLabel.setText("User");
         passwordLabel.setText("Password");
-         
-        
+
+
         configureButton.setText("Save");
         testButton.setText("Test Connection");
 	}
@@ -185,22 +185,22 @@ public class CMISConfigurationViewImpl extends Composite implements
 	public void displayNotification(String text) {
 		displayNotification(text, NotificationType.INFO);
 	}
-	
+
 	@Override
 	public void displayNotification(String text, NotificationType type) {
-		notification.fire(new NotificationEvent(text,type));	
+		notification.fire(new NotificationEvent(text,type));
 	}
 
 	@EventHandler("configureButton")
     public void configureButton( ClickEvent e ) {
         presenter.configureParameters();
     }
-	
+
 	@EventHandler("testButton")
     public void testButton( ClickEvent e ) {
         presenter.testConnection();
     }
-	
+
 	@Override
 	public TextBox getWSACLTextBox() {
 		return webServicesACLBox;
@@ -250,7 +250,7 @@ public class CMISConfigurationViewImpl extends Composite implements
 	public TextBox getUserTextBox() {
 		return userBox;
 	}
-	
+
 	@Override
 	public TextBox getPasswordTextBox() {
 		return passwordBox;
@@ -265,7 +265,7 @@ public class CMISConfigurationViewImpl extends Composite implements
 	public Button getConfigureButton() {
 		return configureButton;
 	}
-	
+
 	@Override
 	public Button getTestButton() {
 		return testButton;

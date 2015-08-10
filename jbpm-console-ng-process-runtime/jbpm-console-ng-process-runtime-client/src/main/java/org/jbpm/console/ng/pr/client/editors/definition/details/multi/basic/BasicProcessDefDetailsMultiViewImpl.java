@@ -16,43 +16,82 @@
 package org.jbpm.console.ng.pr.client.editors.definition.details.multi.basic;
 
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import org.jbpm.console.ng.pr.client.editors.definition.details.BaseProcessDefDetailsPresenter;
-import org.jbpm.console.ng.pr.client.editors.definition.details.basic.BasicProcessDefDetailsPresenter;
-import org.jbpm.console.ng.pr.client.editors.definition.details.multi.BaseProcessDefDetailsMultiViewImpl;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.NavTabs;
+import org.gwtbootstrap3.client.ui.TabContent;
+import org.gwtbootstrap3.client.ui.TabListItem;
+import org.gwtbootstrap3.client.ui.TabPane;
+import org.jbpm.console.ng.pr.client.editors.definition.details.multi.BaseProcessDefDetailsMultiViewImpl;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 
 @Dependent
-public class BasicProcessDefDetailsMultiViewImpl extends BaseProcessDefDetailsMultiViewImpl implements
-        BasicProcessDefDetailsMultiPresenter.BasicProcessDefDetailsMultiView {
+public class BasicProcessDefDetailsMultiViewImpl extends BaseProcessDefDetailsMultiViewImpl
+        implements BasicProcessDefDetailsMultiPresenter.BasicProcessDefDetailsMultiView {
 
     interface Binder
             extends
-            UiBinder<Widget, BasicProcessDefDetailsMultiPresenter.BasicProcessDefDetailsMultiView> {
+            UiBinder<Widget, BasicProcessDefDetailsMultiViewImpl> {
 
     }
+
+    @UiField
+    NavTabs navTabs;
+
+    @UiField
+    TabContent tabContent;
 
     private static Binder uiBinder = GWT.create( Binder.class );
 
-    @Inject
-    private BasicProcessDefDetailsPresenter detailsPresenter;
+    private BasicProcessDefDetailsMultiPresenter presenter;
+
+    private TabPane definitionDetailsPane;
+    private TabListItem definitionDetailsTab;
 
     @Override
-    protected BaseProcessDefDetailsPresenter getSpecificProcessDefDetailPresenter() {
-        return detailsPresenter;
+    public void init( final BasicProcessDefDetailsMultiPresenter presenter ) {
+        this.presenter = presenter;
+        initWidget( uiBinder.createAndBindUi( this ) );
+        initTabs();
+    }
+
+    protected void initTabs() {
+        definitionDetailsPane = new TabPane() {{
+            add( getTabView() );
+            setActive( true );
+        }};
+        definitionDetailsTab = new TabListItem( Constants.INSTANCE.Definition_Details() ) {{
+            setDataTargetWidget( definitionDetailsPane );
+            addStyleName( "uf-dropdown-tab-list-item" );
+            setActive( true );
+        }};
+
+        navTabs.add( definitionDetailsTab );
+        tabContent.add( definitionDetailsPane );
     }
 
     @Override
-    protected void createAndBindUi() {
-        uiBinder.createAndBindUi( this );
-
+    protected IsWidget getTabView() {
+        return presenter.getTabView();
     }
 
     @Override
-    protected int getSpecificOffsetHeight() {
-        return BasicProcessDefDetailsMultiViewImpl.this.getParent()
-                .getOffsetHeight();
+    protected void refresh() {
+        presenter.refresh();
     }
+
+    @Override
+    protected void closeDetails() {
+        presenter.closeDetails();
+    }
+
+    @Override
+    protected void createNewProcessInstance() {
+        presenter.createNewProcessInstance();
+    }
+
 }

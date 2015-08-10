@@ -17,7 +17,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
   <ui:with field='i18n' type='org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants'/>
 
@@ -34,7 +34,7 @@
   </ui:style>
 
   <g:HorizontalPanel ui:field="rootPanel" addStyleNames="{style.rootPanel}">
-    <b:Icon type="DOUBLE_ANGLE_LEFT" addStyleNames="{style.icon}"/>
+    <b:Icon type="ANGLE_DOUBLE_LEFT" addStyleNames="{style.icon}"/>
     <g:Anchor ui:field="rootLink" addStyleNames="{style.anchor}" text="{i18n.processes}"/>
     <b:Icon type="ANGLE_RIGHT" addStyleNames="{style.icon}" />
     <g:Label ui:field="processLabel" />

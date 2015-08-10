@@ -15,116 +15,71 @@
 
 package org.jbpm.console.ng.pr.client.editors.definition.details.multi;
 
-import static com.github.gwtbootstrap.client.ui.resources.ButtonSize.MINI;
-
-import org.jbpm.console.ng.gc.client.experimental.details.AbstractTabbedDetailsView;
-import org.jbpm.console.ng.pr.client.editors.definition.details.BaseProcessDefDetailsPresenter;
-import org.jbpm.console.ng.pr.client.i18n.Constants;
-
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.RequiresResize;
-import com.google.gwt.user.client.ui.ScrollPanel;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 
-public abstract class BaseProcessDefDetailsMultiViewImpl extends
-        AbstractTabbedDetailsView<BaseProcessDefDetailsMultiPresenter>
-        implements
-        BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView,
-        RequiresResize {
-
-    private ScrollPanel spDetails = new ScrollPanel();
-
-    @Override
-    public void init( final BaseProcessDefDetailsMultiPresenter presenter ) {
-        super.init( presenter );
-        createAndBindUi();
-        spDetails.add( getSpecificProcessDefDetailPresenter().getWidget() );
-        ((HTMLPanel) tabPanel.getWidget( 0 )).add( spDetails );
-    }
-
-    protected abstract void createAndBindUi();
-
-    protected abstract BaseProcessDefDetailsPresenter getSpecificProcessDefDetailPresenter();
-
-    @Override
-    public void initTabs() {
-        tabPanel.addTab( "Definition Details", Constants.INSTANCE.Definition_Details() );
-    }
+public abstract class BaseProcessDefDetailsMultiViewImpl extends Composite
+        implements BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView {
 
     @Override
     public Button getCloseButton() {
-        return new Button() {
+        return new Button() {{
+            setIcon( IconType.REMOVE );
+            setTitle( Constants.INSTANCE.Close() );
+            setSize( ButtonSize.SMALL );
+            addClickHandler( new ClickHandler() {
 
-            {
-                setIcon( IconType.REMOVE );
-                setTitle( Constants.INSTANCE.Close() );
-                setSize( MINI );
-                addClickHandler( new ClickHandler() {
-
-                    @Override
-                    public void onClick( ClickEvent event ) {
-                        presenter.closeDetails();
-                    }
-                } );
-            }
-        };
+                @Override
+                public void onClick( ClickEvent event ) {
+                    closeDetails();
+                }
+            } );
+        }};
     }
 
     @Override
     public IsWidget getRefreshButton() {
-        return new Button() {
+        return new Button() {{
+            setIcon( IconType.REFRESH );
+            setTitle( Constants.INSTANCE.Refresh() );
+            setSize( ButtonSize.SMALL );
+            addClickHandler( new ClickHandler() {
 
-            {
-                setIcon( IconType.REFRESH );
-                setTitle( Constants.INSTANCE.Refresh() );
-                setSize( MINI );
-                addClickHandler( new ClickHandler() {
-
-                    @Override
-                    public void onClick( ClickEvent event ) {
-                        presenter.refresh();
-                    }
-                } );
-            }
-        };
+                @Override
+                public void onClick( ClickEvent event ) {
+                    refresh();
+                }
+            } );
+        }};
     }
 
     @Override
     public IsWidget getNewInstanceButton() {
-        return new Button() {
+        return new Button() {{
+            setSize( ButtonSize.SMALL );
+            setIcon( IconType.PLAY );
+            setText( Constants.INSTANCE.New_Instance() );
+            addClickHandler( new ClickHandler() {
 
-            {
-                setSize( MINI );
-                setIcon( IconType.PLAY );
-                setText( Constants.INSTANCE.New_Instance() );
-                addClickHandler( new ClickHandler() {
-
-                    @Override
-                    public void onClick( ClickEvent event ) {
-                        presenter.createNewProcessInstance();
-                    }
-                } );
-            }
-        };
+                @Override
+                public void onClick( ClickEvent event ) {
+                    createNewProcessInstance();
+                }
+            } );
+        }};
     }
 
-    @Override
-    public void onResize() {
-        super.onResize();
-        Scheduler.get().scheduleDeferred( new Scheduler.ScheduledCommand() {
+    protected abstract IsWidget getTabView();
 
-            @Override
-            public void execute() {
-                tabPanel.setHeight( getSpecificOffsetHeight() - 30 + "px" );
-                spDetails.setHeight( getSpecificOffsetHeight() - 30 + "px" );
-            }
-        } );
-    }
+    protected abstract void refresh();
 
-    protected abstract int getSpecificOffsetHeight();
+    protected abstract void closeDetails();
+
+    protected abstract void createNewProcessInstance();
 }

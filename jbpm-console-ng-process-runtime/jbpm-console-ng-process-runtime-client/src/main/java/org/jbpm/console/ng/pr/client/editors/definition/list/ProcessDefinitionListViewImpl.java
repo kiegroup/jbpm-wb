@@ -34,20 +34,20 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import org.kie.workbench.common.widgets.client.workbench.configuration.ContextualView;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
+import org.kie.workbench.common.widgets.client.workbench.configuration.ContextualView;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
@@ -57,15 +57,7 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSummary, ProcessDefinitionListPresenter>
         implements ProcessDefinitionListPresenter.ProcessDefinitionListView {
 
-    interface Binder
-            extends
-            UiBinder<Widget, ProcessDefinitionListViewImpl> {
-
-    }
-
-    private static Binder uiBinder = GWT.create( Binder.class );
     private Constants constants = GWT.create( Constants.class );
-
 
     @Inject
     private Event<ProcessDefSelectionEvent> processDefSelected;
@@ -73,11 +65,11 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     @Inject
     private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
 
-    @Inject 
+    @Inject
     private ContextualView contextualView;
-    
+
     private String placeIdentifier;
-  
+
     @Override
     public void init( final ProcessDefinitionListPresenter presenter ) {
 
@@ -117,12 +109,12 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
                 if ( instanceDetailsStatus == PlaceStatus.OPEN ) {
                     placeManager.closePlace( "Process Instance Details Multi" );
                 }
-                placeIdentifier = "Basic Process Details Multi";
-                if ( contextualView.getViewMode( ContextualView.ALL_PERSPECTIVES ).equals( ContextualView.ADVANCED_MODE ) ){
-                	placeIdentifier = "Advanced Process Details Multi";
-                } 
+//                placeIdentifier = "Basic Process Details Multi";
+//                if ( contextualView.getViewMode( ContextualView.ALL_PERSPECTIVES ).equals( ContextualView.ADVANCED_MODE ) ) {
+                    placeIdentifier = "Advanced Process Details Multi";
+//                }
                 PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( placeIdentifier ) );
-                
+
                 if ( status == PlaceStatus.CLOSE ) {
                     placeManager.goTo( placeIdentifier );
                     processDefSelected.fire( new ProcessDefSelectionEvent( selectedItem.getProcessDefId(), selectedItem.getDeploymentId() ) );
@@ -171,12 +163,12 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         actionsColumn = initActionsColumn();
 
         List<ColumnMeta<ProcessSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessSummary>>();
-        columnMetas.add(new ColumnMeta<ProcessSummary>(processNameColumn, constants.Name()));
-        columnMetas.add(new ColumnMeta<ProcessSummary>(versionColumn, constants.Version()));
-        columnMetas.add(new ColumnMeta<ProcessSummary>(projectColumn, constants.Project()));
-        columnMetas.add(new ColumnMeta<ProcessSummary>(actionsColumn, constants.Actions()));
+        columnMetas.add( new ColumnMeta<ProcessSummary>( processNameColumn, constants.Name() ) );
+        columnMetas.add( new ColumnMeta<ProcessSummary>( versionColumn, constants.Version() ) );
+        columnMetas.add( new ColumnMeta<ProcessSummary>( projectColumn, constants.Project() ) );
+        columnMetas.add( new ColumnMeta<ProcessSummary>( actionsColumn, constants.Actions() ) );
 
-        listGrid.addColumns(columnMetas);
+        listGrid.addColumns( columnMetas );
     }
 
     private Column initProcessNameColumn() {
@@ -188,7 +180,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
             }
         };
         processNameColumn.setSortable( true );
-        processNameColumn.setDataStoreName("ProcessName");
+        processNameColumn.setDataStoreName( "ProcessName" );
         return processNameColumn;
     }
 
@@ -200,7 +192,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
             }
         };
         versionColumn.setSortable( true );
-        versionColumn.setDataStoreName("ProcessVersion");
+        versionColumn.setDataStoreName( "ProcessVersion" );
         return versionColumn;
     }
 
@@ -211,8 +203,8 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
                 return object.getDeploymentId();
             }
         };
-        projectColumn.setSortable(true);
-        projectColumn.setDataStoreName("Project");
+        projectColumn.setSortable( true );
+        projectColumn.setDataStoreName( "Project" );
         return projectColumn;
     }
 
@@ -223,7 +215,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         cells.add( new StartActionHasCell( "Start process", new Delegate<ProcessSummary>() {
             @Override
             public void execute( ProcessSummary process ) {
-                presenter.openGenericForm(process.getProcessDefId(), process.getDeploymentId(), process.getProcessDefName());
+                presenter.openGenericForm( process.getProcessDefId(), process.getDeploymentId(), process.getProcessDefName() );
             }
         } ) );
 
@@ -238,10 +230,10 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     }
 
     public void refreshNewProcessInstance( @Observes NewProcessInstanceEvent newProcessInstance ) {
-        placeIdentifier = "Basic Process Details Multi";
-        if ( contextualView.getViewMode( ContextualView.ALL_PERSPECTIVES ).equals( ContextualView.ADVANCED_MODE ) ){
+//        placeIdentifier = "Basic Process Details Multi";
+//        if ( contextualView.getViewMode( ContextualView.ALL_PERSPECTIVES ).equals( ContextualView.ADVANCED_MODE ) ) {
             placeIdentifier = "Advanced Process Details Multi";
-        } 
+//        }
         PlaceStatus definitionDetailsStatus = placeManager.getStatus( new DefaultPlaceRequest( placeIdentifier ) );
         if ( definitionDetailsStatus == PlaceStatus.OPEN ) {
             placeManager.closePlace( placeIdentifier );
@@ -269,7 +261,9 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
                                     SafeHtmlBuilder sb ) {
 
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Start()+"'>"+constants.Start()+"</a>");
+                    mysb.appendHtmlConstant( new Button( constants.Start() ) {{
+                        setSize( ButtonSize.EXTRA_SMALL );
+                    }}.getElement().toString() );
                     sb.append( mysb.toSafeHtml() );
                 }
             };

@@ -15,21 +15,28 @@
  */
 package org.jbpm.console.ng.pr.forms.client.display.displayers.process;
 
-import com.github.gwtbootstrap.client.ui.Accordion;
-import com.github.gwtbootstrap.client.ui.AccordionGroup;
-import com.github.gwtbootstrap.client.ui.event.HiddenEvent;
-import com.github.gwtbootstrap.client.ui.event.HiddenHandler;
+import java.util.Map;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import org.gwtbootstrap3.client.shared.event.HideEvent;
+import org.gwtbootstrap3.client.shared.event.HideHandler;
+import org.gwtbootstrap3.client.ui.Anchor;
+import org.gwtbootstrap3.client.ui.Heading;
+import org.gwtbootstrap3.client.ui.Panel;
+import org.gwtbootstrap3.client.ui.PanelBody;
+import org.gwtbootstrap3.client.ui.PanelCollapse;
+import org.gwtbootstrap3.client.ui.PanelGroup;
+import org.gwtbootstrap3.client.ui.PanelHeader;
+import org.gwtbootstrap3.client.ui.constants.HeadingSize;
+import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import java.util.Map;
-
 /**
- *
  * @author salaboy
  */
 @Dependent
@@ -39,7 +46,7 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
     private Caller<KieSessionEntryPoint> sessionServices;
 
     @Override
-    public boolean supportsContent(String content) {
+    public boolean supportsContent( String content ) {
         return true;
     }
 
@@ -48,65 +55,88 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
         return 1000;
     }
 
-
     @Override
     protected void initDisplayer() {
-        publish(this);
+        publish( this );
         jsniHelper.publishGetFormValues();
         formContainer.clear();
 
-        Accordion accordion = new Accordion();
+        final PanelGroup accordion = new PanelGroup();
+        accordion.setId( DOM.createUniqueId() );
 
+        accordion.add( new Panel() {{
+            final PanelCollapse collapse = new PanelCollapse() {{
+                setIn( false );
+                addHideHandler( new HideHandler() {
+                    @Override
+                    public void onHide( final HideEvent hideEvent ) {
+                        hideEvent.stopPropagation();
+                    }
+                } );
+                add( new PanelBody() {{
+                    add( correlationKey );
+                }} );
+            }};
+            add( new PanelHeader() {{
+                add( new Heading( HeadingSize.H4 ) {{
+                    add( new Anchor() {{
+                        setText( constants.Correlation_Key() );
+                        setDataToggle( Toggle.COLLAPSE );
+                        setDataParent( accordion.getId() );
+                        setDataTargetWidget( collapse );
+                    }} );
+                }} );
+            }} );
+            add( collapse );
+        }} );
 
-        AccordionGroup accordionGroupCorrelation = new AccordionGroup();
-        accordionGroupCorrelation.addHiddenHandler(new HiddenHandler() {
-            @Override
-            public void onHidden(HiddenEvent hiddenEvent) {
-                hiddenEvent.stopPropagation();
-            }
-        });
-        accordionGroupCorrelation.setHeading(constants.Correlation_Key());
-        accordionGroupCorrelation.setDefaultOpen(false);
-        accordionGroupCorrelation.add(correlationKey);
-        accordion.add(accordionGroupCorrelation);
+        accordion.add( new Panel() {{
+            final PanelCollapse collapse = new PanelCollapse() {{
+                setIn( true );
+                addHideHandler( new HideHandler() {
+                    @Override
+                    public void onHide( final HideEvent hideEvent ) {
+                        hideEvent.stopPropagation();
+                    }
+                } );
+                add( new PanelBody() {{
+                    add( new HTMLPanel( formContent ) );
+                }} );
+            }};
+            add( new PanelHeader() {{
+                add( new Heading( HeadingSize.H4 ) {{
+                    add( new Anchor() {{
+                        setText( constants.Form() );
+                        setDataToggle( Toggle.COLLAPSE );
+                        setDataParent( accordion.getId() );
+                        setDataTargetWidget( collapse );
+                    }} );
+                }} );
+            }} );
+            add( collapse );
+        }} );
 
+        jsniHelper.injectFormValidationsScripts( formContent );
 
-        AccordionGroup accordionGroupForm = new AccordionGroup();
-        accordionGroupForm.addHiddenHandler(new HiddenHandler() {
-            @Override
-            public void onHidden(HiddenEvent hiddenEvent) {
-                hiddenEvent.stopPropagation();
-            }
-        });
-        accordionGroupForm.setHeading(constants.Form());
-        accordionGroupForm.setDefaultOpen(true);
-        accordionGroupForm.add(new HTMLPanel(formContent));
-        accordion.add(accordionGroupForm);
-
-        jsniHelper.injectFormValidationsScripts(formContent);
-
-        formContainer.add(accordion);
-
+        formContainer.add( accordion );
     }
-
-
 
     @Override
     public native void startProcessFromDisplayer() /*-{
         try {
-            if($wnd.eval("taskFormValidator()")) $wnd.startProcess($wnd.getFormValues($doc.getElementById("form-data")));
+            if ($wnd.eval("taskFormValidator()")) $wnd.startProcess($wnd.getFormValues($doc.getElementById("form-data")));
         } catch (err) {
             alert("Unexpected error: " + err);
         }
     }-*/;
 
-    public void startProcess(JavaScriptObject values) {
-        final Map<String, Object> params = jsniHelper.getParameters(values);
-        sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
-                .startProcess(deploymentId, processDefId, getCorrelationKey(), params);
+    public void startProcess( JavaScriptObject values ) {
+        final Map<String, Object> params = jsniHelper.getParameters( values );
+        sessionServices.call( getStartProcessRemoteCallback(), getUnexpectedErrorCallback() )
+                .startProcess( deploymentId, processDefId, getCorrelationKey(), params );
     }
 
-    protected native void publish(FTLStartProcessDisplayerImpl ftl)/*-{
+    protected native void publish( FTLStartProcessDisplayerImpl ftl )/*-{
         $wnd.startProcess = function (form) {
             ftl.@org.jbpm.console.ng.pr.forms.client.display.displayers.process.FTLStartProcessDisplayerImpl::startProcess(Lcom/google/gwt/core/client/JavaScriptObject;)(form);
         }

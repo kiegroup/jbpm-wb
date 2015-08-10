@@ -15,9 +15,8 @@
  */
 package org.jbpm.console.ng.df.client.popup.filter;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Icon;
-import com.github.gwtbootstrap.client.ui.ListBox;
+import javax.enterprise.context.Dependent;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -30,11 +29,15 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.DataSetMetadata;
-import org.dashbuilder.dataset.filter.*;
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionType;
+import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.dataset.filter.FilterFactory;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.InputGroup;
+import org.gwtbootstrap3.client.ui.ListBox;
 import org.jbpm.console.ng.df.client.i18n.FiltersConstants;
-
-
-import javax.enterprise.context.Dependent;
 
 @Dependent
 public class DataSetFilterEditor extends Composite implements ColumnFilterEditor.Listener {
@@ -60,13 +63,13 @@ public class DataSetFilterEditor extends Composite implements ColumnFilterEditor
     Button addFilterButton;
 
     @UiField
-    Panel addFilterPanel;
+    InputGroup addFilterPanel;
 
     @UiField
-    Icon filterDeleteIcon;
+    Button filterDeleteIcon;
 
     public DataSetFilterEditor() {
-        initWidget(uiBinder.createAndBindUi(this));
+        initWidget( uiBinder.createAndBindUi(this) );
         filterDeleteIcon.addDomHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 onNewFilterClosed(event);

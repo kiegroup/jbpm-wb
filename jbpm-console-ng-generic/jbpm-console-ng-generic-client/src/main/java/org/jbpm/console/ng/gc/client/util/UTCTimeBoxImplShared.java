@@ -80,12 +80,15 @@ public abstract class UTCTimeBoxImplShared extends Composite implements UTCTimeB
     // ----------------------------------------------------------------------
     // parsing and formatting
 
-    protected final String value2text(Long value) {
+    protected final String value2text( Long value ) {
         return formatUsingFormat(value, timeFormat);
     }
     
-    protected final Long text2value(String text) {
-        
+    protected final Long text2value( String text ) {
+
+        if (text == null ){
+            return null;
+        }
         text = text.trim();
         if (text.length() == 0) {
             return null;

@@ -19,12 +19,12 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -47,15 +47,15 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
 
     @Inject
     @DataField
-    public Label deploymentIdLabel;
-    
+    public FormLabel deploymentIdLabel;
+
     @Inject
     @DataField
     public TextBox deploymentIdText;
 
     @Inject
     @DataField
-    public Label processIdLabel;
+    public FormLabel processIdLabel;
 
     @Inject
     @DataField
@@ -63,8 +63,8 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
 
     @Inject
     @DataField
-    public Label amountOfTasksLabel;
-    
+    public FormLabel amountOfTasksLabel;
+
     @Inject
     @DataField
     public TextBox amountOfTasksText;
@@ -72,32 +72,28 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
     @Inject
     private Event<NotificationEvent> notification;
 
-    private ProcessAdminConstants processAdminConstants = GWT.create(ProcessAdminConstants.class);
+    private ProcessAdminConstants processAdminConstants = GWT.create( ProcessAdminConstants.class );
 
     @Override
-    public void init(ProcessAdminSettingsPresenter presenter) {
+    public void init( ProcessAdminSettingsPresenter presenter ) {
         this.presenter = presenter;
-        
-        amountOfTasksLabel.setText( processAdminConstants.Amount_Of_Tasks());
-        deploymentIdLabel.setText( processAdminConstants.DeploymentId());
-        processIdLabel.setText( processAdminConstants.ProcessId());
-        generateMockInstancesButton.setText( processAdminConstants.Generate_Mock_Instances());
-    }
 
-    
+        amountOfTasksLabel.setText( processAdminConstants.Amount_Of_Tasks() );
+        deploymentIdLabel.setText( processAdminConstants.DeploymentId() );
+        processIdLabel.setText( processAdminConstants.ProcessId() );
+        generateMockInstancesButton.setText( processAdminConstants.Generate_Mock_Instances() );
+    }
 
     @EventHandler("generateMockInstancesButton")
-    public void setGenerateMockInstancesButton(ClickEvent e) {
-        
-            presenter.generateMockInstances( deploymentIdText.getText(), processIdText.getText(), Integer.parseInt( amountOfTasksText.getText() ) );
-       
+    public void setGenerateMockInstancesButton( ClickEvent e ) {
+
+        presenter.generateMockInstances( deploymentIdText.getText(), processIdText.getText(), Integer.parseInt( amountOfTasksText.getText() ) );
+
     }
 
-   
-
     @Override
-    public void displayNotification(String text) {
-        notification.fire(new NotificationEvent(text));
+    public void displayNotification( String text ) {
+        notification.fire( new NotificationEvent( text ) );
     }
 
     @Override
@@ -109,7 +105,6 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
     public TextBox getProcessIdText() {
         return processIdText;
     }
-
 
     @Override
     public Button getGenerateMockInstancesButton() {

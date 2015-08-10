@@ -19,23 +19,28 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
-  <ui:style>
-    .filterDetailsPanel {
-      width: 200px;
-      padding: 5px;
-      background: #dddddd;
-      border-radius: 5px;
-    }
-  </ui:style>
+    <ui:style>
+        .filterDetailsPanel {
+            padding-left: 20px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
 
-  <g:VerticalPanel>
-    <g:HorizontalPanel>
-      <b:ListBox ui:field="filterListBox" width="180px" />
-      <b:Icon type="REMOVE" ui:field="filterDeleteIcon" iconSize="LARGE"/>
-      <b:Icon type="ARROW_DOWN" ui:field="filterExpandIcon" iconSize="LARGE" visible="false"/>
-    </g:HorizontalPanel>
-    <g:FlowPanel ui:field="filterDetailsPanel" visible="false" styleName="{style.filterDetailsPanel}" />
-  </g:VerticalPanel>
+        .spacer {
+            margin-top: 15px;
+        }
+    </ui:style>
+
+    <g:FlowPanel addStyleNames="{style.spacer}">
+        <b:InputGroup>
+            <b:ListBox ui:field="filterListBox"/>
+            <b:InputGroupButton>
+                <b:Button type="DANGER" icon="TRASH" ui:field="filterDeleteIcon"/>
+                <b:Button ui:field="filterExpandIcon" visible="false"/>
+            </b:InputGroupButton>
+        </b:InputGroup>
+        <g:FlowPanel ui:field="filterDetailsPanel" visible="false" styleName="{style.filterDetailsPanel}"/>
+    </g:FlowPanel>
 </ui:UiBinder>

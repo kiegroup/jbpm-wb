@@ -17,13 +17,16 @@ package org.jbpm.console.ng.ht.client.editors.taskadmin;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.IsWidget;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -37,28 +40,23 @@ import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Label;
-
 @Dependent
 public class TaskAdminPresenter {
 
-    public interface TaskAdminView extends IsWidget{
+    public interface TaskAdminView extends IsWidget {
 
-        void displayNotification(String text);
+        void displayNotification( String text );
 
         Label getUsersGroupsControlsPanel();
 
         Button getForwardButton();
-        
+
         TextBox getUserOrGroupText();
-        
+
         Button getReminderButton();
-        
+
         Label getActualOwnerPanel();
-        
+
         void init( final TaskAdminPresenter presenter );
     }
 
@@ -70,12 +68,12 @@ public class TaskAdminPresenter {
 
     @Inject
     protected Caller<TaskLifeCycleService> taskServices;
-    
+
     @Inject
     protected Caller<TaskOperationsService> taskOperationsServices;
 
     private long currentTaskId = 0;
-    
+
     @Inject
     private Event<TaskRefreshedEvent> taskRefreshed;
 
@@ -87,86 +85,89 @@ public class TaskAdminPresenter {
     public IsWidget getView() {
         return view;
     }
-    
 
-    public void forwardTask(String entity) {
-        taskServices.call(new RemoteCallback<Void>() {
+    public void forwardTask( String entity ) {
+        taskServices.call( new RemoteCallback<Void>() {
             @Override
-            public void callback(Void nothing) {
-                view.displayNotification("Task was succesfully forwarded");
+            public void callback( Void nothing ) {
+                view.displayNotification( "Task was succesfully forwarded" );
                 taskRefreshed.fire( new TaskRefreshedEvent( currentTaskId ) );
                 refreshTaskPotentialOwners();
             }
 
         }, new ErrorCallback<Message>() {
-          @Override
-          public boolean error( Message message, Throwable throwable ) {
-              ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-              return true;
-          }
-      }).delegate( currentTaskId, identity.getIdentifier(), entity );
+            @Override
+            public boolean error( Message message,
+                                  Throwable throwable ) {
+                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                return true;
+            }
+        } ).delegate( currentTaskId, identity.getIdentifier(), entity );
     }
 
-    public void reminder(){
-        taskOperationsServices.call(new RemoteCallback<TaskAssignmentSummary>() {
+    public void reminder() {
+        taskOperationsServices.call( new RemoteCallback<TaskAssignmentSummary>() {
             @Override
-            public void callback(TaskAssignmentSummary ts) {
-            	view.displayNotification("Reminder was succesfully sent to " + identity.getIdentifier());
+            public void callback( TaskAssignmentSummary ts ) {
+                view.displayNotification( "Reminder was succesfully sent to " + identity.getIdentifier() );
             }
         }, new ErrorCallback<Message>() {
-              @Override
-              public boolean error( Message message, Throwable throwable ) {
-                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                  return true;
-              }
-          }).executeReminderForTask(currentTaskId,identity.getIdentifier());
-    }
-    public void refreshTaskPotentialOwners() {
-        List<Long> taskIds = new ArrayList<Long>(1);
-        taskIds.add(currentTaskId);
-        
-        taskOperationsServices.call(new RemoteCallback<TaskAssignmentSummary>() {
             @Override
-            public void callback(TaskAssignmentSummary ts) {
-                if (ts == null) {
-                    view.getReminderButton().setEnabled(false);
-                    view.getForwardButton().setEnabled(false);
-                    view.getUserOrGroupText().setEnabled(false);
+            public boolean error( Message message,
+                                  Throwable throwable ) {
+                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                return true;
+            }
+        } ).executeReminderForTask( currentTaskId, identity.getIdentifier() );
+    }
+
+    public void refreshTaskPotentialOwners() {
+        List<Long> taskIds = new ArrayList<Long>( 1 );
+        taskIds.add( currentTaskId );
+
+        taskOperationsServices.call( new RemoteCallback<TaskAssignmentSummary>() {
+            @Override
+            public void callback( TaskAssignmentSummary ts ) {
+                if ( ts == null ) {
+                    view.getReminderButton().setEnabled( false );
+                    view.getForwardButton().setEnabled( false );
+                    view.getUserOrGroupText().setEnabled( false );
                     return;
                 }
-                if( ts.getPotOwnersString() != null && ts.getPotOwnersString().isEmpty() ){
+                if ( ts.getPotOwnersString() != null && ts.getPotOwnersString().isEmpty() ) {
                     view.getUsersGroupsControlsPanel().setText( Constants.INSTANCE.No_Potential_Owners() );
                 } else {
-                       view.getUsersGroupsControlsPanel().setText("" + ts.getPotOwnersString().toString() );
+                    view.getUsersGroupsControlsPanel().setText( "" + ts.getPotOwnersString().toString() );
                 }
-                view.getForwardButton().setEnabled(true);
-                view.getUserOrGroupText().setEnabled(true);
-                
-                if(ts.getActualOwner() == null || ts.getActualOwner().equals("")){
-                	view.getReminderButton().setEnabled(false);
-                	view.getActualOwnerPanel().setText(Constants.INSTANCE.No_Actual_Owner());
-                }else{
-                	view.getReminderButton().setEnabled(true);
-                	view.getActualOwnerPanel().setText(ts.getActualOwner());
+                view.getForwardButton().setEnabled( true );
+                view.getUserOrGroupText().setEnabled( true );
+
+                if ( ts.getActualOwner() == null || ts.getActualOwner().equals( "" ) ) {
+                    view.getReminderButton().setEnabled( false );
+                    view.getActualOwnerPanel().setText( Constants.INSTANCE.No_Actual_Owner() );
+                } else {
+                    view.getReminderButton().setEnabled( true );
+                    view.getActualOwnerPanel().setText( ts.getActualOwner() );
                 }
             }
         }, new ErrorCallback<Message>() {
-              @Override
-              public boolean error( Message message, Throwable throwable ) {
-                  ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-                  return true;
-              }
-          }).getTaskAssignmentDetails(currentTaskId);
+            @Override
+            public boolean error( Message message,
+                                  Throwable throwable ) {
+                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                return true;
+            }
+        } ).getTaskAssignmentDetails( currentTaskId );
 
     }
- 
+
     public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
         this.currentTaskId = event.getTaskId();
         refreshTaskPotentialOwners();
     }
-    
-    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event){
-        if(currentTaskId == event.getTaskId()){
+
+    public void onTaskRefreshedEvent( @Observes TaskRefreshedEvent event ) {
+        if ( currentTaskId == event.getTaskId() ) {
             refreshTaskPotentialOwners();
         }
     }

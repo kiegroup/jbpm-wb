@@ -19,13 +19,12 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
-import org.jboss.errai.security.shared.api.identity.User;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -49,15 +48,15 @@ public class TaskAdminSettingsViewImpl extends Composite implements TaskAdminSet
     @Inject
     @DataField
     public Label userNameLabel;
-    
+
     @Inject
     @DataField
     public TextBox userNameText;
-    
-     @Inject
+
+    @Inject
     @DataField
     public Label amountOfTasksLabel;
-    
+
     @Inject
     @DataField
     public TextBox amountOfTasksText;
@@ -65,38 +64,33 @@ public class TaskAdminSettingsViewImpl extends Composite implements TaskAdminSet
     @Inject
     private Event<NotificationEvent> notification;
 
-    private Constants constants = GWT.create(Constants.class);
+    private Constants constants = GWT.create( Constants.class );
 
     @Override
-    public void init(TaskAdminSettingsPresenter presenter) {
+    public void init( TaskAdminSettingsPresenter presenter ) {
         this.presenter = presenter;
-        
-        amountOfTasksLabel.setText(constants.Amount_Of_Tasks());
-        userNameLabel.setText(constants.User_Name());
-        generateMockTasksButton.setText(constants.Generate_Mock_Tasks());
-    }
 
-    
+        amountOfTasksLabel.setText( constants.Amount_Of_Tasks() );
+        userNameLabel.setText( constants.User_Name() );
+        generateMockTasksButton.setText( constants.Generate_Mock_Tasks() );
+    }
 
     @EventHandler("generateMockTasksButton")
-    public void generateMockTasksButton(ClickEvent e) {
-        
-            presenter.generateMockTasks(userNameText.getText(), Integer.parseInt(amountOfTasksText.getText()));
-       
+    public void generateMockTasksButton( ClickEvent e ) {
+
+        presenter.generateMockTasks( userNameText.getText(), Integer.parseInt( amountOfTasksText.getText() ) );
+
     }
 
-   
-
     @Override
-    public void displayNotification(String text) {
-        notification.fire(new NotificationEvent(text));
+    public void displayNotification( String text ) {
+        notification.fire( new NotificationEvent( text ) );
     }
 
     @Override
     public TextBox getUserNameText() {
         return userNameText;
     }
-
 
     @Override
     public Button getGenerateMockTasksButton() {

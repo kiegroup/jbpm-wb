@@ -20,17 +20,16 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.github.gwtbootstrap.client.ui.ControlLabel;
-import com.github.gwtbootstrap.client.ui.Label;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.Label;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -65,11 +64,11 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @Inject
     @DataField
     public Label logTextLabel;
-     
+
     @Inject
     @DataField
     public Label taskLogsLabel;
-    
+
     @Inject
     @DataField
     public HTML logTextArea;
@@ -77,8 +76,7 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @Inject
     @DataField
     public UTCDateBox dueDate;
-    
-    
+
     @Inject
     @DataField
     public UTCTimeBox dueDateTime;
@@ -89,34 +87,32 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
 
     @Inject
     @DataField
-    public ControlLabel taskStatusLabel;
+    public FormLabel taskStatusLabel;
 
     @Inject
     @DataField
-    public ControlLabel userLabel;
+    public FormLabel userLabel;
 
     @Inject
     @DataField
-    public ControlLabel dueDateLabel;
+    public FormLabel dueDateLabel;
 
     @Inject
     @DataField
-    public ControlLabel taskPriorityLabel;
-
-
-    @Inject
-    @DataField
-    public ControlLabel taskDescriptionLabel;
+    public FormLabel taskPriorityLabel;
 
     @Inject
     @DataField
-    public ControlLabel detailsAccordionLabel;
-    
+    public FormLabel taskDescriptionLabel;
+
+    @Inject
+    @DataField
+    public FormLabel detailsAccordionLabel;
+
     @Inject
     private PlaceManager placeManager;
-    
-    private String[] priorities = { "0 - High", "1", "2", "3", "4", "5 - Medium", "6", "7", "8", "9", "10 - Low" };
 
+    private String[] priorities = { "0 - High", "1", "2", "3", "4", "5 - Medium", "6", "7", "8", "9", "10 - Low" };
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -128,7 +124,7 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @Override
     public void init( TaskDetailsPresenter presenter ) {
         this.presenter = presenter;
-        
+
         logTextLabel.setText( constants.Task_Log() );
         // Commented out until we add the posibility of adding sub tasks
         // for (String strategy : subTaskStrategies) {
@@ -141,32 +137,32 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
 
         }
 
-        taskStatusLabel.add( new HTMLPanel( constants.Status() ) );
-        userLabel.add( new HTMLPanel( constants.User() ) );
-        dueDateLabel.add( new HTMLPanel( constants.Due_On() ) );
+        taskStatusLabel.setText( constants.Status() );
+        userLabel.setText( constants.User() );
+        dueDateLabel.setText( constants.Due_On() );
 
-        taskPriorityLabel.add( new HTMLPanel( constants.Priority() ) );
+        taskPriorityLabel.setText( constants.Priority() );
 
-        taskDescriptionLabel.add( new HTMLPanel( constants.Description() ) );
-        detailsAccordionLabel.add( new HTMLPanel( constants.Details()) );
+        taskDescriptionLabel.setText( constants.Description() );
+        detailsAccordionLabel.setText( constants.Details() );
         taskLogsLabel.setText( constants.Logs() );
         taskLogsLabel.setStyleName( "" );
-        
+
         updateTaskButton.setText( constants.Update() );
-        
+
+        dueDate.getDateBox().setContainer( this );
     }
 
     @EventHandler("updateTaskButton")
     public void updateTaskButton( ClickEvent e ) {
-        
+
         presenter.updateTask( taskDescriptionTextArea.getText(),
                               userText.getText(),
                               // subTaskStrategyListBox.getItemText(subTaskStrategyListBox.getSelectedIndex()),
-                              (dueDate.getValue() != null && dueDateTime.getValue() != null)?UTCDateBox.utc2date(dueDate.getValue() + dueDateTime.getValue()):null,
+                              ( dueDate.getValue() != null && dueDateTime.getValue() != null ) ? UTCDateBox.utc2date( dueDate.getValue() + dueDateTime.getValue() ) : null,
                               taskPriorityListBox.getSelectedIndex() );
 
     }
-    
 
     @Override
     public TextBox getUserText() {
@@ -213,7 +209,6 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
         return taskStatusText;
     }
 
-    
     @Override
     public HTML getLogTextArea() {
         return logTextArea;
