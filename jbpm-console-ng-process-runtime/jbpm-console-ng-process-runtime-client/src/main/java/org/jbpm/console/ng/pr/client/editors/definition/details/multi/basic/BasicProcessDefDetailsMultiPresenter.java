@@ -96,22 +96,6 @@ public class BasicProcessDefDetailsMultiPresenter extends BaseProcessDefDetailsM
                     }
                 } ).endMenu()
 
-                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
-
-                    @Override
-                    public void push( MenuFactory.CustomMenuBuilder element ) {
-                    }
-
-                    @Override
-                    public MenuItem build() {
-                        return new BaseMenuCustom<IsWidget>() {
-
-                            @Override
-                            public IsWidget build() {
-                                return view.getCloseButton();
-                            }
-                        };
-                    }
-                } ).endMenu().build();
+                .build();
     }
 }
