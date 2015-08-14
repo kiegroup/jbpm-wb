@@ -41,6 +41,7 @@ import org.kie.internal.executor.api.CommandContext;
 import org.kie.internal.executor.api.ExecutorService;
 import org.kie.internal.executor.api.RequestInfo;
 import org.kie.internal.executor.api.STATUS;
+import org.kie.internal.query.QueryContext;
 import org.uberfire.paging.PageResponse;
 
 @Service
@@ -52,32 +53,32 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
 
     @Override
     public List<RequestSummary> getQueuedRequests() {
-        return RequestSummaryHelper.adaptRequestList(executor.getQueuedRequests());
+        return RequestSummaryHelper.adaptRequestList(executor.getQueuedRequests(new QueryContext(0, 100)));
     }
 
     @Override
     public List<RequestSummary> getCompletedRequests() {
-        return RequestSummaryHelper.adaptRequestList(executor.getCompletedRequests());
+        return RequestSummaryHelper.adaptRequestList(executor.getCompletedRequests(new QueryContext(0, 100)));
     }
 
     @Override
     public List<RequestSummary> getInErrorRequests() {
-        return RequestSummaryHelper.adaptRequestList(executor.getInErrorRequests());
+        return RequestSummaryHelper.adaptRequestList(executor.getInErrorRequests(new QueryContext(0, 100)));
     }
 
     @Override
     public List<RequestSummary> getCancelledRequests() {
-        return RequestSummaryHelper.adaptRequestList(executor.getCancelledRequests());
+        return RequestSummaryHelper.adaptRequestList(executor.getCancelledRequests(new QueryContext(0, 100)));
     }
 
     @Override
     public List<ErrorSummary> getAllErrors() {
-        return RequestSummaryHelper.adaptErrorList(executor.getAllErrors());
+        return RequestSummaryHelper.adaptErrorList(executor.getAllErrors(new QueryContext(0, 100)));
     }
 
     @Override
     public List<RequestSummary> getAllRequests() {
-        return RequestSummaryHelper.adaptRequestList(executor.getAllRequests());
+        return RequestSummaryHelper.adaptRequestList(executor.getAllRequests(new QueryContext(0, 100)));
     }
 
     @Override
@@ -224,12 +225,15 @@ public class ExecutorServiceEntryPointImpl implements ExecutorServiceEntryPoint 
         if (filter.getParams() != null) {
             states = (List<String>) filter.getParams().get("states");
         }
+        QueryContext qf = new QueryContext(filter.getOffset(), filter.getCount() + 1,
+                                filter.getOrderBy(), filter.isAscending());
+
         Collection<RequestInfo> requestInfoList = null;
         if (states == null || states.isEmpty()) {
-            requestInfoList = executor.getAllRequests(); 
+            requestInfoList = executor.getAllRequests(qf);
         }else{
             List<STATUS> statusList = RequestSummaryHelper.adaptStatusList(states);
-            requestInfoList =executor.getRequestsByStatus(statusList);
+            requestInfoList =executor.getRequestsByStatus(statusList, qf);
         }
         List<RequestSummary> requestSummarys = new ArrayList<RequestSummary>(requestInfoList.size()); ;
         for(RequestInfo requestInfo:requestInfoList){

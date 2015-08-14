@@ -393,7 +393,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         };
         taskIdColumn.setSortable( true );
         listGrid.addColumn(taskIdColumn, constants.Id());
-        taskIdColumn.setDataStoreName( "Id" );
+        taskIdColumn.setDataStoreName( "r.id" );
     }
     
     private void initJobTypeColumn(){
@@ -406,7 +406,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         };
         jobTypeColumn.setSortable( true );
         listGrid.addColumn( jobTypeColumn, constants.Type());
-        jobTypeColumn.setDataStoreName( "CommandName" );
+        jobTypeColumn.setDataStoreName( "r.commandName" );
     }
     
     private void initStatusColumn(){
@@ -419,7 +419,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         };
         jobStatusColumn.setSortable( true );
         listGrid.addColumn(jobStatusColumn, constants.Status());
-        jobStatusColumn.setDataStoreName( "Status" );
+        jobStatusColumn.setDataStoreName( "r.status" );
     }
     
     private void initDueDateColumn(){
@@ -432,7 +432,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         };
         taskNameColumn.setSortable( true );
         listGrid.addColumn(taskNameColumn, constants.Due_On());
-        taskNameColumn.setDataStoreName( "Time" );
+        taskNameColumn.setDataStoreName( "r.time" );
     }
     
     private Column<RequestSummary, RequestSummary> initActionsColumn(){
