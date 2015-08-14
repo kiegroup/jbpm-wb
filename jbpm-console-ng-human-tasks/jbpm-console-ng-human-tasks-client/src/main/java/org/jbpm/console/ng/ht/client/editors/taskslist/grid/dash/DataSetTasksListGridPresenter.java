@@ -36,6 +36,8 @@ import com.google.gwt.view.client.Range;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 
 import org.jboss.errai.bus.client.api.messaging.Message;
@@ -48,6 +50,7 @@ import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
@@ -60,9 +63,13 @@ import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.paging.PageResponse;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.jbpm.console.ng.ht.client.editors.quicknewtask.QuickNewTaskPopup;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -72,6 +79,9 @@ import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 import org.uberfire.mvp.Command;
 
+import static org.dashbuilder.dataset.filter.FilterFactory.OR;
+import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
+
 @Dependent
 @WorkbenchScreen(identifier = "DataSet Tasks List")
 public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<TaskSummary> {
@@ -80,6 +90,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
         public int getRefreshValue();
         public void restoreTabs();
         public void saveRefreshValue(int newValue);
+        public void applyFilterOnPresenter(String key);
     }
 
     @Inject
@@ -146,6 +157,22 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                     dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                 }
                 dataSetQueryHelper.setDataSetHandler(   currentTableSettings );
+                if(textSearchStr!=null && textSearchStr.trim().length()>0){
+
+                    DataSetFilter filter = new DataSetFilter();
+                    List<ColumnFilter> filters =new ArrayList<ColumnFilter>(  );
+                    filters.add(likeTo( DataSetTasksListGridViewImpl.COLUMN_NAME, textSearchStr  ) );
+                    filters.add(likeTo( DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION, textSearchStr ) );
+                    filters.add(likeTo( DataSetTasksListGridViewImpl.COLUMN_PROCESSID, textSearchStr ) );
+                    filter.addFilterColumn( OR( filters ) );
+
+                    if(currentTableSettings.getDataSetLookup().getFirstFilterOp()!=null) {
+                        currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
+                    }else {
+                        currentTableSettings.getDataSetLookup().addOperation( filter );
+                    }
+                    textSearchStr="";
+                }
                 dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
                     @Override
                     public void callback( DataSet dataSet ) {
@@ -212,7 +239,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
     }
 
     public void filterGrid(FilterSettings tableSettings) {
-        dataSetQueryHelper.setCurrentTableSetting( tableSettings);
+        dataSetQueryHelper.setCurrentTableSettings( tableSettings );
         refreshGrid();
     }
 
@@ -495,6 +522,17 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
         return oneMinuteRadioButton;
     }
 
+    @Override
+    protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
+        textSearchStr = searchEvent.getFilter();
+        if(textSearchStr!=null && textSearchStr.trim().length()>0){
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put( "textSearch", textSearchStr );
+            dataSetQueryHelper.getCurrentTableSettings().getKey();
+
+            view.applyFilterOnPresenter( dataSetQueryHelper.getCurrentTableSettings().getKey() );
+        }
+    }
 
 
 }

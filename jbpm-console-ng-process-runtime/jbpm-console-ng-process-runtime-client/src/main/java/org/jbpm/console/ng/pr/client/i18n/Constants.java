@@ -17,6 +17,7 @@
 package org.jbpm.console.ng.pr.client.i18n;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.Messages;
 
 /**
@@ -262,4 +263,12 @@ public interface Constants extends Messages {
     String No_Parent_Process_Instance();
 
     String New_Process_InstanceList();
+
+    String Disable_autorefresh();
+
+    String Autorefresh_Disabled();
+
+    String Minute();
+
+    String Minutes();
 }

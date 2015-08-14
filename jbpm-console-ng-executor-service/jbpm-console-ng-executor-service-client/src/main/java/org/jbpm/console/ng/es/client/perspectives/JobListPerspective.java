@@ -16,12 +16,16 @@
 package org.jbpm.console.ng.es.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
+import org.kie.workbench.common.widgets.client.search.SearchBehavior;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
+import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
@@ -37,12 +41,26 @@ public class JobListPerspective {
     @Inject
     private ContextualSearch contextualSearch;
 
+    @Inject
+    private Event<SearchEvent> searchEvents;
+
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl( MultiListWorkbenchPanelPresenter.class.getName() );
         p.setName( "Jobs" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Requests List" ) ) );
         return p;
+    }
+    @OnStartup
+    public void init() {
+        contextualSearch.setSearchBehavior( new SearchBehavior() {
+            @Override
+            public void execute( String searchFilter ) {
+                searchEvents.fire( new SearchEvent( searchFilter ) );
+            }
+
+        } );
+
     }
 
 }

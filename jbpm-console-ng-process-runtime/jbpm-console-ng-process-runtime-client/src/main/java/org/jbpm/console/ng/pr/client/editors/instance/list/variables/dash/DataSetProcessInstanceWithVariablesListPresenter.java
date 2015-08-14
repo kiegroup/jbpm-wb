@@ -29,11 +29,10 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -58,6 +57,7 @@ import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 
+import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
@@ -84,6 +84,9 @@ import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
+import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
+import static org.dashbuilder.dataset.filter.FilterFactory.OR;
+
 @Dependent
 @WorkbenchScreen(identifier = "DataSet Process Instance List With Variables")
 public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractScreenListPresenter<ProcessInstanceSummary> {
@@ -99,6 +102,8 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
         public FilterSettings getVariablesTableSettings(String processName);
 
         public void addDomainSpecifColumns(ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable, Set<String> columns);
+
+        public void applyFilterOnPresenter(String key);
     }
 
     @Inject
@@ -132,7 +137,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
     }
 
     public void filterGrid(FilterSettings tableSettings) {
-        dataSetQueryHelper.setCurrentTableSetting(tableSettings);
+        dataSetQueryHelper.setCurrentTableSettings( tableSettings );
         refreshGrid();
     }
 
@@ -157,6 +162,22 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                     dataSetQueryHelper.setLastSortOrder(SortOrder.ASCENDING);
                 }
                 dataSetQueryHelper.setDataSetHandler(currentTableSettings);
+                if(textSearchStr!=null && textSearchStr.trim().length()>0){
+
+                    DataSetFilter filter = new DataSetFilter();
+                    List<ColumnFilter> filters =new ArrayList<ColumnFilter>(  );
+                    filters.add(likeTo( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSNAME, textSearchStr ) );
+                    filters.add(likeTo( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSINSTANCEDESCRIPTION, textSearchStr ) );
+                    filters.add(likeTo( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_IDENTITY, textSearchStr ) );
+                    filter.addFilterColumn( OR( filters ) );
+
+                    if(currentTableSettings.getDataSetLookup().getFirstFilterOp()!=null) {
+                        currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
+                    }else {
+                        currentTableSettings.getDataSetLookup().addOperation( filter );
+                    }
+                    textSearchStr="";
+                }
                 dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), new DataSetReadyCallback() {
                     @Override
                     public void callback(DataSet dataSet) {
@@ -186,15 +207,17 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                                 if (dataSetOp.getType().equals(DataSetOpType.FILTER)) {
                                     List<ColumnFilter> filters = ((DataSetFilter) dataSetOp).getColumnFilterList();
                                     for (ColumnFilter filter : filters) {
-                                        CoreFunctionFilter coreFilter = ((CoreFunctionFilter) filter);
+                                        if ( filter instanceof CoreFunctionFilter ) {
+                                            CoreFunctionFilter coreFilter = ( ( CoreFunctionFilter ) filter );
 //                                        GWT.log("ProcessID filter filterColum" + coreFilter.getColumnId());
 //                                        GWT.log("ProcessID filter type filterColum" + coreFilter.getType().toString());
 //                                        GWT.log("ProcessID filter type filterColum" + coreFilter.getParameters());
-                                        if (filter.getColumnId().equals("processId")) {
+                                            if ( filter.getColumnId().equals( "processId" ) ) {
 
-                                            List parameters = coreFilter.getParameters();
-                                            if (parameters.size() > 0) {
-                                                filterValue = parameters.get(0).toString();
+                                                List parameters = coreFilter.getParameters();
+                                                if ( parameters.size() > 0 ) {
+                                                    filterValue = parameters.get( 0 ).toString();
+                                                }
                                             }
                                         }
                                     }
@@ -562,13 +585,12 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
         menuResetTabsButton.setSize(ButtonSize.MINI);
         menuResetTabsButton.setTitle(Constants.INSTANCE.RestoreDefaultFilters());
     }
-
     public void createRefreshToggleButton(final Button refreshIntervalSelector) {
 
         refreshIntervalSelector.setToggle(true);
-        refreshIntervalSelector.setIcon(IconType.COG);
-        refreshIntervalSelector.setTitle(Constants.INSTANCE.AutoRefresh());
-        refreshIntervalSelector.setSize(ButtonSize.MINI);
+        refreshIntervalSelector.setIcon( IconType.COG);
+        refreshIntervalSelector.setTitle( Constants.INSTANCE.AutoRefresh() );
+        refreshIntervalSelector.setSize( ButtonSize.MINI );
 
         popup.getElement().getStyle().setZIndex(Integer.MAX_VALUE);
         popup.addAutoHidePartner(refreshIntervalSelector.getElement());
@@ -582,9 +604,9 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
         refreshIntervalSelector.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                if (!refreshIntervalSelector.isActive()) {
-                    showSelectRefreshIntervalPopup(refreshIntervalSelector.getAbsoluteLeft() + refreshIntervalSelector.getOffsetWidth(),
-                            refreshIntervalSelector.getAbsoluteTop() + refreshIntervalSelector.getOffsetHeight(), refreshIntervalSelector);
+                if (!refreshIntervalSelector.isActive() ) {
+                    showSelectRefreshIntervalPopup( refreshIntervalSelector.getAbsoluteLeft() + refreshIntervalSelector.getOffsetWidth(),
+                            refreshIntervalSelector.getAbsoluteTop() + refreshIntervalSelector.getOffsetHeight(),refreshIntervalSelector);
                 } else {
                     popup.hide(false);
                 }
@@ -594,40 +616,51 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
     }
 
     private void showSelectRefreshIntervalPopup(final int left,
-            final int top,
-            final Button refreshIntervalSelector) {
+                                                final int top,
+                                                final Button refreshIntervalSelector) {
         VerticalPanel popupContent = new VerticalPanel();
+
+        final Button resetButton = new Button( Constants.INSTANCE.Disable_autorefresh() );
 
         //int configuredSeconds = presenter.getAutoRefreshSeconds();
         int configuredSeconds = view.getRefreshValue();
-        if (configuredSeconds > 0) {
-            updateRefreshInterval(true, configuredSeconds);
+        if(configuredSeconds>10) {
+            updateRefreshInterval( true,configuredSeconds );
+            resetButton.setActive( false );
+            resetButton.setEnabled( true );
         } else {
-            updateRefreshInterval(false, 0);
+            updateRefreshInterval( false, 0 );
+            resetButton.setActive(true );
+            resetButton.setEnabled(false);
+            resetButton.setText( Constants.INSTANCE.Autorefresh_Disabled() );
         }
 
-        RadioButton oneMinuteRadioButton = createTimeSelectorRadioButton(60, "1 Minute", configuredSeconds, refreshIntervalSelector, popupContent);
-        RadioButton fiveMinuteRadioButton = createTimeSelectorRadioButton(300, "5 Minutes", configuredSeconds, refreshIntervalSelector, popupContent);
-        RadioButton tenMinuteRadioButton = createTimeSelectorRadioButton(600, "10 Minutes", configuredSeconds, refreshIntervalSelector, popupContent);
+
+        RadioButton oneMinuteRadioButton = createTimeSelectorRadioButton(60, "1 "+Constants.INSTANCE.Minute(), configuredSeconds, refreshIntervalSelector, popupContent,resetButton);
+        RadioButton fiveMinuteRadioButton = createTimeSelectorRadioButton(300, "5 "+Constants.INSTANCE.Minutes(), configuredSeconds, refreshIntervalSelector, popupContent,resetButton);
+        RadioButton tenMinuteRadioButton = createTimeSelectorRadioButton(600, "10 "+Constants.INSTANCE.Minutes(), configuredSeconds, refreshIntervalSelector, popupContent,resetButton);
 
         popupContent.add(oneMinuteRadioButton);
         popupContent.add(fiveMinuteRadioButton);
         popupContent.add(tenMinuteRadioButton);
 
-        Button resetButton = new Button(Constants.INSTANCE.Disable());
-        resetButton.setSize(ButtonSize.MINI);
-        resetButton.addClickHandler(new ClickHandler() {
+        resetButton.setSize( ButtonSize.MINI );
+        resetButton.addClickHandler( new ClickHandler() {
 
             @Override
-            public void onClick(ClickEvent event) {
-                updateRefreshInterval(false, 0);
-                view.saveRefreshValue(0);
-                refreshIntervalSelector.setActive(false);
+            public void onClick( ClickEvent event ) {
+                updateRefreshInterval( false,0 );
+                view.saveRefreshValue( 0 );
+                refreshIntervalSelector.setActive( false );
+                resetButton.setActive( false );
+                resetButton.setEnabled( false );
+                resetButton.setText( Constants.INSTANCE.Autorefresh_Disabled() );
                 popup.hide();
             }
-        });
+        } );
 
-        popupContent.add(resetButton);
+        popupContent.add( resetButton );
+
 
         popup.setWidget(popupContent);
         popup.show();
@@ -636,24 +669,40 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
     }
 
-    private RadioButton createTimeSelectorRadioButton(int time, String name, int configuredSeconds, final Button refreshIntervalSelector, VerticalPanel popupContent) {
-        RadioButton oneMinuteRadioButton = new RadioButton("refreshInterval", name);
-        oneMinuteRadioButton.setText(name);
+    private RadioButton createTimeSelectorRadioButton(int time, String name, int configuredSeconds,
+                                                      final Button refreshIntervalSelector,
+                                                      VerticalPanel popupContent,final Button refreshDisableButton) {
+        RadioButton oneMinuteRadioButton = new RadioButton("refreshInterval",name);
+        oneMinuteRadioButton.setText( name  );
         final int selectedRefreshTime = time;
-        if (configuredSeconds == selectedRefreshTime) {
-            oneMinuteRadioButton.setValue(true);
+        if(configuredSeconds == selectedRefreshTime ) {
+            oneMinuteRadioButton.setValue( true );
         }
 
-        oneMinuteRadioButton.addClickHandler(new ClickHandler() {
+        oneMinuteRadioButton.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                updateRefreshInterval(true, selectedRefreshTime);
-                view.saveRefreshValue(selectedRefreshTime);
-                refreshIntervalSelector.setActive(false);
+            public void onClick( ClickEvent event ) {
+                updateRefreshInterval(true, selectedRefreshTime );
+                view.saveRefreshValue( selectedRefreshTime );
+                refreshIntervalSelector.setActive( false );
+                refreshDisableButton.setActive( false );
+                refreshDisableButton.setEnabled( true );
+                refreshDisableButton.setText( Constants.INSTANCE.Disable_autorefresh() );
                 popup.hide();
 
             }
-        });
+        } );
         return oneMinuteRadioButton;
+    }
+    @Override
+    protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
+        textSearchStr = searchEvent.getFilter();
+        if(textSearchStr!=null && textSearchStr.trim().length()>0){
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put( "textSearch", textSearchStr );
+            dataSetQueryHelper.getCurrentTableSettings().getKey();
+
+            view.applyFilterOnPresenter( dataSetQueryHelper.getCurrentTableSettings().getKey() );
+        }
     }
 }
