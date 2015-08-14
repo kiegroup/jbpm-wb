@@ -148,7 +148,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
             if(currentTableSettings!=null) {
                 currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
                 ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                GWT.log( "-----taskList getData "+columnSortList.size() +"currentTableSettings table name "+ currentTableSettings.getTableName() );
+                
                 if(columnSortList!=null &&  columnSortList.size()>0) {
                     dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
                     dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
@@ -245,7 +245,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.Tasks_List() + "DB";
+        return constants.Tasks_List();
     }
 
     @WorkbenchPartView
@@ -287,7 +287,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
     @WorkbenchMenu
     public Menus getMenus() {
-        GWT.log( "get menus DatasetTasklist presenter " + autoRefreshSeconds );
+        
         setupButtons();
 
         return MenuFactory
