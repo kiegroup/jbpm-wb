@@ -161,9 +161,9 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
 
                     DataSetFilter filter = new DataSetFilter();
                     List<ColumnFilter> filters =new ArrayList<ColumnFilter>(  );
-                    filters.add(likeTo( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSINSTANCEDESCRIPTION, textSearchStr ) );
-                    filters.add(likeTo( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSNAME, textSearchStr ) );
-                    filters.add(likeTo( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSID, textSearchStr ) );
+                    filters.add(likeTo( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSINSTANCEDESCRIPTION, textSearchStr.toLowerCase(), false ) );
+                    filters.add(likeTo( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSNAME, textSearchStr.toLowerCase(), false ) );
+                    filters.add(likeTo( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSID, textSearchStr.toLowerCase(), false ) );
                     filter.addFilterColumn( OR( filters ) );
 
                     if(currentTableSettings.getDataSetLookup().getFirstFilterOp()!=null) {

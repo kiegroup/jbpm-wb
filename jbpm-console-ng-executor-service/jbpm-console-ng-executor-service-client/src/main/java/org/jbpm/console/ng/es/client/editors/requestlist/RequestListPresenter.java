@@ -190,9 +190,9 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
 
                     DataSetFilter filter = new DataSetFilter();
                     List<ColumnFilter> filters =new ArrayList<ColumnFilter>(  );
-                    filters.add(likeTo( RequestListViewImpl.COLUMN_COMMANDNAME,  textSearchStr  ) );
-                    filters.add(likeTo( RequestListViewImpl.COLUMN_MESSAGE,  textSearchStr  ) );
-                    filters.add(likeTo( RequestListViewImpl.COLUMN_BUSINESSKEY, textSearchStr  ) );
+                    filters.add(likeTo( RequestListViewImpl.COLUMN_COMMANDNAME,  textSearchStr.toLowerCase(), false  ) );
+                    filters.add(likeTo( RequestListViewImpl.COLUMN_MESSAGE,  textSearchStr.toLowerCase(), false  ) );
+                    filters.add(likeTo( RequestListViewImpl.COLUMN_BUSINESSKEY, textSearchStr.toLowerCase(), false  ) );
                     filter.addFilterColumn( OR( filters ) );
 
                     if(currentTableSettings.getDataSetLookup().getFirstFilterOp()!=null) {
