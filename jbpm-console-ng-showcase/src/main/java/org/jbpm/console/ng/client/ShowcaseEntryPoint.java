@@ -93,9 +93,6 @@ public class ShowcaseEntryPoint {
     @Inject
     private Caller<AppConfigService> appConfigService;
 
-    @Inject
-    private UberfireDocks uberfireDocks;
-
     @AfterInitialization
     public void startApp() {
         kieSecurityService.call( new RemoteCallback<String>() {
@@ -103,7 +100,6 @@ public class ShowcaseEntryPoint {
                 KieWorkbenchPolicy policy = new KieWorkbenchPolicy( str );
                 kieACL.activatePolicy( policy );
                 setupMenu();
-                setupDocks();
                 loadPreferences();
                 hideLoadingPopup();
             }
@@ -149,14 +145,6 @@ public class ShowcaseEntryPoint {
 
                 .build();
         menubar.addMenus( menus );
-    }
-
-    private void setupDocks() {
-        uberfireDocks.register(
-                new UberfireDock( UberfireDockPosition.EAST, new DefaultPlaceRequest( "DroolsDomainScreen" ), "Authoring" ).withSize( 450 ),
-                new UberfireDock( UberfireDockPosition.EAST, new DefaultPlaceRequest( "JPADomainScreen" ), "Authoring" ).withSize( 450 ),
-                new UberfireDock( UberfireDockPosition.EAST, new DefaultPlaceRequest( "AdvancedDomainScreen" ), "Authoring" ).withSize( 450 )
-        );
     }
 
     private List<? extends MenuItem> getRoles() {
