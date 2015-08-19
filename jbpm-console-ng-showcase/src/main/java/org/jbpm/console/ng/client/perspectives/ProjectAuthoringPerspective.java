@@ -16,10 +16,8 @@
 
 package org.jbpm.console.ng.client.perspectives;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import com.google.gwt.core.client.GWT;
+import org.jbpm.console.ng.client.docks.AuthoringWorkbenchDocks;
 import org.jbpm.console.ng.client.i18n.Constants;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcesMenu;
@@ -29,23 +27,22 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
-import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.CompassPosition;
-import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.PerspectiveDefinition;
-import org.uberfire.workbench.model.impl.PanelDefinitionImpl;
-import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 @ApplicationScoped
 @WorkbenchPerspective(identifier = "Authoring")
 public class ProjectAuthoringPerspective {
 
-    private Constants constants = GWT.create( Constants.class );
+    private Constants constants = GWT.create(Constants.class);
 
     @Inject
     private PlaceManager placeManager;
@@ -59,40 +56,44 @@ public class ProjectAuthoringPerspective {
     @Inject
     private RepositoryMenu repositoryMenu;
 
+    @Inject
+    private AuthoringWorkbenchDocks docks;
+
+    @PostConstruct
+    public void setup() {
+        docks.setup("Authoring", new DefaultPlaceRequest("org.kie.guvnor.explorer"));
+    }
+
+
     public ProjectAuthoringPerspective() {
     }
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( MultiListWorkbenchPanelPresenter.class.getName() );
-        p.setName( "Project Authoring Perspective" );
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(MultiListWorkbenchPanelPresenter.class.getName());
+        p.setName("Project Authoring Perspective");
 
-        final PanelDefinition west = new PanelDefinitionImpl( SimpleWorkbenchPanelPresenter.class.getName() );
-        west.setWidth( 300 );
-        west.setMinWidth( 200 );
-        west.addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "org.kie.guvnor.explorer" ) ) );
-        p.getRoot().insertChild( CompassPosition.WEST, west );
         return p;
     }
 
     @WorkbenchMenu
     public Menus getMenus() {
         return MenuFactory
-                .newTopLevelMenu( "Projects" )
-                .respondsWith( new Command() {
+                .newTopLevelMenu("Projects")
+                .respondsWith(new Command() {
                     @Override
                     public void execute() {
-                        placeManager.goTo( "org.kie.guvnor.explorer" );
+                        placeManager.goTo("org.kie.guvnor.explorer");
                     }
-                } )
+                })
                 .endMenu()
 
-                .newTopLevelMenu( "New" )
-                .withItems( newResourcesMenu.getMenuItems() )
+                .newTopLevelMenu("New")
+                .withItems(newResourcesMenu.getMenuItems())
                 .endMenu()
 
-                .newTopLevelMenu( "Repository" )
-                .withItems( repositoryMenu.getMenuItems() )
+                .newTopLevelMenu("Repository")
+                .withItems(repositoryMenu.getMenuItems())
                 .endMenu()
 
                 .build();
