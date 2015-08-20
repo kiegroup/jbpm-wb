@@ -29,6 +29,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
+
 import org.guvnor.common.services.shared.config.AppConfigService;
 import org.guvnor.common.services.shared.security.KieWorkbenchACL;
 import org.guvnor.common.services.shared.security.KieWorkbenchPolicy;
@@ -44,6 +45,7 @@ import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.client.i18n.Constants;
 import org.jbpm.console.ng.ga.forms.service.PlaceManagerActivityService;
+import org.kie.workbench.common.widgets.client.handlers.workbench.configuration.*;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
 import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
 import org.kie.workbench.common.widgets.client.menu.WorkbenchConfigurationMenuBuilder;
@@ -60,7 +62,6 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.MenuPosition;
 import org.uberfire.workbench.model.menu.Menus;
-
 @EntryPoint
 public class ShowcaseEntryPoint {
 
@@ -96,6 +97,9 @@ public class ShowcaseEntryPoint {
     @Inject
     private UberfireDocks uberfireDocks;
 
+    @Inject
+    private WorkbenchConfigurationMenu workbenchconfigurationMenu;
+    
     @AfterInitialization
     public void startApp() {
         kieSecurityService.call( new RemoteCallback<String>() {
@@ -143,10 +147,9 @@ public class ShowcaseEntryPoint {
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu()
                 .newTopLevelMenu( constants.Dashboards() ).withItems( getDashboardsViews() ).endMenu()
                 .newTopLevelMenu( constants.Experimental() ).withItems( getExperimentalViews() ).endMenu()
-                .newTopLevelCustomMenu( iocManager.lookupBean( WorkbenchConfigurationMenuBuilder.class).getInstance() ).endMenu()
                 .newTopLevelMenu( constants.Groups() ).position( MenuPosition.RIGHT ).withItems( getGroups()).endMenu()
                 .newTopLevelMenu( constants.User() + ": " + identity.getIdentifier() ).position( MenuPosition.RIGHT ).withItems( getRoles() ).endMenu()
-
+                .newTopLevelMenu( "Setting" ).position( MenuPosition.RIGHT ).withItems( workbenchconfigurationMenu.getMenuItems() ).endMenu()
                 .build();
         menubar.addMenus( menus );
     }
@@ -241,10 +244,17 @@ public class ShowcaseEntryPoint {
         result.add( MenuFactory.newSimpleItem( constants.Process_Instances() ).respondsWith( new Command() {
             @Override
             public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "DataSet Process Instances" ) );
+                placeManager.goTo( new DefaultPlaceRequest( "Process Instances" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
 
+        result.add( MenuFactory.newSimpleItem( "DataSet "+constants.Process_Instances() ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "DataSet Process Instances" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+        
         result.add( MenuFactory.newSimpleItem( constants.Process_Instances_Admin() ).respondsWith( new Command() {
             @Override
             public void execute() {

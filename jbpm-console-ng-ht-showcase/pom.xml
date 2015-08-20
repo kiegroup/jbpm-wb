@@ -597,6 +597,10 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-generic-preferences</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -694,6 +698,8 @@
 
                         <compileSourcesArtifact>org.guvnor:guvnor-message-console-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.guvnor:guvnor-message-console-client</compileSourcesArtifact>
+                        
+                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-preferences</compileSourcesArtifact>
                     </compileSourcesArtifacts>
                 </configuration>
                 <executions>
