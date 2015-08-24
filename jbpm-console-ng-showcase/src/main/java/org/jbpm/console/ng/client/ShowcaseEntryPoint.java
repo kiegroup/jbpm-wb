@@ -288,6 +288,12 @@ public class ShowcaseEntryPoint {
                 placeManager.goTo( new DefaultPlaceRequest( "Jobs" ) );
             }
         } ).endMenu().build().getItems().get( 0 ) );
+        result.add( MenuFactory.newSimpleItem( "DataSet "+constants.Jobs() ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "DataSet Jobs" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
 
         result.add( MenuFactory.newSimpleItem( constants.Asset_Management() ).respondsWith( new Command() {
             @Override

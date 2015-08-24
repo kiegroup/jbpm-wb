@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.es.client.editors.requestlist;
+package org.jbpm.console.ng.es.client.editors.requestlist.dataset;
 
 import java.util.*;
 
@@ -24,6 +24,9 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import org.jbpm.console.ng.df.client.filter.FilterSettings;
+import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
+import org.jbpm.console.ng.df.client.list.base.DataSetEditorManager;
 import org.jbpm.console.ng.es.client.editors.jobdetails.JobDetailsPopup;
 import org.jbpm.console.ng.es.client.editors.quicknewjob.QuickNewJobPopup;
 import org.jbpm.console.ng.es.client.editors.servicesettings.JobServiceSettingsPopup;
@@ -35,13 +38,11 @@ import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractMultiGridView;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 
+import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.SplitDropdownButton;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
@@ -65,10 +66,24 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 
+import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+
 @Dependent
-public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,RequestListPresenter>
-        implements RequestListPresenter.RequestListView {
+public class DataSetRequestListViewImpl extends AbstractMultiGridView<RequestSummary,DataSetRequestListPresenter>
+        implements DataSetRequestListPresenter.DataSetRequestListView {
     private Constants constants = GWT.create( Constants.class );
+
+    public static String REQUEST_LIST_PREFIX = "DS_RequestListGrid" ;
+    public static final String REQUEST_LIST_DATASET_ID = "jbpmRequestList";
+
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_TIMESTAMP = "timestamp";
+    public static final String COLUMN_STATUS = "status";
+    public static final String COLUMN_COMMANDNAME = "commandName";
+    public static final String COLUMN_MESSAGE = "message";
+    public static final String COLUMN_BUSINESSKEY = "businessKey";
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -78,22 +93,23 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
     @Inject
     private JobDetailsPopup jobDetailsPopup;
 
-    //@Inject
-    //private QuickNewJobPopup quickNewJobPopup;
+    @Inject
+    private QuickNewJobPopup quickNewJobPopup;
 
     @Inject
     private NewTabFilterPopup newTabFilterPopup;
 
+    @Inject
+    private DataSetEditorManager dataSetEditorManager;
 
-
-    //@Inject
-    //private JobServiceSettingsPopup jobServiceSettingsPopup;
+    @Inject
+    private JobServiceSettingsPopup jobServiceSettingsPopup;
 
     @Override
-    public void init(final RequestListPresenter presenter ) {
+    public void init(final DataSetRequestListPresenter presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
         bannedColumns.add(constants.Id());
-        bannedColumns.add(constants.Type());
+        bannedColumns.add( constants.Type() );
         final List<String> initColumns = new ArrayList<String>();
         initColumns.add(constants.Id());
         initColumns.add(constants.Type());
@@ -102,12 +118,42 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
         button.setText( "+" );
         button.addClickHandler( new ClickHandler() {
             public void onClick( ClickEvent event ) {
+                final String key = getValidKeyForAdditionalListGrid(REQUEST_LIST_PREFIX+"_");
+
+                Command addNewGrid = new Command() {
+                    @Override
+                    public void execute() {
+
+                        final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance(  new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
+
+                        presenter.addDataDisplay( extendedPagedTable );
+                        extendedPagedTable.setDataProvider(presenter.getDataProvider() );
+
+                        filterPagedTable.createNewTab( extendedPagedTable, key, button,new Command() {
+                            @Override
+                            public void execute() {
+                                currentListGrid = extendedPagedTable;
+                                applyFilterOnPresenter( key );
+                            }
+                        } ) ;
+                        applyFilterOnPresenter( key );
+
+
+                    }
+                };
+                FilterSettings tableSettings = createTableSettingsPrototype();
+                tableSettings.setKey( key );
+                dataSetEditorManager.showTableSettingsEditor( filterPagedTable, Constants.INSTANCE.New_JobList(), tableSettings, addNewGrid );
+
+
+             /*
+
                 Command addNewGrid = new Command() {
                     @Override
                     public void execute() {
                         HashMap<String,Object> newTabFormValues = newTabFilterPopup.getFormValues();
 
-                        final String key = getValidKeyForAdditionalListGrid("RequestListGrid_");
+                        final String key = getValidKeyForAdditionalListGrid(REQUEST_LIST_PREFIX + "_");
 
                         filterPagedTable.saveNewTabSettings( key, newTabFormValues );
                         final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance(  new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
@@ -129,43 +175,36 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
                 };
                 createFilterForm();
                 newTabFilterPopup.show( addNewGrid, getMultiGridPreferencesStore() );
-
+               */
             }
         } );
 
-        super.init(presenter, new GridGlobalPreferences("RequestListGrid", initColumns, bannedColumns),button);
+        super.init( presenter, new GridGlobalPreferences( REQUEST_LIST_PREFIX, initColumns, bannedColumns ), button );
     }
 
     public void requestCreated( @Observes RequestChangedEvent event ) {
-        presenter.refreshRequests(null);
+        presenter.refreshGrid();
     }
 
 
     @Override
     public void initColumns(ExtendedPagedTable extendedPagedTable  ) {
-
-        initJobIdColumn(extendedPagedTable);
-        initJobTypeColumn(extendedPagedTable);
-        initStatusColumn(extendedPagedTable);
-        initDueDateColumn(extendedPagedTable);
+        Column jobIdColumn = initJobIdColumn();
+        Column jobTypeColumn = initJobTypeColumn();
+        Column statusColumn = initStatusColumn();
+        Column dueDateColumn = initDueDateColumn();
         actionsColumn = initActionsColumn();
-        extendedPagedTable.addColumn( actionsColumn, constants.Actions() );
-    }
 
-    private void createFilterForm(){
-        HashMap<String,String> statesListBoxInfo = new HashMap<String, String>(  );
-
-        statesListBoxInfo.put( String.valueOf( "QUEUED" ), Constants.INSTANCE.Queued() );
-        statesListBoxInfo.put( String.valueOf( "RUNNING" ), Constants.INSTANCE.Running() );
-        statesListBoxInfo.put( String.valueOf( "RETRYING" ), Constants.INSTANCE.Retrying() );
-        statesListBoxInfo.put( String.valueOf( "ERROR" ), Constants.INSTANCE.Error() );
-        statesListBoxInfo.put( String.valueOf( "DONE" ), Constants.INSTANCE.Completed() );
-        statesListBoxInfo.put( String.valueOf( "CANCELLED" ), Constants.INSTANCE.Cancelled() );
-
-        newTabFilterPopup.init();
-        newTabFilterPopup.addListBoxToFilter( Constants.INSTANCE.Status(), "states",true,statesListBoxInfo );
+        List<ColumnMeta<RequestSummary>> columnMetas = new ArrayList<ColumnMeta<RequestSummary>>();
+        columnMetas.add( new ColumnMeta<RequestSummary>( jobIdColumn, constants.Id() ) );
+        columnMetas.add( new ColumnMeta<RequestSummary>( jobTypeColumn, constants.Type() ) );
+        columnMetas.add( new ColumnMeta<RequestSummary>( statusColumn, constants.Status() ) );
+        columnMetas.add( new ColumnMeta<RequestSummary>( dueDateColumn, constants.Due_On() ) );
+        columnMetas.add( new ColumnMeta<RequestSummary>( actionsColumn, constants.Actions() ) );
+        extendedPagedTable.addColumns( columnMetas );
 
     }
+
 
     public void initSelectionModel(){
         final ExtendedPagedTable<RequestSummary> extendedPagedTable = getListGrid();
@@ -242,25 +281,26 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
     }
 
     private void initLeftToolbarActions(ExtendedPagedTable extendedPagedTable) {
- 
     }
 
 
 
-    private void initJobIdColumn(ExtendedPagedTable extendedPagedTable){
+    private Column initJobIdColumn(){
         // Id
-        Column<RequestSummary, Number> taskIdColumn = new Column<RequestSummary, Number>( new NumberCell() ) {
+        Column<RequestSummary, Number> jobIdColumn = new Column<RequestSummary, Number>( new NumberCell() ) {
             @Override
             public Number getValue( RequestSummary object ) {
                 return object.getJobId();
             }
         };
-        taskIdColumn.setSortable( true );
-        extendedPagedTable.addColumn(taskIdColumn, constants.Id());
-        taskIdColumn.setDataStoreName( "r.id" );
+        jobIdColumn.setSortable( true );
+        jobIdColumn.setDataStoreName( COLUMN_ID );
+
+        return jobIdColumn;
+
     }
 
-    private void initJobTypeColumn(ExtendedPagedTable extendedPagedTable){
+    private Column initJobTypeColumn(){
         // Name
         Column<RequestSummary, String> jobTypeColumn = new Column<RequestSummary, String>( new TextCell() ) {
             @Override
@@ -269,11 +309,12 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
             }
         };
         jobTypeColumn.setSortable( true );
-        extendedPagedTable.addColumn(jobTypeColumn, constants.Type());
-        jobTypeColumn.setDataStoreName( "r.commandName" );
+        jobTypeColumn.setDataStoreName( COLUMN_COMMANDNAME );
+        return jobTypeColumn;
+
     }
 
-    private void initStatusColumn(ExtendedPagedTable extendedPagedTable){
+    private Column initStatusColumn(){
         // Status
         Column<RequestSummary, String> statusColumn = new Column<RequestSummary, String>( new TextCell() ) {
             @Override
@@ -282,21 +323,24 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
             }
         };
         statusColumn.setSortable( true );
-        extendedPagedTable.addColumn(statusColumn, constants.Status());
-        statusColumn.setDataStoreName( "r.status" );
+        statusColumn.setDataStoreName( COLUMN_STATUS );
+
+        return statusColumn;
+
     }
 
-    private void initDueDateColumn(ExtendedPagedTable extendedPagedTable){
+    private Column initDueDateColumn(){
         // Time
-        Column<RequestSummary, String> taskNameColumn = new Column<RequestSummary, String>( new TextCell() ) {
+        Column<RequestSummary, String> dueDateColumn = new Column<RequestSummary, String>( new TextCell() ) {
             @Override
             public String getValue( RequestSummary object ) {
                 return object.getTime().toString();
             }
         };
-        taskNameColumn.setSortable( true );
-        extendedPagedTable.addColumn(taskNameColumn, constants.Due_On());
-        taskNameColumn.setDataStoreName( "r.time" );
+        dueDateColumn.setSortable( true );
+        dueDateColumn.setDataStoreName( COLUMN_TIMESTAMP );
+        return dueDateColumn;
+
     }
 
     private Column<RequestSummary, RequestSummary> initActionsColumn(){
@@ -394,76 +438,133 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
         List<String> statuses;
 
         statuses = null;
+        statuses=new ArrayList<String>(  );
 
-        initTabFilter( preferences, "RequestListGrid_0", Constants.INSTANCE.All(), "Filter " + Constants.INSTANCE.All(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_0", Constants.INSTANCE.All(), "Filter " + Constants.INSTANCE.All(), statuses );
 
         statuses=new ArrayList<String>(  );
         statuses.add( "QUEUED" );
 
-        initTabFilter( preferences, "RequestListGrid_1", Constants.INSTANCE.Queued(), "Filter " + Constants.INSTANCE.Queued(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_1", Constants.INSTANCE.Queued(), "Filter " + Constants.INSTANCE.Queued(), statuses );
 
         statuses=new ArrayList<String>(  );
         statuses.add( "RUNNING" );
 
-        initTabFilter( preferences, "RequestListGrid_2", Constants.INSTANCE.Running(), "Filter " + Constants.INSTANCE.Running(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_2", Constants.INSTANCE.Running(), "Filter " + Constants.INSTANCE.Running(), statuses );
 
         statuses=new ArrayList<String>(  );
         statuses.add( "RETRYING" );
 
-        initTabFilter( preferences, "RequestListGrid_3", Constants.INSTANCE.Retrying(), "Filter " + Constants.INSTANCE.Retrying(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_3", Constants.INSTANCE.Retrying(), "Filter " + Constants.INSTANCE.Retrying(), statuses );
 
         statuses=new ArrayList<String>(  );
         statuses.add( "ERROR" );
 
-        initTabFilter( preferences, "RequestListGrid_4", Constants.INSTANCE.Error(), "Filter " + Constants.INSTANCE.Error(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_4", Constants.INSTANCE.Error(), "Filter " + Constants.INSTANCE.Error(), statuses );
 
         statuses=new ArrayList<String>(  );
         statuses.add( "DONE" );
 
-        initTabFilter( preferences, "RequestListGrid_5", Constants.INSTANCE.Completed(), "Filter " + Constants.INSTANCE.Completed(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_5", Constants.INSTANCE.Completed(), "Filter " + Constants.INSTANCE.Completed(), statuses );
 
         statuses=new ArrayList<String>(  );
         statuses.add( "CANCELLED" );
 
-        initTabFilter( preferences, "RequestListGrid_6", Constants.INSTANCE.Cancelled(), "Filter " + Constants.INSTANCE.Cancelled(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_6", Constants.INSTANCE.Cancelled(), "Filter " + Constants.INSTANCE.Cancelled(), statuses );
 
         filterPagedTable.addAddTableButton( createTabButton );
-        applyFilterOnPresenter( "RequestListGrid_6" );
+        getMultiGridPreferencesStore().setSelectedGrid( REQUEST_LIST_PREFIX + "_0" );
+        filterPagedTable.setSelectedTab();
+        applyFilterOnPresenter( REQUEST_LIST_PREFIX + "_0" );
 
     }
 
     private void initTabFilter(GridGlobalPreferences preferences, final String key, String tabName,
                                String tabDesc, List<String> statuses ){
+        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
+        builder.initBuilder();
+        if(statuses!=null && statuses.size()>0) {
+            builder.dataset( REQUEST_LIST_DATASET_ID );
+            List<Comparable> names = new ArrayList<Comparable>();
+
+            for ( String s : statuses ) {
+                names.add( s );
+            }
+            builder.filter( equalsTo( COLUMN_STATUS, names ) );
+        }
+        builder.dataset(REQUEST_LIST_DATASET_ID);
+        builder.setColumn( COLUMN_ID, "id" );
+        builder.setColumn( COLUMN_TIMESTAMP, "time" , "MMM dd E, yyyy");
+        builder.setColumn( COLUMN_STATUS,"status" );
+        builder.setColumn( COLUMN_COMMANDNAME , "commandName", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_MESSAGE, "status" );
+        builder.setColumn( COLUMN_BUSINESSKEY, "key" );
+
+        builder.filterOn( true, true, true);
+        builder.tableOrderEnabled(true);
+        builder.tableOrderDefault( COLUMN_TIMESTAMP, DESCENDING );
+
+        FilterSettings tableSettings = builder.buildSettings();
+        tableSettings.setKey( key );
+        tableSettings.setTableName( tabName );
+        tableSettings.setTableDescription( tabDesc );
 
         HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>(  );
 
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM,tabName);
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tabDesc);
-        tabSettingsValues.put( RequestListPresenter.FILTER_STATUSES_PARAM_NAME, statuses );
+        tabSettingsValues.put( FILTER_TABLE_SETTINGS, dataSetEditorManager.getTableSettingsToStr(tableSettings  ));
+        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName() );
+        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription() );
 
         filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
-        final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance(  new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns()), key );
+
+        final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns()), key );
         currentListGrid = extendedPagedTable;
         presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider(presenter.getDataProvider() );
+
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
             @Override
             public void execute() {
                 currentListGrid = extendedPagedTable;
-                applyFilterOnPresenter( key  );
+                applyFilterOnPresenter( key );
             }
         } ) ;
 
-    }
-
-    public void applyFilterOnPresenter( HashMap<String, Object> params){
-        List<String> statuses = ( List ) params.get(RequestListPresenter.FILTER_STATUSES_PARAM_NAME );
-        presenter.refreshRequests( statuses );
 
     }
+
+    public void applyFilterOnPresenter(HashMap<String, Object> params){
+
+        String tableSettingsJSON = (String) params.get( FILTER_TABLE_SETTINGS );
+        FilterSettings tableSettings = dataSetEditorManager.getStrToTableSettings( tableSettingsJSON );
+        presenter.filterGrid( tableSettings);
+
+    }
+
     public void applyFilterOnPresenter(String key) {
         initSelectionModel();
         applyFilterOnPresenter( filterPagedTable.getMultiGridPreferencesStore().getGridSettings( key ) );
+    }
+
+    public FilterSettings createTableSettingsPrototype() {
+        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
+        builder.initBuilder();
+
+        builder.dataset( REQUEST_LIST_DATASET_ID );
+        builder.setColumn( COLUMN_ID, "id" );
+        builder.setColumn( COLUMN_TIMESTAMP, "time" , "MMM dd E, yyyy");
+        builder.setColumn( COLUMN_STATUS,"status" );
+        builder.setColumn( COLUMN_COMMANDNAME , "commandName", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_MESSAGE, "status" );
+        builder.setColumn( COLUMN_BUSINESSKEY, "key" );
+
+        builder.filterOn( true, true, true);
+        builder.tableOrderEnabled(true);
+        builder.tableOrderDefault( COLUMN_TIMESTAMP, DESCENDING );
+        builder.tableWidth(1000);
+
+        return  builder.buildSettings();
+
     }
     public int getRefreshValue(){
         return getMultiGridPreferencesStore().getRefreshInterval();

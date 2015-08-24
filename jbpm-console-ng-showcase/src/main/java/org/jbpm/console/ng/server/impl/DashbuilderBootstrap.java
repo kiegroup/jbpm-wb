@@ -17,7 +17,6 @@ package org.jbpm.console.ng.server.impl;
 
 import org.dashbuilder.dataset.DataSetFactory;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
-import org.jbpm.console.ng.es.client.editors.requestlist.RequestListViewImpl;
 import org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash.DataSetTasksListGridViewImpl;
 import org.jbpm.console.ng.pr.client.editors.instance.list.dash.DataSetProcessInstanceListViewImpl;
 import org.uberfire.commons.services.cdi.Startup;
@@ -25,6 +24,7 @@ import org.uberfire.commons.services.cdi.Startup;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import org.jbpm.console.ng.es.client.editors.requestlist.dataset.DataSetRequestListViewImpl;
 
 @Startup
 @ApplicationScoped
@@ -168,12 +168,12 @@ public class DashbuilderBootstrap {
                                 .name( "Request List" )
                                 .dataSource( JBPM_DATASOURCE )
                                 .dbTable( REQUEST_LIST_TABLE, false )
-                                .label( RequestListViewImpl.COLUMN_ID )
-                                .date( RequestListViewImpl.COLUMN_TIMESTAMP )
-                                .label( RequestListViewImpl.COLUMN_STATUS )
-                                .label( RequestListViewImpl.COLUMN_COMMANDNAME )
-                                .label( RequestListViewImpl.COLUMN_MESSAGE )
-                                .label( RequestListViewImpl.COLUMN_BUSINESSKEY )
+                                .label( DataSetRequestListViewImpl.COLUMN_ID )
+                                .date( DataSetRequestListViewImpl.COLUMN_TIMESTAMP )
+                                .label( DataSetRequestListViewImpl.COLUMN_STATUS )
+                                .label( DataSetRequestListViewImpl.COLUMN_COMMANDNAME )
+                                .label( DataSetRequestListViewImpl.COLUMN_MESSAGE )
+                                .label( DataSetRequestListViewImpl.COLUMN_BUSINESSKEY )
                                 .buildDef() );
                 
                 

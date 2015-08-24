@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.es.client.editors.requestlist;
+package org.jbpm.console.ng.es.client.editors.requestlist.dataset;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.dashbuilder.common.client.error.ClientRuntimeError;
+import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.dataset.sort.SortOrder;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.RadioButton;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
@@ -36,28 +44,29 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jbpm.console.ng.df.client.filter.FilterSettings;
+import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.es.client.editors.quicknewjob.QuickNewJobPopup;
 import org.jbpm.console.ng.es.client.editors.servicesettings.JobServiceSettingsPopup;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
-import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
+import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.mvp.Command;
+import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.paging.PageResponse;
 
 
 import com.google.gwt.core.client.GWT;
-import org.jboss.errai.bus.client.api.messaging.Message;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
@@ -67,26 +76,32 @@ import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
+import static org.dashbuilder.dataset.filter.FilterFactory.OR;
+import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
+
 @Dependent
-@WorkbenchScreen(identifier = "Requests List")
-public class RequestListPresenter extends AbstractScreenListPresenter<RequestSummary> {
+@WorkbenchScreen(identifier = "DataSet Requests List")
+public class DataSetRequestListPresenter extends AbstractScreenListPresenter<RequestSummary> {
     public static String FILTER_STATUSES_PARAM_NAME = "states";
 
-    public interface RequestListView extends ListView<RequestSummary, RequestListPresenter> {
+    public interface DataSetRequestListView extends ListView<RequestSummary, DataSetRequestListPresenter> {
         public int getRefreshValue();
         public void restoreTabs();
         public void saveRefreshValue(int newValue);
+        public void applyFilterOnPresenter(String key);
     }
     private Constants constants = GWT.create( Constants.class );
-    
+
     @Inject
-    private RequestListView view;
-    
+    private DataSetRequestListView view;
+
     @Inject
     private Caller<ExecutorServiceEntryPoint> executorServices;
     @Inject
     private Event<RequestChangedEvent> requestChangedEvent;
 
+    @Inject
+    DataSetQueryHelper dataSetQueryHelper;
 
     private List<String> currentActiveStates;
 
@@ -103,10 +118,14 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     public Button menuResetTabsButton = new Button();
 
 
-    public RequestListPresenter() {
+    @Inject
+    private ErrorPopupPresenter errorPopup;
+
+
+    public DataSetRequestListPresenter() {
         super();
     }
-    
+
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -114,12 +133,12 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     }
 
     @WorkbenchPartView
-    public UberView<RequestListPresenter> getView() {
+    public UberView<DataSetRequestListPresenter> getView() {
         return view;
     }
 
-    public void refreshRequests(List<String> statuses) {
-        currentActiveStates = statuses;
+    public void filterGrid(FilterSettings tableSettings) {
+        dataSetQueryHelper.setCurrentTableSettings( tableSettings );
         refreshGrid();
     }
 
@@ -150,51 +169,96 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     }
 
     @Override
-    public void getData(Range visibleRange) {
-        ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-        if (currentFilter == null) {
-            currentFilter = new PortableQueryFilter(visibleRange.getStart(),
-                    visibleRange.getLength(),
-                    false, "",
-                    (columnSortList.size() > 0) ? columnSortList.get(0)
-                            .getColumn().getDataStoreName() : "",
-                    (columnSortList.size() > 0) ? columnSortList.get(0)
-                            .isAscending() : true);
-        }
-        // If we are refreshing after a search action, we need to go back to offset 0
-        if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
-                || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")) {
-            currentFilter.setOffset(view.getListGrid().getPageStart());
-            currentFilter.setCount(view.getListGrid().getPageSize());
-        } else {
-            currentFilter.setOffset(0);
-            currentFilter.setCount(view.getListGrid().getPageSize());
-        }
-        //Applying screen specific filters
-        if (currentFilter.getParams() == null) {
-            currentFilter.setParams(new HashMap<String, Object>());
-        }
-        currentFilter.getParams().put("states", currentActiveStates);
+    public void getData(final Range visibleRange) {
+        try {
+            FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
+            if(currentTableSettings!=null) {
+                currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
+                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+                
+                if(columnSortList!=null &&  columnSortList.size()>0) {
+                    dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
+                    dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
+                }else {
+                    dataSetQueryHelper.setLastOrderedColumn(DataSetRequestListViewImpl.COLUMN_TIMESTAMP );
+                    dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
+                }
+                dataSetQueryHelper.setDataSetHandler(   currentTableSettings );
+                if(textSearchStr!=null && textSearchStr.trim().length()>0){
 
-        currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
-                .getColumn().getDataStoreName() : "");
-        currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
-                .isAscending() : true);
+                    DataSetFilter filter = new DataSetFilter();
+                    List<ColumnFilter> filters =new ArrayList<ColumnFilter>(  );
+                    filters.add(likeTo(DataSetRequestListViewImpl.COLUMN_COMMANDNAME,  textSearchStr.toLowerCase(), false  ) );
+                    filters.add(likeTo(DataSetRequestListViewImpl.COLUMN_MESSAGE,  textSearchStr.toLowerCase(), false  ) );
+                    filters.add(likeTo(DataSetRequestListViewImpl.COLUMN_BUSINESSKEY, textSearchStr.toLowerCase(), false  ) );
+                    filter.addFilterColumn( OR( filters ) );
 
-        executorServices.call(new RemoteCallback<PageResponse<RequestSummary>>() {
-            @Override
-            public void callback(PageResponse<RequestSummary> response) {
-                updateDataOnCallback(response);
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error(Message message, Throwable throwable) {
+                    if(currentTableSettings.getDataSetLookup().getFirstFilterOp()!=null) {
+                        currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
+                    }else {
+                        currentTableSettings.getDataSetLookup().addOperation( filter );
+                    }
+                    textSearchStr="";
+                }
+                dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), new DataSetReadyCallback() {
+                    @Override
+                    public void callback( DataSet dataSet ) {
+                        if ( dataSet != null) {
+                            List<RequestSummary> myRequestSumaryFromDataSet = new ArrayList<RequestSummary>();
+
+                            for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
+
+                                myRequestSumaryFromDataSet.add(new RequestSummary(
+                                        dataSetQueryHelper.getColumnLongValue(dataSet, DataSetRequestListViewImpl.COLUMN_ID, i ),
+                                        dataSetQueryHelper.getColumnDateValue(dataSet, DataSetRequestListViewImpl.COLUMN_TIMESTAMP, i ),
+                                        dataSetQueryHelper.getColumnStringValue(dataSet, DataSetRequestListViewImpl.COLUMN_STATUS, i ),
+                                        dataSetQueryHelper.getColumnStringValue(dataSet, DataSetRequestListViewImpl.COLUMN_COMMANDNAME, i ),
+                                        dataSetQueryHelper.getColumnStringValue(dataSet, DataSetRequestListViewImpl.COLUMN_MESSAGE, i ),
+                                        dataSetQueryHelper.getColumnStringValue(dataSet, DataSetRequestListViewImpl.COLUMN_BUSINESSKEY, i ) ) );
+
+                            }
+                            PageResponse<RequestSummary> requestSummaryPageResponse = new PageResponse<RequestSummary>();
+                            requestSummaryPageResponse.setPageRowList( myRequestSumaryFromDataSet );
+                            requestSummaryPageResponse.setStartRowIndex( visibleRange.getStart() );
+                            requestSummaryPageResponse.setTotalRowSize( dataSet.getRowCountNonTrimmed() );
+                            requestSummaryPageResponse.setTotalRowSizeExact( true );
+                            if ( visibleRange.getStart() + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed() ) {
+                                requestSummaryPageResponse.setLastPage( true );
+                            } else {
+                                requestSummaryPageResponse.setLastPage( false );
+                            }
+                            updateDataOnCallback( requestSummaryPageResponse );
+                        }
+                        view.hideBusyIndicator();
+                    }
+
+                    @Override
+                    public void notFound() {
+                        view.hideBusyIndicator();
+                        errorPopup.showMessage("Not found DataSet with UUID [  " + DataSetRequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] " );
+                        GWT.log("DataSet with UUID [  "+DataSetRequestListViewImpl.REQUEST_LIST_DATASET_ID+ " ] not found." );
+                    }
+
+                    @Override
+                    public boolean onError( final ClientRuntimeError error ) {
+                        view.hideBusyIndicator();
+                        errorPopup.showMessage("DataSet with UUID [  "+DataSetRequestListViewImpl.REQUEST_LIST_DATASET_ID+ " ] error: " + error.getThrowable() );
+                        GWT.log("DataSet with UUID [  "+DataSetRequestListViewImpl.REQUEST_LIST_DATASET_ID+ " ] error: ", error.getThrowable() );
+                        return false;
+                    }
+                } );
+            }else {
                 view.hideBusyIndicator();
-                view.displayNotification("Error: Getting Jbos Requests: " + message);
-                GWT.log(throwable.toString());
-                return true;
             }
-        }).getData(currentFilter);
+        } catch (Exception e) {
+            GWT.log("Error looking up dataset with UUID [ " + DataSetRequestListViewImpl.REQUEST_LIST_DATASET_ID + " ]");
+        }
+
+
+
+
+
+
     }
 
     public void addDataDisplay(HasData<RequestSummary> display) {
@@ -378,30 +442,30 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     public void createRefreshToggleButton(final Button refreshIntervalSelector) {
 
         refreshIntervalSelector.setToggle(true);
-        refreshIntervalSelector.setIcon( IconType.COG);
+        refreshIntervalSelector.setIcon( IconType.COG );
         refreshIntervalSelector.setTitle( Constants.INSTANCE.AutoRefresh() );
         refreshIntervalSelector.setSize( ButtonSize.MINI );
 
-        popup.getElement().getStyle().setZIndex(Integer.MAX_VALUE);
-        popup.addAutoHidePartner(refreshIntervalSelector.getElement());
-        popup.addCloseHandler(new CloseHandler<PopupPanel>() {
-            public void onClose(CloseEvent<PopupPanel> popupPanelCloseEvent) {
-                if (popupPanelCloseEvent.isAutoClosed()) {
-                    refreshIntervalSelector.setActive(false);
+        popup.getElement().getStyle().setZIndex( Integer.MAX_VALUE );
+        popup.addAutoHidePartner( refreshIntervalSelector.getElement() );
+        popup.addCloseHandler( new CloseHandler<PopupPanel>() {
+            public void onClose( CloseEvent<PopupPanel> popupPanelCloseEvent ) {
+                if ( popupPanelCloseEvent.isAutoClosed() ) {
+                    refreshIntervalSelector.setActive( false );
                 }
             }
-        });
+        } );
 
-        refreshIntervalSelector.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                if (!refreshIntervalSelector.isActive() ) {
+        refreshIntervalSelector.addClickHandler( new ClickHandler() {
+            public void onClick( ClickEvent event ) {
+                if ( !refreshIntervalSelector.isActive() ) {
                     showSelectRefreshIntervalPopup( refreshIntervalSelector.getAbsoluteLeft() + refreshIntervalSelector.getOffsetWidth(),
-                            refreshIntervalSelector.getAbsoluteTop() + refreshIntervalSelector.getOffsetHeight(),refreshIntervalSelector);
+                            refreshIntervalSelector.getAbsoluteTop() + refreshIntervalSelector.getOffsetHeight(), refreshIntervalSelector );
                 } else {
-                    popup.hide(false);
+                    popup.hide( false );
                 }
             }
-        });
+        } );
 
     }
 
@@ -418,9 +482,9 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
             updateRefreshInterval( false, 0 );
         }
 
-        RadioButton oneMinuteRadioButton = createTimeSelectorRadioButton(60, "1 Minute", configuredSeconds, refreshIntervalSelector, popupContent);
-        RadioButton fiveMinuteRadioButton = createTimeSelectorRadioButton(300, "5 Minutes", configuredSeconds, refreshIntervalSelector, popupContent);
-        RadioButton tenMinuteRadioButton = createTimeSelectorRadioButton(600, "10 Minutes", configuredSeconds, refreshIntervalSelector, popupContent);
+        RadioButton oneMinuteRadioButton = createTimeSelectorRadioButton(60, "1 "+Constants.INSTANCE.Minute(), configuredSeconds, refreshIntervalSelector, popupContent);
+        RadioButton fiveMinuteRadioButton = createTimeSelectorRadioButton(300, "5 "+Constants.INSTANCE.Minutes(), configuredSeconds, refreshIntervalSelector, popupContent);
+        RadioButton tenMinuteRadioButton = createTimeSelectorRadioButton(600, "10 "+Constants.INSTANCE.Minutes(), configuredSeconds, refreshIntervalSelector, popupContent);
 
         popupContent.add(oneMinuteRadioButton);
         popupContent.add(fiveMinuteRadioButton);
@@ -445,7 +509,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         popup.setWidget(popupContent);
         popup.show();
         int finalLeft = left - popup.getOffsetWidth();
-        popup.setPopupPosition(finalLeft, top);
+        popup.setPopupPosition( finalLeft, top );
 
     }
 
@@ -470,4 +534,15 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         return oneMinuteRadioButton;
     }
 
+    @Override
+    protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
+        textSearchStr = searchEvent.getFilter();
+        if(textSearchStr!=null && textSearchStr.trim().length()>0){
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put( "textSearch", textSearchStr );
+            dataSetQueryHelper.getCurrentTableSettings().getKey();
+
+            view.applyFilterOnPresenter( dataSetQueryHelper.getCurrentTableSettings().getKey() );
+        }
+    }
 }
