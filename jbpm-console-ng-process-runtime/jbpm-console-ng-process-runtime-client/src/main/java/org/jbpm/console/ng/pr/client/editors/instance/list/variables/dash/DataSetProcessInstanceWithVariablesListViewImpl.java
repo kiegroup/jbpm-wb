@@ -704,7 +704,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         //Filter status completed
         states = new ArrayList<String>();
         states.add(String.valueOf(ProcessInstance.STATE_ABORTED));
-        initGenericTabFilter(preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1", Constants.INSTANCE.Aborted(), "Filter " + Constants.INSTANCE.Aborted(), states, "", "");
+        initGenericTabFilter(preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2", Constants.INSTANCE.Aborted(), "Filter " + Constants.INSTANCE.Aborted(), states, "", "");
 
         filterPagedTable.addAddTableButton(createTabButton);
         getMultiGridPreferencesStore().setSelectedGrid(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0");

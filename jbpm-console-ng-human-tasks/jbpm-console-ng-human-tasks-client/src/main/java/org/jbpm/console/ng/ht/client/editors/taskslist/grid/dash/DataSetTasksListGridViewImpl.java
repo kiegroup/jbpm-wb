@@ -964,9 +964,19 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset(HUMAN_TASKS_DATASET);
+        builder.dataset(HUMAN_TASKS_WITH_USERS_DATASET);
 
-  
+        Set<Group> groups = identity.getGroups();
+        List<ColumnFilter> condList = new  ArrayList<ColumnFilter>();
+        for(Group g : groups){
+            condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY,g.getName()));
+
+        }
+        ColumnFilter myGroupFilter = FilterFactory.AND( FilterFactory.OR( condList ), FilterFactory.equalsTo( COLUMN_ACTUALOWNER, "" ) );
+
+        builder.filter( OR( myGroupFilter, FilterFactory.equalsTo( COLUMN_ACTUALOWNER, identity.getIdentifier() ) ) );
+
+        builder.group( COLUMN_TASKID );
 
         builder.setColumn( COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_ACTUALOWNER, constants.Actual_Owner());
