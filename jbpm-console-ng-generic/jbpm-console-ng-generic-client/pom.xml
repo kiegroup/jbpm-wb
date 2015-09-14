@@ -87,7 +87,10 @@
       <artifactId>kie-wb-common-ui</artifactId>
     </dependency>
 
-
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-workbench-client-views-patternfly</artifactId>
+    </dependency>
 
     <!-- Errai UI -->
     <dependency>
