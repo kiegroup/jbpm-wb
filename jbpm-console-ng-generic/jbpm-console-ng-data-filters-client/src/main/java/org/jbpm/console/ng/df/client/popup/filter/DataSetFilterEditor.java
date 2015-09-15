@@ -87,6 +87,8 @@ public class DataSetFilterEditor extends Composite implements ColumnFilterEditor
         initNewFilterListBox();
         filterListPanel.clear();
 
+        /*
+        Avoid show the predefined filters on datasetLookup. To be reviewed when the filters will be editable
         if (filter != null) {
             for (ColumnFilter columnFilter : filter.getColumnFilterList()) {
                 ColumnFilterEditor columnFilterEditor = new ColumnFilterEditor();
@@ -94,6 +96,7 @@ public class DataSetFilterEditor extends Composite implements ColumnFilterEditor
                 filterListPanel.add(columnFilterEditor);
             }
         }
+        */
     }
 
     protected void initNewFilterListBox() {
