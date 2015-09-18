@@ -63,12 +63,8 @@ public class ProcessImageResourceImpl {
     private String getProcesImageSVGFromDeployment( String deploymentId, ProcessDefinition procDef ) {
         String procDefSvg = null;
 
-        String svgFileName = ((ProcessAssetDesc) procDef).getOriginalPath();
-        int slashIndex = svgFileName.lastIndexOf("/");
-        if( slashIndex < 0 ) {
-            slashIndex = 0;
-        }
-        svgFileName = svgFileName.substring( slashIndex, svgFileName.lastIndexOf(".")) + "-svg.svg";
+        String svgFileName = ((ProcessAssetDesc) procDef).getId();
+        svgFileName = svgFileName + "-svg.svg";
 
         // Get kjar and see if svg file is present in it.
         String [] depIdParts = deploymentId.split(":");
@@ -80,9 +76,15 @@ public class ProcessImageResourceImpl {
                 Enumeration<JarEntry> entries = depJarFile.entries();
                 while( entries.hasMoreElements() ) {
                     JarEntry jarEntry = entries.nextElement();
-                    if( jarEntry.getName().contains(svgFileName) ) {
+                    String entryName = jarEntry.getName();
+                    if( ! entryName.endsWith("svg") ) {
+                        continue;
+                    }
+                    int index = entryName.indexOf('/');
+                    index = index >= 0 ? index + 1 : 0;
+                    entryName = entryName.substring(index);
+                    if( entryName.equals(svgFileName) ) {
                         InputStream svgInputStream = depJarFile.getInputStream(jarEntry);
-
                         procDefSvg = IOUtils.toString(svgInputStream);
                         break;
                     }

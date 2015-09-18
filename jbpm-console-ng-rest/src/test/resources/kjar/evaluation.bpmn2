@@ -13,7 +13,7 @@
 
   <itemDefinition id="_employeeItem" structureRef="String" />
 
-  <process processType="Private" isExecutable="true" id="Evaluation" name="Evaluation Process" >
+  <process processType="Private" isExecutable="true" id="org.test.process" name="Evaluation Process" >
 
     <!-- process variables -->
     <property id="employee" itemSubjectRef="_employeeItem"/>
