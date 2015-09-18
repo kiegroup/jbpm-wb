@@ -210,7 +210,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 //                                        GWT.log("ProcessID filter filterColum" + coreFilter.getColumnId());
 //                                        GWT.log("ProcessID filter type filterColum" + coreFilter.getType().toString());
 //                                        GWT.log("ProcessID filter type filterColum" + coreFilter.getParameters());
-                                            if ( filter.getColumnId().equals( "processId" ) ) {
+                                            if ( filter.getColumnId().toUpperCase().equals( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSID.toUpperCase() ) ) {
 
                                                 List parameters = coreFilter.getParameters();
                                                 if ( parameters.size() > 0 ) {
