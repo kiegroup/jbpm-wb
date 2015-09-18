@@ -678,9 +678,12 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.filter( COLUMN_ACTUALOWNER, equalsTo("") );
         List<ColumnFilter> condList = new  ArrayList<ColumnFilter>();
         for(Group g : groups){
-            condList.add( FilterFactory.equalsTo(g.getName()));
+            condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, g.getName()));
             
         }
+        //Adding own identity to check against potential owners
+        condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier()));
+        
         builder.filter( COLUMN_ORGANIZATIONAL_ENTITY, OR(condList) );
         builder.group(COLUMN_TASKID);
         
@@ -750,10 +753,11 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         List<ColumnFilter> condList = new  ArrayList<ColumnFilter>();
         for(Group g : groups){
-            condList.add( FilterFactory.equalsTo(g.getName()));
+            condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, g.getName()));
         
         }
-        condList.add( FilterFactory.equalsTo(identity.getIdentifier()));
+        //Adding own identity to check against potential owners
+        condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier()));
         
         builder.filter( COLUMN_ORGANIZATIONAL_ENTITY, OR(condList) );
         
@@ -890,6 +894,9 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY,g.getName()));
 
         }
+        //Adding own identity to check against potential owners
+        condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier()));
+        
         ColumnFilter myGroupFilter = FilterFactory.AND( FilterFactory.OR( condList ),FilterFactory.equalsTo( COLUMN_ACTUALOWNER, "" ));
 
         builder.filter( OR( myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUALOWNER, identity.getIdentifier() )) );
