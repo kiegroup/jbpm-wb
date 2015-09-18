@@ -213,8 +213,10 @@ public class DashbuilderBootstrap {
                 .name("Tasks monitoring")
                 .dataSource(JBPM_DATASOURCE)
                 .dbSQL("select p.processname, t.* " +
-                        "from processinstancelog p inner join bamtasksummary t " +
-                        "on (t.processinstanceid = p.processinstanceid)", true)
+                        "from processinstancelog p " +
+                        "inner join bamtasksummary t on (t.processinstanceid = p.processinstanceid) " +
+                        "inner join (select min(pk) pk from bamtasksummary group by taskid) d on t.pk=d.pk",
+                        true)
                 .buildDef();
 
         processMonitoringDef.setPublic(false);

@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
+import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
 import org.uberfire.client.workbench.panels.impl.MultiTabWorkbenchPanelPresenter;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
@@ -35,7 +36,7 @@ public class DashboardPerspective extends FlowPanel {
     @Perspective
     public PerspectiveDefinition buildPerspective() {
 
-        PerspectiveDefinition perspective = new PerspectiveDefinitionImpl(MultiTabWorkbenchPanelPresenter.class.getName());
+        PerspectiveDefinition perspective = new PerspectiveDefinitionImpl(MultiListWorkbenchPanelPresenter.class.getName());
         perspective.setName(DashboardConstants.INSTANCE.processDashboardName());
 
         perspective.getRoot().addPart("ProcessDashboardScreen");

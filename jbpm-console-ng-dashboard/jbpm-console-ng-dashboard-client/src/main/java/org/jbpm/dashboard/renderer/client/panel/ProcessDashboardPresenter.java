@@ -180,7 +180,7 @@ public class ProcessDashboardPresenter implements ProcessBreadCrumb.Listener {
     public Displayer createTableDisplayer(DisplayerSettings settings) {
         checkNotNull("displayerSettings", settings);
         ProcessTableDisplayer tableDisplayer = new ProcessTableDisplayer(settings, this);
-        tableDisplayer.addFormatter(COLUMN_PROCESS_DURATION, new DurationFormatter());
+        tableDisplayer.addFormatter(COLUMN_PROCESS_DURATION, new DurationFormatter(COLUMN_PROCESS_START_DATE, COLUMN_PROCESS_END_DATE));
         return tableDisplayer;
     }
 

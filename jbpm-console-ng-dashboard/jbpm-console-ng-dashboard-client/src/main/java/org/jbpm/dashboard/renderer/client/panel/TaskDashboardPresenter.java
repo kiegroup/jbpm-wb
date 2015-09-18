@@ -197,7 +197,7 @@ public class TaskDashboardPresenter implements ProcessBreadCrumb.Listener {
     public Displayer createTableDisplayer(DisplayerSettings settings) {
         checkNotNull("displayerSettings", settings);
         TaskTableDisplayer tableDisplayer = new TaskTableDisplayer(settings, this);
-        tableDisplayer.addFormatter(COLUMN_TASK_DURATION, new DurationFormatter());
+        tableDisplayer.addFormatter(COLUMN_TASK_DURATION, new DurationFormatter(COLUMN_TASK_CREATED_DATE, COLUMN_TASK_END_DATE));
         return tableDisplayer;
     }
 
