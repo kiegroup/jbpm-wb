@@ -51,7 +51,7 @@ public abstract class AbstractListPresenter<T> {
 
     protected Timer refreshTimer = null;
     protected boolean autoRefreshEnabled = true;
-    protected int autoRefreshSeconds = 7; // This should be loaded from the grid settings (probably the filters)
+    protected int autoRefreshSeconds = 60; // This should be loaded from the grid settings (probably the filters)
 
     protected abstract AbstractListView.ListView getListView();
 
@@ -67,7 +67,10 @@ public abstract class AbstractListPresenter<T> {
                         getData(dataProvider.getDataDisplays().iterator().next().getVisibleRange());
                     }
                 };
+            } else{
+                refreshTimer.cancel();
             }
+
             refreshTimer.schedule(autoRefreshSeconds * 1000);
         }
         else if (refreshTimer != null) {
