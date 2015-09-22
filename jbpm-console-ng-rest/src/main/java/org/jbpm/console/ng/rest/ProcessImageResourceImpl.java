@@ -22,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.jbpm.kie.services.impl.model.ProcessAssetDesc;
@@ -30,10 +31,14 @@ import org.jbpm.process.svg.SVGImageProcessor;
 import org.jbpm.services.api.RuntimeDataService;
 import org.jbpm.services.api.model.NodeInstanceDesc;
 import org.jbpm.services.api.model.ProcessDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/runtime/{deploymentId: [\\w\\.-]+(:[\\w\\.-]+){2,2}(:[\\w\\.-]*){0,2}}/process/{processDefId: [_a-zA-Z0-9-:\\.]+}/image")
 @ApplicationScoped
 public class ProcessImageResourceImpl {
+
+    private static Logger logger = LoggerFactory.getLogger(ProcessImageResourceImpl.class);
 
     /* REST information */
 
@@ -115,12 +120,14 @@ public class ProcessImageResourceImpl {
         // find procdef (or throw 404) if the deployment id or pro
         ProcessDefinition procDef = dataService.getProcessesByDeploymentIdProcessId(deploymentId, processId);
         if( procDef == null ) {
+            logger.warn("Could not find process definition for process '" + processId + "', returning status 404 (NOT FOUND)");
            return Response.status(Response.Status.NOT_FOUND).build();
         }
 
         // get SVG String
         String imageSVGString = getProcesImageSVGFromDeployment(deploymentId, procDef);
         if( imageSVGString == null ) {
+            logger.warn("Could not find SVG image file for process '" + processId + "', returning status 412 (PRECONDITION FAILED). Has the 'storesvgonsave' option in the jbpm.xml file in the war been set to true?");
             return Response.status(Response.Status.PRECONDITION_FAILED).build();
         }
 
