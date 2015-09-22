@@ -80,7 +80,7 @@ public class ProcessImageResourceImpl {
                     if( ! entryName.endsWith("svg") ) {
                         continue;
                     }
-                    int index = entryName.indexOf('/');
+                    int index = entryName.lastIndexOf('/');
                     index = index >= 0 ? index + 1 : 0;
                     entryName = entryName.substring(index);
                     if( entryName.equals(svgFileName) ) {
