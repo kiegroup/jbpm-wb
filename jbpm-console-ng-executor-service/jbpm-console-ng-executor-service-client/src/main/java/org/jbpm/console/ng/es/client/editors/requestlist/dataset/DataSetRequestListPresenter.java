@@ -188,9 +188,9 @@ public class DataSetRequestListPresenter extends AbstractScreenListPresenter<Req
 
                     DataSetFilter filter = new DataSetFilter();
                     List<ColumnFilter> filters =new ArrayList<ColumnFilter>(  );
-                    filters.add(likeTo(DataSetRequestListViewImpl.COLUMN_COMMANDNAME,  textSearchStr.toLowerCase(), false  ) );
-                    filters.add(likeTo(DataSetRequestListViewImpl.COLUMN_MESSAGE,  textSearchStr.toLowerCase(), false  ) );
-                    filters.add(likeTo(DataSetRequestListViewImpl.COLUMN_BUSINESSKEY, textSearchStr.toLowerCase(), false  ) );
+                    filters.add(likeTo(DataSetRequestListViewImpl.COLUMN_COMMANDNAME,  "%" + textSearchStr.toLowerCase() + "%", false  ) );
+                    filters.add(likeTo(DataSetRequestListViewImpl.COLUMN_MESSAGE,  "%" + textSearchStr.toLowerCase()+ "%", false  ) );
+                    filters.add(likeTo(DataSetRequestListViewImpl.COLUMN_BUSINESSKEY, "%" + textSearchStr.toLowerCase()+ "%", false  ) );
                     filter.addFilterColumn( OR( filters ) );
 
                     if(currentTableSettings.getDataSetLookup().getFirstFilterOp()!=null) {

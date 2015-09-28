@@ -58,20 +58,17 @@ public class DataSetProcessInstancesVariablesPerspective {
         p.getRoot().addPart( new PartDefinitionImpl( defaultPlaceRequest ) );
         return p;
     }
-    
+
     @OnStartup
-    public void onStartup(final PlaceRequest place) {
-            
-        contextualSearch.setSearchBehavior(new SearchBehavior() {
+    public void init() {
+        contextualSearch.setSearchBehavior( new SearchBehavior() {
             @Override
-            public void execute(String searchFilter) {
-                searchEvents.fire(new SearchEvent(searchFilter));
+            public void execute( String searchFilter ) {
+                searchEvents.fire( new SearchEvent( searchFilter ) );
             }
 
-            
-        });
-        this.currentProcessDefinition = place.getParameter( "processName", "" );
-        setSearchTextEvents.fire(new SetSearchTextEvent(currentProcessDefinition));
+        } );
+
     }
 
 }
