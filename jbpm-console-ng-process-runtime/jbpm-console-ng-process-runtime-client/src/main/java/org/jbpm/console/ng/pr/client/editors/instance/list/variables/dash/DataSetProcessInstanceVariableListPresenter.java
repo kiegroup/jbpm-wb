@@ -153,9 +153,9 @@ public class DataSetProcessInstanceVariableListPresenter extends AbstractScreenL
 
                     DataSetFilter filter = new DataSetFilter();
                     List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-                    filters.add( likeTo( DataSetProcessInstanceListVariableViewImpl.PROCESS_NAME, textSearchStr.toLowerCase(), false ) );
-                    filters.add( likeTo( DataSetProcessInstanceListVariableViewImpl.PROCESS_INSTANCE_ID, textSearchStr.toLowerCase(), false ) );
-                    filters.add( likeTo( DataSetProcessInstanceListVariableViewImpl.VARIABLE_VALUE, textSearchStr.toLowerCase(), false ) );
+                    filters.add( likeTo( DataSetProcessInstanceListVariableViewImpl.PROCESS_NAME, "%" + textSearchStr.toLowerCase()+ "%", false ) );
+                    filters.add( likeTo( DataSetProcessInstanceListVariableViewImpl.PROCESS_INSTANCE_ID, "%" + textSearchStr.toLowerCase()+ "%", false ) );
+                    filters.add( likeTo( DataSetProcessInstanceListVariableViewImpl.VARIABLE_VALUE, "%" + textSearchStr.toLowerCase()+ "%", false ) );
                     filter.addFilterColumn( OR( filters ) );
 
                     if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {

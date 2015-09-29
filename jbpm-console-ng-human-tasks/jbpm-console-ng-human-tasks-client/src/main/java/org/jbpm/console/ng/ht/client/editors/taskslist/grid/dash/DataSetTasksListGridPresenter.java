@@ -148,9 +148,9 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
                     DataSetFilter filter = new DataSetFilter();
                     List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-                    filters.add( likeTo( DataSetTasksListGridViewImpl.COLUMN_NAME, textSearchStr.toLowerCase(), false ) );
-                    filters.add( likeTo( DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION, textSearchStr.toLowerCase(), false ) );
-                    filters.add( likeTo( DataSetTasksListGridViewImpl.COLUMN_PROCESSID, textSearchStr.toLowerCase(), false ) );
+                    filters.add( likeTo( DataSetTasksListGridViewImpl.COLUMN_NAME, "%"+ textSearchStr.toLowerCase()+ "%", false ) );
+                    filters.add( likeTo( DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION, "%"+ textSearchStr.toLowerCase()+ "%", false ) );
+                    filters.add( likeTo( DataSetTasksListGridViewImpl.COLUMN_PROCESSID, "%"+ textSearchStr.toLowerCase()+ "%", false ) );
                     filter.addFilterColumn( OR( filters ) );
 
                     if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {
