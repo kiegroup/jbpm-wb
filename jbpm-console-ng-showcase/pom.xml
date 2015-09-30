@@ -193,6 +193,12 @@
     </dependency>
     
     <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-generic-preferences</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
       <scope>provided</scope>
@@ -1050,6 +1056,7 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-workbench-integration-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-executor-service-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-executor-service-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-preferences</compileSourcesArtifact>
 
             <!-- Dashbuilder -->
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-widgets</compileSourcesArtifact>

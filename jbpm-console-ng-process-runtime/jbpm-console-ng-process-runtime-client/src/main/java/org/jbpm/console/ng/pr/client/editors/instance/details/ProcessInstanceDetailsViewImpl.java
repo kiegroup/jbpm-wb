@@ -16,166 +16,100 @@
 
 package org.jbpm.console.ng.pr.client.editors.instance.details;
 
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
-import org.gwtbootstrap3.client.ui.FormLabel;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
-import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
+import org.gwtbootstrap3.client.ui.FormControlStatic;
+import org.gwtbootstrap3.client.ui.FormGroup;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.workbench.events.NotificationEvent;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Widget;
+
 @Dependent
-@Templated(value = "ProcessInstanceDetailsViewImpl.html")
 public class ProcessInstanceDetailsViewImpl extends Composite implements
                                                               ProcessInstanceDetailsPresenter.ProcessInstanceDetailsView {
+    interface ProcessInstanceDetailsViewImplBinder extends UiBinder<Widget, ProcessInstanceDetailsViewImpl> {
 
-    @Inject
-    @DataField
-    public HTML processDefinitionIdText;
+    }
 
-    @Inject
-    @DataField
-    public HTML processDeploymentText;
+    private static ProcessInstanceDetailsViewImplBinder uiBinder = GWT.create( ProcessInstanceDetailsViewImplBinder.class );
 
-    @Inject
-    @DataField
-    public HTML processVersionText;
+    @UiField
+    public FormControlStatic processDefinitionIdText;
 
-    @Inject
-    @DataField
-    public HTML correlationKeyText;
+    @UiField
+    FormGroup processDefinitionIdGroup;
+    
+    @UiField
+    public FormControlStatic processDeploymentText;
 
-    @Inject
-    @DataField
-    public FormLabel parentProcessInstanceIdLabel;
+    @UiField
+    FormGroup processDeploymentGroup;
+    
+    @UiField
+    public FormControlStatic processVersionText;
 
-    @Inject
-    @DataField
-    public HTML parentProcessInstanceIdText;
+    @UiField
+    FormGroup  processVersionGroup;
+    
+    @UiField
+    public FormControlStatic correlationKeyText;
 
-    @Inject
-    @DataField
-    public HTML stateText;
+    @UiField
+    FormGroup  correlationKeyGroup;
 
-    @Inject
-    @DataField
-    public HTML currentActivitiesListBox;
+    @UiField
+    public FormControlStatic parentProcessInstanceIdText;
 
-    @Inject
-    @DataField
-    public FormLabel processDefinitionIdLabel;
-
-    @Inject
-    @DataField
-    public FormLabel processDeploymentLabel;
-
-    @Inject
-    @DataField
-    public FormLabel processVersionLabel;
-
-    @Inject
-    @DataField
-    public FormLabel correlationKeyLabel;
-
-    @Inject
-    @DataField
-    public FormLabel stateLabel;
-
-    @Inject
-    @DataField
-    public FormLabel currentActivitiesListLabel;
-
-    @Inject
-    @DataField
-    public HTML activeTasksListBox;
-
-    @Inject
-    @DataField
-    public FormLabel activeTasksListLabel;
+    @UiField
+    FormGroup  parentProcessInstanceIdGroup;
+    
+    @UiField
+    public FormControlStatic stateText;
+    
+    @UiField
+    FormGroup  stateGroup;
 
     @Inject
     private Event<NotificationEvent> notification;
 
-    private Constants constants = GWT.create( Constants.class );
-
-    private ProcessInstanceSummary processInstance;
     private Path processAssetPath;
     private String encodedProcessSource;
-    private List<NodeInstanceSummary> activeNodes;
-    private List<NodeInstanceSummary> completedNodes;
-
-  
-    
-    @PostConstruct
-    public void init(  ) {
-        processDefinitionIdLabel.setText( constants.Process_Definition_Id() );
-        processDeploymentLabel.setText( constants.Deployment_Name() );
-        processVersionLabel.setText( constants.Process_Definition_Version() );
-        correlationKeyLabel.setText( constants.Correlation_Key() );
-        stateLabel.setText( constants.Process_Instance_State() );
-        activeTasksListLabel.setText( constants.Active_Tasks() );
-        currentActivitiesListLabel.setText( constants.Current_Activities() );
-        parentProcessInstanceIdLabel.setText(constants.Parent_Process_Instance());
-    }
-
 
     @Override
-    public HTML getProcessDefinitionIdText() {
+    public FormControlStatic getProcessDefinitionIdText() {
         return processDefinitionIdText;
     }
 
     @Override
-    public HTML getCurrentActivitiesListBox() {
-        return currentActivitiesListBox;
-    }
-
-    @Override
-    public HTML getActiveTasksListBox() {
-        return activeTasksListBox;
-    }
-
-    @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
-    }
-
-    @Override
-    public void setProcessInstance( ProcessInstanceSummary processInstance ) {
-        this.processInstance = processInstance;
-    }
-
-    @Override
-    public HTML getStateText() {
+    public FormControlStatic getStateText() {
         return this.stateText;
     }
 
     @Override
-    public HTML getProcessDeploymentText() {
+    public FormControlStatic getProcessDeploymentText() {
         return processDeploymentText;
     }
 
     @Override
-    public HTML getCorrelationKeyText() {
+    public FormControlStatic getCorrelationKeyText() {
         return correlationKeyText;
     }
 
     @Override
-    public HTML getParentProcessInstanceIdText() {
+    public FormControlStatic getParentProcessInstanceIdText() {
         return parentProcessInstanceIdText;
     }
 
     @Override
-    public HTML getProcessVersionText() {
+    public FormControlStatic getProcessVersionText() {
         return processVersionText;
     }
 
@@ -184,36 +118,10 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
         this.processAssetPath = processAssetPath;
     }
 
-    @Override
-    public void setCurrentActiveNodes( List<NodeInstanceSummary> activeNodes ) {
-        this.activeNodes = activeNodes;
-
-    }
-
-    @Override
-    public void setCurrentCompletedNodes( List<NodeInstanceSummary> completedNodes ) {
-        this.completedNodes = completedNodes;
-    }
 
     @Override
     public void setEncodedProcessSource( String encodedProcessSource ) {
         this.encodedProcessSource = encodedProcessSource;
-    }
-
-    public List<NodeInstanceSummary> getActiveNodes() {
-        return activeNodes;
-    }
-
-    public void setActiveNodes(List<NodeInstanceSummary> activeNodes) {
-        this.activeNodes = activeNodes;
-    }
-
-    public List<NodeInstanceSummary> getCompletedNodes() {
-        return completedNodes;
-    }
-
-    public void setCompletedNodes(List<NodeInstanceSummary> completedNodes) {
-        this.completedNodes = completedNodes;
     }
 
     public Path getProcessAssetPath() {
@@ -224,6 +132,21 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
         return encodedProcessSource;
     }
 
-    
+
+    @Override
+    public void initLables() {
+    }
+
+
+    @Override
+    public void displayNotification( String text ) {
+        notification.fire( new NotificationEvent( text ) );
+    }
+
+    @PostConstruct
+    public void init( ) {
+        initWidget( uiBinder.createAndBindUi( this ) );
+        
+    }
     
 }

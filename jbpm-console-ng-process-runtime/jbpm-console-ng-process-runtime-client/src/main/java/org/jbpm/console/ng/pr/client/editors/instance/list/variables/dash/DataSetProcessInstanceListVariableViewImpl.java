@@ -15,27 +15,17 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.list.variables.dash;
 
+import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.BrowserEvents;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.InputElement;
-import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.view.client.CellPreviewEvent;
-import com.google.gwt.view.client.DefaultSelectionEventManager;
-import com.google.gwt.view.client.NoSelectionModel;
-import com.google.gwt.view.client.SelectionChangeEvent;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
@@ -50,6 +40,7 @@ import org.jbpm.console.ng.pr.model.ProcessInstanceVariableSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.workbench.common.widgets.client.workbench.configuration.ContextualView;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
@@ -57,7 +48,19 @@ import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
-import static org.dashbuilder.dataset.sort.SortOrder.*;
+import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.view.client.CellPreviewEvent;
+import com.google.gwt.view.client.DefaultSelectionEventManager;
+import com.google.gwt.view.client.NoSelectionModel;
+import com.google.gwt.view.client.SelectionChangeEvent;
 
 @Dependent
 public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGridView<ProcessInstanceVariableSummary, DataSetProcessInstanceVariableListPresenter>
@@ -66,7 +69,10 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
     public static final String PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX = "DS_ProcessInstancesVariableGrid";
 
     public static final String PROCESS_INSTANCE_WITH_VARIABLES_DATASET = "jbpmProcessInstancesWithVariables";
-
+    
+    public static final String BASIC_VIEW_MODE = "Basic Process Instance Details Multi";
+    public static final String ADVANCED_VIEW_MODE = "Advanced Process Instance Details Multi";
+    
     public static final String PROCESS_INSTANCE_ID = "pid";
     public static final String PROCESS_NAME = "pname";
     public static final String VARIABLE_ID = "varid";
@@ -91,6 +97,9 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
     @Inject
     private QuickNewProcessInstancePopup newProcessInstancePopup;
 
+    @Inject
+    private ContextualView contextualView;
+    
     @Override
     public void init( final DataSetProcessInstanceVariableListPresenter presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
@@ -173,8 +182,12 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
                 }
 
                 selectedItem = selectionModel.getLastSelectedObject();
+                String placeIdentifier = BASIC_VIEW_MODE;
+                if ( contextualView.getViewMode( ContextualView.ALL_PERSPECTIVES ).equals( ContextualView.ADVANCED_MODE ) ) {
+                    placeIdentifier = ADVANCED_VIEW_MODE;
+                }
 
-                PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( "Process Instance Details Multi" ) );
+                PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( placeIdentifier ) );
 
             }
         } );

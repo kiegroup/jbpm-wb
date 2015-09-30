@@ -1,21 +1,7 @@
-/*
- * Copyright 2012 JBoss Inc
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.jbpm.console.ng.pr.client.editors.instance.details.multi;
 
 import java.util.List;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -24,6 +10,7 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
+
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -60,12 +47,10 @@ import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
-@Dependent
-@WorkbenchScreen(identifier = "Process Instance Details Multi", preferredWidth = 500)
-public class ProcessInstanceDetailsMultiPresenter {
+public abstract class BaseProcessInstanceDetailsMultiPresenter {
 
-    public interface ProcessInstanceDetailsMultiView
-            extends UberView<ProcessInstanceDetailsMultiPresenter> {
+    public interface BaseProcessInstanceDetailsMultiView
+            extends UberView<BaseProcessInstanceDetailsMultiPresenter> {
 
         IsWidget getOptionsButton();
 
@@ -75,14 +60,11 @@ public class ProcessInstanceDetailsMultiPresenter {
 
         void selectInstanceDetailsTab();
     }
+    
+    protected Constants constants = GWT.create( Constants.class );
 
     @Inject
-    public ProcessInstanceDetailsMultiView view;
-
-    private Constants constants = GWT.create( Constants.class );
-
-    @Inject
-    private PlaceManager placeManager;
+    protected PlaceManager placeManager;
 
     @Inject
     private Caller<KieSessionEntryPoint> kieSessionServices;
@@ -117,32 +99,14 @@ public class ProcessInstanceDetailsMultiPresenter {
 
     private String selectedProcessDefName = "";
 
-    private PlaceRequest place;
+    protected PlaceRequest place;
 
-    private String deploymentId = "";
+    protected String deploymentId = "";
 
     private String processId = "";
-
-    @WorkbenchPartView
-    public UberView<ProcessInstanceDetailsMultiPresenter> getView() {
-        return view;
-    }
-
-    @DefaultPosition
-    public Position getPosition() {
+    
+    protected Position getPosition() {
         return CompassPosition.EAST;
-    }
-
-
-
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.Details();
-    }
-
-    @OnStartup
-    public void onStartup( final PlaceRequest place ) {
-        this.place = place;
     }
 
     public void onProcessSelectionEvent( @Observes ProcessInstanceSelectionEvent event ) {
@@ -154,20 +118,13 @@ public class ProcessInstanceDetailsMultiPresenter {
 
         changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf(deploymentId) + " - " + selectedProcessDefName ) );
 
-        view.selectInstanceDetailsTab();
+        this.getSpecificView().selectInstanceDetailsTab();
     }
 
     public void refresh() {
         processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedDeploymentId, Long.valueOf( deploymentId ), processId, selectedProcessDefName, selectedProcessInstanceStatus ) );
     }
-
-    public void signalProcessInstance() {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Signal Process Popup" );
-        placeRequestImpl.addParameter( "processInstanceId", deploymentId );
-        placeManager.goTo( placeRequestImpl );
-
-    }
-
+    
     public void abortProcessInstance() {
         dataServices.call( new RemoteCallback<ProcessInstanceSummary>() {
             @Override
@@ -203,7 +160,7 @@ public class ProcessInstanceDetailsMultiPresenter {
             }
         } ).getProcessInstanceById( Long.parseLong( deploymentId ) );
     }
-
+    
     public void goToProcessInstanceModelPopup() {
         if ( place != null && !deploymentId.equals( "" ) ) {
             dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
@@ -262,8 +219,7 @@ public class ProcessInstanceDetailsMultiPresenter {
 
         }
     }
-
-    @WorkbenchMenu
+    
     public Menus buildMenu() {
         return MenuFactory
                 .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
@@ -276,7 +232,7 @@ public class ProcessInstanceDetailsMultiPresenter {
                         return new BaseMenuCustom<IsWidget>() {
                             @Override
                             public IsWidget build() {
-                                return view.getOptionsButton();
+                                return getSpecificView().getOptionsButton();
                             }
                         };
                     }
@@ -292,7 +248,7 @@ public class ProcessInstanceDetailsMultiPresenter {
                         return new BaseMenuCustom<IsWidget>() {
                             @Override
                             public IsWidget build() {
-                                return view.getRefreshButton();
+                                return getSpecificView().getRefreshButton();
                             }
                         };
                     }
@@ -300,7 +256,6 @@ public class ProcessInstanceDetailsMultiPresenter {
 
                 .build();
     }
-
     public void closeDetails() {
         placeManager.closePlace( place );
     }
@@ -329,4 +284,11 @@ public class ProcessInstanceDetailsMultiPresenter {
         return runtimeLogPresenter.getWidget();
     }
 
+    public abstract Menus buildSpecificMenu();
+
+    protected abstract BaseProcessInstanceDetailsMultiView getSpecificView();
+
+    public abstract String getTitle();
+
+    public abstract UberView<BaseProcessInstanceDetailsMultiPresenter> getView();
 }

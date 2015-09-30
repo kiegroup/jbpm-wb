@@ -270,4 +270,24 @@ public interface Constants extends Messages {
     String Disable_autorefresh();
 
     String Autorefresh_Disabled();
+    
+    String Node_Type();
+
+    String Log_Time();
+
+    String Instance_Node_Logs();
+    
+    String User_Task_Work();
+    
+    String User_Task_logs();
+    
+    String User_Task_Id();
+    
+    String User_Task_Name();
+    
+    String No_History_For_This_Process();
+    
+    String Node_History();
+    
+    String User_Task_Work_Details();
 }

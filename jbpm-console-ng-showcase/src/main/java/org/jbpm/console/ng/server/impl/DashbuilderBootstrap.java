@@ -15,17 +15,17 @@
  */
 package org.jbpm.console.ng.server.impl;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.dashbuilder.dataset.DataSetFactory;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.jbpm.console.ng.es.client.editors.requestlist.RequestListViewImpl;
 import org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash.DataSetTasksListGridViewImpl;
-import org.jbpm.console.ng.pr.client.editors.instance.list.dash.DataSetProcessInstanceListViewImpl;
+import org.jbpm.console.ng.pr.client.editors.instance.list.dash.BaseDataSetProcessInstanceListPresenter.BaseDataSetProcessInstanceListView;
 import org.uberfire.commons.services.cdi.Startup;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 @Startup
 @ApplicationScoped
@@ -57,7 +57,7 @@ public class DashbuilderBootstrap {
     }
 
     protected void registerDataSetDefinitions() {
-
+        
         DataSetDef humanTasksDef = DataSetFactory.newSQLDataSetDef()
                 .uuid(HUMAN_TASKS_DATASET)
                 .name("Human tasks")
@@ -86,20 +86,20 @@ public class DashbuilderBootstrap {
                 .name("Process Instances")
                 .dataSource(JBPM_DATASOURCE)
                 .dbTable(PROCESS_INSTANCE_TABLE, false)
-                .number(DataSetProcessInstanceListViewImpl.COLUMN_PROCESSINSTANCEID)
-                .label(DataSetProcessInstanceListViewImpl.COLUMN_PROCESSID)
-                .date(DataSetProcessInstanceListViewImpl.COLUMN_START)
-                .date(DataSetProcessInstanceListViewImpl.COLUMN_END)
-                .number(DataSetProcessInstanceListViewImpl.COLUMN_STATUS)
-                .number(DataSetProcessInstanceListViewImpl.COLUMN_PARENTPROCESSINSTANCEID)
-                .label(DataSetProcessInstanceListViewImpl.COLUMN_OUTCOME)
-                .number(DataSetProcessInstanceListViewImpl.COLUMN_DURATION)
-                .label(DataSetProcessInstanceListViewImpl.COLUMN_IDENTITY)
-                .label(DataSetProcessInstanceListViewImpl.COLUMN_PROCESSVERSION)
-                .label(DataSetProcessInstanceListViewImpl.COLUMN_PROCESSNAME)
-                .label(DataSetProcessInstanceListViewImpl.COLUMN_CORRELATIONKEY)
-                .label(DataSetProcessInstanceListViewImpl.COLUMN_EXTERNALID)
-                .label(DataSetProcessInstanceListViewImpl.COLUMN_PROCESSINSTANCEDESCRIPTION)
+                .number( BaseDataSetProcessInstanceListView.COLUMN_PROCESSINSTANCEID )
+                .label(BaseDataSetProcessInstanceListView.COLUMN_PROCESSID)
+                .date(BaseDataSetProcessInstanceListView.COLUMN_START)
+                .date(BaseDataSetProcessInstanceListView.COLUMN_END)
+                .number(BaseDataSetProcessInstanceListView.COLUMN_STATUS)
+                .number(BaseDataSetProcessInstanceListView.COLUMN_PARENTPROCESSINSTANCEID )
+                .label(BaseDataSetProcessInstanceListView.COLUMN_OUTCOME)
+                .number( BaseDataSetProcessInstanceListView.COLUMN_DURATION )
+                .label(BaseDataSetProcessInstanceListView.COLUMN_IDENTITY)
+                .label(BaseDataSetProcessInstanceListView.COLUMN_PROCESSVERSION)
+                .label(BaseDataSetProcessInstanceListView.COLUMN_PROCESSNAME)
+                .label(BaseDataSetProcessInstanceListView.COLUMN_CORRELATIONKEY)
+                .label(BaseDataSetProcessInstanceListView.COLUMN_EXTERNALID)
+                .label(BaseDataSetProcessInstanceListView.COLUMN_PROCESSINSTANCEDESCRIPTION)
                 .buildDef();
 
         DataSetDef humanTasksWithUserDef = DataSetFactory.newSQLDataSetDef()
