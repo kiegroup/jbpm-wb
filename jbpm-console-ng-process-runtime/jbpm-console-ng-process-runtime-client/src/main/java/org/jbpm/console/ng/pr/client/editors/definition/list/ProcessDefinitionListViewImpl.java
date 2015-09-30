@@ -104,15 +104,16 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
 
                 selectedItem = selectionModel.getLastSelectedObject();
 
-                PlaceStatus instanceDetailsStatus = placeManager.getStatus( new DefaultPlaceRequest( "Process Instance Details Multi" ) );
-
-                if ( instanceDetailsStatus == PlaceStatus.OPEN ) {
-                    placeManager.closePlace( "Process Instance Details Multi" );
-                }
-//                placeIdentifier = "Basic Process Details Multi";
-//                if ( contextualView.getViewMode( ContextualView.ALL_PERSPECTIVES ).equals( ContextualView.ADVANCED_MODE ) ) {
+                String processInstancePlaceIdentifier = "Basic Process Instance Details Multi" ;
+                placeIdentifier = "Basic Process Details Multi";
+                if ( contextualView.getViewMode( ContextualView.ALL_PERSPECTIVES ).equals( ContextualView.ADVANCED_MODE ) ){
                     placeIdentifier = "Advanced Process Details Multi";
-//                }
+                    processInstancePlaceIdentifier = "Advanced Process Instance Details Multi";
+                } 
+                PlaceStatus instanceDetailsStatus = placeManager.getStatus( new DefaultPlaceRequest( processInstancePlaceIdentifier ) );
+                if ( instanceDetailsStatus == PlaceStatus.OPEN ) {
+                    placeManager.closePlace( processInstancePlaceIdentifier );
+                }
                 PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( placeIdentifier ) );
 
                 if ( status == PlaceStatus.CLOSE ) {
@@ -230,15 +231,17 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     }
 
     public void refreshNewProcessInstance( @Observes NewProcessInstanceEvent newProcessInstance ) {
-//        placeIdentifier = "Basic Process Details Multi";
-//        if ( contextualView.getViewMode( ContextualView.ALL_PERSPECTIVES ).equals( ContextualView.ADVANCED_MODE ) ) {
+        String processInstancePlaceIdentifier = "Basic Process Instance Details Multi" ;
+        placeIdentifier = "Basic Process Details Multi";
+        if ( contextualView.getViewMode( ContextualView.ALL_PERSPECTIVES ).equals( ContextualView.ADVANCED_MODE ) ){
             placeIdentifier = "Advanced Process Details Multi";
-//        }
+            processInstancePlaceIdentifier = "Advanced Process Instance Details Multi";
+        } 
         PlaceStatus definitionDetailsStatus = placeManager.getStatus( new DefaultPlaceRequest( placeIdentifier ) );
         if ( definitionDetailsStatus == PlaceStatus.OPEN ) {
             placeManager.closePlace( placeIdentifier );
         }
-        placeManager.goTo( "Process Instance Details Multi" );
+        placeManager.goTo( processInstancePlaceIdentifier );
         processInstanceSelected.fire( new ProcessInstanceSelectionEvent( newProcessInstance.getDeploymentId(),
                                                                          newProcessInstance.getNewProcessInstanceId(),
                                                                          newProcessInstance.getNewProcessDefId(), newProcessInstance.getProcessDefName(), newProcessInstance.getNewProcessInstanceStatus() ) );

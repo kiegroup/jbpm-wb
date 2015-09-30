@@ -23,6 +23,7 @@ import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
 import org.kie.workbench.common.widgets.client.search.SetSearchTextEvent;
+import org.kie.workbench.common.widgets.client.workbench.configuration.ContextualView;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
@@ -46,13 +47,20 @@ public class ProcessInstancesPerspective {
     @Inject
     private Event<SetSearchTextEvent> setSearchTextEvents;
     
+    @Inject
+    private ContextualView contextualView;
+    
     private String currentProcessDefinition = "";
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(SimpleWorkbenchPanelPresenter.class.getName());
-        p.setName( "Process Instances" );
-        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Process Instance List" );
+        String placeIdentifier = "Basic Process Instance List";
+        p.setName( placeIdentifier );
+        if ( contextualView.getViewMode( ContextualView.ALL_PERSPECTIVES ).equals( ContextualView.ADVANCED_MODE ) ) {
+            placeIdentifier = "Advanced Process Instance List";
+        }
+        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( placeIdentifier );
         defaultPlaceRequest.addParameter( "processName", currentProcessDefinition );
         p.getRoot().addPart( new PartDefinitionImpl( defaultPlaceRequest ) );
         return p;

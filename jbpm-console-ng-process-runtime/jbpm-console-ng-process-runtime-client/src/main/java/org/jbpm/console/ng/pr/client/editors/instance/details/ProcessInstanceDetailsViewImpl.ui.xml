@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+    xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:b='urn:import:org.gwtbootstrap3.client.ui'>
+    <ui:with field="i18n"
+        type="org.jbpm.console.ng.pr.client.i18n.Constants" />
+    <ui:style>
+        .container {
+        margin: 10px;
+        }
+
+        .horizontalContainer {
+        height:
+        32px;
+        }
+
+        .right {
+        float: right;
+        text-align: right;
+        margin-right: 10px;
+        }
+
+        .center {
+        text-align: center
+        }
+    </ui:style>
+    <b:Container fluid="true">
+        <b:Row>
+            <b:Column size="MD_12">
+                <b:Form type="HORIZONTAL">
+                    <b:FieldSet>
+                        <b:FormGroup ui:field="processDefinitionIdGroup">
+                            <b:FormLabel for="processDefinitionIdText"
+                                addStyleNames="col-md-3">
+                                <ui:text from="{i18n.Process_Definition_Id}" />
+                            </b:FormLabel>
+                            <b:Column size="MD_9">
+                                <b:FormControlStatic ui:field="processDefinitionIdText" />
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup ui:field="stateGroup">
+                            <b:FormLabel for="stateText"
+                                addStyleNames="col-md-3">
+                                <ui:text from="{i18n.Process_Instance_State}" />
+                            </b:FormLabel>
+                            <b:Column size="MD_9">
+                                <b:FormControlStatic ui:field="stateText" />
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup ui:field="processDeploymentGroup">
+                            <b:FormLabel for="processDeploymentText"
+                                addStyleNames="col-md-3">
+                                <ui:text from="{i18n.Deployment_Name}" />
+                            </b:FormLabel>
+                            <b:Column size="MD_9">
+                                <b:FormControlStatic ui:field="processDeploymentText" />
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup ui:field="processVersionGroup">
+                            <b:FormLabel for="processVersionText"
+                                addStyleNames="col-md-3">
+                                <ui:text
+                                    from="{i18n.Process_Definition_Version}" />
+                            </b:FormLabel>
+                            <b:Column size="MD_9">
+                                <b:FormControlStatic ui:field="processVersionText" />
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup ui:field="correlationKeyGroup">
+                            <b:FormLabel for="correlationKeyText"
+                                addStyleNames="col-md-3">
+                                <ui:text from="{i18n.Correlation_Key}" />
+                            </b:FormLabel>
+                            <b:Column size="MD_9">
+                                <b:FormControlStatic ui:field="correlationKeyText" />
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup ui:field="parentProcessInstanceIdGroup">
+                            <b:FormLabel for="parentProcessInstanceIdText"
+                                addStyleNames="col-md-3">
+                                <ui:text
+                                    from="{i18n.Parent_Process_Instance}" />
+                            </b:FormLabel>
+                            <b:Column size="MD_9">
+                                <b:FormControlStatic ui:field="parentProcessInstanceIdText" />
+                            </b:Column>
+                        </b:FormGroup>
+                    </b:FieldSet>
+                </b:Form>
+            </b:Column>
+        </b:Row>
+    </b:Container>
+</ui:UiBinder>

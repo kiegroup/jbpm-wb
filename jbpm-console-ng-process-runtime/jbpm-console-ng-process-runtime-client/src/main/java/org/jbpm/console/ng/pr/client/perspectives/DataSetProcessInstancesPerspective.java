@@ -19,6 +19,7 @@ import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
 import org.kie.workbench.common.widgets.client.search.SetSearchTextEvent;
+import org.kie.workbench.common.widgets.client.workbench.configuration.ContextualView;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
@@ -46,13 +47,21 @@ public class DataSetProcessInstancesPerspective {
     @Inject
     private Event<SetSearchTextEvent> setSearchTextEvents;
     
+    @Inject
+    private ContextualView contextualView;
+    
+    
     private String currentProcessDefinition = "";
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(SimpleWorkbenchPanelPresenter.class.getName());
-        p.setName( "DataSet Process Instances" );
-        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "DataSet Process Instance List" );
+        String placeIdentifier = "Basic DataSet Process Instance List";
+        if ( contextualView.getViewMode( ContextualView.ALL_PERSPECTIVES ).equals( ContextualView.ADVANCED_MODE ) ) {
+            placeIdentifier = "Advanced DataSet Process Instance List";
+        }
+        p.setName( placeIdentifier );
+        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( placeIdentifier );
         p.getRoot().addPart( new PartDefinitionImpl( defaultPlaceRequest ) );
         return p;
     }
