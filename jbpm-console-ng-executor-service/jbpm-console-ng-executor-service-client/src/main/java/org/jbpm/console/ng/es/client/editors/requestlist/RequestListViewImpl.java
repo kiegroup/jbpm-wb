@@ -25,8 +25,6 @@ import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import org.jbpm.console.ng.es.client.editors.jobdetails.JobDetailsPopup;
-import org.jbpm.console.ng.es.client.editors.quicknewjob.QuickNewJobPopup;
-import org.jbpm.console.ng.es.client.editors.servicesettings.JobServiceSettingsPopup;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
@@ -39,9 +37,6 @@ import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.SplitDropdownButton;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
@@ -78,16 +73,8 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
     @Inject
     private JobDetailsPopup jobDetailsPopup;
 
-    //@Inject
-    //private QuickNewJobPopup quickNewJobPopup;
-
     @Inject
     private NewTabFilterPopup newTabFilterPopup;
-
-
-
-    //@Inject
-    //private JobServiceSettingsPopup jobServiceSettingsPopup;
 
     @Override
     public void init(final RequestListPresenter presenter ) {
@@ -112,7 +99,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
                         filterPagedTable.saveNewTabSettings( key, newTabFormValues );
                         final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance(  new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
 
-                        presenter.addDataDisplay( extendedPagedTable );
                         extendedPagedTable.setDataProvider(presenter.getDataProvider() );
 
                         filterPagedTable.createNewTab( extendedPagedTable, key, button,new Command() {
@@ -242,7 +228,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
     }
 
     private void initLeftToolbarActions(ExtendedPagedTable extendedPagedTable) {
- 
+
     }
 
 
@@ -392,7 +378,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
     public void initDefaultFilters(GridGlobalPreferences preferences ,Button createTabButton){
 
         List<String> statuses;
-
+        presenter.setAddingDefaultFilters( true );
         statuses = null;
 
         initTabFilter( preferences, "RequestListGrid_0", Constants.INSTANCE.All(), "Filter " + Constants.INSTANCE.All(), statuses );
@@ -428,6 +414,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
         initTabFilter( preferences, "RequestListGrid_6", Constants.INSTANCE.Cancelled(), "Filter " + Constants.INSTANCE.Cancelled(), statuses );
 
         filterPagedTable.addAddTableButton( createTabButton );
+        presenter.setAddingDefaultFilters( false );
         applyFilterOnPresenter( "RequestListGrid_6" );
 
     }
@@ -444,7 +431,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary,Re
         filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
         final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance(  new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns()), key );
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider(presenter.getDataProvider() );
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
             @Override

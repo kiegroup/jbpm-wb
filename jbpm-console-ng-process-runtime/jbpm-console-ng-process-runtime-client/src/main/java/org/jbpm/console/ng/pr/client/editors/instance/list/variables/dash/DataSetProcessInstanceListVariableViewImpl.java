@@ -112,7 +112,7 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
     @Override
     public void init(final DataSetProcessInstanceVariableListPresenter presenter) {
         final List<String> bannedColumns = new ArrayList<String>();
-        
+
         bannedColumns.add(constants.Id());
         bannedColumns.add(constants.Name());
 
@@ -123,9 +123,9 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
         initColumns.add(constants.Id());
         initColumns.add(constants.Variables_Name());
         initColumns.add(constants.Variable_Value());
-        
 
-        
+
+
 
         final Button button = new Button();
         button.setText("+");
@@ -140,7 +140,6 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
 
                         final ExtendedPagedTable<ProcessInstanceVariableSummary> extendedPagedTable = createGridInstance(new GridGlobalPreferences(key, initColumns, bannedColumns), key);
 
-                        presenter.addDataDisplay(extendedPagedTable);
                         extendedPagedTable.setDataProvider(presenter.getDataProvider());
 
                         filterPagedTable.createNewTab(extendedPagedTable, key, button, new Command() {
@@ -246,7 +245,7 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
     @Override
     public void initColumns(ExtendedPagedTable<ProcessInstanceVariableSummary> extendedPagedTable) {
 
-        
+
         Column processInstanceIdColumn = initProcessInstanceIdColumn();
 
         Column processNameColumn = initProcessNameColumn();
@@ -255,7 +254,7 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
         Column variableValueColumn = initVariableValueColumn();
 
         List<ColumnMeta<ProcessInstanceVariableSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessInstanceVariableSummary>>();
-        
+
         columnMetas.add(new ColumnMeta<ProcessInstanceVariableSummary>(processInstanceIdColumn, constants.Process_Instance_ID()));
         columnMetas.add(new ColumnMeta<ProcessInstanceVariableSummary>(processNameColumn, constants.Process_Instance_Name()));
         columnMetas.add(new ColumnMeta<ProcessInstanceVariableSummary>(variableIdColumn, constants.Id()));
@@ -299,7 +298,7 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
 
         return vairableIdColumn;
     }
-    
+
     private Column initProcessNameColumn() {
         // Process Instance Id.
         Column<ProcessInstanceVariableSummary, String> processNameColumn = new Column<ProcessInstanceVariableSummary, String>(new TextCell()) {
@@ -349,7 +348,7 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
     public void initDefaultFilters(GridGlobalPreferences preferences, Button createTabButton) {
 
         List<String> states = new ArrayList<String>();
-
+        presenter.setAddingDefaultFilters( true );
         //Filter status Active
         states.add(String.valueOf(ProcessInstance.STATE_ACTIVE));
         initGenericTabFilter(preferences, PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states, "", "");
@@ -357,6 +356,7 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
         filterPagedTable.addAddTableButton(createTabButton);
         getMultiGridPreferencesStore().setSelectedGrid(PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_0");
         filterPagedTable.setSelectedTab();
+        presenter.setAddingDefaultFilters( false );
         applyFilterOnPresenter(PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_0");
 
     }
@@ -394,7 +394,6 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
 
         final ExtendedPagedTable<ProcessInstanceVariableSummary> extendedPagedTable = createGridInstance(new GridGlobalPreferences(key, preferences.getInitialColumns(), preferences.getBannedColumns()), key);
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay(extendedPagedTable);
         extendedPagedTable.setDataProvider(presenter.getDataProvider());
 
         filterPagedTable.addTab(extendedPagedTable, key, new Command() {

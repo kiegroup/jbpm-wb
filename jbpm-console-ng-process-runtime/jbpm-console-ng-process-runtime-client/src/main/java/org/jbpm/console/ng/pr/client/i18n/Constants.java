@@ -68,8 +68,6 @@ public interface Constants extends Messages {
 
     String Initiator();
 
-    String Process_Instances_Refreshed();
-
     String No_Process_Instances_Found();
 
     String Aborting_Process_Instance_Not_Allowed();
@@ -101,14 +99,6 @@ public interface Constants extends Messages {
     String Type();
 
     String No_Variables_Available();
-
-    String Refresh();
-
-    String AutoRefresh();
-
-    String RestoreDefaultFilters();
-
-    String Disable();
 
     String View_Process_Instances();
 
@@ -249,13 +239,13 @@ public interface Constants extends Messages {
     String Close();
 
     String Correlation_Key();
-    
+
     String Process_DeploymentId();
-    
+
     String Basic();
-    
+
     String Advanced();
-    
+
     String Form();
 
     String Parent_Process_Instance();
@@ -264,11 +254,6 @@ public interface Constants extends Messages {
 
     String New_Process_InstanceList();
 
-    String Disable_autorefresh();
+    String Refresh();
 
-    String Autorefresh_Disabled();
-
-    String Minute();
-
-    String Minutes();
 }

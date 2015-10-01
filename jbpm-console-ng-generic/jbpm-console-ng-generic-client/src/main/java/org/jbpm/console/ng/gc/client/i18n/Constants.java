@@ -56,4 +56,16 @@ public interface Constants extends Messages {
     String Next();
 
     String Loading();
+
+    String Minutes();
+
+    String Minute();
+
+    String DisableAutorefresh();
+
+    String AutorefreshDisabled();
+
+    String RestoreDefaultFilters();
+
+    String AutoRefresh();
 }

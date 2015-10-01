@@ -16,26 +16,17 @@
 package org.jbpm.console.ng.gc.client.list.base;
 
 import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.RadioButton;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
-import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.services.shared.preferences.*;
@@ -127,11 +118,13 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
                 if ( existingGrids != null && existingGrids.size() > 0 ) {
                     String key;
+
+                    presenter.setAddingDefaultFilters( true );
                     for ( int i = 0; i < existingGrids.size(); i++ ) {
                         key = existingGrids.get( i );
+
                         final ExtendedPagedTable<T> extendedPagedTable = createGridInstance( preferences, key );
                         currentListGrid = extendedPagedTable;
-                        presenter.addDataDisplay( extendedPagedTable );
                         extendedPagedTable.setDataProvider( presenter.dataProvider );
                         final String filterKey = key;
                         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
@@ -144,6 +137,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                         if ( currentListGrid != null && key.equals( selectedGridId ) )
                             currentListGrid = extendedPagedTable;
                     }
+                    presenter.setAddingDefaultFilters( false );
 
                     filterPagedTable.addAddTableButton( createNewGridButton );
                     if ( selectedGridId != null ) {
@@ -159,8 +153,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
             }
 
         } ).loadUserPreferences( preferences.getKey(), UserPreferencesType.MULTIGRIDPREFERENCES );
-        //presenter.setFilterPagedTable( filterPagedTable );
-       // presenter.autoRefreshSeconds =  getMultiGridPreferencesStore().getRefreshInterval();
+
     }
 
     @Override
@@ -242,97 +235,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     public void applyFilterOnPresenter( String key ) {
-    }
-
-    public void createRefreshToggleButton(final Button refreshIntervalSelector) {
-
-        refreshIntervalSelector.setToggle(true);
-        refreshIntervalSelector.setIcon( IconType.LIST_ALT);
-        refreshIntervalSelector.setTitle( "Refresh tooltip" );
-
-        popup.getElement().getStyle().setZIndex(Integer.MAX_VALUE);
-        popup.addAutoHidePartner(refreshIntervalSelector.getElement());
-        popup.addCloseHandler(new CloseHandler<PopupPanel>() {
-            public void onClose(CloseEvent<PopupPanel> popupPanelCloseEvent) {
-                if (popupPanelCloseEvent.isAutoClosed()) {
-                    refreshIntervalSelector.setActive(false);
-                }
-            }
-        });
-
-        refreshIntervalSelector.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                if (!refreshIntervalSelector.isActive() ) {
-                    showSelectRefreshIntervalPopup( refreshIntervalSelector.getAbsoluteLeft() + refreshIntervalSelector.getOffsetWidth(),
-                            refreshIntervalSelector.getAbsoluteTop() + refreshIntervalSelector.getOffsetHeight(),refreshIntervalSelector);
-                } else {
-                    popup.hide(false);
-                }
-            }
-        });
-
-    }
-
-    private void showSelectRefreshIntervalPopup(final int left,
-            final int top,
-            final Button refreshIntervalSelector) {
-        VerticalPanel popupContent = new VerticalPanel();
-
-        int configuredSeconds = getMultiGridPreferencesStore().getRefreshInterval();
-        if(configuredSeconds>0) {
-            presenter.updateRefreshInterval( true,configuredSeconds );
-        } else {
-            presenter.updateRefreshInterval( false, 0 );
-        }
-
-        RadioButton oneMinuteRadioButton = createTimeSelectorRadioButton(10000, "1 Minute", configuredSeconds, refreshIntervalSelector, popupContent);
-        RadioButton fiveMinuteRadioButton = createTimeSelectorRadioButton(50000, "5 Minutes", configuredSeconds, refreshIntervalSelector, popupContent);
-        RadioButton tenMinuteRadioButton = createTimeSelectorRadioButton(100000, "10 Minutes", configuredSeconds, refreshIntervalSelector, popupContent);
-
-        popupContent.add(oneMinuteRadioButton);
-        popupContent.add(fiveMinuteRadioButton);
-        popupContent.add(tenMinuteRadioButton);
-
-        Button resetButton = new Button( "Disable Autorefresh" );
-        resetButton.setSize( ButtonSize.MINI );
-        resetButton.addClickHandler( new ClickHandler() {
-
-            @Override
-            public void onClick( ClickEvent event ) {
-                filterPagedTable.saveNewRefreshInterval( 0 );
-                presenter.updateRefreshInterval( false,0 );
-                refreshIntervalSelector.setActive( false );
-                popup.hide();
-            }
-        } );
-
-        popupContent.add( resetButton );
-
-        popup.setWidget(popupContent);
-        popup.show();
-        int finalLeft = left - popup.getOffsetWidth();
-        popup.setPopupPosition(finalLeft, top);
-
-    }
-    private RadioButton createTimeSelectorRadioButton(int time, String name, int configuredSeconds, final Button refreshIntervalSelector, VerticalPanel popupContent) {
-        RadioButton oneMinuteRadioButton = new RadioButton("refreshInterval",name);
-        oneMinuteRadioButton.setText( name  );
-        final int selectedRefreshTime = time;
-        if(configuredSeconds == selectedRefreshTime ) {
-            oneMinuteRadioButton.setValue( true );
-        }
-
-        oneMinuteRadioButton.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                filterPagedTable.saveNewRefreshInterval( selectedRefreshTime );
-                presenter.updateRefreshInterval(true, selectedRefreshTime );
-                refreshIntervalSelector.setActive( false );
-                popup.hide();
-
-            }
-        } );
-        return oneMinuteRadioButton;
     }
 
 

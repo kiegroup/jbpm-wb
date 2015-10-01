@@ -164,7 +164,6 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
 
                         final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable = createGridInstance(new GridGlobalPreferences(key, initColumns, bannedColumns), key);
 
-                        presenter.addDataDisplay(extendedPagedTable);
                         extendedPagedTable.setDataProvider(presenter.getDataProvider());
 
                         filterPagedTable.createNewTab(extendedPagedTable, key, button, new Command() {
@@ -691,7 +690,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
     public void initDefaultFilters(GridGlobalPreferences preferences, Button createTabButton) {
 
         List<String> states = new ArrayList<String>();
-
+        presenter.setAddingDefaultFilters( true );
         //Filter status Active
         states.add(String.valueOf(ProcessInstance.STATE_ACTIVE));
         initGenericTabFilter(preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states, "", "");
@@ -700,13 +699,14 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         states = new ArrayList<String>();
         states.add(String.valueOf(ProcessInstance.STATE_COMPLETED));
         initGenericTabFilter(preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1", Constants.INSTANCE.Completed(), "Filter " + Constants.INSTANCE.Completed(), states, "", "");
-        
+
         //Filter status completed
         states = new ArrayList<String>();
         states.add(String.valueOf(ProcessInstance.STATE_ABORTED));
         initGenericTabFilter(preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2", Constants.INSTANCE.Aborted(), "Filter " + Constants.INSTANCE.Aborted(), states, "", "");
 
         filterPagedTable.addAddTableButton(createTabButton);
+        presenter.setAddingDefaultFilters( false );
         getMultiGridPreferencesStore().setSelectedGrid(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0");
         filterPagedTable.setSelectedTab();
         applyFilterOnPresenter(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0");
@@ -761,7 +761,6 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
 
         final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable = createGridInstance(new GridGlobalPreferences(key, preferences.getInitialColumns(), preferences.getBannedColumns()), key);
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay(extendedPagedTable);
         extendedPagedTable.setDataProvider(presenter.getDataProvider());
 
         filterPagedTable.addTab(extendedPagedTable, key, new Command() {
@@ -860,7 +859,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
                 + "    \"tableDescription\": \"Filtered Desc\",\n"
                 + "    \"tableEditEnabled\": \"false\"\n"
                 + "}";
-        
+
         return dataSetEditorManager.getStrToTableSettings(tableSettingsJSON);
     }
 
