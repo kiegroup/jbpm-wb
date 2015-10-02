@@ -104,9 +104,6 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
     private RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder( this );
 
-    public Button menuRefreshButton = new Button();
-    public Button menuResetTabsButton = new Button();
-
     private final List<MenuItem> items = new ArrayList<MenuItem>();
 
     public DataSetTasksListGridPresenter() {
@@ -131,93 +128,96 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
     @Override
     public void getData( final Range visibleRange ) {
         try {
-            FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
-            if ( currentTableSettings != null ) {
-                currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
-                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                GWT.log( "-----taskList getData " + columnSortList.size() + "currentTableSettings table name " + currentTableSettings.getTableName() );
-                if ( columnSortList != null && columnSortList.size() > 0 ) {
-                    dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
-                    dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
-                } else {
-                    dataSetQueryHelper.setLastOrderedColumn( DataSetTasksListGridViewImpl.COLUMN_CREATEDON );
-                    dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
-                }
-                dataSetQueryHelper.setDataSetHandler( currentTableSettings );
-                if ( textSearchStr != null && textSearchStr.trim().length() > 0 ) {
-
-                    DataSetFilter filter = new DataSetFilter();
-                    List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-                    filters.add( likeTo( DataSetTasksListGridViewImpl.COLUMN_NAME, "%"+ textSearchStr.toLowerCase()+ "%", false ) );
-                    filters.add( likeTo( DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION, "%"+ textSearchStr.toLowerCase()+ "%", false ) );
-                    filters.add( likeTo( DataSetTasksListGridViewImpl.COLUMN_PROCESSID, "%"+ textSearchStr.toLowerCase()+ "%", false ) );
-                    filter.addFilterColumn( OR( filters ) );
-
-                    if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {
-                        currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
+            if(!isAddingDefaultFilters()) {
+                FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
+                if ( currentTableSettings != null ) {
+                    currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
+                    ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+                    //GWT.log( "-----taskList getData table name " + currentTableSettings.getTableName() );
+                    if ( columnSortList != null && columnSortList.size() > 0 ) {
+                        dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
+                        dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
                     } else {
-                        currentTableSettings.getDataSetLookup().addOperation( filter );
+                        dataSetQueryHelper.setLastOrderedColumn( DataSetTasksListGridViewImpl.COLUMN_CREATEDON );
+                        dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                     }
-                    textSearchStr = "";
-                }
-                dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
-                    @Override
-                    public void callback( DataSet dataSet ) {
-                        if ( dataSet != null ) {
-                            List<TaskSummary> myTasksFromDataSet = new ArrayList<TaskSummary>();
 
-                            for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
-                                myTasksFromDataSet.add( new TaskSummary(
-                                        dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_TASKID, i ),
-                                        dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_NAME, i ),
-                                        dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION, i ),
-                                        dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_STATUS, i ),
-                                        dataSetQueryHelper.getColumnIntValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PRIORITY, i ),
-                                        dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, i ),
-                                        dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_CREATEDBY, i ),
-                                        dataSetQueryHelper.getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_CREATEDON, i ),
-                                        dataSetQueryHelper.getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_ACTIVATIONTIME, i ),
-                                        dataSetQueryHelper.getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DUEDATE, i ),
-                                        dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSID, i ),
-                                        dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSSESSIONID, i ),
-                                        dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSINSTANCEID, i ),
-                                        dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DEPLOYMENTID, i ),
-                                        dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PARENTID, i ) ) );
+                    if ( textSearchStr != null && textSearchStr.trim().length() > 0 ) {
 
-                            }
-                            PageResponse<TaskSummary> taskSummaryPageResponse = new PageResponse<TaskSummary>();
-                            taskSummaryPageResponse.setPageRowList( myTasksFromDataSet );
-                            taskSummaryPageResponse.setStartRowIndex( visibleRange.getStart() );
-                            taskSummaryPageResponse.setTotalRowSize( dataSet.getRowCountNonTrimmed() );
-                            taskSummaryPageResponse.setTotalRowSizeExact( true );
-                            if ( visibleRange.getStart() + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed() ) {
-                                taskSummaryPageResponse.setLastPage( true );
-                            } else {
-                                taskSummaryPageResponse.setLastPage( false );
-                            }
-                            DataSetTasksListGridPresenter.this.updateDataOnCallback( taskSummaryPageResponse );
+                        DataSetFilter filter = new DataSetFilter();
+                        List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
+                        filters.add( likeTo( DataSetTasksListGridViewImpl.COLUMN_NAME, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo( DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo( DataSetTasksListGridViewImpl.COLUMN_PROCESSID, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filter.addFilterColumn( OR( filters ) );
+
+                        if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {
+                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
+                        } else {
+                            currentTableSettings.getDataSetLookup().addOperation( filter );
                         }
-                        view.hideBusyIndicator();
+                        textSearchStr = "";
                     }
+                    dataSetQueryHelper.setDataSetHandler( currentTableSettings );
+                    dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
+                        @Override
+                        public void callback( DataSet dataSet ) {
+                            if ( dataSet != null ) {
+                                List<TaskSummary> myTasksFromDataSet = new ArrayList<TaskSummary>();
 
-                    @Override
-                    public void notFound() {
-                        view.hideBusyIndicator();
-                        errorPopup.showMessage( "Not found DataSet with UUID [  jbpmHumanTasks ] " );
-                        GWT.log( "DataSet with UUID [  jbpmHumanTasks ] not found." );
-                    }
+                                for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
+                                    myTasksFromDataSet.add( new TaskSummary(
+                                            dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_TASKID, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_NAME, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_STATUS, i ),
+                                            dataSetQueryHelper.getColumnIntValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PRIORITY, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_CREATEDBY, i ),
+                                            dataSetQueryHelper.getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_CREATEDON, i ),
+                                            dataSetQueryHelper.getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_ACTIVATIONTIME, i ),
+                                            dataSetQueryHelper.getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DUEDATE, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSID, i ),
+                                            dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSSESSIONID, i ),
+                                            dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSINSTANCEID, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DEPLOYMENTID, i ),
+                                            dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PARENTID, i ) ) );
 
-                    @Override
-                    public boolean onError( final ClientRuntimeError error ) {
-                        view.hideBusyIndicator();
-                        error.getThrowable().printStackTrace();
-                        errorPopup.showMessage( "DataSet with UUID [  jbpmHumanTasks ] error: " + error.getThrowable() );
-                        GWT.log( "DataSet with UUID [  jbpmHumanTasks ] error: ", error.getThrowable() );
-                        return false;
-                    }
-                } );
-            } else {
-                view.hideBusyIndicator();
+                                }
+                                PageResponse<TaskSummary> taskSummaryPageResponse = new PageResponse<TaskSummary>();
+                                taskSummaryPageResponse.setPageRowList( myTasksFromDataSet );
+                                taskSummaryPageResponse.setStartRowIndex( visibleRange.getStart() );
+                                taskSummaryPageResponse.setTotalRowSize( dataSet.getRowCountNonTrimmed() );
+                                taskSummaryPageResponse.setTotalRowSizeExact( true );
+                                if ( visibleRange.getStart() + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed() ) {
+                                    taskSummaryPageResponse.setLastPage( true );
+                                } else {
+                                    taskSummaryPageResponse.setLastPage( false );
+                                }
+                                DataSetTasksListGridPresenter.this.updateDataOnCallback( taskSummaryPageResponse );
+                            }
+                            view.hideBusyIndicator();
+                        }
+
+                        @Override
+                        public void notFound() {
+                            view.hideBusyIndicator();
+                            errorPopup.showMessage( "Not found DataSet with UUID [  jbpmHumanTasks ] " );
+                            GWT.log( "DataSet with UUID [  jbpmHumanTasks ] not found." );
+                        }
+
+                        @Override
+                        public boolean onError( final ClientRuntimeError error ) {
+                            view.hideBusyIndicator();
+                            error.getThrowable().printStackTrace();
+                            errorPopup.showMessage( "DataSet with UUID [  jbpmHumanTasks ] error: " + error.getThrowable() );
+                            GWT.log( "DataSet with UUID [  jbpmHumanTasks ] error: ", error.getThrowable() );
+                            return false;
+                        }
+                    } );
+                } else {
+                    view.hideBusyIndicator();
+                }
             }
         } catch ( Exception e ) {
             GWT.log( "Error looking up dataset with UUID [ jbpmHumanTasks ]" );
@@ -371,16 +371,6 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
     }
 
-    @PostConstruct
-    public void setupButtons() {
-        menuRefreshButton.setIcon( IconType.REFRESH );
-        menuRefreshButton.setSize( ButtonSize.SMALL );
-        menuRefreshButton.setTitle( Constants.INSTANCE.Refresh() );
-
-        menuResetTabsButton.setIcon( IconType.TH_LIST );
-        menuResetTabsButton.setSize( ButtonSize.SMALL );
-        menuResetTabsButton.setTitle( Constants.INSTANCE.RestoreDefaultFilters() );
-    }
 
     @Override
     public void onGridPreferencesStoreLoaded() {
