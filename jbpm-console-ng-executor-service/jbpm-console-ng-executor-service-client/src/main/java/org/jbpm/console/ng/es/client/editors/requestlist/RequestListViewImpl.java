@@ -129,7 +129,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
                         final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
 
-                        presenter.addDataDisplay( extendedPagedTable );
                         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
                         filterPagedTable.createNewTab( extendedPagedTable, key, button, new Command() {
@@ -148,36 +147,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                 dataSetEditorManager.showTableSettingsEditor( filterPagedTable, Constants.INSTANCE.New_JobList(), tableSettings, addNewGrid );
 
 
-             /*
-
-                Command addNewGrid = new Command() {
-                    @Override
-                    public void execute() {
-                        HashMap<String,Object> newTabFormValues = newTabFilterPopup.getFormValues();
-
-                        final String key = getValidKeyForAdditionalListGrid(REQUEST_LIST_PREFIX + "_");
-
-                        filterPagedTable.saveNewTabSettings( key, newTabFormValues );
-                        final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance(  new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
-
-                        presenter.addDataDisplay( extendedPagedTable );
-                        extendedPagedTable.setDataProvider(presenter.getDataProvider() );
-
-                        filterPagedTable.createNewTab( extendedPagedTable, key, button,new Command() {
-                            @Override
-                            public void execute() {
-                                currentListGrid = extendedPagedTable;
-                                applyFilterOnPresenter( key );
-                            }
-                        } ) ;
-                        applyFilterOnPresenter( newTabFormValues );
-
-
-                    }
-                };
-                createFilterForm();
-                newTabFilterPopup.show( addNewGrid, getMultiGridPreferencesStore() );
-               */
             }
         } );
 
@@ -438,8 +407,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                                     Button createTabButton ) {
 
         List<String> statuses;
-
-        statuses = null;
+        presenter.setAddingDefaultFilters( true );
         statuses = new ArrayList<String>();
 
         initTabFilter( preferences, REQUEST_LIST_PREFIX + "_0", Constants.INSTANCE.All(), "Filter " + Constants.INSTANCE.All(), statuses );
@@ -475,6 +443,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         initTabFilter( preferences, REQUEST_LIST_PREFIX + "_6", Constants.INSTANCE.Cancelled(), "Filter " + Constants.INSTANCE.Cancelled(), statuses );
 
         filterPagedTable.addAddTableButton( createTabButton );
+        presenter.setAddingDefaultFilters( false );
         getMultiGridPreferencesStore().setSelectedGrid( REQUEST_LIST_PREFIX + "_0" );
         filterPagedTable.setSelectedTab();
         applyFilterOnPresenter( REQUEST_LIST_PREFIX + "_0" );
@@ -524,7 +493,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
         final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
@@ -583,6 +551,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         ArrayList<String> existingGrids = getMultiGridPreferencesStore().getGridsId();
         ArrayList<String> allTabs = new ArrayList<String>( existingGrids.size() );
 
+        presenter.setAddingDefaultFilters( true );
         if ( existingGrids != null && existingGrids.size() > 0 ) {
 
             for ( int i = 0; i < existingGrids.size(); i++ ) {

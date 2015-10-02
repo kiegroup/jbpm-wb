@@ -138,7 +138,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
                         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
 
-                        presenter.addDataDisplay( extendedPagedTable );
                         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
                         filterPagedTable.createNewTab( extendedPagedTable, key, button, new Command() {
@@ -643,7 +642,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                                     Button createTabButton ) {
 
         List<String> states;
-
+        presenter.setAddingDefaultFilters( true );
         //Filter status Active
         states = TaskUtils.getStatusByType( TaskUtils.TaskType.ACTIVE );
         initOwnTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states, TASK_ROLE_POTENTIALOWNER );
@@ -665,6 +664,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         initAdminTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_4", Constants.INSTANCE.Task_Admin(), "Filter " + Constants.INSTANCE.Task_Admin(), states, TASK_ROLE_ADMINISTRATOR );
 
         filterPagedTable.addAddTableButton( createTabButton );
+        presenter.setAddingDefaultFilters( false );
 
         getMultiGridPreferencesStore().setSelectedGrid( DATASET_TASK_LIST_PREFIX + "_0" );
         filterPagedTable.setSelectedTab();
@@ -739,7 +739,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
@@ -818,7 +817,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
@@ -885,7 +883,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
@@ -965,7 +962,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
@@ -1037,6 +1033,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         ArrayList<String> existingGrids = getMultiGridPreferencesStore().getGridsId();
         ArrayList<String> allTabs = new ArrayList<String>( existingGrids.size() );
 
+        presenter.setAddingDefaultFilters( true );
         if ( existingGrids != null && existingGrids.size() > 0 ) {
 
             for ( int i = 0; i < existingGrids.size(); i++ ) {

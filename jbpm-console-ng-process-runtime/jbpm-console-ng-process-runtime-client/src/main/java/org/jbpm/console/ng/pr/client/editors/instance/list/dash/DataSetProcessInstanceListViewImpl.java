@@ -172,7 +172,6 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
 
                         final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
 
-                        presenter.addDataDisplay( extendedPagedTable );
                         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
                         filterPagedTable.createNewTab( extendedPagedTable, key, button, new Command() {
@@ -623,7 +622,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
                                     Button createTabButton ) {
 
         List<String> states = new ArrayList<String>();
-
+        presenter.setAddingDefaultFilters( true );
         //Filter status Active
         states.add( String.valueOf( ProcessInstance.STATE_ACTIVE ) );
         initGenericTabFilter( preferences, PROCESS_INSTANCES_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states, "", "" );
@@ -634,6 +633,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
         initGenericTabFilter( preferences, PROCESS_INSTANCES_LIST_PREFIX + "_1", Constants.INSTANCE.Completed(), "Filter " + Constants.INSTANCE.Completed(), states, "", "" );
 
         filterPagedTable.addAddTableButton( createTabButton );
+        presenter.setAddingDefaultFilters( false );
         getMultiGridPreferencesStore().setSelectedGrid( PROCESS_INSTANCES_LIST_PREFIX + "_0" );
         filterPagedTable.setSelectedTab();
         applyFilterOnPresenter( PROCESS_INSTANCES_LIST_PREFIX + "_0" );
@@ -693,7 +693,6 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
 
         final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
@@ -774,6 +773,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
         ArrayList<String> existingGrids = getMultiGridPreferencesStore().getGridsId();
         ArrayList<String> allTabs = new ArrayList<String>( existingGrids.size() );
 
+        presenter.setAddingDefaultFilters( true );
         if ( existingGrids != null && existingGrids.size() > 0 ) {
 
             for ( int i = 0; i < existingGrids.size(); i++ ) {

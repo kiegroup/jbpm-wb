@@ -120,7 +120,6 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
 
                         final ExtendedPagedTable<ProcessInstanceVariableSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
 
-                        presenter.addDataDisplay( extendedPagedTable );
                         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
                         filterPagedTable.createNewTab( extendedPagedTable, key, button, new Command() {
@@ -329,12 +328,13 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
                                     Button createTabButton ) {
 
         List<String> states = new ArrayList<String>();
-
+        presenter.setAddingDefaultFilters( true );
         //Filter status Active
         states.add( String.valueOf( ProcessInstance.STATE_ACTIVE ) );
         initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states, "", "" );
 
         filterPagedTable.addAddTableButton( createTabButton );
+        presenter.setAddingDefaultFilters( false );
         getMultiGridPreferencesStore().setSelectedGrid( PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_0" );
         filterPagedTable.setSelectedTab();
         applyFilterOnPresenter( PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_0" );
@@ -379,7 +379,6 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
 
         final ExtendedPagedTable<ProcessInstanceVariableSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
@@ -438,6 +437,7 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
         ArrayList<String> existingGrids = getMultiGridPreferencesStore().getGridsId();
         ArrayList<String> allTabs = new ArrayList<String>( existingGrids.size() );
 
+        presenter.setAddingDefaultFilters( true );
         if ( existingGrids != null && existingGrids.size() > 0 ) {
 
             for ( int i = 0; i < existingGrids.size(); i++ ) {
