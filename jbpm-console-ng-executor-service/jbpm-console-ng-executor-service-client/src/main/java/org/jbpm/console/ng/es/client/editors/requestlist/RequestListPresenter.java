@@ -41,12 +41,6 @@ import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.Container;
-import org.gwtbootstrap3.client.ui.Radio;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.client.ui.constants.Styles;
-import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.common.client.api.Caller;
@@ -82,8 +76,6 @@ import static org.dashbuilder.dataset.filter.FilterFactory.*;
 @WorkbenchScreen(identifier = "Requests List")
 public class RequestListPresenter extends AbstractScreenListPresenter<RequestSummary> {
 
-    public static String FILTER_STATUSES_PARAM_NAME = "states";
-
     public interface RequestListView extends ListView<RequestSummary, RequestListPresenter> {
 
         int getRefreshValue();
@@ -115,9 +107,6 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
 
     @Inject
     private QuickNewJobPopup quickNewJobPopup;
-
-    private Button menuRefreshButton = new Button();
-    private Button menuResetTabsButton = new Button();
 
     private RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder( this );
 
@@ -172,93 +161,92 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     @Override
     public void getData( final Range visibleRange ) {
         try {
-            FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
-            if ( currentTableSettings != null ) {
-                currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
-                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                //GWT.log( "processInstances getData "+columnSortList.size() +"currentTableSettings table name "+ currentTableSettings.getTableName() );
-                if ( columnSortList != null && columnSortList.size() > 0 ) {
-                    dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
-                    dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
-                } else {
-                    dataSetQueryHelper.setLastOrderedColumn( RequestListViewImpl.COLUMN_TIMESTAMP );
-                    dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
-                }
-                dataSetQueryHelper.setDataSetHandler( currentTableSettings );
-                if ( textSearchStr != null && textSearchStr.trim().length() > 0 ) {
-
-                    DataSetFilter filter = new DataSetFilter();
-                    List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-                    filters.add( likeTo( RequestListViewImpl.COLUMN_COMMANDNAME,"%" + textSearchStr.toLowerCase()+ "%", false ) );
-                    filters.add( likeTo( RequestListViewImpl.COLUMN_MESSAGE,"%" + textSearchStr.toLowerCase()+ "%", false ) );
-                    filters.add( likeTo( RequestListViewImpl.COLUMN_BUSINESSKEY,"%" + textSearchStr.toLowerCase()+ "%", false ) );
-                    filter.addFilterColumn( OR( filters ) );
-
-                    if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {
-                        currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
+            if(!isAddingDefaultFilters()) {
+                FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
+                if ( currentTableSettings != null ) {
+                    currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
+                    ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+                    //GWT.log( "-----RequestList getData table name " + currentTableSettings.getTableName() );
+                    if ( columnSortList != null && columnSortList.size() > 0 ) {
+                        dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
+                        dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
                     } else {
-                        currentTableSettings.getDataSetLookup().addOperation( filter );
+                        dataSetQueryHelper.setLastOrderedColumn( RequestListViewImpl.COLUMN_TIMESTAMP );
+                        dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                     }
-                    textSearchStr = "";
-                }
-                dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
-                    @Override
-                    public void callback( DataSet dataSet ) {
-                        if ( dataSet != null ) {
-                            List<RequestSummary> myRequestSumaryFromDataSet = new ArrayList<RequestSummary>();
 
-                            for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
+                    if ( textSearchStr != null && textSearchStr.trim().length() > 0 ) {
 
-                                myRequestSumaryFromDataSet.add( new RequestSummary(
-                                        dataSetQueryHelper.getColumnLongValue( dataSet, RequestListViewImpl.COLUMN_ID, i ),
-                                        dataSetQueryHelper.getColumnDateValue( dataSet, RequestListViewImpl.COLUMN_TIMESTAMP, i ),
-                                        dataSetQueryHelper.getColumnStringValue( dataSet, RequestListViewImpl.COLUMN_STATUS, i ),
-                                        dataSetQueryHelper.getColumnStringValue( dataSet, RequestListViewImpl.COLUMN_COMMANDNAME, i ),
-                                        dataSetQueryHelper.getColumnStringValue( dataSet, RequestListViewImpl.COLUMN_MESSAGE, i ),
-                                        dataSetQueryHelper.getColumnStringValue( dataSet, RequestListViewImpl.COLUMN_BUSINESSKEY, i ) ) );
+                        DataSetFilter filter = new DataSetFilter();
+                        List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
+                        filters.add( likeTo( RequestListViewImpl.COLUMN_COMMANDNAME, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo( RequestListViewImpl.COLUMN_MESSAGE, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo( RequestListViewImpl.COLUMN_BUSINESSKEY, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filter.addFilterColumn( OR( filters ) );
 
-                            }
-                            PageResponse<RequestSummary> requestSummaryPageResponse = new PageResponse<RequestSummary>();
-                            requestSummaryPageResponse.setPageRowList( myRequestSumaryFromDataSet );
-                            requestSummaryPageResponse.setStartRowIndex( visibleRange.getStart() );
-                            requestSummaryPageResponse.setTotalRowSize( dataSet.getRowCountNonTrimmed() );
-                            requestSummaryPageResponse.setTotalRowSizeExact( true );
-                            if ( visibleRange.getStart() + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed() ) {
-                                requestSummaryPageResponse.setLastPage( true );
-                            } else {
-                                requestSummaryPageResponse.setLastPage( false );
-                            }
-                            updateDataOnCallback( requestSummaryPageResponse );
+                        if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {
+                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
+                        } else {
+                            currentTableSettings.getDataSetLookup().addOperation( filter );
                         }
-                        view.hideBusyIndicator();
+                        textSearchStr = "";
                     }
+                    dataSetQueryHelper.setDataSetHandler( currentTableSettings );
+                    dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
+                        @Override
+                        public void callback( DataSet dataSet ) {
+                            if ( dataSet != null ) {
+                                List<RequestSummary> myRequestSumaryFromDataSet = new ArrayList<RequestSummary>();
 
-                    @Override
-                    public void notFound() {
-                        view.hideBusyIndicator();
-                        errorPopup.showMessage( "Not found DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] " );
-                        GWT.log( "DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] not found." );
-                    }
+                                for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
 
-                    @Override
-                    public boolean onError( final ClientRuntimeError error ) {
-                        view.hideBusyIndicator();
-                        errorPopup.showMessage( "DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] error: " + error.getThrowable() );
-                        GWT.log( "DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] error: ", error.getThrowable() );
-                        return false;
-                    }
-                } );
-            } else {
-                view.hideBusyIndicator();
+                                    myRequestSumaryFromDataSet.add( new RequestSummary(
+                                            dataSetQueryHelper.getColumnLongValue( dataSet, RequestListViewImpl.COLUMN_ID, i ),
+                                            dataSetQueryHelper.getColumnDateValue( dataSet, RequestListViewImpl.COLUMN_TIMESTAMP, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, RequestListViewImpl.COLUMN_STATUS, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, RequestListViewImpl.COLUMN_COMMANDNAME, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, RequestListViewImpl.COLUMN_MESSAGE, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, RequestListViewImpl.COLUMN_BUSINESSKEY, i ) ) );
+
+                                }
+                                PageResponse<RequestSummary> requestSummaryPageResponse = new PageResponse<RequestSummary>();
+                                requestSummaryPageResponse.setPageRowList( myRequestSumaryFromDataSet );
+                                requestSummaryPageResponse.setStartRowIndex( visibleRange.getStart() );
+                                requestSummaryPageResponse.setTotalRowSize( dataSet.getRowCountNonTrimmed() );
+                                requestSummaryPageResponse.setTotalRowSizeExact( true );
+                                if ( visibleRange.getStart() + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed() ) {
+                                    requestSummaryPageResponse.setLastPage( true );
+                                } else {
+                                    requestSummaryPageResponse.setLastPage( false );
+                                }
+                                updateDataOnCallback( requestSummaryPageResponse );
+                            }
+                            view.hideBusyIndicator();
+                        }
+
+                        @Override
+                        public void notFound() {
+                            view.hideBusyIndicator();
+                            errorPopup.showMessage( "Not found DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] " );
+                            GWT.log( "DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] not found." );
+                        }
+
+                        @Override
+                        public boolean onError( final ClientRuntimeError error ) {
+                            view.hideBusyIndicator();
+                            errorPopup.showMessage( "DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] error: " + error.getThrowable() );
+                            GWT.log( "DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] error: ", error.getThrowable() );
+                            return false;
+                        }
+                    } );
+                } else {
+                    view.hideBusyIndicator();
+                }
             }
         } catch ( Exception e ) {
             GWT.log( "Error looking up dataset with UUID [ " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ]" );
         }
 
-    }
-
-    public void addDataDisplay( HasData<RequestSummary> display ) {
-        dataProvider.addDataDisplay( display );
     }
 
     public AsyncDataProvider<RequestSummary> getDataProvider() {
@@ -413,16 +401,6 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         refreshSelectorMenuBuilder.loadOptions( view.getRefreshValue() );
     }
 
-    @PostConstruct
-    public void setupButtons() {
-        menuRefreshButton.setIcon( IconType.REFRESH );
-        menuRefreshButton.setSize( ButtonSize.SMALL );
-        menuRefreshButton.setTitle( Constants.INSTANCE.Refresh() );
-
-        menuResetTabsButton.setIcon( IconType.TH_LIST );
-        menuResetTabsButton.setSize( ButtonSize.SMALL );
-        menuResetTabsButton.setTitle( Constants.INSTANCE.RestoreDefaultFilters() );
-    }
 
     @Override
     protected void onSearchEvent( @Observes SearchEvent searchEvent ) {

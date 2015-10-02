@@ -101,57 +101,59 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
 
   @Override
   public void getData(Range visibleRange) {
-    ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-    if (currentFilter == null) {
-      currentFilter = new PortableQueryFilter(visibleRange.getStart(),
-              visibleRange.getLength(),
-              false, "",
-              (columnSortList.size() > 0) ? columnSortList.get(0)
-                      .getColumn().getDataStoreName() : "",
-              (columnSortList.size() > 0) ? columnSortList.get(0)
-                      .isAscending() : true);
-    }
-    // If we are refreshing after a search action, we need to go back to offset 0
-    if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
-            || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")) {
-      currentFilter.setOffset(visibleRange.getStart());
-      currentFilter.setCount(visibleRange.getLength());
-    } else {
-      currentFilter.setOffset(0);
-      currentFilter.setCount(view.getListGrid().getPageSize());
-    }
-    //Applying screen specific filters
-    if (currentFilter.getParams() == null) {
-      currentFilter.setParams(new HashMap<String, Object>());
-    }
-    if ( initiator != null && initiator.trim().length() > 0 ) {
-      currentFilter.getParams().put( FILTER_INITIATOR_PARAM_NAME, initiator );
-    } else {
-      currentFilter.getParams().remove( FILTER_INITIATOR_PARAM_NAME );
-    }
-    currentFilter.getParams().put(FILTER_STATE_PARAM_NAME, currentActiveStates);
-
-    currentFilter.getParams().put(FILTER_PROCESS_DEFINITION_PARAM_NAME, currentProcessDefinition);
-
-    currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0)
-            .getColumn().getDataStoreName() : "");
-    currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
-            .isAscending() : true);
-
-    processInstanceService.call(new RemoteCallback<PageResponse<ProcessInstanceSummary>>() {
-      @Override
-      public void callback(PageResponse<ProcessInstanceSummary> response) {
-        updateDataOnCallback(response);
+    if(!isAddingDefaultFilters()) {
+      ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+      if ( currentFilter == null ) {
+        currentFilter = new PortableQueryFilter( visibleRange.getStart(),
+                visibleRange.getLength(),
+                false, "",
+                ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                        .getColumn().getDataStoreName() : "",
+                ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                        .isAscending() : true );
       }
-    }, new ErrorCallback<Message>() {
-      @Override
-      public boolean error(Message message, Throwable throwable) {
-        view.hideBusyIndicator();
-        view.displayNotification("Error: Getting Process Definitions: " + message);
-        GWT.log(throwable.toString());
-        return true;
+      // If we are refreshing after a search action, we need to go back to offset 0
+      if ( currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
+              || currentFilter.getParams().get( "textSearch" ) == null || currentFilter.getParams().get( "textSearch" ).equals( "" ) ) {
+        currentFilter.setOffset( visibleRange.getStart() );
+        currentFilter.setCount( visibleRange.getLength() );
+      } else {
+        currentFilter.setOffset( 0 );
+        currentFilter.setCount( view.getListGrid().getPageSize() );
       }
-    }).getData(currentFilter);
+      //Applying screen specific filters
+      if ( currentFilter.getParams() == null ) {
+        currentFilter.setParams( new HashMap<String, Object>() );
+      }
+      if ( initiator != null && initiator.trim().length() > 0 ) {
+        currentFilter.getParams().put( FILTER_INITIATOR_PARAM_NAME, initiator );
+      } else {
+        currentFilter.getParams().remove( FILTER_INITIATOR_PARAM_NAME );
+      }
+      currentFilter.getParams().put( FILTER_STATE_PARAM_NAME, currentActiveStates );
+
+      currentFilter.getParams().put( FILTER_PROCESS_DEFINITION_PARAM_NAME, currentProcessDefinition );
+
+      currentFilter.setOrderBy( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+              .getColumn().getDataStoreName() : "" );
+      currentFilter.setIsAscending( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+              .isAscending() : true );
+
+      processInstanceService.call( new RemoteCallback<PageResponse<ProcessInstanceSummary>>() {
+        @Override
+        public void callback( PageResponse<ProcessInstanceSummary> response ) {
+          updateDataOnCallback( response );
+        }
+      }, new ErrorCallback<Message>() {
+        @Override
+        public boolean error( Message message, Throwable throwable ) {
+          view.hideBusyIndicator();
+          view.displayNotification( "Error: Getting Process Definitions: " + message );
+          GWT.log( throwable.toString() );
+          return true;
+        }
+      } ).getData( currentFilter );
+    }
   }
 
   public void newInstanceCreated(@Observes NewProcessInstanceEvent pi) {

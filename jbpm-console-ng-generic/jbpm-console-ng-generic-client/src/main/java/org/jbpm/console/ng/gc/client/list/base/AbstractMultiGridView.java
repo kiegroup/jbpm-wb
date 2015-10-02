@@ -131,11 +131,12 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
                 if ( existingGrids != null && existingGrids.size() > 0 ) {
                     String key;
+
+                    presenter.setAddingDefaultFilters( true );
                     for ( int i = 0; i < existingGrids.size(); i++ ) {
                         key = existingGrids.get( i );
                         final ExtendedPagedTable<T> extendedPagedTable = createGridInstance( preferences, key );
                         currentListGrid = extendedPagedTable;
-                        presenter.addDataDisplay( extendedPagedTable );
                         extendedPagedTable.setDataProvider( presenter.dataProvider );
                         final String filterKey = key;
                         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
@@ -145,12 +146,12 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                 applyFilterOnPresenter( filterKey );
                             }
                         } );
-                        if ( currentListGrid != null && key.equals( selectedGridId ) ) {
+                        if ( currentListGrid != null && key.equals( selectedGridId ) )
                             currentListGrid = extendedPagedTable;
-                        }
                     }
 
                     filterPagedTable.addAddTableButton( createNewGridButton );
+                    presenter.setAddingDefaultFilters( false );
                     if ( selectedGridId != null ) {
                         multiGridPreferencesStore.setSelectedGrid( selectedGridId );
                         preferencesService.call().saveUserPreferences( multiGridPreferencesStore );
