@@ -48,14 +48,6 @@ public interface Constants extends Messages {
 
     String Cancelled();
 
-    String Refresh();
-
-    String AutoRefresh();
-
-    String RestoreDefaultFilters();
-
-    String Disable();
-
     String Settings();
 
     String New_Job();
@@ -144,8 +136,6 @@ public interface Constants extends Messages {
     String  Requeue();
 
     String New_JobList();
-    String Minutes();
-    String Minute();
 
 
 }

@@ -113,7 +113,6 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                         filterPagedTable.saveNewTabSettings( key, newTabFormValues );
                         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance(  new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
 
-                        presenter.addDataDisplay( extendedPagedTable );
                         extendedPagedTable.setDataProvider(presenter.getDataProvider() );
 
                         filterPagedTable.createNewTab( extendedPagedTable, key, button,new Command() {
@@ -363,7 +362,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
         return descriptionColumn;
     }
 
-     
+
     private Column initTaskPriorityColumn() {
         Column<TaskSummary, Number> taskPriorityColumn = new Column<TaskSummary, Number>(new NumberCell()) {
             @Override
@@ -600,6 +599,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
 
 
         List<String> states;
+        presenter.setAddingDefaultFilters( true );
 
         //Filter status Active
         states=TaskUtils.getStatusByType(TaskUtils.TaskType.ACTIVE  );
@@ -624,10 +624,11 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
 
         filterPagedTable.addAddTableButton( createTabButton );
 
-        getMultiGridPreferencesStore().setSelectedGrid( "TaskListGrid_0" );      
+        presenter.setAddingDefaultFilters( false );
+        getMultiGridPreferencesStore().setSelectedGrid( "TaskListGrid_0" );
         filterPagedTable.setSelectedTab();
         applyFilterOnPresenter( "TaskListGrid_0" );
-        
+
 
     }
     private void initTabFilter(GridGlobalPreferences preferences, final String key, String tabName,
@@ -644,7 +645,6 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
 
         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns()), key );
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider(presenter.getDataProvider() );
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
             @Override

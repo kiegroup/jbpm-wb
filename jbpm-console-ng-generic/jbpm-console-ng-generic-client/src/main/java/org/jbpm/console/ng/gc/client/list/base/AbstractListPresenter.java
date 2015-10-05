@@ -15,8 +15,18 @@
  */
 package org.jbpm.console.ng.gc.client.list.base;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.RadioButton;
+import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
@@ -25,7 +35,7 @@ import org.jbpm.console.ng.ga.model.QueryFilter;
 
 import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
-//import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
+import org.uberfire.lifecycle.OnClose;
 import org.uberfire.paging.PageResponse;
 
 import javax.enterprise.event.Observes;
@@ -41,17 +51,23 @@ public abstract class AbstractListPresenter<T> {
 
     protected AsyncDataProvider<T> dataProvider;
 
-   // private FilterPagedTable filterPagedTable;
-
     protected QueryFilter currentFilter;
 
     protected String textSearchStr="";
 
     private Constants constants = GWT.create(Constants.class);
 
+    protected  boolean addingDefaultFilters = false;
+
     protected Timer refreshTimer = null;
     protected boolean autoRefreshEnabled = true;
     protected int autoRefreshSeconds = 60; // This should be loaded from the grid settings (probably the filters)
+
+    public Button menuActionsButton;
+    private PopupPanel popup = new PopupPanel(true);
+
+    public Button menuRefreshButton = new Button();
+    public Button menuResetTabsButton = new Button();
 
     protected abstract AbstractListView.ListView getListView();
 
@@ -59,22 +75,25 @@ public abstract class AbstractListPresenter<T> {
         initDataProvider();
     }
 
-    protected void updateRefreshTimer() {
-        if (autoRefreshEnabled && autoRefreshSeconds > 0) {
-            if (refreshTimer == null) {
-                refreshTimer = new Timer() {
-                    public void run() {
-                        getData(dataProvider.getDataDisplays().iterator().next().getVisibleRange());
-                    }
-                };
-            } else{
-                refreshTimer.cancel();
-            }
+    public boolean isAddingDefaultFilters() {
+        return addingDefaultFilters;
+    }
 
-            refreshTimer.schedule(autoRefreshSeconds * 1000);
-        }
-        else if (refreshTimer != null) {
+    public void setAddingDefaultFilters( boolean addingDefaultFilters ) {
+        this.addingDefaultFilters = addingDefaultFilters;
+    }
+    protected void updateRefreshTimer() {
+        if (refreshTimer == null) {
+            refreshTimer = new Timer() {
+                public void run() {
+                    getData(dataProvider.getDataDisplays().iterator().next().getVisibleRange());
+                }
+            };
+        }else{
             refreshTimer.cancel();
+        }
+        if (autoRefreshEnabled && autoRefreshSeconds > 10) {
+            refreshTimer.schedule(autoRefreshSeconds * 1000);
         }
     }
 
@@ -137,21 +156,6 @@ public abstract class AbstractListPresenter<T> {
 
     }
 
- /*   protected void onNewItemEvent( @Observes NewItemEvent newItemEvent ) {
-        newItemEventAction();
-    }
-
-    protected void onRefreshIntervalChangeEvent( @Observes RefreshIntervalEvent refreshIntervalEvent ) {
-        int refreshInterval = refreshIntervalEvent.getRefreshInterval();
-        if(refreshInterval == 0 ) {
-            refreshGrid();
-        } else if(refreshInterval == -1){
-            updateRefreshInterval( false, -1 );
-        } else{
-            updateRefreshInterval( true, refreshInterval );
-        }
-    }
- */
     protected void updateRefreshInterval(boolean enableAutoRefresh, int newInterval){
         this.autoRefreshEnabled = enableAutoRefresh;
         setAutoRefreshSeconds( newInterval);
@@ -159,20 +163,142 @@ public abstract class AbstractListPresenter<T> {
     }
 
     protected int getAutoRefreshSeconds(){
-     //   autoRefreshSeconds = filterPagedTable.getMultiGridPreferencesStore().getRefreshInterval();
         return autoRefreshSeconds;
     }
 
     protected void setAutoRefreshSeconds(int refreshSeconds){
-    //    filterPagedTable.saveNewRefreshInterval(refreshSeconds);
         autoRefreshSeconds = refreshSeconds;
     }
-   /* public FilterPagedTable getFilterPagedTable() {
-        return filterPagedTable;
+
+
+    public void setupButtons( ) {
+        menuActionsButton = new Button();
+        createRefreshToggleButton( menuActionsButton );
+
+        menuRefreshButton.setIcon( IconType.REFRESH );
+        menuRefreshButton.setSize( ButtonSize.MINI );
+        menuRefreshButton.setTitle( Constants.INSTANCE.Refresh() );
+
+        menuResetTabsButton.setIcon( IconType.TH_LIST );
+        menuResetTabsButton.setSize( ButtonSize.MINI );
+        menuResetTabsButton.setTitle( Constants.INSTANCE.RestoreDefaultFilters() );
     }
 
-    public void setFilterPagedTable( FilterPagedTable filterPagedTable ) {
-        this.filterPagedTable = filterPagedTable;
-    }*/
+    public void createRefreshToggleButton(final Button refreshIntervalSelector) {
+
+        refreshIntervalSelector.setToggle( true );
+        refreshIntervalSelector.setIcon( IconType.COG );
+        refreshIntervalSelector.setTitle( Constants.INSTANCE.AutoRefresh() );
+        refreshIntervalSelector.setSize( ButtonSize.MINI );
+
+        popup.getElement().getStyle().setZIndex( Integer.MAX_VALUE );
+        popup.addAutoHidePartner( refreshIntervalSelector.getElement() );
+        popup.addCloseHandler( new CloseHandler<PopupPanel>() {
+            public void onClose( CloseEvent<PopupPanel> popupPanelCloseEvent ) {
+                if ( popupPanelCloseEvent.isAutoClosed() ) {
+                    refreshIntervalSelector.setActive( false );
+                }
+            }
+        } );
+
+        refreshIntervalSelector.addClickHandler( new ClickHandler() {
+            public void onClick( ClickEvent event ) {
+                if ( !refreshIntervalSelector.isActive() ) {
+                    showSelectRefreshIntervalPopup( refreshIntervalSelector.getAbsoluteLeft() + refreshIntervalSelector.getOffsetWidth(),
+                            refreshIntervalSelector.getAbsoluteTop() + refreshIntervalSelector.getOffsetHeight(), refreshIntervalSelector );
+                } else {
+                    popup.hide( false );
+                }
+            }
+        } );
+
+    }
+
+    private void showSelectRefreshIntervalPopup(final int left,
+                                                final int top,
+                                                final Button refreshIntervalSelector) {
+        VerticalPanel popupContent = new VerticalPanel();
+
+        final Button resetButton = new Button( Constants.INSTANCE.DisableAutorefresh() );
+        //int configuredSeconds = presenter.getAutoRefreshSeconds();
+        int configuredSeconds = getRefreshValue();
+
+        if(configuredSeconds>10) {
+            updateRefreshInterval( true, configuredSeconds );
+            resetButton.setEnabled( true );
+            resetButton.setActive( false );
+            resetButton.setText( Constants.INSTANCE.DisableAutorefresh() );
+        } else {
+            updateRefreshInterval( false, 0 );
+            resetButton.setEnabled( false );
+            resetButton.setActive( true );
+            resetButton.setText( Constants.INSTANCE.AutorefreshDisabled() );
+        }
+
+        RadioButton oneMinuteRadioButton = createTimeSelectorRadioButton(60, "1 "+ Constants.INSTANCE.Minute(), configuredSeconds, refreshIntervalSelector, popupContent);
+        RadioButton fiveMinuteRadioButton = createTimeSelectorRadioButton(300, "5 "+ Constants.INSTANCE.Minutes(), configuredSeconds, refreshIntervalSelector, popupContent);
+        RadioButton tenMinuteRadioButton = createTimeSelectorRadioButton(600, "10 "+ Constants.INSTANCE.Minutes(), configuredSeconds, refreshIntervalSelector, popupContent);
+
+        popupContent.add(oneMinuteRadioButton);
+        popupContent.add( fiveMinuteRadioButton );
+        popupContent.add( tenMinuteRadioButton );
+
+        resetButton.setSize( ButtonSize.MINI );
+        resetButton.addClickHandler( new ClickHandler() {
+
+            @Override
+            public void onClick( ClickEvent event ) {
+                updateRefreshInterval( false, 0 );
+                saveRefreshValue( 0 );
+                resetButton.setEnabled( false );
+                resetButton.setActive( true );
+                resetButton.setText( Constants.INSTANCE.AutorefreshDisabled() );
+                popup.hide();
+            }
+        } );
+
+        popupContent.add( resetButton );
+
+
+        popup.setWidget( popupContent );
+        popup.show();
+        int finalLeft = left - popup.getOffsetWidth();
+        popup.setPopupPosition( finalLeft, top );
+
+    }
+
+    private RadioButton createTimeSelectorRadioButton(int time, String name, int configuredSeconds, final Button refreshIntervalSelector, VerticalPanel popupContent) {
+        RadioButton oneMinuteRadioButton = new RadioButton("refreshInterval",name);
+        oneMinuteRadioButton.setText( name  );
+        final int selectedRefreshTime = time;
+        if(configuredSeconds == selectedRefreshTime ) {
+            oneMinuteRadioButton.setValue( true );
+        }
+
+        oneMinuteRadioButton.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                updateRefreshInterval( true, selectedRefreshTime );
+                saveRefreshValue( selectedRefreshTime );
+                refreshIntervalSelector.setActive( false );
+                popup.hide();
+
+            }
+        } );
+        return oneMinuteRadioButton;
+    }
+
+    protected void saveRefreshValue(int newValue){
+    }
+    protected int getRefreshValue(){
+        return 0;
+    }
+
+    @OnClose
+    public void onClose() {
+        if(refreshTimer!=null) {
+            refreshTimer.cancel();
+        }
+    }
 
 }

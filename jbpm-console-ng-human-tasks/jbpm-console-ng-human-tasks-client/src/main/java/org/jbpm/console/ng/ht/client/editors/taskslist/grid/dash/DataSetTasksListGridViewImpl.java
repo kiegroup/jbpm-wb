@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
 
 import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.cell.client.*;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
@@ -99,7 +98,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     public static final String COLUMN_TASKID = "taskId";
     public static final String COLUMN_WORKITEMID = "workItemId";
     public static final String COLUMN_ORGANIZATIONAL_ENTITY = "oeid";
-    
+
 
     private static Binder uiBinder = GWT.create(Binder.class);
 
@@ -139,7 +138,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
                         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance(  new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
 
-                        presenter.addDataDisplay( extendedPagedTable );
                         extendedPagedTable.setDataProvider(presenter.getDataProvider() );
 
                         filterPagedTable.createNewTab( extendedPagedTable, key, button,new Command() {
@@ -290,7 +288,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         Column statusColumn = initTaskStatusColumn();
         Column createdOnDateColumn = initTaskCreatedOnColumn();
         Column dueDateColumn = initTaskDueColumn();
-        
+
         actionsColumn = initActionsColumn(extendedPagedTable);
 
         List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
@@ -367,8 +365,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         descriptionColumn.setDataStoreName( COLUMN_DESCRIPTION );
         return descriptionColumn;
     }
-    
-    
+
+
 
     private Column initTaskPriorityColumn() {
         Column<TaskSummary, Number> taskPriorityColumn = new Column<TaskSummary, Number>(new NumberCell()) {
@@ -629,6 +627,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     public void initDefaultFilters(GridGlobalPreferences preferences ,Button createTabButton){
 
         List<String> states;
+        presenter.setAddingDefaultFilters( true );
 
         //Filter status Active
         states= TaskUtils.getStatusByType( TaskUtils.TaskType.ACTIVE );
@@ -653,10 +652,11 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         filterPagedTable.addAddTableButton( createTabButton );
 
+        presenter.setAddingDefaultFilters( false );
         getMultiGridPreferencesStore().setSelectedGrid( DATASET_TASK_LIST_PREFIX + "_0" );
         filterPagedTable.setSelectedTab();
         applyFilterOnPresenter( DATASET_TASK_LIST_PREFIX + "_0" );
-        
+
 
     }
     private void initGroupTabFilter(GridGlobalPreferences preferences, final String key, String tabName,
@@ -671,22 +671,22 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             names.add(s);
         }
         builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names )  );
-        
+
         Set<Group> groups = identity.getGroups();
-        
-        
+
+
         builder.filter( COLUMN_ACTUALOWNER, equalsTo("") );
         List<ColumnFilter> condList = new  ArrayList<ColumnFilter>();
         for(Group g : groups){
             condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, g.getName()));
-            
+
         }
         //Adding own identity to check against potential owners
         condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier()));
-        
+
         builder.filter( COLUMN_ORGANIZATIONAL_ENTITY, OR(condList) );
         builder.group(COLUMN_TASKID);
-        
+
         builder.setColumn( COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_ACTUALOWNER, constants.Actual_Owner());
         builder.setColumn( COLUMN_CREATEDBY,"CreatedBy" );
@@ -723,7 +723,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns()), key );
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider(presenter.getDataProvider() );
 
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
@@ -734,7 +733,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         } ) ;
     }
-    
+
     private void initAdminTabFilter(GridGlobalPreferences preferences, final String key, String tabName,
                                String tabDesc, List<String> states, String role){
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
@@ -747,22 +746,22 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             names.add(s);
         }
         builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names )  );
-        
+
         Set<Group> groups = identity.getGroups();
-        
+
 
         List<ColumnFilter> condList = new  ArrayList<ColumnFilter>();
         for(Group g : groups){
             condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, g.getName()));
-        
+
         }
         //Adding own identity to check against potential owners
         condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier()));
-        
+
         builder.filter( COLUMN_ORGANIZATIONAL_ENTITY, OR(condList) );
-        
+
         builder.group(COLUMN_TASKID);
-        
+
         builder.setColumn( COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_ACTUALOWNER, constants.Actual_Owner());
         builder.setColumn( COLUMN_CREATEDBY,"CreatedBy" );
@@ -799,7 +798,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns()), key );
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider(presenter.getDataProvider() );
 
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
@@ -810,7 +808,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         } ) ;
     }
-    
+
     private void initPersonalTabFilter(GridGlobalPreferences preferences, final String key, String tabName,
                                String tabDesc, List<String> states, String role){
 
@@ -862,7 +860,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns()), key );
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider(presenter.getDataProvider() );
 
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
@@ -896,7 +893,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         }
         //Adding own identity to check against potential owners
         condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier()));
-        
+
         ColumnFilter myGroupFilter = FilterFactory.AND( FilterFactory.OR( condList ),FilterFactory.equalsTo( COLUMN_ACTUALOWNER, "" ));
 
         builder.filter( OR( myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUALOWNER, identity.getIdentifier() )) );
@@ -938,7 +935,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns()), key );
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider(presenter.getDataProvider() );
 
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
