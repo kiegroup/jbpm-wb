@@ -113,7 +113,6 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                         filterPagedTable.saveNewTabSettings( key, newTabFormValues );
                         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
 
-                        presenter.addDataDisplay( extendedPagedTable );
                         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
                         filterPagedTable.createNewTab( extendedPagedTable, key, button, new Command() {
@@ -613,7 +612,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                                     Button createTabButton ) {
 
         List<String> states;
-
+        presenter.setAddingDefaultFilters( true );
         //Filter status Active
         states = TaskUtils.getStatusByType( TaskUtils.TaskType.ACTIVE );
         initTabFilter( preferences, "TaskListGrid_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states, TASK_ROLE_POTENTIALOWNER );
@@ -636,6 +635,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
 
         filterPagedTable.addAddTableButton( createTabButton );
 
+        presenter.setAddingDefaultFilters( false );
         getMultiGridPreferencesStore().setSelectedGrid( "TaskListGrid_0" );
         filterPagedTable.setSelectedTab();
         applyFilterOnPresenter( "TaskListGrid_0" );
@@ -660,7 +660,6 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
 
         final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
             @Override

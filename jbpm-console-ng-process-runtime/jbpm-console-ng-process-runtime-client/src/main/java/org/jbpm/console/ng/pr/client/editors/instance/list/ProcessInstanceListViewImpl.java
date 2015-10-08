@@ -135,7 +135,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                         filterPagedTable.saveNewTabSettings( key, newTabFormValues );
                         final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
 
-                        presenter.addDataDisplay( extendedPagedTable );
                         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
                         filterPagedTable.createNewTab( extendedPagedTable, key, button, new Command() {
@@ -618,7 +617,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                     Button createTabButton ) {
 
         List<String> states = new ArrayList<String>();
-
+        presenter.setAddingDefaultFilters( true );
         //Filter status Active
         states.add( String.valueOf( ProcessInstance.STATE_ACTIVE ) );
         initTabFilter( preferences, "ProcessInstancesGrid_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states, "", "" );
@@ -629,6 +628,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         initTabFilter( preferences, "ProcessInstancesGrid_1", Constants.INSTANCE.Completed(), "Filter " + Constants.INSTANCE.Completed(), states, "", "" );
 
         filterPagedTable.addAddTableButton( createTabButton );
+        presenter.setAddingDefaultFilters( false );
         applyFilterOnPresenter( "ProcessInstancesGrid_1" );
 
     }
@@ -652,7 +652,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
         final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
         currentListGrid = extendedPagedTable;
-        presenter.addDataDisplay( extendedPagedTable );
         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
             @Override

@@ -21,13 +21,17 @@ import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 
 import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
-//import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
+import org.uberfire.lifecycle.OnClose;
 import org.uberfire.paging.PageResponse;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,17 +45,20 @@ public abstract class AbstractListPresenter<T> {
 
     protected AsyncDataProvider<T> dataProvider;
 
-   // private FilterPagedTable filterPagedTable;
-
     protected QueryFilter currentFilter;
 
     protected String textSearchStr="";
 
     private Constants constants = GWT.create(Constants.class);
 
+    protected  boolean addingDefaultFilters = false;
+
     protected Timer refreshTimer = null;
     protected boolean autoRefreshEnabled = true;
-    protected int autoRefreshSeconds = 7; // This should be loaded from the grid settings (probably the filters)
+    protected int autoRefreshSeconds = 0; // This should be loaded from the grid settings (probably the filters)
+
+    protected Button menuRefreshButton = new Button();
+    protected Button menuResetTabsButton = new Button();
 
     protected abstract AbstractListView.ListView getListView();
 
@@ -59,19 +66,25 @@ public abstract class AbstractListPresenter<T> {
         initDataProvider();
     }
 
+    public boolean isAddingDefaultFilters() {
+        return addingDefaultFilters;
+    }
+
+    public void setAddingDefaultFilters( boolean addingDefaultFilters ) {
+        this.addingDefaultFilters = addingDefaultFilters;
+    }
     protected void updateRefreshTimer() {
-        if (autoRefreshEnabled && autoRefreshSeconds > 0) {
-            if (refreshTimer == null) {
-                refreshTimer = new Timer() {
-                    public void run() {
-                        getData(dataProvider.getDataDisplays().iterator().next().getVisibleRange());
-                    }
-                };
-            }
-            refreshTimer.schedule(autoRefreshSeconds * 1000);
-        }
-        else if (refreshTimer != null) {
+        if (refreshTimer == null) {
+            refreshTimer = new Timer() {
+                public void run() {
+                    getData(dataProvider.getDataDisplays().iterator().next().getVisibleRange());
+                }
+            };
+        }else{
             refreshTimer.cancel();
+        }
+        if (autoRefreshEnabled && autoRefreshSeconds > 10) {
+            refreshTimer.schedule( autoRefreshSeconds * 1000 );
         }
     }
 
@@ -174,4 +187,21 @@ public abstract class AbstractListPresenter<T> {
         this.filterPagedTable = filterPagedTable;
     }*/
 
+    @PostConstruct
+    public void setupButtons() {
+        menuRefreshButton.setIcon( IconType.REFRESH );
+        menuRefreshButton.setSize( ButtonSize.SMALL );
+        menuRefreshButton.setTitle( Constants.INSTANCE.Refresh() );
+
+        menuResetTabsButton.setIcon( IconType.TH_LIST );
+        menuResetTabsButton.setSize( ButtonSize.SMALL );
+        menuResetTabsButton.setTitle( Constants.INSTANCE.RestoreDefaultFilters() );
+    }
+
+    @OnClose
+   public void onClose() {
+       if(refreshTimer!=null) {
+           refreshTimer.cancel();
+       }
+   }
 }
