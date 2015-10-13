@@ -763,7 +763,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
         ArrayList<String> existingGrids = getMultiGridPreferencesStore().getGridsId();
         ArrayList<String> allTabs= new ArrayList<String>( existingGrids.size() );
 
-
+        presenter.setAddingDefaultFilters( true );
         if ( existingGrids != null && existingGrids.size() > 0 ) {
 
             for ( int i = 0; i < existingGrids.size(); i++ ) {
