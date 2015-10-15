@@ -17,7 +17,6 @@ package org.jbpm.dashboard.renderer.client.panel;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -25,6 +24,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.group.DataSetGroup;
@@ -36,7 +36,6 @@ import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.displayer.client.DisplayerCoordinator;
 import org.dashbuilder.displayer.client.DisplayerHelper;
 import org.dashbuilder.displayer.client.DisplayerListener;
-import org.dashbuilder.displayer.client.formatter.ValueFormatterRegistry;
 import org.dashbuilder.displayer.client.json.DisplayerSettingsJSONMarshaller;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
@@ -47,9 +46,6 @@ import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
 import org.jbpm.dashboard.renderer.client.panel.widgets.MetricDisplayerExt;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessTableDisplayer;
-import org.uberfire.client.annotations.WorkbenchPartTitle;
-import org.uberfire.client.annotations.WorkbenchPartView;
-import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
 
@@ -58,25 +54,13 @@ import static org.jbpm.dashboard.renderer.client.panel.DashboardKpis.*;
 import static org.uberfire.commons.validation.PortablePreconditions.*;
 
 @Dependent
-@WorkbenchScreen(identifier = "ProcessDashboardScreen")
-public class ProcessDashboardPresenter implements ProcessBreadCrumb.Listener {
+public class ProcessDashboard implements ProcessBreadCrumb.Listener, IsWidget {
 
-    @Inject
     protected ProcessDashboardView view;
-
-    @Inject
     protected DisplayerCoordinator displayerCoordinator;
-
-    @Inject
     protected DisplayerSettingsJSONMarshaller jsonMarshaller;
-
-    @Inject
     protected PlaceManager placeManager;
-
-    @Inject
     protected Event<ProcessInstanceSelectionEvent> instanceSelectionEvent;
-
-    @Inject
     protected Event<ProcessDashboardFocusEvent> processDashboardFocusEvent;
 
     protected Displayer totalMetric;
@@ -98,17 +82,24 @@ public class ProcessDashboardPresenter implements ProcessBreadCrumb.Listener {
     protected List<Displayer> metricsGroup = new ArrayList<Displayer>();
     protected List<Displayer> chartsGroup = new ArrayList<Displayer>();
 
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return DashboardConstants.INSTANCE.processScreenTitle();
+    @Inject
+    public ProcessDashboard(final ProcessDashboardView view,
+                            final DisplayerCoordinator displayerCoordinator,
+                            final DisplayerSettingsJSONMarshaller jsonMarshaller,
+                            final PlaceManager placeManager,
+                            final Event<ProcessInstanceSelectionEvent> instanceSelectionEvent,
+                            final Event<ProcessDashboardFocusEvent> processDashboardFocusEvent) {
+
+        this.view = view;
+        this.displayerCoordinator = displayerCoordinator;
+        this.jsonMarshaller = jsonMarshaller;
+        this.placeManager = placeManager;
+        this.instanceSelectionEvent = instanceSelectionEvent;
+        this.processDashboardFocusEvent = processDashboardFocusEvent;
+
+        this.init();
     }
 
-    @WorkbenchPartView
-    public IsWidget getView() {
-        return view;
-    }
-
-    @PostConstruct
     protected void init() {
         view.showLoading();
 
@@ -156,6 +147,10 @@ public class ProcessDashboardPresenter implements ProcessBreadCrumb.Listener {
                 view.hideLoading();
             }
         });
+    }
+
+    public Widget asWidget() {
+        return view.asWidget();
     }
 
     @Override

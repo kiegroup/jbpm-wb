@@ -20,7 +20,7 @@ import org.dashbuilder.displayer.client.Displayer;
 
 public interface ProcessDashboardView extends IsWidget {
 
-    void init(ProcessDashboardPresenter presenter,
+    void init(ProcessDashboard presenter,
             Displayer totalMetric,
             Displayer activeMetric,
             Displayer pendingMetric,

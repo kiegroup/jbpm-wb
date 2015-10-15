@@ -103,7 +103,7 @@ public class DisplayerContainerView extends Composite
 
     @Override
     public void setDisplayerHeight( int h ) {
-        displayerPanel.setHeight( h + "px" );
+        displayerPanel.setHeight( (h+25) + "px" );
     }
 
     @Override

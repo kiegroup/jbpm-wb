@@ -220,6 +220,7 @@ public class TaskDashboardViewImpl extends Composite implements TaskDashboardVie
     @Override
     public void showBreadCrumb( String processName ) {
         processBreadCrumbRow.setVisible( true );
+        processBreadCrumb.setRootTitle(DashboardConstants.INSTANCE.tasks());
         processBreadCrumb.setProcessName( processName );
     }
 

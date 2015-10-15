@@ -25,6 +25,7 @@ import org.uberfire.client.mvp.UberView;
 public class ProcessBreadCrumb implements IsWidget {
 
     public interface View extends UberView<ProcessBreadCrumb> {
+        void setRootTitle(String text);
         void setProcess(String name);
     }
 
@@ -49,6 +50,10 @@ public class ProcessBreadCrumb implements IsWidget {
         for (Listener listener : listenerList) {
             listener.rootSelected();
         }
+    }
+
+    public void setRootTitle(String text) {
+        view.setRootTitle(text);
     }
 
     public void setProcessName(String name) {

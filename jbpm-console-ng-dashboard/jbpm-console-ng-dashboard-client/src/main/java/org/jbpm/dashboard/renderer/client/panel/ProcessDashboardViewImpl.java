@@ -101,9 +101,9 @@ public class ProcessDashboardViewImpl extends Composite implements ProcessDashbo
     @UiField(provided = true)
     Displayer processesTable;
 
-    ProcessDashboardPresenter presenter;
+    ProcessDashboard presenter;
 
-    public void init(ProcessDashboardPresenter presenter,
+    public void init(ProcessDashboard presenter,
             Displayer totalMetric,
             Displayer activeMetric,
             Displayer pendingMetric,
@@ -209,6 +209,7 @@ public class ProcessDashboardViewImpl extends Composite implements ProcessDashbo
     @Override
     public void showBreadCrumb(String processName) {
         processBreadCrumbRow.setVisible(true);
+        processBreadCrumb.setRootTitle(DashboardConstants.INSTANCE.processes());
         processBreadCrumb.setProcessName(processName);
     }
 

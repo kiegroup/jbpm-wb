@@ -38,20 +38,20 @@
     }
 
     .header {
-      padding-left: 10px;
-      padding-bottom: 20px;
+      padding: 15px;
       background-color: white;
     }
 
+    .breadcrumb {
+      padding-left: 15px;
+    }
+
     .metricsRow {
-      margin-left: 10px;
-      margin-right: 10px;
-      margin-top: 10px;
-      margin-bottom: 30px;
+      margin-bottom: 10px;
     }
 
     .chartsRow {
-      margin: 10px;
+      margin-bottom: 10px;
     }
 
     .separator {
@@ -76,7 +76,7 @@
 
     <!-- Dashboard -->
     <b:Container fluid="true" addStyleNames="{style.body}" ui:field="dashboardPanel">
-      <b:Row ui:field="processBreadCrumbRow" visible="false">
+      <b:Row addStyleNames="{style.breadcrumb}" ui:field="processBreadCrumbRow" visible="false">
         <j:ProcessBreadCrumb ui:field="processBreadCrumb"/>
       </b:Row>
       <b:Row addStyleNames="{style.metricsRow}">

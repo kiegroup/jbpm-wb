@@ -16,15 +16,25 @@
 
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-             xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
   <ui:with field='i18n' type='org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants'/>
 
-  <g:FlowPanel ui:field="rootPanel">
-    <b:Breadcrumbs>
-      <b:AnchorListItem ui:field="rootLink" text="{i18n.processes}"/>
-      <b:ListItem ui:field="processLabel" />
-    </b:Breadcrumbs>
-  </g:FlowPanel>
+  <b:Container fluid="true">
+    <b:Row>
+      <b:Column size="MD_12">
+        <b:TabPanel addStyleNames="uf-tabbar-panel">
+          <b:NavTabs addStyleNames="uf-tabbar-panel-nav-tabs nav-tabs-pf">
+            <b:TabListItem active="true" dataTarget="#processes" text="{i18n.processes}"/>
+            <b:TabListItem dataTarget="#tasks" text="{i18n.tasks}"/>
+          </b:NavTabs>
+          <b:TabContent>
+            <b:TabPane ui:field="processesPane" active="true" b:id="processes" />
+            <b:TabPane ui:field="tasksPane" b:id="tasks" />
+          </b:TabContent>
+        </b:TabPanel>
+      </b:Column>
+    </b:Row>
+  </b:Container>
+
 </ui:UiBinder>

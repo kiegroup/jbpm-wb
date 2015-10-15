@@ -21,8 +21,7 @@
 
   <ui:style>
     .header {
-      padding: 20px;
-      height: 30px;
+      padding: 15px;
     }
     .separator {
       height: 2px;
