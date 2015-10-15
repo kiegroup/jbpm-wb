@@ -18,13 +18,13 @@ package org.jbpm.dashboard.renderer.client.panel.widgets;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.client.DataSetHandlerImpl;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
-import org.jbpm.dashboard.renderer.client.panel.ProcessDashboardPresenter;
+import org.jbpm.dashboard.renderer.client.panel.ProcessDashboard;
 
 public class ProcessTableDisplayer extends TableDisplayer {
 
-    protected ProcessDashboardPresenter presenter;
+    protected ProcessDashboard presenter;
 
-    public ProcessTableDisplayer(DisplayerSettings settings, ProcessDashboardPresenter presenter) {
+    public ProcessTableDisplayer(DisplayerSettings settings, ProcessDashboard presenter) {
         super();
         this.presenter = presenter;
         setDisplayerSettings(settings);

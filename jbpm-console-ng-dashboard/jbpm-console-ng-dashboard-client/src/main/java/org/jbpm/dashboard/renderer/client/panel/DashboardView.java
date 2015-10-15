@@ -13,28 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.dashboard.renderer.client.panel.widgets;
+package org.jbpm.dashboard.renderer.client.panel;
+
+import javax.enterprise.context.Dependent;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
+import org.gwtbootstrap3.client.ui.TabPane;
 
-public class DisplayerContainerPopup extends BaseModal {
+import static org.uberfire.commons.validation.PortablePreconditions.checkNotNull;
 
-    interface Binder extends UiBinder<Widget, DisplayerContainerPopup> {}
+@Dependent
+public class DashboardView extends Composite implements DashboardScreen.View {
+
+    interface Binder extends UiBinder<Widget, DashboardView> {}
     private static Binder uiBinder = GWT.create(Binder.class);
 
-    @UiField(provided = true)
-    DisplayerContainer container;
+    @UiField
+    TabPane processesPane;
 
-    public DisplayerContainerPopup(DisplayerContainer container) {
-        super();
-        this.container = container;
-        setBody( uiBinder.createAndBindUi(this));
-//        content.getParent().setHeight("550px");
-//        setMaxHeigth("550px");
-//        setWidth(800);
+    @UiField
+    TabPane tasksPane;
+
+    DashboardScreen presenter;
+
+    public void init(DashboardScreen presenter) {
+        initWidget(uiBinder.createAndBindUi(this));
+        this.presenter = checkNotNull( "presenter", presenter );
+        processesPane.add(presenter.getProcessDashboard());
+        tasksPane.add(presenter.getTaskDashboard());
     }
 }

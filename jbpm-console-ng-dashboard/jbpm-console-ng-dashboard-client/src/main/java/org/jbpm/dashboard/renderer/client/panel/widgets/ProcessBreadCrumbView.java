@@ -20,11 +20,11 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.ListItem;
 
 public class ProcessBreadCrumbView extends Composite
         implements ProcessBreadCrumb.View {
@@ -36,10 +36,10 @@ public class ProcessBreadCrumbView extends Composite
     protected Panel rootPanel;
 
     @UiField
-    protected Label processLabel;
+    protected AnchorListItem rootLink;
 
     @UiField
-    protected Anchor rootLink;
+    protected ListItem processLabel;
 
     public ProcessBreadCrumbView() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -55,7 +55,13 @@ public class ProcessBreadCrumbView extends Composite
     }
 
     @Override
+    public void setRootTitle(String text) {
+        rootLink.setText(text);
+    }
+
+    @Override
     public void setProcess(String name) {
+        processLabel.clear();
         processLabel.setText(name);
     }
 }
