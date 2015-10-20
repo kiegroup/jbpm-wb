@@ -1,0 +1,3 @@
+org.jbpm.console.ng.pr.forms.display.process.api.StartProcessFormDisplayProvider
+org.jbpm.console.ng.pr.forms.display.process.api.ProcessDisplayerConfig
+org.jbpm.console.ng.pr.forms.display.process.api.StartProcessFormDisplayer

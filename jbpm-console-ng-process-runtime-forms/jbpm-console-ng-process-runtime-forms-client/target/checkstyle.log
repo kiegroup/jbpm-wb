@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="5.7">
+<file name="/home/kiereleaseuser/droolsjbpm/jbpm-console-ng/jbpm-console-ng-process-runtime-forms/jbpm-console-ng-process-runtime-forms-client/src/main/java/org/jbpm/console/ng/pr/forms/client/i18n/Constants.java">
+</file>
+<file name="/home/kiereleaseuser/droolsjbpm/jbpm-console-ng/jbpm-console-ng-process-runtime-forms/jbpm-console-ng-process-runtime-forms-client/src/main/java/org/jbpm/console/ng/pr/forms/client/display/displayers/process/PlaceManagerStartProcessDisplayerImpl.java">
+</file>
+<file name="/home/kiereleaseuser/droolsjbpm/jbpm-console-ng/jbpm-console-ng-process-runtime-forms/jbpm-console-ng-process-runtime-forms-client/src/main/java/org/jbpm/console/ng/pr/forms/client/display/displayers/process/FTLStartProcessDisplayerImpl.java">
+</file>
+<file name="/home/kiereleaseuser/droolsjbpm/jbpm-console-ng/jbpm-console-ng-process-runtime-forms/jbpm-console-ng-process-runtime-forms-client/src/main/java/org/jbpm/console/ng/pr/forms/client/display/displayers/process/AbstractStartProcessFormDisplayer.java">
+</file>
+<file name="/home/kiereleaseuser/droolsjbpm/jbpm-console-ng/jbpm-console-ng-process-runtime-forms/jbpm-console-ng-process-runtime-forms-client/src/main/java/org/jbpm/console/ng/pr/forms/client/display/standalone/StandaloneProcessFormDisplayScreen.java">
+</file>
+<file name="/home/kiereleaseuser/droolsjbpm/jbpm-console-ng/jbpm-console-ng-process-runtime-forms/jbpm-console-ng-process-runtime-forms-client/src/main/java/org/jbpm/console/ng/pr/forms/client/display/views/PopupFormDisplayerView.java">
+</file>
+<file name="/home/kiereleaseuser/droolsjbpm/jbpm-console-ng/jbpm-console-ng-process-runtime-forms/jbpm-console-ng-process-runtime-forms-client/src/main/java/org/jbpm/console/ng/pr/forms/client/display/providers/StartProcessFormDisplayProviderImpl.java">
+</file>
+<file name="/home/kiereleaseuser/droolsjbpm/jbpm-console-ng/jbpm-console-ng-process-runtime-forms/jbpm-console-ng-process-runtime-forms-client/src/main/java/org/jbpm/console/ng/pr/forms/client/editors/quicknewinstance/QuickNewProcessInstancePopup.java">
+</file>
+<file name="/home/kiereleaseuser/droolsjbpm/jbpm-console-ng/jbpm-console-ng-process-runtime-forms/jbpm-console-ng-process-runtime-forms-client/src/main/resources/ErraiApp.properties">
+</file>
+<file name="/home/kiereleaseuser/droolsjbpm/jbpm-console-ng/jbpm-console-ng-process-runtime-forms/jbpm-console-ng-process-runtime-forms-client/src/main/resources/org/jbpm/console/ng/pr/forms/client/i18n/Constants.properties">
+</file>
+</checkstyle>
