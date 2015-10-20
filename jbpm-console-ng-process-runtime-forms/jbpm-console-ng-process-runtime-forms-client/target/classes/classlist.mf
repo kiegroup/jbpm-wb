@@ -1,0 +1,9 @@
+org.jbpm.console.ng.pr.forms.client.display.displayers.process.AbstractStartProcessFormDisplayer
+org.jbpm.console.ng.pr.forms.client.display.displayers.process.FTLStartProcessDisplayerImpl
+org.jbpm.console.ng.pr.forms.client.i18n.Constants
+org.jbpm.console.ng.pr.forms.client.display.displayers.process.PlaceManagerStartProcessDisplayerImpl
+org.jbpm.console.ng.pr.forms.client.display.standalone.StandaloneProcessFormDisplayScreen
+org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup
+org.jbpm.console.ng.pr.forms.client.display.views.PopupFormDisplayerView
+org.jbpm.console.ng.pr.forms.client.display.standalone.StandaloneProcessFormDisplayScreenActivity
+org.jbpm.console.ng.pr.forms.client.display.providers.StartProcessFormDisplayProviderImpl
