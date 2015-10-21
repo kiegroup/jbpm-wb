@@ -29,6 +29,7 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Panel;
 import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.ButtonGroup;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
@@ -67,7 +68,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     protected String deploymentId;
 
     final protected FormPanel container = new FormPanel();
-    final protected FlowPanel buttonsContainer = new FlowPanel();
+    final protected ButtonGroup buttonsContainer = new ButtonGroup();
     final protected FlowPanel formContainer = new FlowPanel();
 
     private Command onClose;
@@ -140,10 +141,6 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
                 if (opener != null) {
                     injectEventListener(AbstractHumanTaskFormDisplayer.this);
                 } else {
-                    FlowPanel wrapperFlowPanel = new FlowPanel();
-                    wrapperFlowPanel.setStyleName("wrapper form-actions");
-                    buttonsContainer.add(wrapperFlowPanel);
-
                     if (task.getStatus().equals("Ready")) {
                         Button claimButton = new Button();
                         claimButton.setType(ButtonType.PRIMARY);
@@ -154,8 +151,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
                                 claimFromDisplayer();
                             }
                         });
-                        wrapperFlowPanel.add(claimButton);
-                        buttonsContainer.add(wrapperFlowPanel);
+                        buttonsContainer.add(claimButton);
                     }
 
                     if (task.getStatus().equals("Reserved") && task.getActualOwner().equals(identity.getIdentifier())) {
@@ -168,7 +164,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
                                 releaseFromDisplayer();
                             }
                         });
-                        wrapperFlowPanel.add(releaseButton);
+                        buttonsContainer.add(releaseButton);
 
                         Button startButton = new Button();
                         startButton.setType(ButtonType.PRIMARY);
@@ -179,9 +175,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
                                 startFromDisplayer();
                             }
                         });
-                        wrapperFlowPanel.add(startButton);
-
-                        buttonsContainer.add(wrapperFlowPanel);
+                        buttonsContainer.add(startButton);
                     } else if (task.getStatus().equals("InProgress") && task.getActualOwner().equals(identity.getIdentifier())) {
                         Button saveButton = new Button();
                         saveButton.setText(constants.Save());
@@ -192,7 +186,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
 
                             }
                         });
-                        wrapperFlowPanel.add(saveButton);
+                        buttonsContainer.add(saveButton);
 
                         Button releaseButton = new Button();
                         releaseButton.setText(constants.Release());
@@ -202,7 +196,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
                                 releaseFromDisplayer();
                             }
                         });
-                        wrapperFlowPanel.add(releaseButton);
+                        buttonsContainer.add(releaseButton);
 
                         Button completeButton = new Button();
                         completeButton.setType(ButtonType.PRIMARY);
@@ -214,9 +208,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
                             }
                         });
 
-                        wrapperFlowPanel.add(completeButton);
-                        buttonsContainer.add(wrapperFlowPanel);
-
+                        buttonsContainer.add(completeButton);
                     }
                 }
                 initDisplayer();

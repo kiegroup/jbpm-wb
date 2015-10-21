@@ -30,26 +30,24 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
-import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.TextArea;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.gwt.DataGrid;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.CommentSummary;
+import org.uberfire.ext.widgets.common.client.tables.PagedTable;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
@@ -62,31 +60,18 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
 
     @Inject
     @DataField
-    public FormLabel commentsAccordionLabel;
-
-    @Inject
-    @DataField
     public TextArea newTaskCommentTextArea;
 
     @Inject
     @DataField
-    public Label newTaskCommentLabel;
+    public FormLabel newTaskCommentLabel;
 
     @Inject
     @DataField
     public Button addCommentButton;
 
-    @Inject
     @DataField
-    public DataGrid<CommentSummary> commentsListGrid;
-
-    @Inject
-    @DataField
-    public SimplePager pager;
-
-    @Inject
-    @DataField
-    public FlowPanel listContainer;
+    public PagedTable<CommentSummary> commentsListGrid = new PagedTable<CommentSummary>();
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -108,33 +93,15 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
     @Override
     public void init( TaskCommentsPresenter presenter ) {
         this.presenter = presenter;
-        listContainer.add( commentsListGrid );
-        listContainer.add( pager );
-        commentsAccordionLabel.setText( constants.Add_Comment() );
-        commentsListGrid.setHeight( "350px" );
-        commentsListGrid.setEmptyTableWidget( new HTMLPanel( constants.No_Comments_For_This_Task() ) );
+        commentsListGrid.setEmptyTableCaption( constants.No_Comments_For_This_Task() );
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler = new ListHandler<CommentSummary>( presenter.getDataProvider().getList() );
         commentsListGrid.addColumnSortHandler( sortHandler );
         initTableColumns();
         presenter.addDataDisplay( commentsListGrid );
-        // Create a Pager to control the table.
-        pager.setDisplay( commentsListGrid );
-        pager.setPageSize( COMMENTS_PER_PAGE );
-        adjustDisplayForListOfSize( 1 );
 
-        newTaskCommentTextArea.setWidth( "300px" );
         addCommentButton.setText( constants.Add_Comment() );
         newTaskCommentLabel.setText( constants.Comment() );
-    }
-
-    @Override
-    public void adjustDisplayForListOfSize( int size ) {
-        if ( size > COMMENTS_PER_PAGE ) {
-            pager.setVisible( true );
-        } else {
-            pager.setVisible( false );
-        }
     }
 
     @EventHandler("addCommentButton")
@@ -160,7 +127,7 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
         };
         addedByColumn.setSortable( false );
         commentsListGrid.addColumn( addedByColumn, constants.Added_By() );
-        commentsListGrid.setColumnWidth( addedByColumn, "100px" );
+        commentsListGrid.setColumnWidth( addedByColumn, 100, Style.Unit.PX );
 
         // date
         Column<CommentSummary, String> addedAtColumn = new Column<CommentSummary, String>( new TextCell() ) {
@@ -225,7 +192,8 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
 
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
                     mysb.appendHtmlConstant( new Button( constants.Delete() ) {{
-                        setSize( ButtonSize.EXTRA_SMALL );
+                        setSize( ButtonSize.SMALL );
+                        setType( ButtonType.DANGER );
                     }}.getElement().toString() );
                     sb.append( mysb.toSafeHtml() );
                 }

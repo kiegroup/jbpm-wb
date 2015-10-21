@@ -1,45 +1,28 @@
-<div>
-    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-        <div class="panel panel-default">
-            <div class="panel-heading" role="tab" id="desc_assignments_header">
-                <h4 class="panel-title">
-                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#desc_assignments_collapse" aria-expanded="true" aria-controls="desc_assignments_collapse">
-                        <span data-field="assignmentsAccordionLabel"></span>
-                    </a>
-                </h4>
-            </div>
-            <div id="desc_assignments_collapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="desc_assignments_header">
-                <div class="panel-body">
-                    <div class="container-fluid">
-                        <div class="col-md-12">
-                            <div class="form-horizontal">
-                                <fieldset>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-2" for="usersGroupsControlsPanel" data-field="usersGroupsControlsLabel"></label>
+<div class="row" style="padding-top: 10px">
+    <div class="col-md-12">
+        <div class="form-horizontal">
+            <fieldset>
+                <div class="form-group">
+                    <label class="control-label col-md-3" for="usersGroupsControlsPanel" data-field="usersGroupsControlsLabel"></label>
 
-                                        <div class="col-md-10">
-                                            <input type="text" id="usersGroupsControlsPanel" data-field="usersGroupsControlsPanel" class="form-control"/>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-2" for="userOrGroupText" data-field="userOrGroupLabel"></label>
-
-                                        <div class="col-md-10">
-                                            <input type="text" data-field="userOrGroupText" id="userOrGroupText" placeholder="" class="form-control"/>
-                                            <span id="helpBlock" class="help-block" for="userOrGroupText" data-field="userOrGroupHelpBlock"></span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="col-md-offset-2 col-md-10">
-                                            <button class="btn btn-default" data-field="delegateButton" id="delegateButton"></button>
-                                        </div>
-                                    </div>
-                                </fieldset>
-                            </div>
-                        </div>
+                    <div class="col-md-9">
+                        <p id="usersGroupsControlsPanel" data-field="usersGroupsControlsPanel" class="form-control-static">
                     </div>
                 </div>
-            </div>
+                <div class="form-group">
+                    <label class="control-label col-md-3" for="userOrGroupText" data-field="userOrGroupLabel"></label>
+
+                    <div class="col-md-9">
+                        <input type="text" data-field="userOrGroupText" id="userOrGroupText" placeholder="" class="form-control"/>
+                        <span id="helpBlock" class="help-block" for="userOrGroupText" data-field="userOrGroupHelpBlock"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-md-9">
+                        <button class="btn btn-default" data-field="delegateButton" id="delegateButton"></button>
+                    </div>
+                </div>
+            </fieldset>
         </div>
     </div>
 </div>

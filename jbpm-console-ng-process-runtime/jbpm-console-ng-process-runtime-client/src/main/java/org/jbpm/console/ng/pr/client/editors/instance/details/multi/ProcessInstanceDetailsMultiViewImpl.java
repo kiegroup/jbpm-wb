@@ -146,12 +146,12 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
     @Override
     public IsWidget getOptionsButton() {
         return new ButtonGroup() {{
-            addStyleName( Styles.PULL_RIGHT );
             add( new Button( Constants.INSTANCE.Options() ) {{
                 setSize( ButtonSize.SMALL );
                 setDataToggle( Toggle.DROPDOWN );
             }} );
             add( new DropDownMenu() {{
+                addStyleName( Styles.DROPDOWN_MENU + "-right" );
                 add( new AnchorListItem( Constants.INSTANCE.Signal() ) {{
                     addClickHandler( new ClickHandler() {
                         @Override

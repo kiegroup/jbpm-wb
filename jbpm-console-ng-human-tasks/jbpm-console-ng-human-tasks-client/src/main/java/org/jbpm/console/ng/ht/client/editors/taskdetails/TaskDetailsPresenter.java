@@ -31,9 +31,9 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -53,8 +53,8 @@ import org.jbpm.console.ng.ht.service.TaskAuditService;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.paging.PageResponse;
 
 @Dependent
@@ -68,7 +68,7 @@ public class TaskDetailsPresenter {
 
         TextArea getTaskDescriptionTextArea();
 
-        ListBox getTaskPriorityListBox();
+        Select getTaskPriorityListBox();
 
         UTCDateBox getDueDate();
 
@@ -203,7 +203,7 @@ public class TaskDetailsPresenter {
                 i = 0;
                 for ( String priority : view.getPriorities() ) {
                     if ( details.getPriority() == i ) {
-                        view.getTaskPriorityListBox().setSelectedIndex( i );
+                        view.getTaskPriorityListBox().setValue( String.valueOf( i ) );
                     }
                     i++;
                 }

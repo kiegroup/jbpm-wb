@@ -25,11 +25,12 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.extras.select.client.ui.Option;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -59,7 +60,7 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
 
     @Inject
     @DataField
-    public ListBox taskPriorityListBox;
+    public Select taskPriorityListBox;
 
     @Inject
     @DataField
@@ -106,10 +107,6 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     public FormLabel taskDescriptionLabel;
 
     @Inject
-    @DataField
-    public FormLabel detailsAccordionLabel;
-
-    @Inject
     private PlaceManager placeManager;
 
     private String[] priorities = { "0 - High", "1", "2", "3", "4", "5 - Medium", "6", "7", "8", "9", "10 - Low" };
@@ -132,10 +129,13 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
         //
         // }
 
-        for ( String priority : priorities ) {
-            taskPriorityListBox.addItem( priority );
-
+        for ( int i = 0; i < priorities.length; i++) {
+            final Option option = new Option();
+            option.setText( priorities[i] );
+            option.setValue( String.valueOf( i ) );
+            taskPriorityListBox.add( option );
         }
+        taskPriorityListBox.refresh();
 
         taskStatusLabel.setText( constants.Status() );
         userLabel.setText( constants.User() );
@@ -144,7 +144,6 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
         taskPriorityLabel.setText( constants.Priority() );
 
         taskDescriptionLabel.setText( constants.Description() );
-        detailsAccordionLabel.setText( constants.Details() );
         taskLogsLabel.setText( constants.Logs() );
         taskLogsLabel.setStyleName( "" );
 
@@ -160,7 +159,7 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
                               userText.getText(),
                               // subTaskStrategyListBox.getItemText(subTaskStrategyListBox.getSelectedIndex()),
                               ( dueDate.getValue() != null && dueDateTime.getValue() != null ) ? UTCDateBox.utc2date( dueDate.getValue() + dueDateTime.getValue() ) : null,
-                              taskPriorityListBox.getSelectedIndex() );
+                              Integer.valueOf( taskPriorityListBox.getValue() ) );
 
     }
 
@@ -175,7 +174,7 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     }
 
     @Override
-    public ListBox getTaskPriorityListBox() {
+    public Select getTaskPriorityListBox() {
         return taskPriorityListBox;
     }
 

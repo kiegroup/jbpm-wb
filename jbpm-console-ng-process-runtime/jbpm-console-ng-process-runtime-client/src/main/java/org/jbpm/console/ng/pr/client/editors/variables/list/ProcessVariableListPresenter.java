@@ -32,7 +32,6 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
-import org.jbpm.console.ng.gc.client.util.TaskUtils;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
@@ -133,9 +132,6 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
                     .getColumn().getDataStoreName() : "" );
             currentFilter.setIsAscending( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
                     .isAscending() : true );
-
-            GWT.log( "ProcessVariableCurrentFilter 1:count" + currentFilter.getCount() );
-            GWT.log( "                             2:ofset" + currentFilter.getOffset() );
 
             variablesServices.call( new RemoteCallback<PageResponse<ProcessVariableSummary>>() {
                 @Override

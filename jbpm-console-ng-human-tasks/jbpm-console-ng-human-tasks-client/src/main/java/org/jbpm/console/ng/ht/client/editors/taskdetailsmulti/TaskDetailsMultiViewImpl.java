@@ -238,7 +238,7 @@ public class TaskDetailsMultiViewImpl extends Composite
             {
                 setIcon( IconType.REFRESH );
                 setTitle( Constants.INSTANCE.Refresh() );
-                setSize( ButtonSize.EXTRA_SMALL );
+                setSize( ButtonSize.SMALL );
                 addClickHandler( new ClickHandler() {
                     @Override
                     public void onClick( ClickEvent event ) {
