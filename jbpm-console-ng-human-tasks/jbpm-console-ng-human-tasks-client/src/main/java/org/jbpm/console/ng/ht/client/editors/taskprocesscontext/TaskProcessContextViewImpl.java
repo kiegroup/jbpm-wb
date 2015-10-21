@@ -23,7 +23,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -36,10 +35,6 @@ import org.uberfire.workbench.events.NotificationEvent;
 public class TaskProcessContextViewImpl extends Composite implements TaskProcessContextPresenter.TaskProcessContextView {
 
     private TaskProcessContextPresenter presenter;
-
-    @Inject
-    @DataField
-    public Label processContextLabel;
 
     @Inject
     @DataField
@@ -78,9 +73,6 @@ public class TaskProcessContextViewImpl extends Composite implements TaskProcess
         processIdLabel.setText( constants.Process_Definition_Id() );
         processIdText.setReadOnly( true );
         processIdText.setEnabled( false );
-
-        processContextLabel.setText( constants.Process_Context() );
-        processContextLabel.setStyleName( "" );
 
         pIDetailsButton.setText( constants.Process_Instance_Details() );
     }

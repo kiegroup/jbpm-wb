@@ -21,10 +21,10 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
@@ -49,7 +49,7 @@ public class TaskAssignmentsPresenter {
 
         void displayNotification( String text );
 
-        Label getUsersGroupsControlsPanel();
+        HasText getUsersGroupsControlsPanel();
 
         Button getDelegateButton();
 

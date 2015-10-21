@@ -36,6 +36,7 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -524,7 +525,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                     if ( value.getActualOwner() != null && value.getStatus().equals( "InProgress" ) ) {
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
                         mysb.appendHtmlConstant( new Button( constants.Complete() ) {{
-                            setSize( ButtonSize.EXTRA_SMALL );
+                            setSize( ButtonSize.SMALL );
+                            getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
                         }}.getElement().toString() );
                         sb.append( mysb.toSafeHtml() );
                     }
@@ -562,7 +564,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                     if ( value.getStatus().equals( "Ready" ) ) {
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
                         mysb.appendHtmlConstant( new Button( constants.Claim() ) {{
-                            setSize( ButtonSize.EXTRA_SMALL );
+                            setSize( ButtonSize.SMALL );
+                            getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
                         }}.getElement().toString() );
                         sb.append( mysb.toSafeHtml() );
                     }
@@ -601,7 +604,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                             && ( value.getStatus().equals( "Reserved" ) || value.getStatus().equals( "InProgress" ) ) ) {
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
                         mysb.appendHtmlConstant( new Button( constants.Release() ) {{
-                            setSize( ButtonSize.EXTRA_SMALL );
+                            setSize( ButtonSize.SMALL );
+                            getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
                         }}.getElement().toString() );
                         sb.append( mysb.toSafeHtml() );
                     }

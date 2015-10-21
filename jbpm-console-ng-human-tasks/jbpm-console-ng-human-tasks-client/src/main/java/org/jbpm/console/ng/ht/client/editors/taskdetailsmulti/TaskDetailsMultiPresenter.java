@@ -51,7 +51,7 @@ import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @Dependent
-@WorkbenchScreen(identifier = "Task Details Multi", preferredWidth = 500)
+@WorkbenchScreen(identifier = "Task Details Multi", preferredWidth = 515)
 public class TaskDetailsMultiPresenter {
 
     public interface TaskDetailsMultiView

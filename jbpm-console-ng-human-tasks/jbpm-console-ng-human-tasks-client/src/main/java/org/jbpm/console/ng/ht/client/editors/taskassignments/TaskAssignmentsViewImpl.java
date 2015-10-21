@@ -23,10 +23,11 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HasText;
 import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.FormControlStatic;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -42,15 +43,11 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
 
     @Inject
     @DataField
-    public FormLabel assignmentsAccordionLabel;
+    public FormLabel userOrGroupLabel;
 
     @Inject
     @DataField
-    public Label userOrGroupLabel;
-
-    @Inject
-    @DataField
-    public Label usersGroupsControlsLabel;
+    public FormLabel usersGroupsControlsLabel;
 
     @Inject
     @DataField
@@ -62,7 +59,7 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
 
     @Inject
     @DataField
-    public Label usersGroupsControlsPanel;
+    public FormControlStatic usersGroupsControlsPanel;
 
     @Inject
     @DataField
@@ -78,10 +75,8 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
         this.presenter = presenter;
 
         userOrGroupLabel.setText( constants.Delegate_User() );
-        assignmentsAccordionLabel.setText( constants.Assignments() );
         delegateButton.setText( constants.Delegate() );
         usersGroupsControlsLabel.setText( constants.Potential_Owners() );
-        usersGroupsControlsPanel.setStyleName( "" );
         userOrGroupHelpBlock.setText( "" );
     }
 
@@ -96,7 +91,7 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
     }
 
     @Override
-    public Label getUsersGroupsControlsPanel() {
+    public HasText getUsersGroupsControlsPanel() {
         return usersGroupsControlsPanel;
     }
 

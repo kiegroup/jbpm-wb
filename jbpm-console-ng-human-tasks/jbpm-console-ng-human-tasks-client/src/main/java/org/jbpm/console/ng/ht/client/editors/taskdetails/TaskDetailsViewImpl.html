@@ -1,95 +1,84 @@
-<div>
-    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-        <div class="panel panel-default">
-            <div class="panel-heading" role="tab" id="desc_header">
-                <h4 class="panel-title">
-                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#desc_collapse" aria-expanded="true" aria-controls="desc_collapse">
-                        <label data-field="detailsAccordionLabel"></label>
-                    </a>
-                </h4>
-            </div>
-            <div id="desc_collapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="desc_header">
-                <div class="panel-body">
-                    <div class="container-fluid">
-                        <div class="col-md-12">
-                            <div class="form-horizontal">
-                                <fieldset>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-2" for="taskDescriptionTextArea" data-field="taskDescriptionLabel"></label>
+<div class="row" style="padding-top: 10px">
+    <div class="col-md-12">
+        <div class="form-horizontal">
+            <fieldset>
+                <div class="form-group">
+                    <label class="control-label col-md-3" for="taskDescriptionTextArea" data-field="taskDescriptionLabel"></label>
 
-                                        <div class="col-md-10">
-                                            <input type="text" data-field="taskDescriptionTextArea" id="taskDescriptionTextArea" placeholder="" class="form-control"/>
-                                        </div>
+                    <div class="col-md-9">
+                        <input type="text" data-field="taskDescriptionTextArea" id="taskDescriptionTextArea" placeholder="" class="form-control"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3" for="taskStatusText" data-field="taskStatusLabel"></label>
+
+                    <div class="col-md-9">
+                        <input type="text" data-field="taskStatusText" id="taskStatusText" placeholder="" class="form-control"/>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="control-label col-md-3" for="dueDate" data-field="dueDateLabel"></label>
+
+                    <div class="col-md-9">
+                        <div data-field="dueDate" id="dueDate" class="col-md-8"></div>
+                        <div data-field="dueDateTime" id="dueDateTime" class="col-md-4"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3" for="taskPriorityListBox" data-field="taskPriorityLabel"></label>
+
+                    <div class="col-md-9">
+                        <select data-field="taskPriorityListBox" id="taskPriorityListBox" class="form-control"></select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3" for="userText" data-field="userLabel"></label>
+
+                    <div class="col-md-9">
+                        <select data-field="userText" id="userText" class="form-control"></select>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="logs_header">
+                    <h4 class="panel-title">
+                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#logs_collapse" aria-expanded="true" aria-controls="logs_collapse">
+                            <label data-field="taskLogsLabel"></label>
+                        </a>
+                    </h4>
+                </div>
+                <div id="logs_collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="logs_header">
+                    <div class="panel-body">
+                        <div class="form-horizontal" style="margin-top: 15px">
+                            <fieldset>
+                                <div class="form-group">
+                                    <strong><label class="control-label col-md-2" for="logTextArea" data-field="logTextLabel"></label></strong>
+
+                                    <div class="readonly col-md-10">
+                                        <label id="logTextArea" data-field="logTextArea"></label>
                                     </div>
-
-                                    <div class="form-group">
-                                        <label class="control-label col-md-2" for="taskStatusText" data-field="taskStatusLabel"></label>
-
-                                        <div class="col-md-10">
-                                            <input type="text" data-field="taskStatusText" id="taskStatusText" placeholder="" class="form-control"/>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="form-group">
-                                        <label class="control-label col-md-2" for="dueDate" data-field="dueDateLabel"></label>
-
-                                        <div class="col-md-10">
-                                            <div data-field="dueDate" id="dueDate" class="col-md-8"></div>
-                                            <div data-field="dueDateTime" id="dueDateTime" class="col-md-4"></div>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="control-label col-md-2" for="taskPriorityListBox" data-field="taskPriorityLabel"></label>
-
-                                        <div class="col-md-10">
-                                            <select data-field="taskPriorityListBox" id="taskPriorityListBox" class="form-control"></select>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="control-label col-md-2" for="userText" data-field="userLabel"></label>
-
-                                        <div class="col-md-10">
-                                            <select data-field="userText" id="userText" class="form-control"></select>
-                                        </div>
-                                    </div>
-                                </fieldset>
-                            </div>
+                                </div>
+                            </fieldset>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="panel panel-default">
-            <div class="panel-heading" role="tab" id="logs_header">
-                <h4 class="panel-title">
-                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#logs_collapse" aria-expanded="true" aria-controls="logs_collapse">
-                        <label data-field="taskLogsLabel"></label>
-                    </a>
-                </h4>
-            </div>
-            <div id="logs_collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="logs_header">
-                <div class="panel-body">
-                    <div class="form-group">
-                        <strong><label class="control-label col-md-2" for="logTextArea" data-field="logTextLabel"></label></strong>
-
-                        <div class="readonly col-md-10">
-                            <label id="logTextArea" data-field="logTextArea"></label>
-                        </div>
+        <div class="form-horizontal">
+            <fieldset>
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-md-9">
+                        <button class="btn btn-default" data-field="updateTaskButton" id="updateTaskButton"></button>
                     </div>
                 </div>
-            </div>
+            </fieldset>
         </div>
-    </div>
-    <div class="form-horizontal">
-        <fieldset>
-            <div class="form-group">
-                <div class="col-md-12">
-                    <button class="btn btn-default" data-field="updateTaskButton" id="updateTaskButton"></button>
-                </div>
-            </div>
-        </fieldset>
     </div>
 </div>

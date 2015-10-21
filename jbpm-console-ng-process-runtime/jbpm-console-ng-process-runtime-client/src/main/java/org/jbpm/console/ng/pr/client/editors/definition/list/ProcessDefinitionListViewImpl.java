@@ -33,6 +33,7 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.view.client.CellPreviewEvent;
@@ -153,6 +154,8 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         listGrid.setEmptyTableCaption( constants.No_Process_Definitions_Found() );
         listGrid.setRowStyles( selectedStyles );
 
+        listGrid.getElement().getStyle().setPaddingRight( 20, Style.Unit.PX );
+        listGrid.getElement().getStyle().setPaddingLeft( 20, Style.Unit.PX );
     }
 
     @Override
@@ -262,7 +265,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
 
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
                     mysb.appendHtmlConstant( new Button( constants.Start() ) {{
-                        setSize( ButtonSize.EXTRA_SMALL );
+                        setSize( ButtonSize.SMALL );
                     }}.getElement().toString() );
                     sb.append( mysb.toSafeHtml() );
                 }

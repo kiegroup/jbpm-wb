@@ -57,7 +57,7 @@ import org.gwtbootstrap3.client.ui.ButtonGroup;
 import org.gwtbootstrap3.client.ui.DropDownMenu;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.client.ui.constants.Pull;
+import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
@@ -320,9 +320,11 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
         final ButtonGroup bulkActions = new ButtonGroup() {{
             add( new Button( constants.Bulk_Actions() ) {{
                 setDataToggle( Toggle.DROPDOWN );
+                getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
             }} );
             add( new DropDownMenu() {{
-                setPull( Pull.RIGHT );
+                addStyleName( Styles.DROPDOWN_MENU + "-right" );
+                getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
                 add( bulkAbortNavLink );
                 add( bulkSignalNavLink );
             }} );

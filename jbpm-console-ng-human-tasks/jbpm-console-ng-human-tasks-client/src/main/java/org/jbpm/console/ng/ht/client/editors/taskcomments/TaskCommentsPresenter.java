@@ -17,6 +17,7 @@ package org.jbpm.console.ng.ht.client.editors.taskcomments;
 
 import java.util.Date;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -24,7 +25,6 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
-import javax.annotation.PostConstruct;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -43,8 +43,6 @@ public class TaskCommentsPresenter {
         void clearCommentInput();
 
         void redrawDataGrid();
-
-        void adjustDisplayForListOfSize(int size);
 
         void displayNotification(String text);
     }
@@ -83,7 +81,6 @@ public class TaskCommentsPresenter {
                         dataProvider.getList().clear();
                         dataProvider.getList().addAll(comments);
                         dataProvider.refresh();
-                        view.adjustDisplayForListOfSize(comments.size());
                         view.redrawDataGrid();
                     }
                 },
