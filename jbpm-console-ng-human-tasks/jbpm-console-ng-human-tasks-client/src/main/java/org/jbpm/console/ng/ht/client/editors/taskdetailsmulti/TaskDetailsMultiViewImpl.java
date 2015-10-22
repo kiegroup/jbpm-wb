@@ -74,6 +74,9 @@ public class TaskDetailsMultiViewImpl extends Composite
     private TabPane taskAdminPane;
     private TabListItem taskAdminTab;
 
+    private TabPane taskLogsPane;
+    private TabListItem taskLogsTab;
+
     @Override
     public void init( final TaskDetailsMultiPresenter presenter ) {
         initWidget( uiBinder.createAndBindUi( this ) );
@@ -183,6 +186,24 @@ public class TaskDetailsMultiViewImpl extends Composite
                 }
             } );
         }
+
+        {
+            taskLogsPane = new TabPane() {{
+                add( presenter.getTaskLogsView() );
+            }};
+            taskLogsTab = new TabListItem( Constants.INSTANCE.Logs() ) {{
+                setDataTargetWidget( taskLogsPane );
+                addStyleName( "uf-dropdown-tab-list-item" );
+            }};
+            navTabs.add( taskLogsTab );
+            tabContent.add( taskLogsPane );
+            taskLogsTab.addShowHandler( new TabShowHandler() {
+                @Override
+                public void onShow( final TabShowEvent event ) {
+                    presenter.taskLogsRefresh();
+                }
+            } );
+        }
     }
 
     @Override
@@ -210,9 +231,9 @@ public class TaskDetailsMultiViewImpl extends Composite
         for ( Widget active : tabContent ) {
             active.setVisible( false );
         }
-        taskDetailsPane.setVisible( true );
-        taskDetailsTab.setVisible( true );
-        taskDetailsTab.showTab();
+        taskLogsPane.setVisible( true );
+        taskLogsTab.setVisible( true );
+        taskLogsTab.showTab();
     }
 
     @Override
