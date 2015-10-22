@@ -26,6 +26,7 @@ import org.jbpm.console.ng.ht.client.editors.taskassignments.TaskAssignmentsPres
 import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskdetails.TaskDetailsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskform.TaskFormPresenter;
+import org.jbpm.console.ng.ht.client.editors.tasklogs.TaskLogsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskDisplayerConfig;
@@ -51,7 +52,7 @@ import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @Dependent
-@WorkbenchScreen(identifier = "Task Details Multi", preferredWidth = 515)
+@WorkbenchScreen(identifier = "Task Details Multi", preferredWidth = 595)
 public class TaskDetailsMultiPresenter {
 
     public interface TaskDetailsMultiView
@@ -82,6 +83,9 @@ public class TaskDetailsMultiPresenter {
 
     @Inject
     private TaskDetailsPresenter taskDetailsPresenter;
+
+    @Inject
+    private TaskLogsPresenter taskLogsPresenter;
 
     @Inject
     private TaskAssignmentsPresenter taskAssignmentsPresenter;
@@ -206,6 +210,10 @@ public class TaskDetailsMultiPresenter {
         return taskAdminPresenter.getView();
     }
 
+    public IsWidget getTaskLogsView() {
+        return taskLogsPresenter.getView();
+    }
+
     public void taskDetailsRefresh() {
         taskDetailsPresenter.refreshTask();
     }
@@ -220,6 +228,10 @@ public class TaskDetailsMultiPresenter {
 
     public void taskCommentsRefresh() {
         taskCommentsPresenter.refreshComments();
+    }
+
+    public void taskLogsRefresh() {
+        taskLogsPresenter.refreshLogs();
     }
 
     public void taskAdminRefresh() {

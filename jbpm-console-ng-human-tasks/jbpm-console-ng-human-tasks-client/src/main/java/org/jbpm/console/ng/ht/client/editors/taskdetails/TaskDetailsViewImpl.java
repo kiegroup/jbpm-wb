@@ -24,11 +24,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -61,18 +59,6 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @Inject
     @DataField
     public Select taskPriorityListBox;
-
-    @Inject
-    @DataField
-    public Label logTextLabel;
-
-    @Inject
-    @DataField
-    public Label taskLogsLabel;
-
-    @Inject
-    @DataField
-    public HTML logTextArea;
 
     @Inject
     @DataField
@@ -122,7 +108,6 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     public void init( TaskDetailsPresenter presenter ) {
         this.presenter = presenter;
 
-        logTextLabel.setText( constants.Task_Log() );
         // Commented out until we add the posibility of adding sub tasks
         // for (String strategy : subTaskStrategies) {
         // subTaskStrategyListBox.addItem(strategy);
@@ -144,8 +129,6 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
         taskPriorityLabel.setText( constants.Priority() );
 
         taskDescriptionLabel.setText( constants.Description() );
-        taskLogsLabel.setText( constants.Logs() );
-        taskLogsLabel.setStyleName( "" );
 
         updateTaskButton.setText( constants.Update() );
 
@@ -206,11 +189,6 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @Override
     public TextBox getTaskStatusText() {
         return taskStatusText;
-    }
-
-    @Override
-    public HTML getLogTextArea() {
-        return logTextArea;
     }
 
     @Override
