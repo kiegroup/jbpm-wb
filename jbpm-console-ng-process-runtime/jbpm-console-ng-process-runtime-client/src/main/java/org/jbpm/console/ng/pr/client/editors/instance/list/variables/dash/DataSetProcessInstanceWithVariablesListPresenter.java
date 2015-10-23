@@ -182,8 +182,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                                 final List<ProcessInstanceSummary> myProcessInstancesFromDataSet = new ArrayList<ProcessInstanceSummary>();
 
                                 for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
-                                    //GWT.log( " PID: " + dataSetQueryHelper.getColumnLongValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSINSTANCEID, i ) + "- " );
-                                    //GWT.log( " Process Name: " + dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSID, i ) + "- " );
+                                    
                                     myProcessInstancesFromDataSet.add( new ProcessInstanceSummary(
                                             dataSetQueryHelper.getColumnLongValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSINSTANCEID, i ),
                                             dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSID, i ),
@@ -196,7 +195,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                                             dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSINSTANCEDESCRIPTION, i ),
                                             dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_CORRELATIONKEY, i ),
                                             dataSetQueryHelper.getColumnLongValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PARENTPROCESSINSTANCEID, i ) ) );
-
+                                    
                                 }
                                 List<DataSetOp> ops = currentTableSettings.getDataSetLookup().getOperationList();
                                 String filterValue = null;
@@ -222,9 +221,12 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                                 }
                                 if ( filterValue != null ) {
                                     final int rowCountNotTrimmed = dataSet.getRowCountNonTrimmed();
-                                    dataSetQueryHelper.setDataSetHandler( view.getVariablesTableSettings( filterValue ) );
-
-                                    dataSetQueryHelper.setLastOrderedColumn( "pname" );
+                                    FilterSettings variablesTableSettings = view.getVariablesTableSettings( filterValue );
+                                    variablesTableSettings.setTablePageSize(-1);
+                                    
+                                    dataSetQueryHelper.setDataSetHandler(variablesTableSettings);
+                                    dataSetQueryHelper.setCurrentTableSettings(variablesTableSettings);
+                                    dataSetQueryHelper.setLastOrderedColumn( "pid" );
                                     dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                                     dataSetQueryHelper.lookupDataSet( 0, new DataSetReadyCallback() {
                                                 @Override
