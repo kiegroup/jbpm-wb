@@ -29,12 +29,16 @@ import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
+import javax.annotation.PostConstruct;
 import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
@@ -101,6 +105,9 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     public GridGlobalPreferences currentGlobalPreferences;
     public Button createTabButton;
+    
+    protected Button menuRefreshButton = new Button();
+    protected Button menuResetTabsButton = new Button();
 
     public AbstractMultiGridView() {
         initWidget( uiBinder.createAndBindUi( this ) );
@@ -250,4 +257,22 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public void applyFilterOnPresenter( String key ) {
     }
 
+    @PostConstruct
+    public void setupButtons() {
+        menuRefreshButton.setIcon( IconType.REFRESH );
+        menuRefreshButton.setSize( ButtonSize.SMALL );
+        menuRefreshButton.setTitle( Constants.INSTANCE.Refresh() );
+
+        menuResetTabsButton.setIcon( IconType.TH_LIST );
+        menuResetTabsButton.setSize( ButtonSize.SMALL );
+        menuResetTabsButton.setTitle( Constants.INSTANCE.RestoreDefaultFilters() );
+    }
+
+    public Button getMenuRefreshButton() {
+        return menuRefreshButton;
+    }
+
+    public Button getMenuResetTabsButton() {
+        return menuResetTabsButton;
+    }
 }
