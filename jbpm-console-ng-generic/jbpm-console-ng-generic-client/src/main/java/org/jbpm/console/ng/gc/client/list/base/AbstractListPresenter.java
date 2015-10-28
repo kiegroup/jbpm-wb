@@ -57,8 +57,7 @@ public abstract class AbstractListPresenter<T> {
     protected boolean autoRefreshEnabled = true;
     protected int autoRefreshSeconds = 0; // This should be loaded from the grid settings (probably the filters)
 
-    protected Button menuRefreshButton = new Button();
-    protected Button menuResetTabsButton = new Button();
+
 
     protected abstract AbstractListView.ListView getListView();
 
@@ -187,17 +186,7 @@ public abstract class AbstractListPresenter<T> {
         this.filterPagedTable = filterPagedTable;
     }*/
 
-    @PostConstruct
-    public void setupButtons() {
-        menuRefreshButton.setIcon( IconType.REFRESH );
-        menuRefreshButton.setSize( ButtonSize.SMALL );
-        menuRefreshButton.setTitle( Constants.INSTANCE.Refresh() );
-
-        menuResetTabsButton.setIcon( IconType.TH_LIST );
-        menuResetTabsButton.setSize( ButtonSize.SMALL );
-        menuResetTabsButton.setTitle( Constants.INSTANCE.RestoreDefaultFilters() );
-    }
-
+   
     @OnClose
    public void onClose() {
        if(refreshTimer!=null) {

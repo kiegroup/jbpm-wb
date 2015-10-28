@@ -103,32 +103,40 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                                             Set<String> columns );
 
         void applyFilterOnPresenter( String key );
+        
+        RefreshSelectorMenuBuilder getRefreshSelectorMenuBuilder();
+        
     }
 
     @Inject
     private DataSetProcessInstanceWithVariablesListView view;
 
     @Inject
-    private Caller<ProcessInstanceService> processInstanceService;
-
-    @Inject
     private Caller<KieSessionEntryPoint> kieSessionServices;
 
     @Inject
-    DataSetQueryHelper dataSetQueryHelper;
+    private DataSetQueryHelper dataSetQueryHelper;
 
     @Inject
     private ErrorPopupPresenter errorPopup;
-
-    private RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder( this );
 
     @Inject
     private QuickNewProcessInstancePopup newProcessInstancePopup;
 
     private Constants constants = GWT.create( Constants.class );
+    
+    private DataSetReadyCallback domainSpecificCallback;
+    
+    private DataSetReadyCallback processInstanceCallback;
 
     public DataSetProcessInstanceWithVariablesListPresenter() {
         super();
+    }
+
+    public DataSetProcessInstanceWithVariablesListPresenter(DataSetProcessInstanceWithVariablesListView view, DataSetQueryHelper dataSetQueryHelper) {
+        this();
+        this.dataSetQueryHelper = dataSetQueryHelper;
+        this.view = view;
     }
 
     public void filterGrid( FilterSettings tableSettings ) {
@@ -175,155 +183,198 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                         textSearchStr = "";
                     }
                     dataSetQueryHelper.setDataSetHandler( currentTableSettings );
-                    dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
-                        @Override
-                        public void callback( DataSet dataSet ) {
-                            if ( dataSet != null ) {
-                                final List<ProcessInstanceSummary> myProcessInstancesFromDataSet = new ArrayList<ProcessInstanceSummary>();
-
-                                for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
-                                    
-                                    myProcessInstancesFromDataSet.add( new ProcessInstanceSummary(
-                                            dataSetQueryHelper.getColumnLongValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSINSTANCEID, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSID, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_EXTERNALID, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSNAME, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSVERSION, i ),
-                                            dataSetQueryHelper.getColumnIntValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_STATUS, i ),
-                                            dataSetQueryHelper.getColumnDateValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_START, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_IDENTITY, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSINSTANCEDESCRIPTION, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_CORRELATIONKEY, i ),
-                                            dataSetQueryHelper.getColumnLongValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PARENTPROCESSINSTANCEID, i ) ) );
-                                    
-                                }
-                                List<DataSetOp> ops = currentTableSettings.getDataSetLookup().getOperationList();
-                                String filterValue = null;
-                                for ( DataSetOp dataSetOp : ops ) {
-                                    if ( dataSetOp.getType().equals( DataSetOpType.FILTER ) ) {
-                                        List<ColumnFilter> filters = ( ( DataSetFilter ) dataSetOp ).getColumnFilterList();
-                                        for ( ColumnFilter filter : filters ) {
-                                            if ( filter instanceof CoreFunctionFilter ) {
-                                                CoreFunctionFilter coreFilter = ( ( CoreFunctionFilter ) filter );
-//                                        GWT.log("ProcessID filter filterColum" + coreFilter.getColumnId());
-//                                        GWT.log("ProcessID filter type filterColum" + coreFilter.getType().toString());
-//                                        GWT.log("ProcessID filter type filterColum" + coreFilter.getParameters());
-                                                if ( filter.getColumnId().equals( "processId" ) ) {
-
-                                                    List parameters = coreFilter.getParameters();
-                                                    if ( parameters.size() > 0 ) {
-                                                        filterValue = parameters.get( 0 ).toString();
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                if ( filterValue != null ) {
-                                    final int rowCountNotTrimmed = dataSet.getRowCountNonTrimmed();
-                                    FilterSettings variablesTableSettings = view.getVariablesTableSettings( filterValue );
-                                    variablesTableSettings.setTablePageSize(-1);
-                                    
-                                    dataSetQueryHelper.setDataSetHandler(variablesTableSettings);
-                                    dataSetQueryHelper.setCurrentTableSettings(variablesTableSettings);
-                                    dataSetQueryHelper.setLastOrderedColumn( "pid" );
-                                    dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
-                                    dataSetQueryHelper.lookupDataSet( 0, new DataSetReadyCallback() {
-                                                @Override
-                                                public void callback( DataSet dataSet ) {
-
-                                                    Set<String> columns = new HashSet<String>();
-                                                    for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
-                                                        Long processInstanceId = dataSetQueryHelper.getColumnLongValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.PROCESS_INSTANCE_ID, i );
-                                                        String variableName = dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.VARIABLE_NAME, i );
-                                                        String variableValue = dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.VARIABLE_VALUE, i );
-                                                        GWT.log( "processInstanceId: " + processInstanceId + " - " + "Variable Name: " + variableName + " - " + "Variable Value: " + variableValue );
-
-                                                        for ( ProcessInstanceSummary pis : myProcessInstancesFromDataSet ) {
-                                                            if ( pis.getProcessInstanceId().equals( processInstanceId ) ) {
-                                                                pis.addDomainData( variableName, variableValue );
-                                                                columns.add( variableName );
-                                                            }
-
-                                                        }
-
-                                                    }
-                                                    view.addDomainSpecifColumns( view.getListGrid(), columns );
-
-                                                    PageResponse<ProcessInstanceSummary> processInstanceSummaryPageResponse = new PageResponse<ProcessInstanceSummary>();
-                                                    processInstanceSummaryPageResponse.setPageRowList( myProcessInstancesFromDataSet );
-                                                    processInstanceSummaryPageResponse.setStartRowIndex( visibleRange.getStart() );
-                                                    processInstanceSummaryPageResponse.setTotalRowSize( rowCountNotTrimmed );
-                                                    processInstanceSummaryPageResponse.setTotalRowSizeExact( true );
-                                                    if ( visibleRange.getStart() + myProcessInstancesFromDataSet.size() == rowCountNotTrimmed ) {
-                                                        processInstanceSummaryPageResponse.setLastPage( true );
-                                                    } else {
-                                                        processInstanceSummaryPageResponse.setLastPage( false );
-                                                    }
-                                                    DataSetProcessInstanceWithVariablesListPresenter.this.updateDataOnCallback( processInstanceSummaryPageResponse );
-                                                }
-
-                                                @Override
-                                                public void notFound() {
-                                                    view.hideBusyIndicator();
-                                                    errorPopup.showMessage( "Not found DataSet with UUID [  variables ] " );
-                                                    GWT.log( "DataSet with UUID [  variables ] not found." );
-                                                }
-
-                                                @Override
-                                                public boolean onError( final ClientRuntimeError error ) {
-                                                    view.hideBusyIndicator();
-                                                    errorPopup.showMessage( "DataSet with UUID [  variables ] error: " + error.getThrowable() );
-                                                    GWT.log( "DataSet with UUID [  variables ] error: ", error.getThrowable() );
-                                                    return false;
-                                                }
-                                            }
-                                    );
-                                } else {
-                                    PageResponse<ProcessInstanceSummary> processInstanceSummaryPageResponse = new PageResponse<ProcessInstanceSummary>();
-                                    processInstanceSummaryPageResponse.setPageRowList( myProcessInstancesFromDataSet );
-                                    processInstanceSummaryPageResponse.setStartRowIndex( visibleRange.getStart() );
-                                    processInstanceSummaryPageResponse.setTotalRowSize( dataSet.getRowCountNonTrimmed() );
-                                    processInstanceSummaryPageResponse.setTotalRowSizeExact( true );
-                                    if ( visibleRange.getStart() + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed() ) {
-                                        processInstanceSummaryPageResponse.setLastPage( true );
-                                    } else {
-                                        processInstanceSummaryPageResponse.setLastPage( false );
-                                    }
-                                    DataSetProcessInstanceWithVariablesListPresenter.this.updateDataOnCallback( processInstanceSummaryPageResponse );
-                                }
-
-                            }
-
-                            view.hideBusyIndicator();
-                        }
-
-                        @Override
-                        public void notFound() {
-                            view.hideBusyIndicator();
-                            errorPopup.showMessage( "Not found DataSet with UUID [  jbpmProcessInstances ] " );
-                            GWT.log( "DataSet with UUID [  jbpmProcessInstances ] not found." );
-                        }
-
-                        @Override
-                        public boolean onError( final ClientRuntimeError error ) {
-                            view.hideBusyIndicator();
-                            errorPopup.showMessage( "DataSet with UUID [  jbpmProcessInstances ] error: " + error.getThrowable() );
-                            GWT.log( "DataSet with UUID [  jbpmProcessInstances ] error: ", error.getThrowable() );
-                            return false;
-                        }
-                    } );
+                    if(processInstanceCallback == null){
+                        this.processInstanceCallback = createDataSetProcessInstanceCallback(visibleRange.getStart(), currentTableSettings);
+                    }
+                    dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), getProcessInstanceCallback());
 
                 } else {
                     view.hideBusyIndicator();
                 }
             }
         } catch ( Exception e ) {
-            GWT.log( "Error looking up dataset with UUID [ jbpmProcessInstances ]" );
+            e.printStackTrace();
+            GWT.log( "Error looking up dataset with UUID [ jbpmProcessInstances ]" + e.getMessage() );
         }
 
     }
+    
+    private DataSetReadyCallback createDataSetDomainSpecificCallback(final int startRange, final int totalRowSize, final List<ProcessInstanceSummary> instances, final FilterSettings tableSettings){
+        return new DataSetReadyCallback() {
+            @Override
+            public void callback(DataSet dataSet) {
 
+                Set<String> columns = new HashSet<String>();
+                for (int i = 0; i < dataSet.getRowCount(); i++) {
+                    Long processInstanceId = dataSetQueryHelper.getColumnLongValue(dataSet, DataSetProcessInstanceWithVariablesListViewImpl.PROCESS_INSTANCE_ID, i);
+                    String variableName = dataSetQueryHelper.getColumnStringValue(dataSet, DataSetProcessInstanceWithVariablesListViewImpl.VARIABLE_NAME, i);
+                    String variableValue = dataSetQueryHelper.getColumnStringValue(dataSet, DataSetProcessInstanceWithVariablesListViewImpl.VARIABLE_VALUE, i);
+
+                    for (ProcessInstanceSummary pis : instances) {
+                        if (pis.getProcessInstanceId().equals(processInstanceId)) {
+                            pis.addDomainData(variableName, variableValue);
+                            columns.add(variableName);
+                        }
+
+                    }
+
+                }
+                view.addDomainSpecifColumns(view.getListGrid(), columns);
+
+                PageResponse<ProcessInstanceSummary> processInstanceSummaryPageResponse = new PageResponse<ProcessInstanceSummary>();
+                processInstanceSummaryPageResponse.setPageRowList(instances);
+                processInstanceSummaryPageResponse.setStartRowIndex(startRange);
+                processInstanceSummaryPageResponse.setTotalRowSize(totalRowSize);
+                processInstanceSummaryPageResponse.setTotalRowSizeExact(true);
+                if (startRange + instances.size() == totalRowSize) {
+                    processInstanceSummaryPageResponse.setLastPage(true);
+                } else {
+                    processInstanceSummaryPageResponse.setLastPage(false);
+                }
+                DataSetProcessInstanceWithVariablesListPresenter.this.updateDataOnCallback(processInstanceSummaryPageResponse);
+            }
+
+            @Override
+            public void notFound() {
+                view.hideBusyIndicator();
+                errorPopup.showMessage("Not found DataSet with UUID [  variables ] ");
+                GWT.log("DataSet with UUID [  variables ] not found.");
+            }
+
+            @Override
+            public boolean onError(final ClientRuntimeError error) {
+                view.hideBusyIndicator();
+                errorPopup.showMessage("DataSet with UUID [  variables ] error: " + error.getThrowable());
+                GWT.log("DataSet with UUID [  variables ] error: ", error.getThrowable());
+                return false;
+            }
+        };
+    }
+    
+    private DataSetReadyCallback createDataSetProcessInstanceCallback(final int startRange, final FilterSettings processInstanceTableSettings){
+        return new DataSetReadyCallback() {
+
+           
+            @Override
+            public void notFound() {
+                view.hideBusyIndicator();
+                errorPopup.showMessage("Not found DataSet with UUID [  jbpmProcessInstances ] ");
+                GWT.log("DataSet with UUID [  jbpmProcessInstances ] not found.");
+            }
+
+            @Override
+            public boolean onError(final ClientRuntimeError error) {
+                view.hideBusyIndicator();
+                errorPopup.showMessage("DataSet with UUID [  jbpmProcessInstances ] error: " + error.getThrowable());
+                GWT.log("DataSet with UUID [  jbpmProcessInstances ] error: ", error.getThrowable());
+                return false;
+            }
+            @Override
+            public void callback(DataSet dataSet) {
+                if (dataSet != null) {
+                    final List<ProcessInstanceSummary> myProcessInstancesFromDataSet = new ArrayList<ProcessInstanceSummary>();
+
+                    for (int i = 0; i < dataSet.getRowCount(); i++) {
+                        myProcessInstancesFromDataSet.add(createProcessInstanceSummaryFromDataSet(dataSet, i));
+
+                    }
+
+                    List<DataSetOp> ops = processInstanceTableSettings.getDataSetLookup().getOperationList();
+                    String filterValue = isFilteredByProcessId(ops);
+
+                    if (filterValue != null) {
+                        getDomainSpecifDataForProcessInstances(startRange, dataSet, filterValue, myProcessInstancesFromDataSet);
+                    } else {
+                        PageResponse<ProcessInstanceSummary> processInstanceSummaryPageResponse = new PageResponse<ProcessInstanceSummary>();
+                        processInstanceSummaryPageResponse.setPageRowList(myProcessInstancesFromDataSet);
+                        processInstanceSummaryPageResponse.setStartRowIndex(startRange);
+                        processInstanceSummaryPageResponse.setTotalRowSize(dataSet.getRowCountNonTrimmed());
+                        processInstanceSummaryPageResponse.setTotalRowSizeExact(true);
+                        if (startRange + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed()) {
+                            processInstanceSummaryPageResponse.setLastPage(true);
+                        } else {
+                            processInstanceSummaryPageResponse.setLastPage(false);
+                        }
+                        DataSetProcessInstanceWithVariablesListPresenter.this.updateDataOnCallback(processInstanceSummaryPageResponse);
+                    }
+
+                }
+
+                view.hideBusyIndicator();
+            }
+
+            
+
+            };
+        }
+    private String isFilteredByProcessId(List<DataSetOp> ops) {
+        for (DataSetOp dataSetOp : ops) {
+            if (dataSetOp.getType().equals(DataSetOpType.FILTER)) {
+                List<ColumnFilter> filters = ((DataSetFilter) dataSetOp).getColumnFilterList();
+                for (ColumnFilter filter : filters) {
+                    if (filter instanceof CoreFunctionFilter) {
+                        CoreFunctionFilter coreFilter = ((CoreFunctionFilter) filter);
+
+                        if (filter.getColumnId().equals("processId")) {
+
+                            List parameters = coreFilter.getParameters();
+                            if (parameters.size() > 0) {
+                                return parameters.get(0).toString();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public void getDomainSpecifDataForProcessInstances(final int startRange, DataSet dataSet, String filterValue, final List<ProcessInstanceSummary> myProcessInstancesFromDataSet) {
+        final int rowCountNotTrimmed = dataSet.getRowCountNonTrimmed();
+        FilterSettings variablesTableSettings = view.getVariablesTableSettings(filterValue);
+        variablesTableSettings.setTablePageSize(-1);
+
+        dataSetQueryHelper.setDataSetHandler(variablesTableSettings);
+        dataSetQueryHelper.setCurrentTableSettings(variablesTableSettings);
+        dataSetQueryHelper.setLastOrderedColumn("pid");
+        dataSetQueryHelper.setLastSortOrder(SortOrder.ASCENDING);
+        if (domainSpecificCallback == null) {
+            domainSpecificCallback = createDataSetDomainSpecificCallback(startRange, rowCountNotTrimmed, myProcessInstancesFromDataSet, variablesTableSettings);
+        }
+        dataSetQueryHelper.lookupDataSet(0, getDataSetDomainSpecifCallback());
+    }
+
+    private ProcessInstanceSummary createProcessInstanceSummaryFromDataSet(DataSet dataSet, int i) {
+        return new ProcessInstanceSummary(
+                dataSetQueryHelper.getColumnLongValue(dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSINSTANCEID, i),
+                dataSetQueryHelper.getColumnStringValue(dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSID, i),
+                dataSetQueryHelper.getColumnStringValue(dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_EXTERNALID, i),
+                dataSetQueryHelper.getColumnStringValue(dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSNAME, i),
+                dataSetQueryHelper.getColumnStringValue(dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSVERSION, i),
+                dataSetQueryHelper.getColumnIntValue(dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_STATUS, i),
+                dataSetQueryHelper.getColumnDateValue(dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_START, i),
+                dataSetQueryHelper.getColumnStringValue(dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_IDENTITY, i),
+                dataSetQueryHelper.getColumnStringValue(dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSINSTANCEDESCRIPTION, i),
+                dataSetQueryHelper.getColumnStringValue(dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_CORRELATIONKEY, i),
+                dataSetQueryHelper.getColumnLongValue(dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PARENTPROCESSINSTANCEID, i));
+    }
+    
+    public DataSetReadyCallback getProcessInstanceCallback(){
+        return processInstanceCallback;
+    }
+    
+    public void setProcessInstanceCallback(DataSetReadyCallback processInstanceCallback){
+        this.processInstanceCallback = processInstanceCallback;
+    }
+    
+    public void setDataSetDomainSpecifCallback(DataSetReadyCallback domainSpecificCallback){
+        this.domainSpecificCallback = domainSpecificCallback;
+    }
+    
+    public DataSetReadyCallback getDataSetDomainSpecifCallback(){
+        return domainSpecificCallback;
+    }
+    
     public void newInstanceCreated( @Observes NewProcessInstanceEvent pi ) {
         refreshGrid();
     }
@@ -475,13 +526,13 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                         return new BaseMenuCustom<IsWidget>() {
                             @Override
                             public IsWidget build() {
-                                menuRefreshButton.addClickHandler( new ClickHandler() {
+                                view.getMenuRefreshButton().addClickHandler( new ClickHandler() {
                                     @Override
                                     public void onClick( ClickEvent clickEvent ) {
                                         refreshGrid();
                                     }
                                 } );
-                                return menuRefreshButton;
+                                return view.getMenuRefreshButton();
                             }
 
                             @Override
@@ -502,7 +553,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                         };
                     }
                 } ).endMenu()
-                .newTopLevelCustomMenu( refreshSelectorMenuBuilder ).endMenu()
+                .newTopLevelCustomMenu( view.getRefreshSelectorMenuBuilder() ).endMenu()
                 .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
                     @Override
                     public void push( MenuFactory.CustomMenuBuilder element ) {
@@ -513,13 +564,13 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                         return new BaseMenuCustom<IsWidget>() {
                             @Override
                             public IsWidget build() {
-                                menuResetTabsButton.addClickHandler( new ClickHandler() {
+                                view.getMenuResetTabsButton().addClickHandler( new ClickHandler() {
                                     @Override
                                     public void onClick( ClickEvent clickEvent ) {
                                         view.restoreTabs();
                                     }
                                 } );
-                                return menuResetTabsButton;
+                                return view.getMenuResetTabsButton();
                             }
 
                             @Override
@@ -546,7 +597,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
     @Override
     public void onGridPreferencesStoreLoaded() {
-        refreshSelectorMenuBuilder.loadOptions( view.getRefreshValue() );
+        view.getRefreshSelectorMenuBuilder().loadOptions( view.getRefreshValue() );
     }
 
     @Override
