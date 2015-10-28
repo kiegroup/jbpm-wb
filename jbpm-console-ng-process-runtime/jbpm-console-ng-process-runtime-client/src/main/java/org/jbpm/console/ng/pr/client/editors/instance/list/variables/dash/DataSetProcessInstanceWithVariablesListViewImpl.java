@@ -83,6 +83,7 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.dashbuilder.dataset.sort.SortOrder.*;
+import org.jbpm.console.ng.gc.client.list.base.RefreshSelectorMenuBuilder;
 
 @Dependent
 public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMultiGridView<ProcessInstanceSummary, DataSetProcessInstanceWithVariablesListPresenter>
@@ -140,6 +141,8 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
 
     @Inject
     private QuickNewProcessInstancePopup newProcessInstancePopup;
+    
+    private RefreshSelectorMenuBuilder refreshSelectorMenuBuilder;
 
     private void controlBulkOperations() {
         if ( selectedProcessInstances != null && selectedProcessInstances.size() > 0 ) {
@@ -201,7 +204,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
 
             }
         } );
-
+        refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder( presenter );
         super.init( presenter, new GridGlobalPreferences( PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX, initColumns, bannedColumns ), button );
 
     }
@@ -835,8 +838,8 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
                 + "    \"table\": {\n"
                 + "        \"sort\": {\n"
                 + "            \"enabled\": \"true\",\n"
-                + "            \"columnId\": \"varname\",\n"
-                + "            \"order\": \"DESCENDING\"\n"
+                + "            \"columnId\": \"pid\",\n"
+                + "            \"order\": \"ASCENDING\"\n"
                 + "        }\n"
                 + "    },\n"
                 + "    \"dataSetLookup\": {\n"
@@ -978,4 +981,10 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         initDefaultFilters( currentGlobalPreferences, createTabButton );
     }
 
+    @Override
+    public RefreshSelectorMenuBuilder getRefreshSelectorMenuBuilder() {
+        return refreshSelectorMenuBuilder;
+    }
+
+    
 }
