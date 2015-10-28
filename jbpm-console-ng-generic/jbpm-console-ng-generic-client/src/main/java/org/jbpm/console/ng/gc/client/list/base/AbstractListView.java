@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
+import javax.annotation.PostConstruct;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.common.client.api.Caller;
@@ -43,6 +44,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 
 /**
  * @param <T>
@@ -89,6 +91,9 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
     protected Column actionsColumn;
 
     protected DefaultSelectionEventManager<T> noActionColumnManager;
+    
+    protected Button menuRefreshButton = new Button();
+    protected Button menuResetTabsButton = new Button();
 
     public interface BasicListView<T extends GenericSummary> extends IsWidget {
 
@@ -99,6 +104,11 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
         void displayNotification( String text );
 
         ExtendedPagedTable<T> getListGrid();
+        
+        Button getMenuRefreshButton();
+        
+        Button getMenuResetTabsButton();
+        
     }
 
     public interface ListView<T extends GenericSummary, V> extends BasicListView<T>,
@@ -176,5 +186,26 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
      *  DataGrid columns and how they must be initialized
      */
     public abstract void initColumns();
+
+    @PostConstruct
+    public void setupButtons() {
+        menuRefreshButton.setIcon( IconType.REFRESH );
+        menuRefreshButton.setSize( ButtonSize.SMALL );
+        menuRefreshButton.setTitle( Constants.INSTANCE.Refresh() );
+
+        menuResetTabsButton.setIcon( IconType.TH_LIST );
+        menuResetTabsButton.setSize( ButtonSize.SMALL );
+        menuResetTabsButton.setTitle( Constants.INSTANCE.RestoreDefaultFilters() );
+    }
+
+    public Button getMenuRefreshButton() {
+        return menuRefreshButton;
+    }
+
+    public Button getMenuResetTabsButton() {
+        return menuResetTabsButton;
+    }
+    
+    
 
 }
