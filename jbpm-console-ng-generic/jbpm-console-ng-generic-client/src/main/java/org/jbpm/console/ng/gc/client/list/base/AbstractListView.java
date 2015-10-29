@@ -17,6 +17,7 @@ package org.jbpm.console.ng.gc.client.list.base;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.Column;
@@ -40,7 +41,7 @@ import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 import org.uberfire.workbench.events.NotificationEvent;
-
+import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
@@ -89,6 +90,9 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
     protected Column actionsColumn;
 
     protected DefaultSelectionEventManager<T> noActionColumnManager;
+    
+    protected Button menuRefreshButton = new Button();
+    protected Button menuResetTabsButton = new Button();
 
     public interface BasicListView<T extends GenericSummary> extends IsWidget {
 
@@ -99,11 +103,17 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
         void displayNotification( String text );
 
         ExtendedPagedTable<T> getListGrid();
+        
+        Button getMenuRefreshButton();
+        
+        Button getMenuResetTabsButton();
+        
+        void setupButtons();
+        
     }
 
     public interface ListView<T extends GenericSummary, V> extends BasicListView<T>,
             UberView<V> {
-
     }
 
     public void init( V presenter,
@@ -175,5 +185,26 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
      *  DataGrid columns and how they must be initialized
      */
     public abstract void initColumns();
+
+    @PostConstruct
+    public void setupButtons() {
+        menuRefreshButton.setIcon( IconType.REFRESH );
+        menuRefreshButton.setSize( ButtonSize.SMALL );
+        menuRefreshButton.setTitle( Constants.INSTANCE.Refresh() );
+
+        menuResetTabsButton.setIcon( IconType.TH_LIST );
+        menuResetTabsButton.setSize( ButtonSize.SMALL );
+        menuResetTabsButton.setTitle( Constants.INSTANCE.RestoreDefaultFilters() );
+    }
+
+    public Button getMenuRefreshButton() {
+        return menuRefreshButton;
+    }
+
+    public Button getMenuResetTabsButton() {
+        return menuResetTabsButton;
+    }
+    
+    
 
 }

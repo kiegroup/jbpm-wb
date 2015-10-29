@@ -104,7 +104,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
 
     public DataSetTasksListGridPresenter() {
-
+        
 
         dataProvider = new AsyncDataProvider<TaskSummary>() {
 
@@ -272,7 +272,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
     @WorkbenchMenu
     public Menus getMenus() {
 
-        setupButtons();
+        view.setupButtons();
 
         return MenuFactory
 
@@ -295,13 +295,13 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                         return new BaseMenuCustom<IsWidget>() {
                             @Override
                             public IsWidget build() {
-                                menuRefreshButton.addClickHandler( new ClickHandler() {
+                                view.getMenuRefreshButton().addClickHandler( new ClickHandler() {
                                     @Override
                                     public void onClick( ClickEvent clickEvent ) {
                                         refreshGrid();
                                     }
                                 } );
-                                return menuRefreshButton;
+                                return view.getMenuRefreshButton();
                             }
 
                             @Override
@@ -366,13 +366,13 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                         return new BaseMenuCustom<IsWidget>() {
                             @Override
                             public IsWidget build() {
-                                menuResetTabsButton.addClickHandler( new ClickHandler() {
+                                view.getMenuResetTabsButton().addClickHandler( new ClickHandler() {
                                     @Override
                                     public void onClick( ClickEvent clickEvent ) {
                                         view.restoreTabs();
                                     }
                                 } );
-                                return menuResetTabsButton;
+                                return view.getMenuResetTabsButton();
                             }
 
                             @Override

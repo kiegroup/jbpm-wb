@@ -16,6 +16,8 @@
 package org.jbpm.console.ng.gc.client.list.base;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.ui.Composite;
@@ -38,6 +40,8 @@ import org.uberfire.workbench.events.NotificationEvent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import javax.annotation.PostConstruct;
+import org.jbpm.console.ng.gc.client.i18n.Constants;
 
 
 public abstract class AbstractMultiGridView<T extends GenericSummary, V extends AbstractListPresenter>
@@ -92,6 +96,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public GridGlobalPreferences currentGlobalPreferences;
     public Button createTabButton;
 
+    protected Button menuRefreshButton = new Button();
+    protected Button menuResetTabsButton = new Button();
 
     public void init( final V presenter,
                       final GridGlobalPreferences preferences,
@@ -237,5 +243,23 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public void applyFilterOnPresenter( String key ) {
     }
 
+    @PostConstruct
+    public void setupButtons() {
+        menuRefreshButton.setIcon( IconType.REFRESH );
+        menuRefreshButton.setSize( ButtonSize.SMALL );
+        menuRefreshButton.setTitle( Constants.INSTANCE.Refresh() );
+
+        menuResetTabsButton.setIcon( IconType.TH_LIST );
+        menuResetTabsButton.setSize( ButtonSize.SMALL );
+        menuResetTabsButton.setTitle( Constants.INSTANCE.RestoreDefaultFilters() );
+    }
+
+    public Button getMenuRefreshButton() {
+        return menuRefreshButton;
+    }
+
+    public Button getMenuResetTabsButton() {
+        return menuResetTabsButton;
+    }
 
 }
