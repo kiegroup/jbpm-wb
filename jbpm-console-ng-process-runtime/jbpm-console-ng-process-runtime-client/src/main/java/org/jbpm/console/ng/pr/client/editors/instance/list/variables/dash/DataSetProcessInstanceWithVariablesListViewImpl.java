@@ -133,6 +133,8 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
             bulkSignalNavLink.setDisabled(true);
         }
     }
+    
+    
 
     @Override
     public void init(final DataSetProcessInstanceWithVariablesListPresenter presenter) {
@@ -325,7 +327,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
     }
 
     public void addDomainSpecifColumns(ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable, Set<String> columns) {
-        GWT.log("Adding COlumns : "+columns);
+
         extendedPagedTable.storeColumnToPreferences();
 
         HashMap modifiedCaptions= new HashMap <String, String>(  );
@@ -794,8 +796,8 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
                 + "    \"table\": {\n"
                 + "        \"sort\": {\n"
                 + "            \"enabled\": \"true\",\n"
-                + "            \"columnId\": \"varname\",\n"
-                + "            \"order\": \"DESCENDING\"\n"
+                + "            \"columnId\": \"pid\",\n"
+                + "            \"order\": \"ASCENDING\"\n"
                 + "        }\n"
                 + "    },\n"
                 + "    \"dataSetLookup\": {\n"
@@ -862,7 +864,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
 
         return dataSetEditorManager.getStrToTableSettings(tableSettingsJSON);
     }
-
+    
     public void applyFilterOnPresenter(String key) {
         initSelectionModel();
         applyFilterOnPresenter(filterPagedTable.getMultiGridPreferencesStore().getGridSettings(key));

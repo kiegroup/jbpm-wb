@@ -66,9 +66,6 @@ public abstract class AbstractListPresenter<T> {
     public Button menuActionsButton;
     private PopupPanel popup = new PopupPanel(true);
 
-    public Button menuRefreshButton = new Button();
-    public Button menuResetTabsButton = new Button();
-
     protected abstract AbstractListView.ListView getListView();
 
     public AbstractListPresenter() {
@@ -133,7 +130,7 @@ public abstract class AbstractListPresenter<T> {
         if(dataProvider.getDataDisplays().size()>0) {
             HasData<T> next = dataProvider.getDataDisplays().iterator().next();
             next.setVisibleRangeAndClearData( next.getVisibleRange(), true );
-        }
+        }   
     }
 
     protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
@@ -168,20 +165,6 @@ public abstract class AbstractListPresenter<T> {
 
     protected void setAutoRefreshSeconds(int refreshSeconds){
         autoRefreshSeconds = refreshSeconds;
-    }
-
-
-    public void setupButtons( ) {
-        menuActionsButton = new Button();
-        createRefreshToggleButton( menuActionsButton );
-
-        menuRefreshButton.setIcon( IconType.REFRESH );
-        menuRefreshButton.setSize( ButtonSize.MINI );
-        menuRefreshButton.setTitle( Constants.INSTANCE.Refresh() );
-
-        menuResetTabsButton.setIcon( IconType.TH_LIST );
-        menuResetTabsButton.setSize( ButtonSize.MINI );
-        menuResetTabsButton.setTitle( Constants.INSTANCE.RestoreDefaultFilters() );
     }
 
     public void createRefreshToggleButton(final Button refreshIntervalSelector) {
