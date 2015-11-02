@@ -21,14 +21,9 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
@@ -38,137 +33,137 @@ import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
+import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 @Dependent
 public class TaskAssignmentsPresenter {
 
     public interface TaskAssignmentsView extends IsWidget {
 
-        void init( final TaskAssignmentsPresenter presenter );
+        void init(final TaskAssignmentsPresenter presenter);
 
-        void displayNotification( String text );
+        void displayNotification(String text);
 
-        HasText getUsersGroupsControlsPanel();
+        void setPotentialOwnersInfo(String text);
 
-        Button getDelegateButton();
+        void enableDelegateButton(boolean enable);
 
-        TextBox getUserOrGroupText();
+        void setDelegateButtonActive(boolean enable);
 
-        HelpBlock getUserOrGroupHelpBlock();
+        void clearUserOrGroupInput();
+
+        void enableUserOrGroupInput(boolean enable);
+
+        void setHelpText(String text);
     }
 
-    @Inject
     private TaskAssignmentsView view;
-
-    @Inject
     private User identity;
-
-    @Inject
-    Caller<TaskLifeCycleService> taskServices;
-
-    @Inject
-    Caller<TaskOperationsService> taskOperationsServices;
-
+    private Caller<TaskLifeCycleService> taskLifecycleService;
+    private Caller<TaskOperationsService> taskOperationsService;
+    private Event<TaskRefreshedEvent> taskRefreshed;
     private long currentTaskId = 0;
 
     @Inject
-    private Event<TaskRefreshedEvent> taskRefreshed;
+    public TaskAssignmentsPresenter(
+            TaskAssignmentsView view,
+            User identity,
+            Caller<TaskLifeCycleService> taskLifecycleService,
+            Caller<TaskOperationsService> taskOperationsService,
+            Event<TaskRefreshedEvent> taskRefreshed
+    ) {
+        this.view = view;
+        this.identity = identity;
+        this.taskLifecycleService = taskLifecycleService;
+        this.taskOperationsService = taskOperationsService;
+        this.taskRefreshed = taskRefreshed;
+    }
 
     @PostConstruct
     public void init() {
-        view.init( this );
+        view.init(this);
     }
 
     public IsWidget getView() {
         return view;
     }
 
-    public void delegateTask( String entity ) {
-        taskServices.call( new RemoteCallback<Void>() {
-            @Override
-            public void callback( Void nothing ) {
-                view.displayNotification( "Task was successfully delegated" );
-                view.getDelegateButton().setActive( false );
-                view.getUserOrGroupHelpBlock().setText( Constants.INSTANCE.DelegationSuccessfully() );
-                taskRefreshed.fire( new TaskRefreshedEvent( currentTaskId ) );
-                refreshTaskPotentialOwners();
-            }
+    public void delegateTask(String entity) {
+        if (entity == null || "".equals(entity.trim())) {
+            view.setHelpText(Constants.INSTANCE.DelegationUserInputRequired());
+            return;
+        }
+        taskLifecycleService.call(
+                new RemoteCallback<Void>() {
+                    @Override
+                    public void callback(Void nothing) {
+                        view.displayNotification("Task was successfully delegated");
+                        view.setDelegateButtonActive(false);
+                        view.setHelpText(Constants.INSTANCE.DelegationSuccessfully());
+                        taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
+                        refreshTaskPotentialOwners();
+                    }
+                },
+                new DefaultErrorCallback() {
 
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                view.getDelegateButton().setActive( true );
-                view.getUserOrGroupHelpBlock().setText( Constants.INSTANCE.DelegationUnable() );
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
-                return true;
-
-            }
-        } ).delegate( currentTaskId, identity.getIdentifier(), entity );
+                    @Override
+                    public boolean error(Message message, Throwable throwable) {
+                        view.setDelegateButtonActive(true);
+                        view.setHelpText(Constants.INSTANCE.DelegationUnable());
+                        return super.error(message, throwable);
+                    }
+                }
+        ).delegate(currentTaskId, identity.getIdentifier(), entity);
     }
 
     public void refreshTaskPotentialOwners() {
-        if ( currentTaskId != 0 ) {
-            taskOperationsServices.call( new RemoteCallback<TaskSummary>() {
-
+        if (currentTaskId != 0) {
+            taskOperationsService.call(new RemoteCallback<TaskSummary>() {
                 @Override
-                public void callback( TaskSummary response ) {
-                    if ( response == null ) {
-                        view.getDelegateButton().setEnabled( false );
-                        view.getUserOrGroupText().setEnabled( false );
-                        return;
-                    }
-                    if ( response.getStatus().equals( "Completed" ) || response.getActualOwner().equals( "" )
-                            || !response.getActualOwner().equals( identity.getIdentifier() ) ) {
-                        view.getDelegateButton().setEnabled( false );
-                        view.getUserOrGroupText().setEnabled( false );
+                public void callback(TaskSummary response) {
+                    if (response == null
+                            || response.getStatus().equals("Completed")
+                            || response.getActualOwner().equals("")
+                            || !response.getActualOwner().equals(identity.getIdentifier())) {
+                        view.enableDelegateButton(false);
+                        view.enableUserOrGroupInput(false);
                     } else {
-                        view.getDelegateButton().setEnabled( true );
-                        view.getUserOrGroupText().setEnabled( true );
+                        view.enableDelegateButton(true);
+                        view.enableUserOrGroupInput(true);
                     }
-
                 }
+            }).getTaskDetails(currentTaskId);
 
-            } ).getTaskDetails( currentTaskId );
+            taskOperationsService.call(
+                    new RemoteCallback<TaskAssignmentSummary>() {
+                        @Override
+                        public void callback(TaskAssignmentSummary ts) {
+                            if (ts == null) {
+                                return;
+                            }
 
-            taskOperationsServices.call( new RemoteCallback<TaskAssignmentSummary>() {
-                @Override
-                public void callback( TaskAssignmentSummary ts ) {
-                    if ( ts == null ) {
-                        return;
-                    }
-
-                    if ( ts.getPotOwnersString() != null && ts.getPotOwnersString().size() == 0 ) {
-                        view.getUsersGroupsControlsPanel().setText( Constants.INSTANCE.No_Potential_Owners() );
-                    } else {
-                        view.getUsersGroupsControlsPanel().setText( "" + ts.getPotOwnersString().toString() );
-                    }
-
-                }
-            }, new ErrorCallback<Message>() {
-                @Override
-                public boolean error( Message message,
-                                      Throwable throwable ) {
-                    ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
-                    return true;
-                }
-            } ).getTaskAssignmentDetails( currentTaskId );
+                            if (ts.getPotOwnersString() == null || ts.getPotOwnersString().isEmpty()) {
+                                view.setPotentialOwnersInfo(Constants.INSTANCE.No_Potential_Owners());
+                            } else {
+                                view.setPotentialOwnersInfo(ts.getPotOwnersString().toString());
+                            }
+                        }
+                    },
+                    new DefaultErrorCallback()
+            ).getTaskAssignmentDetails(currentTaskId);
         }
-
     }
 
-    public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
+    public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
         this.currentTaskId = event.getTaskId();
-        view.getUserOrGroupHelpBlock().setText( "" );
-        view.getUserOrGroupText().setText( "" );
+        view.setHelpText("");
+        view.clearUserOrGroupInput();
         refreshTaskPotentialOwners();
     }
 
-    public void onTaskRefreshedEvent( @Observes TaskRefreshedEvent event ) {
-        if ( currentTaskId == event.getTaskId() ) {
+    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
+        if (currentTaskId == event.getTaskId()) {
             refreshTaskPotentialOwners();
         }
     }
-
 }
