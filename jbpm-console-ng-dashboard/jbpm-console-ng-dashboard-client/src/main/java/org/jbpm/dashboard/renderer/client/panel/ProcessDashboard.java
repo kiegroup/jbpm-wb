@@ -36,7 +36,7 @@ import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.displayer.client.DisplayerCoordinator;
 import org.dashbuilder.displayer.client.DisplayerHelper;
 import org.dashbuilder.displayer.client.DisplayerListener;
-import org.dashbuilder.displayer.client.json.DisplayerSettingsJSONMarshaller;
+import org.dashbuilder.displayer.json.DisplayerSettingsJSONMarshaller;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.dashboard.renderer.client.panel.events.ProcessDashboardFocusEvent;
