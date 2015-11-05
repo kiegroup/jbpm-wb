@@ -32,4 +32,6 @@ public interface FormDisplayerView {
     void setResizeListener(FormContentResizeListener resizeListener);
 
     GenericFormDisplayer getCurrentDisplayer();
+    
+    Command getHideCommand();
 }

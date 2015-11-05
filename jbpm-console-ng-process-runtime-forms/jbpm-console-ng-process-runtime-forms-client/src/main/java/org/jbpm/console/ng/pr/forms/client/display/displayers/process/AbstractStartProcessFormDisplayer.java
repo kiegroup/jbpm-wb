@@ -16,6 +16,7 @@
 package org.jbpm.console.ng.pr.forms.client.display.displayers.process;
 
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -29,6 +30,7 @@ import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Panel;
+
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.TextBox;
@@ -50,6 +52,7 @@ import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mvp.Command;
+import org.uberfire.workbench.events.NotificationEvent;
 
 /**
  * @author salaboy
@@ -94,15 +97,17 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
 
     @Inject
     protected JSNIHelper jsniHelper;
-
-
+    
+    @Inject
+    private Event<NotificationEvent> notificationEvent;
+    
     @PostConstruct
     protected void init() {
         container.getElement().setId("form-data");
     }
 
     @Override
-    public void init(FormDisplayerConfig<ProcessDefinitionKey> config, Command onClose, Command onRefreshCommand, FormContentResizeListener resizeContentListener) {
+    public void init(FormDisplayerConfig<ProcessDefinitionKey> config, Command onClose, Command onRefreshCommand, FormContentResizeListener resizeContentListener , final Command hideCommand) {
         this.deploymentId = config.getKey().getDeploymentId();
         this.processDefId = config.getKey().getProcessId();
         this.formContent = config.getFormContent();
@@ -123,6 +128,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
         Button startButton = new Button(constants.Submit(), new ClickHandler() {
             @Override public void onClick(ClickEvent event) {
                 startProcessFromDisplayer();
+                hideCommand.execute();
             }
         });
         startButton.setType(ButtonType.PRIMARY);
@@ -159,6 +165,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
                 String notification = "Unexpected error encountered : " + throwable.getMessage();
                 errorPopup.showMessage(notification);
                 jsniHelper.notifyErrorMessage(opener, notification);
+                close();
                 return true;
             }
         };
@@ -192,6 +199,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
             public void callback(Long processInstanceId) {
                 newProcessInstanceEvent.fire(new NewProcessInstanceEvent(deploymentId, processInstanceId, processDefId, processName, 1));
                 jsniHelper.notifySuccessMessage(opener, "Process Id: " + processInstanceId + " started!");
+                notificationEvent.fire( new NotificationEvent("Process Id: " + processInstanceId + " started!") ); 
                 close();
             }
         };
@@ -217,6 +225,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
         if (this.onClose != null) {
             this.onClose.execute();
         }
+        
         clearStatus();
     }
 
