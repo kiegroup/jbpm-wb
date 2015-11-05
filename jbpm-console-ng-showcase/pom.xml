@@ -717,6 +717,13 @@
       <artifactId>drools-wb-drl-text-editor-backend</artifactId>
     </dependency>
 
+    <!-- User preference  -->
+    <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-generic-preferences</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    
     <!-- Dashboard -->
 
     <dependency>
@@ -1050,7 +1057,8 @@
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-workbench-integration-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-executor-service-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.jbpm:jbpm-console-ng-executor-service-api</compileSourcesArtifact>
-
+            <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-preferences</compileSourcesArtifact>
+            
             <!-- Dashbuilder -->
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-json</compileSourcesArtifact>
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-widgets</compileSourcesArtifact>

@@ -110,10 +110,10 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
                 if ( instanceDetailsStatus == PlaceStatus.OPEN ) {
                     placeManager.closePlace( "Process Instance Details Multi" );
                 }
-//                placeIdentifier = "Basic Process Details Multi";
-//                if ( contextualView.getViewMode( ContextualView.ALL_PERSPECTIVES ).equals( ContextualView.ADVANCED_MODE ) ) {
+                placeIdentifier = "Basic Process Details Multi";
+                if ( contextualView.getViewMode( ContextualView.ALL_PERSPECTIVES ).equals( ContextualView.ADVANCED_MODE ) ) {
                     placeIdentifier = "Advanced Process Details Multi";
-//                }
+                }
                 PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( placeIdentifier ) );
 
                 if ( status == PlaceStatus.CLOSE ) {
@@ -233,10 +233,10 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     }
 
     public void refreshNewProcessInstance( @Observes NewProcessInstanceEvent newProcessInstance ) {
-//        placeIdentifier = "Basic Process Details Multi";
-//        if ( contextualView.getViewMode( ContextualView.ALL_PERSPECTIVES ).equals( ContextualView.ADVANCED_MODE ) ) {
+        placeIdentifier = "Basic Process Details Multi";
+        if ( contextualView.getViewMode( ContextualView.ALL_PERSPECTIVES ).equals( ContextualView.ADVANCED_MODE ) ) {
             placeIdentifier = "Advanced Process Details Multi";
-//        }
+        }
         PlaceStatus definitionDetailsStatus = placeManager.getStatus( new DefaultPlaceRequest( placeIdentifier ) );
         if ( definitionDetailsStatus == PlaceStatus.OPEN ) {
             placeManager.closePlace( placeIdentifier );
