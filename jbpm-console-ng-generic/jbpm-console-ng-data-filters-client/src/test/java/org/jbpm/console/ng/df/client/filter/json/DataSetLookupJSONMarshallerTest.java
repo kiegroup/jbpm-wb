@@ -46,22 +46,9 @@ import static org.junit.Assert.*;
 @RunWith(GwtMockitoTestRunner.class)
 public class DataSetLookupJSONMarshallerTest {
 
-    public static final String COLUMN_ACTIVATIONTIME = "activationTime";
     public static final String COLUMN_ACTUALOWNER = "actualOwner";
-    public static final String COLUMN_CREATEDBY = "createdBy";
-    public static final String COLUMN_CREATEDON = "createdOn";
-    public static final String COLUMN_DEPLOYMENTID = "deploymentId";
-    public static final String COLUMN_DESCRIPTION = "description";
-    public static final String COLUMN_DUEDATE = "dueDate";
     public static final String COLUMN_NAME = "name";
-    public static final String COLUMN_PARENTID = "parentId";
-    public static final String COLUMN_PRIORITY = "priority";
-    public static final String COLUMN_PROCESSID = "processId";
-    public static final String COLUMN_PROCESSINSTANCEID = "processInstanceId";
-    public static final String COLUMN_PROCESSSESSIONID = "processSessionId";
-    public static final String COLUMN_STATUS = "status";
-    public static final String COLUMN_TASKID = "taskId";
-    public static final String COLUMN_WORKITEMID = "workItemId";
+    public static final String COLUMN_ENABLED = "enabled";
     public static final String COLUMN_ORGANIZATIONAL_ENTITY = "oeid";
 
     @Mock
@@ -87,6 +74,7 @@ public class DataSetLookupJSONMarshallerTest {
         List<ColumnFilter> condList = new  ArrayList<ColumnFilter>();
         condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, "val1"));
         condList.add(FilterFactory.equalsTo(COLUMN_ACTUALOWNER, "val2"));
+        condList.add(FilterFactory.equalsTo(COLUMN_ENABLED, Boolean.TRUE));
         condList.add(FilterFactory.AND(COLUMN_NAME, FilterFactory.equalsTo("1", "2")));
         datasetFilter.addFilterColumn(FilterFactory.AND(condList));
 
