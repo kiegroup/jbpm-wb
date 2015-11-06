@@ -535,24 +535,21 @@ public class DataSetLookupJSONMarshaller {
             // Null
             return JSONNull.getInstance();
         }
-        try {
-            // Boolean
-            return JSONBoolean.getInstance((Boolean) value);
-        }
-        catch (Exception e1) {
+        // Boolean
+        if(value instanceof Boolean ){
+           return JSONBoolean.getInstance((Boolean) value);
+        } else if(value instanceof Number) {
+            return new JSONNumber(((Number) value).doubleValue());
+        } else if (value instanceof Date){
             try {
-                // Number
-                return new JSONNumber(((Number) value).doubleValue());
-            } catch (Exception e2) {
-                try {
-                    // Date
-                    return new JSONString(_dateFormat.format((Date) value));
-                } catch (Exception e3) {
-                    // String
+               // Date
+            return new JSONString(_dateFormat.format((Date) value));
+            } catch (Exception e) {
                     return new JSONString(value.toString());
-                }
             }
         }
+        return new JSONString(value.toString());
+
     }
 
     private Comparable parseValue(JSONValue jsonValue) {
