@@ -23,10 +23,10 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
-import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.FormControlStatic;
 import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.Legend;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -42,15 +42,15 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
 
     @Inject
     @DataField
-    public Anchor adminDetailsAccordionLabel;
+    public Legend adminDetailsAccordionLabel;
 
     @Inject
     @DataField
-    public Label adminUserOrGroupLabel;
+    public FormLabel adminUserOrGroupLabel;
 
     @Inject
     @DataField
-    public Label adminUsersGroupsControlsLabel;
+    public FormLabel adminUsersGroupsControlsLabel;
 
     @Inject
     @DataField
@@ -62,19 +62,19 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
 
     @Inject
     @DataField
-    public Label adminUsersGroupsControlsPanel;
+    public FormControlStatic adminUsersGroupsControlsPanel;
 
     @Inject
     @DataField
-    public FormLabel reminderDetailsAccordionLabel;
+    public Legend reminderDetailsAccordionLabel;
 
     @Inject
     @DataField
-    public Label actualOwnerLabel;
+    public FormLabel actualOwnerLabel;
 
     @Inject
     @DataField
-    public Label actualOwnerPanel;
+    public FormControlStatic actualOwnerPanel;
 
     @Inject
     @DataField
@@ -92,11 +92,9 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
         adminDetailsAccordionLabel.setText( constants.Details() );
         adminForwardButton.setText( constants.Forward() );
         adminUsersGroupsControlsLabel.setText( constants.Potential_Owners() );
-        adminUsersGroupsControlsPanel.setStyleName( "" );
 
         reminderDetailsAccordionLabel.setText( constants.Reminder_Details() );
         actualOwnerLabel.setText( constants.Actual_Owner() );
-        actualOwnerPanel.setStyleName( "" );
         adminReminderButton.setText( constants.Reminder() );
     }
 
@@ -117,7 +115,7 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
     }
 
     @Override
-    public Label getUsersGroupsControlsPanel() {
+    public FormControlStatic getUsersGroupsControlsPanel() {
         return adminUsersGroupsControlsPanel;
     }
 
@@ -142,7 +140,7 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
     }
 
     @Override
-    public Label getActualOwnerPanel() {
+    public FormControlStatic getActualOwnerPanel() {
         return actualOwnerPanel;
     }
 }
