@@ -16,6 +16,7 @@
 package org.jbpm.console.ng.pr.client.editors.instance.list.variables.dash;
 
 
+import com.github.gwtbootstrap.client.ui.Button;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -482,6 +483,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
     @WorkbenchMenu
     public Menus getMenus() {
         view.setupButtons();
+        setupRefreshButton();
 
         return MenuFactory
                 .newTopLevelMenu(Constants.INSTANCE.New_Process_Instance())
@@ -620,5 +622,10 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
     protected int getRefreshValue(){
         return view.getRefreshValue();
+    }
+
+    public void setupRefreshButton( ) {
+        menuActionsButton = new Button();
+        createRefreshToggleButton(menuActionsButton);
     }
 }

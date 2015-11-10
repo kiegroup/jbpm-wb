@@ -94,6 +94,7 @@ public class DataSetQueryHelper<T> {
                     }
             );
         } catch ( Exception e ) {
+            callback.onError(new ClientRuntimeError(e.getMessage()));
             GWT.log("DataSetQueryHelper: lookuDataserError"+e.getMessage());
 
         }

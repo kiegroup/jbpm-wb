@@ -17,6 +17,7 @@ package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
 
 
 
+import com.github.gwtbootstrap.client.ui.Button;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -104,7 +105,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
 
     public DataSetTasksListGridPresenter() {
-        
+
 
         dataProvider = new AsyncDataProvider<TaskSummary>() {
 
@@ -116,6 +117,16 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
             }
         };
+    }
+
+    @Inject
+    public DataSetTasksListGridPresenter(DataSetTaskListView view,
+            Caller<TaskLifeCycleService> taskOperationsService,
+            DataSetQueryHelper dataSetQueryHelper
+            ) {
+        this.view = view;
+        this.taskOperationsService = taskOperationsService;
+        this.dataSetQueryHelper = dataSetQueryHelper;
     }
 
     @Override
@@ -193,28 +204,26 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                                 }
                                 DataSetTasksListGridPresenter.this.updateDataOnCallback( taskSummaryPageResponse );
                             }
-                            view.hideBusyIndicator();
+
                         }
 
                         @Override
                         public void notFound() {
-                            view.hideBusyIndicator();
                             errorPopup.showMessage( "Not found DataSet with UUID [  jbpmHumanTasks ] " );
                             GWT.log( "DataSet with UUID [  jbpmHumanTasks ] not found." );
                         }
 
                         @Override
                         public boolean onError( final ClientRuntimeError error ) {
-                            view.hideBusyIndicator();
                             error.getThrowable().printStackTrace();
                             errorPopup.showMessage( "DataSet with UUID [  jbpmHumanTasks ] error: " + error.getThrowable() );
                             GWT.log( "DataSet with UUID [  jbpmHumanTasks ] error: ", error.getThrowable() );
                             return false;
                         }
                     } );
-                }else {
-                    view.hideBusyIndicator();
+
                 }
+                view.hideBusyIndicator();
             }
         } catch (Exception e) {
             GWT.log("Error looking up dataset with UUID [ jbpmHumanTasks ]");
@@ -273,6 +282,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
     public Menus getMenus() {
 
         view.setupButtons();
+        setupRefreshButton();
 
         return MenuFactory
 
@@ -417,5 +427,11 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
     protected int getRefreshValue(){
         return view.getRefreshValue();
     }
+
+    public void setupRefreshButton( ) {
+        menuActionsButton = new Button();
+        createRefreshToggleButton(menuActionsButton);
+    }
+
 
 }
