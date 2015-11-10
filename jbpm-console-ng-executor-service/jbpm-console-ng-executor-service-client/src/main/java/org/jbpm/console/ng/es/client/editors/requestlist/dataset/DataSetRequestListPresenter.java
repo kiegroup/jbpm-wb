@@ -26,6 +26,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.Button;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
@@ -88,6 +89,7 @@ public class DataSetRequestListPresenter extends AbstractScreenListPresenter<Req
 
     @Inject
     private Caller<ExecutorServiceEntryPoint> executorServices;
+
     @Inject
     private Event<RequestChangedEvent> requestChangedEvent;
 
@@ -109,6 +111,14 @@ public class DataSetRequestListPresenter extends AbstractScreenListPresenter<Req
         super();
     }
 
+    public DataSetRequestListPresenter(DataSetRequestListViewImpl view,
+            Caller<ExecutorServiceEntryPoint> executorServices,
+            DataSetQueryHelper dataSetQueryHelper
+    ) {
+        this.view = view;
+        this.executorServices = executorServices;
+        this.dataSetQueryHelper = dataSetQueryHelper;
+    }
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -231,9 +241,9 @@ public class DataSetRequestListPresenter extends AbstractScreenListPresenter<Req
                             return false;
                         }
                     } );
-                } else {
-                    view.hideBusyIndicator();
                 }
+                view.hideBusyIndicator();
+
             }
         } catch (Exception e) {
             GWT.log("Error looking up dataset with UUID [ " + DataSetRequestListViewImpl.REQUEST_LIST_DATASET_ID + " ]");
@@ -273,6 +283,7 @@ public class DataSetRequestListPresenter extends AbstractScreenListPresenter<Req
     @WorkbenchMenu
     public Menus getMenus() {
         view.setupButtons();
+        setupRefreshButton();
 
         return MenuFactory
 
@@ -424,5 +435,10 @@ public class DataSetRequestListPresenter extends AbstractScreenListPresenter<Req
 
     protected int getRefreshValue(){
         return view.getRefreshValue();
+    }
+
+    protected void setupRefreshButton( ) {
+        menuActionsButton = new Button();
+        createRefreshToggleButton(menuActionsButton);
     }
 }
