@@ -25,7 +25,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.FormControlStatic;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
@@ -47,7 +47,7 @@ public class TaskAdminPresenter {
 
         void displayNotification( String text );
 
-        Label getUsersGroupsControlsPanel();
+        FormControlStatic getUsersGroupsControlsPanel();
 
         Button getForwardButton();
 
@@ -55,7 +55,7 @@ public class TaskAdminPresenter {
 
         Button getReminderButton();
 
-        Label getActualOwnerPanel();
+        FormControlStatic getActualOwnerPanel();
 
         void init( final TaskAdminPresenter presenter );
     }
