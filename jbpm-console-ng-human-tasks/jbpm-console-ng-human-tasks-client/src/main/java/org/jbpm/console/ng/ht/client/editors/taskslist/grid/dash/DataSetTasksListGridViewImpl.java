@@ -675,7 +675,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         Set<Group> groups = identity.getGroups();
 
 
-        builder.filter( COLUMN_ACTUALOWNER, equalsTo("") );
+        builder.filter( COLUMN_ACTUALOWNER, OR(equalsTo(""), isNull()) );
         List<ColumnFilter> condList = new  ArrayList<ColumnFilter>();
         for(Group g : groups){
             condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, g.getName()));
@@ -894,7 +894,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         //Adding own identity to check against potential owners
         condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier()));
 
-        ColumnFilter myGroupFilter = FilterFactory.AND( FilterFactory.OR( condList ),FilterFactory.equalsTo( COLUMN_ACTUALOWNER, "" ));
+        ColumnFilter myGroupFilter = FilterFactory.AND( FilterFactory.OR( condList ),
+                FilterFactory.OR(FilterFactory.equalsTo(COLUMN_ACTUALOWNER, ""), FilterFactory.isNull(COLUMN_ACTUALOWNER)));
 
         builder.filter( OR( myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUALOWNER, identity.getIdentifier() )) );
         builder.group( COLUMN_TASKID );
@@ -975,7 +976,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY,g.getName()));
 
         }
-        ColumnFilter myGroupFilter = FilterFactory.AND( FilterFactory.OR( condList ), FilterFactory.equalsTo( COLUMN_ACTUALOWNER, "" ) );
+        ColumnFilter myGroupFilter = FilterFactory.AND( FilterFactory.OR( condList ),
+                FilterFactory.OR(FilterFactory.equalsTo(COLUMN_ACTUALOWNER, ""), FilterFactory.isNull(COLUMN_ACTUALOWNER)) );
 
         builder.filter( OR( myGroupFilter, FilterFactory.equalsTo( COLUMN_ACTUALOWNER, identity.getIdentifier() ) ) );
 
