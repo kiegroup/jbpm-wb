@@ -119,7 +119,6 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
         };
     }
 
-    @Inject
     public DataSetTasksListGridPresenter(DataSetTaskListView view,
             Caller<TaskLifeCycleService> taskOperationsService,
             DataSetQueryHelper dataSetQueryHelper
