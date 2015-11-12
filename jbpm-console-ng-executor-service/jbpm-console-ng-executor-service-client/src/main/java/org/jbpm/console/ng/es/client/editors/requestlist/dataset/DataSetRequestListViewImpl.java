@@ -84,6 +84,7 @@ public class DataSetRequestListViewImpl extends AbstractMultiGridView<RequestSum
     public static final String COLUMN_COMMANDNAME = "commandName";
     public static final String COLUMN_MESSAGE = "message";
     public static final String COLUMN_BUSINESSKEY = "businessKey";
+    public static final String COL_ID_ACTIONS ="Actions";
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -108,12 +109,13 @@ public class DataSetRequestListViewImpl extends AbstractMultiGridView<RequestSum
     @Override
     public void init(final DataSetRequestListPresenter presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(constants.Id());
-        bannedColumns.add( constants.Type() );
+        bannedColumns.add(COLUMN_ID);
+        bannedColumns.add( COLUMN_COMMANDNAME );
+        bannedColumns.add(COL_ID_ACTIONS);
         final List<String> initColumns = new ArrayList<String>();
-        initColumns.add(constants.Id());
-        initColumns.add(constants.Type());
-        initColumns.add(constants.Actions());
+        initColumns.add(COLUMN_ID);
+        initColumns.add(COLUMN_COMMANDNAME);
+        initColumns.add(COL_ID_ACTIONS);
         final Button button = new Button();
         button.setText( "+" );
         button.addClickHandler( new ClickHandler() {
@@ -359,6 +361,7 @@ public class DataSetRequestListViewImpl extends AbstractMultiGridView<RequestSum
                 return object;
             }
         };
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
     }
 

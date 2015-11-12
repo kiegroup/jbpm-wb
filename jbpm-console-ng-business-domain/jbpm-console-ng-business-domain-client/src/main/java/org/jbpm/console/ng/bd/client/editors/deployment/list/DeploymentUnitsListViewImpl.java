@@ -47,6 +47,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jbpm.console.ng.bd.client.editors.deployment.newunit.NewDeploymentPopup;
+import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
@@ -58,6 +59,16 @@ import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 
 public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploymentUnitSummary, DeploymentUnitsListPresenter>
         implements DeploymentUnitsListPresenter.DeploymentUnitsListView {
+
+    public static final String COL_ID_DEPLOYMENT ="Deployment";
+    public static final String COL_ID_GROUP ="GroupId";
+    public static final String COL_ID_ARTIFACT ="Artifact";
+    public static final String COL_ID_VERSION ="Version";
+    public static final String COL_ID_KIEBASENAME ="KieBaseName";
+    public static final String COL_ID_KIEBSESSIONNAME ="KieSessionName";
+    public static final String COL_ID_STRATEGY ="Strategy";
+    public static final String COL_ID_STATUS ="Status";
+    public static final String COL_ID_ACTIONS ="Actions";
 
     interface Binder
             extends
@@ -76,13 +87,13 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
         List<String> bannedColumns = new ArrayList<String>();
 
-        bannedColumns.add(constants.Deployment());
-        bannedColumns.add(constants.Actions());
+        bannedColumns.add(COL_ID_DEPLOYMENT);
+        bannedColumns.add(COL_ID_ACTIONS);
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add(constants.Deployment());
-        initColumns.add(constants.Strategy());
-        initColumns.add(constants.Status());
-        initColumns.add(constants.Actions());
+        initColumns.add(COL_ID_DEPLOYMENT);
+        initColumns.add(COL_ID_STRATEGY);
+        initColumns.add(COL_ID_STATUS);
+        initColumns.add(COL_ID_ACTIONS);
 
         super.init(presenter, new GridGlobalPreferences("DeploymentUnitsGrid", initColumns, bannedColumns));
 
@@ -148,7 +159,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
     }
 
     @Override
-    public void initColumns() {
+    public void initColumns(ExtendedPagedTable extendedPagedTable) {
         Column<KModuleDeploymentUnitSummary, ?> unitIdColumn = idColumn();
         Column<KModuleDeploymentUnitSummary, ?> groupIdColumn = groupIdColumn();
         Column<KModuleDeploymentUnitSummary, ?> artifactIdColumn = artifactIdColumn();
@@ -169,7 +180,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
         columnMetas.add(new ColumnMeta<KModuleDeploymentUnitSummary>(strategyColumn, constants.Strategy()));
         columnMetas.add(new ColumnMeta<KModuleDeploymentUnitSummary>(statusColumn, constants.Status()));
         columnMetas.add(new ColumnMeta<KModuleDeploymentUnitSummary>(actionsColumn, constants.Actions()));
-        listGrid.addColumns(columnMetas);
+        extendedPagedTable.addColumns(columnMetas);
     }
 
     private Column<KModuleDeploymentUnitSummary, ?> idColumn() {
@@ -182,7 +193,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
             }
         };
         unitIdColumn.setSortable(true);
-        unitIdColumn.setDataStoreName("Deployment");
+        unitIdColumn.setDataStoreName(COL_ID_DEPLOYMENT);
         return unitIdColumn;
     }
 
@@ -196,7 +207,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
             }
         };
         groupIdColumn.setSortable(true);
-        groupIdColumn.setDataStoreName("GroupId");
+        groupIdColumn.setDataStoreName(COL_ID_GROUP);
         return groupIdColumn;
     }
 
@@ -210,7 +221,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
             }
         };
         artifactIdColumn.setSortable(true);
-        artifactIdColumn.setDataStoreName("ArtifactId");
+        artifactIdColumn.setDataStoreName(COL_ID_ARTIFACT);
         return artifactIdColumn;
     }
 
@@ -224,7 +235,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
             }
         };
         versionColumn.setSortable(true);
-        versionColumn.setDataStoreName("Version");
+        versionColumn.setDataStoreName(COL_ID_VERSION);
         return versionColumn;
 
     }
@@ -242,7 +253,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return kbaseName;
             }
         };
-        kbaseColumn.setDataStoreName("KieBaseName");
+        kbaseColumn.setDataStoreName(COL_ID_KIEBASENAME);
         kbaseColumn.setSortable(true);
         return kbaseColumn;
     }
@@ -260,7 +271,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return ksessionName;
             }
         };
-        ksessionColumn.setDataStoreName("KieSessionName");
+        ksessionColumn.setDataStoreName(COL_ID_KIEBSESSIONNAME);
         ksessionColumn.setSortable(true);
         return ksessionColumn;
     }
@@ -275,7 +286,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
             }
         };
         strategyColumn.setSortable(true);
-        strategyColumn.setDataStoreName("Strategy");
+        strategyColumn.setDataStoreName(COL_ID_STRATEGY);
         return strategyColumn;
     }
 
@@ -294,7 +305,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
             }
         };
         statusColumn.setSortable(true);
-        statusColumn.setDataStoreName("Status");
+        statusColumn.setDataStoreName(COL_ID_STATUS);
         return statusColumn;
     }
 
@@ -326,13 +337,16 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
 
         CompositeCell<KModuleDeploymentUnitSummary> cell = new CompositeCell<KModuleDeploymentUnitSummary>(cells);
-        return new Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary>(
+        Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> actionColum =
+             new Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary>(
                 cell) {
-            @Override
-            public KModuleDeploymentUnitSummary getValue(KModuleDeploymentUnitSummary object) {
+                @Override
+                public KModuleDeploymentUnitSummary getValue(KModuleDeploymentUnitSummary object) {
                 return object;
             }
-        };
+            };
+        actionColum.setDataStoreName(COL_ID_ACTIONS);
+        return actionColum;
     }
 
     public void refreshOnChangedUnit(@Observes DeployedUnitChangedEvent event) {
