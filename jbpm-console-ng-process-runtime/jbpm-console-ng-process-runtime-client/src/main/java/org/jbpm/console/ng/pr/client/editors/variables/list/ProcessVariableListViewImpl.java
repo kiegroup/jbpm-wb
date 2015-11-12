@@ -29,6 +29,7 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
+import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.editors.variables.edit.VariableEditPopup;
 import org.jbpm.console.ng.pr.client.editors.variables.history.VariableHistoryPopup;
@@ -50,6 +51,12 @@ import java.util.List;
 @Dependent
 public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariableSummary, ProcessVariableListPresenter>
         implements ProcessVariableListPresenter.ProcessVariableListView {
+
+    public static final String COL_ID_VARID ="varId";
+    public static final String COL_ID_VARVALUE ="varValue";
+    public static final String COL_ID_VARTYPE ="varType";
+    public static final String COL_ID_LASTMOD ="lastMod";
+    public static final String COL_ID_ACTIONS ="Actions";
 
     interface Binder
             extends
@@ -73,13 +80,13 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
     public void init(final ProcessVariableListPresenter presenter) {
         List<String> bannedColumns = new ArrayList<String>();
 
-        bannedColumns.add(constants.Name());
-        bannedColumns.add(constants.Value());
-        bannedColumns.add(constants.Actions());
+        bannedColumns.add(COL_ID_VARID);
+        bannedColumns.add(COL_ID_VARVALUE);
+        bannedColumns.add(COL_ID_ACTIONS);
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add(constants.Name());
-        initColumns.add(constants.Value());
-        initColumns.add(constants.Actions());
+        initColumns.add(COL_ID_VARID);
+        initColumns.add(COL_ID_VARVALUE);
+        initColumns.add(COL_ID_ACTIONS);
 
         super.init(presenter, new GridGlobalPreferences("ProcessVariablesGrid", initColumns, bannedColumns));
 
@@ -138,7 +145,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
     }
 
     @Override
-    public void initColumns() {
+    public void initColumns(ExtendedPagedTable extendedPagedTable) {
         Column<ProcessVariableSummary, ?> variableId = initProcessVariableIdColumn();
         Column<ProcessVariableSummary, ?> valueColumn = initProcessVariableValueColumn();
         Column<ProcessVariableSummary, ?> typeColumn = initProcessVariableTypeColumn();
@@ -151,7 +158,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
         columnMetas.add(new ColumnMeta<ProcessVariableSummary>(typeColumn, constants.Type()));
         columnMetas.add(new ColumnMeta<ProcessVariableSummary>(lastModificationColumn, constants.Last_Modification()));
         columnMetas.add(new ColumnMeta<ProcessVariableSummary>(actionsColumn, constants.Actions()));
-        listGrid.addColumns(columnMetas);
+        extendedPagedTable.addColumns(columnMetas);
     }
 
     private Column<ProcessVariableSummary, ?> initProcessVariableIdColumn() {
@@ -164,6 +171,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
             }
         };
         variableId.setSortable(true);
+        variableId.setDataStoreName(COL_ID_VARID);
 
         return variableId;
     }
@@ -178,7 +186,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
             }
         };
         valueColumn.setSortable(true);
-
+        valueColumn.setDataStoreName(COL_ID_VARVALUE);
         return valueColumn;
     }
 
@@ -193,7 +201,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
             }
         };
         typeColumn.setSortable(true);
-
+        typeColumn.setDataStoreName(COL_ID_VARTYPE);
         return typeColumn;
     }
 
@@ -211,7 +219,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
             }
         };
         lastModificationColumn.setSortable(true);
-
+        lastModificationColumn.setDataStoreName(COL_ID_LASTMOD);
         return lastModificationColumn;
     }
 
@@ -242,6 +250,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
                 return object;
             }
         };
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
     }
 

@@ -63,6 +63,14 @@ import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.TASK_ROLE_POTENTIAL
 public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, TasksListGridPresenter>
         implements TasksListGridPresenter.TaskListView {
 
+    public static final String COL_ID_ID ="t.id";
+    public static final String COL_ID_NAME ="t.name";
+    public static final String COL_ID_DESCRIPTION ="t.description";
+    public static final String COL_ID_PRIORITY ="t.priority" ;
+    public static final String COL_ID_STATUS ="t.taskData.status";
+    public static final String COL_ID_CREATEON ="t.taskData.createdOn";
+    public static final String COL_ID_EXPIRATIONTIME ="t.taskData.expirationTime";
+    public static final String COL_ID_ACTIONS ="Actions";
 
     interface Binder
             extends
@@ -85,10 +93,12 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
     @Override
     public void init(final TasksListGridPresenter presenter) {
         final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(constants.Task());
+        bannedColumns.add(COL_ID_NAME);
+        bannedColumns.add(COL_ID_ACTIONS);
         final List<String> initColumns = new ArrayList<String>();
-        initColumns.add(constants.Task());
-        initColumns.add(constants.Description());
+        initColumns.add(COL_ID_NAME);
+        initColumns.add(COL_ID_DESCRIPTION);
+        initColumns.add(COL_ID_ACTIONS);
 
         final Button button = new Button();
         button.setText( "+" );
@@ -334,7 +344,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
             }
         };
         taskIdColumn.setSortable(true);
-        taskIdColumn.setDataStoreName("t.id");
+        taskIdColumn.setDataStoreName(COL_ID_ID);
         return taskIdColumn;
     }
 
@@ -346,7 +356,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
             }
         };
         taskNameColumn.setSortable(true);
-        taskNameColumn.setDataStoreName("t.name");
+        taskNameColumn.setDataStoreName(COL_ID_NAME);
         return taskNameColumn;
     }
 
@@ -358,7 +368,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
             }
         };
         descriptionColumn.setSortable(true);
-        descriptionColumn.setDataStoreName("t.description");
+        descriptionColumn.setDataStoreName(COL_ID_DESCRIPTION);
         return descriptionColumn;
     }
 
@@ -371,7 +381,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
             }
         };
         taskPriorityColumn.setSortable(true);
-        taskPriorityColumn.setDataStoreName("t.priority");
+        taskPriorityColumn.setDataStoreName(COL_ID_PRIORITY);
         return taskPriorityColumn;
     }
 
@@ -383,7 +393,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
             }
         };
         statusColumn.setSortable(true);
-        statusColumn.setDataStoreName("t.taskData.status");
+        statusColumn.setDataStoreName(COL_ID_STATUS);
         return statusColumn;
     }
 
@@ -400,7 +410,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
             }
         };
         createdOnDateColumn.setSortable(true);
-        createdOnDateColumn.setDataStoreName("t.taskData.createdOn");
+        createdOnDateColumn.setDataStoreName(COL_ID_CREATEON);
         return createdOnDateColumn;
     }
 
@@ -417,7 +427,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
             }
         };
         dueDateColumn.setSortable(true);
-        dueDateColumn.setDataStoreName("t.taskData.expirationTime");
+        dueDateColumn.setDataStoreName(COL_ID_EXPIRATIONTIME);
         return dueDateColumn;
     }
 
@@ -466,6 +476,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                 return object;
             }
         };
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
 
     }

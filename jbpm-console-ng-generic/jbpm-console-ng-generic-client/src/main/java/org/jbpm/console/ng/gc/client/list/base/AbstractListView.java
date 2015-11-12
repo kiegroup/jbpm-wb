@@ -18,6 +18,7 @@ package org.jbpm.console.ng.gc.client.list.base;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.Column;
@@ -91,8 +92,8 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
 
     protected DefaultSelectionEventManager<T> noActionColumnManager;
     
-    protected Button menuRefreshButton = new Button();
-    protected Button menuResetTabsButton = new Button();
+    protected Button menuRefreshButton = GWT.create( Button.class );
+    protected Button menuResetTabsButton = GWT.create( Button.class );
 
     public interface BasicListView<T extends GenericSummary> extends IsWidget {
 
@@ -135,7 +136,7 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
                 } else {
                     listGrid.setGridPreferencesStore( preferencesStore );
                 }
-                initColumns();
+                initColumns(listGrid);
                 initGenericToolBar();
                 listGrid.loadPageSizePreferences();
             }
@@ -148,8 +149,8 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
 
     }
 
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification( String text) {
+        notification.fire(new NotificationEvent(text));
     }
   /*
    * By default all the tables will have a refresh button
@@ -172,8 +173,8 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
         return listGrid;
     }
 
-    public void showBusyIndicator( final String message ) {
-        BusyPopup.showMessage( message );
+    public void showBusyIndicator( final String message) {
+        BusyPopup.showMessage(message);
     }
 
     public void hideBusyIndicator() {
@@ -184,7 +185,8 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
      * For each specific implementation define the
      *  DataGrid columns and how they must be initialized
      */
-    public abstract void initColumns();
+
+    public abstract void initColumns(ExtendedPagedTable<T> extendedPagedTable);
 
     @PostConstruct
     public void setupButtons() {
@@ -204,7 +206,8 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
     public Button getMenuResetTabsButton() {
         return menuResetTabsButton;
     }
-    
+
+
     
 
 }

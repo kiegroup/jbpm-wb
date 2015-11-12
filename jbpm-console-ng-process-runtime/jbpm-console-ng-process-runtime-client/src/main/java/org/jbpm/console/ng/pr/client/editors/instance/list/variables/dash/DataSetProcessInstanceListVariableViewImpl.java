@@ -113,16 +113,15 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
     public void init(final DataSetProcessInstanceVariableListPresenter presenter) {
         final List<String> bannedColumns = new ArrayList<String>();
 
-        bannedColumns.add(constants.Id());
-        bannedColumns.add(constants.Name());
+        bannedColumns.add(PROCESS_INSTANCE_ID);
+        bannedColumns.add(PROCESS_NAME);
 
-        bannedColumns.add(constants.Actions());
         final List<String> initColumns = new ArrayList<String>();
-        initColumns.add(constants.Process_Instance_ID());
-        initColumns.add(constants.Process_Instance_Name());
-        initColumns.add(constants.Id());
-        initColumns.add(constants.Variables_Name());
-        initColumns.add(constants.Variable_Value());
+        initColumns.add(PROCESS_INSTANCE_ID);
+        initColumns.add(PROCESS_NAME);
+        initColumns.add(VARIABLE_ID);
+        initColumns.add(VARIABLE_NAME);
+        initColumns.add(VARIABLE_VALUE);
 
 
 

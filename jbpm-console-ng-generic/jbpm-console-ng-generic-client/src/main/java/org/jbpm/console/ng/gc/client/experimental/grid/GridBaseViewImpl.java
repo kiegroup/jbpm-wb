@@ -78,7 +78,7 @@ public class GridBaseViewImpl extends Composite
         
         presenter.addDataDisplay(listGrid);
         listContainer.add(listGrid);
-        this.initGridColumns();
+        this.initGridColumns(listGrid);
         
         Button refreshButton = new Button();
         refreshButton.setIcon(IconType.REFRESH);
@@ -110,7 +110,7 @@ public class GridBaseViewImpl extends Composite
     
     
 
-    public void initGridColumns() {
+    public void initGridColumns(ExtendedPagedTable extendedPagedTable) {
         Column columnIdColumn = idColumn();
         Column column1Column = column1Column();
         Column column2Column = column2Column();
@@ -123,7 +123,7 @@ public class GridBaseViewImpl extends Composite
         columnMetas.add(new ColumnMeta<DataMockSummary>(column2Column, "Column2"));
         columnMetas.add(new ColumnMeta<DataMockSummary>(column3Column, "Column3"));
         columnMetas.add(new ColumnMeta<DataMockSummary>(column4Column, "Column4"));
-        listGrid.addColumns(columnMetas);
+        extendedPagedTable.addColumns(columnMetas);
     }
 
     private Column idColumn() {
@@ -136,6 +136,7 @@ public class GridBaseViewImpl extends Composite
             }
         };
         columnIdColumn.setSortable(true);
+        columnIdColumn.setDataStoreName("idColumn");
         return columnIdColumn;
     }
 
@@ -151,6 +152,7 @@ public class GridBaseViewImpl extends Composite
             }
         };
         column1Column.setSortable(true);
+        column1Column.setDataStoreName("col1");
         return column1Column;
     }
 
@@ -165,6 +167,7 @@ public class GridBaseViewImpl extends Composite
             }
         };
         column2Column.setSortable(true);
+        column2Column.setDataStoreName("col2");
         return column2Column;
     }
 
@@ -178,6 +181,7 @@ public class GridBaseViewImpl extends Composite
             }
         };
         column3Column.setSortable(true);
+        column3Column.setDataStoreName("col3");
         return column3Column;
     }
 
@@ -192,6 +196,7 @@ public class GridBaseViewImpl extends Composite
             }
         };
         column4Column.setSortable(true);
+        column4Column.setDataStoreName("col4");
         return column4Column;
     }
 

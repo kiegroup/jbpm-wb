@@ -41,6 +41,7 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
+import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.kie.workbench.common.widgets.client.workbench.configuration.ContextualView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
@@ -56,6 +57,11 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 @Dependent
 public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSummary, ProcessDefinitionListPresenter>
         implements ProcessDefinitionListPresenter.ProcessDefinitionListView {
+
+    public static final String COL_ID_PROCESSNAME ="ProcessName";
+    public static final String COL_ID_PROCESSVERSION ="ProcessVersion";
+    public static final String COL_ID_PROJECT ="Project";
+    public static final String COL_ID_ACTIONS ="Actions";
 
     interface Binder
             extends
@@ -82,13 +88,13 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     public void init( final ProcessDefinitionListPresenter presenter ) {
 
         List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add( constants.Name() );
-        bannedColumns.add( constants.Actions() );
+        bannedColumns.add( COL_ID_PROCESSNAME );
+        bannedColumns.add( COL_ID_ACTIONS );
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add( constants.Name() );
-        initColumns.add( constants.Version() );
-        initColumns.add( constants.Project() );
-        initColumns.add( constants.Actions() );
+        initColumns.add( COL_ID_PROCESSNAME );
+        initColumns.add( COL_ID_PROCESSVERSION );
+        initColumns.add( COL_ID_PROJECT );
+        initColumns.add( COL_ID_ACTIONS );
         super.init( presenter, new GridGlobalPreferences( "ProcessDefinitionsGrid", initColumns, bannedColumns ) );
 
         selectionModel = new NoSelectionModel<ProcessSummary>();
@@ -164,7 +170,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     }
 
     @Override
-    public void initColumns() {
+    public void initColumns(ExtendedPagedTable extendedPagedTable) {
         Column processNameColumn = initProcessNameColumn();
         Column versionColumn = initVersionColumn();
         Column projectColumn = initProjectColumn();
@@ -176,7 +182,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         columnMetas.add(new ColumnMeta<ProcessSummary>(projectColumn, constants.Project()));
         columnMetas.add(new ColumnMeta<ProcessSummary>(actionsColumn, constants.Actions()));
 
-        listGrid.addColumns(columnMetas);
+        extendedPagedTable.addColumns(columnMetas);
     }
 
     private Column initProcessNameColumn() {
@@ -188,7 +194,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
             }
         };
         processNameColumn.setSortable( true );
-        processNameColumn.setDataStoreName("ProcessName");
+        processNameColumn.setDataStoreName(COL_ID_PROCESSNAME);
         return processNameColumn;
     }
 
@@ -200,7 +206,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
             }
         };
         versionColumn.setSortable( true );
-        versionColumn.setDataStoreName("ProcessVersion");
+        versionColumn.setDataStoreName(COL_ID_PROCESSVERSION);
         return versionColumn;
     }
 
@@ -212,7 +218,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
             }
         };
         projectColumn.setSortable(true);
-        projectColumn.setDataStoreName("Project");
+        projectColumn.setDataStoreName(COL_ID_PROJECT);
         return projectColumn;
     }
 
@@ -234,6 +240,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
                 return object;
             }
         };
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
     }
 

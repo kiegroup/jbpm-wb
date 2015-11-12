@@ -99,6 +99,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     public static final String COLUMN_WORKITEMID = "workItemId";
     public static final String COLUMN_ORGANIZATIONAL_ENTITY = "oeid";
 
+    public static final String COL_ID_ACTIONS = "actions";
+
 
     private static Binder uiBinder = GWT.create(Binder.class);
 
@@ -121,11 +123,12 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     public void init(final DataSetTasksListGridPresenter presenter) {
 
         final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(constants.Task());
+        bannedColumns.add(COLUMN_NAME);
+        bannedColumns.add(COL_ID_ACTIONS);
         final List<String> initColumns = new ArrayList<String>();
-        initColumns.add(constants.Task());
-        initColumns.add(constants.Description());
-        initColumns.add( constants.Actions() );
+        initColumns.add(COLUMN_NAME);
+        initColumns.add(COLUMN_DESCRIPTION);
+        initColumns.add( COL_ID_ACTIONS);
         final Button button = new Button();
         button.setText( "+" );
         button.addClickHandler(new ClickHandler() {
@@ -494,6 +497,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                 return object;
             }
         };
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
 
     }
