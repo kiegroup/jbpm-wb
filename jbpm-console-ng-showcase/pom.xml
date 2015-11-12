@@ -939,9 +939,8 @@
         <artifactId>gwt-maven-plugin</artifactId>
         <configuration>
           <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
-          <localWorkers>1</localWorkers>
-          <extraJvmArgs>-Xmx4048m -XX:MaxPermSize=512m -Xms1024m -XX:PermSize=128m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true</extraJvmArgs>
-          <module>org.jbpm.console.ng.FastCompiledjBPMShowcase</module>
+          <extraJvmArgs>-Xms1g -Xmx3g -XX:PermSize=128m -XX:MaxPermSize=512m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true</extraJvmArgs>
+          <module>org.jbpm.console.ng.jBPMShowcase</module>
           <logLevel>INFO</logLevel>
           <noServer>false</noServer>
           <draftCompile>true</draftCompile>
