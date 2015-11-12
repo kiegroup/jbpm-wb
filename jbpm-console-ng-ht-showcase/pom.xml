@@ -614,9 +614,8 @@
         <artifactId>gwt-maven-plugin</artifactId>
         <configuration>
           <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
-          <localWorkers>1</localWorkers>
-          <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m -Xms1024m -XX:PermSize=128m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.marshalling.server.classOutput=${project.build.outputDirectory} -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true</extraJvmArgs>
-          <module>org.jbpm.console.ng.showcase.ht.FastCompiledjBPMHTShowcase</module>
+          <extraJvmArgs>-Xms1g -Xmx2g -XX:PermSize=128m -XX:MaxPermSize=256m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.marshalling.server.classOutput=${project.build.outputDirectory} -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true</extraJvmArgs>
+          <module>org.jbpm.console.ng.showcase.ht.jBPMHTShowcase</module>
           <logLevel>INFO</logLevel>
           <noServer>false</noServer>
           <server>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</server>
