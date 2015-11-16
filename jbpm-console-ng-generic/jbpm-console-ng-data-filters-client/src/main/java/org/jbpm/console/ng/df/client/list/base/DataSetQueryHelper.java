@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.df.client.list.base;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Timer;
 import org.dashbuilder.common.client.StringUtils;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
@@ -29,7 +28,6 @@ import org.jbpm.console.ng.df.client.filter.dataset.DataSetHandlerImpl;
 
 import javax.enterprise.context.Dependent;
 import java.util.Date;
-import org.dashbuilder.common.client.error.ClientRuntimeError;
 
 
 @Dependent
@@ -46,12 +44,6 @@ public class DataSetQueryHelper<T> {
     protected DataSet dataSet;
 
     protected DataSetHandler dataSetHandler;
-
-
-    protected Timer refreshTimer = null;
-    protected boolean autoRefreshEnabled = true;
-    protected int autoRefreshSeconds = 10; // This should be loaded from the grid settings (probably the filters)
-
 
     public DataSetQueryHelper() {
     }
@@ -94,6 +86,7 @@ public class DataSetQueryHelper<T> {
                     }
             );
         } catch ( Exception e ) {
+            callback.onError(new ClientRuntimeError(e.getMessage()));
             GWT.log("DataSetQueryHelper: lookuDataserError"+e.getMessage());
 
         }
@@ -139,36 +132,13 @@ public class DataSetQueryHelper<T> {
         this.dataSet = dataSet;
     }
 
-    public DataSetHandler getDataSetHandler() {
-        return dataSetHandler;
-    }
 
     public void setDataSetHandler(FilterSettings tableSettings) {
         this.dataSetHandler = new DataSetHandlerImpl( tableSettings.getDataSetLookup() );
     }
 
-    public Timer getRefreshTimer() {
-        return refreshTimer;
-    }
-
-    public void setRefreshTimer( Timer refreshTimer ) {
-        this.refreshTimer = refreshTimer;
-    }
-
-    public boolean isAutoRefreshEnabled() {
-        return autoRefreshEnabled;
-    }
-
-    public void setAutoRefreshEnabled( boolean autoRefreshEnabled ) {
-        this.autoRefreshEnabled = autoRefreshEnabled;
-    }
-
-    public int getAutoRefreshSeconds() {
-        return autoRefreshSeconds;
-    }
-
-    public void setAutoRefreshSeconds( int autoRefreshSeconds ) {
-        this.autoRefreshSeconds = autoRefreshSeconds;
+    public void setDataSetHandler(DataSetHandler dataSetHandler) {
+        this.dataSetHandler = dataSetHandler;
     }
 
     public Long getColumnLongValue(DataSet currentDataSet, String columnId, int index){
