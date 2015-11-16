@@ -345,9 +345,8 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         return false;
     }
 
-    public void addDomainSpecifColumns( ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable,
-                                        Set<String> columns ) {
-        GWT.log( "Adding COlumns : " + columns );
+    public void addDomainSpecifColumns(ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable, Set<String> columns) {
+
         extendedPagedTable.storeColumnToPreferences();
 
         HashMap modifiedCaptions = new HashMap<String, String>();
@@ -403,17 +402,6 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
     }
 
     public void initExtraButtons( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
-        /*   Button newInstanceButton = new Button();
-         newInstanceButton.setTitle(constants.New_Instance());
-         newInstanceButton.setIcon( IconType.PLUS_SIGN );
-         newInstanceButton.setTitle( Constants.INSTANCE.New_Instance() );
-         newInstanceButton.addClickHandler(new ClickHandler() {
-         @Override
-         public void onClick(ClickEvent event) {
-         newProcessInstancePopup.show();
-         }
-         });
-         extendedPagedTable.getRightActionsToolbar().add(newInstanceButton);*/
     }
 
     private void initBulkActions( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
@@ -835,8 +823,8 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
                 + "    \"table\": {\n"
                 + "        \"sort\": {\n"
                 + "            \"enabled\": \"true\",\n"
-                + "            \"columnId\": \"varname\",\n"
-                + "            \"order\": \"DESCENDING\"\n"
+                + "            \"columnId\": \"pid\",\n"
+                + "            \"order\": \"ASCENDING\"\n"
                 + "        }\n"
                 + "    },\n"
                 + "    \"dataSetLookup\": {\n"

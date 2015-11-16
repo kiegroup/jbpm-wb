@@ -57,8 +57,9 @@ public abstract class AbstractListPresenter<T> {
     protected boolean autoRefreshEnabled = true;
     protected int autoRefreshSeconds = 0; // This should be loaded from the grid settings (probably the filters)
 
-    protected Button menuRefreshButton = new Button();
-    protected Button menuResetTabsButton = new Button();
+
+    protected Button menuRefreshButton = GWT.create( Button.class );
+    protected Button menuResetTabsButton = GWT.create( Button.class );
 
     protected abstract AbstractListView.ListView getListView();
 
@@ -107,7 +108,7 @@ public abstract class AbstractListPresenter<T> {
 
     public void updateDataOnCallback(PageResponse response){
         getListView().hideBusyIndicator();
-        dataProvider.updateRowCount( response.getTotalRowSize(),
+        dataProvider.updateRowCount(response.getTotalRowSize(),
                 response.isTotalRowSizeExact() );
         dataProvider.updateRowData( response.getStartRowIndex(),
                 response.getPageRowList() );
@@ -149,21 +150,6 @@ public abstract class AbstractListPresenter<T> {
 
     }
 
- /*   protected void onNewItemEvent( @Observes NewItemEvent newItemEvent ) {
-        newItemEventAction();
-    }
-
-    protected void onRefreshIntervalChangeEvent( @Observes RefreshIntervalEvent refreshIntervalEvent ) {
-        int refreshInterval = refreshIntervalEvent.getRefreshInterval();
-        if(refreshInterval == 0 ) {
-            refreshGrid();
-        } else if(refreshInterval == -1){
-            updateRefreshInterval( false, -1 );
-        } else{
-            updateRefreshInterval( true, refreshInterval );
-        }
-    }
- */
     protected void updateRefreshInterval(boolean enableAutoRefresh, int newInterval){
         this.autoRefreshEnabled = enableAutoRefresh;
         setAutoRefreshSeconds( newInterval );
@@ -171,21 +157,12 @@ public abstract class AbstractListPresenter<T> {
     }
 
     protected int getAutoRefreshSeconds(){
-     //   autoRefreshSeconds = filterPagedTable.getMultiGridPreferencesStore().getRefreshInterval();
         return autoRefreshSeconds;
     }
 
     protected void setAutoRefreshSeconds(int refreshSeconds){
-    //    filterPagedTable.saveNewRefreshInterval(refreshSeconds);
         autoRefreshSeconds = refreshSeconds;
     }
-   /* public FilterPagedTable getFilterPagedTable() {
-        return filterPagedTable;
-    }
-
-    public void setFilterPagedTable( FilterPagedTable filterPagedTable ) {
-        this.filterPagedTable = filterPagedTable;
-    }*/
 
     @PostConstruct
     public void setupButtons() {
