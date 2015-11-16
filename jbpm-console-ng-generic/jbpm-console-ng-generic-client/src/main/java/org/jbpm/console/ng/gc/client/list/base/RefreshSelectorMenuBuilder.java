@@ -1,5 +1,6 @@
 package org.jbpm.console.ng.gc.client.list.base;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -25,7 +26,7 @@ public class RefreshSelectorMenuBuilder implements MenuFactory.CustomMenuBuilder
     private AbstractListPresenter presenter;
 
     private final DropDownMenu menuDropDownMenu = new DropDownMenu();
-    private final Button menuButton = new Button();
+    private final Button menuButton = GWT.create(Button.class);;
 
     public RefreshSelectorMenuBuilder( final AbstractListPresenter presenter ) {
         this.presenter = presenter;
