@@ -32,7 +32,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.view.client.AsyncDataProvider;
-import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
@@ -40,9 +39,6 @@ import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
@@ -94,6 +90,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
 
     @Inject
     private Caller<ExecutorServiceEntryPoint> executorServices;
+
     @Inject
     private Event<RequestChangedEvent> requestChangedEvent;
 
@@ -115,6 +112,16 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
 
     public RequestListPresenter() {
         super();
+    }
+
+    public RequestListPresenter(RequestListViewImpl view,
+            Caller<ExecutorServiceEntryPoint> executorServices,
+            DataSetQueryHelper dataSetQueryHelper,Event<RequestChangedEvent> requestChangedEvent
+    ) {
+        this.view = view;
+        this.executorServices = executorServices;
+        this.dataSetQueryHelper = dataSetQueryHelper;
+        this.requestChangedEvent = requestChangedEvent;
     }
 
     @WorkbenchPartTitle
@@ -166,7 +173,6 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                 if ( currentTableSettings != null ) {
                     currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
                     ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                    //GWT.log( "-----RequestList getData table name " + currentTableSettings.getTableName() );
                     if ( columnSortList != null && columnSortList.size() > 0 ) {
                         dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
                         dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
@@ -191,55 +197,51 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                         }
                         textSearchStr = "";
                     }
-                    dataSetQueryHelper.setDataSetHandler( currentTableSettings );
-                    dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
+                    dataSetQueryHelper.setDataSetHandler(currentTableSettings);
+                    dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), new DataSetReadyCallback() {
                         @Override
-                        public void callback( DataSet dataSet ) {
-                            if ( dataSet != null ) {
+                        public void callback(DataSet dataSet) {
+                            if (dataSet != null) {
                                 List<RequestSummary> myRequestSumaryFromDataSet = new ArrayList<RequestSummary>();
 
-                                for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
+                                for (int i = 0; i < dataSet.getRowCount(); i++) {
 
-                                    myRequestSumaryFromDataSet.add( new RequestSummary(
-                                            dataSetQueryHelper.getColumnLongValue( dataSet, RequestListViewImpl.COLUMN_ID, i ),
-                                            dataSetQueryHelper.getColumnDateValue( dataSet, RequestListViewImpl.COLUMN_TIMESTAMP, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, RequestListViewImpl.COLUMN_STATUS, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, RequestListViewImpl.COLUMN_COMMANDNAME, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, RequestListViewImpl.COLUMN_MESSAGE, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, RequestListViewImpl.COLUMN_BUSINESSKEY, i ) ) );
+                                    myRequestSumaryFromDataSet.add(new RequestSummary(
+                                            dataSetQueryHelper.getColumnLongValue(dataSet, RequestListViewImpl.COLUMN_ID, i),
+                                            dataSetQueryHelper.getColumnDateValue(dataSet, RequestListViewImpl.COLUMN_TIMESTAMP, i),
+                                            dataSetQueryHelper.getColumnStringValue(dataSet, RequestListViewImpl.COLUMN_STATUS, i),
+                                            dataSetQueryHelper.getColumnStringValue(dataSet, RequestListViewImpl.COLUMN_COMMANDNAME, i),
+                                            dataSetQueryHelper.getColumnStringValue(dataSet, RequestListViewImpl.COLUMN_MESSAGE, i),
+                                            dataSetQueryHelper.getColumnStringValue(dataSet, RequestListViewImpl.COLUMN_BUSINESSKEY, i)));
 
                                 }
                                 PageResponse<RequestSummary> requestSummaryPageResponse = new PageResponse<RequestSummary>();
-                                requestSummaryPageResponse.setPageRowList( myRequestSumaryFromDataSet );
-                                requestSummaryPageResponse.setStartRowIndex( visibleRange.getStart() );
-                                requestSummaryPageResponse.setTotalRowSize( dataSet.getRowCountNonTrimmed() );
-                                requestSummaryPageResponse.setTotalRowSizeExact( true );
-                                if ( visibleRange.getStart() + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed() ) {
-                                    requestSummaryPageResponse.setLastPage( true );
+                                requestSummaryPageResponse.setPageRowList(myRequestSumaryFromDataSet);
+                                requestSummaryPageResponse.setStartRowIndex(visibleRange.getStart());
+                                requestSummaryPageResponse.setTotalRowSize(dataSet.getRowCountNonTrimmed());
+                                requestSummaryPageResponse.setTotalRowSizeExact(true);
+                                if (visibleRange.getStart() + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed()) {
+                                    requestSummaryPageResponse.setLastPage(true);
                                 } else {
-                                    requestSummaryPageResponse.setLastPage( false );
+                                    requestSummaryPageResponse.setLastPage(false);
                                 }
-                                updateDataOnCallback( requestSummaryPageResponse );
+                                updateDataOnCallback(requestSummaryPageResponse);
                             }
-                            view.hideBusyIndicator();
                         }
 
                         @Override
                         public void notFound() {
-                            view.hideBusyIndicator();
-                            errorPopup.showMessage( "Not found DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] " );
-                            GWT.log( "DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] not found." );
+                            errorPopup.showMessage("Not found DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] ");
+                            GWT.log("DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] not found.");
                         }
 
                         @Override
-                        public boolean onError( final ClientRuntimeError error ) {
-                            view.hideBusyIndicator();
-                            errorPopup.showMessage( "DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] error: " + error.getThrowable() );
-                            GWT.log( "DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] error: ", error.getThrowable() );
+                        public boolean onError(final ClientRuntimeError error) {
+                            errorPopup.showMessage("DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] error: " + error.getThrowable());
+                            GWT.log("DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] error: ", error.getThrowable());
                             return false;
                         }
-                    } );
-                } else {
+                    });
                     view.hideBusyIndicator();
                 }
             }
