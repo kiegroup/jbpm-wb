@@ -51,8 +51,7 @@
     <module>jbpm-console-ng-asset-mgmt</module>
     <module>jbpm-console-ng-generic</module>
     <module>jbpm-console-ng-documents</module>
-    <module>jbpm-console-ng-rest</module>	
-    <module>jbpm-console-ng-ht-showcase</module>
+    <module>jbpm-console-ng-rest</module>
     <module>jbpm-console-ng-showcase</module>
   </modules>
 
