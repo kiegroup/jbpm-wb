@@ -78,6 +78,16 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessInstanceSummary, ProcessInstanceListPresenter>
         implements ProcessInstanceListPresenter.ProcessInstanceListView {
 
+    public static final String COL_ID_SELECT ="Select";
+    public static final String COL_ID_ACTIONS ="Actions";
+    public static final String COL_ID_PROCESSINSIID ="log.processInstanceId";
+    public static final String COL_ID_PROCESSNAME ="log.processName";
+    public static final String COL_ID_IDENTITY ="log.identity";
+    public static final String COL_ID_PROCESSVERSION ="log.processVersion";
+    public static final String COL_ID_START ="log.start";
+    public static final String COL_ID_DESCRIPTION ="log.processInstanceDescription";
+    public static final String COL_ID_STATUS ="log.status";
+
     private Constants constants = GWT.create( Constants.class );
 
     private List<ProcessInstanceSummary> selectedProcessInstances = new ArrayList<ProcessInstanceSummary>();
@@ -109,19 +119,18 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     @Override
     public void init( final ProcessInstanceListPresenter presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add( constants.Select() );
-        bannedColumns.add( constants.Id() );
-        bannedColumns.add( constants.Name() );
-        bannedColumns.add( constants.Process_Instance_Description() );
-        bannedColumns.add( constants.Actions() );
+        bannedColumns.add( COL_ID_SELECT );
+        bannedColumns.add( COL_ID_PROCESSINSIID );
+        bannedColumns.add( COL_ID_PROCESSNAME );
+        bannedColumns.add( COL_ID_DESCRIPTION );
+        bannedColumns.add( COL_ID_ACTIONS );
         final List<String> initColumns = new ArrayList<String>();
-        initColumns.add( constants.Select() );
-        initColumns.add( constants.Id() );
-        initColumns.add( constants.Name() );
-        initColumns.add( constants.Process_Instance_Description() );
-        initColumns.add( constants.Version() );
-        initColumns.add( constants.Actions() );
-        initColumns.add( constants.Version() );
+        initColumns.add( COL_ID_SELECT );
+        initColumns.add( COL_ID_PROCESSINSIID );
+        initColumns.add( COL_ID_PROCESSNAME );
+        initColumns.add( COL_ID_DESCRIPTION );
+        initColumns.add( COL_ID_PROCESSVERSION );
+        initColumns.add( COL_ID_ACTIONS );
 
         final Button button = new Button();
         button.setText( "+" );
@@ -356,7 +365,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             }
         };
         processInstanceIdColumn.setSortable( true );
-        processInstanceIdColumn.setDataStoreName( "log.processInstanceId" );
+        processInstanceIdColumn.setDataStoreName( COL_ID_PROCESSINSIID );
 
         return processInstanceIdColumn;
     }
@@ -370,7 +379,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             }
         };
         processNameColumn.setSortable( true );
-        processNameColumn.setDataStoreName( "log.processName" );
+        processNameColumn.setDataStoreName( COL_ID_PROCESSNAME );
 
         return processNameColumn;
     }
@@ -384,7 +393,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             }
         };
         processInitiatorColumn.setSortable( true );
-        processInitiatorColumn.setDataStoreName( "log.identity" );
+        processInitiatorColumn.setDataStoreName( COL_ID_IDENTITY );
 
         return processInitiatorColumn;
     }
@@ -398,7 +407,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             }
         };
         processVersionColumn.setSortable( true );
-        processVersionColumn.setDataStoreName( "log.processVersion" );
+        processVersionColumn.setDataStoreName( COL_ID_PROCESSVERSION );
 
         return processVersionColumn;
     }
@@ -434,7 +443,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             }
         };
         processStateColumn.setSortable( true );
-        processStateColumn.setDataStoreName( "log.status" );
+        processStateColumn.setDataStoreName( COL_ID_STATUS );
 
         return processStateColumn;
     }
@@ -453,7 +462,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             }
         };
         startTimeColumn.setSortable( true );
-        startTimeColumn.setDataStoreName( "log.start" );
+        startTimeColumn.setDataStoreName(COL_ID_START );
 
         return startTimeColumn;
     }
@@ -489,6 +498,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                 return object;
             }
         };
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
 
     }
@@ -505,7 +515,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                 return selectedProcessInstances.contains( object );
             }
         };
-
+        checkColumn.setDataStoreName(COL_ID_SELECT);
         return checkColumn;
     }
 

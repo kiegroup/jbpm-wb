@@ -55,6 +55,7 @@ import org.jbpm.console.ng.dm.model.events.DocumentRemoveSearchEvent;
 import org.jbpm.console.ng.dm.model.events.DocumentsHomeSearchEvent;
 import org.jbpm.console.ng.dm.model.events.DocumentsListSearchEvent;
 import org.jbpm.console.ng.dm.model.events.DocumentsParentSearchEvent;
+import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
@@ -65,6 +66,10 @@ import org.uberfire.workbench.events.NotificationEvent;
 @Dependent
 public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, DocumentListPresenter> implements
         DocumentListPresenter.DocumentListView {
+
+    public static final String COL_ID_ID ="Id";
+    public static final String COL_ID_NAME ="Name";
+    public static final String COL_ID_ACTIONS ="Actions";
 
     private Constants constants = GWT.create(Constants.class);
 
@@ -99,13 +104,13 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
     public void init(final DocumentListPresenter presenter) {
 
         List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(constants.DocumentID());
-        bannedColumns.add(constants.DocumentName());
-        bannedColumns.add(constants.Actions());
+        bannedColumns.add(COL_ID_ID);
+        bannedColumns.add(COL_ID_NAME);
+        bannedColumns.add(COL_ID_ACTIONS);
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add(constants.DocumentID());
-        initColumns.add(constants.DocumentName());
-        initColumns.add(constants.Actions());
+        initColumns.add(COL_ID_ID);
+        initColumns.add(COL_ID_NAME);
+        initColumns.add(COL_ID_ACTIONS);
 
         super.init(presenter, new GridGlobalPreferences("DocumentListGrid", initColumns, bannedColumns));
 
@@ -179,7 +184,7 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
     }
 
     @Override
-    public void initColumns() {
+    public void initColumns(ExtendedPagedTable extendedPagedTable) {
         Column<CMSContentSummary, ?> idColumn = initIdColumn();
         Column<CMSContentSummary, ?> processNameColumn = initNameColumn();
         actionsColumn = initActionsColumn();
@@ -188,7 +193,7 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
         columnMetas.add(new ColumnMeta<CMSContentSummary>(idColumn, constants.DocumentID()));
         columnMetas.add(new ColumnMeta<CMSContentSummary>(processNameColumn, constants.DocumentName()));
         columnMetas.add(new ColumnMeta<CMSContentSummary>(actionsColumn, constants.Actions()));
-        listGrid.addColumns(columnMetas);
+        extendedPagedTable.addColumns(columnMetas);
     }
 
     private Column<CMSContentSummary, ?> initIdColumn() {
@@ -199,6 +204,7 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
             }
         };
         idColumn.setSortable(true);
+        idColumn.setDataStoreName(COL_ID_ID);
 
         return idColumn;
     }
@@ -211,7 +217,7 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
             }
         };
         processNameColumn.setSortable(true);
-
+        processNameColumn.setDataStoreName(COL_ID_NAME);
         return processNameColumn;
     }
 
@@ -234,12 +240,14 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
         }));
 
         CompositeCell<CMSContentSummary> cell = new CompositeCell<CMSContentSummary>(cells);
-        return new Column<CMSContentSummary, CMSContentSummary>(cell) {
+        Column<CMSContentSummary, CMSContentSummary> actionsColumn = new Column<CMSContentSummary, CMSContentSummary>(cell) {
             @Override
             public CMSContentSummary getValue(CMSContentSummary object) {
                 return object;
             }
         };
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
+        return actionsColumn;
     }
 
     private void initFiltersBar() {

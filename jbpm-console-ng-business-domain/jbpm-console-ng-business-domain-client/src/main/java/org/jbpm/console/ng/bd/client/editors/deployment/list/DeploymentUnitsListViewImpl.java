@@ -50,6 +50,7 @@ import org.jbpm.console.ng.bd.client.editors.deployment.newunit.NewDeploymentPop
 import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 import org.jbpm.console.ng.bd.model.events.DeployedUnitChangedEvent;
+import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
@@ -57,6 +58,16 @@ import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 @Dependent
 public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploymentUnitSummary, DeploymentUnitsListPresenter>
         implements DeploymentUnitsListPresenter.DeploymentUnitsListView {
+
+    public static final String COL_ID_DEPLOYMENT ="Deployment";
+    public static final String COL_ID_GROUP ="GroupId";
+    public static final String COL_ID_ARTIFACT ="Artifact";
+    public static final String COL_ID_VERSION ="Version";
+    public static final String COL_ID_KIEBASENAME ="KieBaseName";
+    public static final String COL_ID_KIEBSESSIONNAME ="KieSessionName";
+    public static final String COL_ID_STRATEGY ="Strategy";
+    public static final String COL_ID_STATUS ="Status";
+    public static final String COL_ID_ACTIONS ="Actions";
 
     interface Binder
             extends
@@ -74,13 +85,13 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
         List<String> bannedColumns = new ArrayList<String>();
 
-        bannedColumns.add( constants.Deployment() );
-        bannedColumns.add( constants.Actions() );
+        bannedColumns.add(COL_ID_DEPLOYMENT);
+        bannedColumns.add(COL_ID_ACTIONS);
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add( constants.Deployment() );
-        initColumns.add( constants.Strategy() );
-        initColumns.add( constants.Status() );
-        initColumns.add( constants.Actions() );
+        initColumns.add(COL_ID_DEPLOYMENT);
+        initColumns.add(COL_ID_STRATEGY);
+        initColumns.add(COL_ID_STATUS);
+        initColumns.add(COL_ID_ACTIONS);
 
         super.init( presenter, new GridGlobalPreferences( "DeploymentUnitsGrid", initColumns, bannedColumns ) );
 
@@ -145,7 +156,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
     }
 
     @Override
-    public void initColumns() {
+    public void initColumns(ExtendedPagedTable extendedPagedTable) {
         Column<KModuleDeploymentUnitSummary, ?> unitIdColumn = idColumn();
         Column<KModuleDeploymentUnitSummary, ?> groupIdColumn = groupIdColumn();
         Column<KModuleDeploymentUnitSummary, ?> artifactIdColumn = artifactIdColumn();
@@ -178,8 +189,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return unit.getId();
             }
         };
-        unitIdColumn.setSortable( true );
-        unitIdColumn.setDataStoreName( "Deployment" );
+        unitIdColumn.setSortable(true);
+        unitIdColumn.setDataStoreName(COL_ID_DEPLOYMENT);
         return unitIdColumn;
     }
 
@@ -192,8 +203,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return unit.getGroupId();
             }
         };
-        groupIdColumn.setSortable( true );
-        groupIdColumn.setDataStoreName( "GroupId" );
+        groupIdColumn.setSortable(true);
+        groupIdColumn.setDataStoreName(COL_ID_GROUP);
         return groupIdColumn;
     }
 
@@ -206,8 +217,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return unit.getArtifactId();
             }
         };
-        artifactIdColumn.setSortable( true );
-        artifactIdColumn.setDataStoreName( "ArtifactId" );
+        artifactIdColumn.setSortable(true);
+        artifactIdColumn.setDataStoreName(COL_ID_ARTIFACT);
         return artifactIdColumn;
     }
 
@@ -220,8 +231,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return unit.getVersion();
             }
         };
-        versionColumn.setSortable( true );
-        versionColumn.setDataStoreName( "Version" );
+        versionColumn.setSortable(true);
+        versionColumn.setDataStoreName(COL_ID_VERSION);
         return versionColumn;
 
     }
@@ -239,8 +250,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return kbaseName;
             }
         };
-        kbaseColumn.setDataStoreName( "KieBaseName" );
-        kbaseColumn.setSortable( true );
+        kbaseColumn.setDataStoreName(COL_ID_KIEBASENAME);
+        kbaseColumn.setSortable(true);
         return kbaseColumn;
     }
 
@@ -257,8 +268,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return ksessionName;
             }
         };
-        ksessionColumn.setDataStoreName( "KieSessionName" );
-        ksessionColumn.setSortable( true );
+        ksessionColumn.setDataStoreName(COL_ID_KIEBSESSIONNAME);
+        ksessionColumn.setSortable(true);
         return ksessionColumn;
     }
 
@@ -271,8 +282,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return unit.getStrategy();
             }
         };
-        strategyColumn.setSortable( true );
-        strategyColumn.setDataStoreName( "Strategy" );
+        strategyColumn.setSortable(true);
+        strategyColumn.setDataStoreName(COL_ID_STRATEGY);
         return strategyColumn;
     }
 
@@ -290,8 +301,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
             }
         };
-        statusColumn.setSortable( true );
-        statusColumn.setDataStoreName( "Status" );
+        statusColumn.setSortable(true);
+        statusColumn.setDataStoreName(COL_ID_STATUS);
         return statusColumn;
     }
 
@@ -319,14 +330,18 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
             }
         } ) );
 
-        CompositeCell<KModuleDeploymentUnitSummary> cell = new CompositeCell<KModuleDeploymentUnitSummary>( cells );
-        return new Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary>(
-                cell ) {
-            @Override
-            public KModuleDeploymentUnitSummary getValue( KModuleDeploymentUnitSummary object ) {
+
+        CompositeCell<KModuleDeploymentUnitSummary> cell = new CompositeCell<KModuleDeploymentUnitSummary>(cells);
+        Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> actionColum =
+             new Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary>(
+                cell) {
+                @Override
+                public KModuleDeploymentUnitSummary getValue(KModuleDeploymentUnitSummary object) {
                 return object;
             }
-        };
+            };
+        actionColum.setDataStoreName(COL_ID_ACTIONS);
+        return actionColum;
     }
 
     public void refreshOnChangedUnit( @Observes DeployedUnitChangedEvent event ) {
