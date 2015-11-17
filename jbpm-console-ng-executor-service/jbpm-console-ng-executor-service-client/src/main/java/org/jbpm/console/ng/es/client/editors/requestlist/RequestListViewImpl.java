@@ -87,6 +87,8 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     public static final String COLUMN_MESSAGE = "message";
     public static final String COLUMN_BUSINESSKEY = "businessKey";
 
+    public static final String COL_ID_ACTIONS ="Actions";
+
     @Inject
     private Event<NotificationEvent> notification;
 
@@ -110,12 +112,13 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     @Override
     public void init( final RequestListPresenter presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add( constants.Id() );
-        bannedColumns.add( constants.Type() );
+        bannedColumns.add(COLUMN_ID);
+        bannedColumns.add( COLUMN_COMMANDNAME );
+        bannedColumns.add(COL_ID_ACTIONS);
         final List<String> initColumns = new ArrayList<String>();
-        initColumns.add( constants.Id() );
-        initColumns.add( constants.Type() );
-        initColumns.add( constants.Actions() );
+        initColumns.add(COLUMN_ID);
+        initColumns.add(COLUMN_COMMANDNAME);
+        initColumns.add(COL_ID_ACTIONS);
         final Button button = new Button();
         button.setIcon( IconType.PLUS );
         button.setSize( ButtonSize.SMALL );
@@ -358,6 +361,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                 return object;
             }
         };
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
     }
 
