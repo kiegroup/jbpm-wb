@@ -42,6 +42,7 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import org.gwtbootstrap3.client.ui.AnchorButton;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.DocumentSummary;
@@ -54,6 +55,11 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
         implements ProcessDocumentListPresenter.ProcessDocumentListView {
 
     private Constants constants = GWT.create( Constants.class );
+    public static final String COL_ID_DOCID ="documentId";
+    public static final String COL_ID_LASTMOD ="lastModified";
+    public static final String COL_ID_DOCSIZE ="docSize";
+    public static final String COL_ID_PATH ="Path";
+    public static final String COL_ID_ACTIONS ="Actions";
 
     final String[] units = new String[]{ "B", "KB", "MB", "GB", "TB" };
 
@@ -63,13 +69,13 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
     public void init( final ProcessDocumentListPresenter presenter ) {
         List<String> bannedColumns = new ArrayList<String>();
 
-        bannedColumns.add( constants.Name() );
-        bannedColumns.add( constants.Actions() );
+        bannedColumns.add(COL_ID_DOCID);
+        bannedColumns.add(COL_ID_ACTIONS);
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add( constants.Name() );
-        initColumns.add( constants.Last_Modified() );
-        initColumns.add( constants.Size() );
-        initColumns.add( constants.Actions() );
+        initColumns.add(COL_ID_DOCID);
+        initColumns.add(COL_ID_LASTMOD);
+        initColumns.add(COL_ID_DOCSIZE);
+        initColumns.add(COL_ID_ACTIONS);
 
         super.init( presenter, new GridGlobalPreferences( "DocumentGrid", initColumns, bannedColumns ) );
 
@@ -125,18 +131,18 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
     }
 
     @Override
-    public void initColumns() {
+    public void initColumns(ExtendedPagedTable extendedPagedTable) {
         Column documentId = initDocumentIdColumn();
         Column lastModifiedColumn = initDocumentLastModifiedColumn();
         Column sizeColumn = initDocumentSizeColumn();
         actionsColumn = initActionsColumn();
 
         List<ColumnMeta<DocumentSummary>> columnMetas = new ArrayList<ColumnMeta<DocumentSummary>>();
-        columnMetas.add( new ColumnMeta<DocumentSummary>( documentId, constants.Name() ) );
-        columnMetas.add( new ColumnMeta<DocumentSummary>( lastModifiedColumn, constants.Last_Modification() ) );
-        columnMetas.add( new ColumnMeta<DocumentSummary>( sizeColumn, constants.Size() ) );
-        columnMetas.add( new ColumnMeta<DocumentSummary>( actionsColumn, constants.Actions() ) );
-        listGrid.addColumns( columnMetas );
+        columnMetas.add(new ColumnMeta<DocumentSummary>(documentId, constants.Name()));
+        columnMetas.add(new ColumnMeta<DocumentSummary>(lastModifiedColumn, constants.Last_Modification()));
+        columnMetas.add(new ColumnMeta<DocumentSummary>(sizeColumn, constants.Size()));
+        columnMetas.add(new ColumnMeta<DocumentSummary>(actionsColumn, constants.Actions()));
+        extendedPagedTable.addColumns(columnMetas);
     }
 
     private Column initDocumentIdColumn() {
@@ -148,7 +154,8 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                 return object.getDocumentId();
             }
         };
-        documentId.setSortable( true );
+        documentId.setSortable(true);
+        documentId.setDataStoreName(COL_ID_DOCID);
 
         return documentId;
     }
@@ -162,8 +169,8 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                 return object.getDocumentLastModified().toString();
             }
         };
-        lastModifiedColumn.setSortable( true );
-
+        lastModifiedColumn.setSortable(true);
+         lastModifiedColumn.setDataStoreName(COL_ID_LASTMOD);
         return lastModifiedColumn;
     }
 
@@ -176,8 +183,8 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                 return readableFileSize( object.getDocumentSize() );
             }
         };
-        sizeColumn.setSortable( true );
-
+        sizeColumn.setSortable(true);
+        sizeColumn.setDataStoreName(COL_ID_DOCSIZE);
         return sizeColumn;
     }
 
@@ -199,8 +206,8 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                 return String.valueOf( object.getDocumentSize() );
             }
         };
-        pathColumn.setSortable( true );
-
+        pathColumn.setSortable(true);
+        pathColumn.setDataStoreName(COL_ID_PATH);
         return pathColumn;
     }
 
@@ -224,6 +231,7 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                 return object;
             }
         };
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
     }
 
