@@ -72,6 +72,14 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
         implements TasksListGridPresenter.TaskListView {
 
     private final Constants constants = GWT.create( Constants.class );
+    public static final String COL_ID_ID ="t.id";
+    public static final String COL_ID_NAME ="t.name";
+    public static final String COL_ID_DESCRIPTION ="t.description";
+    public static final String COL_ID_PRIORITY ="t.priority" ;
+    public static final String COL_ID_STATUS ="t.taskData.status";
+    public static final String COL_ID_CREATEON ="t.taskData.createdOn";
+    public static final String COL_ID_EXPIRATIONTIME ="t.taskData.expirationTime";
+    public static final String COL_ID_ACTIONS ="Actions";
 
     @Inject
     private Event<TaskSelectionEvent> taskSelected;
@@ -85,10 +93,12 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
     @Override
     public void init( final TasksListGridPresenter presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add( constants.Task() );
+        bannedColumns.add(COL_ID_NAME);
+        bannedColumns.add(COL_ID_ACTIONS);
         final List<String> initColumns = new ArrayList<String>();
-        initColumns.add( constants.Task() );
-        initColumns.add( constants.Description() );
+        initColumns.add(COL_ID_NAME);
+        initColumns.add(COL_ID_DESCRIPTION);
+        initColumns.add(COL_ID_ACTIONS);
 
         final Button button = new Button();
         button.setIcon( IconType.PLUS );
@@ -332,8 +342,8 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                 return object.getTaskId();
             }
         };
-        taskIdColumn.setSortable( true );
-        taskIdColumn.setDataStoreName( "t.id" );
+        taskIdColumn.setSortable(true);
+        taskIdColumn.setDataStoreName(COL_ID_ID);
         return taskIdColumn;
     }
 
@@ -344,8 +354,8 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                 return object.getTaskName();
             }
         };
-        taskNameColumn.setSortable( true );
-        taskNameColumn.setDataStoreName( "t.name" );
+        taskNameColumn.setSortable(true);
+        taskNameColumn.setDataStoreName(COL_ID_NAME);
         return taskNameColumn;
     }
 
@@ -356,8 +366,8 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                 return object.getDescription();
             }
         };
-        descriptionColumn.setSortable( true );
-        descriptionColumn.setDataStoreName( "t.description" );
+        descriptionColumn.setSortable(true);
+        descriptionColumn.setDataStoreName(COL_ID_DESCRIPTION);
         return descriptionColumn;
     }
 
@@ -368,8 +378,8 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                 return object.getPriority();
             }
         };
-        taskPriorityColumn.setSortable( true );
-        taskPriorityColumn.setDataStoreName( "t.priority" );
+        taskPriorityColumn.setSortable(true);
+        taskPriorityColumn.setDataStoreName(COL_ID_PRIORITY);
         return taskPriorityColumn;
     }
 
@@ -380,8 +390,8 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                 return object.getStatus();
             }
         };
-        statusColumn.setSortable( true );
-        statusColumn.setDataStoreName( "t.taskData.status" );
+        statusColumn.setSortable(true);
+        statusColumn.setDataStoreName(COL_ID_STATUS);
         return statusColumn;
     }
 
@@ -397,8 +407,8 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                 return "";
             }
         };
-        createdOnDateColumn.setSortable( true );
-        createdOnDateColumn.setDataStoreName( "t.taskData.createdOn" );
+        createdOnDateColumn.setSortable(true);
+        createdOnDateColumn.setDataStoreName(COL_ID_CREATEON);
         return createdOnDateColumn;
     }
 
@@ -414,8 +424,8 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                 return "";
             }
         };
-        dueDateColumn.setSortable( true );
-        dueDateColumn.setDataStoreName( "t.taskData.expirationTime" );
+        dueDateColumn.setSortable(true);
+        dueDateColumn.setDataStoreName(COL_ID_EXPIRATIONTIME);
         return dueDateColumn;
     }
 
@@ -464,6 +474,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
                 return object;
             }
         };
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
 
     }

@@ -126,7 +126,7 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
                     listGrid.setGridPreferencesStore( preferencesStore );
                 }
                 presenter.onGridPreferencesStoreLoaded();
-                initColumns();
+                initColumns(listGrid);
                 initGenericToolBar();
                 listGrid.loadPageSizePreferences();
             }
@@ -175,6 +175,6 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
      * For each specific implementation define the
      *  DataGrid columns and how they must be initialized
      */
-    public abstract void initColumns();
+    public abstract void initColumns(ExtendedPagedTable<T> extendedPagedTable);
 
 }

@@ -120,6 +120,15 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
         };
     }
 
+    public DataSetTasksListGridPresenter(DataSetTaskListView view,
+            Caller<TaskLifeCycleService> taskOperationsService,
+            DataSetQueryHelper dataSetQueryHelper
+    ) {
+        this.view = view;
+        this.taskOperationsService = taskOperationsService;
+        this.dataSetQueryHelper = dataSetQueryHelper;
+    }
+
     @Override
     protected ListView getListView() {
         return view;
@@ -214,8 +223,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                             GWT.log( "DataSet with UUID [  jbpmHumanTasks ] error: ", error.getThrowable() );
                             return false;
                         }
-                    } );
-                } else {
+                    });
                     view.hideBusyIndicator();
                 }
             }

@@ -110,6 +110,9 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
     public static final String COLUMN_EXTERNALID = "externalId";
     public static final String COLUMN_PROCESSINSTANCEDESCRIPTION = "processInstanceDescription";
 
+    public static final String COL_ID_SELECT ="Select";
+    public static final String COL_ID_ACTIONS ="Actions";
+
     private Constants constants = GWT.create( Constants.class );
 
     private List<ProcessInstanceSummary> selectedProcessInstances = new ArrayList<ProcessInstanceSummary>();
@@ -133,30 +136,29 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
 
     private void controlBulkOperations() {
         if ( selectedProcessInstances != null && selectedProcessInstances.size() > 0 ) {
-            bulkAbortNavLink.setEnabled( true );
-            bulkSignalNavLink.setEnabled( true );
+            bulkAbortNavLink.setEnabled(true);
+            bulkSignalNavLink.setEnabled(true);
         } else {
-            bulkAbortNavLink.setEnabled( false );
-            bulkSignalNavLink.setEnabled( false );
+            bulkAbortNavLink.setEnabled(false);
+            bulkSignalNavLink.setEnabled(false);
         }
     }
 
     @Override
     public void init( final DataSetProcessInstanceListPresenter presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add( constants.Select() );
-        bannedColumns.add( constants.Id() );
-        bannedColumns.add( constants.Name() );
-        bannedColumns.add( constants.Process_Instance_Description() );
-        bannedColumns.add( constants.Actions() );
+        bannedColumns.add( COL_ID_SELECT );
+        bannedColumns.add( COLUMN_PROCESSINSTANCEID );
+        bannedColumns.add( COLUMN_PROCESSNAME);
+        bannedColumns.add( COLUMN_PROCESSINSTANCEDESCRIPTION );
+        bannedColumns.add( COL_ID_ACTIONS );
         final List<String> initColumns = new ArrayList<String>();
-        initColumns.add( constants.Select() );
-        initColumns.add( constants.Id() );
-        initColumns.add( constants.Name() );
-        initColumns.add( constants.Process_Instance_Description() );
-        initColumns.add( constants.Version() );
-        initColumns.add( constants.Actions() );
-        initColumns.add( constants.Version() );
+        initColumns.add( COL_ID_SELECT );
+        initColumns.add( COLUMN_PROCESSINSTANCEID );
+        initColumns.add(COLUMN_PROCESSNAME);
+        initColumns.add( COLUMN_PROCESSINSTANCEDESCRIPTION );
+        initColumns.add( COLUMN_PROCESSVERSION );
+        initColumns.add( COL_ID_ACTIONS );
 
         final Button button = new Button();
         button.setIcon( IconType.PLUS );
@@ -499,6 +501,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
                 return object;
             }
         };
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
 
     }
@@ -515,7 +518,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
                 return selectedProcessInstances.contains( object );
             }
         };
-
+        checkColumn.setDataStoreName(COL_ID_SELECT);
         return checkColumn;
     }
 
