@@ -291,7 +291,7 @@ public class DataSetRequestListPresenter extends AbstractScreenListPresenter<Req
                 .respondsWith( new Command() {
                     @Override
                     public void execute() {
-                        quickNewJobPopup.show();
+                        showNewJobPopup();
                     }
                 } )
                 .endMenu()
@@ -300,7 +300,7 @@ public class DataSetRequestListPresenter extends AbstractScreenListPresenter<Req
                 .respondsWith( new Command() {
                     @Override
                     public void execute() {
-                        jobServiceSettingsPopup.show();
+                        showJobSettingsPopup();
                     }
                 } )
                 .endMenu()
@@ -440,5 +440,39 @@ public class DataSetRequestListPresenter extends AbstractScreenListPresenter<Req
     protected void setupRefreshButton( ) {
         menuActionsButton = new Button();
         createRefreshToggleButton(menuActionsButton);
+    }
+
+    protected void showNewJobPopup() {
+        executorServices.call(new RemoteCallback<Boolean>() {
+            @Override
+            public void callback(Boolean isDisabled) {
+                if (isDisabled) {
+                    view.displayNotification("Executor service is disabled");
+                } else {
+                    displayNewJobPopup();
+                }
+            }
+        }).isExecutorDisabled();
+    }
+
+    protected void displayNewJobPopup() {
+        quickNewJobPopup.show();
+    }
+
+    protected void showJobSettingsPopup() {
+        executorServices.call(new RemoteCallback<Boolean>() {
+            @Override
+            public void callback(Boolean isDisabled) {
+                if (isDisabled) {
+                    view.displayNotification("Executor service is disabled");
+                } else {
+                    displayJobSettingsPopup();
+                }
+            }
+        }).isExecutorDisabled();
+    }
+
+    protected void displayJobSettingsPopup() {
+        jobServiceSettingsPopup.show();
     }
 }
