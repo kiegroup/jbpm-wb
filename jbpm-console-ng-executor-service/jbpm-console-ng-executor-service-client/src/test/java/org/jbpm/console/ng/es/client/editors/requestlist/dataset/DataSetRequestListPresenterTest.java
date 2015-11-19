@@ -21,6 +21,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
@@ -29,6 +30,7 @@ import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +40,7 @@ import org.uberfire.mocks.CallerMock;
 
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+
 
 @RunWith(GwtMockitoTestRunner.class)
 public class DataSetRequestListPresenterTest {
@@ -80,6 +83,14 @@ public class DataSetRequestListPresenterTest {
                 callerMockExecutorService,dataSetQueryHelper));
         
         doNothing().when(presenter).setupRefreshButton();
+
+        doNothing().when(presenter).displayJobSettingsPopup();
+        doNothing().when(presenter).displayNewJobPopup();
+    }
+
+    @After
+    public void cleanup() {
+        System.clearProperty("org.kie.executor.disabled");
     }
 
     @Test
@@ -97,6 +108,39 @@ public class DataSetRequestListPresenterTest {
         presenter.getMenus();
 
         verify(presenter).setupRefreshButton();
+    }
+
+    @Test
+    public void getMenusShowJobSettingsPopup() {
+
+        presenter.showJobSettingsPopup();
+
+        verify( presenter, times( 1 ) ).displayJobSettingsPopup();
+    }
+
+    @Test
+    public void getMenusNewJobPopup() {
+
+        presenter.showNewJobPopup();
+
+        verify( presenter, times( 1 ) ).displayNewJobPopup();
+    }
+
+    @Test
+    public void getDisabledMenusShowJobSettingsPopup() {
+        when(executorServiceMock.isExecutorDisabled()).thenReturn(true);
+
+        presenter.showJobSettingsPopup();
+
+        verify( presenter, times( 0 ) ).displayJobSettingsPopup();
+    }
+
+    @Test
+    public void getDisabledMenusNewJobPopup() {
+        when(executorServiceMock.isExecutorDisabled()).thenReturn(true);
+        presenter.showNewJobPopup();
+
+        verify( presenter, times( 0 ) ).displayNewJobPopup();
     }
     
 
