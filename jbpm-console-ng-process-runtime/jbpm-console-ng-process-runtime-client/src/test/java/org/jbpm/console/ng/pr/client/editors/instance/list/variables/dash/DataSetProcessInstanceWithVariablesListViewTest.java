@@ -16,19 +16,25 @@
 package org.jbpm.console.ng.pr.client.editors.instance.list.variables.dash;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jbpm.console.ng.df.client.list.base.DataSetEditorManager;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
+import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
+import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
+import org.uberfire.mvp.Command;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -42,8 +48,27 @@ public class DataSetProcessInstanceWithVariablesListViewTest {
     @Mock
     protected GridPreferencesStore gridPreferencesStore;
 
-    @InjectMocks
-    private DataSetProcessInstanceWithVariablesListViewImpl view;
+    @Mock
+    protected DataSetEditorManager dataSetEditorManager;
+
+    @Mock
+    protected MultiGridPreferencesStore multiGridPreferencesStore;
+
+    @Mock
+    protected FilterPagedTable filterPagedTable;
+
+    @Mock
+    protected DataSetProcessInstanceWithVariablesListPresenter presenter;
+
+    private ProcessInstancesWithVariableListViewExtension view;
+
+    @Before
+    public void setupMocks() {
+
+        view = new ProcessInstancesWithVariableListViewExtension();
+        view.setUpMocks(currentListGrid, filterPagedTable, dataSetEditorManager, presenter);
+
+    }
 
     @Test
     public void testDataStoreNameIsSet() {
@@ -64,6 +89,16 @@ public class DataSetProcessInstanceWithVariablesListViewTest {
         view.initColumns( currentListGrid );
 
         verify( currentListGrid ).addColumns( anyList() );
+    }
+
+    @Test
+    public void testInitDefaultFilters() {
+        when(filterPagedTable.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStore);
+
+        view.initDefaultFilters(new GridGlobalPreferences("testGrid", new ArrayList<String>(), new ArrayList<String>()), null);
+
+        verify(filterPagedTable,times(3)).addTab((ExtendedPagedTable) any(), anyString(), (Command) any());
+        verify(filterPagedTable,times(3)).saveNewTabSettings(anyString(), (HashMap) any());
     }
 
 }
