@@ -134,7 +134,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
     private NewTabFilterPopup newTabFilterPopup;
 
     @Inject
-    private DataSetEditorManager dataSetEditorManager;
+    protected DataSetEditorManager dataSetEditorManager;
 
     private Column actionsColumn;
 
@@ -714,21 +714,21 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
     public void initDefaultFilters( GridGlobalPreferences preferences,
                                     Button createTabButton ) {
 
-        List<String> states = new ArrayList<String>();
+        List<Integer> states = new ArrayList<Integer>();
         presenter.setAddingDefaultFilters( true );
         //Filter status Active
-        states.add( String.valueOf( ProcessInstance.STATE_ACTIVE ) );
-        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states, "", "" );
+        states.add( Integer.valueOf( ProcessInstance.STATE_ACTIVE ) );
+        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states);
 
         //Filter status completed
-        states = new ArrayList<String>();
-        states.add( String.valueOf( ProcessInstance.STATE_COMPLETED ) );
-        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1", Constants.INSTANCE.Completed(), "Filter " + Constants.INSTANCE.Completed(), states, "", "" );
+        states = new ArrayList<Integer>();
+        states.add( Integer.valueOf( ProcessInstance.STATE_COMPLETED ) );
+        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1", Constants.INSTANCE.Completed(), "Filter " + Constants.INSTANCE.Completed(), states);
 
         //Filter status completed
-        states = new ArrayList<String>();
-        states.add( String.valueOf( ProcessInstance.STATE_ABORTED ) );
-        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2", Constants.INSTANCE.Aborted(), "Filter " + Constants.INSTANCE.Aborted(), states, "", "" );
+        states = new ArrayList<Integer>();
+        states.add( Integer.valueOf( ProcessInstance.STATE_ABORTED ) );
+        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2", Constants.INSTANCE.Aborted(), "Filter " + Constants.INSTANCE.Aborted(), states );
 
         filterPagedTable.addAddTableButton( createTabButton );
         presenter.setAddingDefaultFilters( false );
@@ -742,9 +742,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
                                        final String key,
                                        String tabName,
                                        String tabDesc,
-                                       List<String> states,
-                                       String processDefinition,
-                                       String initiator ) {
+                                       List<Integer> states ) {
 
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
@@ -752,7 +750,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         builder.dataset( PROCESS_INSTANCES_DATASET_ID );
         List<Comparable> names = new ArrayList<Comparable>();
 
-        for ( String s : states ) {
+        for ( Integer s : states ) {
             names.add( s );
         }
         builder.filter( equalsTo( COLUMN_STATUS, names ) );
