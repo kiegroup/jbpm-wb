@@ -62,6 +62,11 @@ public class DashbuilderBootstrap {
         registerDataSetDefinitions();
     }
 
+    public void setDataSetDefRegistry(DataSetDefRegistry dataSetDefRegistry){
+        this.dataSetDefRegistry = dataSetDefRegistry;
+    }
+
+
     protected void registerDataSetDefinitions() {
 
         DataSetDef humanTasksDef = DataSetFactory.newSQLDataSetDef()
@@ -192,7 +197,7 @@ public class DashbuilderBootstrap {
                         "       v.id varid,\n" +
                         "       v.variableId varname,\n" +
                         "       v.value varvalue\n" +
-                        "from ProcessInstancelog pil\n" +
+                        "from ProcessInstanceLog pil\n" +
                         "  inner join (select vil.processInstanceId ,vil.variableId, MAX(vil.ID) maxvilid  FROM VariableInstanceLog vil\n" +
                         "  GROUP BY vil.processInstanceId, vil.variableId)  x\n" +
                         "    on (x.processInstanceId =pil.processInstanceId)\n" +
