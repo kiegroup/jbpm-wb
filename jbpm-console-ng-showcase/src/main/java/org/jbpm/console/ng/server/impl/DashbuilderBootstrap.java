@@ -62,11 +62,6 @@ public class DashbuilderBootstrap {
         registerDataSetDefinitions();
     }
 
-    public void setDataSetDefRegistry(DataSetDefRegistry dataSetDefRegistry){
-        this.dataSetDefRegistry = dataSetDefRegistry;
-    }
-
-
     protected void registerDataSetDefinitions() {
 
         DataSetDef humanTasksDef = DataSetFactory.newSQLDataSetDef()
@@ -124,7 +119,7 @@ public class DashbuilderBootstrap {
                         + "from AuditTaskImpl t, "
                         + "PeopleAssignments_PotOwners po, "
                         + "OrganizationalEntity oe "
-                        + "where t.id = po.task_id and po.entity_id = oe.id", false )
+                        + "where t.taskId = po.task_id and po.entity_id = oe.id", false )
                 .date(DataSetTasksListGridViewImpl.COLUMN_ACTIVATIONTIME)
                 .label(DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER)
                 .label(DataSetTasksListGridViewImpl.COLUMN_CREATEDBY)
@@ -155,7 +150,7 @@ public class DashbuilderBootstrap {
                         + "from AuditTaskImpl t, "
                         + "PeopleAssignments_BAs bas, "
                         + "OrganizationalEntity oe "
-                        + "where t.id = bas.task_id and bas.entity_id = oe.id", false)
+                        + "where t.taskId = bas.task_id and bas.entity_id = oe.id", false)
                 .date(DataSetTasksListGridViewImpl.COLUMN_ACTIVATIONTIME)
                 .label(DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER)
                 .label(DataSetTasksListGridViewImpl.COLUMN_CREATEDBY)
