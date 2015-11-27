@@ -20,7 +20,12 @@
              xmlns:bgwt="urn:import:org.gwtbootstrap3.client.ui.gwt" xmlns:g="urn:import:com.google.gwt.user.client.ui">
 
     <ui:with field="i18n" type="org.jbpm.console.ng.bd.client.i18n.Constants"/>
-
+    <ui:style>
+        .edit-cell input {
+            width: 95%;
+            text-align: left;
+        }
+    </ui:style>
     <b:Container fluid="true">
         <b:Row>
             <b:Column size="MD_12">
@@ -92,7 +97,7 @@
                             </b:FormLabel>
                             <b:Column size="MD_9">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="marshalStrategyTable"/>
+                                    <bgwt:CellTable ui:field="marshalStrategyTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="marshalStrategyHelpInline"/>
                                 <b:Button ui:field="addMarshalStrategyButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
@@ -106,7 +111,7 @@
                             </b:FormLabel>
                             <b:Column size="MD_9">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="eventListenersTable"/>
+                                    <bgwt:CellTable ui:field="eventListenersTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="eventListenersHelpInline"/>
                                 <b:Button ui:field="addEventListenersButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
@@ -120,7 +125,7 @@
                             </b:FormLabel>
                             <b:Column size="MD_9">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="globalsTable"/>
+                                    <bgwt:CellTable ui:field="globalsTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="globalsHelpInline"/>
                                 <b:Button ui:field="addGlobalsButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
@@ -134,7 +139,7 @@
                             </b:FormLabel>
                             <b:Column size="MD_9">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="workItemHandlersTable"/>
+                                    <bgwt:CellTable ui:field="workItemHandlersTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="workItemHandlersHelpInline"/>
                                 <b:Button ui:field="addWorkItemHandlersButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
@@ -148,7 +153,7 @@
                             </b:FormLabel>
                             <b:Column size="MD_9">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="taskEventListenersTable"/>
+                                    <bgwt:CellTable ui:field="taskEventListenersTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="taskEventListenersHelpInline"/>
                                 <b:Button ui:field="addTaskEventListenersButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
@@ -162,7 +167,7 @@
                             </b:FormLabel>
                             <b:Column size="MD_9">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="environmentEntriesTable"/>
+                                    <bgwt:CellTable ui:field="environmentEntriesTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="environmentEntriesHelpInline"/>
                                 <b:Button ui:field="addEnvironmentEntriesButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
@@ -176,7 +181,7 @@
                             </b:FormLabel>
                             <b:Column size="MD_9">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="configurationTable"/>
+                                    <bgwt:CellTable ui:field="configurationTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="configurationHelpInline"/>
                                 <b:Button ui:field="addConfigurationButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
@@ -190,7 +195,7 @@
                             </b:FormLabel>
                             <b:Column size="MD_9">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="requiredRolesTable"/>
+                                    <bgwt:CellTable ui:field="requiredRolesTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="requiredRolesHelpInline"/>
                                 <b:Button ui:field="addRequiredRolesButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
@@ -204,7 +209,7 @@
                             </b:FormLabel>
                             <b:Column size="MD_9">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="remoteableClassesTable"/>
+                                    <bgwt:CellTable ui:field="remoteableClassesTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="remoteableClassesHelpInline"/>
                                 <b:Button ui:field="addRemoteableClassesButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
