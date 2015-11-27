@@ -20,7 +20,12 @@
              xmlns:bgwt="urn:import:org.gwtbootstrap3.client.ui.gwt" xmlns:g="urn:import:com.google.gwt.user.client.ui">
 
     <ui:with field="i18n" type="org.jbpm.console.ng.bd.client.i18n.Constants"/>
-
+    <ui:style>
+        .edit-cell input {
+            width: 95%;
+            text-align: left;
+        }
+    </ui:style>
     <b:Container fluid="true">
         <b:Row>
             <b:Column size="MD_12">
@@ -32,10 +37,10 @@
 
                         <!-- runtime strategy-->
                         <b:FormGroup ui:field="runtimeStrategyGroup">
-                            <b:FormLabel for="runtimeStrategy" ui:field="runtimeStrategyLabel" addStyleNames="col-md-3">
+                            <b:FormLabel for="runtimeStrategy" ui:field="runtimeStrategyLabel" addStyleNames="col-md-2">
                                 <ui:text from="{i18n.RuntimeStrategy}"/>
                             </b:FormLabel>
-                            <b:Column size="MD_9">
+                            <b:Column size="MD_10">
                                 <b:ListBox b:id="runtimeStrategy" ui:field="runtimeStrategyDropdown"/>
                                 <b:HelpBlock ui:field="runtimeStrategyHelpInline"/>
                             </b:Column>
@@ -43,10 +48,10 @@
 
                         <!-- persistence unit -->
                         <b:FormGroup ui:field="persistenceUnitGroup">
-                            <b:FormLabel for="persistenceUnit" addStyleNames="col-md-3">
+                            <b:FormLabel for="persistenceUnit" addStyleNames="col-md-2">
                                 <ui:text from="{i18n.PersistenceUnit}"/>
                             </b:FormLabel>
-                            <b:Column size="MD_9">
+                            <b:Column size="MD_10">
                                 <b:TextBox b:id="persistenceUnit" ui:field="persistenceUnitTextBox" placeholder=""/>
                                 <b:HelpBlock ui:field="persistenceUnitHelpInline"/>
                             </b:Column>
@@ -54,10 +59,10 @@
 
                         <!-- persistence mode -->
                         <b:FormGroup ui:field="persistenceModeGroup">
-                            <b:FormLabel for="persistenceMode" ui:field="persistenceModeLabel" addStyleNames="col-md-3">
+                            <b:FormLabel for="persistenceMode" ui:field="persistenceModeLabel" addStyleNames="col-md-2">
                                 <ui:text from="{i18n.PersistenceMode}"/>
                             </b:FormLabel>
-                            <b:Column size="MD_9">
+                            <b:Column size="MD_10">
                                 <b:ListBox b:id="persistenceMode" ui:field="persistenceModeDropdown"/>
                                 <b:HelpBlock ui:field="persistenceModeHelpInline"/>
                             </b:Column>
@@ -65,10 +70,10 @@
 
                         <!-- audit persistence unit -->
                         <b:FormGroup ui:field="auditPersistenceUnitGroup">
-                            <b:FormLabel for="auditPersistenceUnit" addStyleNames="col-md-3">
+                            <b:FormLabel for="auditPersistenceUnit" addStyleNames="col-md-2">
                                 <ui:text from="{i18n.AuditPersistenceUnit}"/>
                             </b:FormLabel>
-                            <b:Column size="MD_9">
+                            <b:Column size="MD_10">
                                 <b:TextBox b:id="auditPersistenceUnit" ui:field="auditPersistenceUnitTextBox" placeholder=""/>
                                 <b:HelpBlock ui:field="auditPersistenceUnitHelpInline"/>
                             </b:Column>
@@ -76,10 +81,10 @@
 
                         <!-- audit mode -->
                         <b:FormGroup ui:field="auditModeGroup">
-                            <b:FormLabel for="auditMode" ui:field="auditModeLabel" addStyleNames="col-md-3">
+                            <b:FormLabel for="auditMode" ui:field="auditModeLabel" addStyleNames="col-md-2">
                                 <ui:text from="{i18n.AuditMode}"/>
                             </b:FormLabel>
-                            <b:Column size="MD_9">
+                            <b:Column size="MD_10">
                                 <b:ListBox b:id="auditMode" ui:field="auditModeDropdown"/>
                                 <b:HelpBlock ui:field="auditModeHelpInline"/>
                             </b:Column>
@@ -87,12 +92,12 @@
 
                         <!-- marshalling strategies-->
                         <b:FormGroup ui:field="marshalStrategyGroup">
-                            <b:FormLabel for="marshalStrategyTable" ui:field="marshalStrategyLabel" addStyleNames="col-md-3">
+                            <b:FormLabel for="marshalStrategyTable" ui:field="marshalStrategyLabel" addStyleNames="col-md-2">
                                 <ui:text from="{i18n.MarshalStrategy}"/>
                             </b:FormLabel>
-                            <b:Column size="MD_9">
+                            <b:Column size="MD_10">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="marshalStrategyTable"/>
+                                    <bgwt:CellTable ui:field="marshalStrategyTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="marshalStrategyHelpInline"/>
                                 <b:Button ui:field="addMarshalStrategyButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
@@ -101,12 +106,12 @@
 
                         <!-- event listeners-->
                         <b:FormGroup ui:field="eventListenersGroup">
-                            <b:FormLabel for="eventListenersTable" ui:field="eventListenersLabel" addStyleNames="col-md-3">
+                            <b:FormLabel for="eventListenersTable" ui:field="eventListenersLabel" addStyleNames="col-md-2">
                                 <ui:text from="{i18n.EventListeners}"/>
                             </b:FormLabel>
-                            <b:Column size="MD_9">
+                            <b:Column size="MD_10">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="eventListenersTable"/>
+                                    <bgwt:CellTable ui:field="eventListenersTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="eventListenersHelpInline"/>
                                 <b:Button ui:field="addEventListenersButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
@@ -115,12 +120,12 @@
 
                         <!-- globals-->
                         <b:FormGroup ui:field="globalsGroup">
-                            <b:FormLabel for="globalsTable" ui:field="globalsLabel" addStyleNames="col-md-3">
+                            <b:FormLabel for="globalsTable" ui:field="globalsLabel" addStyleNames="col-md-2">
                                 <ui:text from="{i18n.Globals}"/>
                             </b:FormLabel>
-                            <b:Column size="MD_9">
+                            <b:Column size="MD_10">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="globalsTable"/>
+                                    <bgwt:CellTable ui:field="globalsTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="globalsHelpInline"/>
                                 <b:Button ui:field="addGlobalsButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
@@ -129,12 +134,12 @@
 
                         <!-- work item handlers-->
                         <b:FormGroup ui:field="workItemHandlersGroup">
-                            <b:FormLabel for="workItemHandlersTable" ui:field="workItemHandlersLabel" addStyleNames="col-md-3">
+                            <b:FormLabel for="workItemHandlersTable" ui:field="workItemHandlersLabel" addStyleNames="col-md-2">
                                 <ui:text from="{i18n.WorkItemHandlers}"/>
                             </b:FormLabel>
-                            <b:Column size="MD_9">
+                            <b:Column size="MD_10">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="workItemHandlersTable"/>
+                                    <bgwt:CellTable ui:field="workItemHandlersTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="workItemHandlersHelpInline"/>
                                 <b:Button ui:field="addWorkItemHandlersButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
@@ -143,12 +148,12 @@
 
                         <!-- task event listeners-->
                         <b:FormGroup ui:field="taskEventListenersGroup">
-                            <b:FormLabel for="taskEventListenersTable" ui:field="taskEventListenersLabel" addStyleNames="col-md-3">
+                            <b:FormLabel for="taskEventListenersTable" ui:field="taskEventListenersLabel" addStyleNames="col-md-2">
                                 <ui:text from="{i18n.TaskEventListeners}"/>
                             </b:FormLabel>
-                            <b:Column size="MD_9">
+                            <b:Column size="MD_10">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="taskEventListenersTable"/>
+                                    <bgwt:CellTable ui:field="taskEventListenersTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="taskEventListenersHelpInline"/>
                                 <b:Button ui:field="addTaskEventListenersButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
@@ -157,12 +162,12 @@
 
                         <!-- environment entries-->
                         <b:FormGroup ui:field="environmentEntriesGroup">
-                            <b:FormLabel for="environmentEntriesTable" ui:field="environmentEntriesLabel" addStyleNames="col-md-3">
+                            <b:FormLabel for="environmentEntriesTable" ui:field="environmentEntriesLabel" addStyleNames="col-md-2">
                                 <ui:text from="{i18n.EnvironmentEntries}"/>
                             </b:FormLabel>
-                            <b:Column size="MD_9">
+                            <b:Column size="MD_10">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="environmentEntriesTable"/>
+                                    <bgwt:CellTable ui:field="environmentEntriesTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="environmentEntriesHelpInline"/>
                                 <b:Button ui:field="addEnvironmentEntriesButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
@@ -171,12 +176,12 @@
 
                         <!-- configuration-->
                         <b:FormGroup ui:field="configurationGroup">
-                            <b:FormLabel for="configurationTable" ui:field="configurationLabel" addStyleNames="col-md-3">
+                            <b:FormLabel for="configurationTable" ui:field="configurationLabel" addStyleNames="col-md-2">
                                 <ui:text from="{i18n.Configuration}"/>
                             </b:FormLabel>
-                            <b:Column size="MD_9">
+                            <b:Column size="MD_10">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="configurationTable"/>
+                                    <bgwt:CellTable ui:field="configurationTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="configurationHelpInline"/>
                                 <b:Button ui:field="addConfigurationButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
@@ -185,12 +190,12 @@
 
                         <!-- required roles-->
                         <b:FormGroup ui:field="requiredRolesGroup">
-                            <b:FormLabel for="requiredRolesTable" ui:field="rolesLabel" addStyleNames="col-md-3">
+                            <b:FormLabel for="requiredRolesTable" ui:field="rolesLabel" addStyleNames="col-md-2">
                                 <ui:text from="{i18n.RequiredRoles}"/>
                             </b:FormLabel>
-                            <b:Column size="MD_9">
+                            <b:Column size="MD_10">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="requiredRolesTable"/>
+                                    <bgwt:CellTable ui:field="requiredRolesTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="requiredRolesHelpInline"/>
                                 <b:Button ui:field="addRequiredRolesButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
@@ -199,12 +204,12 @@
 
                         <!-- remoteable classes-->
                         <b:FormGroup ui:field="remoteableClassesGroup">
-                            <b:FormLabel for="remoteableClassesTable" ui:field="remoteableClassesLabel" addStyleNames="col-md-3">
+                            <b:FormLabel for="remoteableClassesTable" ui:field="remoteableClassesLabel" addStyleNames="col-md-2">
                                 <ui:text from="{i18n.RemoteableClasses}"/>
                             </b:FormLabel>
-                            <b:Column size="MD_9">
+                            <b:Column size="MD_10">
                                 <g:FlowPanel addStyleNames="table-responsive">
-                                    <bgwt:CellTable ui:field="remoteableClassesTable"/>
+                                    <bgwt:CellTable ui:field="remoteableClassesTable" addStyleNames='{style.edit-cell}'/>
                                 </g:FlowPanel>
                                 <b:HelpBlock ui:field="remoteableClassesHelpInline"/>
                                 <b:Button ui:field="addRemoteableClassesButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>

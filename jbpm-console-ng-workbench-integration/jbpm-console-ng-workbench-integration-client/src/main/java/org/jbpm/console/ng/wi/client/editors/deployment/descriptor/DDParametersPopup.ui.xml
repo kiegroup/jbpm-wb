@@ -22,7 +22,12 @@
              xmlns:bgwt="urn:import:org.gwtbootstrap3.client.ui.gwt">
 
   <ui:with field="i18n" type="org.jbpm.console.ng.bd.client.i18n.Constants"/>
-
+  <ui:style>
+    .edit-cell input {
+      width: 95%;
+      text-align: left;
+    }
+  </ui:style>
   <g:HTMLPanel>
       <b:FieldSet>
         <b:Legend>
@@ -40,7 +45,7 @@
         </b:Alert>
         <b:FormGroup ui:field="parametersGroup">
           <b:FormLabel for="ou" ui:field="parametersLabel"/>
-          <bgwt:CellTable ui:field="parametersTable"/>
+          <bgwt:CellTable ui:field="parametersTable" addStyleNames='{style.edit-cell}'/>
           <b:HelpBlock ui:field="parametersHelpInline"/>
           <b:Button ui:field="addParameterButton" icon="PLUS" type="PRIMARY" text="{i18n.Add}"/>
         </b:FormGroup>
