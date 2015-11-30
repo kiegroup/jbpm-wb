@@ -50,6 +50,7 @@ import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mvp.Command;
+import org.uberfire.workbench.events.NotificationEvent;
 
 /**
  * @author salaboy
@@ -60,11 +61,11 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
 
     protected Constants constants = GWT.create(Constants.class);
 
-    protected FormPanel container = new FormPanel();
-    protected FlowPanel formContainer = new FlowPanel();
-    protected FlowPanel footerButtons = new FlowPanel();
+    protected FormPanel container = GWT.create( FormPanel.class );
+    protected FlowPanel formContainer = GWT.create( FlowPanel.class );
+    protected FlowPanel footerButtons = GWT.create( FlowPanel.class );
 
-    protected TextBox correlationKey = new TextBox();
+    protected TextBox correlationKey = GWT.create( TextBox.class );
     protected Label correlationKeyLabel;
 
     protected String formContent;
@@ -89,12 +90,13 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     @Inject
     protected Event<NewProcessInstanceEvent> newProcessInstanceEvent;
 
-    @Inject
-    private Caller<KieSessionEntryPoint> sessionServices;
+    protected Caller<KieSessionEntryPoint> sessionServices;
 
     @Inject
     protected JSNIHelper jsniHelper;
 
+    @Inject
+    private Event<NotificationEvent> notificationEvent;
 
     @PostConstruct
     protected void init() {
@@ -156,7 +158,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
         return new ErrorCallback<Message>() {
             @Override
             public boolean error(Message message, Throwable throwable) {
-                String notification = "Unexpected error encountered : " + throwable.getMessage();
+                String notification = Constants.INSTANCE.UnexpectedError( throwable.getMessage() );
                 errorPopup.showMessage(notification);
                 jsniHelper.notifyErrorMessage(opener, notification);
                 return true;
@@ -176,11 +178,11 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
 
     @Override
     public void startProcess(Map<String, Object> params) {
-        if(parentProcessInstanceId > 0 ){
+        if( parentProcessInstanceId > 0 ){
             sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
                     .startProcess(deploymentId, processDefId, correlationKey.getValue(), params, parentProcessInstanceId);
 
-        }else {
+        } else {
             sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
                     .startProcess(deploymentId, processDefId, correlationKey.getValue(), params);
         }
@@ -191,7 +193,9 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
             @Override
             public void callback(Long processInstanceId) {
                 newProcessInstanceEvent.fire(new NewProcessInstanceEvent(deploymentId, processInstanceId, processDefId, processName, 1));
-                jsniHelper.notifySuccessMessage(opener, "Process Id: " + processInstanceId + " started!");
+                final String message = Constants.INSTANCE.ProcessStarted( processInstanceId );
+                jsniHelper.notifySuccessMessage(opener, message );
+                notificationEvent.fire( new NotificationEvent( message, NotificationEvent.NotificationType.SUCCESS ) );
                 close();
             }
         };
@@ -276,5 +280,10 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
 
     public void setParentProcessInstanceId(Long parentProcessInstanceId) {
         this.parentProcessInstanceId = parentProcessInstanceId;
+    }
+
+    @Inject
+    public void setSessionServices( final Caller<KieSessionEntryPoint> sessionServices ) {
+        this.sessionServices = sessionServices;
     }
 }

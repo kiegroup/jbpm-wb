@@ -42,9 +42,6 @@ import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 @Dependent
 public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDisplayer {
 
-    @Inject
-    private Caller<KieSessionEntryPoint> sessionServices;
-
     @Override
     public boolean supportsContent( String content ) {
         return true;
