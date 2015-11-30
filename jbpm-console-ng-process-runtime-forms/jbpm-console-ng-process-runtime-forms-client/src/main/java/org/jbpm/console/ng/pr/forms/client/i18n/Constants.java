@@ -62,4 +62,8 @@ public interface Constants extends Messages {
     String Process_DeploymentId();
 
     String Process_Definition();
+
+    String UnexpectedError( String errorMessage );
+
+    String ProcessStarted( Long processInstanceId );
 }
