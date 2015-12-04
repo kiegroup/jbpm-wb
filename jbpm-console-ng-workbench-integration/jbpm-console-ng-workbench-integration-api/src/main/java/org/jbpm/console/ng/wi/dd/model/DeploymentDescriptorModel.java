@@ -1,9 +1,10 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
+ * You may obtain a copy of the License at
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -50,6 +51,8 @@ public class DeploymentDescriptorModel {
     private List<String> requiredRoles;
 
     private List<String> remotableClasses;
+
+    private Boolean limitSerializationClasses;
 
     public String getPersistenceUnitName() {
         return persistenceUnitName;
@@ -163,6 +166,14 @@ public class DeploymentDescriptorModel {
         this.remotableClasses = remotableClasses;
     }
 
+    public Boolean getLimitSerializationClasses() {
+        return this.limitSerializationClasses;
+    }
+
+    public void setLimitSerializationClasses(Boolean limit) {
+        this.limitSerializationClasses = limit;
+    }
+
     public Overview getOverview() {
         return overview;
     }
@@ -224,6 +235,9 @@ public class DeploymentDescriptorModel {
         if (workItemHandlers != null ? !workItemHandlers.equals(that.workItemHandlers) : that.workItemHandlers != null) {
             return false;
         }
+        if (limitSerializationClasses != null ? !limitSerializationClasses.equals(that.limitSerializationClasses) : that.limitSerializationClasses != null) {
+            return false;
+        }
 
         return true;
     }
@@ -257,6 +271,8 @@ public class DeploymentDescriptorModel {
         result = 31 * result + (requiredRoles != null ? requiredRoles.hashCode() : 0);
         result = ~~result;
         result = 31 * result + (remotableClasses != null ? remotableClasses.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (limitSerializationClasses != null ? limitSerializationClasses.hashCode() : 0);
         result = ~~result;
         return result;
     }
