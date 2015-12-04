@@ -38,6 +38,7 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
+import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.resources.HumanTasksImages;
@@ -62,6 +63,15 @@ import java.util.List;
 @Dependent
 public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksListGridPresenter>
         implements TasksListGridPresenter.TaskListView {
+
+    public static final String COL_ID_ID ="t.id";
+    public static final String COL_ID_NAME ="t.name";
+    public static final String COL_ID_DESCRIPTION ="t.description";
+    public static final String COL_ID_PRIORITY ="t.priority" ;
+    public static final String COL_ID_STATUS ="t.taskData.status";
+    public static final String COL_ID_CREATEON ="t.taskData.createdOn";
+    public static final String COL_ID_EXPIRATIONTIME ="t.taskData.expirationTime";
+    public static final String COL_ID_ACTIONS ="Actions";
 
     interface Binder
             extends
@@ -90,10 +100,12 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
     @Override
     public void init(final TasksListGridPresenter presenter) {
         List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(constants.Task());
+        bannedColumns.add(COL_ID_NAME);
+        bannedColumns.add(COL_ID_ACTIONS);
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add(constants.Task());
-        initColumns.add(constants.Description());
+        initColumns.add(COL_ID_NAME);
+        initColumns.add(COL_ID_DESCRIPTION);
+        initColumns.add(COL_ID_ACTIONS);
         super.init(presenter, new GridGlobalPreferences("TaskListGrid", initColumns, bannedColumns));
 
         selectedStyles = new RowStyles<TaskSummary>() {
@@ -361,7 +373,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         taskIdColumn.setSortable(true);
-        taskIdColumn.setDataStoreName("t.id");
+        taskIdColumn.setDataStoreName(COL_ID_ID);
         return taskIdColumn;
     }
 
@@ -373,7 +385,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         taskNameColumn.setSortable(true);
-        taskNameColumn.setDataStoreName("t.name");
+        taskNameColumn.setDataStoreName(COL_ID_NAME);
         return taskNameColumn;
     }
 
@@ -385,7 +397,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         descriptionColumn.setSortable(true);
-        descriptionColumn.setDataStoreName("t.description");
+        descriptionColumn.setDataStoreName(COL_ID_DESCRIPTION);
         return descriptionColumn;
     }
 
@@ -397,7 +409,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         taskPriorityColumn.setSortable(true);
-        taskPriorityColumn.setDataStoreName("t.priority");
+        taskPriorityColumn.setDataStoreName(COL_ID_PRIORITY);
         return taskPriorityColumn;
     }
 
@@ -409,7 +421,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         statusColumn.setSortable(true);
-        statusColumn.setDataStoreName("t.taskData.status");
+        statusColumn.setDataStoreName(COL_ID_STATUS);
         return statusColumn;
     }
 
@@ -426,7 +438,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         createdOnDateColumn.setSortable(true);
-        createdOnDateColumn.setDataStoreName("t.taskData.createdOn");
+        createdOnDateColumn.setDataStoreName(COL_ID_CREATEON);
         return createdOnDateColumn;
     }
 
@@ -443,7 +455,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
             }
         };
         dueDateColumn.setSortable(true);
-        dueDateColumn.setDataStoreName("t.taskData.expirationTime");
+        dueDateColumn.setDataStoreName(COL_ID_EXPIRATIONTIME);
         return dueDateColumn;
     }
 
@@ -492,6 +504,7 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
                 return object;
             }
         };
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
 
     }
@@ -628,5 +641,9 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
         if (getPlaceStatus(place) == PlaceStatus.OPEN) {
             placeManager.closePlace(place);
         }
+    }
+
+    public void setListGrid(ExtendedPagedTable newListGrid){
+        this.listGrid =newListGrid;
     }
 }
