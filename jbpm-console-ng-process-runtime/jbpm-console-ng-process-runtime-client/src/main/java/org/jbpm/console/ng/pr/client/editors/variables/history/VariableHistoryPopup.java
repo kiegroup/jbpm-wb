@@ -56,6 +56,7 @@ import org.jbpm.console.ng.pr.client.util.DataGridUtils;
 import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
+import org.uberfire.ext.widgets.common.client.tables.PopoverTextCell;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
@@ -142,21 +143,11 @@ public class VariableHistoryPopup extends BaseModal {
         } );
 
         // Value.
-        com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String> valueColumn = new com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String>( new TextCell() ) {
-
-            @Override
-            public void render( Cell.Context context,
-                                ProcessVariableSummary variableSummary,
-                                SafeHtmlBuilder sb ) {
-                String title = variableSummary.getNewValue();
-                sb.append( DataGridUtils.createDivStart( title ) );
-                super.render( context, variableSummary, sb );
-                sb.append( DataGridUtils.createDivEnd() );
-            }
+        com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String> valueColumn = new com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String>( new PopoverTextCell() ) {
 
             @Override
             public String getValue( ProcessVariableSummary object ) {
-                return DataGridUtils.trimToColumnWidth( processVarListGrid, this, object.getNewValue() );
+                return object.getNewValue();
             }
         };
 
@@ -171,21 +162,11 @@ public class VariableHistoryPopup extends BaseModal {
         } );
 
         // Old Value.
-        com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String> oldValueColumn = new com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String>( new TextCell() ) {
-
-            @Override
-            public void render( Cell.Context context,
-                                ProcessVariableSummary variableSummary,
-                                SafeHtmlBuilder sb ) {
-                String title = variableSummary.getOldValue();
-                sb.append( DataGridUtils.createDivStart( title ) );
-                super.render( context, variableSummary, sb );
-                sb.append( DataGridUtils.createDivEnd() );
-            }
+        com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String> oldValueColumn = new com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String>( new PopoverTextCell() ) {
 
             @Override
             public String getValue( ProcessVariableSummary object ) {
-                return DataGridUtils.trimToColumnWidth( processVarListGrid, this, object.getOldValue() );
+                return object.getOldValue();
             }
         };
         oldValueColumn.setSortable( true );

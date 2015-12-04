@@ -43,7 +43,7 @@
                                 <ui:text from="{i18n.Variable_Value}"/>
                             </b:FormLabel>
                             <b:Column size="MD_9">
-                                <b:TextBox ui:field="variableValueTextBox" placeholder="{i18n.Variable_Value}"/>
+                                <b:TextArea ui:field="variableValueTextBox" placeholder="{i18n.Variable_Value}" visibleLines="10" />
                             </b:Column>
                         </b:FormGroup>
                     </b:Form>

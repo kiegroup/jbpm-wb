@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.FormControlStatic;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.TextArea;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.jboss.errai.bus.client.api.messaging.Message;
@@ -55,7 +55,7 @@ public class VariableEditPopup extends BaseModal {
     public FormControlStatic variableNameTextBox;
 
     @UiField
-    public TextBox variableValueTextBox;
+    public TextArea variableValueTextBox;
 
     @UiField
     public HelpBlock errorMessages;
@@ -128,7 +128,6 @@ public class VariableEditPopup extends BaseModal {
     }
 
     public void setProcessVariable() {
-
         kieSessionServices.call( new RemoteCallback<Void>() {
             @Override
             public void callback( Void v ) {
@@ -141,7 +140,6 @@ public class VariableEditPopup extends BaseModal {
                                   Throwable throwable ) {
                 errorMessages.setText( throwable.getMessage() );
                 errorMessagesGroup.setValidationState( ValidationState.ERROR );
-                //ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
                 return true;
             }
         } ).setProcessVariable( processInstanceId, variableNameTextBox.getText(), variableValueTextBox.getValue() );
