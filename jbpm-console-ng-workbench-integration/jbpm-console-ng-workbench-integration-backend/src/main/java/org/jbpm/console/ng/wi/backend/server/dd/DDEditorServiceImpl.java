@@ -1,9 +1,10 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
+ * You may obtain a copy of the License at
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -139,7 +140,7 @@ public class DDEditorServiceImpl
 
     // helper methods
 
-    private DeploymentDescriptorModel marshal(org.kie.internal.runtime.conf.DeploymentDescriptor originDD) {
+    protected DeploymentDescriptorModel marshal(org.kie.internal.runtime.conf.DeploymentDescriptor originDD) {
         DeploymentDescriptorModel ddModel = new DeploymentDescriptorModel();
         ddModel.setPersistenceUnitName(originDD.getPersistenceUnit());
         ddModel.setAuditPersistenceUnitName(originDD.getAuditPersistenceUnit());
@@ -181,12 +182,13 @@ public class DDEditorServiceImpl
         // remoteable classes
         ddModel.setRemotableClasses(originDD.getClasses());
 
+        ddModel.setLimitSerializationClasses(originDD.getLimitSerializationClasses());
 
         return ddModel;
     }
 
 
-    private org.kie.internal.runtime.conf.DeploymentDescriptor unmarshal(Path path, DeploymentDescriptorModel model) {
+    protected org.kie.internal.runtime.conf.DeploymentDescriptor unmarshal(Path path, DeploymentDescriptorModel model) {
 
         if (model == null) {
             return new DeploymentDescriptorManager().getDefaultDescriptor();
@@ -198,7 +200,8 @@ public class DDEditorServiceImpl
                 .auditPersistenceUnit(model.getAuditPersistenceUnitName())
                 .auditMode(AuditMode.valueOf(model.getAuditMode()))
                 .persistenceMode(PersistenceMode.valueOf(model.getPersistenceMode()))
-                .runtimeStrategy(RuntimeStrategy.valueOf(model.getRuntimeStrategy()));
+                .runtimeStrategy(RuntimeStrategy.valueOf(model.getRuntimeStrategy()))
+                .setLimitSerializationClasses(model.getLimitSerializationClasses());
 
         // marshalling strategies
         List<ItemObjectModel> marshallingStrategies = model.getMarshallingStrategies();

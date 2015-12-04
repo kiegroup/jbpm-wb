@@ -1,9 +1,10 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
+ * You may obtain a copy of the License at
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -33,6 +34,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.CheckBox;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.Label;
@@ -124,7 +126,8 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiField(provided = true)
     CellTable<ItemObjectModel> marshalStrategyTable = new CellTable<ItemObjectModel>();
 
-    private ListDataProvider<ItemObjectModel> marshalStrategyDataProvider = new ListDataProvider<ItemObjectModel>();
+    // pkg for tests
+    ListDataProvider<ItemObjectModel> marshalStrategyDataProvider = new ListDataProvider<ItemObjectModel>();
 
     // event listeners
     @UiField
@@ -139,7 +142,8 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiField(provided = true)
     CellTable<ItemObjectModel> eventListenersTable = new CellTable<ItemObjectModel>();
 
-    private ListDataProvider<ItemObjectModel> eventListenersDataProvider = new ListDataProvider<ItemObjectModel>();
+    // pkg for tests
+    ListDataProvider<ItemObjectModel> eventListenersDataProvider = new ListDataProvider<ItemObjectModel>();
 
     // globals
     @UiField
@@ -154,7 +158,8 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiField(provided = true)
     CellTable<ItemObjectModel> globalsTable = new CellTable<ItemObjectModel>();
 
-    private ListDataProvider<ItemObjectModel> globalsDataProvider = new ListDataProvider<ItemObjectModel>();
+    // pkg for tests
+    ListDataProvider<ItemObjectModel> globalsDataProvider = new ListDataProvider<ItemObjectModel>();
 
     // work item handlers
     @UiField
@@ -169,7 +174,8 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiField(provided = true)
     CellTable<ItemObjectModel> workItemHandlersTable = new CellTable<ItemObjectModel>();
 
-    private ListDataProvider<ItemObjectModel> workItemHandlersDataProvider = new ListDataProvider<ItemObjectModel>();
+    // pkg for tests
+    ListDataProvider<ItemObjectModel> workItemHandlersDataProvider = new ListDataProvider<ItemObjectModel>();
 
     // task event listeners
     @UiField
@@ -184,7 +190,8 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiField(provided = true)
     CellTable<ItemObjectModel> taskEventListenersTable = new CellTable<ItemObjectModel>();
 
-    private ListDataProvider<ItemObjectModel> taskEventListenersDataProvider = new ListDataProvider<ItemObjectModel>();
+    // pkg for tests
+    ListDataProvider<ItemObjectModel> taskEventListenersDataProvider = new ListDataProvider<ItemObjectModel>();
 
     // environment entries
     @UiField
@@ -199,7 +206,8 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiField(provided = true)
     CellTable<ItemObjectModel> environmentEntriesTable = new CellTable<ItemObjectModel>();
 
-    private ListDataProvider<ItemObjectModel> environmentEntriesDataProvider = new ListDataProvider<ItemObjectModel>();
+    // pkg for tests
+    ListDataProvider<ItemObjectModel> environmentEntriesDataProvider = new ListDataProvider<ItemObjectModel>();
 
     // configuration
     @UiField
@@ -214,7 +222,8 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiField(provided = true)
     CellTable<ItemObjectModel> configurationTable = new CellTable<ItemObjectModel>();
 
-    private ListDataProvider<ItemObjectModel> configurationDataProvider = new ListDataProvider<ItemObjectModel>();
+    // pkg for tests
+    ListDataProvider<ItemObjectModel> configurationDataProvider = new ListDataProvider<ItemObjectModel>();
 
     // required roles
     @UiField
@@ -229,7 +238,8 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiField(provided = true)
     CellTable<String> requiredRolesTable = new CellTable<String>();
 
-    private ListDataProvider<String> requiredRolesDataProvider = new ListDataProvider<String>();
+    // pkg for tests
+    ListDataProvider<String> requiredRolesDataProvider = new ListDataProvider<String>();
 
     // remoteable classes
     @UiField
@@ -244,14 +254,24 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiField(provided = true)
     CellTable<String> remoteableClassesTable = new CellTable<String>();
 
-    private ListDataProvider<String> remoteableClassesDataProvider = new ListDataProvider<String>();
+    // pkg for tests
+    ListDataProvider<String> remoteableClassesDataProvider = new ListDataProvider<String>();
+
+    @UiField
+    FormGroup limitSerializationClassesGroup;
+
+    @UiField
+    HelpBlock limitSerializationClassesHelpInline;
+
+    @UiField
+    CheckBox limitSerializationClassesCheckBox;
 
     public DeploymentDescriptorViewImpl() {
         initWidget( uiBinder.createAndBindUi( this ) );
         setup();
     }
 
-    private void setup() {
+    void setup() {
         persistenceModeDropdown.addItem( "NONE", "NONE" );
         persistenceModeDropdown.addItem( "JPA", "JPA" );
 
@@ -325,6 +345,12 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
         if ( deploymentDescriptorModel.getRemotableClasses() != null ) {
             remoteableClassesDataProvider.setList( deploymentDescriptorModel.getRemotableClasses() );
         }
+        Boolean limitSerializationClasses = deploymentDescriptorModel.getLimitSerializationClasses();
+        if( limitSerializationClasses == null ) {
+            // change in 7.0.x!
+            limitSerializationClasses = false;
+        }
+        limitSerializationClassesCheckBox.setValue(limitSerializationClasses);
     }
 
     @Override
@@ -358,6 +384,8 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
         deploymentDescriptorModel.setRequiredRoles( requiredRolesDataProvider.getList() );
 
         deploymentDescriptorModel.setRemotableClasses( remoteableClassesDataProvider.getList() );
+
+        deploymentDescriptorModel.setLimitSerializationClasses(limitSerializationClassesCheckBox.getValue());
     }
 
     @Override
