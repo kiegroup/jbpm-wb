@@ -590,6 +590,12 @@
 
     <!-- Guvnor -->
     <dependency>
+       <groupId>org.kie.workbench.widgets</groupId>
+       <artifactId>kie-wb-decorated-grid-widget</artifactId>
+       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-asset-mgmt-client</artifactId>
       <scope>provided</scope>
@@ -994,6 +1000,7 @@
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-java-editor-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-default-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-default-editor-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-decorated-grid-widget</compileSourcesArtifact>
 
             <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-client</compileSourcesArtifact>
