@@ -34,6 +34,7 @@
     <module>jbpm-console-ng-generic-client</module>
     <module>jbpm-console-ng-generic-forms-api</module>
     <module>jbpm-console-ng-generic-forms-client</module>
-    <module>jbpm-console-ng-data-filters-client</module>	
+    <module>jbpm-console-ng-data-filters-client</module>
+    <module>jbpm-console-ng-generic-preferences</module>	
   </modules>
 </project>
