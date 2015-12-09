@@ -37,6 +37,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.SimplePanel;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.TextArea;
@@ -191,10 +192,10 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
                                     SafeHtmlBuilder sb ) {
 
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant( new Button( constants.Delete() ) {{
+                    mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Delete() ) {{
                         setSize( ButtonSize.SMALL );
                         setType( ButtonType.DANGER );
-                    }}.getElement().toString() );
+                    }} ).getElement().getInnerHTML() );
                     sb.append( mysb.toSafeHtml() );
                 }
             };

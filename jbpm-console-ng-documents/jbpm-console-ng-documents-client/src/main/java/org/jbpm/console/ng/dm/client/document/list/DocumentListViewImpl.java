@@ -40,6 +40,7 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
@@ -65,13 +66,13 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, DocumentListPresenter> implements
-        DocumentListPresenter.DocumentListView {
+                                                                                                     DocumentListPresenter.DocumentListView {
 
-    public static final String COL_ID_ID ="Id";
-    public static final String COL_ID_NAME ="Name";
-    public static final String COL_ID_ACTIONS ="Actions";
+    public static final String COL_ID_ID = "Id";
+    public static final String COL_ID_NAME = "Name";
+    public static final String COL_ID_ACTIONS = "Actions";
 
-    private Constants constants = GWT.create(Constants.class);
+    private Constants constants = GWT.create( Constants.class );
 
     private Column actionsColumn;
 
@@ -101,34 +102,34 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
     private Event<NotificationEvent> notification;
 
     @Override
-    public void init(final DocumentListPresenter presenter) {
+    public void init( final DocumentListPresenter presenter ) {
 
         List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(COL_ID_ID);
-        bannedColumns.add(COL_ID_NAME);
-        bannedColumns.add(COL_ID_ACTIONS);
+        bannedColumns.add( COL_ID_ID );
+        bannedColumns.add( COL_ID_NAME );
+        bannedColumns.add( COL_ID_ACTIONS );
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add(COL_ID_ID);
-        initColumns.add(COL_ID_NAME);
-        initColumns.add(COL_ID_ACTIONS);
+        initColumns.add( COL_ID_ID );
+        initColumns.add( COL_ID_NAME );
+        initColumns.add( COL_ID_ACTIONS );
 
-        super.init(presenter, new GridGlobalPreferences("DocumentListGrid", initColumns, bannedColumns));
+        super.init( presenter, new GridGlobalPreferences( "DocumentListGrid", initColumns, bannedColumns ) );
 
         initFiltersBar();
         initPathLink();
 
         selectionModel = new NoSelectionModel<CMSContentSummary>();
-        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+        selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
             @Override
-            public void onSelectionChange(SelectionChangeEvent event) {
+            public void onSelectionChange( SelectionChangeEvent event ) {
                 boolean close = false;
-                if (selectedRow == -1) {
-                    listGrid.setRowStyles(selectedStyles);
+                if ( selectedRow == -1 ) {
+                    listGrid.setRowStyles( selectedStyles );
                     selectedRow = listGrid.getKeyboardSelectedRow();
                     listGrid.redraw();
-                } else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
+                } else if ( listGrid.getKeyboardSelectedRow() != selectedRow ) {
 
-                    listGrid.setRowStyles(selectedStyles);
+                    listGrid.setRowStyles( selectedStyles );
                     selectedRow = listGrid.getKeyboardSelectedRow();
                     listGrid.redraw();
                 } else {
@@ -138,115 +139,115 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
                 selectedItem = selectionModel.getLastSelectedObject();
 
             }
-        });
+        } );
 
         noActionColumnManager = DefaultSelectionEventManager
-                .createCustomManager(new DefaultSelectionEventManager.EventTranslator<CMSContentSummary>() {
+                .createCustomManager( new DefaultSelectionEventManager.EventTranslator<CMSContentSummary>() {
 
                     @Override
-                    public boolean clearCurrentSelection(CellPreviewEvent<CMSContentSummary> event) {
+                    public boolean clearCurrentSelection( CellPreviewEvent<CMSContentSummary> event ) {
                         return false;
                     }
 
                     @Override
                     public DefaultSelectionEventManager.SelectAction translateSelectionEvent(
-                            CellPreviewEvent<CMSContentSummary> event) {
+                            CellPreviewEvent<CMSContentSummary> event ) {
                         NativeEvent nativeEvent = event.getNativeEvent();
-                        if (BrowserEvents.CLICK.equals(nativeEvent.getType())) {
+                        if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) ) {
                             // Ignore if the event didn't occur in the correct
                             // column.
-                            if (listGrid.getColumnIndex(actionsColumn) == event.getColumn()) {
+                            if ( listGrid.getColumnIndex( actionsColumn ) == event.getColumn() ) {
                                 return DefaultSelectionEventManager.SelectAction.IGNORE;
                             }
                         }
                         return DefaultSelectionEventManager.SelectAction.DEFAULT;
                     }
-                });
-        listGrid.setSelectionModel(selectionModel, noActionColumnManager);
+                } );
+        listGrid.setSelectionModel( selectionModel, noActionColumnManager );
 
         Button configRepoButton = new Button();
-        configRepoButton.setIcon(IconType.COG);
+        configRepoButton.setIcon( IconType.COG );
         configRepoButton.setTitle( Constants.INSTANCE.ConfigurationPanel() );
-        configRepoButton.addClickHandler(new ClickHandler() {
+        configRepoButton.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest("CMIS Configuration"));
-                if (instanceDetailsStatus == PlaceStatus.OPEN) {
-                    placeManager.closePlace("CMIS Configuration");
+            public void onClick( ClickEvent event ) {
+                PlaceStatus instanceDetailsStatus = placeManager.getStatus( new DefaultPlaceRequest( "CMIS Configuration" ) );
+                if ( instanceDetailsStatus == PlaceStatus.OPEN ) {
+                    placeManager.closePlace( "CMIS Configuration" );
                 }
-                placeManager.goTo("CMIS Configuration");
+                placeManager.goTo( "CMIS Configuration" );
             }
-        });
+        } );
 
-        listGrid.getRightToolbar().add(configRepoButton);
-        listGrid.setEmptyTableCaption(constants.No_Documents_Available());
-        listGrid.setRowStyles(selectedStyles);
+        listGrid.getRightToolbar().add( configRepoButton );
+        listGrid.setEmptyTableCaption( constants.No_Documents_Available() );
+        listGrid.setRowStyles( selectedStyles );
     }
 
     @Override
-    public void initColumns(ExtendedPagedTable extendedPagedTable) {
+    public void initColumns( ExtendedPagedTable extendedPagedTable ) {
         Column<CMSContentSummary, ?> idColumn = initIdColumn();
         Column<CMSContentSummary, ?> processNameColumn = initNameColumn();
         actionsColumn = initActionsColumn();
 
         List<ColumnMeta<CMSContentSummary>> columnMetas = new ArrayList<ColumnMeta<CMSContentSummary>>();
-        columnMetas.add(new ColumnMeta<CMSContentSummary>(idColumn, constants.DocumentID()));
-        columnMetas.add(new ColumnMeta<CMSContentSummary>(processNameColumn, constants.DocumentName()));
-        columnMetas.add(new ColumnMeta<CMSContentSummary>(actionsColumn, constants.Actions()));
-        extendedPagedTable.addColumns(columnMetas);
+        columnMetas.add( new ColumnMeta<CMSContentSummary>( idColumn, constants.DocumentID() ) );
+        columnMetas.add( new ColumnMeta<CMSContentSummary>( processNameColumn, constants.DocumentName() ) );
+        columnMetas.add( new ColumnMeta<CMSContentSummary>( actionsColumn, constants.Actions() ) );
+        extendedPagedTable.addColumns( columnMetas );
     }
 
     private Column<CMSContentSummary, ?> initIdColumn() {
-        Column<CMSContentSummary, String> idColumn = new Column<CMSContentSummary, String>(new TextCell()) {
+        Column<CMSContentSummary, String> idColumn = new Column<CMSContentSummary, String>( new TextCell() ) {
             @Override
-            public String getValue(CMSContentSummary object) {
+            public String getValue( CMSContentSummary object ) {
                 return object.getId();
             }
         };
-        idColumn.setSortable(true);
-        idColumn.setDataStoreName(COL_ID_ID);
+        idColumn.setSortable( true );
+        idColumn.setDataStoreName( COL_ID_ID );
 
         return idColumn;
     }
 
     private Column<CMSContentSummary, ?> initNameColumn() {
-        Column<CMSContentSummary, String> processNameColumn = new Column<CMSContentSummary, String>(new TextCell()) {
+        Column<CMSContentSummary, String> processNameColumn = new Column<CMSContentSummary, String>( new TextCell() ) {
             @Override
-            public String getValue(CMSContentSummary object) {
+            public String getValue( CMSContentSummary object ) {
                 return object.getName();
             }
         };
-        processNameColumn.setSortable(true);
-        processNameColumn.setDataStoreName(COL_ID_NAME);
+        processNameColumn.setSortable( true );
+        processNameColumn.setDataStoreName( COL_ID_NAME );
         return processNameColumn;
     }
 
     private Column<CMSContentSummary, ?> initActionsColumn() {
         List<HasCell<CMSContentSummary, ?>> cells = new LinkedList<HasCell<CMSContentSummary, ?>>();
 
-        cells.add(new RemoveHasCell("Remove", new Delegate<CMSContentSummary>() {
+        cells.add( new RemoveHasCell( "Remove", new Delegate<CMSContentSummary>() {
             @Override
-            public void execute(CMSContentSummary process) {
-                removeDocEvent.fire(new DocumentRemoveSearchEvent(process));
+            public void execute( CMSContentSummary process ) {
+                removeDocEvent.fire( new DocumentRemoveSearchEvent( process ) );
             }
-        }));
+        } ) );
 
-        cells.add(new GoHasCell("Go", new Delegate<CMSContentSummary>() {
+        cells.add( new GoHasCell( "Go", new Delegate<CMSContentSummary>() {
             @Override
-            public void execute(CMSContentSummary process) {
-                selectDocEvent.fire(new DocumentsListSearchEvent(process));
-                pathLink.setText(process.getPath());
+            public void execute( CMSContentSummary process ) {
+                selectDocEvent.fire( new DocumentsListSearchEvent( process ) );
+                pathLink.setText( process.getPath() );
             }
-        }));
+        } ) );
 
-        CompositeCell<CMSContentSummary> cell = new CompositeCell<CMSContentSummary>(cells);
-        Column<CMSContentSummary, CMSContentSummary> actionsColumn = new Column<CMSContentSummary, CMSContentSummary>(cell) {
+        CompositeCell<CMSContentSummary> cell = new CompositeCell<CMSContentSummary>( cells );
+        Column<CMSContentSummary, CMSContentSummary> actionsColumn = new Column<CMSContentSummary, CMSContentSummary>( cell ) {
             @Override
-            public CMSContentSummary getValue(CMSContentSummary object) {
+            public CMSContentSummary getValue( CMSContentSummary object ) {
                 return object;
             }
         };
-        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
+        actionsColumn.setDataStoreName( COL_ID_ACTIONS );
         return actionsColumn;
     }
 
@@ -254,50 +255,50 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
         HorizontalPanel filtersBar = new HorizontalPanel();
 
         parentLink = new Button();
-        parentLink.setIcon(IconType.BACKWARD);
-        parentLink.setSize(ButtonSize.SMALL);
-        parentLink.setText(constants.Parent());
-        parentLink.setEnabled(true);
-        parentLink.addClickHandler(new ClickHandler() {
+        parentLink.setIcon( IconType.BACKWARD );
+        parentLink.setSize( ButtonSize.SMALL );
+        parentLink.setText( constants.Parent() );
+        parentLink.setEnabled( true );
+        parentLink.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                if (BrowserEvents.CLICK.equalsIgnoreCase(event.getNativeEvent().getType())) {
-                    parentDocEvent.fire(new DocumentsParentSearchEvent());
-                    pathLink.setText(presenter.currentCMSContentSummary.getParent().getPath());
+            public void onClick( ClickEvent event ) {
+                if ( BrowserEvents.CLICK.equalsIgnoreCase( event.getNativeEvent().getType() ) ) {
+                    parentDocEvent.fire( new DocumentsParentSearchEvent() );
+                    pathLink.setText( presenter.currentCMSContentSummary.getParent().getPath() );
                 }
             }
-        });
+        } );
 
         homeLink = new Button();
-        homeLink.setIcon(IconType.HOME);
-        homeLink.setSize(ButtonSize.SMALL);
-        homeLink.setText(constants.Home());
-        homeLink.setEnabled(true);
-        homeLink.addClickHandler(new ClickHandler() {
+        homeLink.setIcon( IconType.HOME );
+        homeLink.setSize( ButtonSize.SMALL );
+        homeLink.setText( constants.Home() );
+        homeLink.setEnabled( true );
+        homeLink.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                if (BrowserEvents.CLICK.equalsIgnoreCase(event.getNativeEvent().getType())) {
-                    homeDocEvent.fire(new DocumentsHomeSearchEvent());
-                    pathLink.setText("/");
+            public void onClick( ClickEvent event ) {
+                if ( BrowserEvents.CLICK.equalsIgnoreCase( event.getNativeEvent().getType() ) ) {
+                    homeDocEvent.fire( new DocumentsHomeSearchEvent() );
+                    pathLink.setText( "/" );
                 }
             }
-        });
+        } );
 
         newLink = new Button();
-        newLink.setIcon(IconType.PLUS);
-        newLink.setSize(ButtonSize.SMALL);
-        newLink.setText(constants.New());
-        newLink.setEnabled(true);
-        newLink.addClickHandler(new ClickHandler() {
+        newLink.setIcon( IconType.PLUS );
+        newLink.setSize( ButtonSize.SMALL );
+        newLink.setText( constants.New() );
+        newLink.setEnabled( true );
+        newLink.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                DefaultPlaceRequest req = new DefaultPlaceRequest("New Document");
-                String folder = (presenter.currentCMSContentSummary == null) ? "/" : presenter.currentCMSContentSummary
+            public void onClick( ClickEvent event ) {
+                DefaultPlaceRequest req = new DefaultPlaceRequest( "New Document" );
+                String folder = ( presenter.currentCMSContentSummary == null ) ? "/" : presenter.currentCMSContentSummary
                         .getPath();
-                req.addParameter("folder", folder);
-                placeManager.goTo(req);
+                req.addParameter( "folder", folder );
+                placeManager.goTo( req );
             }
-        });
+        } );
 
         filtersButtonGroup = new ButtonGroup() {{
             add( parentLink );
@@ -305,53 +306,57 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
             add( newLink );
         }};
 
-        filtersBar.add(filtersButtonGroup);
-        listGrid.getCenterToolbar().add(filtersBar);
+        filtersBar.add( filtersButtonGroup );
+        listGrid.getCenterToolbar().add( filtersBar );
     }
-    
-    private void initPathLink(){
+
+    private void initPathLink() {
         FlowPanel container = new FlowPanel();
         Label pathLabel = new Label();
-        pathLabel.setText("Path:");
+        pathLabel.setText( "Path:" );
         pathLink = new Anchor();
-        pathLink.setText("/");
-        container.add(pathLabel);
-        container.add(pathLink);
-        listGrid.getLeftToolbar().add(container);
+        pathLink.setText( "/" );
+        container.add( pathLabel );
+        container.add( pathLink );
+        listGrid.getLeftToolbar().add( container );
     }
 
     @Override
     public void updatePathLink() {
-        if (presenter.currentCMSContentSummary != null) {
+        if ( presenter.currentCMSContentSummary != null ) {
             String path = presenter.currentCMSContentSummary.getPath();
-            if (path != null && !path.equals("")) {
-                pathLink.setText(path);
+            if ( path != null && !path.equals( "" ) ) {
+                pathLink.setText( path );
             } else {
-                pathLink.setText("/");
+                pathLink.setText( "/" );
             }
         } else {
-            pathLink.setText("/");
+            pathLink.setText( "/" );
         }
     }
 
     protected class RemoveHasCell implements HasCell<CMSContentSummary, CMSContentSummary> {
+
         private ActionCell<CMSContentSummary> cell;
 
-        public RemoveHasCell(String text, ActionCell.Delegate<CMSContentSummary> delegate) {
-            cell = new ActionCell<CMSContentSummary>(text, delegate) {
+        public RemoveHasCell( String text,
+                              ActionCell.Delegate<CMSContentSummary> delegate ) {
+            cell = new ActionCell<CMSContentSummary>( text, delegate ) {
                 @Override
-                public void render(Cell.Context context, CMSContentSummary value, SafeHtmlBuilder sb) {
+                public void render( Cell.Context context,
+                                    CMSContentSummary value,
+                                    SafeHtmlBuilder sb ) {
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant( new Button( constants.Remove() ) {{
+                    mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Remove() ) {{
                         setSize( ButtonSize.SMALL );
                         getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                    }}.getElement().toString());
+                    }} ).getElement().getInnerHTML() );
 
                     // TODO
                     // add
                     // constants
 
-                    sb.append(mysb.toSafeHtml());
+                    sb.append( mysb.toSafeHtml() );
                 }
             };
 
@@ -368,24 +373,28 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
         }
 
         @Override
-        public CMSContentSummary getValue(CMSContentSummary object) {
+        public CMSContentSummary getValue( CMSContentSummary object ) {
             return object;
         }
     }
 
     protected class GoHasCell implements HasCell<CMSContentSummary, CMSContentSummary> {
+
         private ActionCell<CMSContentSummary> cell;
 
-        public GoHasCell(String text, ActionCell.Delegate<CMSContentSummary> delegate) {
-            cell = new ActionCell<CMSContentSummary>(text, delegate) {
+        public GoHasCell( String text,
+                          ActionCell.Delegate<CMSContentSummary> delegate ) {
+            cell = new ActionCell<CMSContentSummary>( text, delegate ) {
                 @Override
-                public void render(Cell.Context context, CMSContentSummary value, SafeHtmlBuilder sb) {
+                public void render( Cell.Context context,
+                                    CMSContentSummary value,
+                                    SafeHtmlBuilder sb ) {
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant( new Button( constants.Go() ) {{
+                    mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Go() ) {{
                         setSize( ButtonSize.SMALL );
                         getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                    }}.getElement().toString());
-                    sb.append(mysb.toSafeHtml());
+                    }} ).getElement().getInnerHTML() );
+                    sb.append( mysb.toSafeHtml() );
                 }
             };
 
@@ -402,7 +411,7 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
         }
 
         @Override
-        public CMSContentSummary getValue(CMSContentSummary object) {
+        public CMSContentSummary getValue( CMSContentSummary object ) {
             return object;
         }
     }
