@@ -43,6 +43,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
@@ -122,12 +123,12 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     public void init( final DataSetTasksListGridPresenter presenter ) {
 
         final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(COLUMN_NAME);
-        bannedColumns.add(COL_ID_ACTIONS);
+        bannedColumns.add( COLUMN_NAME );
+        bannedColumns.add( COL_ID_ACTIONS );
         final List<String> initColumns = new ArrayList<String>();
-        initColumns.add(COLUMN_NAME);
-        initColumns.add(COLUMN_DESCRIPTION);
-        initColumns.add( COL_ID_ACTIONS);
+        initColumns.add( COLUMN_NAME );
+        initColumns.add( COLUMN_DESCRIPTION );
+        initColumns.add( COL_ID_ACTIONS );
         final Button button = new Button();
         button.setIcon( IconType.PLUS );
         button.setSize( ButtonSize.SMALL );
@@ -496,7 +497,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                 return object;
             }
         };
-        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
+        actionsColumn.setDataStoreName( COL_ID_ACTIONS );
         return actionsColumn;
 
     }
@@ -527,10 +528,10 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                                     SafeHtmlBuilder sb ) {
                     if ( value.getActualOwner() != null && value.getStatus().equals( "InProgress" ) ) {
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new Button( constants.Complete() ) {{
+                        mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Complete() ) {{
                             setSize( ButtonSize.SMALL );
                             getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                        }}.getElement().toString() );
+                        }} ).getElement().getInnerHTML() );
                         sb.append( mysb.toSafeHtml() );
                     }
                 }
@@ -566,10 +567,10 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                                     SafeHtmlBuilder sb ) {
                     if ( value.getStatus().equals( "Ready" ) ) {
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new Button( constants.Claim() ) {{
+                        mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Claim() ) {{
                             setSize( ButtonSize.SMALL );
                             getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                        }}.getElement().toString() );
+                        }} ).getElement().getInnerHTML() );
                         sb.append( mysb.toSafeHtml() );
                     }
                 }
@@ -606,10 +607,10 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                     if ( value.getActualOwner() != null && value.getActualOwner().equals( identity.getIdentifier() )
                             && ( value.getStatus().equals( "Reserved" ) || value.getStatus().equals( "InProgress" ) ) ) {
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new Button( constants.Release() ) {{
+                        mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Release() ) {{
                             setSize( ButtonSize.SMALL );
                             getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                        }}.getElement().toString() );
+                        }} ).getElement().getInnerHTML() );
                         sb.append( mysb.toSafeHtml() );
                     }
                 }
@@ -701,12 +702,12 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.filter( COLUMN_ACTUALOWNER, equalsTo( "" ) );
         List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
         for ( Group g : groups ) {
-            condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, g.getName() ) );
+            condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, g.getName() ) );
 
         }
         //Adding own identity to check against potential owners
-        condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier()));
-        
+        condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier() ) );
+
         builder.filter( COLUMN_ORGANIZATIONAL_ENTITY, OR( condList ) );
         builder.group( COLUMN_TASKID );
 
@@ -778,11 +779,11 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
         for ( Group g : groups ) {
-            condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, g.getName() ) );
+            condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, g.getName() ) );
 
         }
         //Adding own identity to check against potential owners
-        condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier()));
+        condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier() ) );
 
         builder.filter( COLUMN_ORGANIZATIONAL_ENTITY, OR( condList ) );
 
@@ -926,8 +927,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         }
         //Adding own identity to check against potential owners
-        condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier()));
-        
+        condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier() ) );
+
         ColumnFilter myGroupFilter = FilterFactory.AND( FilterFactory.OR( condList ), FilterFactory.equalsTo( COLUMN_ACTUALOWNER, "" ) );
 
         builder.filter( OR( myGroupFilter, FilterFactory.equalsTo( COLUMN_ACTUALOWNER, identity.getIdentifier() ) ) );

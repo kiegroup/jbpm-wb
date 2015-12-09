@@ -45,6 +45,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
@@ -78,15 +79,15 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessInstanceSummary, ProcessInstanceListPresenter>
         implements ProcessInstanceListPresenter.ProcessInstanceListView {
 
-    public static final String COL_ID_SELECT ="Select";
-    public static final String COL_ID_ACTIONS ="Actions";
-    public static final String COL_ID_PROCESSINSIID ="log.processInstanceId";
-    public static final String COL_ID_PROCESSNAME ="log.processName";
-    public static final String COL_ID_IDENTITY ="log.identity";
-    public static final String COL_ID_PROCESSVERSION ="log.processVersion";
-    public static final String COL_ID_START ="log.start";
-    public static final String COL_ID_DESCRIPTION ="log.processInstanceDescription";
-    public static final String COL_ID_STATUS ="log.status";
+    public static final String COL_ID_SELECT = "Select";
+    public static final String COL_ID_ACTIONS = "Actions";
+    public static final String COL_ID_PROCESSINSIID = "log.processInstanceId";
+    public static final String COL_ID_PROCESSNAME = "log.processName";
+    public static final String COL_ID_IDENTITY = "log.identity";
+    public static final String COL_ID_PROCESSVERSION = "log.processVersion";
+    public static final String COL_ID_START = "log.start";
+    public static final String COL_ID_DESCRIPTION = "log.processInstanceDescription";
+    public static final String COL_ID_STATUS = "log.status";
 
     private Constants constants = GWT.create( Constants.class );
 
@@ -462,7 +463,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             }
         };
         startTimeColumn.setSortable( true );
-        startTimeColumn.setDataStoreName(COL_ID_START );
+        startTimeColumn.setDataStoreName( COL_ID_START );
 
         return startTimeColumn;
     }
@@ -498,7 +499,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                 return object;
             }
         };
-        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
+        actionsColumn.setDataStoreName( COL_ID_ACTIONS );
         return actionsColumn;
 
     }
@@ -515,7 +516,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                 return selectedProcessInstances.contains( object );
             }
         };
-        checkColumn.setDataStoreName(COL_ID_SELECT);
+        checkColumn.setDataStoreName( COL_ID_SELECT );
         return checkColumn;
     }
 
@@ -552,10 +553,10 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                     SafeHtmlBuilder sb ) {
                     if ( value.getState() == ProcessInstance.STATE_ACTIVE ) {
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new Button( constants.Abort() ) {{
+                        mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Abort() ) {{
                             setSize( ButtonSize.SMALL );
                             getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                        }}.getElement().toString() );
+                        }} ).getElement().getInnerHTML() );
                         sb.append( mysb.toSafeHtml() );
                     }
                 }
@@ -591,10 +592,10 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                     SafeHtmlBuilder sb ) {
                     if ( value.getState() == ProcessInstance.STATE_ACTIVE ) {
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new Button( constants.Signal() ) {{
+                        mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Signal() ) {{
                             setSize( ButtonSize.SMALL );
                             getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                        }}.getElement().toString() );
+                        }} ).getElement().getInnerHTML() );
                         sb.append( mysb.toSafeHtml() );
                     }
                 }

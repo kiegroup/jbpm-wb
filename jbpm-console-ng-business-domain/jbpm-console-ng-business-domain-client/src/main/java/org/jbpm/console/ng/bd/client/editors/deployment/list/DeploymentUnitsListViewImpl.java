@@ -38,6 +38,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
@@ -59,15 +60,15 @@ import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploymentUnitSummary, DeploymentUnitsListPresenter>
         implements DeploymentUnitsListPresenter.DeploymentUnitsListView {
 
-    public static final String COL_ID_DEPLOYMENT ="Deployment";
-    public static final String COL_ID_GROUP ="GroupId";
-    public static final String COL_ID_ARTIFACT ="Artifact";
-    public static final String COL_ID_VERSION ="Version";
-    public static final String COL_ID_KIEBASENAME ="KieBaseName";
-    public static final String COL_ID_KIEBSESSIONNAME ="KieSessionName";
-    public static final String COL_ID_STRATEGY ="Strategy";
-    public static final String COL_ID_STATUS ="Status";
-    public static final String COL_ID_ACTIONS ="Actions";
+    public static final String COL_ID_DEPLOYMENT = "Deployment";
+    public static final String COL_ID_GROUP = "GroupId";
+    public static final String COL_ID_ARTIFACT = "Artifact";
+    public static final String COL_ID_VERSION = "Version";
+    public static final String COL_ID_KIEBASENAME = "KieBaseName";
+    public static final String COL_ID_KIEBSESSIONNAME = "KieSessionName";
+    public static final String COL_ID_STRATEGY = "Strategy";
+    public static final String COL_ID_STATUS = "Status";
+    public static final String COL_ID_ACTIONS = "Actions";
 
     interface Binder
             extends
@@ -85,13 +86,13 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
         List<String> bannedColumns = new ArrayList<String>();
 
-        bannedColumns.add(COL_ID_DEPLOYMENT);
-        bannedColumns.add(COL_ID_ACTIONS);
+        bannedColumns.add( COL_ID_DEPLOYMENT );
+        bannedColumns.add( COL_ID_ACTIONS );
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add(COL_ID_DEPLOYMENT);
-        initColumns.add(COL_ID_STRATEGY);
-        initColumns.add(COL_ID_STATUS);
-        initColumns.add(COL_ID_ACTIONS);
+        initColumns.add( COL_ID_DEPLOYMENT );
+        initColumns.add( COL_ID_STRATEGY );
+        initColumns.add( COL_ID_STATUS );
+        initColumns.add( COL_ID_ACTIONS );
 
         super.init( presenter, new GridGlobalPreferences( "DeploymentUnitsGrid", initColumns, bannedColumns ) );
 
@@ -156,7 +157,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
     }
 
     @Override
-    public void initColumns(ExtendedPagedTable extendedPagedTable) {
+    public void initColumns( ExtendedPagedTable extendedPagedTable ) {
         Column<KModuleDeploymentUnitSummary, ?> unitIdColumn = idColumn();
         Column<KModuleDeploymentUnitSummary, ?> groupIdColumn = groupIdColumn();
         Column<KModuleDeploymentUnitSummary, ?> artifactIdColumn = artifactIdColumn();
@@ -189,8 +190,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return unit.getId();
             }
         };
-        unitIdColumn.setSortable(true);
-        unitIdColumn.setDataStoreName(COL_ID_DEPLOYMENT);
+        unitIdColumn.setSortable( true );
+        unitIdColumn.setDataStoreName( COL_ID_DEPLOYMENT );
         return unitIdColumn;
     }
 
@@ -203,8 +204,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return unit.getGroupId();
             }
         };
-        groupIdColumn.setSortable(true);
-        groupIdColumn.setDataStoreName(COL_ID_GROUP);
+        groupIdColumn.setSortable( true );
+        groupIdColumn.setDataStoreName( COL_ID_GROUP );
         return groupIdColumn;
     }
 
@@ -217,8 +218,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return unit.getArtifactId();
             }
         };
-        artifactIdColumn.setSortable(true);
-        artifactIdColumn.setDataStoreName(COL_ID_ARTIFACT);
+        artifactIdColumn.setSortable( true );
+        artifactIdColumn.setDataStoreName( COL_ID_ARTIFACT );
         return artifactIdColumn;
     }
 
@@ -231,8 +232,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return unit.getVersion();
             }
         };
-        versionColumn.setSortable(true);
-        versionColumn.setDataStoreName(COL_ID_VERSION);
+        versionColumn.setSortable( true );
+        versionColumn.setDataStoreName( COL_ID_VERSION );
         return versionColumn;
 
     }
@@ -250,8 +251,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return kbaseName;
             }
         };
-        kbaseColumn.setDataStoreName(COL_ID_KIEBASENAME);
-        kbaseColumn.setSortable(true);
+        kbaseColumn.setDataStoreName( COL_ID_KIEBASENAME );
+        kbaseColumn.setSortable( true );
         return kbaseColumn;
     }
 
@@ -268,8 +269,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return ksessionName;
             }
         };
-        ksessionColumn.setDataStoreName(COL_ID_KIEBSESSIONNAME);
-        ksessionColumn.setSortable(true);
+        ksessionColumn.setDataStoreName( COL_ID_KIEBSESSIONNAME );
+        ksessionColumn.setSortable( true );
         return ksessionColumn;
     }
 
@@ -282,8 +283,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 return unit.getStrategy();
             }
         };
-        strategyColumn.setSortable(true);
-        strategyColumn.setDataStoreName(COL_ID_STRATEGY);
+        strategyColumn.setSortable( true );
+        strategyColumn.setDataStoreName( COL_ID_STRATEGY );
         return strategyColumn;
     }
 
@@ -301,8 +302,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
             }
         };
-        statusColumn.setSortable(true);
-        statusColumn.setDataStoreName(COL_ID_STATUS);
+        statusColumn.setSortable( true );
+        statusColumn.setDataStoreName( COL_ID_STATUS );
         return statusColumn;
     }
 
@@ -330,17 +331,16 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
             }
         } ) );
 
-
-        CompositeCell<KModuleDeploymentUnitSummary> cell = new CompositeCell<KModuleDeploymentUnitSummary>(cells);
+        CompositeCell<KModuleDeploymentUnitSummary> cell = new CompositeCell<KModuleDeploymentUnitSummary>( cells );
         Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> actionColum =
-             new Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary>(
-                cell) {
-                @Override
-                public KModuleDeploymentUnitSummary getValue(KModuleDeploymentUnitSummary object) {
-                return object;
-            }
-            };
-        actionColum.setDataStoreName(COL_ID_ACTIONS);
+                new Column<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary>(
+                        cell ) {
+                    @Override
+                    public KModuleDeploymentUnitSummary getValue( KModuleDeploymentUnitSummary object ) {
+                        return object;
+                    }
+                };
+        actionColum.setDataStoreName( COL_ID_ACTIONS );
         return actionColum;
     }
 
@@ -362,9 +362,9 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                                     SafeHtmlBuilder sb ) {
                     String title = constants.Undeploy();
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant( new Button( title ) {{
+                    mysb.appendHtmlConstant( new SimplePanel( new Button( title ) {{
                         setSize( ButtonSize.EXTRA_SMALL );
-                    }}.getElement().toString() );
+                    }} ).getElement().getInnerHTML() );
                     sb.append( mysb.toSafeHtml() );
                 }
             };
@@ -400,15 +400,15 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                                     SafeHtmlBuilder sb ) {
                     if ( value.isActive() ) {
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new Button( constants.Deactivate() ) {{
+                        mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Deactivate() ) {{
                             setSize( ButtonSize.EXTRA_SMALL );
-                        }}.getElement().toString() );
+                        }} ).getElement().getInnerHTML() );
                         sb.append( mysb.toSafeHtml() );
                     } else {
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new Button( constants.Activate() ) {{
+                        mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Activate() ) {{
                             setSize( ButtonSize.EXTRA_SMALL );
-                        }}.getElement().toString() );
+                        }} ).getElement().getInnerHTML() );
                         sb.append( mysb.toSafeHtml() );
                     }
                 }

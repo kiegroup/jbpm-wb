@@ -35,6 +35,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
@@ -55,11 +56,11 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
         implements ProcessDocumentListPresenter.ProcessDocumentListView {
 
     private Constants constants = GWT.create( Constants.class );
-    public static final String COL_ID_DOCID ="documentId";
-    public static final String COL_ID_LASTMOD ="lastModified";
-    public static final String COL_ID_DOCSIZE ="docSize";
-    public static final String COL_ID_PATH ="Path";
-    public static final String COL_ID_ACTIONS ="Actions";
+    public static final String COL_ID_DOCID = "documentId";
+    public static final String COL_ID_LASTMOD = "lastModified";
+    public static final String COL_ID_DOCSIZE = "docSize";
+    public static final String COL_ID_PATH = "Path";
+    public static final String COL_ID_ACTIONS = "Actions";
 
     final String[] units = new String[]{ "B", "KB", "MB", "GB", "TB" };
 
@@ -69,13 +70,13 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
     public void init( final ProcessDocumentListPresenter presenter ) {
         List<String> bannedColumns = new ArrayList<String>();
 
-        bannedColumns.add(COL_ID_DOCID);
-        bannedColumns.add(COL_ID_ACTIONS);
+        bannedColumns.add( COL_ID_DOCID );
+        bannedColumns.add( COL_ID_ACTIONS );
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add(COL_ID_DOCID);
-        initColumns.add(COL_ID_LASTMOD);
-        initColumns.add(COL_ID_DOCSIZE);
-        initColumns.add(COL_ID_ACTIONS);
+        initColumns.add( COL_ID_DOCID );
+        initColumns.add( COL_ID_LASTMOD );
+        initColumns.add( COL_ID_DOCSIZE );
+        initColumns.add( COL_ID_ACTIONS );
 
         super.init( presenter, new GridGlobalPreferences( "DocumentGrid", initColumns, bannedColumns ) );
 
@@ -131,18 +132,18 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
     }
 
     @Override
-    public void initColumns(ExtendedPagedTable extendedPagedTable) {
+    public void initColumns( ExtendedPagedTable extendedPagedTable ) {
         Column documentId = initDocumentIdColumn();
         Column lastModifiedColumn = initDocumentLastModifiedColumn();
         Column sizeColumn = initDocumentSizeColumn();
         actionsColumn = initActionsColumn();
 
         List<ColumnMeta<DocumentSummary>> columnMetas = new ArrayList<ColumnMeta<DocumentSummary>>();
-        columnMetas.add(new ColumnMeta<DocumentSummary>(documentId, constants.Name()));
-        columnMetas.add(new ColumnMeta<DocumentSummary>(lastModifiedColumn, constants.Last_Modification()));
-        columnMetas.add(new ColumnMeta<DocumentSummary>(sizeColumn, constants.Size()));
-        columnMetas.add(new ColumnMeta<DocumentSummary>(actionsColumn, constants.Actions()));
-        extendedPagedTable.addColumns(columnMetas);
+        columnMetas.add( new ColumnMeta<DocumentSummary>( documentId, constants.Name() ) );
+        columnMetas.add( new ColumnMeta<DocumentSummary>( lastModifiedColumn, constants.Last_Modification() ) );
+        columnMetas.add( new ColumnMeta<DocumentSummary>( sizeColumn, constants.Size() ) );
+        columnMetas.add( new ColumnMeta<DocumentSummary>( actionsColumn, constants.Actions() ) );
+        extendedPagedTable.addColumns( columnMetas );
     }
 
     private Column initDocumentIdColumn() {
@@ -154,8 +155,8 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                 return object.getDocumentId();
             }
         };
-        documentId.setSortable(true);
-        documentId.setDataStoreName(COL_ID_DOCID);
+        documentId.setSortable( true );
+        documentId.setDataStoreName( COL_ID_DOCID );
 
         return documentId;
     }
@@ -169,8 +170,8 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                 return object.getDocumentLastModified().toString();
             }
         };
-        lastModifiedColumn.setSortable(true);
-         lastModifiedColumn.setDataStoreName(COL_ID_LASTMOD);
+        lastModifiedColumn.setSortable( true );
+        lastModifiedColumn.setDataStoreName( COL_ID_LASTMOD );
         return lastModifiedColumn;
     }
 
@@ -183,8 +184,8 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                 return readableFileSize( object.getDocumentSize() );
             }
         };
-        sizeColumn.setSortable(true);
-        sizeColumn.setDataStoreName(COL_ID_DOCSIZE);
+        sizeColumn.setSortable( true );
+        sizeColumn.setDataStoreName( COL_ID_DOCSIZE );
         return sizeColumn;
     }
 
@@ -206,8 +207,8 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                 return String.valueOf( object.getDocumentSize() );
             }
         };
-        pathColumn.setSortable(true);
-        pathColumn.setDataStoreName(COL_ID_PATH);
+        pathColumn.setSortable( true );
+        pathColumn.setDataStoreName( COL_ID_PATH );
         return pathColumn;
     }
 
@@ -231,7 +232,7 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                 return object;
             }
         };
-        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
+        actionsColumn.setDataStoreName( COL_ID_ACTIONS );
         return actionsColumn;
     }
 
@@ -253,13 +254,13 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                                     final DocumentSummary value,
                                     final SafeHtmlBuilder sb ) {
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant( new AnchorButton( ButtonType.DEFAULT ) {{
+                    mysb.appendHtmlConstant( new SimplePanel( new AnchorButton( ButtonType.DEFAULT ) {{
                         setText( constants.download() );
                         getElement().setPropertyString( "target", "_blank" );
                         setHref( value.getDocumentLink() );
                         setSize( ButtonSize.SMALL );
                         getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                    }}.getElement().toString() );
+                    }} ).getElement().getInnerHTML() );
                     sb.append( mysb.toSafeHtml() );
                 }
             };

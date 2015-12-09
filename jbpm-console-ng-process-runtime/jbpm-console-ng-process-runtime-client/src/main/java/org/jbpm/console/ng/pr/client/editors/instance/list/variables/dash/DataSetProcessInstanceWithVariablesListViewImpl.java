@@ -47,6 +47,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
@@ -120,10 +121,10 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
     public static final String VARIABLE_NAME = "varname";
     public static final String VARIABLE_VALUE = "varvalue";
 
-    public static final String COL_ID_SELECT ="Select";
-    public static final String COL_ID_ACTIONS ="Actions";
+    public static final String COL_ID_SELECT = "Select";
+    public static final String COL_ID_ACTIONS = "Actions";
 
-    private Constants constants = GWT.create(Constants.class);
+    private Constants constants = GWT.create( Constants.class );
 
     private List<ProcessInstanceSummary> selectedProcessInstances = new ArrayList<ProcessInstanceSummary>();
 
@@ -146,33 +147,33 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
 
     private void controlBulkOperations() {
         if ( selectedProcessInstances != null && selectedProcessInstances.size() > 0 ) {
-            bulkAbortNavLink.setEnabled(true);
-            bulkSignalNavLink.setEnabled(true);
+            bulkAbortNavLink.setEnabled( true );
+            bulkSignalNavLink.setEnabled( true );
         } else {
-            bulkAbortNavLink.setEnabled(false);
-            bulkSignalNavLink.setEnabled(false);
+            bulkAbortNavLink.setEnabled( false );
+            bulkSignalNavLink.setEnabled( false );
         }
     }
 
     @Override
     public void init( final DataSetProcessInstanceWithVariablesListPresenter presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(COL_ID_SELECT);
-        bannedColumns.add(COLUMN_PROCESSINSTANCEID);
-        bannedColumns.add(COLUMN_PROCESSNAME);
-        bannedColumns.add(COLUMN_PROCESSINSTANCEDESCRIPTION);
-        bannedColumns.add(COL_ID_ACTIONS);
+        bannedColumns.add( COL_ID_SELECT );
+        bannedColumns.add( COLUMN_PROCESSINSTANCEID );
+        bannedColumns.add( COLUMN_PROCESSNAME );
+        bannedColumns.add( COLUMN_PROCESSINSTANCEDESCRIPTION );
+        bannedColumns.add( COL_ID_ACTIONS );
         final List<String> initColumns = new ArrayList<String>();
-        initColumns.add(COL_ID_SELECT);
-        initColumns.add(COLUMN_PROCESSINSTANCEID);
-        initColumns.add(COLUMN_PROCESSNAME);
-        initColumns.add(COLUMN_PROCESSINSTANCEDESCRIPTION);
-        initColumns.add(COLUMN_PROCESSVERSION);
-        initColumns.add(COL_ID_ACTIONS);
+        initColumns.add( COL_ID_SELECT );
+        initColumns.add( COLUMN_PROCESSINSTANCEID );
+        initColumns.add( COLUMN_PROCESSNAME );
+        initColumns.add( COLUMN_PROCESSINSTANCEDESCRIPTION );
+        initColumns.add( COLUMN_PROCESSVERSION );
+        initColumns.add( COL_ID_ACTIONS );
 
         final Button button = new Button();
         button.setIcon( IconType.PLUS );
-        button.setSize(ButtonSize.SMALL);
+        button.setSize( ButtonSize.SMALL );
 
         button.addClickHandler( new ClickHandler() {
             public void onClick( ClickEvent event ) {
@@ -339,13 +340,16 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
                                    String caption ) {
         if ( caption != null ) {
             for ( ColumnMeta<ProcessInstanceSummary> colMet : columnMetas ) {
-                if ( caption.equals( colMet.getColumn().getDataStoreName() ) ) return true;
+                if ( caption.equals( colMet.getColumn().getDataStoreName() ) ) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
-    public void addDomainSpecifColumns(ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable, Set<String> columns) {
+    public void addDomainSpecifColumns( ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable,
+                                        Set<String> columns ) {
 
         extendedPagedTable.storeColumnToPreferences();
 
@@ -420,27 +424,27 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
                 add( bulkSignalNavLink );
             }} );
         }};
-        bulkAbortNavLink.setIcon(IconType.BAN);
-        bulkAbortNavLink.setIconFixedWidth(true);
-        bulkAbortNavLink.addClickHandler(new ClickHandler() {
+        bulkAbortNavLink.setIcon( IconType.BAN );
+        bulkAbortNavLink.setIconFixedWidth( true );
+        bulkAbortNavLink.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                presenter.bulkAbort(selectedProcessInstances);
+            public void onClick( ClickEvent event ) {
+                presenter.bulkAbort( selectedProcessInstances );
                 selectedProcessInstances.clear();
                 extendedPagedTable.redraw();
             }
-        });
+        } );
 
-        bulkSignalNavLink.setIcon(IconType.BELL);
-        bulkSignalNavLink.setIconFixedWidth(true);
-        bulkSignalNavLink.addClickHandler(new ClickHandler() {
+        bulkSignalNavLink.setIcon( IconType.BELL );
+        bulkSignalNavLink.setIconFixedWidth( true );
+        bulkSignalNavLink.addClickHandler( new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                presenter.bulkSignal(selectedProcessInstances);
+            public void onClick( ClickEvent event ) {
+                presenter.bulkSignal( selectedProcessInstances );
                 selectedProcessInstances.clear();
                 extendedPagedTable.redraw();
             }
-        });
+        } );
 
         extendedPagedTable.getRightActionsToolbar().add( bulkActions );
 
@@ -589,7 +593,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
                 return object;
             }
         };
-        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
+        actionsColumn.setDataStoreName( COL_ID_ACTIONS );
         return actionsColumn;
 
     }
@@ -606,7 +610,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
                 return selectedProcessInstances.contains( object );
             }
         };
-        checkColumn.setDataStoreName(COL_ID_SELECT);
+        checkColumn.setDataStoreName( COL_ID_SELECT );
         return checkColumn;
     }
 
@@ -679,10 +683,10 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
                                     SafeHtmlBuilder sb ) {
                     if ( value.getState() == ProcessInstance.STATE_ACTIVE ) {
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new Button( constants.Signal() ) {{
+                        mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Signal() ) {{
                             setSize( ButtonSize.SMALL );
                             getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                        }}.getElement().toString() );
+                        }} ).getElement().getInnerHTML() );
                         sb.append( mysb.toSafeHtml() );
                     }
                 }
@@ -718,12 +722,12 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         presenter.setAddingDefaultFilters( true );
         //Filter status Active
         states.add( Integer.valueOf( ProcessInstance.STATE_ACTIVE ) );
-        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states);
+        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states );
 
         //Filter status completed
         states = new ArrayList<Integer>();
         states.add( Integer.valueOf( ProcessInstance.STATE_COMPLETED ) );
-        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1", Constants.INSTANCE.Completed(), "Filter " + Constants.INSTANCE.Completed(), states);
+        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1", Constants.INSTANCE.Completed(), "Filter " + Constants.INSTANCE.Completed(), states );
 
         //Filter status completed
         states = new ArrayList<Integer>();

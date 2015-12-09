@@ -44,6 +44,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
@@ -87,7 +88,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     public static final String COLUMN_MESSAGE = "message";
     public static final String COLUMN_BUSINESSKEY = "businessKey";
 
-    public static final String COL_ID_ACTIONS ="Actions";
+    public static final String COL_ID_ACTIONS = "Actions";
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -112,13 +113,13 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     @Override
     public void init( final RequestListPresenter presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(COLUMN_ID);
+        bannedColumns.add( COLUMN_ID );
         bannedColumns.add( COLUMN_COMMANDNAME );
-        bannedColumns.add(COL_ID_ACTIONS);
+        bannedColumns.add( COL_ID_ACTIONS );
         final List<String> initColumns = new ArrayList<String>();
-        initColumns.add(COLUMN_ID);
-        initColumns.add(COLUMN_COMMANDNAME);
-        initColumns.add(COL_ID_ACTIONS);
+        initColumns.add( COLUMN_ID );
+        initColumns.add( COLUMN_COMMANDNAME );
+        initColumns.add( COL_ID_ACTIONS );
         final Button button = new Button();
         button.setIcon( IconType.PLUS );
         button.setSize( ButtonSize.SMALL );
@@ -148,7 +149,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                 FilterSettings tableSettings = createTableSettingsPrototype();
                 tableSettings.setKey( key );
                 dataSetEditorManager.showTableSettingsEditor( filterPagedTable, Constants.INSTANCE.New_JobList(), tableSettings, addNewGrid );
-
 
             }
         } );
@@ -361,7 +361,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                 return object;
             }
         };
-        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
+        actionsColumn.setDataStoreName( COL_ID_ACTIONS );
         return actionsColumn;
     }
 
@@ -381,10 +381,10 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                                     SafeHtmlBuilder sb ) {
                     if ( availableStatuses.contains( value.getStatus() ) ) {
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new Button( text ) {{
+                        mysb.appendHtmlConstant( new SimplePanel( new Button( text ) {{
                             setSize( ButtonSize.SMALL );
                             getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                        }}.getElement().toString() );
+                        }} ).getElement().getInnerHTML() );
                         sb.append( mysb.toSafeHtml() );
                     }
                 }
