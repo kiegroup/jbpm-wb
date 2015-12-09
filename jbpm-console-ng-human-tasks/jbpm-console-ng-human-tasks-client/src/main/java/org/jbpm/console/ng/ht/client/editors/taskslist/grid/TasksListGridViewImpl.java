@@ -28,7 +28,6 @@ import javax.inject.Inject;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
@@ -41,7 +40,6 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
@@ -51,6 +49,7 @@ import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractMultiGridView;
+import org.jbpm.console.ng.gc.client.util.ButtonActionCell;
 import org.jbpm.console.ng.gc.client.util.TaskUtils;
 import org.jbpm.console.ng.ht.client.editors.quicknewtask.QuickNewTaskPopup;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
@@ -493,118 +492,46 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
         selectionModel.setSelected( new TaskSummary( newTask.getNewTaskId(), newTask.getNewTaskName() ), true );
     }
 
-    protected class CompleteActionHasCell implements HasCell<TaskSummary, TaskSummary> {
+    protected class CompleteActionHasCell extends ButtonActionCell<TaskSummary> {
 
-        private ActionCell<TaskSummary> cell;
-
-        public CompleteActionHasCell( String text,
-                                      ActionCell.Delegate<TaskSummary> delegate ) {
-            cell = new ActionCell<TaskSummary>( text, delegate ) {
-                @Override
-                public void render( Context context,
-                                    TaskSummary value,
-                                    SafeHtmlBuilder sb ) {
-                    if ( value.getActualOwner() != null && value.getStatus().equals( "InProgress" ) ) {
-                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Complete() ) {{
-                            setSize( ButtonSize.EXTRA_SMALL );
-                        }} ).getElement().getInnerHTML() );
-                        sb.append( mysb.toSafeHtml() );
-                    }
-                }
-            };
+        public CompleteActionHasCell( final String text, final ActionCell.Delegate<TaskSummary> delegate ) {
+            super( text, delegate );
         }
 
         @Override
-        public Cell<TaskSummary> getCell() {
-            return cell;
-        }
-
-        @Override
-        public FieldUpdater<TaskSummary, TaskSummary> getFieldUpdater() {
-            return null;
-        }
-
-        @Override
-        public TaskSummary getValue( TaskSummary object ) {
-            return object;
+        public void render( final Cell.Context context, final TaskSummary value, final SafeHtmlBuilder sb ) {
+            if ( value.getActualOwner() != null && value.getStatus().equals( "InProgress" ) ) {
+                super.render( context, value, sb );
+            }
         }
     }
 
-    protected class ClaimActionHasCell implements HasCell<TaskSummary, TaskSummary> {
+    protected class ClaimActionHasCell extends ButtonActionCell<TaskSummary> {
 
-        private ActionCell<TaskSummary> cell;
-
-        public ClaimActionHasCell( String text,
-                                   ActionCell.Delegate<TaskSummary> delegate ) {
-            cell = new ActionCell<TaskSummary>( text, delegate ) {
-                @Override
-                public void render( Cell.Context context,
-                                    TaskSummary value,
-                                    SafeHtmlBuilder sb ) {
-                    if ( value.getStatus().equals( "Ready" ) ) {
-                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Claim() ) {{
-                            setSize( ButtonSize.EXTRA_SMALL );
-                        }} ).getElement().getInnerHTML() );
-                        sb.append( mysb.toSafeHtml() );
-                    }
-                }
-            };
+        public ClaimActionHasCell( final String text, final ActionCell.Delegate<TaskSummary> delegate ) {
+            super( text, delegate );
         }
 
         @Override
-        public Cell<TaskSummary> getCell() {
-            return cell;
-        }
-
-        @Override
-        public FieldUpdater<TaskSummary, TaskSummary> getFieldUpdater() {
-            return null;
-        }
-
-        @Override
-        public TaskSummary getValue( TaskSummary object ) {
-            return object;
+        public void render( final Cell.Context context, final TaskSummary value, final SafeHtmlBuilder sb ) {
+            if ( value.getStatus().equals( "Ready" ) ) {
+                super.render( context, value, sb );
+            }
         }
     }
 
-    protected class ReleaseActionHasCell implements HasCell<TaskSummary, TaskSummary> {
+    protected class ReleaseActionHasCell extends ButtonActionCell<TaskSummary> {
 
-        private ActionCell<TaskSummary> cell;
-
-        public ReleaseActionHasCell( String text,
-                                     ActionCell.Delegate<TaskSummary> delegate ) {
-            cell = new ActionCell<TaskSummary>( text, delegate ) {
-                @Override
-                public void render( Cell.Context context,
-                                    TaskSummary value,
-                                    SafeHtmlBuilder sb ) {
-                    if ( value.getActualOwner() != null && value.getActualOwner().equals( identity.getIdentifier() )
-                            && ( value.getStatus().equals( "Reserved" ) || value.getStatus().equals( "InProgress" ) ) ) {
-                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Release() ) {{
-                            setSize( ButtonSize.EXTRA_SMALL );
-                        }} ).getElement().getInnerHTML() );
-                        sb.append( mysb.toSafeHtml() );
-                    }
-                }
-            };
+        public ReleaseActionHasCell( final String text, final ActionCell.Delegate<TaskSummary> delegate ) {
+            super( text, delegate );
         }
 
         @Override
-        public Cell<TaskSummary> getCell() {
-            return cell;
-        }
-
-        @Override
-        public FieldUpdater<TaskSummary, TaskSummary> getFieldUpdater() {
-            return null;
-        }
-
-        @Override
-        public TaskSummary getValue( TaskSummary object ) {
-            return object;
+        public void render( final Cell.Context context, final TaskSummary value, final SafeHtmlBuilder sb ) {
+            if ( value.getActualOwner() != null && value.getActualOwner().equals( identity.getIdentifier() )
+                    && ( value.getStatus().equals( "Reserved" ) || value.getStatus().equals( "InProgress" ) ) ) {
+                super.render( context, value, sb );
+            }
         }
     }
 

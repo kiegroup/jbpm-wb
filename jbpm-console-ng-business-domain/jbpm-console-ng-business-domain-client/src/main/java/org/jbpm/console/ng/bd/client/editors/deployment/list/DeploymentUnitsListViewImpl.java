@@ -22,11 +22,8 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
-import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
@@ -34,18 +31,15 @@ import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jbpm.console.ng.bd.client.editors.deployment.newunit.NewDeploymentPopup;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
@@ -53,6 +47,7 @@ import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 import org.jbpm.console.ng.bd.model.events.DeployedUnitChangedEvent;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
+import org.jbpm.console.ng.gc.client.util.ButtonActionCell;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 
@@ -310,7 +305,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
     private Column<KModuleDeploymentUnitSummary, ?> actionsColumn() {
         List<HasCell<KModuleDeploymentUnitSummary, ?>> cells = new LinkedList<HasCell<KModuleDeploymentUnitSummary, ?>>();
 
-        cells.add( new ActivateDeactivateActionHasCell( constants.Activate(), new Delegate<KModuleDeploymentUnitSummary>() {
+        cells.add( new ActivateDeactivateActionHasCell( new Delegate<KModuleDeploymentUnitSummary>() {
             @Override
             public void execute( KModuleDeploymentUnitSummary unit ) {
 
@@ -319,7 +314,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
         } ) );
 
-        cells.add( new DeleteActionHasCell( constants.Undeploy(), new Delegate<KModuleDeploymentUnitSummary>() {
+        cells.add( new ButtonActionCell<KModuleDeploymentUnitSummary>( constants.Undeploy(), new Delegate<KModuleDeploymentUnitSummary>() {
             @Override
             public void execute( KModuleDeploymentUnitSummary unit ) {
 
@@ -348,87 +343,17 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
         presenter.refreshGrid();
     }
 
-    /* Is this generic enough ?*/
-    protected class DeleteActionHasCell implements HasCell<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> {
+    private class ActivateDeactivateActionHasCell extends ButtonActionCell<KModuleDeploymentUnitSummary> {
 
-        private ActionCell<KModuleDeploymentUnitSummary> cell;
-
-        public DeleteActionHasCell( final String text,
-                                    ActionCell.Delegate<KModuleDeploymentUnitSummary> delegate ) {
-            cell = new ActionCell<KModuleDeploymentUnitSummary>( text, delegate ) {
-                @Override
-                public void render( Cell.Context context,
-                                    KModuleDeploymentUnitSummary value,
-                                    SafeHtmlBuilder sb ) {
-                    String title = constants.Undeploy();
-                    SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant( new SimplePanel( new Button( title ) {{
-                        setSize( ButtonSize.EXTRA_SMALL );
-                    }} ).getElement().getInnerHTML() );
-                    sb.append( mysb.toSafeHtml() );
-                }
-            };
-
+        public ActivateDeactivateActionHasCell( final Delegate<KModuleDeploymentUnitSummary> delegate ) {
+            super( delegate );
         }
 
         @Override
-        public Cell<KModuleDeploymentUnitSummary> getCell() {
-            return cell;
+        public String getText( final KModuleDeploymentUnitSummary value ) {
+            return value.isActive() ? constants.Deactivate() : constants.Activate();
         }
 
-        @Override
-        public FieldUpdater<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> getFieldUpdater() {
-            return null;
-        }
-
-        @Override
-        public KModuleDeploymentUnitSummary getValue( KModuleDeploymentUnitSummary object ) {
-            return object;
-        }
-    }
-
-    private class ActivateDeactivateActionHasCell implements HasCell<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> {
-
-        private ActionCell<KModuleDeploymentUnitSummary> cell;
-
-        public ActivateDeactivateActionHasCell( String text,
-                                                Delegate<KModuleDeploymentUnitSummary> delegate ) {
-            cell = new ActionCell<KModuleDeploymentUnitSummary>( text, delegate ) {
-                @Override
-                public void render( Cell.Context context,
-                                    KModuleDeploymentUnitSummary value,
-                                    SafeHtmlBuilder sb ) {
-                    if ( value.isActive() ) {
-                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Deactivate() ) {{
-                            setSize( ButtonSize.EXTRA_SMALL );
-                        }} ).getElement().getInnerHTML() );
-                        sb.append( mysb.toSafeHtml() );
-                    } else {
-                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Activate() ) {{
-                            setSize( ButtonSize.EXTRA_SMALL );
-                        }} ).getElement().getInnerHTML() );
-                        sb.append( mysb.toSafeHtml() );
-                    }
-                }
-            };
-        }
-
-        @Override
-        public Cell<KModuleDeploymentUnitSummary> getCell() {
-            return cell;
-        }
-
-        @Override
-        public FieldUpdater<KModuleDeploymentUnitSummary, KModuleDeploymentUnitSummary> getFieldUpdater() {
-            return null;
-        }
-
-        @Override
-        public KModuleDeploymentUnitSummary getValue( KModuleDeploymentUnitSummary object ) {
-            return object;
-        }
     }
 
 }

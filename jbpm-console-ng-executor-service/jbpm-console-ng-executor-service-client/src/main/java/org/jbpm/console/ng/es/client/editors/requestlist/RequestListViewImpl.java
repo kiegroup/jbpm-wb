@@ -25,11 +25,9 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
@@ -38,13 +36,11 @@ import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
@@ -63,6 +59,7 @@ import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractMultiGridView;
+import org.jbpm.console.ng.gc.client.util.ButtonActionCell;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
@@ -365,46 +362,24 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         return actionsColumn;
     }
 
-    private class ActionHasCell implements HasCell<RequestSummary, RequestSummary> {
+    private class ActionHasCell extends ButtonActionCell<RequestSummary> {
 
         private final List<String> availableStatuses;
-        private ActionCell<RequestSummary> cell;
 
         public ActionHasCell( final String text,
                               List<String> availableStatusesList,
                               Delegate<RequestSummary> delegate ) {
+            super( text, delegate );
             this.availableStatuses = availableStatusesList;
-            cell = new ActionCell<RequestSummary>( text, delegate ) {
-                @Override
-                public void render( Context context,
-                                    RequestSummary value,
-                                    SafeHtmlBuilder sb ) {
-                    if ( availableStatuses.contains( value.getStatus() ) ) {
-                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new SimplePanel( new Button( text ) {{
-                            setSize( ButtonSize.SMALL );
-                            getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                        }} ).getElement().getInnerHTML() );
-                        sb.append( mysb.toSafeHtml() );
-                    }
-                }
-            };
         }
 
         @Override
-        public Cell<RequestSummary> getCell() {
-            return cell;
+        public void render(Cell.Context context, RequestSummary value, SafeHtmlBuilder sb) {
+            if ( availableStatuses.contains( value.getStatus() ) ) {
+                super.render(context, value, sb);
+            }
         }
 
-        @Override
-        public FieldUpdater<RequestSummary, RequestSummary> getFieldUpdater() {
-            return null;
-        }
-
-        @Override
-        public RequestSummary getValue( RequestSummary object ) {
-            return object;
-        }
     }
 
     public void initDefaultFilters( GridGlobalPreferences preferences,
