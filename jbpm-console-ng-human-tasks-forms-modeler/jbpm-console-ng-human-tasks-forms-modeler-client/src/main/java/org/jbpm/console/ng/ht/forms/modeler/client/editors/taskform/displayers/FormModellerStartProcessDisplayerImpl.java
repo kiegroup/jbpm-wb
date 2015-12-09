@@ -50,7 +50,6 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
     @Inject
     private FormRendererWidget formRenderer;
 
-    @Inject
     private Caller<FormModelerProcessStarterEntryPoint> renderContextServices;
 
     protected String action;
@@ -168,4 +167,9 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
         }
     }
 
+    @Inject
+    public void setRenderContextServices(Caller<FormModelerProcessStarterEntryPoint> renderContextServices){
+        this.renderContextServices = renderContextServices;
+        
+    }
 }

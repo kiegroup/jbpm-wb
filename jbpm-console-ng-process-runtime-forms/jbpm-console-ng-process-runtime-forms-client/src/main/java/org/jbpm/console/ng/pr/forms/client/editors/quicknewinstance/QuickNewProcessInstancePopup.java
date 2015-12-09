@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -32,6 +33,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
+
 import org.gwtbootstrap3.client.shared.event.ModalHiddenEvent;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenHandler;
 import org.gwtbootstrap3.client.ui.FormGroup;
@@ -368,5 +370,15 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
     public GenericFormDisplayer getCurrentDisplayer() {
         return currentDisplayer;
     }
+    
+    @Override
+    public Command getHideCommand() {
+        return new Command() {
 
+            @Override
+            public void execute() {
+                setVisible( false );
+            }
+        };
+    }
 }

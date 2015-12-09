@@ -30,8 +30,6 @@ import org.uberfire.mvp.Command;
 public interface GenericFormDisplayer<T extends ItemKey> {
     boolean supportsContent(String content);
 
-    void init(FormDisplayerConfig<T> config, Command onCloseCommand, Command onRefreshCommand, FormContentResizeListener formContentResizeListener);
-
     Panel getContainer();
 
     IsWidget getFooter();

@@ -21,8 +21,6 @@ import java.util.Map;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
-import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
@@ -39,9 +37,6 @@ import org.uberfire.ext.widgets.common.client.forms.SetFormParamsEvent;
  */
 @Dependent
 public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessFormDisplayer {
-
-    @Inject
-    private Caller<KieSessionEntryPoint> sessionServices;
 
     @Inject
     private PlaceManagerFormActivitySearcher placeManagerFormActivitySearcher;
