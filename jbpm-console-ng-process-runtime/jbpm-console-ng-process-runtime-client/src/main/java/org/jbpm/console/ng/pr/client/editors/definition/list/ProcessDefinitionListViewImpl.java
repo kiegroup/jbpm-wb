@@ -23,28 +23,22 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
-import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
+import org.jbpm.console.ng.gc.client.util.ButtonActionCell;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
@@ -221,7 +215,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         // actions (icons)
         List<HasCell<ProcessSummary, ?>> cells = new LinkedList<HasCell<ProcessSummary, ?>>();
 
-        cells.add( new StartActionHasCell( "Start process", new Delegate<ProcessSummary>() {
+        cells.add( new ButtonActionCell<ProcessSummary>( constants.Start(), new Delegate<ProcessSummary>() {
             @Override
             public void execute( ProcessSummary process ) {
                 presenter.openGenericForm( process.getProcessDefId(), process.getDeploymentId(), process.getProcessDefName() );
@@ -253,46 +247,6 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
                                                                          newProcessInstance.getNewProcessInstanceId(),
                                                                          newProcessInstance.getNewProcessDefId(), newProcessInstance.getProcessDefName(), newProcessInstance.getNewProcessInstanceStatus() ) );
 
-    }
-
-    /*
-     * Custom Action Columns for the Process Definition List
-     */
-    private class StartActionHasCell implements HasCell<ProcessSummary, ProcessSummary> {
-
-        private ActionCell<ProcessSummary> cell;
-
-        public StartActionHasCell( String text,
-                                   Delegate<ProcessSummary> delegate ) {
-            cell = new ActionCell<ProcessSummary>( text, delegate ) {
-                @Override
-                public void render( Cell.Context context,
-                                    ProcessSummary value,
-                                    SafeHtmlBuilder sb ) {
-
-                    SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Start() ) {{
-                        setSize( ButtonSize.SMALL );
-                    }} ).getElement().getInnerHTML() );
-                    sb.append( mysb.toSafeHtml() );
-                }
-            };
-        }
-
-        @Override
-        public Cell<ProcessSummary> getCell() {
-            return cell;
-        }
-
-        @Override
-        public FieldUpdater<ProcessSummary, ProcessSummary> getFieldUpdater() {
-            return null;
-        }
-
-        @Override
-        public ProcessSummary getValue( ProcessSummary object ) {
-            return object;
-        }
     }
 
 }

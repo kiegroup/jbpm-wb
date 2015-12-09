@@ -25,12 +25,9 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
-import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
@@ -41,12 +38,10 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
@@ -65,6 +60,7 @@ import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.console.ng.df.client.list.base.DataSetEditorManager;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractMultiGridView;
+import org.jbpm.console.ng.pr.client.editors.instance.list.ProcessInstanceSummaryActionCell;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
@@ -474,7 +470,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
     private Column initActionsColumn() {
         List<HasCell<ProcessInstanceSummary, ?>> cells = new LinkedList<HasCell<ProcessInstanceSummary, ?>>();
 
-        cells.add( new SignalActionHasCell( constants.Signal(), new Delegate<ProcessInstanceSummary>() {
+        cells.add(new ProcessInstanceSummaryActionCell( constants.Signal(), new Delegate<ProcessInstanceSummary>() {
             @Override
             public void execute( ProcessInstanceSummary processInstance ) {
 
@@ -485,7 +481,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
             }
         } ) );
 
-        cells.add( new AbortActionHasCell( constants.Abort(), new Delegate<ProcessInstanceSummary>() {
+        cells.add( new ProcessInstanceSummaryActionCell( constants.Abort(), new Delegate<ProcessInstanceSummary>() {
             @Override
             public void execute( ProcessInstanceSummary processInstance ) {
                 if ( Window.confirm( "Are you sure that you want to abort the process instance?" ) ) {
@@ -541,81 +537,6 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
         processInstanceSelected.fire( new ProcessInstanceSelectionEvent( event.getDeploymentId(),
                                                                          event.getProcessInstanceId(), event.getProcessDefId(),
                                                                          event.getProcessDefName(), event.getProcessInstanceStatus() ) );
-    }
-
-    private class AbortActionHasCell implements HasCell<ProcessInstanceSummary, ProcessInstanceSummary> {
-
-        private ActionCell<ProcessInstanceSummary> cell;
-
-        public AbortActionHasCell( String text,
-                                   Delegate<ProcessInstanceSummary> delegate ) {
-            cell = new ActionCell<ProcessInstanceSummary>( text, delegate ) {
-                @Override
-                public void render( Context context,
-                                    ProcessInstanceSummary value,
-                                    SafeHtmlBuilder sb ) {
-                    if ( value.getState() == ProcessInstance.STATE_ACTIVE ) {
-                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( "<a href='javascript:;' class='btn btn-default btn-sm' style='margin-right:5px;' title='" + constants.Abort() + "'>" + constants.Abort() + "</a>&nbsp;" );
-                        sb.append( mysb.toSafeHtml() );
-                    }
-                }
-            };
-        }
-
-        @Override
-        public Cell<ProcessInstanceSummary> getCell() {
-            return cell;
-        }
-
-        @Override
-        public FieldUpdater<ProcessInstanceSummary, ProcessInstanceSummary> getFieldUpdater() {
-            return null;
-        }
-
-        @Override
-        public ProcessInstanceSummary getValue( ProcessInstanceSummary object ) {
-            return object;
-        }
-    }
-
-    private class SignalActionHasCell implements HasCell<ProcessInstanceSummary, ProcessInstanceSummary> {
-
-        private ActionCell<ProcessInstanceSummary> cell;
-
-        public SignalActionHasCell( String text,
-                                    Delegate<ProcessInstanceSummary> delegate ) {
-            cell = new ActionCell<ProcessInstanceSummary>( text, delegate ) {
-                @Override
-                public void render( Context context,
-                                    ProcessInstanceSummary value,
-                                    SafeHtmlBuilder sb ) {
-                    if ( value.getState() == ProcessInstance.STATE_ACTIVE ) {
-                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Signal() ) {{
-                            setSize( ButtonSize.SMALL );
-                            getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                        }} ).getElement().getInnerHTML() );
-                        sb.append( mysb.toSafeHtml() );
-                    }
-                }
-            };
-        }
-
-        @Override
-        public Cell<ProcessInstanceSummary> getCell() {
-            return cell;
-        }
-
-        @Override
-        public FieldUpdater<ProcessInstanceSummary, ProcessInstanceSummary> getFieldUpdater() {
-            return null;
-        }
-
-        @Override
-        public ProcessInstanceSummary getValue( ProcessInstanceSummary object ) {
-            return object;
-        }
     }
 
     public void formClosed( @Observes BeforeClosePlaceEvent closed ) {
