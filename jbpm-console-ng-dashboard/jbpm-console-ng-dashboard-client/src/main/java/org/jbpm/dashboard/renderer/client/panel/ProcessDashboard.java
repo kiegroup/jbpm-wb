@@ -22,46 +22,83 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.Callback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.client.DataSetClientServices;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.group.DataSetGroup;
 import org.dashbuilder.dataset.group.Interval;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.client.AbstractDisplayer;
 import org.dashbuilder.displayer.client.AbstractDisplayerListener;
+import org.dashbuilder.displayer.client.DataSetHandlerImpl;
 import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.displayer.client.DisplayerCoordinator;
-import org.dashbuilder.displayer.client.DisplayerHelper;
 import org.dashbuilder.displayer.client.DisplayerListener;
-import org.dashbuilder.displayer.json.DisplayerSettingsJSONMarshaller;
+import org.dashbuilder.displayer.client.DisplayerLocator;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
+import org.dashbuilder.renderer.client.table.TableDisplayer;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.dashboard.renderer.client.panel.events.ProcessDashboardFocusEvent;
 import org.jbpm.dashboard.renderer.client.panel.events.TaskDashboardFocusEvent;
 import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
-import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
-import org.jbpm.dashboard.renderer.client.panel.widgets.MetricDisplayerExt;
+import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardI18n;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
-import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessTableDisplayer;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.mvp.Command;
 
 import static org.jbpm.dashboard.renderer.model.DashboardData.*;
-import static org.jbpm.dashboard.renderer.client.panel.DashboardKpis.*;
 import static org.uberfire.commons.validation.PortablePreconditions.*;
 
 @Dependent
-public class ProcessDashboard implements ProcessBreadCrumb.Listener, IsWidget {
+public class ProcessDashboard implements IsWidget {
 
-    protected ProcessDashboardView view;
+    public interface View extends IsWidget {
+
+        void init(ProcessDashboard presenter,
+                  Displayer totalMetric,
+                  Displayer activeMetric,
+                  Displayer pendingMetric,
+                  Displayer suspendedMetric,
+                  Displayer abortedMetric,
+                  Displayer completedMetric,
+                  Displayer processesByType,
+                  Displayer processesByUser,
+                  Displayer processesByStartDate,
+                  Displayer processesByEndDate,
+                  Displayer processesByRunningTime,
+                  Displayer processesByVersion,
+                  Displayer processesTable);
+
+        void showBreadCrumb(String processName);
+
+        void hideBreadCrumb();
+
+        void setHeaderText(String text);
+
+        void showLoading();
+
+        void hideLoading();
+
+        void showDashboard();
+
+        void showInstances();
+
+        DashboardI18n getI18nService();
+    }
+
+    protected View view;
+    protected ProcessBreadCrumb processBreadCrumb;
+    protected DashboardFactory dashboardFactory;
+    protected DataSetClientServices dataSetClientServices;
+    protected DisplayerLocator displayerLocator;
     protected DisplayerCoordinator displayerCoordinator;
-    protected DisplayerSettingsJSONMarshaller jsonMarshaller;
     protected PlaceManager placeManager;
     protected Event<ProcessInstanceSelectionEvent> instanceSelectionEvent;
     protected Event<ProcessDashboardFocusEvent> processDashboardFocusEvent;
+    protected DashboardI18n i18n;
 
     protected Displayer totalMetric;
     protected Displayer activeMetric;
@@ -81,18 +118,26 @@ public class ProcessDashboard implements ProcessBreadCrumb.Listener, IsWidget {
     protected String selectedProcess = null;
     protected List<Displayer> metricsGroup = new ArrayList<Displayer>();
     protected List<Displayer> chartsGroup = new ArrayList<Displayer>();
+    protected String totalProcessesTitle;
 
     @Inject
-    public ProcessDashboard(final ProcessDashboardView view,
+    public ProcessDashboard(final View view,
+                            final ProcessBreadCrumb processBreadCrumb,
+                            final DashboardFactory dashboardFactory,
+                            final DataSetClientServices dataSetClientServices,
+                            final DisplayerLocator displayerLocator,
                             final DisplayerCoordinator displayerCoordinator,
-                            final DisplayerSettingsJSONMarshaller jsonMarshaller,
                             final PlaceManager placeManager,
                             final Event<ProcessInstanceSelectionEvent> instanceSelectionEvent,
                             final Event<ProcessDashboardFocusEvent> processDashboardFocusEvent) {
 
         this.view = view;
+        this.i18n = view.getI18nService();
+        this.processBreadCrumb = processBreadCrumb;
+        this.dashboardFactory = dashboardFactory;
+        this.dataSetClientServices = dataSetClientServices;
+        this.displayerLocator = displayerLocator;
         this.displayerCoordinator = displayerCoordinator;
-        this.jsonMarshaller = jsonMarshaller;
         this.placeManager = placeManager;
         this.instanceSelectionEvent = instanceSelectionEvent;
         this.processDashboardFocusEvent = processDashboardFocusEvent;
@@ -101,22 +146,31 @@ public class ProcessDashboard implements ProcessBreadCrumb.Listener, IsWidget {
     }
 
     protected void init() {
+        processBreadCrumb.setOnRootSelectedCommand(new Command() {
+            public void execute() {
+                resetProcessBreadcrumb();
+            }
+        });
+
         view.showLoading();
 
+        DisplayerSettings totalProcesses = DashboardKpis.processTotal(i18n);
+        totalProcessesTitle = totalProcesses.getTitle();
+
         view.init(this,
-                totalMetric = createMetricDisplayer(PROCESSES_TOTAL),
-                activeMetric = createMetricDisplayer(PROCESSES_ACTIVE),
-                pendingMetric = createMetricDisplayer(PROCESSES_PENDING),
-                suspendedMetric = createMetricDisplayer(PROCESSES_SUSPENDED),
-                abortedMetric = createMetricDisplayer(PROCESSES_ABORTED),
-                completedMetric = createMetricDisplayer(PROCESSES_COMPLETED),
-                processesByType = createDisplayer(PROCESSES_BY_TYPE),
-                processesByUser = createDisplayer(PROCESSES_BY_USER),
-                processesByStartDate = createDisplayer(PROCESSES_BY_START_DATE),
-                processesByEndDate = createDisplayer(PROCESSES_BY_END_DATE),
-                processesByRunningTime = createDisplayer(PROCESSES_BY_RUNNING_TIME),
-                processesByVersion = createDisplayer(PROCESSES_BY_VERSION),
-                processesTable = createTableDisplayer(PROCESSES_TABLE));
+                totalMetric = createMetricDisplayer(totalProcesses),
+                activeMetric = createMetricDisplayer(DashboardKpis.processesActive(i18n)),
+                pendingMetric = createMetricDisplayer(DashboardKpis.processesPending(i18n)),
+                suspendedMetric = createMetricDisplayer(DashboardKpis.processesSuspended(i18n)),
+                abortedMetric = createMetricDisplayer(DashboardKpis.processesAborted(i18n)),
+                completedMetric = createMetricDisplayer(DashboardKpis.processesCompleted(i18n)),
+                processesByType = createDisplayer(DashboardKpis.processesByType(i18n)),
+                processesByUser = createDisplayer(DashboardKpis.processesByUser(i18n)),
+                processesByStartDate = createDisplayer(DashboardKpis.processesByStartDate(i18n)),
+                processesByEndDate = createDisplayer(DashboardKpis.processesByEndDate(i18n)),
+                processesByRunningTime = createDisplayer(DashboardKpis.processesByRunningTime(i18n)),
+                processesByVersion = createDisplayer(DashboardKpis.processesByVersion(i18n)),
+                processesTable = createTableDisplayer(DashboardKpis.processesTable(i18n)));
 
         metricsGroup.add(totalMetric);
         metricsGroup.add(activeMetric);
@@ -138,44 +192,114 @@ public class ProcessDashboard implements ProcessBreadCrumb.Listener, IsWidget {
         displayerCoordinator.addNotificationVeto(metricsGroup);
         displayerCoordinator.addListener(dashboardListener);
 
-        displayerCoordinator.drawAll(new Callback() {
-            @Override public void onFailure(Object o) {
-                view.hideLoading();
-            }
-
-            @Override public void onSuccess(Object o) {
-                view.hideLoading();
-            }
-        });
+        displayerCoordinator.drawAll(
+                // On success
+                new Command() {
+                    public void execute() {
+                        view.hideLoading();
+                    }
+                },
+                // On Failure
+                new Command() {
+                    public void execute() {
+                        view.hideLoading();
+                    }
+                }
+        );
     }
 
     public Widget asWidget() {
         return view.asWidget();
     }
 
-    @Override
-    public void rootSelected() {
-        ((AbstractDisplayer) processesByType).filterReset();
-        ((AbstractDisplayer) processesByRunningTime).filterReset();
-        processesByType.redraw();
-        processesByRunningTime.redraw();
-        view.hideBreadCrumb();
+    public ProcessBreadCrumb getProcessBreadCrumb() {
+        return processBreadCrumb;
+    }
+
+    public Displayer getTotalMetric() {
+        return totalMetric;
+    }
+
+    public Displayer getActiveMetric() {
+        return activeMetric;
+    }
+
+    public Displayer getPendingMetric() {
+        return pendingMetric;
+    }
+
+    public Displayer getSuspendedMetric() {
+        return suspendedMetric;
+    }
+
+    public Displayer getAbortedMetric() {
+        return abortedMetric;
+    }
+
+    public Displayer getCompletedMetric() {
+        return completedMetric;
+    }
+
+    public Displayer getProcessesByType() {
+        return processesByType;
+    }
+
+    public Displayer getProcessesByUser() {
+        return processesByUser;
+    }
+
+    public Displayer getProcessesByStartDate() {
+        return processesByStartDate;
+    }
+
+    public Displayer getProcessesByEndDate() {
+        return processesByEndDate;
+    }
+
+    public Displayer getProcessesByRunningTime() {
+        return processesByRunningTime;
+    }
+
+    public Displayer getProcessesByVersion() {
+        return processesByVersion;
+    }
+
+    public Displayer getProcessesTable() {
+        return processesTable;
+    }
+
+    public MetricDisplayer getSelectedMetric() {
+        return selectedMetric;
+    }
+
+    public String getSelectedProcess() {
+        return selectedProcess;
     }
 
     public Displayer createMetricDisplayer(DisplayerSettings settings) {
         checkNotNull("displayerSettings", settings);
-        return new MetricDisplayerExt(settings);
+        MetricDisplayer metricDisplayer = dashboardFactory.createMetricDisplayer();
+        metricDisplayer.setDisplayerSettings(settings);
+        metricDisplayer.setDataSetHandler(new DataSetHandlerImpl(dataSetClientServices, settings.getDataSetLookup()));
+        return metricDisplayer;
     }
 
     public Displayer createDisplayer(DisplayerSettings settings) {
         checkNotNull("displayerSettings", settings);
-        return DisplayerHelper.lookupDisplayer(settings);
+        return displayerLocator.lookupDisplayer(settings);
     }
 
     public Displayer createTableDisplayer(DisplayerSettings settings) {
         checkNotNull("displayerSettings", settings);
-        ProcessTableDisplayer tableDisplayer = new ProcessTableDisplayer(settings, this);
+        final TableDisplayer tableDisplayer = dashboardFactory.createTableDisplayer();
+        tableDisplayer.setDisplayerSettings(settings);
+        tableDisplayer.setDataSetHandler(new DataSetHandlerImpl(dataSetClientServices, settings.getDataSetLookup()));
         tableDisplayer.addFormatter(COLUMN_PROCESS_DURATION, new DurationFormatter(COLUMN_PROCESS_START_DATE, COLUMN_PROCESS_END_DATE));
+        tableDisplayer.setOnCellSelectedCommand(new Command() {
+            public void execute() {
+                tableCellSelected(tableDisplayer.getSelectedCellColumn(), tableDisplayer.getSelectedCellRow());
+            }
+        });
         return tableDisplayer;
     }
 
@@ -196,11 +320,6 @@ public class ProcessDashboard implements ProcessBreadCrumb.Listener, IsWidget {
 
             // Update the header text
             updateHeaderText();
-
-            // Update the selected metric look&feel
-            DisplayerSettings clone = selectedMetric.getDisplayerSettings().cloneInstance();
-            clone.setChartBackgroundColor("2491C8");
-            selectedMetric.applySettings(clone);
         }
         else {
             selectedMetric = null;
@@ -220,27 +339,44 @@ public class ProcessDashboard implements ProcessBreadCrumb.Listener, IsWidget {
         view.hideBreadCrumb();
     }
 
+    public void resetProcessBreadcrumb() {
+        ((AbstractDisplayer) processesByType).filterReset();
+        ((AbstractDisplayer) processesByRunningTime).filterReset();
+        processesByType.redraw();
+        processesByRunningTime.redraw();
+        view.hideBreadCrumb();
+    }
+
     public void showBlankDashboard() {
         // TODO
     }
 
     public void updateHeaderText() {
         if (selectedProcess == null) {
-            String total = DashboardKpis.PROCESSES_TOTAL.getTitle();
             String selected = selectedMetric != null ? selectedMetric.getDisplayerSettings().getTitle() : null;
-            if (selected == null || total.equals(selected)) {
-                view.setHeaderText(DashboardConstants.INSTANCE.allProcesses());
+            if (selected == null || totalProcessesTitle.equals(selected)) {
+                view.setHeaderText(i18n.allProcesses());
             } else {
                 view.setHeaderText(selected);
             }
         } else {
             String status = "";
-            if (activeMetric == selectedMetric) status = DashboardConstants.INSTANCE.processStatusActive();
-            else if (pendingMetric == selectedMetric) status = DashboardConstants.INSTANCE.processStatusPending();
-            else if (suspendedMetric == selectedMetric) status = DashboardConstants.INSTANCE.processStatusSuspended();
-            else if (abortedMetric == selectedMetric) status = DashboardConstants.INSTANCE.processStatusAborted();
-            else if (completedMetric == selectedMetric) status = DashboardConstants.INSTANCE.processStatusCompleted();
-            view.setHeaderText(DashboardConstants.INSTANCE.selectedProcessStatusHeader(status, selectedProcess));
+            if (activeMetric == selectedMetric) {
+                status = i18n.processStatusActive();
+            }
+            else if (pendingMetric == selectedMetric) {
+                status = i18n.processStatusPending();
+            }
+            else if (suspendedMetric == selectedMetric) {
+                status = i18n.processStatusSuspended();
+            }
+            else if (abortedMetric == selectedMetric) {
+                status = i18n.processStatusAborted();
+            }
+            else if (completedMetric == selectedMetric) {
+                status = i18n.processStatusCompleted();
+            }
+            view.setHeaderText(i18n.selectedProcessStatusHeader(status, selectedProcess));
         }
     }
 
@@ -249,10 +385,10 @@ public class ProcessDashboard implements ProcessBreadCrumb.Listener, IsWidget {
     public void tableCellSelected(String columnId, int rowIndex) {
         DataSet ds = processesTable.getDataSetHandler().getLastDataSet();
         String deploymentId = ds.getValueAt(rowIndex, COLUMN_PROCESS_EXTERNAL_ID).toString();
-        Long processInstanceId = Long.parseLong(ds.getValueAt(rowIndex, COLUMN_PROCESS_INSTANCE_ID).toString());
+        Long processInstanceId = Double.valueOf(ds.getValueAt(rowIndex, COLUMN_PROCESS_INSTANCE_ID).toString()).longValue();
         String processDefId = ds.getValueAt(rowIndex, COLUMN_PROCESS_ID).toString();
         String processDefName = ds.getValueAt(rowIndex, COLUMN_PROCESS_NAME).toString();
-        Integer processInstanceStatus = Integer.parseInt(ds.getValueAt(rowIndex, COLUMN_PROCESS_STATUS).toString());
+        Integer processInstanceStatus = Double.valueOf(ds.getValueAt(rowIndex, COLUMN_PROCESS_STATUS).toString()).intValue();
 
         openProcessDetailsScreen();
 
@@ -263,6 +399,7 @@ public class ProcessDashboard implements ProcessBreadCrumb.Listener, IsWidget {
     }
 
     public void showDashboard() {
+        view.showDashboard();
         processDashboardFocusEvent.fire(new ProcessDashboardFocusEvent());
         closeProcessDetailsScreen();
     }
@@ -283,6 +420,7 @@ public class ProcessDashboard implements ProcessBreadCrumb.Listener, IsWidget {
     }
 
     public void showProcessesTable() {
+        view.showInstances();
         processesTable.redraw();
         processDashboardFocusEvent.fire(new ProcessDashboardFocusEvent());
     }

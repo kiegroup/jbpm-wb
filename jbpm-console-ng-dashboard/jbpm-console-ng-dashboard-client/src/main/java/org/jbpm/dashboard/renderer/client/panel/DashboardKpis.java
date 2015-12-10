@@ -20,6 +20,7 @@ import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.DisplayerSettingsFactory;
 import org.dashbuilder.renderer.client.DefaultRenderer;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
+import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardI18n;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.dashbuilder.dataset.group.AggregateFunctionType.*;
@@ -29,541 +30,575 @@ import static org.jbpm.dashboard.renderer.model.DashboardData.*;
 
 public class DashboardKpis {
 
-    public static final int METRIC_WIDTH = 200;
-    public static final int METRIC_HEIGHT = 90;
-    public static final int CHART_WIDTH = 400;
-    public static final int CHART_HEIGHT = 200;
-    public static final String NO_DECIMALS = "#,##0";
-    public static final String BG_COLOR = "FFFFFF";
+        public static final int METRIC_WIDTH = 200;
+        public static final int METRIC_HEIGHT = 90;
+        public static final int CHART_WIDTH = 400;
+        public static final int CHART_HEIGHT = 200;
+        public static final String NO_DECIMALS = "#,##0";
+        public static final String BG_COLOR = "FFFFFF";
 
-    public static final DisplayerSettings PROCESSES_TABLE = DisplayerSettingsFactory
-            .newTableSettings()
-            .uuid(DashboardConstants.INSTANCE.processInstances())
-            .title(DashboardConstants.INSTANCE.processInstances())
-            .dataset(DATASET_PROCESS_INSTANCES)
-            .column(COLUMN_PROCESS_INSTANCE_ID).format(DashboardConstants.INSTANCE.processTableInstanceId(), NO_DECIMALS)
-            .column(COLUMN_PROCESS_EXTERNAL_ID).format(DashboardConstants.INSTANCE.processTableDeploymentId())
-            .column(COLUMN_PROCESS_ID).format(DashboardConstants.INSTANCE.processTableProcessId())
-            .column(COLUMN_PROCESS_NAME).format(DashboardConstants.INSTANCE.processTableName())
-            .column(COLUMN_PROCESS_USER_ID).format(DashboardConstants.INSTANCE.processTableInitiator())
-            .column(COLUMN_PROCESS_STATUS).format(DashboardConstants.INSTANCE.processTableStatus()).expression(processStatusExpression())
-            .column(COLUMN_PROCESS_VERSION).format(DashboardConstants.INSTANCE.processTableVersion())
-            .column(COLUMN_PROCESS_START_DATE).format(DashboardConstants.INSTANCE.processTableStartDate(), "MMM dd, yyyy HH:mm")
-            .column(COLUMN_PROCESS_END_DATE).format(DashboardConstants.INSTANCE.processTableEndDate(), "MMM dd, yyyy HH:mm")
-            .column(COLUMN_PROCESS_DURATION).format(DashboardConstants.INSTANCE.processTableDuration())
-            .tablePageSize(10)
-            .tableOrderEnabled(true)
-            .tableOrderDefault(COLUMN_PROCESS_START_DATE, DESCENDING)
-            .tableWidth(1400)
-            .renderer(DefaultRenderer.UUID)
-            .filterOn(true, false, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings processesTable(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newTableSettings()
+                        .uuid(i18n.processInstances())
+                        .title(i18n.processInstances())
+                        .dataset(DATASET_PROCESS_INSTANCES)
+                        .column(COLUMN_PROCESS_INSTANCE_ID).format(i18n.processTableInstanceId(), NO_DECIMALS)
+                        .column(COLUMN_PROCESS_EXTERNAL_ID).format(i18n.processTableDeploymentId())
+                        .column(COLUMN_PROCESS_ID).format(i18n.processTableProcessId())
+                        .column(COLUMN_PROCESS_NAME).format(i18n.processTableName())
+                        .column(COLUMN_PROCESS_USER_ID).format(i18n.processTableInitiator())
+                        .column(COLUMN_PROCESS_STATUS).format(i18n.processTableStatus()).expression(processStatusExpression(i18n))
+                        .column(COLUMN_PROCESS_VERSION).format(i18n.processTableVersion())
+                        .column(COLUMN_PROCESS_START_DATE).format(i18n.processTableStartDate(), "MMM dd, yyyy HH:mm")
+                        .column(COLUMN_PROCESS_END_DATE).format(i18n.processTableEndDate(), "MMM dd, yyyy HH:mm")
+                        .column(COLUMN_PROCESS_DURATION).format(i18n.processTableDuration())
+                        .tablePageSize(10)
+                        .tableOrderEnabled(true)
+                        .tableOrderDefault(COLUMN_PROCESS_START_DATE, DESCENDING)
+                        .tableWidth(1400)
+                        .renderer(DefaultRenderer.UUID)
+                        .filterOn(true, false, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static String processStatusExpression() {
-        return "['" + DashboardConstants.INSTANCE.processStatusPending() + "'," +
-                "'" + DashboardConstants.INSTANCE.processStatusActive() + "'," +
-                "'" + DashboardConstants.INSTANCE.processStatusCompleted() + "'," +
-                "'" + DashboardConstants.INSTANCE.processStatusAborted() + "'," +
-                "'" + DashboardConstants.INSTANCE.processStatusSuspended() + "'][value]";
-    }
+        public static String processStatusExpression(DashboardI18n i18n) {
+                return "['" + i18n.processStatusPending() + "'," +
+                        "'" + i18n.processStatusActive() + "'," +
+                        "'" + i18n.processStatusCompleted() + "'," +
+                        "'" + i18n.processStatusAborted() + "'," +
+                        "'" + i18n.processStatusSuspended() + "'][value]";
+        }
 
-    public static final DisplayerSettings PROCESSES_TOTAL = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.totalProcesses())
-            .titleVisible(true)
-            .dataset(DATASET_PROCESS_INSTANCES)
-            .column(COUNT, "Processes")
-            .format(DashboardConstants.INSTANCE.processes(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings processTotal(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.totalProcesses())
+                        .titleVisible(true)
+                        .dataset(DATASET_PROCESS_INSTANCES)
+                        .filter(notNull(COLUMN_PROCESS_ID))
+                        .column(COUNT, "Processes")
+                        .format(i18n.processes(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings PROCESSES_ACTIVE = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.activeProcesses())
-            .titleVisible(true)
-            .dataset(DATASET_PROCESS_INSTANCES)
-            .filter(COLUMN_PROCESS_STATUS, equalsTo(1))
-            .column(COUNT, "Processes")
-            .format(DashboardConstants.INSTANCE.activeProcesses(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings processesActive(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.activeProcesses())
+                        .titleVisible(true)
+                        .dataset(DATASET_PROCESS_INSTANCES)
+                        .filter(COLUMN_PROCESS_STATUS, equalsTo(1))
+                        .column(COUNT, "Processes")
+                        .format(i18n.activeProcesses(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings PROCESSES_PENDING = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.pendingProcesses())
-            .titleVisible(true)
-            .dataset(DATASET_PROCESS_INSTANCES)
-            .filter(COLUMN_PROCESS_STATUS, equalsTo(0))
-            .column(COUNT, "Processes")
-            .format(DashboardConstants.INSTANCE.pendingProcesses(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings processesPending(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.pendingProcesses())
+                        .titleVisible(true)
+                        .dataset(DATASET_PROCESS_INSTANCES)
+                        .filter(COLUMN_PROCESS_STATUS, equalsTo(0))
+                        .column(COUNT, "Processes")
+                        .format(i18n.pendingProcesses(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings PROCESSES_SUSPENDED = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.suspendedProcesses())
-            .titleVisible(true)
-            .dataset(DATASET_PROCESS_INSTANCES)
-            .filter(COLUMN_PROCESS_STATUS, equalsTo(4))
-            .column(COUNT, "Processes")
-            .format(DashboardConstants.INSTANCE.suspendedProcesses(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings processesSuspended(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.suspendedProcesses())
+                        .titleVisible(true)
+                        .dataset(DATASET_PROCESS_INSTANCES)
+                        .filter(COLUMN_PROCESS_STATUS, equalsTo(4))
+                        .column(COUNT, "Processes")
+                        .format(i18n.suspendedProcesses(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings PROCESSES_ABORTED = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.abortedProcesses())
-            .titleVisible(true)
-            .dataset(DATASET_PROCESS_INSTANCES)
-            .filter(COLUMN_PROCESS_STATUS, equalsTo(3))
-            .column(COUNT, "Processes")
-            .format(DashboardConstants.INSTANCE.abortedProcesses(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings processesAborted(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.abortedProcesses())
+                        .titleVisible(true)
+                        .dataset(DATASET_PROCESS_INSTANCES)
+                        .filter(COLUMN_PROCESS_STATUS, equalsTo(3))
+                        .column(COUNT, "Processes")
+                        .format(i18n.abortedProcesses(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings PROCESSES_COMPLETED = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.completedProcesses())
-            .titleVisible(true)
-            .dataset(DATASET_PROCESS_INSTANCES)
-            .filter(COLUMN_PROCESS_STATUS, equalsTo(2))
-            .column(COUNT, "Processes")
-            .format(DashboardConstants.INSTANCE.completedProcesses(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings processesCompleted(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.completedProcesses())
+                        .titleVisible(true)
+                        .dataset(DATASET_PROCESS_INSTANCES)
+                        .filter(COLUMN_PROCESS_STATUS, equalsTo(2))
+                        .column(COUNT, "Processes")
+                        .format(i18n.completedProcesses(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings PROCESSES_BY_TYPE = DisplayerSettingsFactory
-            .newPieChartSettings()
-            .title(DashboardConstants.INSTANCE.processesByType())
-            .dataset(DATASET_PROCESS_INSTANCES)
-            .group(COLUMN_PROCESS_NAME)
-            .column(COLUMN_PROCESS_NAME).format(DashboardConstants.INSTANCE.process())
-            .column(COUNT, "Processes").format(DashboardConstants.INSTANCE.processes(), NO_DECIMALS)
-            .width(CHART_WIDTH).height(CHART_HEIGHT)
-            .legendOn("right")
-            .margins(10, 10, 10, 10)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings processesByType(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newPieChartSettings()
+                        .title(i18n.processesByType())
+                        .dataset(DATASET_PROCESS_INSTANCES)
+                        .group(COLUMN_PROCESS_NAME)
+                        .column(COLUMN_PROCESS_NAME).format(i18n.process())
+                        .column(COUNT, "Processes").format(i18n.processes(), NO_DECIMALS)
+                        .width(CHART_WIDTH).height(CHART_HEIGHT)
+                        .legendOn("right")
+                        .margins(10, 10, 10, 10)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings PROCESSES_BY_VERSION = DisplayerSettingsFactory
-            .newPieChartSettings()
-            .title(DashboardConstants.INSTANCE.processesByVersion())
-            .dataset(DATASET_PROCESS_INSTANCES)
-            .group(COLUMN_PROCESS_VERSION)
-            .column(COLUMN_PROCESS_VERSION).format(DashboardConstants.INSTANCE.processVersion()).expression("'Version ' + value")
-            .column(COUNT, "Processes").format(DashboardConstants.INSTANCE.processes(), NO_DECIMALS)
-            .subType_Donut()
-            .width(CHART_WIDTH).height(CHART_HEIGHT)
-            .legendOn("right")
-            .margins(10, 10, 10, 10)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings processesByVersion(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newPieChartSettings()
+                        .title(i18n.processesByVersion())
+                        .dataset(DATASET_PROCESS_INSTANCES)
+                        .group(COLUMN_PROCESS_VERSION)
+                        .column(COLUMN_PROCESS_VERSION).format(i18n.processVersion()).expression("'Version ' + value")
+                        .column(COUNT, "Processes").format(i18n.processes(), NO_DECIMALS)
+                        .subType_Donut()
+                        .width(CHART_WIDTH).height(CHART_HEIGHT)
+                        .legendOn("right")
+                        .margins(10, 10, 10, 10)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings PROCESSES_BY_RUNNING_TIME = DisplayerSettingsFactory
-            .newBubbleChartSettings()
-            .uuid(DashboardConstants.INSTANCE.processesByRunningTime())
-            .title(DashboardConstants.INSTANCE.processesByRunningTime())
-            .dataset(DATASET_PROCESS_INSTANCES)
-            .filter(notNull(COLUMN_PROCESS_DURATION))
-            .group(COLUMN_PROCESS_NAME)
-            .column(COLUMN_PROCESS_NAME).format(DashboardConstants.INSTANCE.process())
-            .column(COUNT, "Processes").format(DashboardConstants.INSTANCE.processes(), NO_DECIMALS)
-            .column(COLUMN_PROCESS_DURATION, AVERAGE, COLUMN_PROCESS_DURATION)
-            .format(DashboardConstants.INSTANCE.processAverageDuration(), "#,##0 min").expression("value/60000")
-            .column(COLUMN_PROCESS_NAME).format(DashboardConstants.INSTANCE.process())
-            .column(COUNT, "Processes").format(DashboardConstants.INSTANCE.processCount(), NO_DECIMALS)
-            .xAxisTitle(DashboardConstants.INSTANCE.processCount())
-            .yAxisTitle(DashboardConstants.INSTANCE.processAverageDuration())
-            .width(CHART_WIDTH).height(CHART_HEIGHT)
-            .margins(10, 30, 60, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings processesByRunningTime(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newBubbleChartSettings()
+                        .uuid(i18n.processesByRunningTime())
+                        .title(i18n.processesByRunningTime())
+                        .dataset(DATASET_PROCESS_INSTANCES)
+                        .filter(notNull(COLUMN_PROCESS_DURATION))
+                        .group(COLUMN_PROCESS_NAME)
+                        .column(COLUMN_PROCESS_NAME).format(i18n.process())
+                        .column(COUNT, "Processes").format(i18n.processes(), NO_DECIMALS)
+                        .column(COLUMN_PROCESS_DURATION, AVERAGE, COLUMN_PROCESS_DURATION)
+                        .format(i18n.processAverageDuration(), "#,##0 min").expression("value/60000")
+                        .column(COLUMN_PROCESS_NAME).format(i18n.process())
+                        .column(COUNT, "Processes").format(i18n.processCount(), NO_DECIMALS)
+                        .xAxisTitle(i18n.processCount())
+                        .yAxisTitle(i18n.processAverageDuration())
+                        .width(CHART_WIDTH).height(CHART_HEIGHT)
+                        .margins(10, 30, 60, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings PROCESSES_BY_USER = DisplayerSettingsFactory
-            .newBarChartSettings()
-            .title(DashboardConstants.INSTANCE.processesStartedByUser())
-            .dataset(DATASET_PROCESS_INSTANCES)
-            .filter(notNull(COLUMN_PROCESS_USER_ID))
-            .group(COLUMN_PROCESS_USER_ID)
-            .column(COLUMN_PROCESS_USER_ID).format(DashboardConstants.INSTANCE.processUser())
-            .column(COUNT, "Processes").format(DashboardConstants.INSTANCE.processes(), NO_DECIMALS)
-            .subType_Bar()
-            .width(CHART_WIDTH).height(CHART_HEIGHT)
-            .legendOn("right")
-            .margins(10, 20, 120, 10)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings processesByUser(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newBarChartSettings()
+                        .title(i18n.processesStartedByUser())
+                        .dataset(DATASET_PROCESS_INSTANCES)
+                        .filter(notNull(COLUMN_PROCESS_USER_ID))
+                        .group(COLUMN_PROCESS_USER_ID)
+                        .column(COLUMN_PROCESS_USER_ID).format(i18n.processUser())
+                        .column(COUNT, "Processes").format(i18n.processes(), NO_DECIMALS)
+                        .subType_Bar()
+                        .width(CHART_WIDTH).height(CHART_HEIGHT)
+                        .legendOn("right")
+                        .margins(10, 20, 120, 10)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings PROCESSES_BY_START_DATE = DisplayerSettingsFactory
-            .newAreaChartSettings()
-            .title(DashboardConstants.INSTANCE.processesByStartDate())
-            .dataset(DATASET_PROCESS_INSTANCES)
-            .filter(notNull(COLUMN_PROCESS_START_DATE))
-            .group(COLUMN_PROCESS_START_DATE).dynamic(30, DateIntervalType.DAY, true)
-            .column(COLUMN_PROCESS_START_DATE).format(DashboardConstants.INSTANCE.processStartDate())
-            .column(COUNT, "Processes").format(DashboardConstants.INSTANCE.processes(), NO_DECIMALS)
-            .width(CHART_WIDTH).height(CHART_HEIGHT)
-            .legendOff()
-            .margins(50, 5, 50, 20)
-            .backgroundColor(BG_COLOR)
-            .filterOn(true, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings processesByStartDate(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newAreaChartSettings()
+                        .title(i18n.processesByStartDate())
+                        .dataset(DATASET_PROCESS_INSTANCES)
+                        .filter(notNull(COLUMN_PROCESS_START_DATE))
+                        .group(COLUMN_PROCESS_START_DATE).dynamic(30, DateIntervalType.DAY, true)
+                        .column(COLUMN_PROCESS_START_DATE).format(i18n.processStartDate())
+                        .column(COUNT, "Processes").format(i18n.processes(), NO_DECIMALS)
+                        .width(CHART_WIDTH).height(CHART_HEIGHT)
+                        .legendOff()
+                        .margins(50, 5, 50, 20)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(true, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings PROCESSES_BY_END_DATE = DisplayerSettingsFactory
-            .newAreaChartSettings()
-            .title(DashboardConstants.INSTANCE.processesByEndDate())
-            .dataset(DATASET_PROCESS_INSTANCES)
-            .filter(notNull(COLUMN_PROCESS_END_DATE))
-            .group(COLUMN_PROCESS_END_DATE).dynamic(30, DateIntervalType.DAY, true)
-            .column(COLUMN_PROCESS_END_DATE).format(DashboardConstants.INSTANCE.processEndDate())
-            .column(COUNT, "Processes").format(DashboardConstants.INSTANCE.processes(), NO_DECIMALS)
-            .width(CHART_WIDTH).height(CHART_HEIGHT)
-            .legendOff()
-            .margins(50, 5, 50, 20)
-            .backgroundColor(BG_COLOR)
-            .filterOn(true, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings processesByEndDate(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newAreaChartSettings()
+                        .title(i18n.processesByEndDate())
+                        .dataset(DATASET_PROCESS_INSTANCES)
+                        .filter(notNull(COLUMN_PROCESS_END_DATE))
+                        .group(COLUMN_PROCESS_END_DATE).dynamic(30, DateIntervalType.DAY, true)
+                        .column(COLUMN_PROCESS_END_DATE).format(i18n.processEndDate())
+                        .column(COUNT, "Processes").format(i18n.processes(), NO_DECIMALS)
+                        .width(CHART_WIDTH).height(CHART_HEIGHT)
+                        .legendOff()
+                        .margins(50, 5, 50, 20)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(true, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
 
-    // Task displayers
+        // Task displayers
 
 
-    public static final DisplayerSettings TASKS_TABLE = DisplayerSettingsFactory
-            .newTableSettings()
-            .uuid(DashboardConstants.INSTANCE.taskInstances())
-            .title(DashboardConstants.INSTANCE.taskInstances())
-            .dataset(DATASET_HUMAN_TASKS)
-            .column(COLUMN_TASK_ID).format(DashboardConstants.INSTANCE.taskTableId(), NO_DECIMALS)
-            .column(COLUMN_PROCESS_NAME).format(DashboardConstants.INSTANCE.taskTableProcess())
-            .column(COLUMN_TASK_NAME).format(DashboardConstants.INSTANCE.taskTableName())
-            .column(COLUMN_TASK_OWNER_ID).format(DashboardConstants.INSTANCE.taskTableOwner())
-            .column(COLUMN_TASK_STATUS).format(DashboardConstants.INSTANCE.taskTableStatus())
-            .column(COLUMN_TASK_CREATED_DATE).format(DashboardConstants.INSTANCE.taskTableStartDate(), "MMM dd, yyyy HH:mm")
-            .column(COLUMN_TASK_END_DATE).format(DashboardConstants.INSTANCE.taskTableEndDate(), "MMM dd, yyyy HH:mm")
-            .column(COLUMN_TASK_DURATION).format(DashboardConstants.INSTANCE.taskTableDuration())
-            .tablePageSize(10)
-            .tableOrderEnabled(true)
-            .tableOrderDefault(COLUMN_TASK_CREATED_DATE, DESCENDING)
-            .tableWidth(1400)
-            .renderer(DefaultRenderer.UUID)
-            .filterOn(true, false, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksTable(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newTableSettings()
+                        .uuid(i18n.taskInstances())
+                        .title(i18n.taskInstances())
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .column(COLUMN_TASK_ID).format(i18n.taskTableId(), NO_DECIMALS)
+                        .column(COLUMN_PROCESS_NAME).format(i18n.taskTableProcess())
+                        .column(COLUMN_TASK_NAME).format(i18n.taskTableName())
+                        .column(COLUMN_TASK_OWNER_ID).format(i18n.taskTableOwner())
+                        .column(COLUMN_TASK_STATUS).format(i18n.taskTableStatus())
+                        .column(COLUMN_TASK_CREATED_DATE).format(i18n.taskTableStartDate(), "MMM dd, yyyy HH:mm")
+                        .column(COLUMN_TASK_END_DATE).format(i18n.taskTableEndDate(), "MMM dd, yyyy HH:mm")
+                        .column(COLUMN_TASK_DURATION).format(i18n.taskTableDuration())
+                        .tablePageSize(10)
+                        .tableOrderEnabled(true)
+                        .tableOrderDefault(COLUMN_TASK_CREATED_DATE, DESCENDING)
+                        .tableWidth(1400)
+                        .renderer(DefaultRenderer.UUID)
+                        .filterOn(true, false, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_TOTAL = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.totalTasks())
-            .titleVisible(true)
-            .dataset(DATASET_HUMAN_TASKS)
-            .column(COUNT, "Tasks")
-            .format(DashboardConstants.INSTANCE.tasks(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksTotal(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.totalTasks())
+                        .titleVisible(true)
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(notNull(COLUMN_TASK_ID))
+                        .column(COUNT, "Tasks")
+                        .format(i18n.tasks(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_CREATED = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.tasksCreated())
-            .titleVisible(true)
-            .dataset(DATASET_HUMAN_TASKS)
-            .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_CREATED))
-            .column(COUNT, "Tasks")
-            .format(DashboardConstants.INSTANCE.tasksCreated(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksCreated(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.tasksCreated())
+                        .titleVisible(true)
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_CREATED))
+                        .column(COUNT, "Tasks")
+                        .format(i18n.tasksCreated(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_READY = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.tasksReady())
-            .titleVisible(true)
-            .dataset(DATASET_HUMAN_TASKS)
-            .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_READY))
-            .column(COUNT, "Tasks")
-            .format(DashboardConstants.INSTANCE.tasksReady(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksReady(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.tasksReady())
+                        .titleVisible(true)
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_READY))
+                        .column(COUNT, "Tasks")
+                        .format(i18n.tasksReady(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_RESERVED = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.tasksReserved())
-            .titleVisible(true)
-            .dataset(DATASET_HUMAN_TASKS)
-            .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_RESERVED))
-            .column(COUNT, "Tasks")
-            .format(DashboardConstants.INSTANCE.tasksReserved(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksReserved(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.tasksReserved())
+                        .titleVisible(true)
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_RESERVED))
+                        .column(COUNT, "Tasks")
+                        .format(i18n.tasksReserved(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_IN_PROGRESS = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.tasksInProgress())
-            .titleVisible(true)
-            .dataset(DATASET_HUMAN_TASKS)
-            .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_IN_PROGRESS))
-            .column(COUNT, "Tasks")
-            .format(DashboardConstants.INSTANCE.tasksInProgress(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksInProgress(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.tasksInProgress())
+                        .titleVisible(true)
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_IN_PROGRESS))
+                        .column(COUNT, "Tasks")
+                        .format(i18n.tasksInProgress(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_SUSPENDED = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.tasksSuspended())
-            .titleVisible(true)
-            .dataset(DATASET_HUMAN_TASKS)
-            .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_SUSPENDED))
-            .column(COUNT, "Tasks")
-            .format(DashboardConstants.INSTANCE.tasksSuspended(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksSuspended(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.tasksSuspended())
+                        .titleVisible(true)
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_SUSPENDED))
+                        .column(COUNT, "Tasks")
+                        .format(i18n.tasksSuspended(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_COMPLETED = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.tasksCompleted())
-            .titleVisible(true)
-            .dataset(DATASET_HUMAN_TASKS)
-            .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_COMPLETED))
-            .column(COUNT, "Tasks")
-            .format(DashboardConstants.INSTANCE.tasksCompleted(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksCompleted(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.tasksCompleted())
+                        .titleVisible(true)
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_COMPLETED))
+                        .column(COUNT, "Tasks")
+                        .format(i18n.tasksCompleted(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_FAILED = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.tasksFailed())
-            .titleVisible(true)
-            .dataset(DATASET_HUMAN_TASKS)
-            .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_FAILED))
-            .column(COUNT, "Tasks")
-            .format(DashboardConstants.INSTANCE.tasksFailed(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksFailed(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.tasksFailed())
+                        .titleVisible(true)
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_FAILED))
+                        .column(COUNT, "Tasks")
+                        .format(i18n.tasksFailed(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_ERROR = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.tasksError())
-            .titleVisible(true)
-            .dataset(DATASET_HUMAN_TASKS)
-            .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_ERROR))
-            .column(COUNT, "Tasks")
-            .format(DashboardConstants.INSTANCE.tasksError(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksError(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.tasksError())
+                        .titleVisible(true)
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_ERROR))
+                        .column(COUNT, "Tasks")
+                        .format(i18n.tasksError(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_EXITED = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.tasksExited())
-            .titleVisible(true)
-            .dataset(DATASET_HUMAN_TASKS)
-            .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_EXITED))
-            .column(COUNT, "Tasks")
-            .format(DashboardConstants.INSTANCE.tasksExited(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksExited(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.tasksExited())
+                        .titleVisible(true)
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_EXITED))
+                        .column(COUNT, "Tasks")
+                        .format(i18n.tasksExited(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_OBSOLETE = DisplayerSettingsFactory
-            .newMetricSettings()
-            .title(DashboardConstants.INSTANCE.tasksObsolete())
-            .titleVisible(true)
-            .dataset(DATASET_HUMAN_TASKS)
-            .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_OBSOLETE))
-            .column(COUNT, "Tasks")
-            .format(DashboardConstants.INSTANCE.tasksObsolete(), NO_DECIMALS)
-            .width(METRIC_WIDTH).height(METRIC_HEIGHT)
-            .margins(0, 0, 0, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksObsolete(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newMetricSettings()
+                        .title(i18n.tasksObsolete())
+                        .titleVisible(true)
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(COLUMN_TASK_STATUS, equalsTo(TASK_STATUS_OBSOLETE))
+                        .column(COUNT, "Tasks")
+                        .format(i18n.tasksObsolete(), NO_DECIMALS)
+                        .width(METRIC_WIDTH).height(METRIC_HEIGHT)
+                        .margins(0, 0, 0, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_BY_PROCESS = DisplayerSettingsFactory
-            .newPieChartSettings()
-            .title(DashboardConstants.INSTANCE.tasksByProcess())
-            .dataset(DATASET_HUMAN_TASKS)
-            .group(COLUMN_PROCESS_NAME)
-            .column(COLUMN_PROCESS_NAME).format(DashboardConstants.INSTANCE.process())
-            .column(COLUMN_TASK_ID, COUNT, "Tasks").format(DashboardConstants.INSTANCE.tasks(), NO_DECIMALS)
-            .width(CHART_WIDTH).height(CHART_HEIGHT)
-            .legendOn("right")
-            .margins(10, 10, 10, 10)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksByProcess(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newPieChartSettings()
+                        .title(i18n.tasksByProcess())
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .group(COLUMN_PROCESS_NAME)
+                        .column(COLUMN_PROCESS_NAME).format(i18n.process())
+                        .column(COLUMN_TASK_ID, COUNT, "Tasks").format(i18n.tasks(), NO_DECIMALS)
+                        .width(CHART_WIDTH).height(CHART_HEIGHT)
+                        .legendOn("right")
+                        .margins(10, 10, 10, 10)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_BY_RUNNING_TIME = DisplayerSettingsFactory
-            .newBubbleChartSettings()
-            .uuid(DashboardConstants.INSTANCE.tasksByRunningTime())
-            .title(DashboardConstants.INSTANCE.tasksByRunningTime())
-            .dataset(DATASET_HUMAN_TASKS)
-            .filter(notNull(COLUMN_TASK_DURATION))
-            .group(COLUMN_PROCESS_NAME)
-            .column(COLUMN_PROCESS_NAME).format(DashboardConstants.INSTANCE.process())
-            .column(COLUMN_TASK_ID, COUNT, "Tasks").format(DashboardConstants.INSTANCE.tasks(), NO_DECIMALS)
-            .column(COLUMN_TASK_DURATION, AVERAGE).format(DashboardConstants.INSTANCE.taskAverageDuration(), "#,##0 min").expression("value/60000")
-            .column(COLUMN_PROCESS_NAME).format(DashboardConstants.INSTANCE.process())
-            .column(COLUMN_TASK_ID, COUNT, "Tasks").format(DashboardConstants.INSTANCE.taskCount(), NO_DECIMALS)
-            .xAxisTitle(DashboardConstants.INSTANCE.taskCount())
-            .yAxisTitle(DashboardConstants.INSTANCE.taskAverageDuration())
-            .width(CHART_WIDTH).height(CHART_HEIGHT)
-            .margins(10, 30, 60, 0)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksByRunningTime(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newBubbleChartSettings()
+                        .uuid(i18n.tasksByRunningTime())
+                        .title(i18n.tasksByRunningTime())
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(notNull(COLUMN_TASK_DURATION))
+                        .group(COLUMN_PROCESS_NAME)
+                        .column(COLUMN_PROCESS_NAME).format(i18n.process())
+                        .column(COLUMN_TASK_ID, COUNT, "Tasks").format(i18n.tasks(), NO_DECIMALS)
+                        .column(COLUMN_TASK_DURATION, AVERAGE).format(i18n.taskAverageDuration(), "#,##0 min").expression("value/60000")
+                        .column(COLUMN_PROCESS_NAME).format(i18n.process())
+                        .column(COLUMN_TASK_ID, COUNT, "Tasks").format(i18n.taskCount(), NO_DECIMALS)
+                        .xAxisTitle(i18n.taskCount())
+                        .yAxisTitle(i18n.taskAverageDuration())
+                        .width(CHART_WIDTH).height(CHART_HEIGHT)
+                        .margins(10, 30, 60, 0)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_BY_OWNER = DisplayerSettingsFactory
-            .newBarChartSettings()
-            .title(DashboardConstants.INSTANCE.tasksByOwner())
-            .dataset(DATASET_HUMAN_TASKS)
-            .filter(notNull(COLUMN_TASK_OWNER_ID))
-            .group(COLUMN_TASK_OWNER_ID)
-            .column(COLUMN_TASK_OWNER_ID).format(DashboardConstants.INSTANCE.taskOwner())
-            .column(COUNT, "Tasks").format(DashboardConstants.INSTANCE.tasks(), NO_DECIMALS)
-            .subType_Bar()
-            .width(CHART_WIDTH).height(CHART_HEIGHT)
-            .legendOn("right")
-            .margins(10, 20, 120, 10)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksByOwner(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newBarChartSettings()
+                        .title(i18n.tasksByOwner())
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(notNull(COLUMN_TASK_OWNER_ID))
+                        .group(COLUMN_TASK_OWNER_ID)
+                        .column(COLUMN_TASK_OWNER_ID).format(i18n.taskOwner())
+                        .column(COUNT, "Tasks").format(i18n.tasks(), NO_DECIMALS)
+                        .subType_Bar()
+                        .width(CHART_WIDTH).height(CHART_HEIGHT)
+                        .legendOn("right")
+                        .margins(10, 20, 120, 10)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_BY_STATUS = DisplayerSettingsFactory
-            .newPieChartSettings()
-            .title(DashboardConstants.INSTANCE.tasksByStatus())
-            .dataset(DATASET_HUMAN_TASKS)
-            .filter(notNull(COLUMN_TASK_STATUS))
-            .group(COLUMN_TASK_STATUS)
-            .column(COLUMN_TASK_STATUS).format(DashboardConstants.INSTANCE.taskStatus())
-            .column(COUNT, "Tasks").format(DashboardConstants.INSTANCE.tasks(), NO_DECIMALS)
-            .subType_Donut()
-            .width(CHART_WIDTH).height(CHART_HEIGHT)
-            .legendOn("right")
-            .margins(10, 20, 120, 10)
-            .backgroundColor(BG_COLOR)
-            .filterOn(false, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksByStatus(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newPieChartSettings()
+                        .title(i18n.tasksByStatus())
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(notNull(COLUMN_TASK_STATUS))
+                        .group(COLUMN_TASK_STATUS)
+                        .column(COLUMN_TASK_STATUS).format(i18n.taskStatus())
+                        .column(COUNT, "Tasks").format(i18n.tasks(), NO_DECIMALS)
+                        .subType_Donut()
+                        .width(CHART_WIDTH).height(CHART_HEIGHT)
+                        .legendOn("right")
+                        .margins(10, 20, 120, 10)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(false, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_BY_CREATION_DATE = DisplayerSettingsFactory
-            .newAreaChartSettings()
-            .title(DashboardConstants.INSTANCE.tasksByCreationDate())
-            .dataset(DATASET_HUMAN_TASKS)
-            .filter(notNull(COLUMN_TASK_CREATED_DATE))
-            .group(COLUMN_TASK_CREATED_DATE).dynamic(30, DateIntervalType.DAY, true)
-            .column(COLUMN_TASK_CREATED_DATE).format(DashboardConstants.INSTANCE.taskCreationDate())
-            .column(COUNT, "Tasks").format(DashboardConstants.INSTANCE.tasks(), NO_DECIMALS)
-            .width(CHART_WIDTH).height(CHART_HEIGHT)
-            .legendOff()
-            .margins(50, 5, 50, 20)
-            .backgroundColor(BG_COLOR)
-            .filterOn(true, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksByCreationDate(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newAreaChartSettings()
+                        .title(i18n.tasksByCreationDate())
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(notNull(COLUMN_TASK_CREATED_DATE))
+                        .group(COLUMN_TASK_CREATED_DATE).dynamic(30, DateIntervalType.DAY, true)
+                        .column(COLUMN_TASK_CREATED_DATE).format(i18n.taskCreationDate())
+                        .column(COUNT, "Tasks").format(i18n.tasks(), NO_DECIMALS)
+                        .width(CHART_WIDTH).height(CHART_HEIGHT)
+                        .legendOff()
+                        .margins(50, 5, 50, 20)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(true, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_BY_START_DATE = DisplayerSettingsFactory
-            .newAreaChartSettings()
-            .title(DashboardConstants.INSTANCE.tasksByStartDate())
-            .dataset(DATASET_HUMAN_TASKS)
-            .filter(notNull(COLUMN_TASK_START_DATE))
-            .group(COLUMN_TASK_START_DATE).dynamic(30, DateIntervalType.DAY, true)
-            .column(COLUMN_TASK_START_DATE).format(DashboardConstants.INSTANCE.taskStartDate())
-            .column(COUNT, "Tasks").format(DashboardConstants.INSTANCE.tasks(), NO_DECIMALS)
-            .width(CHART_WIDTH).height(CHART_HEIGHT)
-            .legendOff()
-            .margins(50, 5, 50, 20)
-            .backgroundColor(BG_COLOR)
-            .filterOn(true, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksByStartDate(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newAreaChartSettings()
+                        .title(i18n.tasksByStartDate())
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(notNull(COLUMN_TASK_START_DATE))
+                        .group(COLUMN_TASK_START_DATE).dynamic(30, DateIntervalType.DAY, true)
+                        .column(COLUMN_TASK_START_DATE).format(i18n.taskStartDate())
+                        .column(COUNT, "Tasks").format(i18n.tasks(), NO_DECIMALS)
+                        .width(CHART_WIDTH).height(CHART_HEIGHT)
+                        .legendOff()
+                        .margins(50, 5, 50, 20)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(true, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 
-    public static final DisplayerSettings TASKS_BY_END_DATE = DisplayerSettingsFactory
-            .newAreaChartSettings()
-            .title(DashboardConstants.INSTANCE.tasksByEndDate())
-            .dataset(DATASET_HUMAN_TASKS)
-            .filter(notNull(COLUMN_TASK_END_DATE))
-            .group(COLUMN_TASK_END_DATE).dynamic(30, DateIntervalType.DAY, true)
-            .column(COLUMN_TASK_END_DATE).format(DashboardConstants.INSTANCE.taskEndDate())
-            .column(COUNT, "Tasks").format(DashboardConstants.INSTANCE.tasks(), NO_DECIMALS)
-            .width(CHART_WIDTH).height(CHART_HEIGHT)
-            .legendOff()
-            .margins(50, 5, 50, 20)
-            .backgroundColor(BG_COLOR)
-            .filterOn(true, true, true)
-            .refreshOn()
-            .buildSettings();
+        public static DisplayerSettings tasksByEndDate(DashboardI18n i18n) {
+                return DisplayerSettingsFactory.newAreaChartSettings()
+                        .title(i18n.tasksByEndDate())
+                        .dataset(DATASET_HUMAN_TASKS)
+                        .filter(notNull(COLUMN_TASK_END_DATE))
+                        .group(COLUMN_TASK_END_DATE).dynamic(30, DateIntervalType.DAY, true)
+                        .column(COLUMN_TASK_END_DATE).format(i18n.taskEndDate())
+                        .column(COUNT, "Tasks").format(i18n.tasks(), NO_DECIMALS)
+                        .width(CHART_WIDTH).height(CHART_HEIGHT)
+                        .legendOff()
+                        .margins(50, 5, 50, 20)
+                        .backgroundColor(BG_COLOR)
+                        .filterOn(true, true, true)
+                        .refreshOn()
+                        .buildSettings();
+        }
 }

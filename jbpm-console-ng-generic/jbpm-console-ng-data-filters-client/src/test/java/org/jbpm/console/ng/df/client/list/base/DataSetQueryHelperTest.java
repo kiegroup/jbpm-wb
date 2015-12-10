@@ -22,10 +22,11 @@ import com.google.common.collect.ImmutableList;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
+import org.dashbuilder.dataset.client.DataSetClientServices;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.displayer.client.DataSetHandler;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
-import org.jbpm.console.ng.df.client.filter.dataset.DataSetHandler;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,12 +51,15 @@ public class DataSetQueryHelperTest {
     @Mock
     protected DataSetHandler dataSetHandlerMock;
 
+    @Mock
+    protected DataSetClientServices dataSetClientServicesMock;
+
     private DataSetQueryHelper dataSetQueryHelper;
 
     @Before
     public void setUp() throws Exception {
         currentTableSetting = createTableSettings();
-        dataSetQueryHelper = new DataSetQueryHelper();
+        dataSetQueryHelper = new DataSetQueryHelper(dataSetClientServicesMock);
         dataSetQueryHelper.setCurrentTableSettings(currentTableSetting);
         dataSetQueryHelper.setDataSetHandler(dataSetHandlerMock);
 

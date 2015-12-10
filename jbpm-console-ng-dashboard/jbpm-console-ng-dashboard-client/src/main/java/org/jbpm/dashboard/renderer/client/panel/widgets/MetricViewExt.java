@@ -17,21 +17,20 @@ package org.jbpm.dashboard.renderer.client.panel.widgets;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
-import org.dashbuilder.common.client.StringUtils;
-import org.dashbuilder.displayer.DisplayerSettings;
-import org.dashbuilder.renderer.client.metric.MetricView;
+import org.dashbuilder.displayer.client.AbstractDisplayerView;
+import org.dashbuilder.renderer.client.metric.MetricDisplayer;
+import org.dashbuilder.renderer.client.resources.i18n.MetricConstants;
 import org.gwtbootstrap3.client.ui.Heading;
 import org.gwtbootstrap3.client.ui.html.Paragraph;
 
-public class MetricViewExt extends Composite implements MetricView {
+public class MetricViewExt extends AbstractDisplayerView<MetricDisplayer> implements MetricDisplayer.View {
 
     @UiField
     protected FocusPanel centerPanel;
@@ -45,71 +44,123 @@ public class MetricViewExt extends Composite implements MetricView {
     @UiField
     protected Heading metricHeading;
 
-    protected DisplayerSettings displayerSettings;
-
     interface Binder extends UiBinder<Widget, MetricViewExt> {}
     private static Binder uiBinder = GWT.create(Binder.class);
 
-    public MetricViewExt() {
-        initWidget(uiBinder.createAndBindUi(this));
-    }
+    @Override
+    public void init(MetricDisplayer presenter) {
+        super.setPresenter(presenter);
+        super.setVisualization(uiBinder.createAndBindUi(this));
 
-    public void applySettings(DisplayerSettings displayerSettings) {
-        this.displayerSettings = displayerSettings;
-        int w = displayerSettings.getChartWidth();
-        int h = displayerSettings.getChartHeight();
-        int mtop = displayerSettings.getChartMarginTop();
-        int mbottom = displayerSettings.getChartMarginBottom();
-        int mleft = displayerSettings.getChartMarginLeft();
-        int mright = displayerSettings.getChartMarginRight();
-
-        // Hero panel (size)
         Style style = centerPanel.getElement().getStyle();
         style.setPadding(0, Style.Unit.PX);
-        style.setWidth(w, Style.Unit.PX);
-        style.setHeight(h, Style.Unit.PX);
         style.setTextAlign(Style.TextAlign.CENTER);
         style.setVerticalAlign(Style.VerticalAlign.MIDDLE);
-        if (!StringUtils.isBlank(displayerSettings.getChartBackgroundColor())) {
-            style.setBackgroundColor("#" + displayerSettings.getChartBackgroundColor());
-        }
-
-        // Center panel (paddings)
-        style = centerPanel.getElement().getStyle();
-        style.setPaddingTop(mtop, Style.Unit.PX);
-        style.setPaddingBottom(mbottom, Style.Unit.PX);
-        style.setPaddingLeft(mleft, Style.Unit.PX);
-        style.setPaddingRight(mright, Style.Unit.PX);
-
-        // Title panel
-        titlePanel.setVisible(displayerSettings.isTitleVisible());
-        titlePanel.setText(displayerSettings.getTitle());
-    }
-
-    public void updateMetric(String value) {
-        metricHeading.setText(value);
-    }
-
-    public void filterOn() {
-        Style style = titlePanel.getElement().getStyle();
-        style.setColor("#FFFFFF");
-        style = metricHeading.getElement().getStyle();
-        style.setColor("#FFFFFF");
-        style = centerPanel.getElement().getStyle();
-        style.setBackgroundColor("blue");
-    }
-
-    public void filterOff() {
-        Style style = titlePanel.getElement().getStyle();
-        style.setColor("black");
-        style = metricHeading.getElement().getStyle();
-        style.setColor("black");
     }
 
     @Override
-    public HandlerRegistration addClickHandler(ClickHandler clickHandler) {
+    public String getColumnsTitle() {
+        return MetricConstants.INSTANCE.metricDisplayer_columnsTitle();
+    }
+
+    @Override
+    public void showTitle(String title) {
+        titlePanel.setVisible(true);
+        titlePanel.getElement().getStyle().setProperty("fontWeight", "400");
+        titlePanel.setText(title);
+    }
+
+    @Override
+    public void setWidth(int width) {
+        centerPanel.getElement().getStyle().setWidth(width, Style.Unit.PX);
+    }
+
+    @Override
+    public void setHeight(int height) {
+        centerPanel.getElement().getStyle().setHeight(height, Style.Unit.PX);
+    }
+
+    @Override
+    public void setBgColor(String color) {
         Style style = centerPanel.getElement().getStyle();
-        style.setCursor(Style.Cursor.POINTER);
-        return centerPanel.addClickHandler(clickHandler);
+        style.setBackgroundColor(color);
+    }
+
+    public String getBgColor() {
+        Style style = centerPanel.getElement().getStyle();
+        return style.getBackgroundColor();
+    }
+
+    @Override
+    public void setMarginTop(int marginTop) {
+        Style style = centerPanel.getElement().getStyle();
+        style.setPaddingTop(marginTop, Style.Unit.PX);
+    }
+
+    @Override
+    public void setMarginBottom(int marginBottom) {
+        Style style = centerPanel.getElement().getStyle();
+        style.setPaddingBottom(marginBottom, Style.Unit.PX);
+    }
+
+    @Override
+    public void setMarginRight(int marginRight) {
+        Style style = centerPanel.getElement().getStyle();
+        style.setPaddingRight(marginRight, Style.Unit.PX);
+    }
+
+    @Override
+    public void setMarginLeft(int marginLeft) {
+        Style style = centerPanel.getElement().getStyle();
+        style.setPaddingLeft(marginLeft, Style.Unit.PX);
+    }
+
+    @Override
+    public void setFilterEnabled(boolean enabled) {
+        Style style = centerPanel.getElement().getStyle();
+        if (enabled) {
+            style.setCursor(Style.Cursor.POINTER);
+            centerPanel.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent clickEvent) {
+                    getPresenter().updateFilter();
+                }
+            });
+        } else {
+            style.setCursor(Style.Cursor.DEFAULT);
+        }
+    }
+
+    protected String filterOffColor = null;
+
+    @Override
+    public void setFilterActive(boolean active) {
+        // Switch on
+        if (active && filterOffColor == null) {
+            filterOffColor = getBgColor();
+            Style style = titlePanel.getElement().getStyle();
+            style.setColor("white");
+            style = metricHeading.getElement().getStyle();
+            style.setColor("white");
+            this.setBgColor("#2491C8");
+        }
+        // Switch off
+        if (!active && filterOffColor != null) {
+            Style style = titlePanel.getElement().getStyle();
+            style.setColor("black");
+            style = metricHeading.getElement().getStyle();
+            style.setColor("black");
+            this.setBgColor(filterOffColor);
+            filterOffColor = null;
+        }
+    }
+
+    @Override
+    public void setValue(String value) {
+        metricHeading.setText(value);
+    }
+
+    @Override
+    public void nodata() {
+        metricHeading.setText(MetricConstants.INSTANCE.metricDisplayer_noDataAvailable());
     }
 }

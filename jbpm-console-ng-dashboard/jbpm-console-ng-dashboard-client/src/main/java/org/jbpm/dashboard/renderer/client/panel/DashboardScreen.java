@@ -37,7 +37,7 @@ public class DashboardScreen {
     ProcessDashboard processDashboard;
 
     @Inject
-    TaskDashboardPresenter taskDashboard;
+    TaskDashboard taskDashboard;
 
     @Inject
     DashboardView view;

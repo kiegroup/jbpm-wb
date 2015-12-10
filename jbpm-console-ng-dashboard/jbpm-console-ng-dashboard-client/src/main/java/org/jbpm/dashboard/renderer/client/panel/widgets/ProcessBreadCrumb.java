@@ -15,29 +15,34 @@
  */
 package org.jbpm.dashboard.renderer.client.panel.widgets;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.mvp.Command;
 
+@Dependent
 public class ProcessBreadCrumb implements IsWidget {
 
     public interface View extends UberView<ProcessBreadCrumb> {
+
         void setRootTitle(String text);
+
         void setProcess(String name);
     }
 
-    List<Listener> listenerList = new ArrayList<Listener>();
-
-    public interface Listener {
-        void rootSelected();
-    }
-
-    protected View view = new ProcessBreadCrumbView();
+    View view;
+    Command onRootSelectedCommand = new Command() {public void execute() {}};
 
     public ProcessBreadCrumb() {
+        this(new ProcessBreadCrumbView());
+    }
+
+    @Inject
+    public ProcessBreadCrumb(View view) {
+        this.view = view;
         view.init(this);
     }
 
@@ -46,10 +51,12 @@ public class ProcessBreadCrumb implements IsWidget {
         return view.asWidget();
     }
 
+    public void setOnRootSelectedCommand(Command onRootSelectedCommand) {
+        this.onRootSelectedCommand = onRootSelectedCommand;
+    }
+
     public void gotoRoot() {
-        for (Listener listener : listenerList) {
-            listener.rootSelected();
-        }
+        onRootSelectedCommand.execute();
     }
 
     public void setRootTitle(String text) {
@@ -58,9 +65,5 @@ public class ProcessBreadCrumb implements IsWidget {
 
     public void setProcessName(String name) {
         view.setProcess(name);
-    }
-
-    public void addListener(Listener listener) {
-        listenerList.add(listener);
     }
 }
