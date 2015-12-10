@@ -17,6 +17,7 @@ package org.jbpm.console.ng.df.client.filter;
 
 import java.util.List;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -108,8 +109,11 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
     Listener editorListener;
     DataSetMetadata metadata;
     DataSetLookup dataSetLookup;
+    DataSetClientServices dataSetClientServices;
 
-    public FilterEditorPopup() {
+    @Inject
+    public FilterEditorPopup(DataSetClientServices dataSetClientServices) {
+        this.dataSetClientServices = dataSetClientServices;
         setBody( uiBinder.createAndBindUi( FilterEditorPopup.this ) );
 
         basictab.setDataTargetWidget( basictabPane );
@@ -216,23 +220,23 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
     public void fetchDataSetLookup() {
         try {
             String uuid = tableDisplayerSettings.getDataSetLookup().getDataSetUUID();
-            DataSetClientServices.get().fetchMetadata( uuid, new DataSetMetadataCallback() {
+            dataSetClientServices.fetchMetadata(uuid, new DataSetMetadataCallback() {
 
-                public void callback( DataSetMetadata metadata ) {
-                    updateDataSetLookup( null, metadata );
+                public void callback(DataSetMetadata metadata) {
+                    updateDataSetLookup(null, metadata);
                 }
 
                 public void notFound() {
                     // Very unlikely since this data set has been selected from a list provided by the backend.
-                    error( FiltersConstants.INSTANCE.displayer_editor_dataset_notfound(), null );
+                    error(FiltersConstants.INSTANCE.displayer_editor_dataset_notfound(), null);
                 }
 
                 @Override
-                public boolean onError( final ClientRuntimeError error ) {
-                    error( error );
+                public boolean onError(final ClientRuntimeError error) {
+                    error(error);
                     return false;
                 }
-            } );
+            });
         } catch ( Exception e ) {
             error( FiltersConstants.INSTANCE.displayer_editor_datasetmetadata_fetcherror(), e );
         }
@@ -264,7 +268,7 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
         this.dataSetLookup = tableDisplayerSettings.getDataSetLookup();
         this.metadata = metadata;
 
-        DataSetClientServices.get().getRemoteSharedDataSetDefs( new RemoteCallback<List<DataSetDef>>() {
+        dataSetClientServices.getPublicDataSetDefs( new RemoteCallback<List<DataSetDef>>() {
             public void callback( List<DataSetDef> dataSetDefs ) {
                 updateFilterControls();
             }

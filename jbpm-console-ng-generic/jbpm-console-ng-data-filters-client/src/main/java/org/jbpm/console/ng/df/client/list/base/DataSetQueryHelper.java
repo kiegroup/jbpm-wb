@@ -19,16 +19,17 @@ import com.google.gwt.core.client.GWT;
 import org.dashbuilder.common.client.StringUtils;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.client.DataSetClientServices;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.sort.SortOrder;
 
+import org.dashbuilder.displayer.client.DataSetHandler;
+import org.dashbuilder.displayer.client.DataSetHandlerImpl;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
-import org.jbpm.console.ng.df.client.filter.dataset.DataSetHandler;
-import org.jbpm.console.ng.df.client.filter.dataset.DataSetHandlerImpl;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import java.util.Date;
-
 
 @Dependent
 public class DataSetQueryHelper<T> {
@@ -45,7 +46,11 @@ public class DataSetQueryHelper<T> {
 
     protected DataSetHandler dataSetHandler;
 
-    public DataSetQueryHelper() {
+    protected DataSetClientServices dataSetClientServices;
+
+    @Inject
+    public DataSetQueryHelper(DataSetClientServices dataSetClientServices) {
+        this.dataSetClientServices = dataSetClientServices;
     }
 
     public void lookupDataSet(Integer offset, final DataSetReadyCallback callback) {
@@ -132,9 +137,8 @@ public class DataSetQueryHelper<T> {
         this.dataSet = dataSet;
     }
 
-
     public void setDataSetHandler(FilterSettings tableSettings) {
-        this.dataSetHandler = new DataSetHandlerImpl( tableSettings.getDataSetLookup() );
+        this.dataSetHandler = new DataSetHandlerImpl(dataSetClientServices, tableSettings.getDataSetLookup());
     }
 
     public void setDataSetHandler(DataSetHandler dataSetHandler) {

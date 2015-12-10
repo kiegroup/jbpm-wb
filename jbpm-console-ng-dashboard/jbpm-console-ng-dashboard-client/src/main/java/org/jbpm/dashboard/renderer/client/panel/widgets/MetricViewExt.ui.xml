@@ -25,7 +25,7 @@
     .headerLine {
       height: 2px;
       width: 100%;
-      background-color: blue;
+      background-color: #2491C8;
     }
   </ui:style>
 
