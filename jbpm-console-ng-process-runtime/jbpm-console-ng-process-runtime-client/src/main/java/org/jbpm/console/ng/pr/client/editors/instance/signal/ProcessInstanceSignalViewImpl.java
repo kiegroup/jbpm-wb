@@ -28,7 +28,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.SuggestBox;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -54,11 +54,11 @@ public class ProcessInstanceSignalViewImpl extends Composite implements ProcessI
 
     @Inject
     @DataField
-    public Label signalRefLabel;
+    public FormLabel signalRefLabel;
 
     @Inject
     @DataField
-    public Label eventLabel;
+    public FormLabel eventLabel;
 
     @Inject
     @DataField
