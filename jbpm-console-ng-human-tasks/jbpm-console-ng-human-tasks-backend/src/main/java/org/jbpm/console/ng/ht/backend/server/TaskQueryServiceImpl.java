@@ -102,7 +102,7 @@ public class TaskQueryServiceImpl implements TaskQueryService {
         List<TaskSummary> taskSummaries = null;
         if (TASK_ROLE_ADMINISTRATOR.equals(taskRole)){
             List<AuditTask> allAdminAuditTask = runtimeDataService.getAllAdminAuditTask(userId, qf);
-            taskSummaries = TaskSummaryHelper.adaptAuditCollection(allAdminAuditTask);
+            taskSummaries = TaskSummaryHelper.adaptAuditCollection(allAdminAuditTask , true);
         }else if("ALL".equals(stringFilter)){
             if(qf.getOrderBy().equals("t.taskData.expirationTime")){
                 qf.setOrderBy("t.dueDate");

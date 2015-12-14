@@ -85,4 +85,33 @@ public class TaskSummaryHelper {
                     false, true);
     
     }
+    
+    public static List<TaskSummary> adaptAuditCollection(List<AuditTask> allAuditTasks,boolean isForAdmin) {
+        List<TaskSummary> taskSummaries = new ArrayList<TaskSummary>(allAuditTasks.size());
+        for (AuditTask auditTaskSum : allAuditTasks) {
+            taskSummaries.add(adaptAudit(auditTaskSum , isForAdmin));
+        }
+        return taskSummaries;
+    }
+    
+    public static TaskSummary adaptAudit(AuditTask auditTask,boolean isForAdmin) {
+        return new TaskSummary(
+                    auditTask.getTaskId(),
+                    auditTask.getName(),
+                    auditTask.getDescription(),
+                    auditTask.getStatus(),
+                    auditTask.getPriority(),
+                    auditTask.getActualOwner(),
+                    auditTask.getCreatedBy(),
+                    auditTask.getCreatedOn(),
+                    auditTask.getActivationTime(),
+                    auditTask.getDueDate(),
+                    auditTask.getProcessId(),
+                    auditTask.getProcessSessionId(),
+                    auditTask.getProcessInstanceId(),
+                    auditTask.getDeploymentId(), 
+                    auditTask.getParentId(),
+                    isForAdmin, true);
+    
+    }
 }

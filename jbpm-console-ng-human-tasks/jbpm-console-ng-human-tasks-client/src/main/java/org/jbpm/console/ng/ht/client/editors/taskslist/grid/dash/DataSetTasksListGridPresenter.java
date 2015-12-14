@@ -190,7 +190,9 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                                             dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSSESSIONID, i ),
                                             dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSINSTANCEID, i ),
                                             dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DEPLOYMENTID, i ),
-                                            dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PARENTID, i ) ) );
+                                            dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PARENTID, i ), 
+                                            Boolean.parseBoolean( dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_ISFORADMIN, i ) ) ) );
+                                    
 
                                 }
                                 PageResponse<TaskSummary> taskSummaryPageResponse = new PageResponse<TaskSummary>();
