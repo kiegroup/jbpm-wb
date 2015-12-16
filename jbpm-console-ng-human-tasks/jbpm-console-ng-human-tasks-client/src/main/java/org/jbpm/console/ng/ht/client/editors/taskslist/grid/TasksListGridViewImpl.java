@@ -101,11 +101,9 @@ public class TasksListGridViewImpl extends AbstractListView<TaskSummary, TasksLi
     public void init(final TasksListGridPresenter presenter) {
         List<String> bannedColumns = new ArrayList<String>();
         bannedColumns.add(COL_ID_NAME);
-        bannedColumns.add(COL_ID_ACTIONS);
         List<String> initColumns = new ArrayList<String>();
         initColumns.add(COL_ID_NAME);
         initColumns.add(COL_ID_DESCRIPTION);
-        initColumns.add(COL_ID_ACTIONS);
         super.init(presenter, new GridGlobalPreferences("TaskListGrid", initColumns, bannedColumns));
 
         selectedStyles = new RowStyles<TaskSummary>() {
