@@ -112,17 +112,17 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
     @Override
     public void init(final ProcessInstanceListPresenter presenter) {
         List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(constants.Select());
-        bannedColumns.add(constants.Id());
-        bannedColumns.add(constants.Name());
-        bannedColumns.add(constants.Actions());
+        bannedColumns.add("Check");
+        bannedColumns.add("log.processInstanceId");
+        bannedColumns.add("log.processName");
+        bannedColumns.add("Actions");
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add(constants.Select());
-        initColumns.add(constants.Id());
-        initColumns.add(constants.Name());
-        initColumns.add(constants.Process_Instance_Description());
-        initColumns.add(constants.Version());
-        initColumns.add(constants.Actions());
+        initColumns.add("Check");
+        initColumns.add("log.processInstanceId");
+        initColumns.add("log.processName");
+        initColumns.add("log.processInstanceDescription");
+        initColumns.add("log.processVersion");
+        initColumns.add("Actions");
 
         super.init(presenter, new GridGlobalPreferences("ProcessInstancesGrid", initColumns, bannedColumns));
 
@@ -225,6 +225,9 @@ public class ProcessInstanceListViewImpl extends AbstractListView<ProcessInstanc
         Column startTimeColumn = initStartDateColumn();
         Column descriptionColumn = initDescriptionColumn();
         actionsColumn = initActionsColumn();
+
+        checkColumn.setDataStoreName("Check");
+        actionsColumn.setDataStoreName("Actions");
 
         List<ColumnMeta<ProcessInstanceSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessInstanceSummary>>();
         columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(checkColumn, constants.Select()));

@@ -116,13 +116,13 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
     public void init(final DocumentListPresenter presenter) {
 
         List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(constants.DocumentID());
-        bannedColumns.add(constants.DocumentName());
-        bannedColumns.add(constants.Actions());
+        bannedColumns.add("Id");
+        bannedColumns.add("ProcessName");
+        bannedColumns.add("Actions");
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add(constants.DocumentID());
-        initColumns.add(constants.DocumentName());
-        initColumns.add(constants.Actions());
+        initColumns.add("Id");
+        initColumns.add("ProcessName");
+        initColumns.add("Actions");
 
         super.init(presenter, new GridGlobalPreferences("DocumentListGrid", initColumns, bannedColumns));
 
@@ -199,6 +199,10 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
         Column<CMSContentSummary, ?> idColumn = initIdColumn();
         Column<CMSContentSummary, ?> processNameColumn = initNameColumn();
         actionsColumn = initActionsColumn();
+
+        idColumn.setDataStoreName("Id");
+        processNameColumn.setDataStoreName("ProcessName");
+        actionsColumn.setDataStoreName("Actions");
 
         List<ColumnMeta<CMSContentSummary>> columnMetas = new ArrayList<ColumnMeta<CMSContentSummary>>();
         columnMetas.add(new ColumnMeta<CMSContentSummary>(idColumn, constants.DocumentID()));

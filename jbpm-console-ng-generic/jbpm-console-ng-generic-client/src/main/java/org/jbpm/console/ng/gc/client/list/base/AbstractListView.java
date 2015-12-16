@@ -170,4 +170,8 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
      *  DataGrid columns and how they must be initialized
      */
     public abstract void initColumns();
+
+    public void setListGrid(ExtendedPagedTable newListGrid){
+        this.listGrid = newListGrid;
+    }
 }

@@ -96,12 +96,12 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
     @Override
     public void init(final RequestListPresenter presenter ) {
         List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(constants.Id());
-        bannedColumns.add(constants.Type());
+        bannedColumns.add("r.id");
+        bannedColumns.add("r.commandName");
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add(constants.Id());
-        initColumns.add(constants.Type());
-        initColumns.add(constants.Actions());
+        initColumns.add("r.id");
+        initColumns.add("r.commandName");
+        initColumns.add("Actions");
         
         super.init(presenter, new GridGlobalPreferences("RequestListGrid", initColumns, bannedColumns));
 
@@ -129,6 +129,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         initStatusColumn();
         initDueDateColumn();
         actionsColumn = initActionsColumn();
+        actionsColumn.setDataStoreName("Actions");
         listGrid.addColumn(actionsColumn, constants.Actions());
     }
     private void initFiltersBar(){
@@ -312,7 +313,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
           }
         });
     }
-    
+
     private void initNoActionColumnManager(){
         noActionColumnManager = DefaultSelectionEventManager
                 .createCustomManager(new DefaultSelectionEventManager.EventTranslator<RequestSummary>() {
@@ -380,9 +381,9 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         actions.add(settingsNavLink);
         listGrid.getLeftToolbar().add(actions);
     }
-    
-    
-    
+
+
+
     private void initJobIdColumn(){
         // Id
         Column<RequestSummary, Number> taskIdColumn = new Column<RequestSummary, Number>( new NumberCell() ) {
@@ -434,7 +435,7 @@ public class RequestListViewImpl extends AbstractListView<RequestSummary,Request
         listGrid.addColumn(taskNameColumn, constants.Due_On());
         taskNameColumn.setDataStoreName( "r.time" );
     }
-    
+
     private Column<RequestSummary, RequestSummary> initActionsColumn(){
         List<HasCell<RequestSummary, ?>> cells = new LinkedList<HasCell<RequestSummary, ?>>();
         List<String> allStatuses = new ArrayList<String>();

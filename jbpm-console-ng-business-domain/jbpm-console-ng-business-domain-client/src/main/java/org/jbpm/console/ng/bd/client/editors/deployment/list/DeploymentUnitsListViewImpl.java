@@ -77,13 +77,13 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
         List<String> bannedColumns = new ArrayList<String>();
 
-        bannedColumns.add(constants.Deployment());
-        bannedColumns.add(constants.Actions());
+        bannedColumns.add("Deployment");
+        bannedColumns.add("Actions");
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add(constants.Deployment());
-        initColumns.add(constants.Strategy());
-        initColumns.add(constants.Status());
-        initColumns.add(constants.Actions());
+        initColumns.add("Deployment");
+        initColumns.add("Strategy");
+        initColumns.add("Status");
+        initColumns.add("Actions");
 
         super.init(presenter, new GridGlobalPreferences("DeploymentUnitsGrid", initColumns, bannedColumns));
 
@@ -158,6 +158,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
         Column<KModuleDeploymentUnitSummary, ?> strategyColumn = strategyColumn();
         Column<KModuleDeploymentUnitSummary, ?> statusColumn = statusColumn();
         actionsColumn = actionsColumn();
+        actionsColumn.setDataStoreName("Actions");
 
         List<ColumnMeta<KModuleDeploymentUnitSummary>> columnMetas = new ArrayList<ColumnMeta<KModuleDeploymentUnitSummary>>();
         columnMetas.add(new ColumnMeta<KModuleDeploymentUnitSummary>(unitIdColumn, constants.Deployment()));

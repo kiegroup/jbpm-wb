@@ -78,6 +78,20 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-documents-api</artifactId>
     </dependency>
+
+    <!-- Test -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.gwt.gwtmockito</groupId>
+      <artifactId>gwtmockito</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>

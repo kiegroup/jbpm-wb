@@ -67,13 +67,13 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
     public void init(final ProcessDocumentListPresenter presenter) {
         List<String> bannedColumns = new ArrayList<String>();
 
-        bannedColumns.add(constants.Name());
-        bannedColumns.add(constants.Actions());
+        bannedColumns.add("DocumentId");
+        bannedColumns.add("Actions");
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add(constants.Name());
-        initColumns.add(constants.Last_Modified());
-        initColumns.add(constants.Size());
-        initColumns.add(constants.Actions());
+        initColumns.add("DocumentId");
+        initColumns.add("LastMod");
+        initColumns.add("Size");
+        initColumns.add("Actions");
 
         super.init(presenter, new GridGlobalPreferences("DocumentGrid", initColumns, bannedColumns));
 
@@ -135,6 +135,11 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
         Column lastModifiedColumn = initDocumentLastModifiedColumn();
         Column sizeColumn = initDocumentSizeColumn();
         actionsColumn = initActionsColumn();
+
+        documentId.setDataStoreName("DocumentId");
+        lastModifiedColumn.setDataStoreName("LastMod");
+        sizeColumn.setDataStoreName("Size");
+        actionsColumn.setDataStoreName("Actions");
 
         List<ColumnMeta<DocumentSummary>> columnMetas = new ArrayList<ColumnMeta<DocumentSummary>>();
         columnMetas.add(new ColumnMeta<DocumentSummary>(documentId, constants.Name()));

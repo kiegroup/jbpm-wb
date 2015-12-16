@@ -78,13 +78,13 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     public void init( final ProcessDefinitionListPresenter presenter ) {
 
         List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add( constants.Name() );
-        bannedColumns.add( constants.Actions() );
+        bannedColumns.add( "ProcessName" );
+        bannedColumns.add( "Actions" );
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add( constants.Name() );
-        initColumns.add( constants.Version() );
-        initColumns.add( constants.Project() );
-        initColumns.add( constants.Actions() );
+        initColumns.add( "ProcessName" );
+        initColumns.add( "ProcessVersion" );
+        initColumns.add( "Project");
+        initColumns.add( "Actions" );
         super.init( presenter, new GridGlobalPreferences( "ProcessDefinitionsGrid", initColumns, bannedColumns ) );
 
         selectionModel = new NoSelectionModel<ProcessSummary>();
@@ -159,6 +159,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         Column versionColumn = initVersionColumn();
         Column projectColumn = initProjectColumn();
         actionsColumn = initActionsColumn();
+        actionsColumn.setDataStoreName("Actions");
 
         List<ColumnMeta<ProcessSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessSummary>>();
         columnMetas.add(new ColumnMeta<ProcessSummary>(processNameColumn, constants.Name()));

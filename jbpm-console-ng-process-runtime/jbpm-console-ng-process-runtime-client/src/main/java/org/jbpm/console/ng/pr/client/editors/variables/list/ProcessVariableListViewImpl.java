@@ -70,13 +70,13 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
     public void init(final ProcessVariableListPresenter presenter) {
         List<String> bannedColumns = new ArrayList<String>();
 
-        bannedColumns.add(constants.Name());
-        bannedColumns.add(constants.Value());
-        bannedColumns.add(constants.Actions());
+        bannedColumns.add("VariableId");
+        bannedColumns.add("VariableValue");
+        bannedColumns.add("Actions");
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add(constants.Name());
-        initColumns.add(constants.Value());
-        initColumns.add(constants.Actions());
+        initColumns.add("VariableId");
+        initColumns.add("VariableValue");
+        initColumns.add("Actions");
 
         super.init(presenter, new GridGlobalPreferences("ProcessVariablesGrid", initColumns, bannedColumns));
 
@@ -141,6 +141,12 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
         Column<ProcessVariableSummary, ?> typeColumn = initProcessVariableTypeColumn();
         Column<ProcessVariableSummary, ?> lastModificationColumn = initProcessVariableLastModifiedColumn();
         actionsColumn = initActionsColumn();
+
+        variableId.setDataStoreName("VariableId");
+        valueColumn.setDataStoreName("VariableValue");
+        typeColumn.setDataStoreName("Type");
+        lastModificationColumn.setDataStoreName("LastMod");
+        actionsColumn.setDataStoreName("Actions");
 
         List<ColumnMeta<ProcessVariableSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessVariableSummary>>();
         columnMetas.add(new ColumnMeta<ProcessVariableSummary>(variableId, constants.Name()));
