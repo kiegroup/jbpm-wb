@@ -214,7 +214,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     public void showBusyIndicator( final String message ) {
-        BusyPopup.showMessage( message );
+        BusyPopup.showMessage(message);
     }
 
     public void hideBusyIndicator() {
@@ -250,4 +250,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public void applyFilterOnPresenter( String key ) {
     }
 
+    public void setIdentity(User identity){
+        this.identity = identity;
+    }
 }

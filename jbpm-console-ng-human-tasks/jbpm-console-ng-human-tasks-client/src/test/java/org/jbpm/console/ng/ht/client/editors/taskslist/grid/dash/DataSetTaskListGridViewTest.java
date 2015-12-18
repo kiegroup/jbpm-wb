@@ -18,6 +18,12 @@ package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
 import java.util.List;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.dashbuilder.dataset.DataSetOp;
+import org.dashbuilder.dataset.DataSetOpType;
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.jboss.errai.security.shared.api.identity.User;
+import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.junit.Test;
@@ -40,6 +46,9 @@ public class DataSetTaskListGridViewTest {
     @InjectMocks
     private DataSetTasksListGridViewImpl view;
 
+    @Mock
+    public User identity;
+
     @Test
     public void testDataStoreNameIsSet() {
         doAnswer( new Answer() {
@@ -56,6 +65,22 @@ public class DataSetTaskListGridViewTest {
         view.initColumns( currentListGrid );
 
         verify( currentListGrid ).addColumns( anyList() );
+    }
+
+    @Test
+    public void testIsNullTableSettingsPrototype(){
+        when(identity.getIdentifier()).thenReturn("user");
+        view.setIdentity(identity);
+        FilterSettings filterSettings = view.createTableSettingsPrototype();
+        List <DataSetOp> ops = filterSettings.getDataSetLookup().getOperationList();
+        for(DataSetOp op : ops){
+            if(op.getType().equals(DataSetOpType.FILTER)){
+                List<ColumnFilter> columnFilters = ((DataSetFilter)op).getColumnFilterList();
+                for(ColumnFilter columnFilter : columnFilters){
+                    assert((columnFilter).toString().contains("actualOwner is_null"));
+                }
+            }
+        }
     }
 
 }
