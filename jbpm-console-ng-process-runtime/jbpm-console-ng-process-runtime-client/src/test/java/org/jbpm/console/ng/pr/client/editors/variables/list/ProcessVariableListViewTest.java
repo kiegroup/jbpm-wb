@@ -17,9 +17,10 @@ package org.jbpm.console.ng.pr.client.editors.variables.list;
 
 import java.util.List;
 
+import com.google.gwt.cell.client.CompositeCell;
+import com.google.gwt.cell.client.TextCell;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
-import org.jbpm.console.ng.pr.client.editors.instance.list.ProcessInstanceListViewImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -34,12 +35,14 @@ import static org.mockito.Mockito.*;
 @RunWith( GwtMockitoTestRunner.class )
 public class ProcessVariableListViewTest {
 
+    @SuppressWarnings("rawtypes")
     @Mock
     protected ExtendedPagedTable currentListGrid;
 
     @InjectMocks
     private ProcessVariableListViewImpl view;
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     public void testDataStoreNameIsSet() {
         doAnswer( new Answer() {
@@ -56,6 +59,30 @@ public class ProcessVariableListViewTest {
         view.initColumns( currentListGrid );
 
         verify( currentListGrid ).addColumns( anyList() );
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Test
+    public void testDisplayButtons() {
+        doAnswer( new Answer() {
+            @Override
+            public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
+                final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[ 0 ];
+                for ( ColumnMeta columnMeta : columns ) {
+                    if(ProcessVariableListViewImpl.COL_ID_ACTIONS.equals(columnMeta.getColumn().getDataStoreName())){
+                        assertTrue( columnMeta.getColumn().getCell() instanceof CompositeCell);
+                    }
+                    if(ProcessVariableListViewImpl.COL_ID_VARVALUE.equals(columnMeta.getColumn().getDataStoreName())){
+                        assertTrue(columnMeta.getColumn().getCell() instanceof TextCell);
+                    }
+                }
+                return null;
+            }
+        } ).when( currentListGrid ).addColumns(anyList());
+
+        view.initColumns(currentListGrid);
+        verify( currentListGrid ).addColumns(anyList());
+
     }
 
 }
