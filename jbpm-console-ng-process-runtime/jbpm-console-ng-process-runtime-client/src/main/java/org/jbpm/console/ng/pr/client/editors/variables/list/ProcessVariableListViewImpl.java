@@ -27,25 +27,21 @@ import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
+import org.jbpm.console.ng.gc.client.util.ButtonActionCell;
 import org.jbpm.console.ng.pr.client.editors.variables.edit.VariableEditPopup;
 import org.jbpm.console.ng.pr.client.editors.variables.history.VariableHistoryPopup;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
@@ -54,7 +50,6 @@ import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
-import org.uberfire.ext.widgets.common.client.tables.PopoverTextCell;
 
 @Dependent
 public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariableSummary, ProcessVariableListPresenter>
@@ -179,7 +174,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
 
     private Column<ProcessVariableSummary, ?> initProcessVariableValueColumn() {
         // Value.
-        Column<ProcessVariableSummary, String> valueColumn = new Column<ProcessVariableSummary, String>( new PopoverTextCell() ) {
+        Column<ProcessVariableSummary, String> valueColumn = new Column<ProcessVariableSummary, String>( new TextCell() ) {
 
             @Override
             public String getValue( ProcessVariableSummary object ) {
@@ -228,7 +223,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
 
         List<HasCell<ProcessVariableSummary, ?>> cells = new LinkedList<HasCell<ProcessVariableSummary, ?>>();
 
-        cells.add( new EditVariableActionHasCell( "Edit Variable", new Delegate<ProcessVariableSummary>() {
+        cells.add( new EditVariableActionHasCell( constants.Edit(), new Delegate<ProcessVariableSummary>() {
             @Override
             public void execute( ProcessVariableSummary variable ) {
                 variableEditPopup.show( variable.getProcessInstanceId(), variable.getVariableId(), variable.getNewValue() );
@@ -236,7 +231,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
             }
         } ) );
 
-        cells.add( new VariableHistoryActionHasCell( "Variable History", new Delegate<ProcessVariableSummary>() {
+        cells.add( new VariableHistoryActionHasCell( constants.History(), new Delegate<ProcessVariableSummary>() {
             @Override
             public void execute( ProcessVariableSummary variable ) {
                 variableHistoryPopup.show( variable.getProcessInstanceId(), variable.getVariableId() );
@@ -259,82 +254,33 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
         presenter.refreshGrid();
     }
 
-    private class EditVariableActionHasCell implements HasCell<ProcessVariableSummary, ProcessVariableSummary> {
+    protected class EditVariableActionHasCell extends ButtonActionCell<ProcessVariableSummary> {
 
-        private ActionCell<ProcessVariableSummary> cell;
-
-        public EditVariableActionHasCell( String text,
-                                          Delegate<ProcessVariableSummary> delegate ) {
-            cell = new ActionCell<ProcessVariableSummary>( text, delegate ) {
-                @Override
-                public void render( Cell.Context context,
-                                    ProcessVariableSummary value,
-                                    SafeHtmlBuilder sb ) {
-                    if ( presenter.getProcessInstanceStatus() == ProcessInstance.STATE_ACTIVE ) {
-                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Edit() ) {{
-                            setSize( ButtonSize.SMALL );
-                            getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                        }} ).getElement().getInnerHTML() );
-                        sb.append( mysb.toSafeHtml() );
-                    }
-                }
-            };
+        public EditVariableActionHasCell( final String text, final ActionCell.Delegate<ProcessVariableSummary> delegate ) {
+            super( text, delegate );
         }
 
         @Override
-        public Cell<ProcessVariableSummary> getCell() {
-            return cell;
+        public void render( final Cell.Context context, final ProcessVariableSummary value, final SafeHtmlBuilder sb ) {
+            if ( presenter.getProcessInstanceStatus() == ProcessInstance.STATE_ACTIVE ) {
+               super.render( context, value, sb );
+            }
         }
-
-        @Override
-        public FieldUpdater<ProcessVariableSummary, ProcessVariableSummary> getFieldUpdater() {
-            return null;
-        }
-
-        @Override
-        public ProcessVariableSummary getValue( ProcessVariableSummary object ) {
-            return object;
-        }
-
     }
 
-    private class VariableHistoryActionHasCell implements HasCell<ProcessVariableSummary, ProcessVariableSummary> {
+    protected class VariableHistoryActionHasCell extends ButtonActionCell<ProcessVariableSummary> {
 
-        private ActionCell<ProcessVariableSummary> cell;
-
-        public VariableHistoryActionHasCell( String text,
-                                             Delegate<ProcessVariableSummary> delegate ) {
-            cell = new ActionCell<ProcessVariableSummary>( text, delegate ) {
-                @Override
-                public void render( Cell.Context context,
-                                    ProcessVariableSummary value,
-                                    SafeHtmlBuilder sb ) {
-                    SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant( new Button( constants.History() ) {{
-                        setSize( ButtonSize.SMALL );
-                        getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                    }}.getElement().getInnerHTML() );
-                    sb.append( mysb.toSafeHtml() );
-                }
-            };
+        public VariableHistoryActionHasCell( final String text, final ActionCell.Delegate<ProcessVariableSummary> delegate ) {
+            super( text, delegate );
         }
 
         @Override
-        public Cell<ProcessVariableSummary> getCell() {
-            return cell;
+        public void render( final Cell.Context context, final ProcessVariableSummary value, final SafeHtmlBuilder sb ) {
+                super.render( context, value, sb );
         }
-
-        @Override
-        public FieldUpdater<ProcessVariableSummary, ProcessVariableSummary> getFieldUpdater() {
-            return null;
-        }
-
-        @Override
-        public ProcessVariableSummary getValue( ProcessVariableSummary object ) {
-            return object;
-        }
-
     }
+
+
+
 
 }
