@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.mvp.Command;
 
 import static org.dashbuilder.dataset.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -116,7 +117,14 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
     }
 
     @Test
+    public void test_JBPM_4851_Fix() {
+        verify(presenter.getTotalMetric().getView()).setFilterActive(true);
+        assertEquals(presenter.getTotalMetric().isFilterOn(), true);
+    }
+
+    @Test
     public void testShowInstances() {
+        reset(displayerListener);
         presenter.showProcessesTable();
         verify(view).showInstances();
         verify(processDashboardFocusEvent).fire(any(ProcessDashboardFocusEvent.class));
@@ -125,6 +133,7 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testShowDashboard() {
+        reset(displayerListener);
         presenter.showDashboard();
         verify(view).showDashboard();
         verify(processDashboardFocusEvent).fire(any(ProcessDashboardFocusEvent.class));
@@ -251,6 +260,7 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testSelectProcess() {
+        reset(view);
         presenter.changeCurrentProcess("Process B");
         assertEquals(presenter.getSelectedProcess(), "Process B");
         verify(view).showBreadCrumb("Process B");
@@ -259,6 +269,7 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testResetProcess() {
+        reset(view);
         presenter.resetCurrentProcess();
         assertNull(presenter.getSelectedProcess());
         verify(view).hideBreadCrumb();
@@ -267,7 +278,11 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testSelectMetric() {
-        MetricDisplayer activeMetric = (MetricDisplayer)  presenter.getActiveMetric();
+        presenter.resetCurrentMetric();
+        reset(view);
+        reset(displayerListener);
+
+        MetricDisplayer activeMetric = presenter.getActiveMetric();
         activeMetric.filterApply();
 
         assertEquals(presenter.getSelectedMetric(), activeMetric);
@@ -287,7 +302,7 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testResetMetric() {
-        MetricDisplayer activeMetric = (MetricDisplayer)  presenter.getActiveMetric();
+        MetricDisplayer activeMetric = presenter.getActiveMetric();
         activeMetric.filterApply();
 
         reset(displayerListener, view);
@@ -310,8 +325,8 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testSwitchMetric() {
-        MetricDisplayer activeMetric = (MetricDisplayer)  presenter.getActiveMetric();
-        MetricDisplayer completedMetric = (MetricDisplayer)  presenter.getCompletedMetric();
+        MetricDisplayer activeMetric = presenter.getActiveMetric();
+        MetricDisplayer completedMetric = presenter.getCompletedMetric();
         activeMetric.filterApply();
 
         reset(displayerListener, view);

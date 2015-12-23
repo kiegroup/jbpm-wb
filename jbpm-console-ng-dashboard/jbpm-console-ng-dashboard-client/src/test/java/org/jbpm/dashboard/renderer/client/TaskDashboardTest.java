@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.mvp.Command;
 
 import static org.dashbuilder.dataset.Assertions.*;
 import static org.jbpm.dashboard.renderer.model.DashboardData.*;
@@ -127,7 +128,14 @@ public class TaskDashboardTest extends AbstractDashboardTest {
     }
 
     @Test
+    public void test_JBPM_4851_Fix() {
+        verify(presenter.getTotalMetric().getView()).setFilterActive(true);
+        assertEquals(presenter.getTotalMetric().isFilterOn(), true);
+    }
+
+    @Test
     public void testShowInstances() {
+        reset(displayerListener);
         presenter.showTasksTable();
         verify(view).showInstances();
         verify(taskDashboardFocusEvent).fire(any(TaskDashboardFocusEvent.class));
@@ -136,6 +144,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testShowDashboard() {
+        reset(displayerListener);
         presenter.showDashboard();
         verify(view).showDashboard();
         verify(taskDashboardFocusEvent).fire(any(TaskDashboardFocusEvent.class));
@@ -276,6 +285,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testSelectProcess() {
+        reset(view);
         presenter.changeCurrentProcess("Process B");
         assertEquals(presenter.getSelectedProcess(), "Process B");
         verify(view).showBreadCrumb("Process B");
@@ -284,6 +294,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testResetProcess() {
+        reset(view);
         presenter.resetCurrentProcess();
         assertNull(presenter.getSelectedProcess());
         verify(view).hideBreadCrumb();
@@ -292,7 +303,11 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testSelectMetric() {
-        MetricDisplayer inProgressMetric = (MetricDisplayer)  presenter.getInProgressMetric();
+        presenter.resetCurrentMetric();
+        reset(view);
+        reset(displayerListener);
+
+        MetricDisplayer inProgressMetric = presenter.getInProgressMetric();
         inProgressMetric.filterApply();
 
         assertEquals(presenter.getSelectedMetric(), inProgressMetric);
@@ -312,7 +327,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testResetMetric() {
-        MetricDisplayer inProgressMetric = (MetricDisplayer)  presenter.getInProgressMetric();
+        MetricDisplayer inProgressMetric = presenter.getInProgressMetric();
         inProgressMetric.filterApply();
 
         reset(displayerListener, view);
@@ -339,8 +354,8 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testSwitchMetric() {
-        MetricDisplayer inProgressMetric = (MetricDisplayer)  presenter.getInProgressMetric();
-        MetricDisplayer completedMetric = (MetricDisplayer)  presenter.getCompletedMetric();
+        MetricDisplayer inProgressMetric = presenter.getInProgressMetric();
+        MetricDisplayer completedMetric = presenter.getCompletedMetric();
         inProgressMetric.filterApply();
 
         reset(displayerListener, view);
@@ -362,7 +377,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
     @Test
     public void testOpenInstanceDetails() {
         when(placeManager.getStatus(TaskDashboard.TASK_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
-        TableDisplayer tableDisplayer = (TableDisplayer) presenter.getTasksTable();
+        TableDisplayer tableDisplayer = presenter.getTasksTable();
         tableDisplayer.selectCell(COLUMN_TASK_ID, 3);
 
         verify(taskSelectionEvent).fire(any(TaskSelectionEvent.class));

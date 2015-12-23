@@ -101,19 +101,19 @@ public class ProcessDashboard implements IsWidget {
     protected Event<ProcessDashboardFocusEvent> processDashboardFocusEvent;
     protected DashboardI18n i18n;
 
-    protected Displayer totalMetric;
-    protected Displayer activeMetric;
-    protected Displayer pendingMetric;
-    protected Displayer suspendedMetric;
-    protected Displayer abortedMetric;
-    protected Displayer completedMetric;
+    protected MetricDisplayer totalMetric;
+    protected MetricDisplayer activeMetric;
+    protected MetricDisplayer pendingMetric;
+    protected MetricDisplayer suspendedMetric;
+    protected MetricDisplayer abortedMetric;
+    protected MetricDisplayer completedMetric;
     protected Displayer processesByType;
     protected Displayer processesByUser;
     protected Displayer processesByStartDate;
     protected Displayer processesByEndDate;
     protected Displayer processesByRunningTime;
     protected Displayer processesByVersion;
-    protected Displayer processesTable;
+    protected TableDisplayer processesTable;
 
     protected MetricDisplayer selectedMetric = null;
     protected String selectedProcess = null;
@@ -198,6 +198,7 @@ public class ProcessDashboard implements IsWidget {
                 new Command() {
                     public void execute() {
                         view.hideLoading();
+                        totalMetric.filterApply();
                     }
                 },
                 // On Failure
@@ -217,27 +218,27 @@ public class ProcessDashboard implements IsWidget {
         return processBreadCrumb;
     }
 
-    public Displayer getTotalMetric() {
+    public MetricDisplayer getTotalMetric() {
         return totalMetric;
     }
 
-    public Displayer getActiveMetric() {
+    public MetricDisplayer getActiveMetric() {
         return activeMetric;
     }
 
-    public Displayer getPendingMetric() {
+    public MetricDisplayer getPendingMetric() {
         return pendingMetric;
     }
 
-    public Displayer getSuspendedMetric() {
+    public MetricDisplayer getSuspendedMetric() {
         return suspendedMetric;
     }
 
-    public Displayer getAbortedMetric() {
+    public MetricDisplayer getAbortedMetric() {
         return abortedMetric;
     }
 
-    public Displayer getCompletedMetric() {
+    public MetricDisplayer getCompletedMetric() {
         return completedMetric;
     }
 
@@ -265,7 +266,7 @@ public class ProcessDashboard implements IsWidget {
         return processesByVersion;
     }
 
-    public Displayer getProcessesTable() {
+    public TableDisplayer getProcessesTable() {
         return processesTable;
     }
 
@@ -277,7 +278,7 @@ public class ProcessDashboard implements IsWidget {
         return selectedProcess;
     }
 
-    public Displayer createMetricDisplayer(DisplayerSettings settings) {
+    public MetricDisplayer createMetricDisplayer(DisplayerSettings settings) {
         checkNotNull("displayerSettings", settings);
         MetricDisplayer metricDisplayer = dashboardFactory.createMetricDisplayer();
         metricDisplayer.setDisplayerSettings(settings);
@@ -290,7 +291,7 @@ public class ProcessDashboard implements IsWidget {
         return displayerLocator.lookupDisplayer(settings);
     }
 
-    public Displayer createTableDisplayer(DisplayerSettings settings) {
+    public TableDisplayer createTableDisplayer(DisplayerSettings settings) {
         checkNotNull("displayerSettings", settings);
         final TableDisplayer tableDisplayer = dashboardFactory.createTableDisplayer();
         tableDisplayer.setDisplayerSettings(settings);
@@ -304,7 +305,7 @@ public class ProcessDashboard implements IsWidget {
         return tableDisplayer;
     }
 
-    public void resetCurrentMetric(MetricDisplayer metric) {
+    public void resetCurrentMetric() {
         selectedMetric = null;
         updateHeaderText();
     }
@@ -471,7 +472,7 @@ public class ProcessDashboard implements IsWidget {
         @Override
         public void onFilterReset(Displayer displayer, DataSetFilter filter) {
             if (metricsGroup.contains(displayer)) {
-                resetCurrentMetric((MetricDisplayer) displayer);
+                resetCurrentMetric();
             }
         }
     };
