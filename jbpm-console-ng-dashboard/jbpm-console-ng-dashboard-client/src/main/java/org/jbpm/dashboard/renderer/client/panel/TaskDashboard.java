@@ -106,24 +106,24 @@ public class TaskDashboard implements IsWidget {
     protected Event<TaskDashboardFocusEvent> taskDashboardFocusEvent;
     protected DashboardI18n i18n;
 
-    protected Displayer totalMetric;
-    protected Displayer createdMetric;
-    protected Displayer readyMetric;
-    protected Displayer reservedMetric;
-    protected Displayer inProgressMetric;
-    protected Displayer suspendedMetric;
-    protected Displayer completedMetric;
-    protected Displayer failedMetric;
-    protected Displayer errorMetric;
-    protected Displayer exitedMetric;
-    protected Displayer obsoleteMetric;
+    protected MetricDisplayer totalMetric;
+    protected MetricDisplayer createdMetric;
+    protected MetricDisplayer readyMetric;
+    protected MetricDisplayer reservedMetric;
+    protected MetricDisplayer inProgressMetric;
+    protected MetricDisplayer suspendedMetric;
+    protected MetricDisplayer completedMetric;
+    protected MetricDisplayer failedMetric;
+    protected MetricDisplayer errorMetric;
+    protected MetricDisplayer exitedMetric;
+    protected MetricDisplayer obsoleteMetric;
     protected Displayer tasksByProcess;
     protected Displayer tasksByOwner;
     protected Displayer tasksByCreationDate;
     protected Displayer tasksByEndDate;
     protected Displayer tasksByRunningTime;
     protected Displayer tasksByStatus;
-    protected Displayer tasksTable;
+    protected TableDisplayer tasksTable;
 
     protected MetricDisplayer selectedMetric = null;
     protected String selectedProcess = null;
@@ -221,6 +221,7 @@ public class TaskDashboard implements IsWidget {
                 new Command() {
                     public void execute() {
                         view.hideLoading();
+                        totalMetric.filterApply();
                     }
                 },
                 // On Failure
@@ -240,47 +241,47 @@ public class TaskDashboard implements IsWidget {
         return processBreadCrumb;
     }
 
-    public Displayer getTotalMetric() {
+    public MetricDisplayer getTotalMetric() {
         return totalMetric;
     }
 
-    public Displayer getCreatedMetric() {
+    public MetricDisplayer getCreatedMetric() {
         return createdMetric;
     }
 
-    public Displayer getReadyMetric() {
+    public MetricDisplayer getReadyMetric() {
         return readyMetric;
     }
 
-    public Displayer getReservedMetric() {
+    public MetricDisplayer getReservedMetric() {
         return reservedMetric;
     }
 
-    public Displayer getInProgressMetric() {
+    public MetricDisplayer getInProgressMetric() {
         return inProgressMetric;
     }
 
-    public Displayer getSuspendedMetric() {
+    public MetricDisplayer getSuspendedMetric() {
         return suspendedMetric;
     }
 
-    public Displayer getCompletedMetric() {
+    public MetricDisplayer getCompletedMetric() {
         return completedMetric;
     }
 
-    public Displayer getFailedMetric() {
+    public MetricDisplayer getFailedMetric() {
         return failedMetric;
     }
 
-    public Displayer getErrorMetric() {
+    public MetricDisplayer getErrorMetric() {
         return errorMetric;
     }
 
-    public Displayer getExitedMetric() {
+    public MetricDisplayer getExitedMetric() {
         return exitedMetric;
     }
 
-    public Displayer getObsoleteMetric() {
+    public MetricDisplayer getObsoleteMetric() {
         return obsoleteMetric;
     }
 
@@ -308,7 +309,7 @@ public class TaskDashboard implements IsWidget {
         return tasksByStatus;
     }
 
-    public Displayer getTasksTable() {
+    public TableDisplayer getTasksTable() {
         return tasksTable;
     }
 
@@ -320,7 +321,7 @@ public class TaskDashboard implements IsWidget {
         return selectedProcess;
     }
 
-    public Displayer createMetricDisplayer(DisplayerSettings settings) {
+    public MetricDisplayer createMetricDisplayer(DisplayerSettings settings) {
         checkNotNull("displayerSettings", settings);
         MetricDisplayer metricDisplayer = dashboardFactory.createMetricDisplayer();
         metricDisplayer.setDisplayerSettings(settings);
@@ -333,7 +334,7 @@ public class TaskDashboard implements IsWidget {
         return displayerLocator.lookupDisplayer(settings);
     }
 
-    public Displayer createTableDisplayer(DisplayerSettings settings) {
+    public TableDisplayer createTableDisplayer(DisplayerSettings settings) {
         checkNotNull("displayerSettings", settings);
         final TableDisplayer tableDisplayer = dashboardFactory.createTableDisplayer();
         tableDisplayer.setDisplayerSettings(settings);
@@ -347,7 +348,7 @@ public class TaskDashboard implements IsWidget {
         return tableDisplayer;
     }
 
-    public void resetCurrentMetric(MetricDisplayer metric) {
+    public void resetCurrentMetric() {
         selectedMetric = null;
         updateHeaderText();
     }
@@ -522,7 +523,7 @@ public class TaskDashboard implements IsWidget {
         @Override
         public void onFilterReset(Displayer displayer, DataSetFilter filter) {
             if (metricsGroup.contains(displayer)) {
-                resetCurrentMetric((MetricDisplayer) displayer);
+                resetCurrentMetric();
             }
         }
     };
