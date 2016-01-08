@@ -177,7 +177,7 @@ public class DeploymentManagerEntryPointImpl implements DeploymentManagerEntryPo
     GAV gav = new GAV(gavElemes[0], gavElemes[1], gavElemes[2]);
     BuildResults buildResults = new BuildResults(gav);
     BuildMessage message = new BuildMessage();
-    message.setLevel(Level.ERROR);
+    message.setLevel(level);
     message.setText(messageText);
     buildResults.addBuildMessage(message);
 
