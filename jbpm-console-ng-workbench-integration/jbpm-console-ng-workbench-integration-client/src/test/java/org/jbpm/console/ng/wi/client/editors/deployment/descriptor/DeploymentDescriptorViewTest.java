@@ -26,10 +26,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.InputStream;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,7 +40,6 @@ import org.gwtbootstrap3.client.ui.TextBox;
 import org.jbpm.console.ng.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.console.ng.wi.dd.model.ItemObjectModel;
 import org.jbpm.console.ng.wi.dd.model.Parameter;
-import org.jgroups.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -86,30 +86,30 @@ public class DeploymentDescriptorViewTest {
 
         deploymentDescriptorModel.setLimitSerializationClasses(true); ++checkBoxUsages;
 
-        deploymentDescriptorModel.setRemotableClasses(Arrays.asList(new String[] { "class1" }));
+        deploymentDescriptorModel.setRemotableClasses(Collections.singletonList("class1"));
 
         deploymentDescriptorModel.setConfiguration(
-                Arrays.asList(new ItemObjectModel[] { new ItemObjectModel("config", "value", "resolver", getParameters()) }));
+                Collections.singletonList(new ItemObjectModel("config", "value", "resolver", getParameters())));
         deploymentDescriptorModel.setEnvironmentEntries(
-                Arrays.asList(new ItemObjectModel[] { new ItemObjectModel("config", "value", "resolver", getParameters()) }));
+                Collections.singletonList(new ItemObjectModel("config", "value", "resolver", getParameters())));
         deploymentDescriptorModel.setEventListeners(
-                Arrays.asList(new ItemObjectModel[] { new ItemObjectModel("config", "value", "resolver", getParameters()) }));
+                Collections.singletonList(new ItemObjectModel("config", "value", "resolver", getParameters())));
         deploymentDescriptorModel.setGlobals(
-                Arrays.asList(new ItemObjectModel[] { new ItemObjectModel("config", "value", "resolver", getParameters()) }));
+                Collections.singletonList(new ItemObjectModel("config", "value", "resolver", getParameters())));
         deploymentDescriptorModel.setMarshallingStrategies(
-                Arrays.asList(new ItemObjectModel[] { new ItemObjectModel("config", "value", "resolver", getParameters()) }));
-        deploymentDescriptorModel.setRequiredRoles(Arrays.asList(new String[] { "roles" }));
+                Collections.singletonList(new ItemObjectModel("config", "value", "resolver", getParameters())));
+        deploymentDescriptorModel.setRequiredRoles(
+                Collections.singletonList("roles"));
         deploymentDescriptorModel.setTaskEventListeners(
-                Arrays.asList(new ItemObjectModel[] { new ItemObjectModel("config", "value", "resolver", getParameters()) }));
+                Collections.singletonList(new ItemObjectModel("config", "value", "resolver", getParameters())));
         deploymentDescriptorModel.setWorkItemHandlers(
-                Arrays.asList(new ItemObjectModel[] { new ItemObjectModel("config", "value", "resolver", getParameters()) }));
+                Collections.singletonList(new ItemObjectModel("config", "value", "resolver", getParameters())));
     }
 
     private static Random random = new Random();
 
     private static List<Parameter> getParameters() {
-        return Arrays.asList(
-                new Parameter[] { new Parameter(UUID.randomUUID().toString(), Integer.toString(random.nextInt(100000))) });
+        return Collections.singletonList(new Parameter(UUID.randomUUID().toString(), Integer.toString(random.nextInt(100000))));
     }
 
     @Test
