@@ -179,7 +179,7 @@ public class DeploymentDescriptorViewTest {
 
     }
 
-    private static final String jarLocRegexStr = "([\\d\\.]{3})\\.\\d(-SNAPSHOT)?";
+    private static final String jarLocRegexStr = "([\\d\\.]{3})\\S*";
     private static final Pattern jarLocRegex = Pattern.compile(jarLocRegexStr);
 
     @Test
