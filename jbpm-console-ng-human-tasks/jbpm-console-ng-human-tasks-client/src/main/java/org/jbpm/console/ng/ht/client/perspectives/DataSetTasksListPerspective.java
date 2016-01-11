@@ -20,7 +20,7 @@ import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
+import org.uberfire.client.workbench.panels.impl.ClosableSimpleWorkbenchPanelPresenter;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.PerspectiveDefinition;
@@ -46,7 +46,7 @@ public class DataSetTasksListPerspective {
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( SimpleWorkbenchPanelPresenter.class.getName() );
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( ClosableSimpleWorkbenchPanelPresenter.class.getName() );
         p.setName( "DataSet Tasks test" );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "DataSet Tasks List" ) ) );
         return p;
