@@ -27,7 +27,6 @@ import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.structure.server.config.ConfigurationService;
 import org.jbpm.services.api.DeploymentService;
-import org.jbpm.services.api.model.DeployedUnit;
 import org.jbpm.services.api.model.DeploymentUnit;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,16 +61,20 @@ public class DeploymentManagerEntryPointImplTest {
      */
     @Test
     public void testDuplicateDeployment() {
+        // pretend any deployment unit is deployed
         when(deploymentService.isDeployed(anyString())).thenReturn(true);
 
+        // process a successful build result
         GAV gav = new GAV("g:a:1");
         BuildResults result = new BuildResults(gav);
         deploymentManager.process(result);
 
+        // deployment unit with the build result GAV must not be deployed (it has already been deployed)
         verify(deploymentService, atLeast(1)).isDeployed("g:a:1");
-        verify(deploymentService, never()).undeploy((DeploymentUnit) any(DeployedUnit.class));
-        verify(deploymentService, never()).deploy((DeploymentUnit) any(DeployedUnit.class));
+        verify(deploymentService, never()).undeploy(any(DeploymentUnit.class));
+        verify(deploymentService, never()).deploy(any(DeploymentUnit.class));
 
+        // check error messages added to the build result
         assertNotEquals(0, result.getErrorMessages().size());
         for (BuildMessage msg : result.getErrorMessages()) {
             assertTrue(msg.getText(), msg.getText().contains("already deployed"));
