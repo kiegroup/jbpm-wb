@@ -30,7 +30,6 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.DataSetMetadata;
-import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionType;
 import org.dashbuilder.dataset.filter.DataSetFilter;
@@ -88,13 +87,6 @@ public class DataSetFilterEditor extends Composite implements ColumnFilterEditor
         initNewFilterListBox();
         filterListPanel.clear();
 
-        if (filter != null) {
-            for (ColumnFilter columnFilter : filter.getColumnFilterList()) {
-                ColumnFilterEditor columnFilterEditor = new ColumnFilterEditor();
-                columnFilterEditor.init(metadata, columnFilter, this);
-                filterListPanel.add(columnFilterEditor);
-            }
-        }
     }
 
     protected void initNewFilterListBox() {
