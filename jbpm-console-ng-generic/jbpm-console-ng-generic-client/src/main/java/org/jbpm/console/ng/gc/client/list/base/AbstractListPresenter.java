@@ -60,8 +60,8 @@ public abstract class AbstractListPresenter<T> {
     protected  boolean addingDefaultFilters = false;
 
     protected Timer refreshTimer = null;
-    protected boolean autoRefreshEnabled = true;
-    protected int autoRefreshSeconds = 60; // This should be loaded from the grid settings (probably the filters)
+    protected boolean autoRefreshEnabled = false;
+    protected int autoRefreshSeconds = 0; // This should be loaded from the grid settings (probably the filters)
 
     public Button menuActionsButton;
     private PopupPanel popup = new PopupPanel(true);
@@ -79,6 +79,23 @@ public abstract class AbstractListPresenter<T> {
     public void setAddingDefaultFilters( boolean addingDefaultFilters ) {
         this.addingDefaultFilters = addingDefaultFilters;
     }
+
+    public void setRefreshTimer(Timer refreshTimer) {
+        this.refreshTimer = refreshTimer;
+    }
+
+    public Timer getRefreshTimer() {
+        return refreshTimer;
+    }
+
+    public void setAutoRefreshEnabled(boolean autoRefreshEnabled) {
+        this.autoRefreshEnabled = autoRefreshEnabled;
+    }
+
+    public boolean isAutoRefreshEnabled() {
+        return autoRefreshEnabled;
+    }
+
     protected void updateRefreshTimer() {
         if (refreshTimer == null) {
             refreshTimer = new Timer() {
