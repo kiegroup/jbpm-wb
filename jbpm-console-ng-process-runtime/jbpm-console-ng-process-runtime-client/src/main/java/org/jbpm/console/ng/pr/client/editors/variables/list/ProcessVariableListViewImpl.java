@@ -50,6 +50,7 @@ import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.common.client.tables.PopoverTextCell;
 
 @Dependent
 public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariableSummary, ProcessVariableListPresenter>
@@ -174,7 +175,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
 
     private Column<ProcessVariableSummary, ?> initProcessVariableValueColumn() {
         // Value.
-        Column<ProcessVariableSummary, String> valueColumn = new Column<ProcessVariableSummary, String>( new TextCell() ) {
+        Column<ProcessVariableSummary, String> valueColumn = new Column<ProcessVariableSummary, String>( new PopoverTextCell() ) {
 
             @Override
             public String getValue( ProcessVariableSummary object ) {
