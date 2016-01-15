@@ -54,7 +54,7 @@ public abstract class AbstractListPresenter<T> {
     protected  boolean addingDefaultFilters = false;
 
     protected Timer refreshTimer = null;
-    protected boolean autoRefreshEnabled = true;
+    protected boolean autoRefreshEnabled = false;
     protected int autoRefreshSeconds = 0; // This should be loaded from the grid settings (probably the filters)
 
 
@@ -74,6 +74,23 @@ public abstract class AbstractListPresenter<T> {
     public void setAddingDefaultFilters( boolean addingDefaultFilters ) {
         this.addingDefaultFilters = addingDefaultFilters;
     }
+
+    public void setRefreshTimer(Timer refreshTimer) {
+        this.refreshTimer = refreshTimer;
+    }
+
+    public Timer getRefreshTimer() {
+        return refreshTimer;
+    }
+
+    public void setAutoRefreshEnabled(boolean autoRefreshEnabled) {
+        this.autoRefreshEnabled = autoRefreshEnabled;
+    }
+
+    public boolean isAutoRefreshEnabled() {
+        return autoRefreshEnabled;
+    }
+
     protected void updateRefreshTimer() {
         if (refreshTimer == null) {
             refreshTimer = new Timer() {
@@ -116,7 +133,7 @@ public abstract class AbstractListPresenter<T> {
     }
 
     public void addDataDisplay( final HasData<T> display ) {
-        dataProvider.addDataDisplay( display );
+        dataProvider.addDataDisplay(display);
     }
 
     public AsyncDataProvider<T> getDataProvider(){
