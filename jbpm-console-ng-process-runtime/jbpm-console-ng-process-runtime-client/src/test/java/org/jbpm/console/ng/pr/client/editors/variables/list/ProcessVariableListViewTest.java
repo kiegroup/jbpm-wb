@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.common.client.tables.PopoverTextCell;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -73,7 +74,7 @@ public class ProcessVariableListViewTest {
                         assertTrue( columnMeta.getColumn().getCell() instanceof CompositeCell);
                     }
                     if(ProcessVariableListViewImpl.COL_ID_VARVALUE.equals(columnMeta.getColumn().getDataStoreName())){
-                        assertTrue(columnMeta.getColumn().getCell() instanceof TextCell);
+                        assertTrue(columnMeta.getColumn().getCell() instanceof PopoverTextCell );
                     }
                 }
                 return null;
