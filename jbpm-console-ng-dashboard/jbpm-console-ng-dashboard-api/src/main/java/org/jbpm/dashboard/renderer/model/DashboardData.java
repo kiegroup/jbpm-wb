@@ -21,26 +21,26 @@ public class DashboardData {
     public static final String DATASET_HUMAN_TASKS = "tasksMonitoring";
     public static final String DATASET_PROCESS_INSTANCES = "processesMonitoring";
 
-    public static final String COLUMN_PROCESS_ID = "PROCESSID";
-    public static final String COLUMN_PROCESS_INSTANCE_ID = "PROCESSINSTANCEID";
-    public static final String COLUMN_PROCESS_EXTERNAL_ID = "EXTERNALID";
-    public static final String COLUMN_PROCESS_NAME = "PROCESSNAME";
-    public static final String COLUMN_PROCESS_USER_ID = "USER_IDENTITY";
-    public static final String COLUMN_PROCESS_START_DATE = "START_DATE";
-    public static final String COLUMN_PROCESS_END_DATE = "END_DATE";
-    public static final String COLUMN_PROCESS_STATUS = "STATUS";
-    public static final String COLUMN_PROCESS_VERSION = "PROCESSVERSION";
-    public static final String COLUMN_PROCESS_DURATION = "DURATION";
+    public static final String COLUMN_PROCESS_ID = "processId";
+    public static final String COLUMN_PROCESS_INSTANCE_ID = "processInstanceId";
+    public static final String COLUMN_PROCESS_EXTERNAL_ID = "externalId";
+    public static final String COLUMN_PROCESS_NAME = "processName";
+    public static final String COLUMN_PROCESS_USER_ID = "user_identity";
+    public static final String COLUMN_PROCESS_START_DATE = "start_date";
+    public static final String COLUMN_PROCESS_END_DATE = "end_date";
+    public static final String COLUMN_PROCESS_STATUS = "status";
+    public static final String COLUMN_PROCESS_VERSION = "processVersion";
+    public static final String COLUMN_PROCESS_DURATION = "duration";
 
-    public static final String COLUMN_TASK_ID = "TASKID";
-    public static final String COLUMN_TASK_NAME = "TASKNAME";
-    public static final String COLUMN_TASK_CREATOR_ID = "USERID";
-    public static final String COLUMN_TASK_OWNER_ID = "USERID";
-    public static final String COLUMN_TASK_CREATED_DATE = "CREATEDDATE";
-    public static final String COLUMN_TASK_START_DATE = "STARTDATE";
-    public static final String COLUMN_TASK_END_DATE = "ENDDATE";
-    public static final String COLUMN_TASK_STATUS = "STATUS";
-    public static final String COLUMN_TASK_DURATION = "DURATION";
+    public static final String COLUMN_TASK_ID = "taskId";
+    public static final String COLUMN_TASK_NAME = "taskName";
+    public static final String COLUMN_TASK_CREATOR_ID = "userId";
+    public static final String COLUMN_TASK_OWNER_ID = "userId";
+    public static final String COLUMN_TASK_CREATED_DATE = "createdDate";
+    public static final String COLUMN_TASK_START_DATE = "startDate";
+    public static final String COLUMN_TASK_END_DATE = "endDate";
+    public static final String COLUMN_TASK_STATUS = "status";
+    public static final String COLUMN_TASK_DURATION = "duration";
 
     public static final String TASK_STATUS_CREATED = "Created";
     public static final String TASK_STATUS_READY = "Ready";
