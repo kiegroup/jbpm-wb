@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
+import org.guvnor.common.services.backend.util.CommentedOptionFactory;
 import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.guvnor.common.services.shared.metadata.model.Overview;
@@ -55,39 +56,42 @@ public class DDEditorServiceImpl
         implements DDEditorService {
 
     @Inject
-    @Named("ioStrategy")
+    @Named( "ioStrategy" )
     private IOService ioService;
 
     @Inject
     private DDConfigUpdaterHelper configUpdaterHelper;
 
+    @Inject
+    private CommentedOptionFactory commentedOptionFactory;
+
     @Override
-    public DeploymentDescriptorModel load(Path path) {
-        return super.loadContent(path);
+    public DeploymentDescriptorModel load( Path path ) {
+        return super.loadContent( path );
     }
 
     @Override
-    protected DeploymentDescriptorModel constructContent(Path path, Overview overview) {
+    protected DeploymentDescriptorModel constructContent( Path path, Overview overview ) {
 
-        InputStream input = ioService.newInputStream(Paths.convert(path));
+        InputStream input = ioService.newInputStream( Paths.convert( path ) );
 
-        org.kie.internal.runtime.conf.DeploymentDescriptor originDD = DeploymentDescriptorIO.fromXml(input);
+        org.kie.internal.runtime.conf.DeploymentDescriptor originDD = DeploymentDescriptorIO.fromXml( input );
 
-        DeploymentDescriptorModel ddModel = marshal(originDD);
+        DeploymentDescriptorModel ddModel = marshal( originDD );
 
-        ddModel.setOverview(overview);
+        ddModel.setOverview( overview );
 
         return ddModel;
     }
 
     @Override
-    public Path save(Path path, DeploymentDescriptorModel content, Metadata metadata, String comment) {
+    public Path save( Path path, DeploymentDescriptorModel content, Metadata metadata, String comment ) {
 
         try {
-            save( path, content, metadata, makeCommentedOption( comment ) );
+            save( path, content, metadata, commentedOptionFactory.makeCommentedOption( comment ) );
             return path;
-        } catch (Exception e) {
-            throw ExceptionUtilities.handleException(e);
+        } catch ( Exception e ) {
+            throw ExceptionUtilities.handleException( e );
         }
     }
 
@@ -95,43 +99,43 @@ public class DDEditorServiceImpl
     public Path save( Path path, DeploymentDescriptorModel content, Metadata metadata, CommentedOption commentedOption ) {
 
         try {
-            String deploymentContent = unmarshal(path, content).toXml();
+            String deploymentContent = unmarshal( path, content ).toXml();
 
             Metadata currentMetadata = metadataService.getMetadata( path );
-            ioService.write(Paths.convert(path),
-                    deploymentContent,
-                    metadataService.setUpAttributes(path,
-                            metadata),
-                    commentedOption);
+            ioService.write( Paths.convert( path ),
+                             deploymentContent,
+                             metadataService.setUpAttributes( path,
+                                                              metadata ),
+                             commentedOption );
 
             fireMetadataSocialEvents( path, currentMetadata, metadata );
 
             return path;
-        } catch (Exception e) {
-            throw ExceptionUtilities.handleException(e);
+        } catch ( Exception e ) {
+            throw ExceptionUtilities.handleException( e );
         }
     }
 
     @Override
-    public List<ValidationMessage> validate(Path path, DeploymentDescriptorModel content) {
+    public List<ValidationMessage> validate( Path path, DeploymentDescriptorModel content ) {
         final List<ValidationMessage> validationMessages = new ArrayList<ValidationMessage>();
         try {
-            unmarshal(path, content).toXml();
-        } catch (Exception e) {
+            unmarshal( path, content ).toXml();
+        } catch ( Exception e ) {
             final ValidationMessage msg = new ValidationMessage();
-            msg.setPath(path);
-            msg.setLevel(Level.ERROR);
-            msg.setText(e.getMessage());
-            validationMessages.add(msg);
+            msg.setPath( path );
+            msg.setLevel( Level.ERROR );
+            msg.setText( e.getMessage() );
+            validationMessages.add( msg );
         }
 
         return validationMessages;
     }
 
     @Override
-    public String toSource(Path path, DeploymentDescriptorModel model) {
+    public String toSource( Path path, DeploymentDescriptorModel model ) {
         try {
-            return unmarshal(path, model).toXml();
+            return unmarshal( path, model ).toXml();
 
         } catch ( Exception e ) {
             throw ExceptionUtilities.handleException( e );
