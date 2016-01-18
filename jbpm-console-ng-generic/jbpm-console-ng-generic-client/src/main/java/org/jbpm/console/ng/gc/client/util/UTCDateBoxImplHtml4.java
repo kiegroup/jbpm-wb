@@ -26,6 +26,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
+import org.uberfire.ext.widgets.common.client.common.DatePickerFormatUtilities;
 
 /**
  * @author andy
@@ -107,7 +108,7 @@ public class UTCDateBoxImplHtml4 extends UTCDateBoxImplShared {
     
     @Override
     public void setDateFormat( final DateTimeFormat dateFormat ) {
-        datebox.setFormat( dateFormat.getPattern() );
+        datebox.setFormat( DatePickerFormatUtilities.convertToBS3DateFormat( dateFormat.getPattern() ) );
         Scheduler.get().scheduleDeferred( new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {
