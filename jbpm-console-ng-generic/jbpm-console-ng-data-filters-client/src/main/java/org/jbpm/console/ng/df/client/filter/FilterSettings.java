@@ -98,8 +98,8 @@ public class FilterSettings extends DisplayerSettings {
         clone.UUID = UUID;
         clone.tableName = tableName;
         clone.tableDescription = tableDescription;
-        clone.settings = new HashMap( settings );
-        clone.columnSettingsList = new ArrayList();
+        clone.settings = new HashMap<String, String>( settings );
+        clone.columnSettingsList = new ArrayList<ColumnSettings>();
         for ( ColumnSettings columnSettings : columnSettingsList ) {
             clone.columnSettingsList.add( columnSettings.cloneInstance() );
         }

@@ -39,10 +39,10 @@ public class UTCDateBoxImplHtml5 extends UTCDateBoxImplShared {
         widget = new InputWidget("date");
         setDateFormat(dateInputFormat);
         
-        widget.addValueChangeHandler(new ValueChangeHandler() {
+        widget.addValueChangeHandler(new ValueChangeHandler<String>() {
 
             @Override
-            public void onValueChange(ValueChangeEvent event) {
+            public void onValueChange(ValueChangeEvent<String> event) {
                 fireValueChangeEvent(getValue());
             }
             
