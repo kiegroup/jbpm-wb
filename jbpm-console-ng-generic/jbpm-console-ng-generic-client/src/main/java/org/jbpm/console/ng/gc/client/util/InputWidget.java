@@ -61,7 +61,7 @@ public class InputWidget extends FocusWidget implements HasValue<String> {
 
     @Override
     public String getValue() {
-        return DOM.getElementProperty(getElement(), "value");
+        return getElement().getPropertyString("value");
     }
 
     @Override
@@ -72,7 +72,7 @@ public class InputWidget extends FocusWidget implements HasValue<String> {
     @Override
     public void setValue(String value, boolean fireEvents) {
         if (value == null) value = ""; 
-        DOM.setElementProperty(getElement(), "value", value);
+        getElement().setPropertyString("value", value);
         if (fireEvents) {
             fireValueChangeHandler(value);
         }

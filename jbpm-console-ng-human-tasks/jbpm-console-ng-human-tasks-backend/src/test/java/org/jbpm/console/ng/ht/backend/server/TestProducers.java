@@ -82,7 +82,7 @@ public class TestProducers {
 
             @Override
             public List<String> getRoles() {
-                return Collections.EMPTY_LIST;
+                return Collections.<String>emptyList();
             }
 
             @Override

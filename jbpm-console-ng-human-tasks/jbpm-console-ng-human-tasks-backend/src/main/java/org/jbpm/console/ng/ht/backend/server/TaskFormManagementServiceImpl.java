@@ -41,7 +41,7 @@ public class TaskFormManagementServiceImpl implements TaskFormManagementService 
     public List<String> getAvailableDeployments() {
         Set<String> deployments = formManagerService.getAllDeployments();
         if (deployments != null) {
-            ArrayList result = new ArrayList<String>( deployments );
+            ArrayList<String> result = new ArrayList<String>( deployments );
             Collections.sort( result );
             return result;
         }
@@ -52,7 +52,7 @@ public class TaskFormManagementServiceImpl implements TaskFormManagementService 
     public List<String> getFormsByDeployment( String deploymentId ) {
         Map<String, String> forms = formManagerService.getAllFormsByDeployment( deploymentId );
         if (forms != null) {
-            ArrayList result = new ArrayList<String>( forms.keySet() );
+            ArrayList<String> result = new ArrayList<String>( forms.keySet() );
             Collections.sort( result );
             return result;
         }
