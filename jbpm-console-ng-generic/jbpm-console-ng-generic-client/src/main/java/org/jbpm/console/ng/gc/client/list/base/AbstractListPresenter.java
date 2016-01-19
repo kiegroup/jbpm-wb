@@ -17,6 +17,7 @@ package org.jbpm.console.ng.gc.client.list.base;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.RadioButton;
+import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.gwt.core.client.GWT;
@@ -35,7 +36,9 @@ import org.jbpm.console.ng.ga.model.QueryFilter;
 
 import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
+import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.lifecycle.OnClose;
+import org.uberfire.mvp.Command;
 import org.uberfire.paging.PageResponse;
 
 import javax.enterprise.event.Observes;
@@ -240,30 +243,30 @@ public abstract class AbstractListPresenter<T> {
         RadioButton tenMinuteRadioButton = createTimeSelectorRadioButton(600, "10 "+ Constants.INSTANCE.Minutes(), configuredSeconds, refreshIntervalSelector, popupContent);
 
         popupContent.add(oneMinuteRadioButton);
-        popupContent.add( fiveMinuteRadioButton );
-        popupContent.add( tenMinuteRadioButton );
+        popupContent.add(fiveMinuteRadioButton);
+        popupContent.add(tenMinuteRadioButton);
 
-        resetButton.setSize( ButtonSize.MINI );
-        resetButton.addClickHandler( new ClickHandler() {
+        resetButton.setSize(ButtonSize.MINI);
+        resetButton.addClickHandler(new ClickHandler() {
 
             @Override
-            public void onClick( ClickEvent event ) {
-                updateRefreshInterval( false, 0 );
-                saveRefreshValue( 0 );
-                resetButton.setEnabled( false );
-                resetButton.setActive( true );
-                resetButton.setText( Constants.INSTANCE.AutorefreshDisabled() );
+            public void onClick(ClickEvent event) {
+                updateRefreshInterval(false, 0);
+                saveRefreshValue(0);
+                resetButton.setEnabled(false);
+                resetButton.setActive(true);
+                resetButton.setText(Constants.INSTANCE.AutorefreshDisabled());
                 popup.hide();
             }
-        } );
+        });
 
-        popupContent.add( resetButton );
+        popupContent.add(resetButton);
 
 
-        popup.setWidget( popupContent );
+        popup.setWidget(popupContent);
         popup.show();
         int finalLeft = left - popup.getOffsetWidth();
-        popup.setPopupPosition( finalLeft, top );
+        popup.setPopupPosition(finalLeft, top);
 
     }
 
@@ -299,6 +302,30 @@ public abstract class AbstractListPresenter<T> {
         if(refreshTimer!=null) {
             refreshTimer.cancel();
         }
+    }
+
+    public void showRestoreDefaultFilterConfirmationPopup(Command yesCommand){
+        YesNoCancelPopup popup = YesNoCancelPopup.newYesNoCancelPopup(
+                Constants.INSTANCE.RestoreDefaultFilters(),
+                Constants.INSTANCE.AreYouSureRestoreDefaultFilters(),
+                yesCommand,
+                null,
+                ButtonType.PRIMARY,
+                null,
+                null,
+                null,
+                null,
+                null,
+                new Command() {
+                    @Override public void execute() {
+                    }
+                },
+                org.uberfire.ext.widgets.common.client.resources.i18n.CommonConstants.INSTANCE.Cancel(),
+                null,
+                null);
+        popup.setCloseVisible(false);
+        popup.show();
+
     }
 
 }
