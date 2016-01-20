@@ -16,10 +16,7 @@
 
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -38,6 +35,7 @@ import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
@@ -84,6 +82,8 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     public static final String COLUMN_COMMANDNAME = "commandName";
     public static final String COLUMN_MESSAGE = "message";
     public static final String COLUMN_BUSINESSKEY = "businessKey";
+
+    public static final String DATE_FORMAT = "dd/MM/yyyy HH:mm";
 
     public static final String COL_ID_ACTIONS = "Actions";
 
@@ -301,7 +301,12 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         Column<RequestSummary, String> dueDateColumn = new Column<RequestSummary, String>( new TextCell() ) {
             @Override
             public String getValue( RequestSummary object ) {
-                return object.getTime().toString();
+                Date time = object.getTime();
+                if ( time != null ) {
+                    DateTimeFormat format = DateTimeFormat.getFormat( DATE_FORMAT );
+                    return format.format( time );
+                }
+                return "";
             }
         };
         dueDateColumn.setSortable( true );
