@@ -348,7 +348,12 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                                 menuResetTabsButton.addClickHandler( new ClickHandler() {
                                     @Override
                                     public void onClick( ClickEvent clickEvent ) {
-                                        view.restoreTabs();
+                                        showRestoreDefaultFilterConfirmationPopup(new Command() {
+                                            @Override public void execute() {
+                                                view.restoreTabs();
+                                            }
+                                        });
+
                                     }
                                 } );
                                 return menuResetTabsButton;
