@@ -38,9 +38,8 @@ public class GenericFormDisplayView extends Composite implements GenericFormDisp
     @Inject
     private Event<NotificationEvent> notification;
 
-    @Inject
     @DataField
-    private FlowPanel formContainer;
+    private FlowPanel formContainer = new FlowPanel();
 
     @Inject
     private EmbeddedFormDisplayView view;

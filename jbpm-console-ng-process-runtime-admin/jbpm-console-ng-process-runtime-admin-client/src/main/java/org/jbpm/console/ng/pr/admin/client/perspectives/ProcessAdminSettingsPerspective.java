@@ -16,20 +16,21 @@
 package org.jbpm.console.ng.pr.admin.client.perspectives;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.FlowPanel;
 import org.uberfire.client.annotations.WorkbenchPanel;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.client.util.Layouts;
+
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  * A Perspective
  */
-@ApplicationScoped
+@Dependent
 @WorkbenchPerspective(identifier = "Process Admin")
-public class ProcessAdminSettingsPerspective extends FlowPanel {
+public class ProcessAdminSettingsPerspective extends Composite {
 
     @Inject
     @WorkbenchPanel(parts = "Process Admin Settings")
@@ -37,7 +38,6 @@ public class ProcessAdminSettingsPerspective extends FlowPanel {
 
     @PostConstruct
     private void init() {
-        Layouts.setToFillParent( tasksAdminSettings );
-        add( tasksAdminSettings );
+        initWidget( tasksAdminSettings );
     }
 }

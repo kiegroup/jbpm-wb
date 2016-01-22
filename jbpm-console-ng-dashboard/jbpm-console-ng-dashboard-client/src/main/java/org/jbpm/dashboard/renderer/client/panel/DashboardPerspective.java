@@ -17,7 +17,6 @@ package org.jbpm.dashboard.renderer.client.panel;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import com.google.gwt.user.client.ui.FlowPanel;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -30,7 +29,7 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
  */
 @ApplicationScoped
 @WorkbenchPerspective(identifier = "DashboardPerspective")
-public class DashboardPerspective extends FlowPanel {
+public class DashboardPerspective {
 
     @Perspective
     public PerspectiveDefinition buildPerspective() {
