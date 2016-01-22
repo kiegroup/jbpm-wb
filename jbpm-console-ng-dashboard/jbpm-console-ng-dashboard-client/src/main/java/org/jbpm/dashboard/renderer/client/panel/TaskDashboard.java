@@ -117,12 +117,12 @@ public class TaskDashboard implements IsWidget {
     protected MetricDisplayer errorMetric;
     protected MetricDisplayer exitedMetric;
     protected MetricDisplayer obsoleteMetric;
-    protected Displayer tasksByProcess;
-    protected Displayer tasksByOwner;
-    protected Displayer tasksByCreationDate;
-    protected Displayer tasksByEndDate;
-    protected Displayer tasksByRunningTime;
-    protected Displayer tasksByStatus;
+    protected AbstractDisplayer tasksByProcess;
+    protected AbstractDisplayer tasksByOwner;
+    protected AbstractDisplayer tasksByCreationDate;
+    protected AbstractDisplayer tasksByEndDate;
+    protected AbstractDisplayer tasksByRunningTime;
+    protected AbstractDisplayer tasksByStatus;
     protected TableDisplayer tasksTable;
 
     protected MetricDisplayer selectedMetric = null;
@@ -285,27 +285,27 @@ public class TaskDashboard implements IsWidget {
         return obsoleteMetric;
     }
 
-    public Displayer getTasksByProcess() {
+    public AbstractDisplayer getTasksByProcess() {
         return tasksByProcess;
     }
 
-    public Displayer getTasksByOwner() {
+    public AbstractDisplayer getTasksByOwner() {
         return tasksByOwner;
     }
 
-    public Displayer getTasksByCreationDate() {
+    public AbstractDisplayer getTasksByCreationDate() {
         return tasksByCreationDate;
     }
 
-    public Displayer getTasksByEndDate() {
+    public AbstractDisplayer getTasksByEndDate() {
         return tasksByEndDate;
     }
 
-    public Displayer getTasksByRunningTime() {
+    public AbstractDisplayer getTasksByRunningTime() {
         return tasksByRunningTime;
     }
 
-    public Displayer getTasksByStatus() {
+    public AbstractDisplayer getTasksByStatus() {
         return tasksByStatus;
     }
 
@@ -329,9 +329,9 @@ public class TaskDashboard implements IsWidget {
         return metricDisplayer;
     }
 
-    public Displayer createDisplayer(DisplayerSettings settings) {
+    public AbstractDisplayer createDisplayer(DisplayerSettings settings) {
         checkNotNull("displayerSettings", settings);
-        return displayerLocator.lookupDisplayer(settings);
+        return (AbstractDisplayer) displayerLocator.lookupDisplayer(settings);
     }
 
     public TableDisplayer createTableDisplayer(DisplayerSettings settings) {
@@ -384,8 +384,8 @@ public class TaskDashboard implements IsWidget {
     }
 
     public void resetProcessBreadcrumb() {
-        ((AbstractDisplayer) tasksByProcess).filterReset();
-        ((AbstractDisplayer) tasksByRunningTime).filterReset();
+        tasksByProcess.filterReset();
+        tasksByRunningTime.filterReset();
         tasksByProcess.redraw();
         tasksByRunningTime.redraw();
         view.hideBreadCrumb();

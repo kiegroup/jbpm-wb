@@ -33,16 +33,18 @@ public class ProcessDashboardData extends RawDataSet {
      */
     public static final ProcessDashboardData INSTANCE = new ProcessDashboardData(
             new String[] {
-                    COLUMN_PROCESS_ID,
-                    COLUMN_PROCESS_INSTANCE_ID,
-                    COLUMN_PROCESS_EXTERNAL_ID,
-                    COLUMN_PROCESS_NAME,
-                    COLUMN_PROCESS_USER_ID,
-                    COLUMN_PROCESS_START_DATE,
-                    COLUMN_PROCESS_END_DATE,
-                    COLUMN_PROCESS_STATUS,
-                    COLUMN_PROCESS_VERSION,
-                    COLUMN_PROCESS_DURATION},
+                    // Ensure the tests also works with columns in a different case,
+                    // which is actually the case when working with some DBs
+                    COLUMN_PROCESS_ID.toUpperCase(),
+                    COLUMN_PROCESS_INSTANCE_ID.toUpperCase(),
+                    COLUMN_PROCESS_EXTERNAL_ID.toUpperCase(),
+                    COLUMN_PROCESS_NAME.toUpperCase(),
+                    COLUMN_PROCESS_USER_ID.toUpperCase(),
+                    COLUMN_PROCESS_START_DATE.toUpperCase(),
+                    COLUMN_PROCESS_END_DATE.toUpperCase(),
+                    COLUMN_PROCESS_STATUS.toUpperCase(),
+                    COLUMN_PROCESS_VERSION.toUpperCase(),
+                    COLUMN_PROCESS_DURATION.toUpperCase()},
             new Class[] {
                     String.class,
                     Integer.class,
