@@ -17,18 +17,14 @@
 package org.jbpm.console.ng.pr.client.editors.instance.log;
 
 import java.util.List;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.ListItem;
 import org.gwtbootstrap3.client.ui.html.Div;
-import org.gwtbootstrap3.client.ui.html.Span;
 import org.gwtbootstrap3.client.ui.html.UnorderedList;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -37,6 +33,11 @@ import org.jbpm.console.ng.pr.client.util.LogUtils.LogOrder;
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogType;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Composite;
 
 @Dependent
 @Templated(value = "RuntimeLogViewImpl.html")
@@ -47,9 +48,9 @@ public class RuntimeLogViewImpl extends Composite
     private LogOrder logOrder = LogOrder.ASC;
     private LogType logType = LogType.BUSINESS;
 
-    @Inject
+    // Can't inject this because many uberfire widgets extend it.
     @DataField
-    public Div logTextArea;
+    public Div logTextArea = new Div();
 
     @Inject
     @DataField

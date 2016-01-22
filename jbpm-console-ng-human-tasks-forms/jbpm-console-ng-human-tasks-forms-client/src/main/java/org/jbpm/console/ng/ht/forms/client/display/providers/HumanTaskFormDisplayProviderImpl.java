@@ -27,7 +27,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.container.IOCBeanDef;
+import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskDisplayerConfig;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayer;
@@ -51,9 +51,9 @@ public class HumanTaskFormDisplayProviderImpl implements HumanTaskFormDisplayPro
     public void init() {
         taskDisplayers.clear();
 
-        final Collection<IOCBeanDef<HumanTaskFormDisplayer>> taskDisplayersBeans = iocManager.lookupBeans(HumanTaskFormDisplayer.class);
+        final Collection<SyncBeanDef<HumanTaskFormDisplayer>> taskDisplayersBeans = iocManager.lookupBeans(HumanTaskFormDisplayer.class);
         if (taskDisplayersBeans != null) {
-            for (final IOCBeanDef displayerDef : taskDisplayersBeans) {
+            for (final SyncBeanDef displayerDef : taskDisplayersBeans) {
                 taskDisplayers.add((HumanTaskFormDisplayer) displayerDef.getInstance());
             }
         }

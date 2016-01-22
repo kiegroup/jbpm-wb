@@ -16,13 +16,14 @@
 package org.jbpm.console.ng.gc.client.perspectives;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.uberfire.client.annotations.WorkbenchPanel;
@@ -32,7 +33,7 @@ import org.uberfire.client.util.Layouts;
 /**
  * A Perspective to show File Explorer
  */
-@ApplicationScoped
+@Dependent
 @WorkbenchPerspective( identifier = ExperimentalPagingPerspective.PERSPECTIVE_ID )
 public class ExperimentalPagingPerspective extends AbstractPerspective implements IsWidget {
 
@@ -44,9 +45,8 @@ public class ExperimentalPagingPerspective extends AbstractPerspective implement
     @Inject
     private Event<SearchEvent> searchEvents;
 
-    @Inject
     @WorkbenchPanel( parts = "Pagination For Tables" )
-    FlowPanel paginationTables;
+    FlowPanel paginationTables = new FlowPanel();
 
     private final FlowPanel view = new FlowPanel();
 

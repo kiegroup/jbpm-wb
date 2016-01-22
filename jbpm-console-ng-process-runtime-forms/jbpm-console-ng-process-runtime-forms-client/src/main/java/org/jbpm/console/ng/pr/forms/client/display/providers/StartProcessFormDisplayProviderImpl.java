@@ -20,7 +20,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.container.IOCBeanDef;
+import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jbpm.console.ng.gc.forms.client.display.views.GenericFormDisplayView;
 import org.uberfire.mvp.Command;
@@ -68,9 +68,9 @@ public class StartProcessFormDisplayProviderImpl implements StartProcessFormDisp
     @PostConstruct
     public void init() {
         processDisplayers.clear();
-        final Collection<IOCBeanDef<StartProcessFormDisplayer>> processDisplayersBeans = iocManager.lookupBeans(StartProcessFormDisplayer.class);
+        final Collection<SyncBeanDef<StartProcessFormDisplayer>> processDisplayersBeans = iocManager.lookupBeans(StartProcessFormDisplayer.class);
         if (processDisplayersBeans != null) {
-            for (final IOCBeanDef displayerDef : processDisplayersBeans) {
+            for (final SyncBeanDef displayerDef : processDisplayersBeans) {
                 processDisplayers.add((StartProcessFormDisplayer) displayerDef.getInstance());
             }
         }
