@@ -40,6 +40,7 @@
     <exclude name="org.dashbuilder.client.**"/>
     <exclude name="org.dashbuilder.common.client.**"/>
     <exclude name="org.dashbuilder.dataset.client.**"/>
+    <exclude name="org.dashbuilder.dataset.DataSetDefRegistryImpl"/>
     <exclude name="org.dashbuilder.dataset.validation.**"/>
     <exclude name="org.dashbuilder.dataset.editor.client.**"/>
     <exclude name="org.dashbuilder.displayer.client.**"/>

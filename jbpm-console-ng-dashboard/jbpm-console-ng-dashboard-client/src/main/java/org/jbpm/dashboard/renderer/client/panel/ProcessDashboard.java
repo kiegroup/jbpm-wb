@@ -107,12 +107,12 @@ public class ProcessDashboard implements IsWidget {
     protected MetricDisplayer suspendedMetric;
     protected MetricDisplayer abortedMetric;
     protected MetricDisplayer completedMetric;
-    protected Displayer processesByType;
-    protected Displayer processesByUser;
-    protected Displayer processesByStartDate;
-    protected Displayer processesByEndDate;
-    protected Displayer processesByRunningTime;
-    protected Displayer processesByVersion;
+    protected AbstractDisplayer processesByType;
+    protected AbstractDisplayer processesByUser;
+    protected AbstractDisplayer processesByStartDate;
+    protected AbstractDisplayer processesByEndDate;
+    protected AbstractDisplayer processesByRunningTime;
+    protected AbstractDisplayer processesByVersion;
     protected TableDisplayer processesTable;
 
     protected MetricDisplayer selectedMetric = null;
@@ -242,27 +242,27 @@ public class ProcessDashboard implements IsWidget {
         return completedMetric;
     }
 
-    public Displayer getProcessesByType() {
+    public AbstractDisplayer getProcessesByType() {
         return processesByType;
     }
 
-    public Displayer getProcessesByUser() {
+    public AbstractDisplayer getProcessesByUser() {
         return processesByUser;
     }
 
-    public Displayer getProcessesByStartDate() {
+    public AbstractDisplayer getProcessesByStartDate() {
         return processesByStartDate;
     }
 
-    public Displayer getProcessesByEndDate() {
+    public AbstractDisplayer getProcessesByEndDate() {
         return processesByEndDate;
     }
 
-    public Displayer getProcessesByRunningTime() {
+    public AbstractDisplayer getProcessesByRunningTime() {
         return processesByRunningTime;
     }
 
-    public Displayer getProcessesByVersion() {
+    public AbstractDisplayer getProcessesByVersion() {
         return processesByVersion;
     }
 
@@ -286,9 +286,9 @@ public class ProcessDashboard implements IsWidget {
         return metricDisplayer;
     }
 
-    public Displayer createDisplayer(DisplayerSettings settings) {
+    public AbstractDisplayer createDisplayer(DisplayerSettings settings) {
         checkNotNull("displayerSettings", settings);
-        return displayerLocator.lookupDisplayer(settings);
+        return (AbstractDisplayer) displayerLocator.lookupDisplayer(settings);
     }
 
     public TableDisplayer createTableDisplayer(DisplayerSettings settings) {
@@ -342,8 +342,8 @@ public class ProcessDashboard implements IsWidget {
     }
 
     public void resetProcessBreadcrumb() {
-        ((AbstractDisplayer) processesByType).filterReset();
-        ((AbstractDisplayer) processesByRunningTime).filterReset();
+        processesByType.filterReset();
+        processesByRunningTime.filterReset();
         processesByType.redraw();
         processesByRunningTime.redraw();
         view.hideBreadCrumb();
