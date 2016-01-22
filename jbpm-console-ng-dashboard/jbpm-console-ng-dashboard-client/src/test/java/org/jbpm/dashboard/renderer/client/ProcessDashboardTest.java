@@ -17,10 +17,13 @@ package org.jbpm.dashboard.renderer.client;
 
 import javax.enterprise.event.Event;
 
+import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.displayer.client.AbstractDisplayer;
 import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
+import org.dashbuilder.renderer.client.table.TableDisplayer;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.dashboard.renderer.client.panel.ProcessDashboard;
 import org.jbpm.dashboard.renderer.client.panel.events.ProcessDashboardFocusEvent;
@@ -31,7 +34,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.mvp.PlaceStatus;
-import org.uberfire.mvp.Command;
 
 import static org.dashbuilder.dataset.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -261,10 +263,15 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
     @Test
     public void testSelectProcess() {
         reset(view);
-        presenter.changeCurrentProcess("Process B");
+        reset(displayerListener);
+
+        presenter.getProcessesByType().filterUpdate(COLUMN_PROCESS_NAME, 1);
         assertEquals(presenter.getSelectedProcess(), "Process B");
+
         verify(view).showBreadCrumb("Process B");
         verify(view).setHeaderText(anyString());
+        verify(displayerListener, times(12)).onRedraw(any(Displayer.class));
+        verify(displayerListener, never()).onError(any(Displayer.class), any(ClientRuntimeError.class));
     }
 
     @Test

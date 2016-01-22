@@ -25,15 +25,17 @@ public class TaskDashboardData extends RawDataSet {
 
     public static final TaskDashboardData INSTANCE = new TaskDashboardData(
             new String[] {
-                    COLUMN_PROCESS_NAME,
-                    COLUMN_TASK_ID,
-                    COLUMN_TASK_NAME,
-                    COLUMN_TASK_OWNER_ID,
-                    COLUMN_TASK_CREATED_DATE,
-                    COLUMN_TASK_START_DATE,
-                    COLUMN_TASK_END_DATE,
-                    COLUMN_TASK_STATUS,
-                    COLUMN_TASK_DURATION},
+                    // Ensure the tests also works with columns in a different case,
+                    // which is actually the case when working with some DBs
+                    COLUMN_PROCESS_NAME.toUpperCase(),
+                    COLUMN_TASK_ID.toUpperCase(),
+                    COLUMN_TASK_NAME.toUpperCase(),
+                    COLUMN_TASK_OWNER_ID.toUpperCase(),
+                    COLUMN_TASK_CREATED_DATE.toUpperCase(),
+                    COLUMN_TASK_START_DATE.toUpperCase(),
+                    COLUMN_TASK_END_DATE.toUpperCase(),
+                    COLUMN_TASK_STATUS.toUpperCase(),
+                    COLUMN_TASK_DURATION.toUpperCase()},
             new Class[] {
                     String.class,
                     Integer.class,
