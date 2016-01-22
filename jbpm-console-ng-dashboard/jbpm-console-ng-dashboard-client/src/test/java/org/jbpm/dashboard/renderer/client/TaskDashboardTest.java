@@ -17,8 +17,10 @@ package org.jbpm.dashboard.renderer.client;
 
 import javax.enterprise.event.Event;
 
+import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.displayer.client.AbstractDisplayer;
 import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
@@ -286,10 +288,15 @@ public class TaskDashboardTest extends AbstractDashboardTest {
     @Test
     public void testSelectProcess() {
         reset(view);
-        presenter.changeCurrentProcess("Process B");
+        reset(displayerListener);
+
+        presenter.getTasksByProcess().filterUpdate(COLUMN_PROCESS_NAME, 1);
         assertEquals(presenter.getSelectedProcess(), "Process B");
+
         verify(view).showBreadCrumb("Process B");
         verify(view).setHeaderText(anyString());
+        verify(displayerListener, times(17)).onRedraw(any(Displayer.class));
+        verify(displayerListener, never()).onError(any(Displayer.class), any(ClientRuntimeError.class));
     }
 
     @Test

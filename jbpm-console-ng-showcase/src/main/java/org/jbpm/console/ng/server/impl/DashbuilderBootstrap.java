@@ -244,6 +244,8 @@ public class DashbuilderBootstrap {
         dataSetDefRegistry.registerDataSetDef(humanTaskWithAdminDef);
         dataSetDefRegistry.registerDataSetDef(requestListDef);
         dataSetDefRegistry.registerDataSetDef(processWithVariablesDef);
+        dataSetDefRegistry.registerDataSetDef(processMonitoringDef);
+        dataSetDefRegistry.registerDataSetDef(taskMonitoringDef);
     }
 
     protected void findDataSourceJNDI() {
