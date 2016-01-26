@@ -201,8 +201,10 @@ public class DeploymentDescriptorViewTest {
 
         viewImpl.setContent(deploymentDescriptorModel);
 
+        boolean limitSerializationClasses = DeploymentDescriptorViewImpl.getLimitSerializationClassesCheckBoxValue(deploymentDescriptorModel);
+
         assertTrue( "The default value of 'limitSerializationClasses is FALSE in 6.x and TRUE in 7.x",
-                jarVersion < 7.0d && ! viewImpl.limitSerializationClassesCheckBox.getValue()
-                || jarVersion >= 7.0d && viewImpl.limitSerializationClassesCheckBox.getValue() );
+                ( jarVersion < 7.0d && ! limitSerializationClasses )
+                || (jarVersion >= 7.0d && limitSerializationClasses ) );
     }
 }
