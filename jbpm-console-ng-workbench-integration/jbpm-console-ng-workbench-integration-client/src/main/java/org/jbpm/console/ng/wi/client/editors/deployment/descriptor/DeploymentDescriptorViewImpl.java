@@ -17,22 +17,9 @@
 package org.jbpm.console.ng.wi.client.editors.deployment.descriptor;
 
 import java.util.ArrayList;
+
 import javax.inject.Inject;
 
-import com.google.gwt.cell.client.EditTextCell;
-import com.google.gwt.cell.client.FieldUpdater;
-import com.google.gwt.cell.client.SelectionCell;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.TextHeader;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.view.client.ListDataProvider;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.CheckBox;
 import org.gwtbootstrap3.client.ui.FormGroup;
@@ -51,6 +38,21 @@ import org.jbpm.console.ng.wi.dd.model.ItemObjectModel;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
 import org.uberfire.client.mvp.PlaceManager;
+
+import com.google.gwt.cell.client.EditTextCell;
+import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.SelectionCell;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.TextHeader;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.ListDataProvider;
 
 public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements DeploymentDescriptorView {
 
@@ -345,12 +347,16 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
         if ( deploymentDescriptorModel.getRemotableClasses() != null ) {
             remoteableClassesDataProvider.setList( deploymentDescriptorModel.getRemotableClasses() );
         }
+        boolean limitSerializationClasses = getLimitSerializationClassesCheckBoxValue(deploymentDescriptorModel);
+        limitSerializationClassesCheckBox.setValue(limitSerializationClasses);
+    }
+
+    public static boolean getLimitSerializationClassesCheckBoxValue(DeploymentDescriptorModel deploymentDescriptorModel) {
         Boolean limitSerializationClasses = deploymentDescriptorModel.getLimitSerializationClasses();
         if( limitSerializationClasses == null ) {
-            // change in 7.0.x!
-            limitSerializationClasses = false;
+            limitSerializationClasses = true;
         }
-        limitSerializationClassesCheckBox.setValue(limitSerializationClasses);
+        return limitSerializationClasses;
     }
 
     @Override
