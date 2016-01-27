@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 JBoss by Red Hat.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,34 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.server.impl;
+package org.jbpm.console.ng.ht.backend.server;
+
+import java.util.List;
 
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DashbuilderBootstrapTest {
+public class DataSetDefsBootstrapTest {
 
     @Mock
     DataSetDefRegistry dataSetDefRegistryMock;
 
     @InjectMocks
-    DashbuilderBootstrap dashbuilderBootstrap;
+    DataSetDefsBootstrap dataSetsBootstrap;
 
     @Test
     public void registerDataSetDefinitionsTest() {
-        dashbuilderBootstrap.registerDataSetDefinitions();
-        verify(dataSetDefRegistryMock,times(6)).registerDataSetDef(any(DataSetDef.class));
+        dataSetsBootstrap.registerDataSetDefinitions();
+        ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
+        verify(dataSetDefRegistryMock, times(3)).registerDataSetDef(argument.capture());
+
+        List<DataSetDef> dsList = argument.getAllValues();
+        assertEquals(dsList.size(), 3);
+        assertEquals(dsList.get(0).getUUID(), HUMAN_TASKS_DATASET);
+        assertEquals(dsList.get(1).getUUID(), HUMAN_TASKS_WITH_USER_DATASET);
+        assertEquals(dsList.get(2).getUUID(), HUMAN_TASKS_WITH_ADMIN_DATASET);
     }
-
-
-
 }

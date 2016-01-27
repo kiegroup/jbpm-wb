@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -67,6 +66,7 @@ import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.jbpm.console.ng.es.model.RequestDataSetConstants.*;
 
 @Dependent
 @WorkbenchScreen(identifier = "Requests List")
@@ -177,7 +177,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                         dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
                         dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
                     } else {
-                        dataSetQueryHelper.setLastOrderedColumn( RequestListViewImpl.COLUMN_TIMESTAMP );
+                        dataSetQueryHelper.setLastOrderedColumn( COLUMN_TIMESTAMP );
                         dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                     }
 
@@ -185,9 +185,9 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
 
                         DataSetFilter filter = new DataSetFilter();
                         List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-                        filters.add( likeTo( RequestListViewImpl.COLUMN_COMMANDNAME, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( RequestListViewImpl.COLUMN_MESSAGE, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( RequestListViewImpl.COLUMN_BUSINESSKEY, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo( COLUMN_COMMANDNAME, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo( COLUMN_MESSAGE, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo( COLUMN_BUSINESSKEY, "%" + textSearchStr.toLowerCase() + "%", false ) );
                         filter.addFilterColumn( OR( filters ) );
 
                         if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {
@@ -207,12 +207,12 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                                 for (int i = 0; i < dataSet.getRowCount(); i++) {
 
                                     myRequestSumaryFromDataSet.add(new RequestSummary(
-                                            dataSetQueryHelper.getColumnLongValue(dataSet, RequestListViewImpl.COLUMN_ID, i),
-                                            dataSetQueryHelper.getColumnDateValue(dataSet, RequestListViewImpl.COLUMN_TIMESTAMP, i),
-                                            dataSetQueryHelper.getColumnStringValue(dataSet, RequestListViewImpl.COLUMN_STATUS, i),
-                                            dataSetQueryHelper.getColumnStringValue(dataSet, RequestListViewImpl.COLUMN_COMMANDNAME, i),
-                                            dataSetQueryHelper.getColumnStringValue(dataSet, RequestListViewImpl.COLUMN_MESSAGE, i),
-                                            dataSetQueryHelper.getColumnStringValue(dataSet, RequestListViewImpl.COLUMN_BUSINESSKEY, i)));
+                                            dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_ID, i),
+                                            dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_TIMESTAMP, i),
+                                            dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_STATUS, i),
+                                            dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_COMMANDNAME, i),
+                                            dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_MESSAGE, i),
+                                            dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_BUSINESSKEY, i)));
 
                                 }
                                 PageResponse<RequestSummary> requestSummaryPageResponse = new PageResponse<RequestSummary>();
@@ -231,14 +231,14 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
 
                         @Override
                         public void notFound() {
-                            errorPopup.showMessage("Not found DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] ");
-                            GWT.log("DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] not found.");
+                            errorPopup.showMessage("Not found DataSet with UUID [  " + REQUEST_LIST_DATASET + " ] ");
+                            GWT.log("DataSet with UUID [  " + REQUEST_LIST_DATASET + " ] not found.");
                         }
 
                         @Override
                         public boolean onError(final ClientRuntimeError error) {
-                            errorPopup.showMessage("DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] error: " + error.getThrowable());
-                            GWT.log("DataSet with UUID [  " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ] error: ", error.getThrowable());
+                            errorPopup.showMessage("DataSet with UUID [  " + REQUEST_LIST_DATASET + " ] error: " + error.getThrowable());
+                            GWT.log("DataSet with UUID [  " + REQUEST_LIST_DATASET + " ] error: ", error.getThrowable());
                             return false;
                         }
                     });
@@ -246,7 +246,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                 }
             }
         } catch ( Exception e ) {
-            GWT.log( "Error looking up dataset with UUID [ " + RequestListViewImpl.REQUEST_LIST_DATASET_ID + " ]" );
+            GWT.log( "Error looking up dataset with UUID [ " + REQUEST_LIST_DATASET + " ]" );
         }
 
     }
