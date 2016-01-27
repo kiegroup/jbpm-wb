@@ -476,7 +476,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         } ) );
 
-        cells.add( new CompleteActionHasCell( constants.Complete(), new ActionCell.Delegate<TaskSummary>() {
+        cells.add( new CompleteActionHasCell( constants.Open(), new ActionCell.Delegate<TaskSummary>() {
             @Override
             public void execute( TaskSummary task ) {
                 placeManager.goTo( "Task Details Multi" );
@@ -484,6 +484,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                 if ( task.getStatus().equals( "Completed" ) && task.isLogOnly() ) {
                     logOnly = true;
                 }
+                selectedRow=-1;
                 taskSelected.fire( new TaskSelectionEvent( task.getTaskId(), task.getName(), task.isForAdmin(), logOnly ) );
             }
         } ) );
