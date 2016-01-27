@@ -16,16 +16,11 @@
 package org.jbpm.console.ng.es.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 
-import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
-import org.kie.workbench.common.widgets.client.search.ContextualSearch;
-import org.kie.workbench.common.widgets.client.search.SearchBehavior;
+import org.jbpm.console.ng.gc.client.perspectives.AbstractPerspective;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
@@ -35,32 +30,21 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Jobs")
-public class JobListPerspective {
+@WorkbenchPerspective(identifier = JobListPerspective.PERSPECTIVE_ID )
+public class JobListPerspective extends AbstractPerspective {
 
-    @Inject
-    private ContextualSearch contextualSearch;
-
-    @Inject
-    private Event<SearchEvent> searchEvents;
+    public static final String PERSPECTIVE_ID = "Jobs";
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl( MultiListWorkbenchPanelPresenter.class.getName() );
-        p.setName( "Jobs" );
+        p.setName( PERSPECTIVE_ID );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Requests List" ) ) );
         return p;
     }
-    @OnStartup
-    public void init() {
-        contextualSearch.setSearchBehavior( new SearchBehavior() {
-            @Override
-            public void execute( String searchFilter ) {
-                searchEvents.fire( new SearchEvent( searchFilter ) );
-            }
 
-        } );
-
+    @Override
+    public String getPerspectiveId() {
+        return PERSPECTIVE_ID;
     }
-
 }
