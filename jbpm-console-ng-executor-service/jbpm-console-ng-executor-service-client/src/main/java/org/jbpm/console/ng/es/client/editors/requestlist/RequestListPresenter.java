@@ -52,6 +52,7 @@ import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.RefreshSelectorMenuBuilder;
+import org.jbpm.console.ng.gc.client.list.base.ResetFiltersMenuBuilder;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -75,8 +76,6 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     public interface RequestListView extends ListView<RequestSummary, RequestListPresenter> {
 
         int getRefreshValue();
-
-        void restoreTabs();
 
         void saveRefreshValue( int newValue );
 
@@ -106,6 +105,8 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     private QuickNewJobPopup quickNewJobPopup;
 
     private RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder( this );
+
+    private ResetFiltersMenuBuilder resetFiltersMenuBuilder = new ResetFiltersMenuBuilder( this );
 
     @Inject
     private ErrorPopupPresenter errorPopup;
@@ -357,43 +358,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
 
                 .newTopLevelCustomMenu( refreshSelectorMenuBuilder ).endMenu()
 
-                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
-                    @Override
-                    public void push( MenuFactory.CustomMenuBuilder element ) {
-                    }
-
-                    @Override
-                    public MenuItem build() {
-                        return new BaseMenuCustom<IsWidget>() {
-                            @Override
-                            public IsWidget build() {
-                                menuResetTabsButton.addClickHandler( new ClickHandler() {
-                                    @Override
-                                    public void onClick( ClickEvent clickEvent ) {
-                                        view.restoreTabs();
-                                    }
-                                } );
-                                return menuResetTabsButton;
-                            }
-
-                            @Override
-                            public boolean isEnabled() {
-                                return true;
-                            }
-
-                            @Override
-                            public void setEnabled( boolean enabled ) {
-
-                            }
-
-                            @Override
-                            public String getSignatureId() {
-                                return "org.jbpm.console.ng.es.client.editors.requestlist.RequestListPresenter#menuResetTabsButton";
-                            }
-
-                        };
-                    }
-                } ).endMenu()
+                .newTopLevelCustomMenu( resetFiltersMenuBuilder ).endMenu()
                 .build();
 
     }

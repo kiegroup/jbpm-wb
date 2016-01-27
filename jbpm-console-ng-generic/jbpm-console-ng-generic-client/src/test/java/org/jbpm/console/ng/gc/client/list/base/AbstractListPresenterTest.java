@@ -16,9 +16,9 @@
 package org.jbpm.console.ng.gc.client.list.base;
 
 
-import com.google.gwt.view.client.Range;
-import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.gwt.user.client.Timer;
+import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -33,55 +33,51 @@ public class AbstractListPresenterTest {
     @Mock
     private Timer timer;
 
-    private TestListPresenter testListPresenter;
+    @Mock
+    private AbstractListView.ListView viewMock;
 
+    private AbstractListPresenter testListPresenter;
+
+    @Before
+    public void setupMocks() {
+        testListPresenter = spy( AbstractScreenListPresenter.class );
+        when( testListPresenter.getListView() ).thenReturn( viewMock );
+    }
 
     @Test
     public void autoRefreshDisabledByDefaultTest() {
-        testListPresenter = new TestListPresenter();
-
-        testListPresenter.setRefreshTimer( null);
+        testListPresenter.setRefreshTimer( null );
         testListPresenter.updateRefreshTimer();
-        assertNotNull(testListPresenter.getRefreshTimer());
-        assertFalse(testListPresenter.isAutoRefreshEnabled());
 
+        assertNotNull( testListPresenter.getRefreshTimer() );
+        assertFalse( testListPresenter.isAutoRefreshEnabled() );
 
-        testListPresenter.setRefreshTimer( timer);
-        testListPresenter.setAutoRefreshSeconds(60);
+        testListPresenter.setRefreshTimer( timer );
+        testListPresenter.setAutoRefreshSeconds( 60 );
         testListPresenter.updateRefreshTimer();
-        assertFalse(testListPresenter.isAutoRefreshEnabled());
-        verify(timer).cancel();
 
+        assertFalse( testListPresenter.isAutoRefreshEnabled() );
+        verify( timer ).cancel();
     }
 
     @Test
     public void autoRefreshEnabledScheduleTimerTest() {
-        testListPresenter = new TestListPresenter();
-
-        testListPresenter.setAutoRefreshEnabled(true);
-        testListPresenter.setAutoRefreshSeconds(60);
-        testListPresenter.setRefreshTimer( timer);
+        testListPresenter.setAutoRefreshEnabled( true );
+        testListPresenter.setAutoRefreshSeconds( 60 );
+        testListPresenter.setRefreshTimer( timer );
         testListPresenter.updateRefreshTimer();
-        assertNotNull(testListPresenter.getRefreshTimer());
-        verify(timer).cancel();
-        verify(timer).schedule(60000);
 
+        assertNotNull( testListPresenter.getRefreshTimer() );
+        verify( timer ).cancel();
+        verify( timer ).schedule( 60000 );
     }
 
-    private class TestListPresenter extends AbstractScreenListPresenter{
 
-        @Override protected AbstractListView.ListView getListView() {
-            return null;
-        }
+    @Test
+    public void restoreTabsTest() {
+        testListPresenter.onRestoreDefaultFilters();
 
-        @Override public void getData(Range visibleRange) {
-
-        }
-
-        protected int getRefreshValue(){
-            return 10;
-        }
+        verify( viewMock ).showRestoreDefaultFilterConfirmationPopup();
     }
 
 }
-
