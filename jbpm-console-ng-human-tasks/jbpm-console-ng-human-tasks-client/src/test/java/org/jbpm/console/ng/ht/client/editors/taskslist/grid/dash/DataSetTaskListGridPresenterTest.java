@@ -35,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.uberfire.mocks.CallerMock;
 
+import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.dashbuilder.dataset.sort.SortOrder.*;
 import static org.mockito.Mockito.*;
@@ -109,39 +110,39 @@ public class DataSetTaskListGridPresenterTest {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset(DataSetTasksListGridViewImpl.HUMAN_TASKS_WITH_USERS_DATASET);
+        builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
 
         //Set<Group> groups = identity.getGroups();
         List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
         //for(Group g : groups){
-        //    condList.add( FilterFactory.equalsTo(DataSetTasksListGridViewImpl.COLUMN_ORGANIZATIONAL_ENTITY, g.getName()));
+        //    condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, g.getName()));
         // }
-        ColumnFilter myGroupFilter = FilterFactory.AND(FilterFactory.OR(condList), FilterFactory.equalsTo(DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, ""));
+        ColumnFilter myGroupFilter = FilterFactory.AND(FilterFactory.OR(condList), FilterFactory.equalsTo(COLUMN_ACTUALOWNER, ""));
 
-        builder.filter(OR(myGroupFilter, FilterFactory.equalsTo(DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, "admin")));
+        builder.filter(OR(myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUALOWNER, "admin")));
 
-        builder.group(DataSetTasksListGridViewImpl.COLUMN_TASKID);
+        builder.group(COLUMN_TASKID);
 
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, "actual owner");
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_CREATEDBY,"CreatedBy" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_CREATEDON , "Created on", "MMM dd E, yyyy" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_DEPLOYMENTID, "DeploymentId" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION, "description" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_NAME, "tasks" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_PARENTID,  "ParentId");
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_PRIORITY, "Priority" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_PROCESSID, "ProcessId" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_PROCESSINSTANCEID, "ProcessInstanceId" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_PROCESSSESSIONID, "ProcessSesionId" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_STATUS, "status" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_TASKID, "id" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_WORKITEMID, "WorkItemId" );
+        builder.setColumn( COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_ACTUALOWNER, "actual owner");
+        builder.setColumn( COLUMN_CREATEDBY,"CreatedBy" );
+        builder.setColumn( COLUMN_CREATEDON , "Created on", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_DEPLOYMENTID, "DeploymentId" );
+        builder.setColumn( COLUMN_DESCRIPTION, "description" );
+        builder.setColumn( COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_NAME, "tasks" );
+        builder.setColumn( COLUMN_PARENTID,  "ParentId");
+        builder.setColumn( COLUMN_PRIORITY, "Priority" );
+        builder.setColumn( COLUMN_PROCESSID, "ProcessId" );
+        builder.setColumn( COLUMN_PROCESSINSTANCEID, "ProcessInstanceId" );
+        builder.setColumn( COLUMN_PROCESSSESSIONID, "ProcessSesionId" );
+        builder.setColumn( COLUMN_STATUS, "status" );
+        builder.setColumn( COLUMN_TASKID, "id" );
+        builder.setColumn( COLUMN_WORKITEMID, "WorkItemId" );
 
         builder.filterOn( true, true, true);
         builder.tableOrderEnabled(true);
-        builder.tableOrderDefault( DataSetTasksListGridViewImpl.COLUMN_CREATEDON, DESCENDING );
+        builder.tableOrderDefault( COLUMN_CREATEDON, DESCENDING );
         builder.tableWidth(1000);
 
 

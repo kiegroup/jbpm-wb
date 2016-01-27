@@ -68,6 +68,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.dashbuilder.dataset.sort.SortOrder.*;
+import static org.jbpm.console.ng.es.model.RequestDataSetConstants.*;
 
 @Dependent
 public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, RequestListPresenter>
@@ -76,15 +77,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     private Constants constants = GWT.create( Constants.class );
 
     public static String REQUEST_LIST_PREFIX = "DS_RequestListGrid";
-    public static final String REQUEST_LIST_DATASET_ID = "jbpmRequestList";
-
-    public static final String COLUMN_ID = "id";
-    public static final String COLUMN_TIMESTAMP = "timestamp";
-    public static final String COLUMN_STATUS = "status";
-    public static final String COLUMN_COMMANDNAME = "commandName";
-    public static final String COLUMN_MESSAGE = "message";
-    public static final String COLUMN_BUSINESSKEY = "businessKey";
-
     public static final String COL_ID_ACTIONS = "Actions";
 
     @Inject
@@ -437,7 +429,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
         if ( statuses != null && statuses.size() > 0 ) {
-            builder.dataset( REQUEST_LIST_DATASET_ID );
+            builder.dataset( REQUEST_LIST_DATASET );
             List<Comparable> names = new ArrayList<Comparable>();
 
             for ( String s : statuses ) {
@@ -445,7 +437,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
             }
             builder.filter( equalsTo( COLUMN_STATUS, names ) );
         }
-        builder.dataset( REQUEST_LIST_DATASET_ID );
+        builder.dataset( REQUEST_LIST_DATASET );
         builder.setColumn( COLUMN_ID, "id" );
         builder.setColumn( COLUMN_TIMESTAMP, "time", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_STATUS, "status" );
@@ -501,7 +493,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset( REQUEST_LIST_DATASET_ID );
+        builder.dataset( REQUEST_LIST_DATASET );
         builder.setColumn( COLUMN_ID, "id" );
         builder.setColumn( COLUMN_TIMESTAMP, "time", "MMM dd E, yyyy" );
         builder.setColumn( COLUMN_STATUS, "status" );
