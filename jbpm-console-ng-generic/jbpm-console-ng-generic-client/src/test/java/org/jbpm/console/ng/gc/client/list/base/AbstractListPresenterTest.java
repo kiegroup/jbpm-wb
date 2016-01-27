@@ -16,24 +16,39 @@
 package org.jbpm.console.ng.gc.client.list.base;
 
 
+import java.util.List;
+
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.gwt.user.client.Timer;
+import com.google.gwtmockito.WithClassesToStub;
+import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
+import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 
-@RunWith( GwtMockitoTestRunner.class )
+@RunWith(GwtMockitoTestRunner.class)
+@WithClassesToStub({YesNoCancelPopup.class})
 public class AbstractListPresenterTest {
 
     @Mock
     private Timer timer;
 
+    @Mock
+    private TestGridViewImpl viewMock;
+
     private TestListPresenter testListPresenter;
+
 
 
     @Test
@@ -68,18 +83,65 @@ public class AbstractListPresenterTest {
 
     }
 
+
+    @Test
+    public void restoreTabsTest() {
+        testListPresenter = new TestListPresenter(viewMock);
+
+        testListPresenter.restoredTabCallTest();
+        verify(viewMock).showRestoreDefaultFilterConfirmationPopup();
+    }
+
+
     private class TestListPresenter extends AbstractScreenListPresenter{
 
+        TestGridViewImpl view;
+
+        public TestListPresenter(){
+
+        }
+        public TestListPresenter(TestGridViewImpl view){
+            this.view= view;
+        }
+
+
         @Override protected AbstractListView.ListView getListView() {
-            return null;
+            return view;
         }
 
         @Override public void getData(Range visibleRange) {
 
         }
 
+        public void restoredTabCallTest(){
+            getListView().showRestoreDefaultFilterConfirmationPopup();
+        }
+
         protected int getRefreshValue(){
             return 10;
+        }
+    }
+
+    public class TestGridViewImpl extends AbstractMultiGridView implements AbstractListView.ListView {
+
+        @Override public void initColumns(ExtendedPagedTable extendedPagedTable) {
+
+        }
+
+        @Override public void initSelectionModel() {
+
+        }
+
+        @Override public void init(Object presenter) {
+
+        }
+
+        @Override public void showRestoreDefaultFilterConfirmationPopup() {
+            restoreTabs();
+        }
+
+        public void restoreTabs() {
+            super.restoreTabs();
         }
     }
 

@@ -76,8 +76,6 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
 
         int getRefreshValue();
 
-        void restoreTabs();
-
         void saveRefreshValue( int newValue );
 
         void applyFilterOnPresenter( String key );
@@ -370,7 +368,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                                 menuResetTabsButton.addClickHandler( new ClickHandler() {
                                     @Override
                                     public void onClick( ClickEvent clickEvent ) {
-                                        view.restoreTabs();
+                                        view.showRestoreDefaultFilterConfirmationPopup();
                                     }
                                 } );
                                 return menuResetTabsButton;

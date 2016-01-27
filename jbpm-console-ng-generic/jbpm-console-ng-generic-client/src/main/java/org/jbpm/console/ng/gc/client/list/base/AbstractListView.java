@@ -98,6 +98,8 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
 
         void displayNotification( String text );
 
+        void showRestoreDefaultFilterConfirmationPopup();
+
         ExtendedPagedTable<T> getListGrid();
     }
 
@@ -141,6 +143,10 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
 
     public void displayNotification( String text ) {
         notification.fire( new NotificationEvent( text ) );
+    }
+
+    public void showRestoreDefaultFilterConfirmationPopup(){
+
     }
   /*
    * By default all the tables will have a refresh button
