@@ -19,9 +19,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
-import org.kie.workbench.common.widgets.client.search.ContextualSearch;
-import org.kie.workbench.common.widgets.client.search.SearchBehavior;
+import org.jbpm.console.ng.gc.client.perspectives.AbstractPerspective;
 import org.kie.workbench.common.widgets.client.search.SetSearchTextEvent;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -34,42 +32,35 @@ import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "DataSet Process Instances Variables")
-public class DataSetProcessInstancesVariablesPerspective {
+@WorkbenchPerspective( identifier = DataSetProcessInstancesVariablesPerspective.PERSPECTIVE_ID )
+public class DataSetProcessInstancesVariablesPerspective extends AbstractPerspective {
+
+    public static final String PERSPECTIVE_ID = "DataSet Process Instances Variables";
 
     @Inject
-    private ContextualSearch contextualSearch;
-    
-    @Inject
-    private Event<SearchEvent> searchEvents;
-    
-    @Inject
     private Event<SetSearchTextEvent> setSearchTextEvents;
-    
+
     private String currentProcessDefinition = "";
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl( ClosableSimpleWorkbenchPanelPresenter.class.getName() );
-        p.setName( "DataSet Process Instances Variables" );
+        p.setName( PERSPECTIVE_ID );
         DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "DataSet Process Instance Variable List" );
-        
+
         p.getRoot().addPart( new PartDefinitionImpl( defaultPlaceRequest ) );
         return p;
     }
-    
-    @OnStartup
-    public void onStartup(final PlaceRequest place) {
-        contextualSearch.setSearchBehavior(new SearchBehavior() {
-            @Override
-            public void execute(String searchFilter) {
-                searchEvents.fire(new SearchEvent(searchFilter));
-            }
 
-            
-        });
+    @Override
+    public String getPerspectiveId() {
+        return PERSPECTIVE_ID;
+    }
+
+    @OnStartup
+    public void onStartup( final PlaceRequest place ) {
         this.currentProcessDefinition = place.getParameter( "processName", "" );
-        setSearchTextEvents.fire(new SetSearchTextEvent(currentProcessDefinition));
+        setSearchTextEvents.fire( new SetSearchTextEvent( currentProcessDefinition ) );
     }
 
 }

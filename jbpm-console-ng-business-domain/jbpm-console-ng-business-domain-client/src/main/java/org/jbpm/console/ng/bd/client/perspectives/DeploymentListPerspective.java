@@ -16,16 +16,11 @@
 package org.jbpm.console.ng.bd.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 
-import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
-import org.kie.workbench.common.widgets.client.search.ContextualSearch;
-import org.kie.workbench.common.widgets.client.search.SearchBehavior;
+import org.jbpm.console.ng.gc.client.perspectives.AbstractPerspective;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.PanelDefinition;
@@ -38,19 +33,15 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Deployments")
-public class DeploymentListPerspective {
+@WorkbenchPerspective( identifier = DeploymentListPerspective.PERSPECTIVE_ID )
+public class DeploymentListPerspective extends AbstractPerspective {
 
-    @Inject
-    private ContextualSearch contextualSearch;
-
-    @Inject
-    private Event<SearchEvent> searchEvents;
+    public static final String PERSPECTIVE_ID = "Deployments";
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl( MultiListWorkbenchPanelPresenter.class.getName() );
-        p.setName( "Deployments" );
+        p.setName( PERSPECTIVE_ID );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Deployments List" ) ) );
 
         final PanelDefinition problems = new PanelDefinitionImpl( MultiListWorkbenchPanelPresenter.class.getName() );
@@ -62,15 +53,8 @@ public class DeploymentListPerspective {
         return p;
     }
 
-    @OnStartup
-    public void init() {
-        contextualSearch.setSearchBehavior( new SearchBehavior() {
-            @Override
-            public void execute( String searchFilter ) {
-                searchEvents.fire( new SearchEvent( searchFilter ) );
-            }
-
-        } );
-
+    @Override
+    public String getPerspectiveId() {
+        return PERSPECTIVE_ID;
     }
 }
