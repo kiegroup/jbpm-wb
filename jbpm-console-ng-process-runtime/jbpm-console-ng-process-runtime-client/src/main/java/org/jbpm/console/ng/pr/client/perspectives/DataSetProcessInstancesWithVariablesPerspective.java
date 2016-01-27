@@ -16,56 +16,35 @@
 package org.jbpm.console.ng.pr.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 
-import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
-import org.kie.workbench.common.widgets.client.search.ContextualSearch;
-import org.kie.workbench.common.widgets.client.search.SearchBehavior;
-import org.kie.workbench.common.widgets.client.search.SetSearchTextEvent;
+import org.jbpm.console.ng.gc.client.perspectives.AbstractPerspective;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.ClosableSimpleWorkbenchPanelPresenter;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "DataSet Process Instances With Variables")
-public class DataSetProcessInstancesWithVariablesPerspective {
+@WorkbenchPerspective( identifier = DataSetProcessInstancesWithVariablesPerspective.PERSPECTIVE_ID )
+public class DataSetProcessInstancesWithVariablesPerspective extends AbstractPerspective {
 
-    @Inject
-    private ContextualSearch contextualSearch;
-    
-    @Inject
-    private Event<SearchEvent> searchEvents;
-    
-    @Inject
-    private Event<SetSearchTextEvent> setSearchTextEvents;
-    
+    public static final String PERSPECTIVE_ID = "DataSet Process Instances With Variables";
+
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl( ClosableSimpleWorkbenchPanelPresenter.class.getName() );
-        p.setName( "DataSet Process Instances With Variables" );
-        
+        p.setName( PERSPECTIVE_ID );
+
         DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "DataSet Process Instance List With Variables" );
-        
+
         p.getRoot().addPart( new PartDefinitionImpl( defaultPlaceRequest ) );
         return p;
     }
-    
-    @OnStartup
-    public void init() {
-        contextualSearch.setSearchBehavior( new SearchBehavior() {
-            @Override
-            public void execute( String searchFilter ) {
-                searchEvents.fire( new SearchEvent( searchFilter ) );
-            }
 
-        } );
-
+    @Override
+    public String getPerspectiveId() {
+        return PERSPECTIVE_ID;
     }
-
 }

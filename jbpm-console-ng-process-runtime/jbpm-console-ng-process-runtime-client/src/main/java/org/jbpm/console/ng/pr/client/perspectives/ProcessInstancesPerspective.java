@@ -19,9 +19,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
-import org.kie.workbench.common.widgets.client.search.ContextualSearch;
-import org.kie.workbench.common.widgets.client.search.SearchBehavior;
+import org.jbpm.console.ng.gc.client.perspectives.AbstractPerspective;
 import org.kie.workbench.common.widgets.client.search.SetSearchTextEvent;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -34,15 +32,11 @@ import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Process Instances")
-public class ProcessInstancesPerspective {
+@WorkbenchPerspective(identifier = ProcessInstancesPerspective.PERSPECTIVE_ID )
+public class ProcessInstancesPerspective extends AbstractPerspective {
 
-    @Inject
-    private ContextualSearch contextualSearch;
-    
-    @Inject
-    private Event<SearchEvent> searchEvents;
-    
+    public static final String PERSPECTIVE_ID = "Process Instances";
+
     @Inject
     private Event<SetSearchTextEvent> setSearchTextEvents;
     
@@ -51,24 +45,20 @@ public class ProcessInstancesPerspective {
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl( ClosableSimpleWorkbenchPanelPresenter.class.getName() );
-        p.setName( "Process Instances" );
+        p.setName( PERSPECTIVE_ID );
         DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Process Instance List" );
         defaultPlaceRequest.addParameter( "processName", currentProcessDefinition );
         p.getRoot().addPart( new PartDefinitionImpl( defaultPlaceRequest ) );
         return p;
     }
-    
+
+    @Override
+    public String getPerspectiveId() {
+        return PERSPECTIVE_ID;
+    }
+
     @OnStartup
     public void onStartup(final PlaceRequest place) {
-            
-        contextualSearch.setSearchBehavior(new SearchBehavior() {
-            @Override
-            public void execute(String searchFilter) {
-                searchEvents.fire(new SearchEvent(searchFilter));
-            }
-
-            
-        });
         this.currentProcessDefinition = place.getParameter( "processName", "" );
         setSearchTextEvents.fire(new SetSearchTextEvent(currentProcessDefinition));
     }
