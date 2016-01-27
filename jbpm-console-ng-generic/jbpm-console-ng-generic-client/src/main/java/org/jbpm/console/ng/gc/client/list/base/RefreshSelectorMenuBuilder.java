@@ -18,15 +18,12 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
-/**
- * Created by Cristiano Nicolai.
- */
 public class RefreshSelectorMenuBuilder implements MenuFactory.CustomMenuBuilder {
 
     private AbstractListPresenter presenter;
 
-    private final DropDownMenu menuDropDownMenu = new DropDownMenu();
-    private final Button menuButton = GWT.create(Button.class);;
+    private final DropDownMenu menuDropDownMenu = GWT.create( DropDownMenu.class );
+    private final Button menuButton = GWT.create( Button.class );
 
     public RefreshSelectorMenuBuilder( final AbstractListPresenter presenter ) {
         this.presenter = presenter;

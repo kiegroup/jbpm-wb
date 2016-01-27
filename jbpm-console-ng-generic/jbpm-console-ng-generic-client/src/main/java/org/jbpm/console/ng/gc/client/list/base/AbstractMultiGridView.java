@@ -35,6 +35,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
@@ -42,6 +43,7 @@ import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
+import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -50,6 +52,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         extends Composite implements RequiresResize {
 
     public static String FILTER_TABLE_SETTINGS = "tableSettings";
+    private Constants constants = GWT.create(Constants.class);
 
     interface Binder extends UiBinder<Widget, AbstractMultiGridView> {
     }
@@ -175,8 +178,46 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+        notification.fire(new NotificationEvent(text));
     }
+
+    public void showRestoreDefaultFilterConfirmationPopup() {
+        YesNoCancelPopup yesNoCancelPopup = YesNoCancelPopup.newYesNoCancelPopup(Constants.INSTANCE.RestoreDefaultFilters(),
+                Constants.INSTANCE.AreYouSureRestoreDefaultFilters(),
+                new Command() {
+                    @Override public void execute() {
+                            restoreTabs();
+                    }
+                },
+                null,
+                new Command() {
+                    @Override public void execute() {
+                    }
+                });
+        yesNoCancelPopup.show();
+    }
+
+    public void restoreTabs(){
+        ArrayList<String> existingGrids = getMultiGridPreferencesStore().getGridsId();
+        ArrayList<String> allTabs = new ArrayList<String>( existingGrids.size() );
+
+        presenter.setAddingDefaultFilters( true );
+        if ( existingGrids != null && existingGrids.size() > 0 ) {
+
+            for ( int i = 0; i < existingGrids.size(); i++ ) {
+                allTabs.add( existingGrids.get( i ) );
+            }
+
+            for ( int i = 0; i < allTabs.size(); i++ ) {
+                filterPagedTable.removeTab( allTabs.get( i ) );
+            }
+
+        }
+        filterPagedTable.removeTab( 0 );
+        initDefaultFilters( currentGlobalPreferences, createTabButton );
+
+    }
+
   /*
    * By default all the tables will have a refresh button
    */
@@ -206,6 +247,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                 initColumns( newListGrid );
                 initGenericToolBar( newListGrid );
                 newListGrid.loadPageSizePreferences();
+                newListGrid.createPageSizesListBox(5, 20, 5);
             }
         } ).loadUserPreferences( key, UserPreferencesType.GRIDPREFERENCES );
         initExtraButtons( newListGrid );

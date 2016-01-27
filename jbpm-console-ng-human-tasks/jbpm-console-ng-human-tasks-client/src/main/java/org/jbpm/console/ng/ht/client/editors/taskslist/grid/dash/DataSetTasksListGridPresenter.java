@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -47,6 +46,7 @@ import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.RefreshSelectorMenuBuilder;
+import org.jbpm.console.ng.gc.client.list.base.ResetFiltersMenuBuilder;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.jbpm.console.ng.ht.client.editors.quicknewtask.QuickNewTaskPopup;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
@@ -68,14 +68,12 @@ import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 
 @Dependent
-@WorkbenchScreen(identifier = "DataSet Tasks List")
+@WorkbenchScreen( identifier = "DataSet Tasks List" )
 public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<TaskSummary> {
 
     public interface DataSetTaskListView extends ListView<TaskSummary, DataSetTasksListGridPresenter> {
 
         int getRefreshValue();
-
-        void restoreTabs();
 
         void saveRefreshValue( int newValue );
 
@@ -101,7 +99,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
     private RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder( this );
 
-    private final List<MenuItem> items = new ArrayList<MenuItem>();
+    private ResetFiltersMenuBuilder resetFiltersMenuBuilder = new ResetFiltersMenuBuilder( this );
 
     public DataSetTasksListGridPresenter() {
 
@@ -117,9 +115,9 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
         };
     }
 
-    public DataSetTasksListGridPresenter(DataSetTaskListView view,
-            Caller<TaskLifeCycleService> taskOperationsService,
-            DataSetQueryHelper dataSetQueryHelper
+    public DataSetTasksListGridPresenter( DataSetTaskListView view,
+                                          Caller<TaskLifeCycleService> taskOperationsService,
+                                          DataSetQueryHelper dataSetQueryHelper
     ) {
         this.view = view;
         this.taskOperationsService = taskOperationsService;
@@ -134,7 +132,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
     @Override
     public void getData( final Range visibleRange ) {
         try {
-            if(!isAddingDefaultFilters()) {
+            if ( !isAddingDefaultFilters() ) {
                 FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
                 if ( currentTableSettings != null ) {
                     currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
@@ -220,7 +218,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                             GWT.log( "DataSet with UUID [  jbpmHumanTasks ] error: ", error.getThrowable() );
                             return false;
                         }
-                    });
+                    } );
                     view.hideBusyIndicator();
                 }
             }
@@ -334,44 +332,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                 } ).endMenu()
 
                 .newTopLevelCustomMenu( refreshSelectorMenuBuilder ).endMenu()
-
-                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
-                    @Override
-                    public void push( MenuFactory.CustomMenuBuilder element ) {
-                    }
-
-                    @Override
-                    public MenuItem build() {
-                        return new BaseMenuCustom<IsWidget>() {
-                            @Override
-                            public IsWidget build() {
-                                menuResetTabsButton.addClickHandler( new ClickHandler() {
-                                    @Override
-                                    public void onClick( ClickEvent clickEvent ) {
-                                        view.restoreTabs();
-                                    }
-                                } );
-                                return menuResetTabsButton;
-                            }
-
-                            @Override
-                            public boolean isEnabled() {
-                                return true;
-                            }
-
-                            @Override
-                            public void setEnabled( boolean enabled ) {
-
-                            }
-
-                            @Override
-                            public String getSignatureId() {
-                                return "org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash.DataSetTaskListGridPresenter#menuResetTabsButton";
-                            }
-
-                        };
-                    }
-                } ).endMenu()
+                .newTopLevelCustomMenu( resetFiltersMenuBuilder ).endMenu()
                 .build();
 
     }

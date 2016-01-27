@@ -59,7 +59,6 @@ public abstract class AbstractListPresenter<T> {
 
 
     protected Button menuRefreshButton = GWT.create( Button.class );
-    protected Button menuResetTabsButton = GWT.create( Button.class );
 
     protected abstract AbstractListView.ListView getListView();
 
@@ -108,7 +107,7 @@ public abstract class AbstractListPresenter<T> {
 
     public abstract void getData(Range visibleRange);
 
-    public void onGridPreferencesStoreLoaded(){};
+    public void onGridPreferencesStoreLoaded(){}
 
     protected void initDataProvider(){
 
@@ -167,6 +166,10 @@ public abstract class AbstractListPresenter<T> {
 
     }
 
+    public void onRestoreDefaultFilters(){
+        getListView().showRestoreDefaultFilterConfirmationPopup();
+    }
+
     protected void updateRefreshInterval(boolean enableAutoRefresh, int newInterval){
         this.autoRefreshEnabled = enableAutoRefresh;
         setAutoRefreshSeconds( newInterval );
@@ -186,10 +189,6 @@ public abstract class AbstractListPresenter<T> {
         menuRefreshButton.setIcon( IconType.REFRESH );
         menuRefreshButton.setSize( ButtonSize.SMALL );
         menuRefreshButton.setTitle( Constants.INSTANCE.Refresh() );
-
-        menuResetTabsButton.setIcon( IconType.TH_LIST );
-        menuResetTabsButton.setSize( ButtonSize.SMALL );
-        menuResetTabsButton.setTitle( Constants.INSTANCE.RestoreDefaultFilters() );
     }
 
     @OnClose
