@@ -74,15 +74,13 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.dashbuilder.dataset.sort.SortOrder.*;
 import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.*;
+import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
 
 @Dependent
 public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, DataSetTasksListGridPresenter>
         implements DataSetTasksListGridPresenter.DataSetTaskListView {
 
     public static String DATASET_TASK_LIST_PREFIX = "DataSetTaskListGrid";
-    public static String HUMAN_TASKS_DATASET = "jbpmHumanTasks";
-    public static String HUMAN_TASKS_WITH_USERS_DATASET = "jbpmHumanTasksWithUser";
-    public static String HUMAN_TASKS_WITH_ADMINS_DATASET = "jbpmHumanTasksWithAdmin";
 
     public static final String COLUMN_ACTIVATIONTIME = "activationTime";
     public static final String COLUMN_ACTUALOWNER = "actualOwner";
@@ -612,7 +610,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset( HUMAN_TASKS_WITH_USERS_DATASET );
+        builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
         List<Comparable> names = new ArrayList<Comparable>();
 
         for ( String s : states ) {
@@ -690,7 +688,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset( HUMAN_TASKS_WITH_ADMINS_DATASET );
+        builder.dataset(HUMAN_TASKS_WITH_ADMIN_DATASET);
         List<Comparable> names = new ArrayList<Comparable>();
 
         for ( String s : states ) {
@@ -835,7 +833,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset( HUMAN_TASKS_WITH_USERS_DATASET );
+        builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
         List<Comparable> names = new ArrayList<Comparable>();
 
         for ( String s : states ) {
@@ -925,7 +923,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset(HUMAN_TASKS_WITH_USERS_DATASET);
+        builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
 
         Set<Group> groups = identity.getGroups();
         List<ColumnFilter> condList = new  ArrayList<ColumnFilter>();

@@ -78,6 +78,7 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.dashbuilder.dataset.sort.SortOrder.*;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
 public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessInstanceSummary, DataSetProcessInstanceListPresenter>
@@ -91,21 +92,6 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
 
     public static final String PROCESS_INSTANCES_LIST_PREFIX = "DS_ProcessInstancesGrid";
     public static final String PROCESS_INSTANCES_DATASET_ID = "jbpmProcessInstances";
-
-    public static final String COLUMN_PROCESSINSTANCEID = "processInstanceId";
-    public static final String COLUMN_PROCESSID = "processId";
-    public static final String COLUMN_START = "start_date";
-    public static final String COLUMN_END = "end_date";
-    public static final String COLUMN_STATUS = "status";
-    public static final String COLUMN_PARENTPROCESSINSTANCEID = "parentProcessInstanceId";
-    public static final String COLUMN_OUTCOME = "outcome";
-    public static final String COLUMN_DURATION = "duration";
-    public static final String COLUMN_IDENTITY = "user_identity";
-    public static final String COLUMN_PROCESSVERSION = "processVersion";
-    public static final String COLUMN_PROCESSNAME = "processName";
-    public static final String COLUMN_CORRELATIONKEY = "correlationKey";
-    public static final String COLUMN_EXTERNALID = "externalId";
-    public static final String COLUMN_PROCESSINSTANCEDESCRIPTION = "processInstanceDescription";
 
     public static final String COL_ID_SELECT = "Select";
     public static final String COL_ID_ACTIONS = "Actions";

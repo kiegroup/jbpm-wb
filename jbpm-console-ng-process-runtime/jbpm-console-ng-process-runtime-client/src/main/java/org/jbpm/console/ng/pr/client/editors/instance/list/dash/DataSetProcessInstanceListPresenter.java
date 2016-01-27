@@ -78,6 +78,7 @@ import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
 @WorkbenchScreen(identifier = "DataSet Process Instance List")
@@ -143,7 +144,7 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
                         dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
                         dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
                     } else {
-                        dataSetQueryHelper.setLastOrderedColumn( DataSetProcessInstanceListViewImpl.COLUMN_START );
+                        dataSetQueryHelper.setLastOrderedColumn( COLUMN_START );
                         dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                     }
 
@@ -151,9 +152,9 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
 
                         DataSetFilter filter = new DataSetFilter();
                         List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-                        filters.add( likeTo( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSINSTANCEDESCRIPTION, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSNAME, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( DataSetProcessInstanceListViewImpl.COLUMN_PROCESSID, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo( COLUMN_PROCESSINSTANCEDESCRIPTION, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo( COLUMN_PROCESSNAME, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo( COLUMN_PROCESSID, "%" + textSearchStr.toLowerCase() + "%", false ) );
                         filter.addFilterColumn( OR( filters ) );
 
                         if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {
@@ -173,17 +174,17 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
 
                                 for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
                                     myProcessInstancesFromDataSet.add( new ProcessInstanceSummary(
-                                            dataSetQueryHelper.getColumnLongValue( dataSet, DataSetProcessInstanceListViewImpl.COLUMN_PROCESSINSTANCEID, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceListViewImpl.COLUMN_PROCESSID, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceListViewImpl.COLUMN_EXTERNALID, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceListViewImpl.COLUMN_PROCESSNAME, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceListViewImpl.COLUMN_PROCESSVERSION, i ),
-                                            dataSetQueryHelper.getColumnIntValue( dataSet, DataSetProcessInstanceListViewImpl.COLUMN_STATUS, i ),
-                                            dataSetQueryHelper.getColumnDateValue( dataSet, DataSetProcessInstanceListViewImpl.COLUMN_START, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceListViewImpl.COLUMN_IDENTITY, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceListViewImpl.COLUMN_PROCESSINSTANCEDESCRIPTION, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceListViewImpl.COLUMN_CORRELATIONKEY, i ),
-                                            dataSetQueryHelper.getColumnLongValue( dataSet, DataSetProcessInstanceListViewImpl.COLUMN_PARENTPROCESSINSTANCEID, i ) ) );
+                                            dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PROCESSINSTANCEID, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESSID, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_EXTERNALID, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESSNAME, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESSVERSION, i ),
+                                            dataSetQueryHelper.getColumnIntValue( dataSet, COLUMN_STATUS, i ),
+                                            dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_START, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_IDENTITY, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESSINSTANCEDESCRIPTION, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_CORRELATIONKEY, i ),
+                                            dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENTPROCESSINSTANCEID, i ) ) );
 
                                 }
                                 PageResponse<ProcessInstanceSummary> processInstanceSummaryPageResponse = new PageResponse<ProcessInstanceSummary>();

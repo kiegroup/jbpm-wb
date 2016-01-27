@@ -15,10 +15,6 @@
  */
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
-import java.util.ArrayList;
-
-import javax.enterprise.event.Event;
-
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.dataset.sort.SortOrder;
@@ -36,10 +32,10 @@ import org.mockito.Mock;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
-import org.uberfire.workbench.events.NotificationEvent;
 
 import static org.dashbuilder.dataset.sort.SortOrder.*;
 import static org.mockito.Mockito.*;
+import static org.jbpm.console.ng.es.model.RequestDataSetConstants.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class RequestListPresenterTest {
@@ -122,17 +118,17 @@ public class RequestListPresenterTest {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset( RequestListViewImpl.REQUEST_LIST_DATASET_ID );
-        builder.setColumn( RequestListViewImpl.COLUMN_ID, "id" );
-        builder.setColumn( RequestListViewImpl.COLUMN_TIMESTAMP, "time" , "MMM dd E, yyyy");
-        builder.setColumn( RequestListViewImpl.COLUMN_STATUS,"status" );
-        builder.setColumn( RequestListViewImpl.COLUMN_COMMANDNAME , "commandName", "MMM dd E, yyyy" );
-        builder.setColumn( RequestListViewImpl.COLUMN_MESSAGE, "status" );
-        builder.setColumn( RequestListViewImpl.COLUMN_BUSINESSKEY, "key" );
+        builder.dataset( REQUEST_LIST_DATASET );
+        builder.setColumn( COLUMN_ID, "id" );
+        builder.setColumn( COLUMN_TIMESTAMP, "time" , "MMM dd E, yyyy");
+        builder.setColumn( COLUMN_STATUS,"status" );
+        builder.setColumn( COLUMN_COMMANDNAME , "commandName", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_MESSAGE, "status" );
+        builder.setColumn( COLUMN_BUSINESSKEY, "key" );
 
         builder.filterOn( true, true, true);
         builder.tableOrderEnabled(true);
-        builder.tableOrderDefault( RequestListViewImpl.COLUMN_TIMESTAMP, DESCENDING );
+        builder.tableOrderDefault( COLUMN_TIMESTAMP, DESCENDING );
         builder.tableWidth(1000);
 
         return  builder.buildSettings();
