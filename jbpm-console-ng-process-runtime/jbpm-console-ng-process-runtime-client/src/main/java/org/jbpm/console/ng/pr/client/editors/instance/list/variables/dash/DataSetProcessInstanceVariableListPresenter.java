@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -37,9 +36,6 @@ import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -50,6 +46,7 @@ import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.RefreshSelectorMenuBuilder;
+import org.jbpm.console.ng.gc.client.list.base.ResetFiltersMenuBuilder;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup;
@@ -80,14 +77,12 @@ import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.console.ng.pr.client.editors.instance.list.variables.dash.DataSetProcessInstanceListVariableViewImpl.*;
 
 @Dependent
-@WorkbenchScreen(identifier = "DataSet Process Instance Variable List")
+@WorkbenchScreen( identifier = "DataSet Process Instance Variable List" )
 public class DataSetProcessInstanceVariableListPresenter extends AbstractScreenListPresenter<ProcessInstanceVariableSummary> {
 
     public interface DataSetProcessInstanceVariableListView extends ListView<org.jbpm.console.ng.pr.model.ProcessInstanceVariableSummary, DataSetProcessInstanceVariableListPresenter> {
 
         int getRefreshValue();
-
-        void restoreTabs();
 
         void saveRefreshValue( int newValue );
 
@@ -111,6 +106,8 @@ public class DataSetProcessInstanceVariableListPresenter extends AbstractScreenL
 
     private RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder( this );
 
+    private ResetFiltersMenuBuilder resetFiltersMenuBuilder = new ResetFiltersMenuBuilder( this );
+
     @Inject
     private QuickNewProcessInstancePopup newProcessInstancePopup;
 
@@ -133,7 +130,7 @@ public class DataSetProcessInstanceVariableListPresenter extends AbstractScreenL
     @Override
     public void getData( final Range visibleRange ) {
         try {
-            if(!isAddingDefaultFilters()) {
+            if ( !isAddingDefaultFilters() ) {
                 FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
                 if ( currentTableSettings != null ) {
                     currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
@@ -393,44 +390,7 @@ public class DataSetProcessInstanceVariableListPresenter extends AbstractScreenL
                 } ).endMenu()
 
                 .newTopLevelCustomMenu( refreshSelectorMenuBuilder ).endMenu()
-
-                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
-                    @Override
-                    public void push( MenuFactory.CustomMenuBuilder element ) {
-                    }
-
-                    @Override
-                    public MenuItem build() {
-                        return new BaseMenuCustom<IsWidget>() {
-                            @Override
-                            public IsWidget build() {
-                                menuResetTabsButton.addClickHandler( new ClickHandler() {
-                                    @Override
-                                    public void onClick( ClickEvent clickEvent ) {
-                                        view.restoreTabs();
-                                    }
-                                } );
-                                return menuResetTabsButton;
-                            }
-
-                            @Override
-                            public boolean isEnabled() {
-                                return true;
-                            }
-
-                            @Override
-                            public void setEnabled( boolean enabled ) {
-
-                            }
-
-                            @Override
-                            public String getSignatureId() {
-                                return "org.jbpm.console.ng.pr.client.editors.instance.list.ProcessInstanceList#menuResetTabsButton";
-                            }
-
-                        };
-                    }
-                } ).endMenu()
+                .newTopLevelCustomMenu( resetFiltersMenuBuilder ).endMenu()
                 .build();
 
     }
