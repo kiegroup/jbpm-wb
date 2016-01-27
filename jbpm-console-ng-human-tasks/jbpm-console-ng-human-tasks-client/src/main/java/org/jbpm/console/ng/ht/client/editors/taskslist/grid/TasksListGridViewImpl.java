@@ -535,18 +535,6 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
         }
     }
 
-    private PlaceStatus getPlaceStatus( String place ) {
-        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( place );
-        PlaceStatus status = placeManager.getStatus( defaultPlaceRequest );
-        return status;
-    }
-
-    private void closePlace( String place ) {
-        if ( getPlaceStatus( place ) == PlaceStatus.OPEN ) {
-            placeManager.closePlace( place );
-        }
-    }
-
     public void initDefaultFilters( GridGlobalPreferences preferences,
                                     Button createTabButton ) {
 

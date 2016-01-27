@@ -101,6 +101,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     public static final String COLUMN_TASKID = "taskId";
     public static final String COLUMN_WORKITEMID = "workItemId";
     public static final String COLUMN_ORGANIZATIONAL_ENTITY = "oeid";
+    public static final String COLUMN_ISFORADMIN = "isForAdmin";
 
     private final Constants constants = GWT.create( Constants.class );
     public static final String COL_ID_ACTIONS = "actions";
@@ -650,7 +651,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.setColumn( COLUMN_STATUS, constants.Status() );
         builder.setColumn( COLUMN_TASKID, constants.Id() );
         builder.setColumn( COLUMN_WORKITEMID, "WorkItemId" );
-
+        builder.setColumn( COLUMN_ISFORADMIN, "IsForAdmin" );
+        
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
         builder.tableOrderDefault( COLUMN_CREATEDON, DESCENDING );
@@ -728,7 +730,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.setColumn( COLUMN_STATUS, constants.Status() );
         builder.setColumn( COLUMN_TASKID, constants.Id() );
         builder.setColumn( COLUMN_WORKITEMID, "WorkItemId" );
-
+        builder.setColumn( COLUMN_ISFORADMIN, "IsForAdmin" );
+        
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
         builder.tableOrderDefault( COLUMN_CREATEDON, DESCENDING );
@@ -794,6 +797,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.setColumn( COLUMN_STATUS, constants.Status() );
         builder.setColumn( COLUMN_TASKID, constants.Id() );
         builder.setColumn( COLUMN_WORKITEMID, "WorkItemId" );
+        builder.setColumn( COLUMN_ISFORADMIN, "IsForAdmin" );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
@@ -874,7 +878,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.setColumn( COLUMN_STATUS, constants.Status() );
         builder.setColumn( COLUMN_TASKID, constants.Id() );
         builder.setColumn( COLUMN_WORKITEMID, "WorkItemId" );
-
+        builder.setColumn( COLUMN_ISFORADMIN, "IsForAdmin" );
+        
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
         builder.tableOrderDefault( COLUMN_CREATEDON, DESCENDING );
@@ -956,7 +961,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.setColumn( COLUMN_STATUS, constants.Status() );
         builder.setColumn( COLUMN_TASKID, constants.Id() );
         builder.setColumn( COLUMN_WORKITEMID, "WorkItemId" );
-
+        builder.setColumn( COLUMN_ISFORADMIN, "IsForAdmin" );
+        
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
         builder.tableOrderDefault( COLUMN_CREATEDON, DESCENDING );

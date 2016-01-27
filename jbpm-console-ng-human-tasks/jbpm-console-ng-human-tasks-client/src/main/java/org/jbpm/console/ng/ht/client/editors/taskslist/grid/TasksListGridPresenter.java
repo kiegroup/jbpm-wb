@@ -44,7 +44,6 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.paging.PageResponse;
 
-import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.*;
 @Dependent
 @WorkbenchScreen(identifier = "Tasks List")
 public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSummary> {
@@ -161,36 +160,6 @@ public class TasksListGridPresenter extends AbstractScreenListPresenter<TaskSumm
     this.currentStatuses= currentStatuses;
     refreshGrid();
 
-  }
-
-  public void refreshActiveTasks() {
-    currentRole = TASK_ROLE_POTENTIALOWNER;
-    currentStatusFilter = TaskUtils.TaskType.ACTIVE;
-    refreshGrid();
-  }
-
-  public void refreshPersonalTasks() {
-    currentRole = TASK_ROLE_POTENTIALOWNER;
-    currentStatusFilter = TaskUtils.TaskType.PERSONAL;
-    refreshGrid();
-  }
-
-  public void refreshGroupTasks() {
-    currentRole = TASK_ROLE_POTENTIALOWNER;
-    currentStatusFilter = TaskUtils.TaskType.GROUP;
-    refreshGrid();
-  }
-
-  public void refreshAllTasks() {
-    currentRole = TASK_ROLE_POTENTIALOWNER;
-    currentStatusFilter = TaskUtils.TaskType.ALL;
-    refreshGrid();
-  }
-
-  public void refreshAdminTasks() {
-    currentRole = TASK_ROLE_ADMINISTRATOR;
-    currentStatusFilter = TaskUtils.TaskType.ADMIN;
-    refreshGrid();
   }
 
   @WorkbenchPartTitle

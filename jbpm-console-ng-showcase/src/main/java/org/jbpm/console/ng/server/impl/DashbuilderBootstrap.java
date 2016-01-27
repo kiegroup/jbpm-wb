@@ -71,7 +71,11 @@ public class DashbuilderBootstrap {
                 .uuid(HUMAN_TASKS_DATASET)
                 .name("Human tasks")
                 .dataSource(jbpmDatasource)
-                .dbTable(HUMAN_TASKS_TABLE, false)
+                  .dbSQL("select  t.activationTime, t.actualOwner, t.createdBy, "
+                        + "t.createdOn, t.deploymentId, t.description, t.dueDate, "
+                        + "t.name, t.parentId, t.priority, t.processId, t.processInstanceId, "
+                        + "t.processSessionId, t.status, t.taskId, t.workItemId, 'false' isForAdmin "
+                        + "from AuditTaskImpl t ", false)
                 .date(DataSetTasksListGridViewImpl.COLUMN_ACTIVATIONTIME)
                 .label(DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER)
                 .label(DataSetTasksListGridViewImpl.COLUMN_CREATEDBY)
@@ -88,6 +92,7 @@ public class DashbuilderBootstrap {
                 .label(DataSetTasksListGridViewImpl.COLUMN_STATUS)
                 .number(DataSetTasksListGridViewImpl.COLUMN_TASKID)
                 .number(DataSetTasksListGridViewImpl.COLUMN_WORKITEMID)
+                .label( DataSetTasksListGridViewImpl.COLUMN_ISFORADMIN )
                 .buildDef();
 
         DataSetDef processInstancesDef = DataSetFactory.newSQLDataSetDef()
@@ -115,10 +120,10 @@ public class DashbuilderBootstrap {
                 .uuid(HUMAN_TASKS_WITH_USER_DATASET)
                 .name("Human tasks and users")
                 .dataSource(jbpmDatasource)
-                .dbSQL( "select  t.activationTime, t.actualOwner, t.createdBy, "
+                  .dbSQL("select  t.activationTime, t.actualOwner, t.createdBy, "
                         + "t.createdOn, t.deploymentId, t.description, t.dueDate, "
                         + "t.name, t.parentId, t.priority, t.processId, t.processInstanceId, "
-                        + "t.processSessionId, t.status, t.taskId, t.workItemId, oe.id oeid "
+                        + "t.processSessionId, t.status, t.taskId, t.workItemId, oe.id oeid, 'false' isForAdmin "
                         + "from AuditTaskImpl t, "
                         + "PeopleAssignments_PotOwners po, "
                         + "OrganizationalEntity oe "
@@ -140,6 +145,7 @@ public class DashbuilderBootstrap {
                 .label(DataSetTasksListGridViewImpl.COLUMN_TASKID)   //declaring as label(even though it's numeric) because needs apply groupby and  Group by number not supported
                 .number(DataSetTasksListGridViewImpl.COLUMN_WORKITEMID)
                 .label(DataSetTasksListGridViewImpl.COLUMN_ORGANIZATIONAL_ENTITY)
+                .label( DataSetTasksListGridViewImpl.COLUMN_ISFORADMIN )
                 .buildDef();
 
         DataSetDef humanTaskWithAdminDef = DataSetFactory.newSQLDataSetDef()
@@ -149,7 +155,7 @@ public class DashbuilderBootstrap {
                 .dbSQL("select t.activationTime, t.actualOwner, t.createdBy, "
                         + "t.createdOn, t.deploymentId, t.description, t.dueDate, "
                         + "t.name, t.parentId, t.priority, t.processId, t.processInstanceId, "
-                        + "t.processSessionId, t.status, t.taskId, t.workItemId, oe.id oeid "
+                        + "t.processSessionId, t.status, t.taskId, t.workItemId, oe.id oeid, 'true' isForAdmin "
                         + "from AuditTaskImpl t, "
                         + "PeopleAssignments_BAs bas, "
                         + "OrganizationalEntity oe "
@@ -171,6 +177,7 @@ public class DashbuilderBootstrap {
                 .label(DataSetTasksListGridViewImpl.COLUMN_TASKID)     //declaring as label(even though it's numeric) because needs apply groupby and  Group by number not supported
                 .number(DataSetTasksListGridViewImpl.COLUMN_WORKITEMID)
                 .label(DataSetTasksListGridViewImpl.COLUMN_ORGANIZATIONAL_ENTITY)
+                .label( DataSetTasksListGridViewImpl.COLUMN_ISFORADMIN )
                 .buildDef();
 
         DataSetDef requestListDef = DataSetFactory.newSQLDataSetDef()
