@@ -21,20 +21,22 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
-import org.kie.workbench.common.widgets.client.search.SearchBehavior;
 import org.uberfire.client.annotations.WorkbenchPanel;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.util.Layouts;
-import org.uberfire.lifecycle.OnStartup;
 
 /**
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Experimental Paging")
-public class ExperimentalPagingPerspective extends FlowPanel {
+@WorkbenchPerspective( identifier = ExperimentalPagingPerspective.PERSPECTIVE_ID )
+public class ExperimentalPagingPerspective extends AbstractPerspective implements IsWidget {
+
+    public static final String PERSPECTIVE_ID = "Experimental Paging";
 
     @Inject
     private ContextualSearch contextualSearch;
@@ -43,24 +45,24 @@ public class ExperimentalPagingPerspective extends FlowPanel {
     private Event<SearchEvent> searchEvents;
 
     @Inject
-    @WorkbenchPanel(parts = "Pagination For Tables")
+    @WorkbenchPanel( parts = "Pagination For Tables" )
     FlowPanel paginationTables;
 
+    private final FlowPanel view = new FlowPanel();
+
     @PostConstruct
-    private void init() {
+    protected void init() {
+        super.init();
         Layouts.setToFillParent( paginationTables );
-        add( paginationTables );
+        view.add( paginationTables );
     }
 
-    @OnStartup
-    public void onStartup() {
-        contextualSearch.setSearchBehavior( new SearchBehavior() {
-            @Override
-            public void execute( String searchFilter ) {
-                searchEvents.fire( new SearchEvent( searchFilter ) );
-            }
+    @Override
+    public Widget asWidget() {
+        return view;
+    }
 
-        } );
-
+    public String getPerspectiveId() {
+        return PERSPECTIVE_ID;
     }
 }
