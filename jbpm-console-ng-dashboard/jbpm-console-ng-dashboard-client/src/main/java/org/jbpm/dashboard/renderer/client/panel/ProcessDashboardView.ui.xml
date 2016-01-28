@@ -21,112 +21,83 @@
              xmlns:d="urn:import:org.dashbuilder.displayer.client"
              xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
-  <ui:with field='i18n' type='org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants'/>
+    <ui:with field='i18n' type='org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants'/>
 
-  <ui:style>
-    .root {
-      max-width: 1400px;
-    }
+    <ui:style>
+        .body {
+            padding: 20px;
+            background-color: #E9E9E9;
+        }
 
-    .body {
-      padding: 20px;
-      background-color: #E9E9E9;
-    }
+        .chartsRow {
+            margin-bottom: 20px;
+        }
 
-    .title {
-      font-size: large;
-    }
+    </ui:style>
 
-    .header {
-      padding: 15px;
-      background-color: white;
-    }
+    <b:Row>
+        <b:Column size="MD_12">
+            <g:FlowPanel>
+                <b:AnchorButton ui:field="instancesAnchor" type="LINK" pull="RIGHT" text="{i18n.showInstances}"/>
+                <b:Heading ui:field="headerLabel" size="H3" text="{i18n.allProcesses}"/>
+            </g:FlowPanel>
 
-    .breadcrumb {
-      padding-left: 15px;
-    }
+            <!-- Dashboard -->
+            <b:Container fluid="true" addStyleNames="{style.body}" ui:field="dashboardPanel">
+                <b:Row ui:field="processBreadCrumbRow" visible="false">
+                    <b:Column size="MD_12">
+                        <j:ProcessBreadCrumb ui:field="processBreadCrumb"/>
+                    </b:Column>
+                </b:Row>
+                <b:Row>
+                    <b:Column size="MD_2">
+                        <j:DisplayerContainer ui:field="totalContainer"/>
+                    </b:Column>
+                    <b:Column size="MD_2" pull="RIGHT">
+                        <j:DisplayerContainer ui:field="activeContainer"/>
+                    </b:Column>
+                    <b:Column size="MD_2">
+                        <j:DisplayerContainer ui:field="pendingContainer"/>
+                    </b:Column>
+                    <b:Column size="MD_2">
+                        <j:DisplayerContainer ui:field="suspendedContainer"/>
+                    </b:Column>
+                    <b:Column size="MD_2">
+                        <j:DisplayerContainer ui:field="abortedContainer"/>
+                    </b:Column>
+                    <b:Column size="MD_2">
+                        <j:DisplayerContainer ui:field="completedContainer"/>
+                    </b:Column>
+                </b:Row>
+                <b:Row addStyleNames="{style.chartsRow}">
+                    <b:Column size="MD_4">
+                        <j:DisplayerContainer ui:field="container1"/>
+                    </b:Column>
+                    <b:Column size="MD_4">
+                        <j:DisplayerContainer ui:field="container2"/>
+                    </b:Column>
+                    <b:Column size="MD_4">
+                        <j:DisplayerContainer ui:field="container3"/>
+                    </b:Column>
+                </b:Row>
+                <b:Row>
+                    <b:Column size="MD_4">
+                        <j:DisplayerContainer ui:field="container4"/>
+                    </b:Column>
+                    <b:Column size="MD_4">
+                        <j:DisplayerContainer ui:field="container5"/>
+                    </b:Column>
+                    <b:Column size="MD_4">
+                        <j:DisplayerContainer ui:field="container6"/>
+                    </b:Column>
+                </b:Row>
+            </b:Container>
 
-    .metricsRow {
-      margin-bottom: 10px;
-    }
+            <!-- Instances table -->
+            <g:FlowPanel ui:field="instancesPanel" visible="false">
+                <d:Displayer ui:field="processesTable"/>
+            </g:FlowPanel>
 
-    .chartsRow {
-      margin-bottom: 10px;
-    }
-
-    .separator {
-      height: 1px;
-      background-color: #E9E9E9;
-    }
-
-    .instancesAnchor {
-      float: right;
-      position: relative;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-  </ui:style>
-
-  <g:FlowPanel addStyleNames="{style.root}">
-    <g:FlowPanel addStyleNames="{style.header}">
-      <g:Anchor ui:field="instancesAnchor" addStyleNames="{style.instancesAnchor}" text="{i18n.showInstances}"/>
-      <g:Label ui:field="headerLabel" addStyleNames="{style.title}" text="{i18n.allProcesses}"/>
-    </g:FlowPanel>
-    <g:FlowPanel addStyleNames="{style.separator}"/>
-
-    <!-- Dashboard -->
-    <b:Container fluid="true" addStyleNames="{style.body}" ui:field="dashboardPanel">
-      <b:Row addStyleNames="{style.breadcrumb}" ui:field="processBreadCrumbRow" visible="false">
-        <j:ProcessBreadCrumb ui:field="processBreadCrumb"/>
-      </b:Row>
-      <b:Row addStyleNames="{style.metricsRow}">
-        <b:Column size="MD_2">
-          <j:DisplayerContainer ui:field="totalContainer"/>
         </b:Column>
-        <b:Column size="MD_2">
-          <j:DisplayerContainer ui:field="activeContainer"/>
-        </b:Column>
-        <b:Column size="MD_2">
-          <j:DisplayerContainer ui:field="pendingContainer"/>
-        </b:Column>
-        <b:Column size="MD_2">
-          <j:DisplayerContainer ui:field="suspendedContainer"/>
-        </b:Column>
-        <b:Column size="MD_2">
-          <j:DisplayerContainer ui:field="abortedContainer"/>
-        </b:Column>
-        <b:Column size="MD_2">
-          <j:DisplayerContainer ui:field="completedContainer"/>
-        </b:Column>
-      </b:Row>
-      <b:Row addStyleNames="{style.chartsRow}">
-        <b:Column size="MD_4">
-          <j:DisplayerContainer ui:field="container1"/>
-        </b:Column>
-        <b:Column size="MD_4">
-          <j:DisplayerContainer ui:field="container2"/>
-        </b:Column>
-        <b:Column size="MD_4">
-          <j:DisplayerContainer ui:field="container3"/>
-        </b:Column>
-      </b:Row>
-      <b:Row addStyleNames="{style.chartsRow}">
-        <b:Column size="MD_4">
-          <j:DisplayerContainer ui:field="container4"/>
-        </b:Column>
-        <b:Column size="MD_4">
-          <j:DisplayerContainer ui:field="container5"/>
-        </b:Column>
-        <b:Column size="MD_4">
-          <j:DisplayerContainer ui:field="container6"/>
-        </b:Column>
-      </b:Row>
-    </b:Container>
-
-    <!-- Instances table -->
-    <g:FlowPanel ui:field="instancesPanel" visible="false">
-      <d:Displayer ui:field="processesTable"/>
-    </g:FlowPanel>
-
-  </g:FlowPanel>
+    </b:Row>
 </ui:UiBinder>

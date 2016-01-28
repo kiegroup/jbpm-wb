@@ -1,6 +1,5 @@
-/**
+/*
  * Copyright (C) 2015 Red Hat, Inc. and/or its affiliates.
-
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,13 +25,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.displayer.client.Displayer;
+import org.gwtbootstrap3.client.ui.AnchorButton;
 import org.gwtbootstrap3.client.ui.Container;
+import org.gwtbootstrap3.client.ui.Heading;
 import org.gwtbootstrap3.client.ui.Row;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardI18n;
@@ -43,11 +42,13 @@ import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 @Dependent
 public class ProcessDashboardView extends Composite implements ProcessDashboard.View {
 
-    interface Binder extends UiBinder<Widget, ProcessDashboardView> {}
+    interface Binder extends UiBinder<Widget, ProcessDashboardView> {
+    }
+
     private static Binder uiBinder = GWT.create(Binder.class);
 
     @UiField
-    Label headerLabel;
+    Heading headerLabel;
 
     @UiField
     Container dashboardPanel;
@@ -56,7 +57,7 @@ public class ProcessDashboardView extends Composite implements ProcessDashboard.
     Panel instancesPanel;
 
     @UiField
-    Anchor instancesAnchor;
+    AnchorButton instancesAnchor;
 
     @UiField
     Row processBreadCrumbRow;
@@ -106,25 +107,25 @@ public class ProcessDashboardView extends Composite implements ProcessDashboard.
     ProcessDashboard presenter;
 
     public void init(ProcessDashboard presenter,
-            Displayer totalMetric,
-            Displayer activeMetric,
-            Displayer pendingMetric,
-            Displayer suspendedMetric,
-            Displayer abortedMetric,
-            Displayer completedMetric,
-            Displayer processesByType,
-            Displayer processesByUser,
-            Displayer processesByStartDate,
-            Displayer processesByEndDate,
-            Displayer processesByRunningTime,
-            Displayer processesByVersion,
-            Displayer processesTable) {
+                     Displayer totalMetric,
+                     Displayer activeMetric,
+                     Displayer pendingMetric,
+                     Displayer suspendedMetric,
+                     Displayer abortedMetric,
+                     Displayer completedMetric,
+                     Displayer processesByType,
+                     Displayer processesByUser,
+                     Displayer processesByStartDate,
+                     Displayer processesByEndDate,
+                     Displayer processesByRunningTime,
+                     Displayer processesByVersion,
+                     Displayer processesTable) {
 
         this.presenter = presenter;
         this.processesTable = processesTable;
         this.processBreadCrumb = presenter.getProcessBreadCrumb();
 
-        Map<String,Displayer> dmap = new HashMap<String, Displayer>();
+        Map<String, Displayer> dmap = new HashMap<String, Displayer>();
         dmap.put(DashboardConstants.INSTANCE.total(), totalMetric);
         totalContainer = createMetricContainer(dmap, false);
 
@@ -175,14 +176,14 @@ public class ProcessDashboardView extends Composite implements ProcessDashboard.
         initWidget(uiBinder.createAndBindUi(this));
     }
 
-    protected DisplayerContainer createMetricContainer(Map<String,Displayer> m, boolean showHeader) {
+    protected DisplayerContainer createMetricContainer(Map<String, Displayer> m, boolean showHeader) {
         DisplayerContainer container = new DisplayerContainer(m, showHeader);
         Style s = container.getView().getHeaderStyle();
         s.setBackgroundColor("white");
         return container;
     }
 
-    protected DisplayerContainer createChartContainer(Map<String,Displayer> m, boolean showHeader) {
+    protected DisplayerContainer createChartContainer(Map<String, Displayer> m, boolean showHeader) {
         DisplayerContainer container = new DisplayerContainer(m, showHeader);
         Style s = container.getView().getHeaderStyle();
         s.setBackgroundColor("white");

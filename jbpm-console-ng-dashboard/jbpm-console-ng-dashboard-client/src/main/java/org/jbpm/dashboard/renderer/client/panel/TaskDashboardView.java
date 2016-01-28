@@ -1,13 +1,12 @@
-/**
+/*
  * Copyright (C) 2015 Red Hat, Inc. and/or its affiliates.
-
- * <p/>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,13 +25,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.displayer.client.Displayer;
+import org.gwtbootstrap3.client.ui.AnchorButton;
 import org.gwtbootstrap3.client.ui.Container;
+import org.gwtbootstrap3.client.ui.Heading;
 import org.gwtbootstrap3.client.ui.Row;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardI18n;
@@ -47,10 +46,10 @@ public class TaskDashboardView extends Composite implements TaskDashboard.View {
 
     }
 
-    private static Binder uiBinder = GWT.create( Binder.class );
+    private static Binder uiBinder = GWT.create(Binder.class);
 
     @UiField
-    Label headerLabel;
+    Heading headerLabel;
 
     @UiField
     Container dashboardPanel;
@@ -59,7 +58,7 @@ public class TaskDashboardView extends Composite implements TaskDashboard.View {
     Panel instancesPanel;
 
     @UiField
-    Anchor instancesAnchor;
+    AnchorButton instancesAnchor;
 
     @UiField
     Row processBreadCrumbRow;
@@ -109,25 +108,25 @@ public class TaskDashboardView extends Composite implements TaskDashboard.View {
     TaskDashboard presenter;
 
     @Override
-    public void init( TaskDashboard presenter,
-                      Displayer totalMetric,
-                      Displayer createdMetric,
-                      Displayer readyMetric,
-                      Displayer reservedMetric,
-                      Displayer inProgressMetric,
-                      Displayer suspendedMetric,
-                      Displayer completedMetric,
-                      Displayer failedMetric,
-                      Displayer errorMetric,
-                      Displayer exitedMetric,
-                      Displayer obsoleteMetric,
-                      Displayer tasksByProcess,
-                      Displayer tasksByOwner,
-                      Displayer tasksByCreationDate,
-                      Displayer tasksByEndDate,
-                      Displayer tasksByRunningTime,
-                      Displayer tasksByStatus,
-                      Displayer tasksTable ) {
+    public void init(TaskDashboard presenter,
+                     Displayer totalMetric,
+                     Displayer createdMetric,
+                     Displayer readyMetric,
+                     Displayer reservedMetric,
+                     Displayer inProgressMetric,
+                     Displayer suspendedMetric,
+                     Displayer completedMetric,
+                     Displayer failedMetric,
+                     Displayer errorMetric,
+                     Displayer exitedMetric,
+                     Displayer obsoleteMetric,
+                     Displayer tasksByProcess,
+                     Displayer tasksByOwner,
+                     Displayer tasksByCreationDate,
+                     Displayer tasksByEndDate,
+                     Displayer tasksByRunningTime,
+                     Displayer tasksByStatus,
+                     Displayer tasksTable) {
 
         this.presenter = presenter;
         this.tasksTable = tasksTable;
@@ -184,22 +183,22 @@ public class TaskDashboardView extends Composite implements TaskDashboard.View {
         initWidget(uiBinder.createAndBindUi(this));
     }
 
-    protected DisplayerContainer createMetricContainer( Map<String, Displayer> m,
-                                                        boolean showHeader ) {
-        DisplayerContainer container = new DisplayerContainer( m, showHeader );
+    protected DisplayerContainer createMetricContainer(Map<String, Displayer> m,
+                                                       boolean showHeader) {
+        DisplayerContainer container = new DisplayerContainer(m, showHeader);
         Style s = container.getView().getHeaderStyle();
-        s.setBackgroundColor( "white" );
+        s.setBackgroundColor("white");
         return container;
     }
 
-    protected DisplayerContainer createChartContainer( Map<String, Displayer> m,
-                                                       boolean showHeader ) {
-        DisplayerContainer container = new DisplayerContainer( m, showHeader );
+    protected DisplayerContainer createChartContainer(Map<String, Displayer> m,
+                                                      boolean showHeader) {
+        DisplayerContainer container = new DisplayerContainer(m, showHeader);
         Style s = container.getView().getHeaderStyle();
-        s.setBackgroundColor( "white" );
+        s.setBackgroundColor("white");
         s = container.getView().getBodyStyle();
-        s.setBackgroundColor( "white" );
-        s.setPaddingBottom( 30, Style.Unit.PX );
+        s.setBackgroundColor("white");
+        s.setPaddingBottom(30, Style.Unit.PX);
         return container;
     }
 
@@ -219,13 +218,13 @@ public class TaskDashboardView extends Composite implements TaskDashboard.View {
     }
 
     @Override
-    public void setHeaderText( String text ) {
+    public void setHeaderText(String text) {
         headerLabel.setText(text);
     }
 
     @Override
-    public void showBreadCrumb( String processName ) {
-        processBreadCrumbRow.setVisible( true );
+    public void showBreadCrumb(String processName) {
+        processBreadCrumbRow.setVisible(true);
         processBreadCrumb.setRootTitle(DashboardConstants.INSTANCE.tasks());
         processBreadCrumb.setProcessName(processName);
     }
@@ -250,8 +249,8 @@ public class TaskDashboardView extends Composite implements TaskDashboard.View {
     }
 
     @UiHandler("instancesAnchor")
-    protected void onShowInstances( ClickEvent event ) {
-        if ( dashboardPanel.isVisible() ) {
+    protected void onShowInstances(ClickEvent event) {
+        if (dashboardPanel.isVisible()) {
             presenter.showTasksTable();
         } else {
             presenter.showDashboard();
