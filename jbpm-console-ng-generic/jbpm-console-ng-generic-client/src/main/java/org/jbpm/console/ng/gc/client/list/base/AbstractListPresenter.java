@@ -28,7 +28,9 @@ import org.jbpm.console.ng.ga.model.QueryFilter;
 
 import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
+import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.lifecycle.OnClose;
+import org.uberfire.mvp.Command;
 import org.uberfire.paging.PageResponse;
 
 import javax.annotation.PostConstruct;
@@ -198,4 +200,16 @@ public abstract class AbstractListPresenter<T> {
            refreshTimer.cancel();
        }
    }
+
+    public void showRestoreDefaultFilterConfirmationPopup(Command yesCommand){
+        YesNoCancelPopup yesNoCancelPopup = YesNoCancelPopup.newYesNoCancelPopup(Constants.INSTANCE.RestoreDefaultFilters(),
+                Constants.INSTANCE.AreYouSureRestoreDefaultFilters(),
+                yesCommand,
+                null, new Command() {
+                    @Override public void execute() {
+
+                    }
+                });
+        yesNoCancelPopup.show();
+    }
 }
