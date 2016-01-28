@@ -19,36 +19,40 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
-  <ui:style>
-    .header {
-      padding: 15px;
-    }
-    .separator {
-      height: 2px;
-      width: 100%;
-    }
-    .title  {
-      font-size: large;
-    }
-    .selector {
-      float: right;
-      position: relative;
-      width: 150px;
-    }
-    .content {
-    }
+    <ui:style>
+        .header {
+            padding: 15px;
+        }
 
-  </ui:style>
+        .separator {
+            height: 2px;
+            width: 100%;
+        }
 
-  <g:FlowPanel ui:field="rootPanel">
-    <g:FlowPanel ui:field="headerPanel">
-      <g:FlowPanel addStyleNames="{style.header}">
-        <b:ListBox ui:field="displayerList" addStyleNames="{style.selector}" />
-        <g:Label ui:field="titleLabel" addStyleNames="{style.title}" />
-      </g:FlowPanel>
+        .title {
+            font-size: large;
+        }
+
+        .selector {
+            float: right;
+            position: relative;
+            width: 150px;
+        }
+
+        .content {
+        }
+
+    </ui:style>
+
+    <g:FlowPanel ui:field="rootPanel">
+        <g:FlowPanel ui:field="headerPanel">
+            <g:FlowPanel addStyleNames="{style.header}">
+                <b:ListBox ui:field="displayerList" addStyleNames="{style.selector}"/>
+                <g:Label ui:field="titleLabel" addStyleNames="{style.title}"/>
+            </g:FlowPanel>
+        </g:FlowPanel>
+        <g:FlowPanel ui:field="separatorPanel" addStyleNames="{style.separator}"/>
+        <g:FlowPanel ui:field="displayerPanel" addStyleNames="{style.content}"/>
     </g:FlowPanel>
-    <g:FlowPanel ui:field="separatorPanel" addStyleNames="{style.separator}" />
-    <g:FlowPanel ui:field="displayerPanel" addStyleNames="{style.content}" />
-  </g:FlowPanel>
 
 </ui:UiBinder>

@@ -19,12 +19,20 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
-  <ui:with field='i18n' type='org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants'/>
+    <ui:with field='i18n' type='org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants'/>
 
-  <g:FlowPanel ui:field="rootPanel">
-    <b:Breadcrumbs>
-      <b:AnchorListItem ui:field="rootLink" text="{i18n.processes}"/>
-      <b:ListItem ui:field="processLabel" />
-    </b:Breadcrumbs>
-  </g:FlowPanel>
+    <ui:style>
+
+        .breadcrumbs {
+            margin-bottom: 10px;
+        }
+
+    </ui:style>
+
+    <g:FlowPanel ui:field="rootPanel">
+        <b:Breadcrumbs addStyleNames="{style.breadcrumbs}">
+            <b:AnchorListItem ui:field="rootLink" text="{i18n.processes}"/>
+            <b:ListItem ui:field="processLabel"/>
+        </b:Breadcrumbs>
+    </g:FlowPanel>
 </ui:UiBinder>
