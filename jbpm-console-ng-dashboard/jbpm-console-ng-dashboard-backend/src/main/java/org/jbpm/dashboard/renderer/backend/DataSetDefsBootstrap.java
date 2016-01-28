@@ -38,11 +38,16 @@ public class DataSetDefsBootstrap {
     public static final String PROCESSES_MONITORING_DATASET = "processesMonitoring";
 
     @Inject
-    protected DataSetDefRegistry dataSetDefRegistry;
+    DataSetDefRegistry dataSetDefRegistry;
+
+    @Inject
+    DeploymentIdsPreprocessor deploymentIdsPreprocessor;
+
+    JpaSettings jpaSettings = JpaSettings.get();
 
     @PostConstruct
     protected void registerDataSetDefinitions() {
-        String jbpmDataSource = JpaSettings.get().getDataSourceJndiName();
+        String jbpmDataSource = jpaSettings.getDataSourceJndiName();
 
         DataSetDef processMonitoringDef = DataSetDefFactory.newSQLDataSetDef()
                 .uuid(PROCESSES_MONITORING_DATASET)
@@ -55,7 +60,7 @@ public class DataSetDefsBootstrap {
                 .uuid(TASKS_MONITORING_DATASET)
                 .name("Tasks monitoring")
                 .dataSource(jbpmDataSource)
-                .dbSQL("select p.processName, t.* " +
+                .dbSQL("select p.processName, p.externalId, t.* " +
                         "from ProcessInstanceLog p " +
                         "inner join BAMTaskSummary t on (t.processInstanceId = p.processInstanceId) " +
                         "inner join (select min(pk) pk from BAMTaskSummary group by taskId) d on t.pk=d.pk",
@@ -71,5 +76,9 @@ public class DataSetDefsBootstrap {
         dataSetDefRegistry.registerDataSetDef(processMonitoringDef);
         dataSetDefRegistry.registerDataSetDef(taskMonitoringDef);
         logger.info("Process dashboard datasets registered");
+
+        // Attach a preprocessor to ensure the user only sees the right process instances
+        dataSetDefRegistry.registerPreprocessor(PROCESSES_MONITORING_DATASET, deploymentIdsPreprocessor);
+        dataSetDefRegistry.registerPreprocessor(TASKS_MONITORING_DATASET, deploymentIdsPreprocessor);
     }
 }

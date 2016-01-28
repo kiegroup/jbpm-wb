@@ -82,24 +82,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
     public static String DATASET_TASK_LIST_PREFIX = "DataSetTaskListGrid";
 
-    public static final String COLUMN_ACTIVATIONTIME = "activationTime";
-    public static final String COLUMN_ACTUALOWNER = "actualOwner";
-    public static final String COLUMN_CREATEDBY = "createdBy";
-    public static final String COLUMN_CREATEDON = "createdOn";
-    public static final String COLUMN_DEPLOYMENTID = "deploymentId";
-    public static final String COLUMN_DESCRIPTION = "description";
-    public static final String COLUMN_DUEDATE = "dueDate";
-    public static final String COLUMN_NAME = "name";
-    public static final String COLUMN_PARENTID = "parentId";
-    public static final String COLUMN_PRIORITY = "priority";
-    public static final String COLUMN_PROCESSID = "processId";
-    public static final String COLUMN_PROCESSINSTANCEID = "processInstanceId";
-    public static final String COLUMN_PROCESSSESSIONID = "processSessionId";
-    public static final String COLUMN_STATUS = "status";
-    public static final String COLUMN_TASKID = "taskId";
-    public static final String COLUMN_WORKITEMID = "workItemId";
-    public static final String COLUMN_ORGANIZATIONAL_ENTITY = "oeid";
-
     private final Constants constants = GWT.create( Constants.class );
     public static final String COL_ID_ACTIONS = "actions";
 
