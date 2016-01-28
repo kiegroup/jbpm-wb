@@ -66,6 +66,7 @@ import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
 
 @Dependent
 @WorkbenchScreen( identifier = "DataSet Tasks List" )
@@ -142,7 +143,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                         dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
                         dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
                     } else {
-                        dataSetQueryHelper.setLastOrderedColumn( DataSetTasksListGridViewImpl.COLUMN_CREATEDON );
+                        dataSetQueryHelper.setLastOrderedColumn( COLUMN_CREATEDON );
                         dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                     }
 
@@ -150,9 +151,9 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
                         DataSetFilter filter = new DataSetFilter();
                         List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-                        filters.add( likeTo( DataSetTasksListGridViewImpl.COLUMN_NAME, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( DataSetTasksListGridViewImpl.COLUMN_PROCESSID, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo( COLUMN_NAME, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo( COLUMN_DESCRIPTION, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo( COLUMN_PROCESSID, "%" + textSearchStr.toLowerCase() + "%", false ) );
                         filter.addFilterColumn( OR( filters ) );
 
                         if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {
@@ -171,21 +172,21 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
                                 for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
                                     myTasksFromDataSet.add( new TaskSummary(
-                                            dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_TASKID, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_NAME, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_STATUS, i ),
-                                            dataSetQueryHelper.getColumnIntValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PRIORITY, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_CREATEDBY, i ),
-                                            dataSetQueryHelper.getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_CREATEDON, i ),
-                                            dataSetQueryHelper.getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_ACTIVATIONTIME, i ),
-                                            dataSetQueryHelper.getColumnDateValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DUEDATE, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSID, i ),
-                                            dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSSESSIONID, i ),
-                                            dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PROCESSINSTANCEID, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_DEPLOYMENTID, i ),
-                                            dataSetQueryHelper.getColumnLongValue( dataSet, DataSetTasksListGridViewImpl.COLUMN_PARENTID, i ) ) );
+                                            dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_TASKID, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_NAME, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_DESCRIPTION, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_STATUS, i ),
+                                            dataSetQueryHelper.getColumnIntValue( dataSet, COLUMN_PRIORITY, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_ACTUALOWNER, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_CREATEDBY, i ),
+                                            dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_CREATEDON, i ),
+                                            dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_ACTIVATIONTIME, i ),
+                                            dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_DUEDATE, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESSID, i ),
+                                            dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PROCESSSESSIONID, i ),
+                                            dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PROCESSINSTANCEID, i ),
+                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_DEPLOYMENTID, i ),
+                                            dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENTID, i ) ) );
 
                                 }
                                 PageResponse<TaskSummary> taskSummaryPageResponse = new PageResponse<TaskSummary>();

@@ -36,11 +36,16 @@ public class DataSetDefsBootstrap {
     private static final Logger logger = LoggerFactory.getLogger(DataSetDefsBootstrap.class);
 
     @Inject
-    protected DataSetDefRegistry dataSetDefRegistry;
+    DataSetDefRegistry dataSetDefRegistry;
+
+    @Inject
+    DeploymentIdsPreprocessor deploymentIdsPreprocessor;
+
+    JpaSettings jpaSettings = JpaSettings.get();
 
     @PostConstruct
     protected void registerDataSetDefinitions() {
-        String jbpmDataSource = JpaSettings.get().getDataSourceJndiName();
+        String jbpmDataSource = jpaSettings.getDataSourceJndiName();
 
         DataSetDef processInstancesDef = DataSetDefFactory.newSQLDataSetDef()
                 .uuid(PROCESS_INSTANCE_DATASET)
@@ -94,5 +99,8 @@ public class DataSetDefsBootstrap {
         dataSetDefRegistry.registerDataSetDef(processInstancesDef);
         dataSetDefRegistry.registerDataSetDef(processWithVariablesDef);
         logger.info("Process instance datasets registered");
+
+        // Attach a preprocessor to ensure the user only sees the right process instances
+        dataSetDefRegistry.registerPreprocessor(PROCESS_INSTANCE_DATASET, deploymentIdsPreprocessor);
     }
 }
