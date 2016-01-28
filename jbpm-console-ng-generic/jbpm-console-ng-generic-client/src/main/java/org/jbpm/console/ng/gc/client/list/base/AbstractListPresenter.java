@@ -187,7 +187,7 @@ public abstract class AbstractListPresenter<T> {
         menuRefreshButton.setSize( ButtonSize.SMALL );
         menuRefreshButton.setTitle( Constants.INSTANCE.Refresh() );
 
-        menuResetTabsButton.setIcon( IconType.TH_LIST );
+        menuResetTabsButton.setIcon( IconType.FILTER );
         menuResetTabsButton.setSize( ButtonSize.SMALL );
         menuResetTabsButton.setTitle( Constants.INSTANCE.RestoreDefaultFilters() );
     }

@@ -75,8 +75,6 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
         int getRefreshValue();
 
-        void restoreTabs();
-
         void saveRefreshValue( int newValue );
 
         void applyFilterOnPresenter( String key );
@@ -348,7 +346,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                                 menuResetTabsButton.addClickHandler( new ClickHandler() {
                                     @Override
                                     public void onClick( ClickEvent clickEvent ) {
-                                        view.restoreTabs();
+                                        view.showRestoreDefaultFilterConfirmationPopup();
                                     }
                                 } );
                                 return menuResetTabsButton;

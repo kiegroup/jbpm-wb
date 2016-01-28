@@ -88,8 +88,6 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
 
         int getRefreshValue();
 
-        void restoreTabs();
-
         void saveRefreshValue( int newValue );
 
         void applyFilterOnPresenter( String key );
@@ -419,7 +417,7 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
                                 menuResetTabsButton.addClickHandler( new ClickHandler() {
                                     @Override
                                     public void onClick( ClickEvent clickEvent ) {
-                                        view.restoreTabs();
+                                        view.showRestoreDefaultFilterConfirmationPopup();
                                     }
                                 } );
                                 return menuResetTabsButton;
