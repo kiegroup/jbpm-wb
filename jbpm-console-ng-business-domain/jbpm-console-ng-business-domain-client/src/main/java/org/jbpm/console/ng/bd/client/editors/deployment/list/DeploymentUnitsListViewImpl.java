@@ -29,6 +29,7 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -149,6 +150,9 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
         listGrid.getLeftToolbar().add( newUnitButton );
         listGrid.setEmptyTableCaption( constants.No_Deployment_Units_Available() );
         listGrid.setRowStyles( selectedStyles );
+
+        listGrid.getElement().getStyle().setPaddingRight( 20, Style.Unit.PX );
+        listGrid.getElement().getStyle().setPaddingLeft( 20, Style.Unit.PX );
     }
 
     @Override
