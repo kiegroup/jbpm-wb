@@ -24,6 +24,14 @@
 
   <ui:with field="i18n" type="org.jbpm.console.ng.bd.client.i18n.Constants"/>
 
+  <ui:style>
+
+    .spacer {
+      padding-top: 20px;
+    }
+
+  </ui:style>
+
   <g:HTMLPanel>
     <b:TabPanel ui:field="tabPanel" addStyleNames="uf-tabbar-panel">
       <b:NavTabs addStyleNames="uf-tabbar-panel-nav-tabs nav-tabs-pf">
@@ -32,7 +40,7 @@
       </b:NavTabs>
       <b:TabContent>
         <b:TabPane active="true" ui:field="basicTabPane">
-          <b:Form type="HORIZONTAL">
+          <b:Form type="HORIZONTAL" addStyleNames="{style.spacer}">
             <b:FieldSet>
               <b:FormGroup ui:field="groupControlGroup">
                 <p:FormLabelHelp text="{i18n.GroupID}" addStyleNames="col-md-3" showRequiredIndicator="true"/>
