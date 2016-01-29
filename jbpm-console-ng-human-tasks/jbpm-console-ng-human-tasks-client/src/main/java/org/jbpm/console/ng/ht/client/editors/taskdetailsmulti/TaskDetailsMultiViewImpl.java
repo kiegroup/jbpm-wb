@@ -18,22 +18,16 @@ package org.jbpm.console.ng.ht.client.editors.taskdetailsmulti;
 import javax.enterprise.context.Dependent;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.shared.event.TabShowEvent;
 import org.gwtbootstrap3.client.shared.event.TabShowHandler;
-import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.NavTabs;
 import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.gwtbootstrap3.client.ui.TabPane;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 
 @Dependent
@@ -234,40 +228,6 @@ public class TaskDetailsMultiViewImpl extends Composite
         taskLogsPane.setVisible( true );
         taskLogsTab.setVisible( true );
         taskLogsTab.showTab();
-    }
-
-    @Override
-    public IsWidget getCloseButton() {
-        return new Button() {
-            {
-                setIcon( IconType.REMOVE );
-                setTitle( Constants.INSTANCE.Close() );
-                setSize( ButtonSize.EXTRA_SMALL );
-                addClickHandler( new ClickHandler() {
-                    @Override
-                    public void onClick( ClickEvent event ) {
-                        presenter.closeDetails();
-                    }
-                } );
-            }
-        };
-    }
-
-    @Override
-    public IsWidget getRefreshButton() {
-        return new Button() {
-            {
-                setIcon( IconType.REFRESH );
-                setTitle( Constants.INSTANCE.Refresh() );
-                setSize( ButtonSize.SMALL );
-                addClickHandler( new ClickHandler() {
-                    @Override
-                    public void onClick( ClickEvent event ) {
-                        presenter.refresh();
-                    }
-                } );
-            }
-        };
     }
 
 }

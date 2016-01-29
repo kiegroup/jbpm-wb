@@ -26,10 +26,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
@@ -50,9 +47,10 @@ import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
-import org.jbpm.console.ng.gc.client.list.base.RefreshSelectorMenuBuilder;
-import org.jbpm.console.ng.gc.client.list.base.ResetFiltersMenuBuilder;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
+import org.jbpm.console.ng.gc.client.menu.RefreshMenuBuilder;
+import org.jbpm.console.ng.gc.client.menu.RefreshSelectorMenuBuilder;
+import org.jbpm.console.ng.gc.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -62,16 +60,14 @@ import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mvp.Command;
 import org.uberfire.paging.PageResponse;
 import org.uberfire.workbench.model.menu.MenuFactory;
-import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
-import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.console.ng.es.model.RequestDataSetConstants.*;
 
 @Dependent
 @WorkbenchScreen(identifier = "Requests List")
-public class RequestListPresenter extends AbstractScreenListPresenter<RequestSummary> {
+public class RequestListPresenter extends AbstractScreenListPresenter<RequestSummary> implements RefreshSelectorMenuBuilder.SupportsRefreshInterval {
 
     public interface RequestListView extends ListView<RequestSummary, RequestListPresenter> {
 
@@ -96,17 +92,13 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     @Inject
     DataSetQueryHelper dataSetQueryHelper;
 
-    private List<String> currentActiveStates;
-
     @Inject
     private JobServiceSettingsPopup jobServiceSettingsPopup;
 
     @Inject
     private QuickNewJobPopup quickNewJobPopup;
 
-    private RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder( this );
-
-    private ResetFiltersMenuBuilder resetFiltersMenuBuilder = new ResetFiltersMenuBuilder( this );
+    private RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder(this);
 
     @Inject
     private ErrorPopupPresenter errorPopup;
@@ -279,88 +271,46 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     @WorkbenchMenu
     public Menus getMenus() {
         return MenuFactory
-
-                .newTopLevelMenu( Constants.INSTANCE.New_Job() )
-                .respondsWith( new Command() {
+                .newTopLevelMenu(Constants.INSTANCE.New_Job())
+                .respondsWith(new Command() {
                     @Override
                     public void execute() {
-                        executorServices.call( new RemoteCallback<Boolean>() {
+                        executorServices.call(new RemoteCallback<Boolean>() {
                             @Override
-                            public void callback( Boolean isDisabled ) {
-                                if ( isDisabled ) {
-                                    view.displayNotification( "Executor service is disabled" );
+                            public void callback(Boolean isDisabled) {
+                                if (isDisabled) {
+                                    view.displayNotification("Executor service is disabled");
                                 } else {
                                     quickNewJobPopup.show();
                                 }
                             }
-                        } ).isExecutorDisabled();
+                        }).isExecutorDisabled();
 
                     }
-                } )
+                })
                 .endMenu()
-
-                .newTopLevelMenu( Constants.INSTANCE.Job_Service_Settings() )
-                .respondsWith( new Command() {
+                .newTopLevelMenu(Constants.INSTANCE.Job_Service_Settings())
+                .respondsWith(new Command() {
                     @Override
                     public void execute() {
-                        executorServices.call( new RemoteCallback<Boolean>() {
+                        executorServices.call(new RemoteCallback<Boolean>() {
                             @Override
-                            public void callback( Boolean isDisabled ) {
-                                if ( isDisabled ) {
-                                    view.displayNotification( "Executor service is disabled" );
+                            public void callback(Boolean isDisabled) {
+                                if (isDisabled) {
+                                    view.displayNotification("Executor service is disabled");
                                 } else {
                                     jobServiceSettingsPopup.show();
                                 }
                             }
-                        } ).isExecutorDisabled();
+                        }).isExecutorDisabled();
 
                     }
-                } )
+                })
                 .endMenu()
-
-                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
-                    @Override
-                    public void push( MenuFactory.CustomMenuBuilder element ) {
-                    }
-
-                    @Override
-                    public MenuItem build() {
-                        return new BaseMenuCustom<IsWidget>() {
-                            @Override
-                            public IsWidget build() {
-                                menuRefreshButton.addClickHandler( new ClickHandler() {
-                                    @Override
-                                    public void onClick( ClickEvent clickEvent ) {
-                                        refreshGrid();
-                                    }
-                                } );
-                                return menuRefreshButton;
-                            }
-
-                            @Override
-                            public boolean isEnabled() {
-                                return true;
-                            }
-
-                            @Override
-                            public void setEnabled( boolean enabled ) {
-
-                            }
-
-                            @Override
-                            public String getSignatureId() {
-                                return "org.jbpm.console.ng.es.client.editors.requestlist.RequestListPresenter#menuRefreshButton";
-                            }
-
-                        };
-                    }
-                } ).endMenu()
-
-                .newTopLevelCustomMenu( refreshSelectorMenuBuilder ).endMenu()
-
-                .newTopLevelCustomMenu( resetFiltersMenuBuilder ).endMenu()
+                .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
+                .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()
+                .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
                 .build();
-
     }
 
     @Override
@@ -382,8 +332,8 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     }
 
     @Override
-    protected void updateRefreshInterval( boolean enableAutoRefresh, int newInterval ) {
-        super.updateRefreshInterval( enableAutoRefresh, newInterval );
-        view.saveRefreshValue( newInterval );
+    public void onUpdateRefreshInterval(boolean enableAutoRefresh, int newInterval) {
+        super.onUpdateRefreshInterval(enableAutoRefresh, newInterval);
+        view.saveRefreshValue(newInterval);
     }
 }

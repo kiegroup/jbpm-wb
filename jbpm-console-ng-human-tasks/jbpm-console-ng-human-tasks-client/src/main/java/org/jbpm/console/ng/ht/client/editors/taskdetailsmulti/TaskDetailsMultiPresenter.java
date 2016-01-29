@@ -21,6 +21,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import org.jbpm.console.ng.gc.client.menu.RefreshMenuBuilder;
 import org.jbpm.console.ng.ht.client.editors.taskadmin.TaskAdminPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter;
@@ -47,22 +48,16 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
-import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
-import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @Dependent
 @WorkbenchScreen(identifier = "Task Details Multi", preferredWidth = 595)
-public class TaskDetailsMultiPresenter {
+public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
 
     public interface TaskDetailsMultiView
             extends UberView<TaskDetailsMultiPresenter> {
 
-        IsWidget getRefreshButton();
-
-        IsWidget getCloseButton();
-
-        void setAdminTabVisible( boolean value );
+        void setAdminTabVisible(boolean value);
 
         void displayAllTabs();
 
@@ -161,28 +156,16 @@ public class TaskDetailsMultiPresenter {
         placeManager.closePlace( place );
     }
 
-    public void refresh() {
-        taskSelected.fire( new TaskSelectionEvent( Long.valueOf( deploymentId ), processId ) );
+    @Override
+    public void onRefresh() {
+        taskSelected.fire(new TaskSelectionEvent(Long.valueOf(deploymentId), processId));
     }
 
     @WorkbenchMenu
     public Menus buildMenu() {
         return MenuFactory
-                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
-                    @Override
-                    public void push( MenuFactory.CustomMenuBuilder element ) {
-                    }
-
-                    @Override
-                    public MenuItem build() {
-                        return new BaseMenuCustom<IsWidget>() {
-                            @Override
-                            public IsWidget build() {
-                                return view.getRefreshButton();
-                            }
-                        };
-                    }
-                } ).endMenu()
+                .newTopLevelCustomMenu(new RefreshMenuBuilder(this))
+                .endMenu()
                 .build();
     }
 

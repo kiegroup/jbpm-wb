@@ -117,11 +117,6 @@ public class AdvancedProcessDefDetailsMultiViewImpl extends BaseProcessDefDetail
     }
 
     @Override
-    protected void refresh() {
-        presenter.refresh();
-    }
-
-    @Override
     protected void closeDetails() {
         presenter.closeDetails();
     }
