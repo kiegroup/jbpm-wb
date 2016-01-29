@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 JBoss Inc
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.gc.client.list.base;
+package org.jbpm.console.ng.gc.client.menu;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -28,19 +28,25 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
-public class ResetFiltersMenuBuilder implements MenuFactory.CustomMenuBuilder {
+public class RefreshMenuBuilder implements MenuFactory.CustomMenuBuilder {
 
-    private AbstractListPresenter presenter;
+    public interface SupportsRefresh {
 
-    protected Button menuResetTabsButton = GWT.create( Button.class );
+        void onRefresh();
 
-    public ResetFiltersMenuBuilder( final AbstractListPresenter presenter ) {
-        this.presenter = presenter;
+    }
+
+    private SupportsRefresh supportsRefresh;
+
+    protected Button menuRefreshButton = GWT.create(Button.class);
+
+    public RefreshMenuBuilder(final SupportsRefresh supportsRefresh) {
+        this.supportsRefresh = supportsRefresh;
         setupMenuButton();
     }
 
     @Override
-    public void push( MenuFactory.CustomMenuBuilder element ) {
+    public void push(MenuFactory.CustomMenuBuilder element) {
     }
 
     @Override
@@ -48,13 +54,7 @@ public class ResetFiltersMenuBuilder implements MenuFactory.CustomMenuBuilder {
         return new BaseMenuCustom<IsWidget>() {
             @Override
             public IsWidget build() {
-                menuResetTabsButton.addClickHandler( new ClickHandler() {
-                    @Override
-                    public void onClick( ClickEvent clickEvent ) {
-                        presenter.onRestoreDefaultFilters();
-                    }
-                } );
-                return menuResetTabsButton;
+                return menuRefreshButton;
             }
 
             @Override
@@ -63,22 +63,28 @@ public class ResetFiltersMenuBuilder implements MenuFactory.CustomMenuBuilder {
             }
 
             @Override
-            public void setEnabled( boolean enabled ) {
+            public void setEnabled(boolean enabled) {
 
             }
 
             @Override
             public String getSignatureId() {
-                return "org.jbpm.console.ng.gc.client.list.base.ResetFiltersMenuBuilder#menuResetTabsButton";
+                return "org.jbpm.console.ng.gc.client.list.base.RefreshMenuBuilder#menuRefreshButton";
             }
 
         };
     }
 
-    protected void setupMenuButton() {
-        menuResetTabsButton.setIcon( IconType.FILTER );
-        menuResetTabsButton.setSize( ButtonSize.SMALL );
-        menuResetTabsButton.setTitle( Constants.INSTANCE.RestoreDefaultFilters() );
+    public void setupMenuButton() {
+        menuRefreshButton.setIcon(IconType.REFRESH);
+        menuRefreshButton.setSize(ButtonSize.SMALL);
+        menuRefreshButton.setTitle(Constants.INSTANCE.Refresh());
+        menuRefreshButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+                supportsRefresh.onRefresh();
+            }
+        });
     }
 
 }
