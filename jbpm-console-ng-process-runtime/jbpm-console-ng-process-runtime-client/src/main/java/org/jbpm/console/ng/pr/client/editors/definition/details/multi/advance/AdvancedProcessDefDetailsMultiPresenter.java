@@ -18,6 +18,8 @@ package org.jbpm.console.ng.pr.client.editors.definition.details.multi.advance;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.IsWidget;
+import org.jbpm.console.ng.gc.client.menu.RefreshMenuBuilder;
 import org.jbpm.console.ng.pr.client.editors.definition.details.advance.AdvancedViewProcessDefDetailsPresenter;
 import org.jbpm.console.ng.pr.client.editors.definition.details.multi.BaseProcessDefDetailsMultiPresenter;
 import org.uberfire.client.annotations.DefaultPosition;
@@ -31,7 +33,6 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
-import com.google.gwt.user.client.ui.IsWidget;
 
 @Dependent
 @WorkbenchScreen(identifier = "Advanced Process Details Multi", preferredWidth = 500)
@@ -63,10 +64,10 @@ public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetai
     @WorkbenchMenu
     public Menus buildMenu() {
         return MenuFactory
-                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+                .newTopLevelCustomMenu(new MenuFactory.CustomMenuBuilder() {
 
                     @Override
-                    public void push( MenuFactory.CustomMenuBuilder element ) {
+                    public void push(MenuFactory.CustomMenuBuilder element) {
                     }
 
                     @Override
@@ -79,12 +80,12 @@ public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetai
                             }
                         };
                     }
-                } ).endMenu()
+                }).endMenu()
 
-                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+                .newTopLevelCustomMenu(new MenuFactory.CustomMenuBuilder() {
 
                     @Override
-                    public void push( MenuFactory.CustomMenuBuilder element ) {
+                    public void push(MenuFactory.CustomMenuBuilder element) {
                     }
 
                     @Override
@@ -97,43 +98,10 @@ public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetai
                             }
                         };
                     }
-                } ).endMenu()
+                }).endMenu()
 
-                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
-
-                    @Override
-                    public void push( MenuFactory.CustomMenuBuilder element ) {
-                    }
-
-                    @Override
-                    public MenuItem build() {
-                        return new BaseMenuCustom<IsWidget>() {
-
-                            @Override
-                            public IsWidget build() {
-                                return view.getRefreshButton();
-                            }
-                        };
-                    }
-                } ).endMenu()
-
-                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
-
-                    @Override
-                    public void push( MenuFactory.CustomMenuBuilder element ) {
-                    }
-
-                    @Override
-                    public MenuItem build() {
-                        return new BaseMenuCustom<IsWidget>() {
-
-                            @Override
-                            public IsWidget build() {
-                                return view.getCloseButton();
-                            }
-                        };
-                    }
-                } ).endMenu().build();
+                .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
+                .build();
     }
 
     public IsWidget getTabView() {

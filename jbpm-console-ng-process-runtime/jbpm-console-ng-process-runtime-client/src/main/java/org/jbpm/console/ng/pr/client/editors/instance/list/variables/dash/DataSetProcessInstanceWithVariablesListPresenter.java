@@ -26,11 +26,8 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
@@ -51,9 +48,10 @@ import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
-import org.jbpm.console.ng.gc.client.list.base.RefreshSelectorMenuBuilder;
-import org.jbpm.console.ng.gc.client.list.base.ResetFiltersMenuBuilder;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
+import org.jbpm.console.ng.gc.client.menu.RefreshMenuBuilder;
+import org.jbpm.console.ng.gc.client.menu.RefreshSelectorMenuBuilder;
+import org.jbpm.console.ng.gc.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
@@ -76,9 +74,7 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.paging.PageResponse;
 import org.uberfire.workbench.model.menu.MenuFactory;
-import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
-import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 
@@ -119,8 +115,6 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
     private ErrorPopupPresenter errorPopup;
 
     private RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder( this );
-
-    private ResetFiltersMenuBuilder resetFiltersMenuBuilder = new ResetFiltersMenuBuilder( this );
 
     @Inject
     private QuickNewProcessInstancePopup newProcessInstancePopup;
@@ -508,55 +502,18 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
     @WorkbenchMenu
     public Menus getMenus() {
         return MenuFactory
-                .newTopLevelMenu( Constants.INSTANCE.New_Process_Instance() )
-                .respondsWith( new Command() {
+                .newTopLevelMenu(Constants.INSTANCE.New_Process_Instance())
+                .respondsWith(new Command() {
                     @Override
                     public void execute() {
                         newProcessInstancePopup.show();
                     }
-                } )
+                })
                 .endMenu()
-                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
-                    @Override
-                    public void push( MenuFactory.CustomMenuBuilder element ) {
-                    }
-
-                    @Override
-                    public MenuItem build() {
-                        return new BaseMenuCustom<IsWidget>() {
-                            @Override
-                            public IsWidget build() {
-                                menuRefreshButton.addClickHandler( new ClickHandler() {
-                                    @Override
-                                    public void onClick( ClickEvent clickEvent ) {
-                                        refreshGrid();
-                                    }
-                                } );
-                                return menuRefreshButton;
-                            }
-
-                            @Override
-                            public boolean isEnabled() {
-                                return true;
-                            }
-
-                            @Override
-                            public void setEnabled( boolean enabled ) {
-
-                            }
-
-                            @Override
-                            public String getSignatureId() {
-                                return "org.jbpm.console.ng.pr.client.editors.instance.list.ProcessInstanceListPresenter#menuRefreshButton";
-                            }
-
-                        };
-                    }
-                } ).endMenu()
-                .newTopLevelCustomMenu( refreshSelectorMenuBuilder ).endMenu()
-                .newTopLevelCustomMenu( resetFiltersMenuBuilder ).endMenu()
+                .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
+                .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()
+                .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder( this )).endMenu()
                 .build();
-
     }
 
     @Override
@@ -565,8 +522,8 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
     }
 
     @Override
-    protected void updateRefreshInterval( boolean enableAutoRefresh, int newInterval ) {
-        super.updateRefreshInterval( enableAutoRefresh, newInterval );
+    public void onUpdateRefreshInterval( boolean enableAutoRefresh, int newInterval ) {
+        super.onUpdateRefreshInterval( enableAutoRefresh, newInterval );
         view.saveRefreshValue( newInterval );
     }
 

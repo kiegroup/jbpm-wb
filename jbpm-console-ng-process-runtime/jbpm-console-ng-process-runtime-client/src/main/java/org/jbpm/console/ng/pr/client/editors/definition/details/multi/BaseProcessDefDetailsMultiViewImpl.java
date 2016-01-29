@@ -28,38 +28,6 @@ public abstract class BaseProcessDefDetailsMultiViewImpl extends Composite
         implements BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView {
 
     @Override
-    public Button getCloseButton() {
-        return new Button() {{
-            setIcon( IconType.REMOVE );
-            setTitle( Constants.INSTANCE.Close() );
-            setSize( ButtonSize.SMALL );
-            addClickHandler( new ClickHandler() {
-
-                @Override
-                public void onClick( ClickEvent event ) {
-                    closeDetails();
-                }
-            } );
-        }};
-    }
-
-    @Override
-    public IsWidget getRefreshButton() {
-        return new Button() {{
-            setIcon( IconType.REFRESH );
-            setTitle( Constants.INSTANCE.Refresh() );
-            setSize( ButtonSize.SMALL );
-            addClickHandler( new ClickHandler() {
-
-                @Override
-                public void onClick( ClickEvent event ) {
-                    refresh();
-                }
-            } );
-        }};
-    }
-
-    @Override
     public IsWidget getNewInstanceButton() {
         return new Button() {{
             setSize( ButtonSize.SMALL );
@@ -76,8 +44,6 @@ public abstract class BaseProcessDefDetailsMultiViewImpl extends Composite
     }
 
     protected abstract IsWidget getTabView();
-
-    protected abstract void refresh();
 
     protected abstract void closeDetails();
 

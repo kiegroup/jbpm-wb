@@ -19,6 +19,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import org.jbpm.console.ng.gc.client.menu.RefreshMenuBuilder;
 import org.jbpm.console.ng.pr.client.editors.definition.details.basic.BasicProcessDefDetailsPresenter;
 import org.jbpm.console.ng.pr.client.editors.definition.details.multi.BaseProcessDefDetailsMultiPresenter;
 import org.uberfire.client.annotations.DefaultPosition;
@@ -26,7 +27,6 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
@@ -67,10 +67,10 @@ public class BasicProcessDefDetailsMultiPresenter extends BaseProcessDefDetailsM
     @WorkbenchMenu
     public Menus buildMenu() {
         return MenuFactory
-                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+                .newTopLevelCustomMenu(new MenuFactory.CustomMenuBuilder() {
 
                     @Override
-                    public void push( MenuFactory.CustomMenuBuilder element ) {
+                    public void push(MenuFactory.CustomMenuBuilder element) {
                     }
 
                     @Override
@@ -83,26 +83,8 @@ public class BasicProcessDefDetailsMultiPresenter extends BaseProcessDefDetailsM
                             }
                         };
                     }
-                } ).endMenu()
-
-                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
-
-                    @Override
-                    public void push( MenuFactory.CustomMenuBuilder element ) {
-                    }
-
-                    @Override
-                    public MenuItem build() {
-                        return new BaseMenuCustom<IsWidget>() {
-
-                            @Override
-                            public IsWidget build() {
-                                return view.getRefreshButton();
-                            }
-                        };
-                    }
-                } ).endMenu()
-
+                }).endMenu()
+                .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
                 .build();
     }
 }
