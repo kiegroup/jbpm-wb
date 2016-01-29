@@ -36,7 +36,6 @@ import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.gwtbootstrap3.client.ui.TabPane;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
@@ -178,40 +177,6 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
                 }} );
             }} );
         }};
-    }
-
-    @Override
-    public IsWidget getRefreshButton() {
-        return new Button() {
-            {
-                setIcon( IconType.REFRESH );
-                setTitle( Constants.INSTANCE.Refresh() );
-                setSize( ButtonSize.SMALL );
-                addClickHandler( new ClickHandler() {
-                    @Override
-                    public void onClick( ClickEvent event ) {
-                        presenter.refresh();
-                    }
-                } );
-            }
-        };
-    }
-
-    @Override
-    public IsWidget getCloseButton() {
-        return new Button() {
-            {
-                setIcon( IconType.REMOVE );
-                setTitle( Constants.INSTANCE.Close() );
-                setSize( ButtonSize.SMALL );
-                addClickHandler( new ClickHandler() {
-                    @Override
-                    public void onClick( ClickEvent event ) {
-                        presenter.closeDetails();
-                    }
-                } );
-            }
-        };
     }
 
     @Override

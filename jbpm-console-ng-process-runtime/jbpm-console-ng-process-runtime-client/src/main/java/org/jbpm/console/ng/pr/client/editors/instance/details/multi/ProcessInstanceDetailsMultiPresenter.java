@@ -30,6 +30,7 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
+import org.jbpm.console.ng.gc.client.menu.RefreshMenuBuilder;
 import org.jbpm.console.ng.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.console.ng.pr.client.editors.documents.list.ProcessDocumentListPresenter;
 import org.jbpm.console.ng.pr.client.editors.instance.details.ProcessInstanceDetailsPresenter;
@@ -62,16 +63,12 @@ import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @Dependent
 @WorkbenchScreen(identifier = "Process Instance Details Multi", preferredWidth = 500)
-public class ProcessInstanceDetailsMultiPresenter {
+public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
 
     public interface ProcessInstanceDetailsMultiView
             extends UberView<ProcessInstanceDetailsMultiPresenter> {
 
         IsWidget getOptionsButton();
-
-        IsWidget getRefreshButton();
-
-        IsWidget getCloseButton();
 
         void selectInstanceDetailsTab();
     }
@@ -157,7 +154,8 @@ public class ProcessInstanceDetailsMultiPresenter {
         view.selectInstanceDetailsTab();
     }
 
-    public void refresh() {
+    @Override
+    public void onRefresh() {
         processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedDeploymentId, Long.valueOf( deploymentId ), processId, selectedProcessDefName, selectedProcessInstanceStatus ) );
     }
 
@@ -266,9 +264,9 @@ public class ProcessInstanceDetailsMultiPresenter {
     @WorkbenchMenu
     public Menus buildMenu() {
         return MenuFactory
-                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
+                .newTopLevelCustomMenu(new MenuFactory.CustomMenuBuilder() {
                     @Override
-                    public void push( MenuFactory.CustomMenuBuilder element ) {
+                    public void push(MenuFactory.CustomMenuBuilder element) {
                     }
 
                     @Override
@@ -280,24 +278,8 @@ public class ProcessInstanceDetailsMultiPresenter {
                             }
                         };
                     }
-                } ).endMenu()
-
-                .newTopLevelCustomMenu( new MenuFactory.CustomMenuBuilder() {
-                    @Override
-                    public void push( MenuFactory.CustomMenuBuilder element ) {
-                    }
-
-                    @Override
-                    public MenuItem build() {
-                        return new BaseMenuCustom<IsWidget>() {
-                            @Override
-                            public IsWidget build() {
-                                return view.getRefreshButton();
-                            }
-                        };
-                    }
-                } ).endMenu()
-
+                }).endMenu()
+                .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
                 .build();
     }
 

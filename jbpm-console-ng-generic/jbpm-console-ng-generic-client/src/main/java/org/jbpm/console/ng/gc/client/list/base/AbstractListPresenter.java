@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 JBoss by Red Hat.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,50 +15,47 @@
  */
 package org.jbpm.console.ng.gc.client.list.base;
 
+import java.util.HashMap;
+import java.util.Map;
+import javax.enterprise.event.Observes;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
-
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jbpm.console.ng.ga.model.QueryFilter;
-
 import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
+import org.jbpm.console.ng.gc.client.menu.RefreshMenuBuilder;
+import org.jbpm.console.ng.gc.client.menu.RefreshSelectorMenuBuilder;
+import org.jbpm.console.ng.gc.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.uberfire.lifecycle.OnClose;
 import org.uberfire.paging.PageResponse;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Observes;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
  * @param <T> data type for the AsyncDataProvider
  * @author salaboy
  */
-public abstract class AbstractListPresenter<T> {
+public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.SupportsRefresh,
+        RefreshSelectorMenuBuilder.SupportsRefreshInterval,
+        RestoreDefaultFiltersMenuBuilder.SupportsRestoreDefaultFilters {
 
     protected AsyncDataProvider<T> dataProvider;
 
     protected QueryFilter currentFilter;
 
-    protected String textSearchStr="";
+    protected String textSearchStr = "";
 
     private Constants constants = GWT.create(Constants.class);
 
-    protected  boolean addingDefaultFilters = false;
+    protected boolean addingDefaultFilters = false;
 
     protected Timer refreshTimer = null;
     protected boolean autoRefreshEnabled = false;
     protected int autoRefreshSeconds = 0; // This should be loaded from the grid settings (probably the filters)
 
-
-    protected Button menuRefreshButton = GWT.create( Button.class );
 
     protected abstract AbstractListView.ListView getListView();
 
@@ -139,6 +136,11 @@ public abstract class AbstractListPresenter<T> {
         return dataProvider;
     }
 
+    @Override
+    public void onRefresh() {
+        refreshGrid();
+    }
+
     public void refreshGrid() {
         if(dataProvider.getDataDisplays().size()>0) {
             HasData<T> next = dataProvider.getDataDisplays().iterator().next();
@@ -166,13 +168,15 @@ public abstract class AbstractListPresenter<T> {
 
     }
 
-    public void onRestoreDefaultFilters(){
+    @Override
+    public void onRestoreDefaultFilters() {
         getListView().showRestoreDefaultFilterConfirmationPopup();
     }
 
-    protected void updateRefreshInterval(boolean enableAutoRefresh, int newInterval){
+    @Override
+    public void onUpdateRefreshInterval(boolean enableAutoRefresh, int newInterval) {
         this.autoRefreshEnabled = enableAutoRefresh;
-        setAutoRefreshSeconds( newInterval );
+        setAutoRefreshSeconds(newInterval);
         updateRefreshTimer();
     }
 
@@ -182,13 +186,6 @@ public abstract class AbstractListPresenter<T> {
 
     protected void setAutoRefreshSeconds(int refreshSeconds){
         autoRefreshSeconds = refreshSeconds;
-    }
-
-    @PostConstruct
-    public void setupButtons() {
-        menuRefreshButton.setIcon( IconType.REFRESH );
-        menuRefreshButton.setSize( ButtonSize.SMALL );
-        menuRefreshButton.setTitle( Constants.INSTANCE.Refresh() );
     }
 
     @OnClose
