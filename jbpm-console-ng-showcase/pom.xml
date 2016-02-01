@@ -129,6 +129,12 @@
       <artifactId>uberfire-security-api</artifactId>
     </dependency>
 
+    <!-- identity provider -->
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-identity-session-provider</artifactId>
+    </dependency>
+
     <!-- Hack: ANT bundled with kie-ci needs to be excluded when running on Jetty -->
     <!-- It is added back for other Application Servers in their respective assemblies -->
     <dependency>
