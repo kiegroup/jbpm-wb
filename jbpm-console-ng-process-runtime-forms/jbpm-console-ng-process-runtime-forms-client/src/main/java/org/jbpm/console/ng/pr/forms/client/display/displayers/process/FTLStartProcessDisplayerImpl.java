@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 JBoss by Red Hat.
+ * Copyright 2015 JBoss by Red Hat.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package org.jbpm.console.ng.pr.forms.client.display.displayers.process;
 
 import java.util.Map;
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.DOM;
@@ -33,8 +32,6 @@ import org.gwtbootstrap3.client.ui.PanelGroup;
 import org.gwtbootstrap3.client.ui.PanelHeader;
 import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
-import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 
 /**
  * @author salaboy

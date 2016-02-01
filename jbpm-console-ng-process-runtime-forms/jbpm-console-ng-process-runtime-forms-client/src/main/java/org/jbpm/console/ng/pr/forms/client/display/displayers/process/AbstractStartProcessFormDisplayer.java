@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 JBoss by Red Hat.
+ * Copyright 2015 JBoss by Red Hat.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package org.jbpm.console.ng.pr.forms.client.display.displayers.process;
 
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -29,6 +30,7 @@ import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Panel;
+
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.TextBox;
@@ -76,10 +78,14 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     protected String opener;
     protected FormContentResizeListener resizeListener;
     protected Long parentProcessInstanceId;
+    
+    protected ErrorCallback<Message> errorCallback;
 
     private Command onClose;
 
     private Command onRefresh;
+    
+    private Command onHide;
 
     @Inject
     protected ErrorPopupPresenter errorPopup;
@@ -94,23 +100,24 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
 
     @Inject
     protected JSNIHelper jsniHelper;
-
+    
     @Inject
     private Event<NotificationEvent> notificationEvent;
-
+    
     @PostConstruct
     protected void init() {
         container.getElement().setId("form-data");
     }
 
     @Override
-    public void init(FormDisplayerConfig<ProcessDefinitionKey> config, Command onClose, Command onRefreshCommand, FormContentResizeListener resizeContentListener) {
+    public void init(FormDisplayerConfig<ProcessDefinitionKey> config, Command onClose, Command onRefreshCommand, FormContentResizeListener resizeContentListener, final Command hideCommand) {
         this.deploymentId = config.getKey().getDeploymentId();
         this.processDefId = config.getKey().getProcessId();
         this.formContent = config.getFormContent();
         this.opener = config.getFormOpener();
         this.onClose = onClose;
         this.onRefresh = onRefreshCommand;
+        this.onHide = hideCommand;
         this.resizeListener = resizeContentListener;
 
         container.clear();
@@ -121,12 +128,12 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
 
         correlationKey = new TextBox();
 
-
-        Button startButton = new Button(constants.Submit(), new ClickHandler() {
+        Button startButton = new Button(constants.Submit());
+        startButton.addClickHandler(  new ClickHandler() {
             @Override public void onClick(ClickEvent event) {
-                startProcessFromDisplayer();
+                onSubmit();
             }
-        });
+        } );
         startButton.setType(ButtonType.PRIMARY);
         footerButtons.add(startButton);
 
@@ -155,15 +162,18 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     }
 
     protected ErrorCallback<Message> getUnexpectedErrorCallback() {
-        return new ErrorCallback<Message>() {
+        errorCallback =  new ErrorCallback<Message>() {
             @Override
             public boolean error(Message message, Throwable throwable) {
-                String notification = Constants.INSTANCE.UnexpectedError( throwable.getMessage() );
+                final String notification = Constants.INSTANCE.UnexpectedError( throwable.getMessage() );
                 errorPopup.showMessage(notification);
                 jsniHelper.notifyErrorMessage(opener, notification);
+                close();
                 return true;
             }
         };
+        
+        return errorCallback;
     }
 
     @Override
@@ -201,6 +211,11 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
         };
     }
 
+    public void onSubmit(){
+        startProcessFromDisplayer();
+        onHide.execute();
+    }
+    
     @Override
     public void addOnCloseCallback(Command callback) {
         this.onClose = callback;
@@ -221,6 +236,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
         if (this.onClose != null) {
             this.onClose.execute();
         }
+        
         clearStatus();
     }
 
@@ -230,7 +246,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
         deploymentId = null;
         processDefId = null;
         processName = null;
-
+        
         container.clear();
         formContainer.clear();
         footerButtons.clear();
@@ -239,7 +255,6 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
         onRefresh = null;
         resizeListener = null;
     }
-
 
     protected void eventListener(String origin, String request) {
         if (origin == null || !origin.endsWith("//" + opener)) {
@@ -281,7 +296,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     public void setParentProcessInstanceId(Long parentProcessInstanceId) {
         this.parentProcessInstanceId = parentProcessInstanceId;
     }
-
+    
     @Inject
     public void setSessionServices( final Caller<KieSessionEntryPoint> sessionServices ) {
         this.sessionServices = sessionServices;

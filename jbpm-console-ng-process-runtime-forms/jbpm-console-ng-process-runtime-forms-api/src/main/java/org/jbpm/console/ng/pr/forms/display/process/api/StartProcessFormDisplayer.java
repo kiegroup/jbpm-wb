@@ -17,9 +17,11 @@ package org.jbpm.console.ng.pr.forms.display.process.api;
 
 import java.util.Map;
 
+import org.jbpm.console.ng.ga.forms.display.FormDisplayerConfig;
 import org.jbpm.console.ng.ga.forms.display.GenericFormDisplayer;
 import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
 import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
+import org.uberfire.mvp.Command;
 
 /**
  *
@@ -32,4 +34,6 @@ public interface StartProcessFormDisplayer extends GenericFormDisplayer<ProcessD
     void startProcess(Map<String, Object> params);
 
     void addResizeFormContent(FormContentResizeListener resizeListener);
+    
+    void init(FormDisplayerConfig<ProcessDefinitionKey> config, Command onCloseCommand, Command onRefreshCommand, FormContentResizeListener formContentResizeListener, final Command hideCommand);
 }

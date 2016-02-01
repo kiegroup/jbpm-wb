@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
+
 import org.gwtbootstrap3.client.shared.event.ModalHiddenEvent;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenHandler;
 import org.gwtbootstrap3.client.ui.ModalFooter;
@@ -138,5 +139,16 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
     @Override
     public GenericFormDisplayer getCurrentDisplayer() {
         return currentDisplayer;
+    }
+    
+    @Override
+    public Command getHideCommand() {
+        return new Command() {
+
+            @Override
+            public void execute() {
+                setVisible( false );
+            }
+        };
     }
 }

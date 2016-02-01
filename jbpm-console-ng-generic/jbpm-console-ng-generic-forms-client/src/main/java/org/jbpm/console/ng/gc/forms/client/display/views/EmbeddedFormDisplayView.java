@@ -38,16 +38,16 @@ public class EmbeddedFormDisplayView implements FormDisplayerView {
 
     @PostConstruct
     public void init() {
-        formContainer.setWidth("100%");
+        formContainer.setWidth( "100%" );
     }
 
-
     @Override
-    public void display(GenericFormDisplayer displayer) {
+    public void display( GenericFormDisplayer displayer ) {
         currentDisplayer = displayer;
         formContainer.clear();
-        formContainer.add(displayer.getContainer());
-        if (displayer.getOpener() == null) formContainer.add(displayer.getFooter());
+        formContainer.add( displayer.getContainer() );
+        if ( displayer.getOpener() == null )
+            formContainer.add( displayer.getFooter() );
     }
 
     public Widget getView() {
@@ -60,7 +60,7 @@ public class EmbeddedFormDisplayView implements FormDisplayerView {
     }
 
     @Override
-    public void setOnCloseCommand(Command onCloseCommand) {
+    public void setOnCloseCommand( Command onCloseCommand ) {
         this.onCloseCommand = onCloseCommand;
     }
 
@@ -70,12 +70,23 @@ public class EmbeddedFormDisplayView implements FormDisplayerView {
     }
 
     @Override
-    public void setResizeListener(FormContentResizeListener resizeListener) {
+    public void setResizeListener( FormContentResizeListener resizeListener ) {
         this.resizeListener = resizeListener;
     }
 
     @Override
     public GenericFormDisplayer getCurrentDisplayer() {
         return currentDisplayer;
+    }
+
+    @Override
+    public Command getHideCommand() {
+        return new Command() {
+
+            @Override
+            public void execute() {
+                formContainer.setVisible( false );
+            }
+        };
     }
 }

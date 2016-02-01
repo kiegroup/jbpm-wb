@@ -107,7 +107,7 @@ public class StartProcessFormDisplayProviderImpl implements StartProcessFormDisp
                                 @Override public void execute() {
                                     display(config, view);
                                 }
-                            } , view.getResizeListener());
+                            } , view.getResizeListener(), view.getHideCommand());
                             view.display(d);
                             return;
                         }
