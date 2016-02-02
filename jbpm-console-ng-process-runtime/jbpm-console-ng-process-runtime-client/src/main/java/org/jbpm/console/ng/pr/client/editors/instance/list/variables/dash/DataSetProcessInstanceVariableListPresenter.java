@@ -30,9 +30,7 @@ import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.view.client.Range;
-import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
-import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
@@ -43,6 +41,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.console.ng.gc.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.RefreshSelectorMenuBuilder;
@@ -161,7 +160,7 @@ public class DataSetProcessInstanceVariableListPresenter extends AbstractScreenL
                         textSearchStr = "";
                     }
                     dataSetQueryHelper.setDataSetHandler( currentTableSettings );
-                    dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
+                    dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new AbstractDataSetReadyCallback( errorPopup, view, currentTableSettings.getDataSet() ) {
                         @Override
                         public void callback( DataSet dataSet ) {
                             if ( dataSet != null ) {
@@ -192,20 +191,6 @@ public class DataSetProcessInstanceVariableListPresenter extends AbstractScreenL
                             view.hideBusyIndicator();
                         }
 
-                        @Override
-                        public void notFound() {
-                            view.hideBusyIndicator();
-                            errorPopup.showMessage( "Not found DataSet with UUID [  " + PROCESS_INSTANCE_WITH_VARIABLES_DATASET + " ] " );
-                            GWT.log( "DataSet with UUID [  " + PROCESS_INSTANCE_WITH_VARIABLES_DATASET + " ] not found." );
-                        }
-
-                        @Override
-                        public boolean onError( final ClientRuntimeError error ) {
-                            view.hideBusyIndicator();
-                            errorPopup.showMessage( "DataSet with UUID [  " + PROCESS_INSTANCE_WITH_VARIABLES_DATASET + " ] error: " + error.getThrowable() );
-                            GWT.log( "DataSet with UUID [  " + PROCESS_INSTANCE_WITH_VARIABLES_DATASET + " ] error: ", error.getThrowable() );
-                            return false;
-                        }
                     } );
                 } else {
                     view.hideBusyIndicator();
