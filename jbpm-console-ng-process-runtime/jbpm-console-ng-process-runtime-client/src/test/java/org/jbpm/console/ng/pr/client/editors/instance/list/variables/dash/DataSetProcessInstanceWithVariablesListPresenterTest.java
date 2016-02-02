@@ -16,73 +16,86 @@
 package org.jbpm.console.ng.pr.client.editors.instance.list.variables.dash;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
-import javax.inject.Inject;
-
+import com.google.gwt.dev.util.collect.HashSet;
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.apache.commons.lang3.StringUtils;
 import org.dashbuilder.dataset.DataSet;
-import org.dashbuilder.dataset.filter.ColumnFilter;
-import org.dashbuilder.dataset.filter.FilterFactory;
+import org.dashbuilder.dataset.DataSetLookup;
+import org.dashbuilder.dataset.DataSetOp;
+import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
-import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
-import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
-import org.jbpm.console.ng.ht.model.TaskSummary;
-import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
+import org.jbpm.console.ng.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.service.ProcessInstanceService;
+import org.jbpm.process.instance.ProcessInstance;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mocks.CallerMock;
+import org.uberfire.mvp.PlaceRequest;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.dashbuilder.dataset.sort.SortOrder.*;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class DataSetProcessInstanceWithVariablesListPresenterTest {
-    private static final Long PROCESSINSTANCE_ID = 1L;
 
-    @Inject
     private CallerMock<ProcessInstanceService> callerMockProcessInstanceService;
 
     @Mock
     private ProcessInstanceService processInstanceServiceMock;
 
-
-    @Inject
     private CallerMock<KieSessionEntryPoint> callerMockKieSessionServices;
 
     @Mock
     private KieSessionEntryPoint kieSessionEntryPointMock;
 
-
     @Mock
     private DataSetProcessInstanceWithVariablesListViewImpl viewMock;
 
     @Mock
-    DataSetQueryHelper dataSetQueryHelper;
+    private DataSetQueryHelper dataSetQueryHelper;
 
     @Mock
-    DataSet dataSet;
+    private DataSet dataSet;
 
     @Mock
-    DataSetQueryHelper dataSetQueryHelperDomainSpecific;
+    private DataSet dataSetProcessVar;
+
+    @Mock
+    private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
 
     @Mock
     private ExtendedPagedTable extendedPagedTable;
 
+    @Mock
+    protected PlaceManager placeManager;
+
+    @Mock
     private FilterSettings filterSettings;
+
+    @Mock
     private FilterSettings variablesTableSettings;
+
     private ArrayList<ProcessInstanceSummary> processInstanceSummaries;
     //Thing under test
     private DataSetProcessInstanceWithVariablesListPresenter presenter;
@@ -94,24 +107,34 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
         callerMockKieSessionServices = new CallerMock<KieSessionEntryPoint>(kieSessionEntryPointMock);
         callerMockProcessInstanceService = new CallerMock<ProcessInstanceService>(processInstanceServiceMock);
 
-        filterSettings= createTableSettingsPrototype(null);
-
         processInstanceSummaries = createProcessInstanceSummaryList(5);
 
-
+        when(filterSettings.getDataSetLookup()).thenReturn(new DataSetLookup());
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getPageSize()).thenReturn(10);
-        when(extendedPagedTable.getColumnSortList()).thenReturn(null);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
         when(viewMock.getVariablesTableSettings("testProc")).thenReturn(filterSettings);
 
-        variablesTableSettings = createTableSettingsPrototype(null);
-        variablesTableSettings.setTablePageSize(-1);
+        doAnswer(new Answer() {
 
-        dataSetQueryHelperDomainSpecific.setDataSetHandler(variablesTableSettings);
-        //dataSetQueryHelper.setCurrentTableSettings(createTableSettingsPrototype());
-        presenter = new DataSetProcessInstanceWithVariablesListPresenter(viewMock,callerMockProcessInstanceService,callerMockKieSessionServices,
-                dataSetQueryHelper,dataSetQueryHelperDomainSpecific);
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSet);
+                return null;
+            }
+        }).when(dataSetQueryHelper).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+
+        doAnswer(new Answer() {
+
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSetProcessVar);
+                return null;
+            }
+        }).when(dataSetQueryHelperDomainSpecific).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+
+        presenter = new DataSetProcessInstanceWithVariablesListPresenter(viewMock, callerMockProcessInstanceService, callerMockKieSessionServices,
+                dataSetQueryHelper, dataSetQueryHelperDomainSpecific, placeManager);
     }
 
     @Test
@@ -124,90 +147,174 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
     }
 
     @Test
-    public void isFilteredByProcessIdTest(){
-        filterSettings = createTableSettingsPrototype("testProc");
-        String processId =presenter.isFilteredByProcessId(filterSettings.getDataSetLookup().getOperationList());
-        assertEquals(processId,"testProc");
+    public void isFilteredByProcessIdTest() {
+        final String processId = "testProc";
+        final DataSetFilter filter = new DataSetFilter();
+        filter.addFilterColumn(equalsTo(COLUMN_PROCESSID, processId));
 
-        filterSettings = createTableSettingsPrototype(null);
-        processId =presenter.isFilteredByProcessId(filterSettings.getDataSetLookup().getOperationList());
-        assertNotEquals(processId, "testProc");
-
+        final String filterProcessId = presenter.isFilteredByProcessId(Collections.<DataSetOp>singletonList(filter));
+        assertEquals(processId, filterProcessId);
     }
 
     @Test
-    public void getDomainSpecifDataForProcessInstancesTest(){
+    public void isFilteredByProcessIdInvalidTest() {
+        final String processId = "testProc";
+        final DataSetFilter filter = new DataSetFilter();
+        filter.addFilterColumn(likeTo(COLUMN_PROCESSID, processId));
 
-        presenter.getDomainSpecifDataForProcessInstances(0, dataSet, "testProc", processInstanceSummaries);
-
-        verify(dataSetQueryHelperDomainSpecific).setLastOrderedColumn(DataSetProcessInstanceWithVariablesListViewImpl.PROCESS_INSTANCE_ID);
-        verify(dataSetQueryHelperDomainSpecific).setLastSortOrder(SortOrder.ASCENDING);
-
+        final String filterProcessId = presenter.isFilteredByProcessId(Collections.<DataSetOp>singletonList(filter));
+        assertNull(filterProcessId);
     }
 
     @Test
     public void abortProcessInstanceTest() {
+        final Long processInstanceId = new Random().nextLong();
 
-        presenter.abortProcessInstance(PROCESSINSTANCE_ID);
-        verify(kieSessionEntryPointMock).abortProcessInstance(PROCESSINSTANCE_ID);
+        presenter.abortProcessInstance(processInstanceId);
 
-        ArrayList<Long> pIds= new ArrayList<Long>();
-        pIds.add(new Long(2));
-        pIds.add(new Long(3));
+        verify(kieSessionEntryPointMock).abortProcessInstance(processInstanceId);
+    }
+
+    @Test
+    public void abortProcessInstancesTest() {
+        final Random random = new Random();
+        final List<Long> pIds = new ArrayList<Long>();
+        pIds.add(random.nextLong());
+        pIds.add(random.nextLong());
+        pIds.add(random.nextLong());
 
         presenter.abortProcessInstance(pIds);
+
         verify(kieSessionEntryPointMock).abortProcessInstances(pIds);
-
-        presenter.bulkAbort(processInstanceSummaries);
-        verify(kieSessionEntryPointMock).abortProcessInstance(anyLong());
-
     }
 
-    public FilterSettings createTableSettingsPrototype(String processId) {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        if(processId!=null) {
-            builder.filter(DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSID, equalsTo(processId));
+    @Test
+    public void bulkAbortProcessInstancesTest() {
+        final List<Long> pIds = new ArrayList<Long>();
+        for (ProcessInstanceSummary summary : processInstanceSummaries) {
+            pIds.add(summary.getProcessInstanceId());
         }
 
-        builder.dataset( DataSetProcessInstanceWithVariablesListViewImpl.PROCESS_INSTANCES_DATASET_ID );
-        builder.setColumn( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSINSTANCEID, "processInstanceId" );
-        builder.setColumn( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSID, "processId" );
-        builder.setColumn( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_START, "start", "MMM dd E, yyyy" );
-        builder.setColumn( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_END, "end", "MMM dd E, yyyy" );
-        builder.setColumn( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_STATUS, "status" );
-        builder.setColumn( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PARENTPROCESSINSTANCEID, "parentProcessInstanceId" );
-        builder.setColumn( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_OUTCOME, "outcome" );
-        builder.setColumn( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_DURATION, "duration" );
-        builder.setColumn( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_IDENTITY, "identity" );
-        builder.setColumn( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSVERSION, "processVersion" );
-        builder.setColumn( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSNAME, "processName" );
-        builder.setColumn( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_CORRELATIONKEY, "CorrelationKey" );
-        builder.setColumn( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_EXTERNALID, "externalId" );
-        builder.setColumn( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSINSTANCEDESCRIPTION, "processInstanceDescription" );
+        presenter.bulkAbort(processInstanceSummaries);
 
-        builder.filterOn( true, true, true );
-        builder.tableOrderEnabled( true );
-        builder.tableOrderDefault( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_START, DESCENDING );
-        builder.tableWidth( 1000 );
-
-        return builder.buildSettings();
+        verify(kieSessionEntryPointMock).abortProcessInstances(pIds);
     }
 
-    public ArrayList<ProcessInstanceSummary> createProcessInstanceSummaryList(int listSize){
-        ArrayList<ProcessInstanceSummary> pIList=new ArrayList<ProcessInstanceSummary>();
-        for(int i=1; i <= listSize; i++ ) {
+    @Test
+    public void bulkAbortProcessInstancesStateTest() {
+        processInstanceSummaries.add(createProcessInstanceSummary(new Random().nextInt(), ProcessInstance.STATE_ABORTED));
+        final List<Long> pIds = new ArrayList<Long>();
+        for (ProcessInstanceSummary summary : processInstanceSummaries) {
+            if (summary.getState() == ProcessInstance.STATE_ACTIVE) {
+                pIds.add(summary.getProcessInstanceId());
+            }
+        }
+
+        presenter.bulkAbort(processInstanceSummaries);
+
+        verify(kieSessionEntryPointMock).abortProcessInstances(pIds);
+    }
+
+    @Test
+    public void bulkSignalProcessInstanceSingleAbortedTest() {
+        ArrayList<ProcessInstanceSummary> processInstanceSummaries = new ArrayList<ProcessInstanceSummary>();
+        processInstanceSummaries.add(createProcessInstanceSummary(new Random().nextInt(), ProcessInstance.STATE_ABORTED));
+
+        presenter.bulkSignal(processInstanceSummaries);
+
+        verify(placeManager, never()).goTo(any(PlaceRequest.class));
+    }
+
+    @Test
+    public void bulkSignalProcessInstancesStateTest() {
+        processInstanceSummaries.add(createProcessInstanceSummary(new Random().nextInt(), ProcessInstance.STATE_ABORTED));
+        final List<Long> pIds = new ArrayList<Long>();
+        for (ProcessInstanceSummary summary : processInstanceSummaries) {
+            if (summary.getState() == ProcessInstance.STATE_ACTIVE) {
+                pIds.add(summary.getProcessInstanceId());
+            }
+        }
+
+        presenter.bulkSignal(processInstanceSummaries);
+
+        final ArgumentCaptor<PlaceRequest> placeRequest = ArgumentCaptor.forClass(PlaceRequest.class);
+        verify(placeManager).goTo(placeRequest.capture());
+
+        assertEquals(ProcessInstanceSignalPresenter.SIGNAL_PROCESS_POPUP, placeRequest.getValue().getIdentifier());
+        assertEquals(StringUtils.join(pIds, ","), placeRequest.getValue().getParameter("processInstanceId", null));
+    }
+
+    @Test
+    public void getDomainSpecifDataForProcessInstancesTest() {
+        presenter.setAddingDefaultFilters(false);
+        final DataSetFilter filter = new DataSetFilter();
+        filter.addFilterColumn(equalsTo(COLUMN_PROCESSID, "testProc"));
+        filterSettings.getDataSetLookup().addOperation(filter);
+
+        when(dataSet.getRowCount()).thenReturn(1);//1 process instance
+        when(dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESSINSTANCEID, 0)).thenReturn(Long.valueOf(1));
+
+        when(dataSetProcessVar.getRowCount()).thenReturn(2); //two domain variables associated
+        when(dataSetQueryHelperDomainSpecific.getColumnLongValue(dataSetProcessVar, PROCESS_INSTANCE_ID, 0)).thenReturn(Long.valueOf(1));
+        String processVariable1 = "var1";
+        when(dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSetProcessVar, VARIABLE_NAME, 0)).thenReturn(processVariable1);
+        when(dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSetProcessVar, VARIABLE_VALUE, 0)).thenReturn("value1");
+
+        when(dataSetQueryHelperDomainSpecific.getColumnLongValue(dataSetProcessVar, PROCESS_INSTANCE_ID, 1)).thenReturn(Long.valueOf(1));
+        String processVariable2 = "var2";
+        when(dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSetProcessVar, VARIABLE_NAME, 1)).thenReturn(processVariable2);
+        when(dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSetProcessVar, VARIABLE_VALUE, 1)).thenReturn("value2");
+
+        Set<String> expectedColumns = new HashSet<String>();
+        expectedColumns.add(processVariable1);
+        expectedColumns.add(processVariable2);
+
+        presenter.getData(new Range(0, 5));
+
+        ArgumentCaptor<Set> argument = ArgumentCaptor.forClass(Set.class);
+        verify(viewMock).addDomainSpecifColumns(any(ExtendedPagedTable.class), argument.capture());
+
+        assertEquals(expectedColumns, argument.getValue());
+
+        verify(dataSetQueryHelper).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelperDomainSpecific).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelperDomainSpecific).setLastOrderedColumn(PROCESS_INSTANCE_ID);
+        verify(dataSetQueryHelperDomainSpecific).setLastSortOrder(SortOrder.ASCENDING);
+
+        when(dataSetProcessVar.getRowCount()).thenReturn(1); //one domain variables associated
+        when(dataSetQueryHelperDomainSpecific.getColumnLongValue(dataSetProcessVar, PROCESS_INSTANCE_ID, 0)).thenReturn(Long.valueOf(1));
+        processVariable1 = "varTest1";
+        when(dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSetProcessVar, VARIABLE_NAME, 0)).thenReturn(processVariable1);
+        when(dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSetProcessVar, VARIABLE_VALUE, 0)).thenReturn("value1");
+
+        expectedColumns = Collections.singleton(processVariable1);
+
+        presenter.getData(new Range(0, 5));
+
+        argument = ArgumentCaptor.forClass(Set.class);
+        verify(viewMock, times(2)).addDomainSpecifColumns(any(ExtendedPagedTable.class), argument.capture());
+
+        assertEquals(expectedColumns, argument.getValue());
+        verify(dataSetQueryHelper, times(2)).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelperDomainSpecific, times(2)).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+    }
+
+    public ArrayList<ProcessInstanceSummary> createProcessInstanceSummaryList(int listSize) {
+        ArrayList<ProcessInstanceSummary> pIList = new ArrayList<ProcessInstanceSummary>();
+        for (int i = 1; i <= listSize; i++) {
             pIList.add(createProcessInstanceSummary(i));
         }
         return pIList;
     }
 
 
-    public ProcessInstanceSummary createProcessInstanceSummary(int key){
-        return new ProcessInstanceSummary(key, "procTest", "test.0.1", "Test Proc", "1.0",
-        1, new Date(), "intiatior", "procTestInstanceDesc", "cKey", Long.valueOf(0));
+    public static ProcessInstanceSummary createProcessInstanceSummary(int key) {
+        return createProcessInstanceSummary(key, ProcessInstance.STATE_ACTIVE);
     }
 
+    public static ProcessInstanceSummary createProcessInstanceSummary(int key, int status) {
+        return new ProcessInstanceSummary(key, "procTest", "test.0.1", "Test Proc", "1.0",
+                status, new Date(), "intiatior", "procTestInstanceDesc", "cKey", Long.valueOf(0));
+    }
 
 }

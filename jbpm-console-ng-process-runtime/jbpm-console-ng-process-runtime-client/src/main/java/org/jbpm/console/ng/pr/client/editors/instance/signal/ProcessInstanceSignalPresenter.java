@@ -42,8 +42,10 @@ import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 
 @Dependent
-@WorkbenchPopup(identifier = "Signal Process Popup")
+@WorkbenchPopup(identifier = ProcessInstanceSignalPresenter.SIGNAL_PROCESS_POPUP)
 public class ProcessInstanceSignalPresenter {
+
+    public static final String SIGNAL_PROCESS_POPUP = "Signal Process Popup";
 
     private Constants constants = GWT.create( Constants.class );
 

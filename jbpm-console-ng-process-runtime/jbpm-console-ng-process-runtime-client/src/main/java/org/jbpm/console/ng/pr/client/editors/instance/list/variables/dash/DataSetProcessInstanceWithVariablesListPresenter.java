@@ -25,9 +25,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetOp;
@@ -35,6 +33,7 @@ import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionType;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.bus.client.api.messaging.Message;
@@ -52,6 +51,7 @@ import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.jbpm.console.ng.gc.client.menu.RefreshMenuBuilder;
 import org.jbpm.console.ng.gc.client.menu.RefreshSelectorMenuBuilder;
 import org.jbpm.console.ng.gc.client.menu.RestoreDefaultFiltersMenuBuilder;
+import org.jbpm.console.ng.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
@@ -63,6 +63,7 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
@@ -77,6 +78,7 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
 @WorkbenchScreen( identifier = "DataSet Process Instance List With Variables" )
@@ -94,6 +96,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                                      Set<String> columns );
 
         void applyFilterOnPresenter( String key );
+
     }
 
     @Inject
@@ -119,8 +122,6 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
     @Inject
     private QuickNewProcessInstancePopup newProcessInstancePopup;
 
-    private Constants constants = GWT.create( Constants.class );
-
     public DataSetProcessInstanceWithVariablesListPresenter() {
         super();
     }
@@ -139,14 +140,15 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
             Caller<ProcessInstanceService> processInstanceService,
             Caller<KieSessionEntryPoint> kieSessionServices,
             DataSetQueryHelper dataSetQueryHelper,
-            DataSetQueryHelper dataSetQueryHelperDomainSpecific ) {
+            DataSetQueryHelper dataSetQueryHelperDomainSpecific,
+            PlaceManager placeManager) {
         this();
         this.dataSetQueryHelper = dataSetQueryHelper;
         this.processInstanceService = processInstanceService;
         this.kieSessionServices = kieSessionServices;
         this.dataSetQueryHelperDomainSpecific = dataSetQueryHelperDomainSpecific;
         this.view = view;
-
+        this.placeManager = placeManager;
     }
 
     public void filterGrid( FilterSettings tableSettings ) {
@@ -171,7 +173,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                         dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
                         dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
                     } else {
-                        dataSetQueryHelper.setLastOrderedColumn( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_START );
+                        dataSetQueryHelper.setLastOrderedColumn( COLUMN_START );
                         dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                     }
 
@@ -179,9 +181,9 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
                         DataSetFilter filter = new DataSetFilter();
                         List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-                        filters.add( likeTo( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSNAME, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSINSTANCEDESCRIPTION, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_IDENTITY, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo( COLUMN_PROCESSNAME, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo( COLUMN_PROCESSINSTANCEDESCRIPTION, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo( COLUMN_IDENTITY, "%" + textSearchStr.toLowerCase() + "%", false ) );
                         filter.addFilterColumn( OR( filters ) );
 
                         if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {
@@ -201,7 +203,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                 }
             }
         } catch ( Exception e ) {
-            GWT.log( "Error looking up dataset with UUID [ jbpmProcessInstances ]" + e.getMessage() );
+            errorPopup.showMessage(Constants.INSTANCE.UnexpectedError(e.getMessage()));
         }
     }
 
@@ -211,9 +213,9 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
             public void callback( DataSet dataSet ) {
                 Set<String> columns = new HashSet<String>();
                 for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
-                    Long processInstanceId = dataSetQueryHelperDomainSpecific.getColumnLongValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.PROCESS_INSTANCE_ID, i );
-                    String variableName = dataSetQueryHelperDomainSpecific.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.VARIABLE_NAME, i );
-                    String variableValue = dataSetQueryHelperDomainSpecific.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.VARIABLE_VALUE, i );
+                    Long processInstanceId = dataSetQueryHelperDomainSpecific.getColumnLongValue( dataSet, PROCESS_INSTANCE_ID, i );
+                    String variableName = dataSetQueryHelperDomainSpecific.getColumnStringValue( dataSet, VARIABLE_NAME, i );
+                    String variableValue = dataSetQueryHelperDomainSpecific.getColumnStringValue( dataSet, VARIABLE_VALUE, i );
 
                     for ( ProcessInstanceSummary pis : instances ) {
                         if ( pis.getProcessInstanceId().equals( processInstanceId ) ) {
@@ -292,7 +294,8 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
                     if ( filter instanceof CoreFunctionFilter ) {
                         CoreFunctionFilter coreFilter = ( ( CoreFunctionFilter ) filter );
-                        if ( filter.getColumnId().toUpperCase().equals( DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSID.toUpperCase() ) ) {
+                        if ( filter.getColumnId().toUpperCase().equals( COLUMN_PROCESSID.toUpperCase() ) &&
+                                ((CoreFunctionFilter) filter).getType() == CoreFunctionType.EQUALS_TO ) {
 
                             List parameters = coreFilter.getParameters();
                             if ( parameters.size() > 0 ) {
@@ -316,7 +319,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
         dataSetQueryHelperDomainSpecific.setDataSetHandler( variablesTableSettings );
         dataSetQueryHelperDomainSpecific.setCurrentTableSettings( variablesTableSettings );
-        dataSetQueryHelperDomainSpecific.setLastOrderedColumn( DataSetProcessInstanceWithVariablesListViewImpl.PROCESS_INSTANCE_ID );
+        dataSetQueryHelperDomainSpecific.setLastOrderedColumn( PROCESS_INSTANCE_ID );
         dataSetQueryHelperDomainSpecific.setLastSortOrder( SortOrder.ASCENDING );
         dataSetQueryHelperDomainSpecific.lookupDataSet( 0, createDataSetDomainSpecificCallback( startRange, rowCountNotTrimmed, myProcessInstancesFromDataSet, variablesTableSettings ) );
 
@@ -324,17 +327,17 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
     private ProcessInstanceSummary createProcessInstanceSummaryFromDataSet( DataSet dataSet, int i ) {
         return new ProcessInstanceSummary(
-                dataSetQueryHelper.getColumnLongValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSINSTANCEID, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSID, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_EXTERNALID, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSNAME, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSVERSION, i ),
-                dataSetQueryHelper.getColumnIntValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_STATUS, i ),
-                dataSetQueryHelper.getColumnDateValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_START, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_IDENTITY, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PROCESSINSTANCEDESCRIPTION, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_CORRELATIONKEY, i ),
-                dataSetQueryHelper.getColumnLongValue( dataSet, DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_PARENTPROCESSINSTANCEID, i ) );
+                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PROCESSINSTANCEID, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESSID, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_EXTERNALID, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESSNAME, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESSVERSION, i ),
+                dataSetQueryHelper.getColumnIntValue( dataSet, COLUMN_STATUS, i ),
+                dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_START, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_IDENTITY, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESSINSTANCEDESCRIPTION, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_CORRELATIONKEY, i ),
+                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENTPROCESSINSTANCEID, i ) );
     }
 
 
@@ -371,7 +374,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage(Constants.INSTANCE.UnexpectedError(throwable.getMessage()));
                 return true;
             }
         } ).abortProcessInstance( processInstanceId );
@@ -387,80 +390,63 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage(Constants.INSTANCE.UnexpectedError(throwable.getMessage()));
                 return true;
             }
         } ).abortProcessInstances( processInstanceIds );
     }
 
-    public void suspendProcessInstance( String processDefId,
-                                        long processInstanceId ) {
-        kieSessionServices.call( new RemoteCallback<Void>() {
-            @Override
-            public void callback( Void v ) {
-                refreshGrid();
-
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
-                return true;
-            }
-        } ).suspendProcessInstance( processInstanceId );
-    }
-
     public void bulkSignal( List<ProcessInstanceSummary> processInstances ) {
-        StringBuilder processIdsParam = new StringBuilder();
-        if ( processInstances != null ) {
-
-            for ( ProcessInstanceSummary selected : processInstances ) {
-                if ( selected.getState() != ProcessInstance.STATE_ACTIVE ) {
-                    view.displayNotification( constants.Signaling_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
-                            + ")" );
-                    continue;
-                }
-                processIdsParam.append( selected.getId() + "," );
-            }
-            // remove last ,
-            if ( processIdsParam.length() > 0 ) {
-                processIdsParam.deleteCharAt( processIdsParam.length() - 1 );
-            }
-        } else {
-            processIdsParam.append( "-1" );
+        if ( processInstances == null || processInstances.isEmpty()) {
+            return;
         }
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Signal Process Popup" );
+
+        final StringBuilder processIdsParam = new StringBuilder();
+        for ( ProcessInstanceSummary selected : processInstances ) {
+            if ( selected.getState() != ProcessInstance.STATE_ACTIVE ) {
+                view.displayNotification( Constants.INSTANCE.Signaling_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
+                        + ")" );
+                continue;
+            }
+            processIdsParam.append( selected.getId() + "," );
+        }
+
+        if ( processIdsParam.length() == 0 ) {
+            return;
+        } else {
+            // remove last ,
+            processIdsParam.deleteCharAt( processIdsParam.length() - 1 );
+        }
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(ProcessInstanceSignalPresenter.SIGNAL_PROCESS_POPUP);
         placeRequestImpl.addParameter( "processInstanceId", processIdsParam.toString() );
 
         placeManager.goTo( placeRequestImpl );
-        view.displayNotification( constants.Signaling_Process_Instance() );
-
+        view.displayNotification( Constants.INSTANCE.Signaling_Process_Instance() );
     }
 
     public void bulkAbort( List<ProcessInstanceSummary> processInstances ) {
-        if ( processInstances != null ) {
-            if ( Window.confirm( "Are you sure that you want to abort the selected process instances?" ) ) {
-                List<Long> ids = new ArrayList<Long>();
-                for ( ProcessInstanceSummary selected : processInstances ) {
-                    if ( selected.getState() != ProcessInstance.STATE_ACTIVE ) {
-                        view.displayNotification( constants.Aborting_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
-                                + ")" );
-                        continue;
-                    }
-                    ids.add( selected.getProcessInstanceId() );
-
-                    view.displayNotification( constants.Aborting_Process_Instance() + "(id=" + selected.getId() + ")" );
-                }
-                abortProcessInstance( ids );
-
+        if ( processInstances == null || processInstances.isEmpty() ) {
+            return;
+        }
+        final List<Long> ids = new ArrayList<Long>();
+        for ( ProcessInstanceSummary selected : processInstances ) {
+            if ( selected.getState() != ProcessInstance.STATE_ACTIVE ) {
+                view.displayNotification( Constants.INSTANCE.Aborting_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
+                        + ")" );
+                continue;
             }
+            ids.add( selected.getProcessInstanceId() );
+
+            view.displayNotification( Constants.INSTANCE.Aborting_Process_Instance() + "(id=" + selected.getId() + ")" );
+        }
+        if( ids.size() > 0 ) {
+            abortProcessInstance(ids);
         }
     }
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.Process_Instances();
+        return Constants.INSTANCE.Process_Instances();
     }
 
     @WorkbenchPartView

@@ -15,23 +15,35 @@
  */
 package org.jbpm.console.ng.pr.model;
 
-public interface ProcessInstanceDataSetConstants {
+public final class ProcessInstanceDataSetConstants {
 
-    String PROCESS_INSTANCE_DATASET = "jbpmProcessInstances";
-    String PROCESS_INSTANCE_WITH_VARIABLES_DATASET = "jbpmProcessInstancesWithVariables";
+    private ProcessInstanceDataSetConstants() {
+    }
 
-    String COLUMN_PROCESSINSTANCEID = "processInstanceId";
-    String COLUMN_PROCESSID = "processId";
-    String COLUMN_START = "start_date";
-    String COLUMN_END = "end_date";
-    String COLUMN_STATUS = "status";
-    String COLUMN_PARENTPROCESSINSTANCEID = "parentProcessInstanceId";
-    String COLUMN_OUTCOME = "outcome";
-    String COLUMN_DURATION = "duration";
-    String COLUMN_IDENTITY = "user_identity";
-    String COLUMN_PROCESSVERSION = "processVersion";
-    String COLUMN_PROCESSNAME = "processName";
-    String COLUMN_CORRELATIONKEY = "correlationKey";
-    String COLUMN_EXTERNALID = "externalId";
-    String COLUMN_PROCESSINSTANCEDESCRIPTION = "processInstanceDescription";
+    public static final String PROCESS_INSTANCE_DATASET = "jbpmProcessInstances";
+    public static final String PROCESS_INSTANCE_WITH_VARIABLES_DATASET = "jbpmProcessInstancesWithVariables";
+
+    public static final String COLUMN_PROCESSINSTANCEID = "processInstanceId";
+    public static final String COLUMN_PROCESSID = "processId";
+    public static final String COLUMN_START = "start_date";
+    public static final String COLUMN_END = "end_date";
+    public static final String COLUMN_STATUS = "status";
+    public static final String COLUMN_PARENTPROCESSINSTANCEID = "parentProcessInstanceId";
+    public static final String COLUMN_OUTCOME = "outcome";
+    public static final String COLUMN_DURATION = "duration";
+    public static final String COLUMN_IDENTITY = "user_identity";
+    public static final String COLUMN_PROCESSVERSION = "processVersion";
+    public static final String COLUMN_PROCESSNAME = "processName";
+    public static final String COLUMN_CORRELATIONKEY = "correlationKey";
+    public static final String COLUMN_EXTERNALID = "externalId";
+    public static final String COLUMN_PROCESSINSTANCEDESCRIPTION = "processInstanceDescription";
+
+    public static final String PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX = "DS_ProcessInstancesWithVariablesIncludedGrid";
+
+    public static final String PROCESS_INSTANCE_ID = "pid";
+    public static final String VARIABLE_NAME = "varname";
+    public static final String VARIABLE_VALUE = "varvalue";
+
+    public static final String COL_ID_SELECT = "Select";
+    public static final String COL_ID_ACTIONS = "Actions";
 }
