@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
-import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
@@ -89,7 +88,7 @@ public class MyDataSetProcessInstanceWithVariablesListPresenter extends DataSetP
     }
 
     @Override
-    protected DataSetReadyCallback createDataSetDomainSpecificCallback(int startRange, int totalRowSize, List<ProcessInstanceSummary> instances) {
+    protected DataSetReadyCallback createDataSetDomainSpecificCallback(int startRange, int totalRowSize, List<ProcessInstanceSummary> instances, FilterSettings tableSettings) {
         return new DataSetReadyCallback() {
 
             @Override
