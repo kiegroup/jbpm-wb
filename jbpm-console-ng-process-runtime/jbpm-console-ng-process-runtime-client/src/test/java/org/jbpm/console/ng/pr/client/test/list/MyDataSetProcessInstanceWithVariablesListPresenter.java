@@ -7,6 +7,7 @@ package org.jbpm.console.ng.pr.client.test.list;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
@@ -14,14 +15,13 @@ import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.pr.client.editors.instance.list.variables.dash.DataSetProcessInstanceWithVariablesListPresenter;
-import org.jbpm.console.ng.pr.client.editors.instance.list.variables.dash.DataSetProcessInstanceWithVariablesListViewImpl;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import org.uberfire.client.annotations.WorkbenchScreen;
 
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.*;
+import static org.mockito.Mockito.*;
+
 /**
- *
  * @author salaboy
  */
 @WorkbenchScreen(identifier = "mock")
@@ -60,8 +60,7 @@ public class MyDataSetProcessInstanceWithVariablesListPresenter extends DataSetP
     public void setFilterSettingsMock(FilterSettings filterSettingsMock) {
         this.filterSettingsMock = filterSettingsMock;
     }
-    
-    
+
 
     @Override
     protected DataSetReadyCallback createDataSetProcessInstanceCallback(int startRange, FilterSettings fs) {
@@ -70,7 +69,7 @@ public class MyDataSetProcessInstanceWithVariablesListPresenter extends DataSetP
             @Override
             public void callback(DataSet dataSet) {
                 verify(dataSetQueryHelperMock, times(1)).setLastSortOrder(SortOrder.ASCENDING);
-                verify(dataSetQueryHelperMock, times(1)).setLastOrderedColumn(DataSetProcessInstanceWithVariablesListViewImpl.COLUMN_START);
+                verify(dataSetQueryHelperMock, times(1)).setLastOrderedColumn(COLUMN_START);
                 getDomainSpecifDataForProcessInstances(0, dataSet, "mock", new ArrayList<ProcessInstanceSummary>());
             }
 
