@@ -29,7 +29,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.view.client.Range;
-import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
@@ -45,6 +44,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.console.ng.gc.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
@@ -205,8 +205,8 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
         }
     }
 
-    protected DataSetReadyCallback createDataSetDomainSpecificCallback( final int startRange, final int totalRowSize, final List<ProcessInstanceSummary> instances ) {
-        return new DataSetReadyCallback() {
+    protected DataSetReadyCallback createDataSetDomainSpecificCallback( final int startRange, final int totalRowSize, final List<ProcessInstanceSummary> instances, final FilterSettings tableSettings ) {
+        return new AbstractDataSetReadyCallback( errorPopup, view, tableSettings.getDataSet() ) {
             @Override
             public void callback( DataSet dataSet ) {
                 Set<String> columns = new HashSet<String>();
@@ -238,41 +238,11 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                 DataSetProcessInstanceWithVariablesListPresenter.this.updateDataOnCallback( processInstanceSummaryPageResponse );
             }
 
-            @Override
-            public void notFound() {
-                view.hideBusyIndicator();
-                errorPopup.showMessage( "Not found DataSet with UUID [  variables ] " );
-                GWT.log( "DataSet with UUID [  variables ] not found." );
-            }
-
-            @Override
-            public boolean onError( final ClientRuntimeError error ) {
-                view.hideBusyIndicator();
-                errorPopup.showMessage( "DataSet with UUID [  variables ] error: " + error.getThrowable() );
-                GWT.log( "DataSet with UUID [  variables ] error: ", error.getThrowable() );
-                return false;
-            }
         };
     }
 
     protected DataSetReadyCallback createDataSetProcessInstanceCallback( final int startRange, final FilterSettings tableSettings ) {
-        return new DataSetReadyCallback() {
-
-
-            @Override
-            public void notFound() {
-                view.hideBusyIndicator();
-                errorPopup.showMessage( "Not found DataSet with UUID [  jbpmProcessInstances ] " );
-                GWT.log( "DataSet with UUID [  jbpmProcessInstances ] not found." );
-            }
-
-            @Override
-            public boolean onError( final ClientRuntimeError error ) {
-                view.hideBusyIndicator();
-                errorPopup.showMessage( "DataSet with UUID [  jbpmProcessInstances ] error: " + error.getThrowable() );
-                GWT.log( "DataSet with UUID [  jbpmProcessInstances ] error: ", error.getThrowable() );
-                return false;
-            }
+        return new AbstractDataSetReadyCallback( errorPopup, view, tableSettings.getDataSet() ) {
 
             @Override
             public void callback( DataSet dataSet ) {
@@ -309,7 +279,6 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
                 view.hideBusyIndicator();
             }
-
 
         };
     }
@@ -349,7 +318,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
         dataSetQueryHelperDomainSpecific.setCurrentTableSettings( variablesTableSettings );
         dataSetQueryHelperDomainSpecific.setLastOrderedColumn( DataSetProcessInstanceWithVariablesListViewImpl.PROCESS_INSTANCE_ID );
         dataSetQueryHelperDomainSpecific.setLastSortOrder( SortOrder.ASCENDING );
-        dataSetQueryHelperDomainSpecific.lookupDataSet( 0, createDataSetDomainSpecificCallback( startRange, rowCountNotTrimmed, myProcessInstancesFromDataSet ) );
+        dataSetQueryHelperDomainSpecific.lookupDataSet( 0, createDataSetDomainSpecificCallback( startRange, rowCountNotTrimmed, myProcessInstancesFromDataSet, variablesTableSettings ) );
 
     }
 

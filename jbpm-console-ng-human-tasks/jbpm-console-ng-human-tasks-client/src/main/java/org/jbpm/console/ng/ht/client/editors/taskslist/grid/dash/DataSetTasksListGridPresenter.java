@@ -28,9 +28,7 @@ import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
-import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
-import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
@@ -40,6 +38,7 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.console.ng.gc.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
@@ -158,7 +157,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                         textSearchStr = "";
                     }
                     dataSetQueryHelper.setDataSetHandler( currentTableSettings );
-                    dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
+                    dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new AbstractDataSetReadyCallback( errorPopup, view, currentTableSettings.getDataSet() ) {
                         @Override
                         public void callback( DataSet dataSet ) {
                             if ( dataSet != null ) {
@@ -196,22 +195,6 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                                 DataSetTasksListGridPresenter.this.updateDataOnCallback( taskSummaryPageResponse );
                             }
                             view.hideBusyIndicator();
-                        }
-
-                        @Override
-                        public void notFound() {
-                            view.hideBusyIndicator();
-                            errorPopup.showMessage( "Not found DataSet with UUID [  jbpmHumanTasks ] " );
-                            GWT.log( "DataSet with UUID [  jbpmHumanTasks ] not found." );
-                        }
-
-                        @Override
-                        public boolean onError( final ClientRuntimeError error ) {
-                            view.hideBusyIndicator();
-                            error.getThrowable().printStackTrace();
-                            errorPopup.showMessage( "DataSet with UUID [  jbpmHumanTasks ] error: " + error.getThrowable() );
-                            GWT.log( "DataSet with UUID [  jbpmHumanTasks ] error: ", error.getThrowable() );
-                            return false;
                         }
                     } );
                     view.hideBusyIndicator();
