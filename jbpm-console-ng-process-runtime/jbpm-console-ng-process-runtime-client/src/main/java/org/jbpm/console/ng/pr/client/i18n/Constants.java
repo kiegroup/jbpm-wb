@@ -257,4 +257,10 @@ public interface Constants extends Messages {
 
     String New_Process_InstanceList();
 
+    String Abort_Process_Instance();
+
+    String Abort_Process_Instances();
+
+    String UnexpectedError(String message);
+
 }
