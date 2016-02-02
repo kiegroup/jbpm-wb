@@ -70,4 +70,8 @@ public interface Constants extends Messages {
     String RestoreDefaultFilters();
 
     String AreYouSureRestoreDefaultFilters();
+
+    String DataSetNotFound(String dataSet);
+
+    String DataSetError(String dataSet, String errorMessage);
 }

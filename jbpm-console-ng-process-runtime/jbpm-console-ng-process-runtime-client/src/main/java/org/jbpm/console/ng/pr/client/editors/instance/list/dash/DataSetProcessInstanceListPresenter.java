@@ -27,9 +27,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.view.client.Range;
-import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
-import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
@@ -40,6 +38,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.console.ng.gc.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
@@ -157,7 +156,7 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
 
                     }
                     dataSetQueryHelper.setDataSetHandler( currentTableSettings );
-                    dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
+                    dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new AbstractDataSetReadyCallback( errorPopup, view, currentTableSettings.getDataSet() ) {
                         @Override
                         public void callback( DataSet dataSet ) {
                             if ( dataSet != null ) {
@@ -193,20 +192,6 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
                             view.hideBusyIndicator();
                         }
 
-                        @Override
-                        public void notFound() {
-                            view.hideBusyIndicator();
-                            errorPopup.showMessage( "Not found DataSet with UUID [  jbpmProcessInstances ] " );
-                            GWT.log( "DataSet with UUID [  jbpmProcessInstances ] not found." );
-                        }
-
-                        @Override
-                        public boolean onError( final ClientRuntimeError error ) {
-                            view.hideBusyIndicator();
-                            errorPopup.showMessage( "DataSet with UUID [  jbpmProcessInstances ] error: " + error.getThrowable() );
-                            GWT.log( "DataSet with UUID [  jbpmProcessInstances ] error: ", error.getThrowable() );
-                            return false;
-                        }
                     } );
                 } else {
                     view.hideBusyIndicator();

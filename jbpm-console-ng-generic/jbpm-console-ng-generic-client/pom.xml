@@ -92,6 +92,23 @@
       <artifactId>uberfire-workbench-client-views-patternfly</artifactId>
     </dependency>
 
+    <!-- Dashbuilder -->
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-dataset-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-common-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-dataset-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Errai UI -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
