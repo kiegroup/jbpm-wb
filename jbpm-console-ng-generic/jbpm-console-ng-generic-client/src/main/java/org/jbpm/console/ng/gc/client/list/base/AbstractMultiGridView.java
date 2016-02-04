@@ -52,7 +52,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         extends Composite implements RequiresResize {
 
     public static String FILTER_TABLE_SETTINGS = "tableSettings";
-    private Constants constants = GWT.create(Constants.class);
 
     interface Binder extends UiBinder<Widget, AbstractMultiGridView> {
     }
@@ -84,7 +83,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
         @Override
         public String getStyleNames( T row,
-                                     int rowIndex ) {
+                int rowIndex ) {
             if ( rowIndex == selectedRow ) {
                 return "selected";
             }
@@ -110,8 +109,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     public void init( final V presenter,
-                      final GridGlobalPreferences preferences,
-                      final Button createNewGridButton ) {
+            final GridGlobalPreferences preferences,
+            final Button createNewGridButton ) {
         this.presenter = presenter;
         this.currentGlobalPreferences = preferences;
         this.createTabButton = createNewGridButton;
@@ -168,8 +167,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
             }
 
         } ).loadUserPreferences( preferences.getKey(), UserPreferencesType.MULTIGRIDPREFERENCES );
-        //presenter.setFilterPagedTable( filterPagedTable );
-        // presenter.autoRefreshSeconds =  getMultiGridPreferencesStore().getRefreshInterval();
     }
 
     @Override
@@ -186,7 +183,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                 Constants.INSTANCE.AreYouSureRestoreDefaultFilters(),
                 new Command() {
                     @Override public void execute() {
-                            restoreTabs();
+                        restoreTabs();
                     }
                 },
                 null,
@@ -230,7 +227,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     public ExtendedPagedTable<T> createGridInstance( final GridGlobalPreferences preferences,
-                                                     final String key ) {
+            final String key ) {
         final ExtendedPagedTable<T> newListGrid = new ExtendedPagedTable<T>( 10, preferences );
         newListGrid.setShowLastPagerButton( true );
         newListGrid.setShowFastFordwardPagerButton( true );
@@ -286,7 +283,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     public void initDefaultFilters( GridGlobalPreferences preferences,
-                                    Button createTabButton ) {
+            Button createTabButton ) {
     }
 
     public void applyFilterOnPresenter( String key ) {
@@ -294,5 +291,9 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     public void setIdentity(User identity){
         this.identity = identity;
+    }
+
+    public void setPreferencesService(Caller<UserPreferencesService> preferencesService){
+        this.preferencesService = preferencesService;
     }
 }

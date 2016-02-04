@@ -43,12 +43,13 @@ public class DataSetDefsBootstrapTest {
     public void registerDataSetDefinitionsTest() {
         dataSetsBootstrap.registerDataSetDefinitions();
         ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
-        verify(dataSetDefRegistryMock, times(3)).registerDataSetDef(argument.capture());
+        verify(dataSetDefRegistryMock, times(4)).registerDataSetDef(argument.capture());
 
         List<DataSetDef> dsList = argument.getAllValues();
-        assertEquals(dsList.size(), 3);
+        assertEquals(dsList.size(), 4);
         assertEquals(dsList.get(0).getUUID(), HUMAN_TASKS_DATASET);
         assertEquals(dsList.get(1).getUUID(), HUMAN_TASKS_WITH_USER_DATASET);
         assertEquals(dsList.get(2).getUUID(), HUMAN_TASKS_WITH_ADMIN_DATASET);
+        assertEquals(dsList.get(3).getUUID(), HUMAN_TASKS_WITH_VARIABLES_DATASET);
     }
 }
