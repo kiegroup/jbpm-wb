@@ -65,6 +65,7 @@ import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
@@ -240,25 +241,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     }
 
     @Override
-    public void initExtraButtons( ExtendedPagedTable extendedPagedTable ) {
-     /*   Button newTaskButton = new Button();
-        newTaskButton.setTitle(constants.New_Task());
-        newTaskButton.setIcon( IconType.PLUS_SIGN );
-        newTaskButton.setTitle( Constants.INSTANCE.New_Task() );
-        newTaskButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                quickNewTaskPopup.show();
-            }
-        });
-
-        extendedPagedTable.getRightActionsToolbar().clear();
-        extendedPagedTable.getRightActionsToolbar().add(newTaskButton);
-        */
-
-    }
-
-    @Override
     public void initColumns( ExtendedPagedTable extendedPagedTable ) {
         initCellPreview( extendedPagedTable );
         Column taskIdColumn = initTaskIdColumn();
@@ -285,6 +267,16 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         columnMetas.add( new ColumnMeta<TaskSummary>( dueDateColumn, "DueOn" ) );
 
         columnMetas.add( new ColumnMeta<TaskSummary>( actionsColumn, constants.Actions() ) );
+        List<GridColumnPreference> columPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
+
+        for ( GridColumnPreference colPref : columPreferenceList ) {
+            if ( !isColumnAdded( columnMetas, colPref.getName() ) ) {
+                Column genericColumn = initGenericColumn( colPref.getName() );
+                genericColumn.setSortable( false );
+                columnMetas.add( new ColumnMeta<TaskSummary>( genericColumn, colPref.getName(), true, true ) );
+            }
+        }
+
         extendedPagedTable.addColumns( columnMetas );
     }
 
@@ -907,18 +899,21 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.initBuilder();
 
         builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
+        List<Comparable> names = new ArrayList<Comparable>();
 
         Set<Group> groups = identity.getGroups();
-        List<ColumnFilter> condList = new  ArrayList<ColumnFilter>();
-        for(Group g : groups){
-            condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, g.getName()));
+        List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
+        for ( Group g : groups ) {
+            condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, g.getName() ) );
 
         }
+        //Adding own identity to check against potential owners
+        condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier() ) );
+
         ColumnFilter myGroupFilter = FilterFactory.AND(FilterFactory.OR(condList),
                 FilterFactory.OR(FilterFactory.equalsTo(COLUMN_ACTUALOWNER, ""), FilterFactory.isNull(COLUMN_ACTUALOWNER)));
 
-        builder.filter(OR(myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUALOWNER, identity.getIdentifier() ) ) );
-
+        builder.filter( OR( myGroupFilter, FilterFactory.equalsTo( COLUMN_ACTUALOWNER, identity.getIdentifier() ) ) );
         builder.group( COLUMN_TASKID );
 
         builder.setColumn( COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy" );
@@ -941,7 +936,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
         builder.tableOrderDefault( COLUMN_CREATEDON, DESCENDING );
-        builder.tableWidth( 1000 );
 
         return builder.buildSettings();
 
@@ -953,6 +947,96 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
     public void saveRefreshValue( int newValue ) {
         filterPagedTable.saveNewRefreshInterval( newValue );
+    }
+
+
+    private boolean isColumnAdded( List<ColumnMeta<TaskSummary>> columnMetas,
+            String caption ) {
+        if ( caption != null ) {
+            for ( ColumnMeta<TaskSummary> colMet : columnMetas ) {
+                if ( caption.equals( colMet.getColumn().getDataStoreName() ) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void addDomainSpecifColumns( ExtendedPagedTable<TaskSummary> extendedPagedTable,
+            Set<String> columns ) {
+
+        extendedPagedTable.storeColumnToPreferences();
+
+        HashMap modifiedCaptions = new HashMap<String, String>();
+        ArrayList<ColumnMeta> existingExtraColumns = new ArrayList<ColumnMeta>();
+        for ( ColumnMeta<TaskSummary> cm : extendedPagedTable.getColumnMetaList() ) {
+            if ( cm.isExtraColumn() ) {
+                existingExtraColumns.add( cm );
+            } else if ( columns.contains( cm.getCaption() ) ) {      //exist a column with the same caption
+                for ( String c : columns ) {
+                    if ( c.equals( cm.getCaption() ) ) {
+                        modifiedCaptions.put( c, "Var_" + c );
+                    }
+                }
+            }
+        }
+        for ( ColumnMeta colMet : existingExtraColumns ) {
+            if ( !columns.contains( colMet.getCaption() ) ) {
+                extendedPagedTable.removeColumnMeta( colMet );
+            } else {
+                columns.remove( colMet.getCaption() );
+            }
+        }
+
+        List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
+        String caption = "";
+        for ( String c : columns ) {
+            caption = c;
+            if ( modifiedCaptions.get( c ) != null ) {
+                caption = (String) modifiedCaptions.get( c );
+            }
+            Column genericColumn = initGenericColumn( c );
+            genericColumn.setSortable( false );
+
+            columnMetas.add( new ColumnMeta<TaskSummary>( genericColumn, caption, true, true ) );
+        }
+
+        extendedPagedTable.addColumns( columnMetas );
+
+    }
+
+
+    @Override
+    public FilterSettings getVariablesTableSettings( String taskName ) {
+        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
+        builder.initBuilder();
+
+        builder.dataset(HUMAN_TASKS_WITH_VARIABLES_DATASET);
+        builder.filter(FilterFactory.equalsTo(COLUMN_NAME, taskName));
+
+        builder.filterOn(true, true, true);
+        builder.tableOrderEnabled(true);
+        builder.tableOrderDefault(COLUMN_TASKID, ASCENDING);
+
+        FilterSettings varTableSettings =builder.buildSettings();
+        varTableSettings.setTablePageSize(-1);
+
+        return varTableSettings;
+
+    }
+
+    private Column initGenericColumn( final String key ) {
+
+        Column<TaskSummary, String> genericColumn = new Column<TaskSummary, String>( new TextCell() ) {
+            @Override
+            public String getValue( TaskSummary object ) {
+                return object.getDomainDataValue( key );
+            }
+        };
+        genericColumn.setSortable(true);
+        genericColumn.setDataStoreName(key);
+
+        return genericColumn;
     }
 
 

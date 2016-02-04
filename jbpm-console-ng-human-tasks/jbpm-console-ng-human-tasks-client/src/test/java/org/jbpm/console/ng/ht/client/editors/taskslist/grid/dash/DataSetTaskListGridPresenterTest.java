@@ -15,16 +15,20 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.dashbuilder.dataset.filter.ColumnFilter;
-import org.dashbuilder.dataset.filter.FilterFactory;
+import com.google.gwtmockito.WithClassesToStub;
+import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.DataSetLookup;
+import org.dashbuilder.dataset.DataSetOp;
+import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
-import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.ht.model.TaskSummary;
@@ -32,19 +36,22 @@ import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.uberfire.mocks.CallerMock;
 
-import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.dashbuilder.dataset.sort.SortOrder.*;
+import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class DataSetTaskListGridPresenterTest {
+
     private static final Long TASK_ID = 1L;
     private static final String USR_ID = "admin";
-
 
     private CallerMock<TaskLifeCycleService> callerMockTaskOperationsService;
 
@@ -55,11 +62,21 @@ public class DataSetTaskListGridPresenterTest {
     private DataSetTasksListGridViewImpl viewMock;
 
     @Mock
-    DataSetQueryHelper dataSetQueryHelper;
+    DataSetQueryHelper dataSetQueryHelperMock;
+
+    @Mock
+    DataSetQueryHelper dataSetDomainDataQueryHelperMock;
 
     @Mock
     private ExtendedPagedTable<TaskSummary> extendedPagedTable;
 
+    @Mock
+    private DataSet dataSetMock;
+
+    @Mock
+    private DataSet dataSetTaskVarMock;
+
+    @Mock
     private FilterSettings filterSettings;
 
     //Thing under test
@@ -69,15 +86,34 @@ public class DataSetTaskListGridPresenterTest {
     public void setupMocks() {
         //Mock that actually calls the callbacks
         callerMockTaskOperationsService = new CallerMock<TaskLifeCycleService>(taskLifeCycleServiceMock);
-        filterSettings= createTableSettingsPrototype();
+        when(filterSettings.getDataSetLookup()).thenReturn(new DataSetLookup());
 
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
+        when(viewMock.getVariablesTableSettings(anyString())).thenReturn(new DataSetTasksListGridViewImpl().getVariablesTableSettings("taskName"));
         when(extendedPagedTable.getPageSize()).thenReturn(10);
-        when(extendedPagedTable.getColumnSortList()).thenReturn(null);
-        when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
+        when(dataSetQueryHelperMock.getCurrentTableSettings()).thenReturn(filterSettings);
 
-        //dataSetQueryHelper.setCurrentTableSettings(createTableSettingsPrototype());
-        presenter = new DataSetTasksListGridPresenter(viewMock, callerMockTaskOperationsService,dataSetQueryHelper);
+
+        //Mock that actually calls the callbacks
+        doAnswer(new Answer() {
+
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSetMock);
+                return null;
+            }
+        }).when(dataSetQueryHelperMock).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+
+        //Mock that actually calls the callbacks
+        doAnswer(new Answer() {
+
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSetTaskVarMock);
+                return null;
+            }
+        }).when(dataSetDomainDataQueryHelperMock).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        presenter = new DataSetTasksListGridPresenter(viewMock, callerMockTaskOperationsService, dataSetQueryHelperMock, dataSetDomainDataQueryHelperMock);
     }
 
     @Test
@@ -85,8 +121,10 @@ public class DataSetTaskListGridPresenterTest {
         presenter.setAddingDefaultFilters(false);
         presenter.getData(new Range(0, 5));
 
-        verify(dataSetQueryHelper).setLastSortOrder(SortOrder.ASCENDING);
-        verify(viewMock).hideBusyIndicator();
+        verify(dataSetQueryHelperMock).setLastSortOrder(SortOrder.ASCENDING);
+        verify(dataSetQueryHelperMock).setLastOrderedColumn(COLUMN_CREATEDON);
+        verify(dataSetQueryHelperMock).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        verify(dataSetDomainDataQueryHelperMock, never()).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
     }
 
     @Test
@@ -94,60 +132,85 @@ public class DataSetTaskListGridPresenterTest {
         presenter.releaseTask(TASK_ID, USR_ID);
 
         verify(taskLifeCycleServiceMock).release(TASK_ID, USR_ID);
-   }
+    }
 
     @Test
     public void claimTaskTest() {
         presenter.claimTask(TASK_ID, USR_ID, "deploymentId");
 
         verify(taskLifeCycleServiceMock).claim(TASK_ID, USR_ID, "deploymentId");
-
     }
 
+    public void isFilteredByTaskNameTest() {
+        final String taskName = "taskName";
+        final DataSetFilter filter = new DataSetFilter();
+        filter.addFilterColumn(equalsTo(COLUMN_NAME, taskName));
 
+        final String filterTaskName = presenter.isFilteredByTaskName(Collections.<DataSetOp>singletonList(filter));
+        assertEquals(taskName, filterTaskName);
+    }
 
-    public FilterSettings createTableSettingsPrototype() {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
+    public void isFilteredByTaskNameInvalidTest() {
+        final String taskName = "taskName";
+        final DataSetFilter filter = new DataSetFilter();
+        filter.addFilterColumn(likeTo(COLUMN_DESCRIPTION, taskName));
 
-        builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
+        final String filterTaskName = presenter.isFilteredByTaskName(Collections.<DataSetOp>singletonList(filter));
+        assertNull(filterTaskName);
+    }
 
-        //Set<Group> groups = identity.getGroups();
-        List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
-        //for(Group g : groups){
-        //    condList.add( FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, g.getName()));
-        // }
-        ColumnFilter myGroupFilter = FilterFactory.AND(FilterFactory.OR(condList), FilterFactory.equalsTo(COLUMN_ACTUALOWNER, ""));
+    @Test
+    public void getDomainSpecificDataForTasksTest() {
+        presenter.setAddingDefaultFilters(false);
+        final DataSetFilter filter = new DataSetFilter();
+        filter.addFilterColumn(equalsTo(COLUMN_NAME, "taskName"));
+        filterSettings.getDataSetLookup().addOperation(filter);
 
-        builder.filter(OR(myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUALOWNER, "admin")));
+        when(dataSetMock.getRowCount()).thenReturn(1);//1 task
+        //Task summary creation
+        when(dataSetQueryHelperMock.getColumnLongValue(dataSetMock, COLUMN_TASKID, 0)).thenReturn(Long.valueOf(1));
 
-        builder.group(COLUMN_TASKID);
+        when(dataSetTaskVarMock.getRowCount()).thenReturn(2); //two domain variables associated
+        when(dataSetDomainDataQueryHelperMock.getColumnLongValue(dataSetTaskVarMock, COLUMN_TASKID, 0)).thenReturn(Long.valueOf(1));
+        String taskVariable1 = "var1";
+        when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_NAME, 0)).thenReturn(taskVariable1);
+        when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_VALUE, 0)).thenReturn("value1");
 
-        builder.setColumn( COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_ACTUALOWNER, "actual owner");
-        builder.setColumn( COLUMN_CREATEDBY,"CreatedBy" );
-        builder.setColumn( COLUMN_CREATEDON , "Created on", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_DEPLOYMENTID, "DeploymentId" );
-        builder.setColumn( COLUMN_DESCRIPTION, "description" );
-        builder.setColumn( COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_NAME, "tasks" );
-        builder.setColumn( COLUMN_PARENTID,  "ParentId");
-        builder.setColumn( COLUMN_PRIORITY, "Priority" );
-        builder.setColumn( COLUMN_PROCESSID, "ProcessId" );
-        builder.setColumn( COLUMN_PROCESSINSTANCEID, "ProcessInstanceId" );
-        builder.setColumn( COLUMN_PROCESSSESSIONID, "ProcessSesionId" );
-        builder.setColumn( COLUMN_STATUS, "status" );
-        builder.setColumn( COLUMN_TASKID, "id" );
-        builder.setColumn( COLUMN_WORKITEMID, "WorkItemId" );
+        when(dataSetDomainDataQueryHelperMock.getColumnLongValue(dataSetTaskVarMock, COLUMN_TASKID, 1)).thenReturn(Long.valueOf(1));
+        String taskVariable2 = "var2";
+        when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_NAME, 1)).thenReturn(taskVariable2);
+        when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_VALUE, 1)).thenReturn("value2");
 
-        builder.filterOn( true, true, true);
-        builder.tableOrderEnabled(true);
-        builder.tableOrderDefault( COLUMN_CREATEDON, DESCENDING );
-        builder.tableWidth(1000);
+        Set<String> expectedColumns = new HashSet<String>();
+        expectedColumns.add(taskVariable1);
+        expectedColumns.add(taskVariable2);
 
+        presenter.getData(new Range(0, 5));
 
-        return  builder.buildSettings();
+        ArgumentCaptor<Set> argument = ArgumentCaptor.forClass(Set.class);
+        verify(viewMock).addDomainSpecifColumns(any(ExtendedPagedTable.class), argument.capture());
 
+        assertEquals(expectedColumns, argument.getValue());
+
+        verify(dataSetQueryHelperMock).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        verify(dataSetDomainDataQueryHelperMock).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+
+        when(dataSetTaskVarMock.getRowCount()).thenReturn(1); //one domain variables associated
+        when(dataSetDomainDataQueryHelperMock.getColumnLongValue(dataSetTaskVarMock, COLUMN_TASKID, 0)).thenReturn(Long.valueOf(1));
+        taskVariable1 = "varTest1";
+        when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_NAME, 0)).thenReturn(taskVariable1);
+        when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_VALUE, 0)).thenReturn("value1");
+
+        expectedColumns = Collections.singleton(taskVariable1);
+
+        presenter.getData(new Range(0, 5));
+
+        argument = ArgumentCaptor.forClass(Set.class);
+        verify(viewMock, times(2)).addDomainSpecifColumns(any(ExtendedPagedTable.class), argument.capture());
+
+        assertEquals(expectedColumns, argument.getValue());
+        verify(dataSetQueryHelperMock, times(2)).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        verify(dataSetDomainDataQueryHelperMock, times(2)).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
     }
 
 }
