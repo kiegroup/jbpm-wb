@@ -127,16 +127,36 @@ public class DataSetDefsBootstrap {
                 .label(COLUMN_ORGANIZATIONAL_ENTITY)
                 .buildDef();
 
+       DataSetDef humanTasksWithUserDomainDef = DataSetDefFactory.newSQLDataSetDef()       //Add to this dataset TaskName? to apply with the specified filter
+                .uuid(HUMAN_TASKS_WITH_VARIABLES_DATASET)
+                .name("Domain Specific Task")
+                .dataSource(jbpmDataSource)
+                .dbSQL("select  tvi.taskId taskId ,\n" +
+                        "       at.name name,\n" +
+                        "       tvi.name varname,\n" +
+                        "       tvi.value varvalue\n" +
+                        " from TaskVariableImpl tvi,AuditTaskImpl at " +
+                        " where tvi.taskId = at.taskId " +
+                        " order by tvi.taskId, tvi.name ", false)
+               .number(COLUMN_TASK_VARIABLE_TASKID)
+               .label(COLUMN_TASK_VARIABLE_TASKNAME)
+               .label(COLUMN_TASK_VARIABLE_NAME)
+               .label(COLUMN_TASK_VARIABLE_VALUE)
+               .buildDef();
+
 
         // Hide all these internal data set from end user view
         humanTasksDef.setPublic(false);
         humanTasksWithUserDef.setPublic(false);
         humanTaskWithAdminDef.setPublic(false);
+        humanTasksWithUserDomainDef.setPublic(false);
 
         // Register the data set definitions
         dataSetDefRegistry.registerDataSetDef(humanTasksDef);
         dataSetDefRegistry.registerDataSetDef(humanTasksWithUserDef);
         dataSetDefRegistry.registerDataSetDef(humanTaskWithAdminDef);
+        dataSetDefRegistry.registerDataSetDef(humanTasksWithUserDomainDef);
         logger.info("Human task datasets registered");
+
     }
 }

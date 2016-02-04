@@ -245,4 +245,12 @@ public interface Constants extends Messages {
 
     String Administrators();
 
+    String UnexpectedError(String errorMessage);
+
+    String NotFoundDataSetWithId();
+
+    String TaskReleased(String taskId);
+
+    String TaskClaimed(String taskId);
+
 }

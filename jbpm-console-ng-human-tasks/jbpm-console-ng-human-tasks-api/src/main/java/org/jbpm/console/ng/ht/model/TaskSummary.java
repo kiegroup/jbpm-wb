@@ -17,7 +17,9 @@ package org.jbpm.console.ng.ht.model;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.console.ng.ga.model.GenericSummary;
@@ -45,6 +47,8 @@ public class TaskSummary extends GenericSummary {
     private Long parentId;
     private List<String> potOwnersString = new ArrayList<String>();
 
+    private Map<String, String> domainData = new HashMap<String, String>();
+
     public TaskSummary(long taskId, String taskName, String description, String status,
             int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
             Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId) {
@@ -66,6 +70,18 @@ public class TaskSummary extends GenericSummary {
         this.processInstanceId = processInstanceId;
         this.deploymentId = deploymentId;
         this.parentId = parentId;
+    }
+
+    public void addDomainData(String key, String value){
+        domainData.put(key, value);
+    }
+
+    public String getDomainDataValue(String key){
+        return domainData.get(key);
+    }
+
+    public Map<String, String> getDomainData(){
+        return domainData;
     }
 
     public TaskSummary(long taskId, String taskName, String description, String status,

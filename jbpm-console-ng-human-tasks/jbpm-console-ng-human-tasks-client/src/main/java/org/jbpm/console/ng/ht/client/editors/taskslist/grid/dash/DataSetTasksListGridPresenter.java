@@ -17,8 +17,10 @@ package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -29,8 +31,14 @@ import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.DataSetOp;
+import org.dashbuilder.dataset.DataSetOpType;
+import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionType;
 import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.dataset.filter.FilterFactory;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
@@ -39,6 +47,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.gc.client.dataset.AbstractDataSetReadyCallback;
+import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
@@ -74,6 +83,10 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
         void saveRefreshValue( int newValue );
 
         void applyFilterOnPresenter( String key );
+
+        void addDomainSpecifColumns( ExtendedPagedTable<TaskSummary> extendedPagedTable, Set<String> columns );
+
+        FilterSettings getVariablesTableSettings( String processName );
     }
 
     @Inject
@@ -86,6 +99,9 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
     @Inject
     DataSetQueryHelper dataSetQueryHelper;
+
+    @Inject
+    private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
 
     @Inject
     private QuickNewTaskPopup quickNewTaskPopup;
@@ -109,13 +125,15 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
         };
     }
 
-    public DataSetTasksListGridPresenter( DataSetTaskListView view,
-                                          Caller<TaskLifeCycleService> taskOperationsService,
-                                          DataSetQueryHelper dataSetQueryHelper
+    public DataSetTasksListGridPresenter(DataSetTaskListView view,
+            Caller<TaskLifeCycleService> taskOperationsService,
+            DataSetQueryHelper dataSetQueryHelper,
+            DataSetQueryHelper dataSetQueryHelperDomainSpecific
     ) {
         this.view = view;
         this.taskOperationsService = taskOperationsService;
         this.dataSetQueryHelper = dataSetQueryHelper;
+        this.dataSetQueryHelperDomainSpecific = dataSetQueryHelperDomainSpecific;
     }
 
     @Override
@@ -131,7 +149,6 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                 if ( currentTableSettings != null ) {
                     currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
                     ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                    //GWT.log( "-----taskList getData table name " + currentTableSettings.getTableName() );
                     if ( columnSortList != null && columnSortList.size() > 0 ) {
                         dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
                         dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
@@ -156,54 +173,163 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                         }
                         textSearchStr = "";
                     }
-                    dataSetQueryHelper.setDataSetHandler( currentTableSettings );
-                    dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new AbstractDataSetReadyCallback( errorPopup, view, currentTableSettings.getDataSet() ) {
-                        @Override
-                        public void callback( DataSet dataSet ) {
-                            if ( dataSet != null ) {
-                                List<TaskSummary> myTasksFromDataSet = new ArrayList<TaskSummary>();
-
-                                for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
-                                    myTasksFromDataSet.add( new TaskSummary(
-                                            dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_TASKID, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_NAME, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_DESCRIPTION, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_STATUS, i ),
-                                            dataSetQueryHelper.getColumnIntValue( dataSet, COLUMN_PRIORITY, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_ACTUALOWNER, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_CREATEDBY, i ),
-                                            dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_CREATEDON, i ),
-                                            dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_ACTIVATIONTIME, i ),
-                                            dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_DUEDATE, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESSID, i ),
-                                            dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PROCESSSESSIONID, i ),
-                                            dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PROCESSINSTANCEID, i ),
-                                            dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_DEPLOYMENTID, i ),
-                                            dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENTID, i ) ) );
-
-                                }
-                                PageResponse<TaskSummary> taskSummaryPageResponse = new PageResponse<TaskSummary>();
-                                taskSummaryPageResponse.setPageRowList( myTasksFromDataSet );
-                                taskSummaryPageResponse.setStartRowIndex( visibleRange.getStart() );
-                                taskSummaryPageResponse.setTotalRowSize( dataSet.getRowCountNonTrimmed() );
-                                taskSummaryPageResponse.setTotalRowSizeExact( true );
-                                if ( visibleRange.getStart() + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed() ) {
-                                    taskSummaryPageResponse.setLastPage( true );
-                                } else {
-                                    taskSummaryPageResponse.setLastPage( false );
-                                }
-                                DataSetTasksListGridPresenter.this.updateDataOnCallback( taskSummaryPageResponse );
-                            }
-                            view.hideBusyIndicator();
-                        }
-                    } );
-                    view.hideBusyIndicator();
+                    dataSetQueryHelper.setDataSetHandler(currentTableSettings);
+                    dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), createDataSetTaskCallback(visibleRange.getStart(), currentTableSettings));
                 }
             }
         } catch ( Exception e ) {
-            GWT.log( "Error looking up dataset with UUID [ jbpmHumanTasks ]" );
+            errorPopup.showMessage(Constants.INSTANCE.UnexpectedError(e.getMessage()) );
         }
 
+    }
+
+    protected DataSetReadyCallback createDataSetTaskCallback(final int startRange, final FilterSettings tableSettings){
+        return new AbstractDataSetReadyCallback( errorPopup, view, tableSettings.getDataSet() )  {
+
+
+            @Override
+            public void callback(DataSet dataSet) {
+
+                if (dataSet != null) {
+                    final List<TaskSummary> myTasksFromDataSet = new ArrayList<TaskSummary>();
+
+                    for (int i = 0; i < dataSet.getRowCount(); i++) {
+                        myTasksFromDataSet.add(createTaskSummaryFromDataSet(dataSet, i));
+
+                    }
+                    List<DataSetOp> ops= tableSettings.getDataSetLookup().getOperationList();
+                    String filterValue = isFilteredByTaskName(ops); //Add here the check to add the domain data columns taskName?
+
+
+                    if (filterValue != null) {
+                        getDomainSpecifDataForTasks(startRange, dataSet.getRowCountNonTrimmed(),filterValue, myTasksFromDataSet);
+                    } else {
+                        PageResponse<TaskSummary> taskSummaryPageResponse = new PageResponse<TaskSummary>();
+                        taskSummaryPageResponse.setPageRowList(myTasksFromDataSet);
+                        taskSummaryPageResponse.setStartRowIndex(startRange);
+                        taskSummaryPageResponse.setTotalRowSize(dataSet.getRowCountNonTrimmed());
+                        taskSummaryPageResponse.setTotalRowSizeExact(true);
+                        if (startRange + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed()) {
+                            taskSummaryPageResponse.setLastPage(true);
+                        } else {
+                            taskSummaryPageResponse.setLastPage(false);
+                        }
+
+                        updateDataOnCallback(taskSummaryPageResponse);
+                    }
+
+                }
+                view.hideBusyIndicator();
+
+            }
+
+
+
+        };
+    }
+
+    protected String isFilteredByTaskName(List<DataSetOp> ops) {
+        for (DataSetOp dataSetOp : ops) {
+            if (dataSetOp.getType().equals(DataSetOpType.FILTER)) {
+                List<ColumnFilter> filters = ((DataSetFilter) dataSetOp).getColumnFilterList();
+
+                for (ColumnFilter filter : filters) {
+
+                    if (filter instanceof CoreFunctionFilter) {
+                        CoreFunctionFilter coreFilter = ((CoreFunctionFilter) filter);
+                        if (filter.getColumnId().toUpperCase().equals(COLUMN_NAME.toUpperCase()) &&
+                                ((CoreFunctionFilter) filter).getType()== CoreFunctionType.EQUALS_TO) {
+
+                            List parameters = coreFilter.getParameters();
+                            if (parameters.size() > 0) {
+                                return parameters.get(0).toString();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+
+    }
+    public void getDomainSpecifDataForTasks(final int startRange, final int rowCountNotTrimmed, String filterValue, final List<TaskSummary> myTasksFromDataSet) {
+
+        FilterSettings variablesTableSettings = view.getVariablesTableSettings(filterValue);
+        variablesTableSettings.setTablePageSize(-1);
+
+        dataSetQueryHelperDomainSpecific.setDataSetHandler(variablesTableSettings);
+        dataSetQueryHelperDomainSpecific.setCurrentTableSettings(variablesTableSettings);
+        dataSetQueryHelperDomainSpecific.setLastOrderedColumn(COLUMN_TASKID);
+        dataSetQueryHelperDomainSpecific.setLastSortOrder(SortOrder.ASCENDING);
+
+        List<Comparable> tasksIds = new ArrayList<Comparable>();
+        for (TaskSummary task : myTasksFromDataSet) {
+            tasksIds.add(task.getTaskId());
+        }
+        DataSetFilter filter = new DataSetFilter();
+        ColumnFilter filter1 = FilterFactory.equalsTo(COLUMN_TASK_VARIABLE_TASKID, tasksIds);
+        filter.addFilterColumn(filter1);
+        variablesTableSettings.getDataSetLookup().addOperation(filter);
+
+        dataSetQueryHelperDomainSpecific.lookupDataSet(0, createDataSetDomainSpecificCallback(startRange, rowCountNotTrimmed, myTasksFromDataSet,variablesTableSettings.getDataSet()));
+
+    }
+
+    protected DataSetReadyCallback createDataSetDomainSpecificCallback(final int startRange, final int totalRowSize, final List<TaskSummary> instances, final DataSet dataset){
+        return new AbstractDataSetReadyCallback( errorPopup, view, dataset ) {
+            @Override
+            public void callback(DataSet dataSet) {
+                if(dataSet.getRowCount()>0) {
+                    Set<String> columns = new HashSet<String>();
+                    for (int i = 0; i < dataSet.getRowCount(); i++) {
+                        Long taskId = dataSetQueryHelperDomainSpecific.getColumnLongValue(dataSet, COLUMN_TASKID, i);
+                        String variableName = dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSet,COLUMN_TASK_VARIABLE_NAME, i);
+                        String variableValue = dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSet,COLUMN_TASK_VARIABLE_VALUE, i);
+
+                        for (TaskSummary task : instances) {
+                            if (task.getTaskId().equals(taskId)) {
+                                task.addDomainData(variableName, variableValue);
+                                columns.add(variableName);
+                            }
+                        }
+                    }
+                    view.addDomainSpecifColumns(view.getListGrid(), columns);
+                }
+                PageResponse<TaskSummary> taskSummaryPageResponse = new PageResponse<TaskSummary>();
+                taskSummaryPageResponse.setPageRowList(instances);
+                taskSummaryPageResponse.setStartRowIndex(startRange);
+                taskSummaryPageResponse.setTotalRowSize(totalRowSize);
+                taskSummaryPageResponse.setTotalRowSizeExact(true);
+                if (startRange + instances.size() == totalRowSize) {
+                    taskSummaryPageResponse.setLastPage(true);
+                } else {
+                    taskSummaryPageResponse.setLastPage(false);
+                }
+
+                updateDataOnCallback(taskSummaryPageResponse);
+            }
+
+        };
+    }
+
+    private TaskSummary createTaskSummaryFromDataSet(DataSet dataSet, int i) {
+        return new TaskSummary(
+                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_TASKID, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_NAME, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_DESCRIPTION, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_STATUS, i ),
+                dataSetQueryHelper.getColumnIntValue(dataSet, COLUMN_PRIORITY, i),
+                dataSetQueryHelper.getColumnStringValue( dataSet,COLUMN_ACTUALOWNER, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_CREATEDBY, i ),
+                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_CREATEDON, i),
+                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_ACTIVATIONTIME, i),
+                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_DUEDATE, i),
+                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_PROCESSID, i),
+                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESSSESSIONID, i),
+                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESSINSTANCEID, i),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_DEPLOYMENTID, i ),
+                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENTID, i ) );
     }
 
     public void filterGrid( FilterSettings tableSettings ) {
@@ -226,14 +352,14 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
         taskOperationsService.call( new RemoteCallback<Void>() {
             @Override
             public void callback( Void nothing ) {
-                view.displayNotification( "Task Released" );
+                view.displayNotification( Constants.INSTANCE.TaskReleased(String.valueOf(taskId)) );
                 refreshGrid();
             }
         }, new ErrorCallback<Message>() {
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                errorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                errorPopup.showMessage( Constants.INSTANCE.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).release( taskId, userId );
@@ -245,17 +371,17 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
         taskOperationsService.call( new RemoteCallback<Void>() {
             @Override
             public void callback( Void nothing ) {
-                view.displayNotification( "Task Claimed" );
+                view.displayNotification( Constants.INSTANCE.TaskClaimed(String.valueOf(taskId)));
                 refreshGrid();
             }
         }, new ErrorCallback<Message>() {
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                errorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                errorPopup.showMessage( Constants.INSTANCE.UnexpectedError(throwable.getMessage())  );
                 return true;
             }
-        } ).claim( taskId, userId, deploymentId );
+        } ).claim(taskId, userId, deploymentId );
     }
 
     @WorkbenchMenu
@@ -280,6 +406,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
     public void onGridPreferencesStoreLoaded() {
         refreshSelectorMenuBuilder.loadOptions(view.getRefreshValue());
     }
+
 
     @Override
     public void onUpdateRefreshInterval(boolean enableAutoRefresh, int newInterval) {
