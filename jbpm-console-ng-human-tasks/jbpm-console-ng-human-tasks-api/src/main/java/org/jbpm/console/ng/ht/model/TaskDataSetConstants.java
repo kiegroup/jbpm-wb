@@ -15,27 +15,37 @@
  */
 package org.jbpm.console.ng.ht.model;
 
-public interface TaskDataSetConstants {
+public final class TaskDataSetConstants {
 
-    String HUMAN_TASKS_DATASET = "jbpmHumanTasks";
-    String HUMAN_TASKS_WITH_USER_DATASET = "jbpmHumanTasksWithUser";
-    String HUMAN_TASKS_WITH_ADMIN_DATASET = "jbpmHumanTasksWithAdmin";
+    public static final String HUMAN_TASKS_DATASET = "jbpmHumanTasks";
+    public static final String HUMAN_TASKS_WITH_USER_DATASET = "jbpmHumanTasksWithUser";
+    public static final String HUMAN_TASKS_WITH_ADMIN_DATASET = "jbpmHumanTasksWithAdmin";
+    public static final String HUMAN_TASKS_WITH_VARIABLES_DATASET = "jbpmHumanTasksWithVariables";
 
-    String COLUMN_ACTIVATIONTIME = "activationTime";
-    String COLUMN_ACTUALOWNER = "actualOwner";
-    String COLUMN_CREATEDBY = "createdBy";
-    String COLUMN_CREATEDON = "createdOn";
-    String COLUMN_DEPLOYMENTID = "deploymentId";
-    String COLUMN_DESCRIPTION = "description";
-    String COLUMN_DUEDATE = "dueDate";
-    String COLUMN_NAME = "name";
-    String COLUMN_PARENTID = "parentId";
-    String COLUMN_PRIORITY = "priority";
-    String COLUMN_PROCESSID = "processId";
-    String COLUMN_PROCESSINSTANCEID = "processInstanceId";
-    String COLUMN_PROCESSSESSIONID = "processSessionId";
-    String COLUMN_STATUS = "status";
-    String COLUMN_TASKID = "taskId";
-    String COLUMN_WORKITEMID = "workItemId";
-    String COLUMN_ORGANIZATIONAL_ENTITY = "oeid";
+
+    public static final String COLUMN_ACTIVATIONTIME = "activationTime";
+    public static final String COLUMN_ACTUALOWNER = "actualOwner";
+    public static final String COLUMN_CREATEDBY = "createdBy";
+    public static final String COLUMN_CREATEDON = "createdOn";
+    public static final String COLUMN_DEPLOYMENTID = "deploymentId";
+    public static final String COLUMN_DESCRIPTION = "description";
+    public static final String COLUMN_DUEDATE = "dueDate";
+    public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_PARENTID = "parentId";
+    public static final String COLUMN_PRIORITY = "priority";
+    public static final String COLUMN_PROCESSID = "processId";
+    public static final String COLUMN_PROCESSINSTANCEID = "processInstanceId";
+    public static final String COLUMN_PROCESSSESSIONID = "processSessionId";
+    public static final String COLUMN_STATUS = "status";
+    public static final String COLUMN_TASKID = "taskId";
+    public static final String COLUMN_WORKITEMID = "workItemId";
+    public static final String COLUMN_ORGANIZATIONAL_ENTITY = "oeid";
+
+
+    public static final String COLUMN_TASK_VARIABLE_TASKID="taskId";
+    public static final String COLUMN_TASK_VARIABLE_TASKNAME="name";
+    public static final String COLUMN_TASK_VARIABLE_NAME = "varname";
+    public static final String COLUMN_TASK_VARIABLE_VALUE = "varvalue";
+
+    private TaskDataSetConstants(){}
 }
