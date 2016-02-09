@@ -15,13 +15,14 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import com.google.gwtmockito.WithClassesToStub;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetOp;
@@ -211,6 +212,24 @@ public class DataSetTaskListGridPresenterTest {
         assertEquals(expectedColumns, argument.getValue());
         verify(dataSetQueryHelperMock, times(2)).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
         verify(dataSetDomainDataQueryHelperMock, times(2)).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+    }
+
+    @Test
+    public void testTaskSummaryAdmin() {
+        final List<String> dataSets = Arrays.asList(
+                HUMAN_TASKS_WITH_ADMIN_DATASET,
+                HUMAN_TASKS_WITH_USER_DATASET,
+                HUMAN_TASKS_DATASET,
+                HUMAN_TASKS_WITH_VARIABLES_DATASET);
+
+        for (final String dataSet : dataSets) {
+            when(dataSetMock.getUUID()).thenReturn(dataSet);
+
+            final TaskSummary summary = presenter.createTaskSummaryFromDataSet(dataSetMock, 0);
+
+            assertNotNull(summary);
+            assertEquals(HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet), summary.isForAdmin());
+        }
     }
 
 }

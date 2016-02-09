@@ -197,7 +197,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                         myTasksFromDataSet.add(createTaskSummaryFromDataSet(dataSet, i));
 
                     }
-                    List<DataSetOp> ops= tableSettings.getDataSetLookup().getOperationList();
+                    List<DataSetOp> ops = tableSettings.getDataSetLookup().getOperationList();
                     String filterValue = isFilteredByTaskName(ops); //Add here the check to add the domain data columns taskName?
 
 
@@ -313,7 +313,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
         };
     }
 
-    private TaskSummary createTaskSummaryFromDataSet(DataSet dataSet, int i) {
+    protected TaskSummary createTaskSummaryFromDataSet(final DataSet dataSet, int i) {
         return new TaskSummary(
                 dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_TASKID, i ),
                 dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_NAME, i ),
@@ -329,7 +329,8 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                 dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESSSESSIONID, i),
                 dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESSINSTANCEID, i),
                 dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_DEPLOYMENTID, i ),
-                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENTID, i ) );
+                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENTID, i ),
+                HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet.getUUID()));
     }
 
     public void filterGrid( FilterSettings tableSettings ) {
