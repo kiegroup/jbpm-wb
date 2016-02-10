@@ -470,7 +470,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
         cells.add( new ProcessInstanceSummaryActionCell( constants.Abort(), new Delegate<ProcessInstanceSummary>() {
             @Override
             public void execute( ProcessInstanceSummary processInstance ) {
-                if ( Window.confirm( "Are you sure that you want to abort the process instance?" ) ) {
+                if ( Window.confirm( constants.Abort_Process_Instances() ) ) {
                     presenter.abortProcessInstance( processInstance.getProcessInstanceId() );
                 }
             }
@@ -538,12 +538,12 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
         presenter.setAddingDefaultFilters( true );
         //Filter status Active
         states.add( String.valueOf( ProcessInstance.STATE_ACTIVE ) );
-        initGenericTabFilter( preferences, PROCESS_INSTANCES_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states, "", "" );
+        initGenericTabFilter( preferences, PROCESS_INSTANCES_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), Constants.INSTANCE.FilterActive(), states, "", "" );
 
         //Filter status completed
         states = new ArrayList<String>();
         states.add( String.valueOf( ProcessInstance.STATE_COMPLETED ) );
-        initGenericTabFilter( preferences, PROCESS_INSTANCES_LIST_PREFIX + "_1", Constants.INSTANCE.Completed(), "Filter " + Constants.INSTANCE.Completed(), states, "", "" );
+        initGenericTabFilter( preferences, PROCESS_INSTANCES_LIST_PREFIX + "_1", Constants.INSTANCE.Completed(), Constants.INSTANCE.FilterCompleted(), states, "", "" );
 
         filterPagedTable.addAddTableButton( createTabButton );
         presenter.setAddingDefaultFilters( false );

@@ -127,8 +127,7 @@ public class DocumentDetailsPresenter {
 		}, new ErrorCallback<Message>() {
 			@Override
 			public boolean error(Message message, Throwable throwable) {
-				org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup.showMessage("Unexpected error encountered : "
-						+ throwable.getMessage());
+				org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
 				return true;
 			}
 		}).getDocument(documentId);

@@ -74,6 +74,7 @@ public class QuickNewJobPopup extends BaseModal {
             UiBinder<Widget, QuickNewJobPopup> {
 
     }
+    private final Constants constants = Constants.INSTANCE;
 
     @UiField
     public TabPanel tabPanel;
@@ -191,23 +192,14 @@ public class QuickNewJobPopup extends BaseModal {
 
     public void init() {
 
-        newParametersButton.setText( Constants.INSTANCE.Add_Parameter() );
+        newParametersButton.setText( constants.Add_Parameter() );
 
         myParametersGrid.setHeight( "200px" );
 
         // Set the message to display when the table is empty.
-        myParametersGrid.setEmptyTableWidget( new Label( Constants.INSTANCE.No_Parameters_added_yet() ) );
+        myParametersGrid.setEmptyTableWidget( new Label( constants.No_Parameters_added_yet() ) );
 
         initGridColumns();
-
-        //long now = System.currentTimeMillis() + 120 * 1000;
-        //jobDueDate.setEnabled( true );
-
-        //jobDueDate.setValue( now );
-        // Two minutes in the future
-        //jobDueDateTime.setValue( UTCDateBox.date2utc( new Date( now ) ) );
-
-        //jobRetriesNumber.setText( "0" );
 
         newParametersButton.addClickHandler( new ClickHandler() {
             @Override
@@ -327,7 +319,7 @@ public class QuickNewJobPopup extends BaseModal {
                 dataProvider.getList().set( index, object );
             }
         } );
-        myParametersGrid.addColumn( paramKeyColumn, new ResizableHeader<RequestParameterSummary>( "Key", myParametersGrid,
+        myParametersGrid.addColumn( paramKeyColumn, new ResizableHeader<RequestParameterSummary>( constants.Key(), myParametersGrid,
                                                                                                   paramKeyColumn ) );
 
         Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>(
@@ -346,7 +338,7 @@ public class QuickNewJobPopup extends BaseModal {
                 dataProvider.getList().set( index, object );
             }
         } );
-        myParametersGrid.addColumn( paramValueColumn, new ResizableHeader<RequestParameterSummary>( "Value", myParametersGrid,
+        myParametersGrid.addColumn( paramValueColumn, new ResizableHeader<RequestParameterSummary>( constants.Value(), myParametersGrid,
                                                                                                     paramValueColumn ) );
 
         // actions (icons)
@@ -365,7 +357,7 @@ public class QuickNewJobPopup extends BaseModal {
         });
         actionsColumn.setHorizontalAlignment( HasHorizontalAlignment.ALIGN_CENTER );
 
-        myParametersGrid.addColumn( actionsColumn, "Actions" );
+        myParametersGrid.addColumn( actionsColumn, constants.Actions() );
         myParametersGrid.setColumnWidth( actionsColumn, 90, Style.Unit.PX );
 
         dataProvider.addDataDisplay( myParametersGrid );
@@ -376,7 +368,7 @@ public class QuickNewJobPopup extends BaseModal {
     }
 
     public void addNewParameter() {
-        addRow( new RequestParameterSummary( "click to edit", "click to edit" ) );
+        addRow( new RequestParameterSummary(constants.ClickToEdit(),constants.ClickToEdit()) );
     }
 
     public void createJob() {
@@ -403,7 +395,7 @@ public class QuickNewJobPopup extends BaseModal {
             @Override
             public void callback( Long requestId ) {
                 cleanForm();
-                displayNotification( "Request Scheduled: " + requestId );
+                displayNotification( constants.RequestScheduled(requestId) );
                 requestCreatedEvent.fire( new RequestChangedEvent( requestId ) );
                 closePopup();
             }

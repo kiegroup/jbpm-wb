@@ -129,7 +129,6 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
                 if ( currentTableSettings != null ) {
                     currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
                     ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                    //GWT.log( "-----DSPIL getData table name " + currentTableSettings.getTableName() );
                     if ( columnSortList != null && columnSortList.size() > 0 ) {
                         dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
                         dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
@@ -236,7 +235,7 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).abortProcessInstance( processInstanceId );
@@ -252,7 +251,7 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).abortProcessInstances( processInstanceIds );
@@ -270,7 +269,7 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).suspendProcessInstance( processInstanceId );
@@ -282,8 +281,7 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
 
             for ( ProcessInstanceSummary selected : processInstances ) {
                 if ( selected.getState() != ProcessInstance.STATE_ACTIVE ) {
-                    view.displayNotification( constants.Signaling_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
-                            + ")" );
+                    view.displayNotification(constants.Signaling_Process_Instance_Not_Allowed(selected.getId()));
                     continue;
                 }
                 processIdsParam.append( selected.getId() + "," );
@@ -305,17 +303,16 @@ public class DataSetProcessInstanceListPresenter extends AbstractScreenListPrese
 
     public void bulkAbort( List<ProcessInstanceSummary> processInstances ) {
         if ( processInstances != null ) {
-            if ( Window.confirm( "Are you sure that you want to abort the selected process instances?" ) ) {
+            if ( Window.confirm(constants.Abort_Process_Instances()) ) {
                 List<Long> ids = new ArrayList<Long>();
                 for ( ProcessInstanceSummary selected : processInstances ) {
                     if ( selected.getState() != ProcessInstance.STATE_ACTIVE ) {
-                        view.displayNotification( constants.Aborting_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
-                                + ")" );
+                        view.displayNotification(constants.Aborting_Process_Instance_Not_Allowed(selected.getId()));
                         continue;
                     }
                     ids.add( selected.getProcessInstanceId() );
 
-                    view.displayNotification( constants.Aborting_Process_Instance() + "(id=" + selected.getId() + ")" );
+                    view.displayNotification(constants.Aborting_Process_Instance(selected.getId()));
                 }
                 abortProcessInstance( ids );
 

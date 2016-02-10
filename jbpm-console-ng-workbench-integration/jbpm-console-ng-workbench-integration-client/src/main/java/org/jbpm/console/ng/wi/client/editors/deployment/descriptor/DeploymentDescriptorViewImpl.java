@@ -64,6 +64,8 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
     private static DeploymentDescriptorBinder uiBinder = GWT.create( DeploymentDescriptorBinder.class );
 
+    private Constants constants = Constants.INSTANCE;
+
     @Inject
     private PlaceManager placeManager;
 
@@ -430,7 +432,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
     @UiHandler("addMarshalStrategyButton")
     public void onClickAddMarshalStrategyButton( final ClickEvent event ) {
-        marshalStrategyDataProvider.getList().add( new ItemObjectModel( "", "enter value", "enter resolver type", null ) );
+        marshalStrategyDataProvider.getList().add( new ItemObjectModel( "", constants.EnterValue(), constants.EnterResolverType(), null ) );
     }
 
     private void configureMarshalingTable() {
@@ -523,7 +525,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
     @UiHandler("addEventListenersButton")
     public void onClickAddEventListenersButton( final ClickEvent event ) {
-        eventListenersDataProvider.getList().add( new ItemObjectModel( "", "enter value", "enter resolver type", null ) );
+        eventListenersDataProvider.getList().add( new ItemObjectModel( "", constants.EnterValue(), constants.EnterResolverType(), null ) );
     }
 
     private void configureEventListenersTable() {
@@ -617,7 +619,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
     @UiHandler("addGlobalsButton")
     public void onClickAddGlobalsButton( final ClickEvent event ) {
-        globalsDataProvider.getList().add( new ItemObjectModel( "", "enter value", "enter resolver type", null ) );
+        globalsDataProvider.getList().add( new ItemObjectModel( "", constants.EnterValue(), constants.EnterResolverType(), null ) );
     }
 
     private void configureGlobalsTable() {
@@ -729,7 +731,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
     @UiHandler("addWorkItemHandlersButton")
     public void onClickAddWorkItemHandlersButton( final ClickEvent event ) {
-        workItemHandlersDataProvider.getList().add( new ItemObjectModel( "", "enter value", "enter resolver type", null ) );
+        workItemHandlersDataProvider.getList().add( new ItemObjectModel( "", constants.EnterValue(), constants.EnterResolverType(), null ) );
     }
 
     private void configureWorkItemHandlersTable() {
@@ -841,7 +843,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
     @UiHandler("addTaskEventListenersButton")
     public void onClickAddTaskEventListenersButton( final ClickEvent event ) {
-        taskEventListenersDataProvider.getList().add( new ItemObjectModel( "", "enter value", "enter resolver type", null ) );
+        taskEventListenersDataProvider.getList().add( new ItemObjectModel( "", constants.EnterValue(), constants.EnterResolverType(), null ) );
     }
 
     private void configureTaskEventListenersTable() {
@@ -935,7 +937,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
     @UiHandler("addEnvironmentEntriesButton")
     public void onClickAddEnvironmentEntriesButton( final ClickEvent event ) {
-        environmentEntriesDataProvider.getList().add( new ItemObjectModel( "", "enter value", "enter resolver type", null ) );
+        environmentEntriesDataProvider.getList().add( new ItemObjectModel( "", constants.EnterValue(), constants.EnterResolverType(), null ) );
     }
 
     private void configureEnvironmentEntriesTable() {
@@ -1047,7 +1049,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
     @UiHandler("addConfigurationButton")
     public void onClickAddConfigurationButton( final ClickEvent event ) {
-        configurationDataProvider.getList().add( new ItemObjectModel( "", "enter value", "enter resolver type", null ) );
+        configurationDataProvider.getList().add( new ItemObjectModel( "", constants.EnterValue(), constants.EnterResolverType(), null ) );
     }
 
     private void configureConfigurationTable() {

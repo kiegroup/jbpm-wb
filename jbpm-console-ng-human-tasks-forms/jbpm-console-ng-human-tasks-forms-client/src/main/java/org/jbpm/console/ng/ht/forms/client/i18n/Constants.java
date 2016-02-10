@@ -54,4 +54,16 @@ public interface Constants extends Messages {
     String Submit();
 
     String Correlation_Key();
+
+    String UnexpectedError(String errorMessage);
+
+    String TaskCompleted(Long id);
+
+    String TaskStarted(Long id);
+
+    String TaskClaimed(Long id);
+
+    String TaskSaved(Long id);
+
+    String TaskReleased(Long id);
 }

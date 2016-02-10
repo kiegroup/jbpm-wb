@@ -39,11 +39,19 @@ public interface Constants extends Messages {
 
     String Personal();
 
+    String FilterPersonal();
+
     String Group();
+
+    String FilterGroup();
 
     String Active();
 
+    String FilterActive();
+
     String All();
+
+    String FilterAll();
 
     String No_Tasks_Found();
 
@@ -82,6 +90,10 @@ public interface Constants extends Messages {
     String Process_Id();
 
     String Process_Instance_Id();
+
+    String ProcessSessionId();
+
+    String WorkItemId();
 
     String Process_Name();
 
@@ -141,6 +153,12 @@ public interface Constants extends Messages {
 
     String Created_On();
 
+    String DeploymentId();
+
+    String DueDate();
+
+    String ParentId();
+
     String Text_Require();
 
     String UserOrGroup();
@@ -177,11 +195,17 @@ public interface Constants extends Messages {
 
     String Task_Admin();
 
+    String FilterTaskAdmin();
+
     String Delegate_User();
 
     String Reminder();
 
     String Actual_Owner();
+
+    String CreatedBy();
+
+    String ActivationTime();
 
     String Reminder_Details();
 
@@ -194,6 +218,8 @@ public interface Constants extends Messages {
     String DelegationUnable();
 
     String DelegationSuccessfully();
+
+    String TaskSuccessfullyDelegated();
 
     String TaskCreatedWithId(String id);
 
@@ -253,4 +279,13 @@ public interface Constants extends Messages {
 
     String TaskClaimed(String taskId);
 
+    String TaskSuccessfullyForwarded();
+
+    String ReminderSentTo(String userName);
+
+    String PleaseEnterUserOrAGroupToDelegate();
+
+    String CommentCannotBeEmpty();
+
+    String CommentDeleted();
 }

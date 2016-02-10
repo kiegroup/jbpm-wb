@@ -52,6 +52,8 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
 
     private static Binder uiBinder = GWT.create( Binder.class );
 
+    private final Constants constants = Constants.INSTANCE;
+
     @UiField
     NavTabs navTabs;
 
@@ -84,7 +86,7 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
             instanceDetailsPane = new TabPane() {{
                 add( presenter.getProcessIntanceView() );
             }};
-            instanceDetailsTab = new TabListItem( Constants.INSTANCE.Process_Instance_Details() ) {{
+            instanceDetailsTab = new TabListItem( constants.Process_Instance_Details() ) {{
                 setDataTargetWidget( instanceDetailsPane );
                 addStyleName( "uf-dropdown-tab-list-item" );
             }};
@@ -96,7 +98,7 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
             processVariablesPane = new TabPane() {{
                 add( presenter.getProcessVariablesView() );
             }};
-            processVariablesTab = new TabListItem( Constants.INSTANCE.Process_Variables() ) {{
+            processVariablesTab = new TabListItem( constants.Process_Variables() ) {{
                 setDataTargetWidget( processVariablesPane );
                 addStyleName( "uf-dropdown-tab-list-item" );
             }};
@@ -115,7 +117,7 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
             documentPane = new TabPane() {{
                 add( presenter.getDocumentView() );
             }};
-            documentTab = new TabListItem( "Documents" ) {{
+            documentTab = new TabListItem( constants.Documents() ) {{
                 setDataTargetWidget( documentPane );
                 addStyleName( "uf-dropdown-tab-list-item" );
             }};
@@ -133,7 +135,7 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
             logsPane = new TabPane() {{
                 add( presenter.getLogsView() );
             }};
-            logsTab = new TabListItem( Constants.INSTANCE.Logs() ) {{
+            logsTab = new TabListItem( constants.Logs() ) {{
                 setDataTargetWidget( logsPane );
                 addStyleName( "uf-dropdown-tab-list-item" );
             }};
@@ -145,13 +147,13 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
     @Override
     public IsWidget getOptionsButton() {
         return new ButtonGroup() {{
-            add( new Button( Constants.INSTANCE.Options() ) {{
+            add( new Button( constants.Options() ) {{
                 setSize( ButtonSize.SMALL );
                 setDataToggle( Toggle.DROPDOWN );
             }} );
             add( new DropDownMenu() {{
                 addStyleName( Styles.DROPDOWN_MENU + "-right" );
-                add( new AnchorListItem( Constants.INSTANCE.Signal() ) {{
+                add( new AnchorListItem( constants.Signal() ) {{
                     addClickHandler( new ClickHandler() {
                         @Override
                         public void onClick( final ClickEvent clickEvent ) {
@@ -159,7 +161,7 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
                         }
                     } );
                 }} );
-                add( new AnchorListItem( Constants.INSTANCE.Abort() ) {{
+                add( new AnchorListItem( constants.Abort() ) {{
                     addClickHandler( new ClickHandler() {
                         @Override
                         public void onClick( final ClickEvent clickEvent ) {
@@ -167,7 +169,7 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
                         }
                     } );
                 }} );
-                add( new AnchorListItem( Constants.INSTANCE.View_Process_Model() ) {{
+                add( new AnchorListItem( constants.View_Process_Model() ) {{
                     addClickHandler( new ClickHandler() {
                         @Override
                         public void onClick( final ClickEvent clickEvent ) {

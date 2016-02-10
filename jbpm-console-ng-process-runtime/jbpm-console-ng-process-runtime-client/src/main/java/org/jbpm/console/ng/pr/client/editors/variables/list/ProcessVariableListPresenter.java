@@ -143,7 +143,7 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
                 public boolean error( Message message,
                                       Throwable throwable ) {
                     view.hideBusyIndicator();
-                    view.displayNotification( "Error: Getting Process Variables List: " + message );
+                    view.displayNotification( constants.ErrorRetrievingProcessVariables(throwable.getMessage()) );
                     GWT.log( throwable.toString() );
                     return true;
                 }

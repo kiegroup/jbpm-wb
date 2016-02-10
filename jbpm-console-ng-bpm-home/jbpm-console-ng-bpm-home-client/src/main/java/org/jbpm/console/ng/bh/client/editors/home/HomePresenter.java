@@ -70,11 +70,10 @@ public class HomePresenter {
     public void doAction( String action ) {
         String locatedAction = actions.get( action );
         if ( locatedAction == null || locatedAction.equals( "" ) ) {
-            view.displayNotification( " Action Not Implemented Yet!" );
+            view.displayNotification(constants.ActionNotImplementedYet() );
             return;
         }
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest( locatedAction );
-        // placeRequestImpl.addParameter("taskId", Long.toString(task.getId()));
 
         placeManager.goTo( placeRequestImpl );
     }

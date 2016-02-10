@@ -58,6 +58,8 @@ public class JobDetailsPopup extends BaseModal {
 
     }
 
+    final Constants constants = Constants.INSTANCE;
+
     @UiField
     public Label jobRetries;
 
@@ -110,8 +112,8 @@ public class JobDetailsPopup extends BaseModal {
         executionParametersGrid.setHeight( "200px" );
 
         // Set the message to display when the table is empty.
-        executionParametersGrid.setEmptyTableWidget( new com.google.gwt.user.client.ui.Label( Constants.INSTANCE.No_Parameters_added_yet() ) );
-        executionParametersGrid.addColumn( paramKeyColumn, new ResizableHeader<RequestParameterSummary>( "Key",
+        executionParametersGrid.setEmptyTableWidget( new com.google.gwt.user.client.ui.Label( constants.No_Parameters_added_yet() ) );
+        executionParametersGrid.addColumn( paramKeyColumn, new ResizableHeader<RequestParameterSummary>( constants.Key(),
                                                                                                          executionParametersGrid, paramKeyColumn ) );
 
         Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>( new TextCell() ) {
@@ -120,7 +122,7 @@ public class JobDetailsPopup extends BaseModal {
                 return rowObject.getValue();
             }
         };
-        executionParametersGrid.addColumn( paramValueColumn, new ResizableHeader<RequestParameterSummary>( "Value",
+        executionParametersGrid.addColumn( paramValueColumn, new ResizableHeader<RequestParameterSummary>( constants.Value(),
                                                                                                            executionParametersGrid, paramValueColumn ) );
 
         this.dataProvider.addDataDisplay( executionParametersGrid );

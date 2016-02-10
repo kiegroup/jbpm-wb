@@ -148,7 +148,7 @@ public class ProcessInstanceDetailsPresenter {
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).getProcessInstanceActiveNodes( Long.parseLong( processId ) );
@@ -163,7 +163,7 @@ public class ProcessInstanceDetailsPresenter {
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).getProcessDesc( deploymentId, processDefId );
@@ -181,22 +181,22 @@ public class ProcessInstanceDetailsPresenter {
 
                 view.setProcessInstance( process );
 
-                String statusStr = "Unknown";
+                String statusStr = constants.Unknown();
                 switch ( process.getState() ) {
                     case ProcessInstance.STATE_ACTIVE:
-                        statusStr = "Active";
+                        statusStr = constants.Active();
                         break;
                     case ProcessInstance.STATE_ABORTED:
-                        statusStr = "Aborted";
+                        statusStr = constants.Aborted();
                         break;
                     case ProcessInstance.STATE_COMPLETED:
-                        statusStr = "Completed";
+                        statusStr = constants.Completed();
                         break;
                     case ProcessInstance.STATE_PENDING:
-                        statusStr = "Pending";
+                        statusStr = constants.Pending();
                         break;
                     case ProcessInstance.STATE_SUSPENDED:
-                        statusStr = "Suspended";
+                        statusStr = constants.Suspended();
                         break;
                     default:
                         break;
@@ -220,7 +220,7 @@ public class ProcessInstanceDetailsPresenter {
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage());
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).getItem(new ProcessInstanceKey(Long.parseLong(processId)));
@@ -234,7 +234,7 @@ public class ProcessInstanceDetailsPresenter {
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).getProcessInstanceCompletedNodes( Long.parseLong( processId ) );
@@ -272,7 +272,7 @@ public class ProcessInstanceDetailsPresenter {
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).getProcessById( deploymentId, processDefId );

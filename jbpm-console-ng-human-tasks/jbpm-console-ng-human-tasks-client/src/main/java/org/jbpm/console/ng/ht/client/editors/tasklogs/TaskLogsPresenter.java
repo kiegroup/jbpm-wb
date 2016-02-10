@@ -31,6 +31,7 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.ga.model.QueryFilter;
+import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
@@ -56,6 +57,8 @@ public class TaskLogsPresenter {
     private Caller<TaskAuditService> taskAuditService;
 
     private long currentTaskId = 0;
+
+    private Constants constants = Constants.INSTANCE;
 
     @Inject
     public TaskLogsPresenter( final TaskLogsView view, final Caller<TaskAuditService> taskAuditService ) {
@@ -96,7 +99,7 @@ public class TaskLogsPresenter {
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).getData( filter );

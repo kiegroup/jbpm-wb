@@ -30,6 +30,7 @@ import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ga.model.process.DummyProcessPath;
 import org.jbpm.console.ng.ht.model.TaskDefSummary;
 import org.jbpm.console.ng.pr.client.editors.definition.details.BaseProcessDefDetailsPresenter;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
@@ -60,6 +61,8 @@ public class AdvancedViewProcessDefDetailsPresenter extends
 
         HTML getSubprocessListBox();
     }
+
+    private Constants constants = Constants.INSTANCE;
 
     @Inject
     private AdvancedProcessDefDetailsView view;
@@ -92,7 +95,7 @@ public class AdvancedViewProcessDefDetailsPresenter extends
                 view.getProcessServicesListBox().setText( "" );
                 SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
                 if (services.keySet().isEmpty()) {
-                    safeHtmlBuilder.appendEscaped( "No services required for this process" );
+                    safeHtmlBuilder.appendEscaped(constants.NoServicesRequiredForThisProcess());
                     view.getProcessServicesListBox().setStyleName( "muted" );
                     view.getProcessServicesListBox().setHTML(
                             safeHtmlBuilder.toSafeHtml() );
@@ -109,8 +112,7 @@ public class AdvancedViewProcessDefDetailsPresenter extends
 
             @Override
             public boolean error( Message message, Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : "
-                        + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).getServiceTasks( deploymentId, processId );
@@ -148,8 +150,7 @@ public class AdvancedViewProcessDefDetailsPresenter extends
 
             @Override
             public boolean error( Message message, Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : "
-                        + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).getItem( new ProcessDefinitionKey( deploymentId, processId ) );
@@ -163,7 +164,7 @@ public class AdvancedViewProcessDefDetailsPresenter extends
                 view.getSubprocessListBox().setText( "" );
                 SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
                 if (subprocesses.isEmpty()) {
-                    safeHtmlBuilder.appendEscapedLines( "No subproceses required by this process" );
+                    safeHtmlBuilder.appendEscapedLines(constants.NoSubprocessesRequiredByThisProcess());
                     view.getSubprocessListBox().setStyleName( "muted" );
                     view.getSubprocessListBox().setHTML(
                             safeHtmlBuilder.toSafeHtml() );
@@ -179,8 +180,7 @@ public class AdvancedViewProcessDefDetailsPresenter extends
 
             @Override
             public boolean error( Message message, Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : "
-                        + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).getReusableSubProcesses( deploymentId, processId );
@@ -195,7 +195,7 @@ public class AdvancedViewProcessDefDetailsPresenter extends
                 view.getProcessDataListBox().setText( "" );
                 SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
                 if (inputs.keySet().isEmpty()) {
-                    safeHtmlBuilder.appendEscapedLines( "No process variables defined for this process" );
+                    safeHtmlBuilder.appendEscapedLines(constants.NoProcessVariablesDefinedForThisProcess());
                     view.getProcessDataListBox().setStyleName( "muted" );
                     view.getProcessDataListBox().setHTML(
                             safeHtmlBuilder.toSafeHtml() );
@@ -212,8 +212,7 @@ public class AdvancedViewProcessDefDetailsPresenter extends
 
             @Override
             public boolean error( Message message, Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : "
-                        + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).getRequiredInputData( deploymentId, processId );
@@ -230,7 +229,7 @@ public class AdvancedViewProcessDefDetailsPresenter extends
                         SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
                         if (entities.keySet().isEmpty()) {
                             safeHtmlBuilder
-                                    .appendEscapedLines( "No user or group used in this process" );
+                                    .appendEscapedLines(constants.NoUserOrGroupUsedInThisProcess());
                             view.getUsersGroupsListBox().setStyleName( "muted" );
                             view.getUsersGroupsListBox().setHTML(
                                     safeHtmlBuilder.toSafeHtml() );
@@ -255,9 +254,7 @@ public class AdvancedViewProcessDefDetailsPresenter extends
 
                     @Override
                     public boolean error( Message message, Throwable throwable ) {
-                        ErrorPopup
-                                .showMessage( "Unexpected error encountered : "
-                                        + throwable.getMessage() );
+                        ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                         return true;
                     }
                 } ).getAssociatedEntities( deploymentId, processId );
@@ -273,7 +270,7 @@ public class AdvancedViewProcessDefDetailsPresenter extends
                 view.getHumanTasksListBox().setText( "" );
                 SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
                 if (tasks.isEmpty()) {
-                    safeHtmlBuilder.appendEscapedLines( "No User Tasks defined in this process" );
+                    safeHtmlBuilder.appendEscapedLines(constants.NoUserTasksDefinedInThisProcess());
                     view.getHumanTasksListBox().setStyleName( "muted" );
                     view.getHumanTasksListBox().setHTML(
                             safeHtmlBuilder.toSafeHtml() );
@@ -289,8 +286,7 @@ public class AdvancedViewProcessDefDetailsPresenter extends
 
             @Override
             public boolean error( Message message, Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : "
-                        + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).getAllTasksDef( deploymentId, processId );

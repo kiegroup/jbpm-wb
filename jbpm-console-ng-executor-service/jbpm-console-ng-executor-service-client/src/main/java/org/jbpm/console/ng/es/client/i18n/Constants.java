@@ -34,19 +34,33 @@ public interface Constants extends Messages {
 
     String Queued();
 
+    String FilterQueued();
+
     String All();
+
+    String FilterAll();
 
     String Running();
 
+    String FilterRunning();
+
     String Retrying();
+
+    String FilterRetrying();
 
     String Error();
 
+    String FilterError();
+
     String Completed();
+
+    String FilterCompleted();
 
     String Showing();
 
     String Cancelled();
+
+    String FilterCancelled();
 
     String Settings();
 
@@ -55,6 +69,16 @@ public interface Constants extends Messages {
     String No_Pending_Jobs();
 
     String Id();
+
+    String Time();
+
+    String CommandName();
+
+    String Message();
+
+    String Key();
+
+    String Value();
 
     String Due_On();
 
@@ -138,8 +162,23 @@ public interface Constants extends Messages {
 
     String Cancel();
 
-    String  Requeue();
+    String Requeue();
 
     String New_JobList();
 
+    String CancelJob();
+
+    String RequeueJob();
+
+    String ExecutorServiceStarted();
+
+    String ExecutorServiceDisabled();
+
+    String RequestScheduled(Long requestId);
+
+    String RequestCancelled(Long requestId);
+
+    String ErrorRetrievingJobs(String message);
+
+    String ClickToEdit();
 }

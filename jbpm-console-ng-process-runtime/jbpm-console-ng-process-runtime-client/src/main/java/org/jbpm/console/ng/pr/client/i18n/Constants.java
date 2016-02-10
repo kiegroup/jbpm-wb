@@ -45,6 +45,10 @@ public interface Constants extends Messages {
 
     String Start();
 
+    String End();
+
+    String Status();
+
     String Signal();
 
     String Abort();
@@ -57,9 +61,15 @@ public interface Constants extends Messages {
 
     String Active();
 
+    String FilterActive();
+
     String Aborted();
 
+    String FilterAborted();
+
     String Completed();
+
+    String FilterCompleted();
 
     String Pending();
 
@@ -71,13 +81,13 @@ public interface Constants extends Messages {
 
     String No_Process_Instances_Found();
 
-    String Aborting_Process_Instance_Not_Allowed();
+    String Aborting_Process_Instance_Not_Allowed(Object id);
 
-    String Aborting_Process_Instance();
+    String Aborting_Process_Instance(Object id);
 
     String Signaling_Process_Instance();
 
-    String Signaling_Process_Instance_Not_Allowed();
+    String Signaling_Process_Instance_Not_Allowed(Object id);
 
     String Bulk_Signal();
 
@@ -253,6 +263,8 @@ public interface Constants extends Messages {
 
     String Parent_Process_Instance();
 
+    String ParentProcessInstanceId();
+
     String No_Parent_Process_Instance();
 
     String New_Process_InstanceList();
@@ -263,4 +275,31 @@ public interface Constants extends Messages {
 
     String UnexpectedError(String message);
 
+    String ErrorRetrievingProcessDefinitions(String message);
+
+    String ErrorRetrievingProcessVariables(String message);
+
+    String Outcome();
+
+    String Duration();
+
+    String Identity();
+
+    String ExternalId();
+
+    String NoSubprocessesRequiredByThisProcess();
+
+    String NoProcessVariablesDefinedForThisProcess();
+
+    String NoUserOrGroupUsedInThisProcess();
+
+    String NoUserTasksDefinedInThisProcess();
+
+    String NoServicesRequiredForThisProcess();
+
+    String ErrorRetrievingProcessDocuments(String message);
+
+    String AccessDocument();
+
+    String ProcessInstanceNeedsToBeActiveInOrderToBeAborted();
 }

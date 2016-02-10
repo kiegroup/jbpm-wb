@@ -28,6 +28,7 @@ import com.google.gwt.view.client.ListDataProvider;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
@@ -47,6 +48,7 @@ public class TaskCommentsPresenter {
         void displayNotification(String text);
     }
 
+    private Constants constants = Constants.INSTANCE;
     private final TaskCommentsView view;
     private final Caller<TaskCommentsService> taskCommentsServices;
     private final User identity;
@@ -90,7 +92,7 @@ public class TaskCommentsPresenter {
 
     public void addTaskComment(final String text) {
         if ("".equals(text.trim())) {
-            view.displayNotification("The Comment cannot be empty!");
+            view.displayNotification(constants.CommentCannotBeEmpty());
         } else {
             addTaskComment(text, new Date());
         }
@@ -116,7 +118,7 @@ public class TaskCommentsPresenter {
                     public void callback(Long response) {
                         refreshComments();
                         view.clearCommentInput();
-                        view.displayNotification("Comment Deleted!");
+                        view.displayNotification(constants.CommentDeleted());
                     }
                 },
                 new DefaultErrorCallback()
