@@ -163,4 +163,19 @@ public interface Constants extends Messages {
 
     String Basic();
 
+    String ErrorRetrievingDeploymentUnits(String message);
+
+    String ErrorUndeployFailed();
+
+    String ErrorActivationFailed();
+
+    String ErrorDeactivationFailed();
+
+    String KjarUndeployed(String group, String artifact, String version);
+
+    String KjarDeployed(String group, String artifact, String version);
+
+    String KjarActivated(String id);
+
+    String KjarDeactivated(String id);
 }

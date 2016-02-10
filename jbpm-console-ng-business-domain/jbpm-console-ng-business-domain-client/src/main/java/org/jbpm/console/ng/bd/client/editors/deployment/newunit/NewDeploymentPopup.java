@@ -277,7 +277,7 @@ public class NewDeploymentPopup extends BaseModal {
                                     public void callback( Void nothing ) {
                                         cleanForm();
                                         hideBusyIndicator();
-                                        displayNotification( " Kjar Deployed " + group + ":" + artifact + ":" + version );
+                                        displayNotification(Constants.INSTANCE.KjarDeployed(group, artifact, version) );
                                         unitChanged.fire( new DeployedUnitChangedEvent() );
                                         closePopup();
                                     }

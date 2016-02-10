@@ -128,7 +128,6 @@ public class DataSetProcessInstanceVariableListPresenter extends AbstractScreenL
                 if ( currentTableSettings != null ) {
                     currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
                     ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                    //GWT.log( "-----PIVarList getData table name " + currentTableSettings.getTableName() );
                     if ( columnSortList != null && columnSortList.size() > 0 ) {
                         dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
                         dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
@@ -229,7 +228,7 @@ public class DataSetProcessInstanceVariableListPresenter extends AbstractScreenL
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).abortProcessInstance( processInstanceId );
@@ -245,7 +244,7 @@ public class DataSetProcessInstanceVariableListPresenter extends AbstractScreenL
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).abortProcessInstances( processInstanceIds );
@@ -263,7 +262,7 @@ public class DataSetProcessInstanceVariableListPresenter extends AbstractScreenL
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).suspendProcessInstance( processInstanceId );
@@ -299,7 +298,7 @@ public class DataSetProcessInstanceVariableListPresenter extends AbstractScreenL
 
                     ids.add( selected.getProcessInstanceId() );
 
-                    view.displayNotification( constants.Aborting_Process_Instance() + "(id=" + selected.getId() + ")" );
+                    view.displayNotification( constants.Aborting_Process_Instance(selected.getId()));
                 }
                 abortProcessInstance( ids );
 

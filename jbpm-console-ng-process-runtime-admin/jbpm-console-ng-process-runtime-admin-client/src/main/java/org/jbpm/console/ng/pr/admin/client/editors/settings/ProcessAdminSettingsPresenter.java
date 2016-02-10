@@ -64,7 +64,7 @@ public class ProcessAdminSettingsPresenter {
 
     private PlaceRequest place;
 
- 
+    private ProcessAdminConstants constants = ProcessAdminConstants.INSTANCE;
 
     @OnStartup
     public void onStartup(final PlaceRequest place) {
@@ -93,12 +93,12 @@ public class ProcessAdminSettingsPresenter {
         instancesAdminServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long taskId) {
-                view.displayNotification("Process Instances succesfully created!");
+                view.displayNotification(constants.ProcessInstancesSuccessfullyCreated());
             }
         }, new ErrorCallback<Message>() {
             @Override
             public boolean error(Message message, Throwable throwable) {
-                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                ErrorPopup.showMessage(constants.UnexpectedError(throwable.getMessage()));
                 return true;
             }
         }).generateMockInstances( deployId, processId, amountOfTasks );
