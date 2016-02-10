@@ -257,7 +257,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
             @Override
             public void callback(Void nothing) {
                 taskRefreshed.fire(new TaskRefreshedEvent(taskId));
-                jsniHelper.notifySuccessMessage(opener, "Task: " + taskId + " was started!");
+                jsniHelper.notifySuccessMessage(opener, constants.TaskStarted(taskId));
                 refresh();
             }
         };
@@ -268,7 +268,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
             @Override
             public void callback(Void nothing) {
                 taskRefreshed.fire(new TaskRefreshedEvent(taskId));
-                jsniHelper.notifySuccessMessage(opener, "Task: " + taskId + " was claimed!");
+                jsniHelper.notifySuccessMessage(opener, constants.TaskClaimed(taskId));
                 refresh();
             }
         };
@@ -279,7 +279,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
             @Override
             public void callback(Long contentId) {
                 taskRefreshed.fire(new TaskRefreshedEvent(taskId));
-                jsniHelper.notifySuccessMessage(opener, "Task: " + taskId + " was saved!");
+                jsniHelper.notifySuccessMessage(opener, constants.TaskSaved(taskId));
                 refresh();
             }
         };
@@ -290,7 +290,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
             @Override
             public void callback(Void nothing) {
                 taskRefreshed.fire(new TaskRefreshedEvent(taskId));
-                jsniHelper.notifySuccessMessage(opener, "Task: " + taskId + " was released!");
+                jsniHelper.notifySuccessMessage(opener, constants.TaskReleased(taskId));
                 refresh();
             }
         };
@@ -307,7 +307,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
                     }
                 }, getUnexpectedErrorCallback()).existInDatabase(taskId);
                 taskRefreshed.fire(new TaskRefreshedEvent(taskId));
-                jsniHelper.notifySuccessMessage(opener, "Task: " + taskId + " was completed!");
+                jsniHelper.notifySuccessMessage(opener, constants.TaskCompleted(taskId));
 
 
             }
@@ -318,7 +318,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
         return new ErrorCallback<Message>() {
             @Override
             public boolean error(Message message, Throwable throwable) {
-                String notification = "Unexpected error encountered : " + throwable.getMessage();
+                String notification = constants.UnexpectedError(throwable.getMessage());
                 errorPopup.showMessage(notification);
                 jsniHelper.notifyErrorMessage(opener, notification);
                 return true;

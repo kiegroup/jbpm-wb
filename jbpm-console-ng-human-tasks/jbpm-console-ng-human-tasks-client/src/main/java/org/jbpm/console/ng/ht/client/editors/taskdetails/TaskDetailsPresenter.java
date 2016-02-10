@@ -36,6 +36,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.gc.client.util.UTCDateBox;
 import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
+import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
@@ -76,6 +77,8 @@ public class TaskDetailsPresenter {
         
         Button getUpdateTaskButton();
     }
+
+    private Constants constants = Constants.INSTANCE;
 
     @Inject
     private PlaceManager placeManager;
@@ -133,7 +136,7 @@ public class TaskDetailsPresenter {
                 @Override
                 public boolean error( Message message,
                                       Throwable throwable ) {
-                    ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                    ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                     return true;
                 }
             } ).updateTask( currentTaskId, priority, descriptions, dueDate );
@@ -197,7 +200,7 @@ public class TaskDetailsPresenter {
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).getItem( new TaskKey( currentTaskId ) );

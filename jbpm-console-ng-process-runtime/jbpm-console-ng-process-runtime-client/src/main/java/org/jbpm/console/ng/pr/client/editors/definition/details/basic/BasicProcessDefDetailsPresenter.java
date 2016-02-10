@@ -24,6 +24,7 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.process.DummyProcessPath;
 import org.jbpm.console.ng.pr.client.editors.definition.details.BaseProcessDefDetailsPresenter;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
@@ -40,6 +41,8 @@ public class BasicProcessDefDetailsPresenter extends BaseProcessDefDetailsPresen
             BaseProcessDefDetailsPresenter.BaseProcessDefDetailsView {
 
     }
+
+    private Constants constants = Constants.INSTANCE;
 
     @Inject
     private BasicProcessDefDetailsView view;
@@ -94,8 +97,7 @@ public class BasicProcessDefDetailsPresenter extends BaseProcessDefDetailsPresen
 
             @Override
             public boolean error( Message message, Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : "
-                        + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).getItem( new ProcessDefinitionKey( deploymentId, processId ) );

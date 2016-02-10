@@ -130,4 +130,8 @@ public interface Constants extends Messages {
     String Type();
 
     String MergeMode();
+
+    String EnterValue();
+
+    String EnterResolverType();
 }

@@ -404,8 +404,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
         final StringBuilder processIdsParam = new StringBuilder();
         for ( ProcessInstanceSummary selected : processInstances ) {
             if ( selected.getState() != ProcessInstance.STATE_ACTIVE ) {
-                view.displayNotification( Constants.INSTANCE.Signaling_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
-                        + ")" );
+                view.displayNotification(Constants.INSTANCE.Signaling_Process_Instance_Not_Allowed(selected.getId()));
                 continue;
             }
             processIdsParam.append( selected.getId() + "," );
@@ -431,13 +430,12 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
         final List<Long> ids = new ArrayList<Long>();
         for ( ProcessInstanceSummary selected : processInstances ) {
             if ( selected.getState() != ProcessInstance.STATE_ACTIVE ) {
-                view.displayNotification( Constants.INSTANCE.Aborting_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
-                        + ")" );
+                view.displayNotification(Constants.INSTANCE.Aborting_Process_Instance_Not_Allowed(selected.getId()));
                 continue;
             }
             ids.add( selected.getProcessInstanceId() );
 
-            view.displayNotification( Constants.INSTANCE.Aborting_Process_Instance() + "(id=" + selected.getId() + ")" );
+            view.displayNotification(Constants.INSTANCE.Aborting_Process_Instance(selected.getId()));
         }
         if( ids.size() > 0 ) {
             abortProcessInstance(ids);

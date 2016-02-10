@@ -94,6 +94,8 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
 
     private List<ProcessInstanceSummary> selectedProcessInstances = new ArrayList<ProcessInstanceSummary>();
 
+    private final Constants constants = Constants.INSTANCE;
+
     @Inject
     private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
 
@@ -166,7 +168,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
                 };
                 FilterSettings tableSettings = createTableSettingsPrototype();
                 tableSettings.setKey( key );
-                dataSetEditorManager.showTableSettingsEditor( filterPagedTable, Constants.INSTANCE.New_Process_InstanceList(), tableSettings, addNewGrid );
+                dataSetEditorManager.showTableSettingsEditor( filterPagedTable, constants.New_Process_InstanceList(), tableSettings, addNewGrid );
 
             }
         } );
@@ -179,7 +181,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
     public void initSelectionModel() {
 
         final ExtendedPagedTable extendedPagedTable = getListGrid();
-        extendedPagedTable.setEmptyTableCaption( Constants.INSTANCE.No_Process_Instances_Found() );
+        extendedPagedTable.setEmptyTableCaption( constants.No_Process_Instances_Found() );
         extendedPagedTable.getRightActionsToolbar().clear();
         initExtraButtons( extendedPagedTable );
         initBulkActions( extendedPagedTable );
@@ -280,15 +282,15 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         actionsColumn = initActionsColumn();
 
         List<ColumnMeta<ProcessInstanceSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessInstanceSummary>>();
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( checkColumn, Constants.INSTANCE.Select() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processInstanceIdColumn, Constants.INSTANCE.Id() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processNameColumn, Constants.INSTANCE.Name() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( descriptionColumn, Constants.INSTANCE.Process_Instance_Description() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processInitiatorColumn, Constants.INSTANCE.Initiator() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processVersionColumn, Constants.INSTANCE.Version() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processStateColumn, Constants.INSTANCE.State() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( startTimeColumn, Constants.INSTANCE.Start_Date() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( actionsColumn, Constants.INSTANCE.Actions() ) );
+        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( checkColumn, constants.Select() ) );
+        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processInstanceIdColumn, constants.Id() ) );
+        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processNameColumn, constants.Name() ) );
+        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( descriptionColumn, constants.Process_Instance_Description() ) );
+        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processInitiatorColumn, constants.Initiator() ) );
+        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processVersionColumn, constants.Version() ) );
+        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processStateColumn, constants.State() ) );
+        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( startTimeColumn, constants.Start_Date() ) );
+        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( actionsColumn, constants.Actions() ) );
 
         List<GridColumnPreference> columPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
 
@@ -375,11 +377,11 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
     }
 
     private void initBulkActions( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
-        bulkAbortNavLink = new AnchorListItem( Constants.INSTANCE.Bulk_Abort() );
-        bulkSignalNavLink = new AnchorListItem( Constants.INSTANCE.Bulk_Signal() );
+        bulkAbortNavLink = new AnchorListItem( constants.Bulk_Abort() );
+        bulkSignalNavLink = new AnchorListItem( constants.Bulk_Signal() );
 
         final ButtonGroup bulkActions = new ButtonGroup() {{
-            add( new Button( Constants.INSTANCE.Bulk_Actions() ) {{
+            add( new Button( constants.Bulk_Actions() ) {{
                 setDataToggle( Toggle.DROPDOWN );
                 getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
             }} );
@@ -395,7 +397,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         bulkAbortNavLink.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
-                if( Window.confirm( Constants.INSTANCE.Abort_Process_Instances() ) ) {
+                if( Window.confirm( constants.Abort_Process_Instances() ) ) {
                     presenter.bulkAbort(selectedProcessInstances);
                     selectedProcessInstances.clear();
                     extendedPagedTable.redraw();
@@ -480,22 +482,22 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         Column<ProcessInstanceSummary, String> processStateColumn = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
             @Override
             public String getValue( ProcessInstanceSummary object ) {
-                String statusStr = Constants.INSTANCE.Unknown();
+                String statusStr = constants.Unknown();
                 switch ( object.getState() ) {
                     case ProcessInstance.STATE_ACTIVE:
-                        statusStr = Constants.INSTANCE.Active();
+                        statusStr = constants.Active();
                         break;
                     case ProcessInstance.STATE_ABORTED:
-                        statusStr = Constants.INSTANCE.Aborted();
+                        statusStr = constants.Aborted();
                         break;
                     case ProcessInstance.STATE_COMPLETED:
-                        statusStr = Constants.INSTANCE.Completed();
+                        statusStr = constants.Completed();
                         break;
                     case ProcessInstance.STATE_PENDING:
-                        statusStr = Constants.INSTANCE.Pending();
+                        statusStr = constants.Pending();
                         break;
                     case ProcessInstance.STATE_SUSPENDED:
-                        statusStr = Constants.INSTANCE.Suspended();
+                        statusStr = constants.Suspended();
                         break;
 
                     default:
@@ -533,7 +535,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
     private Column initActionsColumn() {
         List<HasCell<ProcessInstanceSummary, ?>> cells = new LinkedList<HasCell<ProcessInstanceSummary, ?>>();
 
-        cells.add(new ProcessInstanceSummaryActionCell(Constants.INSTANCE.Signal(), new Delegate<ProcessInstanceSummary>() {
+        cells.add(new ProcessInstanceSummaryActionCell(constants.Signal(), new Delegate<ProcessInstanceSummary>() {
             @Override
             public void execute( ProcessInstanceSummary processInstance ) {
 
@@ -544,10 +546,10 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
             }
         } ) );
 
-        cells.add(new ProcessInstanceSummaryActionCell(Constants.INSTANCE.Abort(), new Delegate<ProcessInstanceSummary>() {
+        cells.add(new ProcessInstanceSummaryActionCell(constants.Abort(), new Delegate<ProcessInstanceSummary>() {
             @Override
             public void execute( ProcessInstanceSummary processInstance ) {
-                if ( Window.confirm( Constants.INSTANCE.Abort_Process_Instance() ) ) {
+                if ( Window.confirm( constants.Abort_Process_Instance() ) ) {
                     presenter.abortProcessInstance( processInstance.getProcessInstanceId() );
                 }
             }
@@ -615,17 +617,17 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         presenter.setAddingDefaultFilters( true );
         //Filter status Active
         states.add( Integer.valueOf( ProcessInstance.STATE_ACTIVE ) );
-        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states );
+        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0", constants.Active(), constants.FilterActive(), states );
 
         //Filter status completed
         states = new ArrayList<Integer>();
         states.add( Integer.valueOf( ProcessInstance.STATE_COMPLETED ) );
-        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1", Constants.INSTANCE.Completed(), "Filter " + Constants.INSTANCE.Completed(), states );
+        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1", constants.Completed(), constants.FilterCompleted(), states );
 
         //Filter status completed
         states = new ArrayList<Integer>();
         states.add( Integer.valueOf( ProcessInstance.STATE_ABORTED ) );
-        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2", Constants.INSTANCE.Aborted(), "Filter " + Constants.INSTANCE.Aborted(), states );
+        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2", constants.Aborted(), constants.FilterAborted(), states );
 
         filterPagedTable.addAddTableButton( createTabButton );
         presenter.setAddingDefaultFilters( false );
@@ -652,20 +654,20 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         }
         builder.filter( equalsTo( COLUMN_STATUS, names ) );
 
-        builder.setColumn( COLUMN_PROCESSINSTANCEID, "processInstanceId" );
-        builder.setColumn( COLUMN_PROCESSID, "processId" );
-        builder.setColumn( COLUMN_START, "start", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_END, "end", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_STATUS, "status" );
-        builder.setColumn( COLUMN_PARENTPROCESSINSTANCEID, "parentProcessInstanceId" );
-        builder.setColumn( COLUMN_OUTCOME, "outcome" );
-        builder.setColumn( COLUMN_DURATION, "duration" );
-        builder.setColumn( COLUMN_IDENTITY, "identity" );
-        builder.setColumn( COLUMN_PROCESSVERSION, "processVersion" );
-        builder.setColumn( COLUMN_PROCESSNAME, "processName" );
-        builder.setColumn( COLUMN_CORRELATIONKEY, "CorrelationKey" );
-        builder.setColumn( COLUMN_EXTERNALID, "externalId" );
-        builder.setColumn( COLUMN_PROCESSINSTANCEDESCRIPTION, "processInstanceDescription" );
+        builder.setColumn( COLUMN_PROCESSINSTANCEID, constants.Process_Instance_ID() );
+        builder.setColumn( COLUMN_PROCESSID, constants.Process_Definition_Id() );
+        builder.setColumn( COLUMN_START, constants.Start(), "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_END, constants.End(), "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_STATUS, constants.Status() );
+        builder.setColumn( COLUMN_PARENTPROCESSINSTANCEID, constants.ParentProcessInstanceId() );
+        builder.setColumn( COLUMN_OUTCOME, constants.Outcome() );
+        builder.setColumn( COLUMN_DURATION, constants.Duration() );
+        builder.setColumn( COLUMN_IDENTITY, constants.Identity() );
+        builder.setColumn( COLUMN_PROCESSVERSION, constants.Version() );
+        builder.setColumn( COLUMN_PROCESSNAME, constants.Name() );
+        builder.setColumn( COLUMN_CORRELATIONKEY, constants.Correlation_Key() );
+        builder.setColumn( COLUMN_EXTERNALID, constants.ExternalId() );
+        builder.setColumn( COLUMN_PROCESSINSTANCEDESCRIPTION, constants.Process_Instance_Description() );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
@@ -802,20 +804,20 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
 
         builder.dataset( PROCESS_INSTANCE_DATASET );
 
-        builder.setColumn( COLUMN_PROCESSINSTANCEID, "processInstanceId" );
-        builder.setColumn( COLUMN_PROCESSID, "processId" );
-        builder.setColumn( COLUMN_START, "start", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_END, "end", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_STATUS, "status" );
-        builder.setColumn( COLUMN_PARENTPROCESSINSTANCEID, "parentProcessInstanceId" );
-        builder.setColumn( COLUMN_OUTCOME, "outcome" );
-        builder.setColumn( COLUMN_DURATION, "duration" );
-        builder.setColumn( COLUMN_IDENTITY, "identity" );
-        builder.setColumn( COLUMN_PROCESSVERSION, "processVersion" );
-        builder.setColumn( COLUMN_PROCESSNAME, "processName" );
-        builder.setColumn( COLUMN_CORRELATIONKEY, "CorrelationKey" );
-        builder.setColumn( COLUMN_EXTERNALID, "externalId" );
-        builder.setColumn( COLUMN_PROCESSINSTANCEDESCRIPTION, "processInstanceDescription" );
+        builder.setColumn( COLUMN_PROCESSINSTANCEID, constants.Process_Instance_ID() );
+        builder.setColumn( COLUMN_PROCESSID, constants.Process_Definition_Id() );
+        builder.setColumn( COLUMN_START, constants.Start(), "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_END, constants.End(), "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_STATUS, constants.Status() );
+        builder.setColumn( COLUMN_PARENTPROCESSINSTANCEID, constants.ParentProcessInstanceId() );
+        builder.setColumn( COLUMN_OUTCOME, constants.Outcome() );
+        builder.setColumn( COLUMN_DURATION, constants.Duration() );
+        builder.setColumn( COLUMN_IDENTITY, constants.Identity() );
+        builder.setColumn( COLUMN_PROCESSVERSION, constants.Version() );
+        builder.setColumn( COLUMN_PROCESSNAME, constants.Name() );
+        builder.setColumn( COLUMN_CORRELATIONKEY, constants.Correlation_Key() );
+        builder.setColumn( COLUMN_EXTERNALID, constants.ExternalId() );
+        builder.setColumn( COLUMN_PROCESSINSTANCEDESCRIPTION, constants.Process_Instance_Description() );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );

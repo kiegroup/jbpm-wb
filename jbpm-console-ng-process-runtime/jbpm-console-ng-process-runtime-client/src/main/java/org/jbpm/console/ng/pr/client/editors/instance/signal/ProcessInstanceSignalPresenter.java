@@ -110,7 +110,7 @@ public class ProcessInstanceSignalPresenter {
         }, new ErrorCallback<Message>() {
              @Override
              public boolean error( Message message, Throwable throwable ) {
-                 ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                 ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                  return true;
              }
          } ).signalProcessInstances( processInstanceIds, view.getSignalRefText(), view.getEventText() );
@@ -141,7 +141,7 @@ public class ProcessInstanceSignalPresenter {
         }, new ErrorCallback<Message>() {
              @Override
              public boolean error( Message message, Throwable throwable ) {
-                 ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                 ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                  return true;
              }
          } ).getAvailableSignals( processInstanceId );

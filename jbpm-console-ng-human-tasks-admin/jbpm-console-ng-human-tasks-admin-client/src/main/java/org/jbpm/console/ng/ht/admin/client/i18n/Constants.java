@@ -38,4 +38,8 @@ public interface Constants extends Messages {
     String User_Name();
 
     String Generate_Mock_Tasks();
+
+    String UnexpectedError(String errorMessage);
+
+    String TaskSuccessfullyCreated();
 }

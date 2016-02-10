@@ -29,6 +29,7 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.displayer.client.AbstractDisplayerListener;
 import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.displayer.client.DisplayerListener;
+import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
 import org.uberfire.client.mvp.UberView;
 
 public class DisplayerContainer implements IsWidget {
@@ -125,7 +126,7 @@ public class DisplayerContainer implements IsWidget {
         if (displayer != null) {
             showDisplayer(displayer);
         } else {
-            view.showError("Displayer not found: " + name, null);
+            view.showError(DashboardConstants.INSTANCE.displayerNotFound(name), null);
         }
     }
 

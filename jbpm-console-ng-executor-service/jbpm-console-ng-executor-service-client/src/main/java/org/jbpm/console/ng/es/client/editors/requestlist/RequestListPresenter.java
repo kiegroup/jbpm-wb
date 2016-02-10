@@ -77,7 +77,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         void applyFilterOnPresenter( String key );
     }
 
-    private Constants constants = GWT.create( Constants.class );
+    private Constants constants = Constants.INSTANCE;
 
     @Inject
     private RequestListView view;
@@ -135,7 +135,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         executorServices.call( new RemoteCallback<Void>() {
             @Override
             public void callback( Void nothing ) {
-                view.displayNotification( "Executor Service Started ..." );
+                view.displayNotification( constants.ExecutorServiceStarted() );
             }
         } ).init();
     }
@@ -146,7 +146,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         executorServices.call( new RemoteCallback<Long>() {
             @Override
             public void callback( Long requestId ) {
-                view.displayNotification( "Request Schedulled: " + requestId );
+                view.displayNotification( constants.RequestScheduled(requestId) );
 
             }
         } ).scheduleRequest( "PrintOutCmd", ctx );
@@ -225,6 +225,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                 }
             }
         } catch ( Exception e ) {
+            view.displayNotification(constants.ErrorRetrievingJobs(e.getMessage()));
             GWT.log( "Error looking up dataset with UUID [ " + REQUEST_LIST_DATASET + " ]" );
         }
 
@@ -238,7 +239,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         executorServices.call( new RemoteCallback<Void>() {
             @Override
             public void callback( Void nothing ) {
-                view.displayNotification( "Request " + requestId + " cancelled" );
+                view.displayNotification( constants.RequestCancelled(requestId) );
                 requestChangedEvent.fire( new RequestChangedEvent( requestId ) );
             }
         } ).cancelRequest( requestId );
@@ -248,7 +249,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         executorServices.call( new RemoteCallback<Void>() {
             @Override
             public void callback( Void nothing ) {
-                view.displayNotification( "Request " + requestId + " cancelled" );
+                view.displayNotification( constants.RequestCancelled(requestId) );
                 requestChangedEvent.fire( new RequestChangedEvent( requestId ) );
             }
         } ).requeueRequest( requestId );
@@ -257,7 +258,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     @WorkbenchMenu
     public Menus getMenus() {
         return MenuFactory
-                .newTopLevelMenu(Constants.INSTANCE.New_Job())
+                .newTopLevelMenu(constants.New_Job())
                 .respondsWith(new Command() {
                     @Override
                     public void execute() {
@@ -265,7 +266,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                             @Override
                             public void callback(Boolean isDisabled) {
                                 if (isDisabled) {
-                                    view.displayNotification("Executor service is disabled");
+                                    view.displayNotification(constants.ExecutorServiceDisabled());
                                 } else {
                                     quickNewJobPopup.show();
                                 }
@@ -275,7 +276,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                     }
                 })
                 .endMenu()
-                .newTopLevelMenu(Constants.INSTANCE.Job_Service_Settings())
+                .newTopLevelMenu(constants.Job_Service_Settings())
                 .respondsWith(new Command() {
                     @Override
                     public void execute() {
@@ -283,7 +284,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                             @Override
                             public void callback(Boolean isDisabled) {
                                 if (isDisabled) {
-                                    view.displayNotification("Executor service is disabled");
+                                    view.displayNotification(constants.ExecutorServiceDisabled());
                                 } else {
                                     jobServiceSettingsPopup.show();
                                 }

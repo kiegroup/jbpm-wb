@@ -132,7 +132,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
             public boolean error( Message message,
                                   Throwable throwable ) {
                 view.hideBusyIndicator();
-                view.displayNotification( "Error: Getting Process Definitions: " + message );
+                view.displayNotification(constants.ErrorRetrievingProcessDefinitions(throwable.getMessage()));
                 GWT.log( throwable.toString() );
                 return true;
             }

@@ -105,7 +105,7 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
             presenter.forwardTask( userOrGroup );
             adminForwardButton.setEnabled( false );
         } else {
-            displayNotification( "Please enter a user or a group to delegate the task" );
+            displayNotification(constants.PleaseEnterUserOrAGroupToDelegate());
         }
     }
 

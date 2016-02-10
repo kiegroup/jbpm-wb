@@ -73,4 +73,6 @@ public interface Constants extends Messages {
 
     String Home();
 
+    String ActionNotImplementedYet();
+
 }

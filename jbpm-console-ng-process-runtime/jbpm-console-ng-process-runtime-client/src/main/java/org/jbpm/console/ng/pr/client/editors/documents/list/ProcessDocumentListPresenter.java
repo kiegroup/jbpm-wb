@@ -130,7 +130,7 @@ public class ProcessDocumentListPresenter extends AbstractListPresenter<Document
                 public boolean error( Message message,
                                       Throwable throwable ) {
                     view.hideBusyIndicator();
-                    view.displayNotification( "Error: Getting Process DocumentList: " + message );
+                    view.displayNotification(constants.ErrorRetrievingProcessDocuments(throwable.getMessage()));
                     GWT.log( throwable.toString() );
                     return true;
                 }
