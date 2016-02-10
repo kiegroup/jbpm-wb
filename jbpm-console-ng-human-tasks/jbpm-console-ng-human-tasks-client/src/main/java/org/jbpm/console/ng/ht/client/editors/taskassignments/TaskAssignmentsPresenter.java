@@ -57,6 +57,7 @@ public class TaskAssignmentsPresenter {
         void setHelpText(String text);
     }
 
+    private Constants constants = Constants.INSTANCE;
     private TaskAssignmentsView view;
     private User identity;
     private Caller<TaskLifeCycleService> taskLifecycleService;
@@ -90,16 +91,16 @@ public class TaskAssignmentsPresenter {
 
     public void delegateTask(String entity) {
         if (entity == null || "".equals(entity.trim())) {
-            view.setHelpText(Constants.INSTANCE.DelegationUserInputRequired());
+            view.setHelpText(constants.DelegationUserInputRequired());
             return;
         }
         taskLifecycleService.call(
                 new RemoteCallback<Void>() {
                     @Override
                     public void callback(Void nothing) {
-                        view.displayNotification("Task was successfully delegated");
+                        view.displayNotification(constants.TaskSuccessfullyDelegated());
                         view.setDelegateButtonActive(false);
-                        view.setHelpText(Constants.INSTANCE.DelegationSuccessfully());
+                        view.setHelpText(constants.DelegationSuccessfully());
                         taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                         refreshTaskPotentialOwners();
                     }
@@ -109,7 +110,7 @@ public class TaskAssignmentsPresenter {
                     @Override
                     public boolean error(Message message, Throwable throwable) {
                         view.setDelegateButtonActive(true);
-                        view.setHelpText(Constants.INSTANCE.DelegationUnable());
+                        view.setHelpText(constants.DelegationUnable());
                         return super.error(message, throwable);
                     }
                 }
@@ -143,7 +144,7 @@ public class TaskAssignmentsPresenter {
                             }
 
                             if (ts.getPotOwnersString() == null || ts.getPotOwnersString().isEmpty()) {
-                                view.setPotentialOwnersInfo(Constants.INSTANCE.No_Potential_Owners());
+                                view.setPotentialOwnersInfo(constants.No_Potential_Owners());
                             } else {
                                 view.setPotentialOwnersInfo(ts.getPotOwnersString().toString());
                             }

@@ -216,7 +216,7 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
 
         List<HasCell<DocumentSummary, ?>> cells = new LinkedList<HasCell<DocumentSummary, ?>>();
 
-        cells.add( new AccessDocumentActionHasCell( "Access Document", new Delegate<DocumentSummary>() {
+        cells.add( new AccessDocumentActionHasCell(constants.AccessDocument(), new Delegate<DocumentSummary>() {
             @Override
             public void execute( DocumentSummary document ) {
                 if ( document != null ) {

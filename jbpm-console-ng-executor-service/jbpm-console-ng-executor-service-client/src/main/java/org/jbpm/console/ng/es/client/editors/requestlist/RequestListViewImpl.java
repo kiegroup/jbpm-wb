@@ -325,7 +325,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         cells.add( new ActionHasCell( Constants.INSTANCE.Cancel(), activeStatuses, new Delegate<RequestSummary>() {
             @Override
             public void execute( RequestSummary job ) {
-                if ( Window.confirm( "Are you sure you want to cancel this Job?" ) ) {
+                if ( Window.confirm( Constants.INSTANCE.CancelJob() ) ) {
                     presenter.cancelRequest( job.getJobId() );
                 }
             }
@@ -337,7 +337,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         cells.add( new ActionHasCell( Constants.INSTANCE.Requeue(), requeueStatuses, new Delegate<RequestSummary>() {
             @Override
             public void execute( RequestSummary job ) {
-                if ( Window.confirm( "Are you sure you want to requeue this Job?" ) ) {
+                if ( Window.confirm( Constants.INSTANCE.RequeueJob() ) ) {
                     presenter.requeueRequest( job.getJobId() );
                 }
             }
@@ -381,37 +381,37 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         presenter.setAddingDefaultFilters( true );
         statuses = new ArrayList<String>();
 
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_0", Constants.INSTANCE.All(), "Filter " + Constants.INSTANCE.All(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_0", Constants.INSTANCE.All(), Constants.INSTANCE.FilterAll(), statuses );
 
         statuses = new ArrayList<String>();
         statuses.add( "QUEUED" );
 
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_1", Constants.INSTANCE.Queued(), "Filter " + Constants.INSTANCE.Queued(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_1", Constants.INSTANCE.Queued(), Constants.INSTANCE.FilterQueued(), statuses );
 
         statuses = new ArrayList<String>();
         statuses.add( "RUNNING" );
 
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_2", Constants.INSTANCE.Running(), "Filter " + Constants.INSTANCE.Running(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_2", Constants.INSTANCE.Running(), Constants.INSTANCE.FilterRunning(), statuses );
 
         statuses = new ArrayList<String>();
         statuses.add( "RETRYING" );
 
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_3", Constants.INSTANCE.Retrying(), "Filter " + Constants.INSTANCE.Retrying(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_3", Constants.INSTANCE.Retrying(), Constants.INSTANCE.FilterRetrying(), statuses );
 
         statuses = new ArrayList<String>();
         statuses.add( "ERROR" );
 
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_4", Constants.INSTANCE.Error(), "Filter " + Constants.INSTANCE.Error(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_4", Constants.INSTANCE.Error(), Constants.INSTANCE.FilterError(), statuses );
 
         statuses = new ArrayList<String>();
         statuses.add( "DONE" );
 
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_5", Constants.INSTANCE.Completed(), "Filter " + Constants.INSTANCE.Completed(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_5", Constants.INSTANCE.Completed(), Constants.INSTANCE.FilterCompleted(), statuses );
 
         statuses = new ArrayList<String>();
         statuses.add( "CANCELLED" );
 
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_6", Constants.INSTANCE.Cancelled(), "Filter " + Constants.INSTANCE.Cancelled(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_6", Constants.INSTANCE.Cancelled(), Constants.INSTANCE.FilterCancelled(), statuses );
 
         filterPagedTable.addAddTableButton( createTabButton );
         presenter.setAddingDefaultFilters( false );
@@ -438,12 +438,12 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
             builder.filter( equalsTo( COLUMN_STATUS, names ) );
         }
         builder.dataset( REQUEST_LIST_DATASET );
-        builder.setColumn( COLUMN_ID, "id" );
-        builder.setColumn( COLUMN_TIMESTAMP, "time", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_STATUS, "status" );
-        builder.setColumn( COLUMN_COMMANDNAME, "commandName", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_MESSAGE, "status" );
-        builder.setColumn( COLUMN_BUSINESSKEY, "key" );
+        builder.setColumn( COLUMN_ID, constants.Id() );
+        builder.setColumn( COLUMN_TIMESTAMP, constants.Time(), "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_STATUS, constants.Status() );
+        builder.setColumn( COLUMN_COMMANDNAME, constants.CommandName(), "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_MESSAGE, constants.Message() );
+        builder.setColumn( COLUMN_BUSINESSKEY, constants.Key() );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
@@ -494,12 +494,12 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         builder.initBuilder();
 
         builder.dataset( REQUEST_LIST_DATASET );
-        builder.setColumn( COLUMN_ID, "id" );
-        builder.setColumn( COLUMN_TIMESTAMP, "time", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_STATUS, "status" );
-        builder.setColumn( COLUMN_COMMANDNAME, "commandName", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_MESSAGE, "status" );
-        builder.setColumn( COLUMN_BUSINESSKEY, "key" );
+        builder.setColumn( COLUMN_ID, constants.Id() );
+        builder.setColumn( COLUMN_TIMESTAMP, constants.Time(), "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_STATUS, constants.Status() );
+        builder.setColumn( COLUMN_COMMANDNAME, constants.CommandName(), "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_MESSAGE, constants.Message() );
+        builder.setColumn( COLUMN_BUSINESSKEY, constants.Key() );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );

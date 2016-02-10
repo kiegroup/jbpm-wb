@@ -148,7 +148,7 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
         @Override
         public boolean error( Message message, Throwable throwable ) {
           view.hideBusyIndicator();
-          view.displayNotification( "Error: Getting Process Definitions: " + message );
+          view.displayNotification( constants.ErrorRetrievingProcessDefinitions(throwable.getMessage()) );
           GWT.log( throwable.toString() );
           return true;
         }
@@ -189,7 +189,7 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
     }, new ErrorCallback<Message>() {
       @Override
       public boolean error(Message message, Throwable throwable) {
-        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        ErrorPopup.showMessage(constants.UnexpectedError(throwable.getMessage()));
         return true;
       }
     }).abortProcessInstance(processInstanceId);
@@ -204,7 +204,7 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
     }, new ErrorCallback<Message>() {
       @Override
       public boolean error(Message message, Throwable throwable) {
-        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        ErrorPopup.showMessage(constants.UnexpectedError(throwable.getMessage()));
         return true;
       }
     }).abortProcessInstances(processInstanceIds);
@@ -221,7 +221,7 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
     }, new ErrorCallback<Message>() {
       @Override
       public boolean error(Message message, Throwable throwable) {
-        ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+        ErrorPopup.showMessage(constants.UnexpectedError(throwable.getMessage()));
         return true;
       }
     }).suspendProcessInstance(processInstanceId);
@@ -233,8 +233,7 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
 
       for (ProcessInstanceSummary selected : processInstances) {
         if (selected.getState() != ProcessInstance.STATE_ACTIVE) {
-          view.displayNotification(constants.Signaling_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
-                  + ")");
+          view.displayNotification(constants.Signaling_Process_Instance_Not_Allowed(selected.getId()));
           continue;
         }
         processIdsParam.append(selected.getId() + ",");
@@ -260,13 +259,12 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
         List<Long> ids = new ArrayList<Long>();
         for (ProcessInstanceSummary selected : processInstances) {
           if (selected.getState() != ProcessInstance.STATE_ACTIVE) {
-            view.displayNotification(constants.Aborting_Process_Instance_Not_Allowed() + "(id=" + selected.getId()
-                    + ")");
+            view.displayNotification(constants.Aborting_Process_Instance_Not_Allowed(selected.getId()));
             continue;
           }
           ids.add(selected.getProcessInstanceId());
 
-          view.displayNotification(constants.Aborting_Process_Instance() + "(id=" + selected.getId() + ")");
+          view.displayNotification(constants.Aborting_Process_Instance(selected.getId()));
         }
         abortProcessInstance(ids);
 

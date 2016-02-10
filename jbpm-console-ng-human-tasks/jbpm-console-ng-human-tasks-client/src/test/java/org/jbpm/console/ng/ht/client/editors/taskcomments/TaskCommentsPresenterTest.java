@@ -91,7 +91,7 @@ public class TaskCommentsPresenterTest {
         verify(commentsServiceMock, never())
                 .addComment(anyLong(), anyString(), anyString(), any(Date.class));
         //User notified
-        verify(viewMock).displayNotification("The Comment cannot be empty!");
+        verify(viewMock).displayNotification("CommentCannotBeEmpty");
     }
 
     @Test

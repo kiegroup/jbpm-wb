@@ -172,7 +172,7 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
             public void callback( ProcessInstanceSummary processInstance ) {
                 if ( processInstance.getState() == ProcessInstance.STATE_ACTIVE ||
                         processInstance.getState() == ProcessInstance.STATE_PENDING ) {
-                    if ( Window.confirm( "Are you sure that you want to abort the process instance?" ) ) {
+                    if ( Window.confirm( constants.Abort_Process_Instance() ) ) {
                         final long processInstanceId = Long.parseLong(deploymentId);
                         kieSessionServices.call( new RemoteCallback<Void>() {
                             @Override
@@ -183,20 +183,20 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
                             @Override
                             public boolean error( Message message,
                                                   Throwable throwable ) {
-                                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                                 return true;
                             }
                         } ).abortProcessInstance( processInstanceId );
                     }
                 } else {
-                    Window.alert( "Process instance needs to be active in order to be aborted" );
+                    Window.alert(constants.ProcessInstanceNeedsToBeActiveInOrderToBeAborted());
                 }
             }
         }, new ErrorCallback<Message>() {
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).getProcessInstanceById( Long.parseLong( deploymentId ) );
@@ -243,7 +243,7 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
                         @Override
                         public boolean error( Message message,
                                               Throwable throwable ) {
-                            ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                            ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                             return true;
                         }
                     } ).getProcessInstanceCompletedNodes( Long.parseLong(deploymentId) );
@@ -253,7 +253,7 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
                 @Override
                 public boolean error( Message message,
                                       Throwable throwable ) {
-                    ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                    ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                     return true;
                 }
             } ).getProcessInstanceActiveNodes( Long.parseLong(deploymentId) );

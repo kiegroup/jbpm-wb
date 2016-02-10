@@ -40,4 +40,8 @@ public interface ProcessAdminConstants extends Messages {
     String ProcessId();
 
     String Generate_Mock_Instances();
+
+    String UnexpectedError(String errorMessage);
+
+    String ProcessInstancesSuccessfullyCreated();
 }

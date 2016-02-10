@@ -30,6 +30,7 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.model.RuntimeLogSummary;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogOrder;
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogType;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
@@ -48,6 +49,8 @@ public class RuntimeLogPresenter {
 
         void setLogs( List<String> logs );
     }
+
+    private Constants constants = Constants.INSTANCE;
 
     @Inject
     private RuntimeLogView view;
@@ -88,7 +91,7 @@ public class RuntimeLogPresenter {
                 @Override
                 public boolean error( Message message,
                                       Throwable throwable ) {
-                    ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                    ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                     return true;
                 }
             } ).getAllRuntimeLogs( Long.valueOf( currentProcessInstanceId ) );
@@ -110,7 +113,7 @@ public class RuntimeLogPresenter {
                 @Override
                 public boolean error( Message message,
                                       Throwable throwable ) {
-                    ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                    ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                     return true;
                 }
             } ).getBusinessLogs( Long.valueOf( currentProcessInstanceId ) );

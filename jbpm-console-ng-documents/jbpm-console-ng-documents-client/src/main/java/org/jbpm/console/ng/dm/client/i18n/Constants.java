@@ -68,4 +68,6 @@ public interface Constants extends Messages {
     String ConfigurationPanel();
     
     String Loading();
+
+    String UnexpectedError(String errorMessage);
 }

@@ -105,7 +105,7 @@ public class DeploymentUnitsListPresenter extends AbstractScreenListPresenter<KM
             @Override
             public boolean error(Message message, Throwable throwable) {
                 view.hideBusyIndicator();
-                view.displayNotification("Error: Getting deployment units: " + message);
+                view.displayNotification(constants.ErrorRetrievingDeploymentUnits(throwable.getMessage()));
                 GWT.log(throwable.toString());
                 return true;
             }
@@ -125,14 +125,14 @@ public class DeploymentUnitsListPresenter extends AbstractScreenListPresenter<KM
       @Override
       public void callback(Void nothing) {
         view.hideBusyIndicator();
-        view.displayNotification(" Kjar Undeployed " + group + ":" + artifact + ":" + version);
+        view.displayNotification(constants.KjarUndeployed(group, artifact, version));
         refreshGrid();
       }
     }, new ErrorCallback<Message>() {
       @Override
       public boolean error(Message message, Throwable throwable) {
         view.hideBusyIndicator();
-        view.displayNotification("Error: Undeploy failed, check Problems panel");
+        view.displayNotification(constants.ErrorUndeployFailed());
         return true;
       }
     }).undeploy(new KModuleDeploymentUnitSummary(id, group, artifact, version, kbaseName, kieSessionName, null, null));
@@ -145,14 +145,14 @@ public class DeploymentUnitsListPresenter extends AbstractScreenListPresenter<KM
                                             @Override
                                             public void callback(Void nothing) {
                 view.hideBusyIndicator();
-                view.displayNotification(" Kjar activated " + unitSummary.getId());
+                view.displayNotification(constants.KjarActivated(unitSummary.getId()));
                 refreshGrid();
             }
         }, new ErrorCallback<Message>() {
             @Override
             public boolean error(Message message, Throwable throwable) {
                 view.hideBusyIndicator();
-                view.displayNotification("Error: Activation failed, check Problems panel");
+                view.displayNotification(constants.ErrorActivationFailed());
                 return true;
             }
         }).activate(unitSummary);
@@ -162,14 +162,14 @@ public class DeploymentUnitsListPresenter extends AbstractScreenListPresenter<KM
                                             @Override
                                             public void callback(Void nothing) {
                     view.hideBusyIndicator();
-                    view.displayNotification(" Kjar deactivated " + unitSummary.getId());
+                    view.displayNotification(constants.KjarDeactivated(unitSummary.getId()));
                     refreshGrid();
                 }
             }, new ErrorCallback<Message>() {
                 @Override
                 public boolean error(Message message, Throwable throwable) {
                     view.hideBusyIndicator();
-                    view.displayNotification("Error: Deactivation failed, check Problems panel");
+                    view.displayNotification(constants.ErrorDeactivationFailed());
                     return true;
                 }
             }).deactivate(unitSummary);

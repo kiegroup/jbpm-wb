@@ -41,7 +41,7 @@ import org.uberfire.mvp.PlaceRequest;
 @WorkbenchScreen(identifier = "Tasks Admin Settings")
 public class TaskAdminSettingsPresenter {
 
-    private Constants constants = GWT.create(Constants.class);
+    private Constants constants = Constants.INSTANCE;
 
     public interface TaskAdminSettingsView extends UberView<TaskAdminSettingsPresenter> {
 
@@ -59,8 +59,6 @@ public class TaskAdminSettingsPresenter {
     Caller<TaskServiceAdminEntryPoint> taskAdminServices;
 
     private PlaceRequest place;
-
- 
 
     @OnStartup
     public void onStartup(final PlaceRequest place) {
@@ -84,30 +82,16 @@ public class TaskAdminSettingsPresenter {
     public void init() {
     }
 
-//            //System.out.println(" FIRST OPTION -> Groups were I'm Included  and I want to be autoassigned add/start/claim!!");
-//            taskServices.call( new RemoteCallback<Long>() {
-//                @Override
-//                public void callback( Long taskId ) {
-//                    refreshNewTask(taskId, taskName, "Task Created and Started (id = " + taskId + ")");
-//                }
-//            }, new ErrorCallback<Message>() {
-//                   @Override
-//                   public boolean error( Message message, Throwable throwable ) {
-//                       ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
-//                       return true;
-//                   }
-//               } ).addTaskAndClaimAndStart( str, null, identity.getName(), templateVars );
-//        
     public void generateMockTasks(String userName, int amountOfTasks) {
         taskAdminServices.call(new RemoteCallback<Long>() {
             @Override
             public void callback(Long taskId) {
-                view.displayNotification("Task succesfully created!");
+                view.displayNotification(constants.TaskSuccessfullyCreated());
             }
         }, new ErrorCallback<Message>() {
             @Override
             public boolean error(Message message, Throwable throwable) {
-                ErrorPopup.showMessage("Unexpected error encountered : " + throwable.getMessage());
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         }).generateMockTasks(userName, amountOfTasks);

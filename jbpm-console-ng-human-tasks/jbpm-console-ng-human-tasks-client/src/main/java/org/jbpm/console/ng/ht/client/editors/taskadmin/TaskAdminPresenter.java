@@ -60,6 +60,8 @@ public class TaskAdminPresenter {
         void init( final TaskAdminPresenter presenter );
     }
 
+    private Constants constants = Constants.INSTANCE;
+
     @Inject
     private TaskAdminView view;
 
@@ -90,7 +92,7 @@ public class TaskAdminPresenter {
         taskServices.call( new RemoteCallback<Void>() {
             @Override
             public void callback( Void nothing ) {
-                view.displayNotification( "Task was succesfully forwarded" );
+                view.displayNotification(constants.TaskSuccessfullyForwarded());
                 taskRefreshed.fire( new TaskRefreshedEvent( currentTaskId ) );
                 refreshTaskPotentialOwners();
             }
@@ -99,7 +101,7 @@ public class TaskAdminPresenter {
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()));
                 return true;
             }
         } ).delegate( currentTaskId, identity.getIdentifier(), entity );
@@ -109,13 +111,13 @@ public class TaskAdminPresenter {
         taskOperationsServices.call( new RemoteCallback<TaskAssignmentSummary>() {
             @Override
             public void callback( TaskAssignmentSummary ts ) {
-                view.displayNotification( "Reminder was succesfully sent to " + identity.getIdentifier() );
+                view.displayNotification(constants.ReminderSentTo(identity.getIdentifier()));
             }
         }, new ErrorCallback<Message>() {
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).executeReminderForTask( currentTaskId, identity.getIdentifier() );
@@ -154,7 +156,7 @@ public class TaskAdminPresenter {
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                ErrorPopup.showMessage( "Unexpected error encountered : " + throwable.getMessage() );
+                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
                 return true;
             }
         } ).getTaskAssignmentDetails( currentTaskId );
