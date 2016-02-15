@@ -136,8 +136,7 @@ public class DataSetDefsBootstrap {
                         "       tvi.name varname,\n" +
                         "       tvi.value varvalue\n" +
                         " from TaskVariableImpl tvi,AuditTaskImpl at " +
-                        " where tvi.taskId = at.taskId " +
-                        " order by tvi.taskId, tvi.name ", false)
+                        " where tvi.taskId = at.taskId ", false)
                .number(COLUMN_TASK_VARIABLE_TASKID)
                .label(COLUMN_TASK_VARIABLE_TASKNAME)
                .label(COLUMN_TASK_VARIABLE_NAME)

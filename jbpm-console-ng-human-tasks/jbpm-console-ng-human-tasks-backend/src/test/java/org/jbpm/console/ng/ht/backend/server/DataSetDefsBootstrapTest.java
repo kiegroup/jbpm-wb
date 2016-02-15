@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
+import org.dashbuilder.dataset.def.SQLDataSetDef;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -51,5 +52,19 @@ public class DataSetDefsBootstrapTest {
         assertEquals(dsList.get(1).getUUID(), HUMAN_TASKS_WITH_USER_DATASET);
         assertEquals(dsList.get(2).getUUID(), HUMAN_TASKS_WITH_ADMIN_DATASET);
         assertEquals(dsList.get(3).getUUID(), HUMAN_TASKS_WITH_VARIABLES_DATASET);
+    }
+
+    @Test
+    public void noOrderByPresentInDefinitionsSQLTest() {
+        dataSetsBootstrap.registerDataSetDefinitions();
+        ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
+        verify(dataSetDefRegistryMock, times(4)).registerDataSetDef(argument.capture());
+
+        List<DataSetDef> dsList = argument.getAllValues();
+        assertNull(((SQLDataSetDef) dsList.get(0)).getDbSQL());
+        assertFalse(((SQLDataSetDef) dsList.get(1)).getDbSQL().contains("order by"));
+        assertFalse(((SQLDataSetDef) dsList.get(2)).getDbSQL().contains("order by"));
+        assertFalse(((SQLDataSetDef) dsList.get(3)).getDbSQL().contains("order by"));
+
     }
 }
