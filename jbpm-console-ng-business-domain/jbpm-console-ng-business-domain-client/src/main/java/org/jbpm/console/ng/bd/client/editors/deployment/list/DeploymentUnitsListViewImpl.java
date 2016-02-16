@@ -26,12 +26,9 @@ import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
@@ -40,8 +37,6 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jbpm.console.ng.bd.client.editors.deployment.newunit.NewDeploymentPopup;
 import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
@@ -137,17 +132,6 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
                 } );
         listGrid.setSelectionModel( selectionModel, noActionColumnManager );
 
-        Button newUnitButton = new Button();
-        newUnitButton.setIcon( IconType.PLUS );
-        newUnitButton.setTitle( constants.Deploy_A_New_Unit() );
-        newUnitButton.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                newDeploymentPopup.show();
-            }
-        } );
-
-        listGrid.getLeftToolbar().add( newUnitButton );
         listGrid.setEmptyTableCaption( constants.No_Deployment_Units_Available() );
         listGrid.setRowStyles( selectedStyles );
 
@@ -360,4 +344,8 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
 
     }
 
+    @Override
+    public void newDeploymentUnit() {
+        newDeploymentPopup.show();
+    }
 }
