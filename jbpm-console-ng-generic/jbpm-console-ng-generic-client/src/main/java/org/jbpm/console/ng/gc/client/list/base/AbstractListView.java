@@ -129,7 +129,6 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
                 }
                 presenter.onGridPreferencesStoreLoaded();
                 initColumns(listGrid);
-                initGenericToolBar();
                 listGrid.loadPageSizePreferences();
             }
         } ).loadUserPreferences(preferences.getKey() , UserPreferencesType.GRIDPREFERENCES);
@@ -146,22 +145,6 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
     }
 
     public void showRestoreDefaultFilterConfirmationPopup(){}
-  /*
-   * By default all the tables will have a refresh button
-   */
-
-    public void initGenericToolBar() {
-        Button refreshButton = new Button();
-        refreshButton.setIcon( IconType.REFRESH );
-        refreshButton.setTitle( Constants.INSTANCE.Refresh() );
-        refreshButton.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                presenter.refreshGrid();
-            }
-        } );
-        listGrid.getRightToolbar().add( refreshButton );
-    }
 
     public ExtendedPagedTable<T> getListGrid() {
         return listGrid;
