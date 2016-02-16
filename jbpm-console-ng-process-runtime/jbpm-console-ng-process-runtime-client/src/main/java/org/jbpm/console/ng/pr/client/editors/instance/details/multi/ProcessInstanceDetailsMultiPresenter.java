@@ -30,7 +30,7 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
-import org.jbpm.console.ng.gc.client.menu.RefreshMenuBuilder;
+import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.console.ng.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.console.ng.pr.client.editors.documents.list.ProcessDocumentListPresenter;
 import org.jbpm.console.ng.pr.client.editors.instance.details.ProcessInstanceDetailsPresenter;
