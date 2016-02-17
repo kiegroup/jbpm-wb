@@ -15,11 +15,14 @@
  */
 package org.jbpm.dashboard.renderer.client;
 
+import java.util.Arrays;
+
 import org.dashbuilder.displayer.client.AbstractDisplayerTest;
 import org.dashbuilder.displayer.client.DisplayerCoordinator;
 import org.dashbuilder.displayer.client.DisplayerListener;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
+import org.jbpm.dashboard.renderer.client.panel.AbstractDashboard;
 import org.jbpm.dashboard.renderer.client.panel.DashboardFactory;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardI18n;
 import org.junit.Before;
@@ -28,11 +31,11 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.mvp.PlaceManager;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public abstract class AbstractDashboardTest extends AbstractDisplayerTest {
 
-    @Mock
     DashboardI18n i18n;
 
     @Mock
@@ -64,5 +67,31 @@ public abstract class AbstractDashboardTest extends AbstractDisplayerTest {
                 return initDisplayer(new TableDisplayer(mock(TableDisplayer.View.class)), null);
             }
         }).when(dashboardFactory).createTableDisplayer();
+
+        i18n = mock(DashboardI18n.class, new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return invocation.getMethod().getName() +
+                        Arrays.deepToString(invocation.getArguments());
+            }
+        });
+
+        when(getView().getI18nService()).thenReturn(i18n);
+
+        registerDataset();
+    }
+
+    protected abstract void registerDataset() throws Exception;
+
+    protected abstract AbstractDashboard.View getView();
+
+    protected abstract AbstractDashboard getPresenter();
+
+    protected void verifyMetricHeaderText(String process, MetricDisplayer metricDisplayer, String expected) {
+        metricDisplayer.filterApply();
+        assertEquals(getPresenter().getSelectedMetric(), metricDisplayer);
+        reset(getView());
+        getPresenter().changeCurrentProcess(process);
+        verify(getView()).setHeaderText(expected);
     }
 }

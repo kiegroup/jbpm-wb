@@ -20,11 +20,11 @@ import javax.enterprise.event.Event;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.filter.DataSetFilter;
-import org.dashbuilder.displayer.client.AbstractDisplayer;
 import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
+import org.jbpm.dashboard.renderer.client.panel.AbstractDashboard;
 import org.jbpm.dashboard.renderer.client.panel.TaskDashboard;
 import org.jbpm.dashboard.renderer.client.panel.events.TaskDashboardFocusEvent;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
@@ -34,7 +34,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.mvp.PlaceStatus;
-import org.uberfire.mvp.Command;
 
 import static org.dashbuilder.dataset.Assertions.*;
 import static org.jbpm.dashboard.renderer.model.DashboardData.*;
@@ -59,17 +58,26 @@ public class TaskDashboardTest extends AbstractDashboardTest {
     TaskDashboard presenter;
     DataSet dataSet;
 
+    @Override
     public void registerDataset() throws Exception {
         dataSet = TaskDashboardData.INSTANCE.toDataSet();
         dataSet.setUUID(DATASET_HUMAN_TASKS);
         clientDataSetManager.registerDataSet(dataSet);
     }
 
+    @Override
+    protected AbstractDashboard.View getView() {
+        return view;
+    }
+
+    @Override
+    protected AbstractDashboard getPresenter() {
+        return presenter;
+    }
+
     @Before
     public void init() throws Exception {
         super.init();
-        registerDataset();
-        when(view.getI18nService()).thenReturn(i18n);
 
         presenter = new TaskDashboard(view,
                 processBreadCrumb,
@@ -291,10 +299,11 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         reset(displayerListener);
 
         presenter.getTasksByProcess().filterUpdate(COLUMN_PROCESS_NAME, 1);
-        assertEquals(presenter.getSelectedProcess(), "Process B");
+        final String process = "Process B";
+        assertEquals(presenter.getSelectedProcess(), process);
 
-        verify(view).showBreadCrumb("Process B");
-        verify(view).setHeaderText(anyString());
+        verify(view).showBreadCrumb(process);
+        verify(view).setHeaderText(i18n.selectedTaskStatusHeader("", process));
         verify(displayerListener, times(17)).onRedraw(any(Displayer.class));
         verify(displayerListener, never()).onError(any(Displayer.class), any(ClientRuntimeError.class));
     }
@@ -305,7 +314,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         presenter.resetCurrentProcess();
         assertNull(presenter.getSelectedProcess());
         verify(view).hideBreadCrumb();
-        verify(view).setHeaderText(anyString());
+        verify(view).setHeaderText(i18n.allTasks());
     }
 
     @Test
@@ -318,7 +327,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         inProgressMetric.filterApply();
 
         assertEquals(presenter.getSelectedMetric(), inProgressMetric);
-        verify(view).setHeaderText(anyString());
+        verify(view).setHeaderText(i18n.tasksInProgress());
         verify(displayerListener).onFilterEnabled(eq(inProgressMetric), any(DataSetFilter.class));
         verify(displayerListener, times(1)).onFilterEnabled(any(Displayer.class), any(DataSetFilter.class));
         verify(displayerListener, never()).onFilterReset(any(Displayer.class), any(DataSetFilter.class));
@@ -341,7 +350,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         inProgressMetric.filterReset();
 
         assertNull(presenter.getSelectedMetric());
-        verify(view).setHeaderText(anyString());
+        verify(view).setHeaderText(i18n.allTasks());
         verify(displayerListener).onFilterReset(eq(inProgressMetric), any(DataSetFilter.class));
         verify(displayerListener, times(1)).onFilterReset(any(Displayer.class), any(DataSetFilter.class));
 
@@ -390,5 +399,24 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         verify(taskSelectionEvent).fire(any(TaskSelectionEvent.class));
         verify(taskDashboardFocusEvent).fire(any(TaskDashboardFocusEvent.class));
         verify(placeManager).goTo(TaskDashboard.TASK_DETAILS_SCREEN_ID);
+    }
+
+    @Test
+    public void testHeaderText(){
+        verify(view).setHeaderText(i18n.allTasks());
+
+        final String task = "Task Test";
+
+        verifyMetricHeaderText(task, presenter.getTotalMetric(), i18n.selectedTaskStatusHeader("", task));
+        verifyMetricHeaderText(task, presenter.getReadyMetric(), i18n.selectedTaskStatusHeader(i18n.taskStatusReady(), task));
+        verifyMetricHeaderText(task, presenter.getReservedMetric(), i18n.selectedTaskStatusHeader(i18n.taskStatusReserved(), task));
+        verifyMetricHeaderText(task, presenter.getInProgressMetric(), i18n.selectedTaskStatusHeader(i18n.taskStatusInProgress(), task));
+        verifyMetricHeaderText(task, presenter.getSuspendedMetric(), i18n.selectedTaskStatusHeader(i18n.taskStatusSuspended(), task));
+        verifyMetricHeaderText(task, presenter.getCompletedMetric(), i18n.selectedTaskStatusHeader(i18n.taskStatusCompleted(), task));
+
+        reset(view);
+        presenter.resetCurrentProcess();
+        presenter.resetCurrentMetric();
+        verify(view).setHeaderText(i18n.allTasks());
     }
 }
