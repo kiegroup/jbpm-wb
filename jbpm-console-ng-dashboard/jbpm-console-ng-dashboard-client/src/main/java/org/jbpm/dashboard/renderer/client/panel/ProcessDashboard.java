@@ -90,7 +90,6 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
     protected AbstractDisplayer processesByVersion;
     protected TableDisplayer processesTable;
 
-    protected String selectedProcess = null;
     protected List<Displayer> metricsGroup = new ArrayList<Displayer>();
     protected List<Displayer> chartsGroup = new ArrayList<Displayer>();
     protected String totalProcessesTitle;

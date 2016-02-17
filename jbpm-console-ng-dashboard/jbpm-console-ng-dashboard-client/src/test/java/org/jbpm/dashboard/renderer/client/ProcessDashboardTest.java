@@ -20,11 +20,10 @@ import javax.enterprise.event.Event;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.filter.DataSetFilter;
-import org.dashbuilder.displayer.client.AbstractDisplayer;
 import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
-import org.dashbuilder.renderer.client.table.TableDisplayer;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
+import org.jbpm.dashboard.renderer.client.panel.AbstractDashboard;
 import org.jbpm.dashboard.renderer.client.panel.ProcessDashboard;
 import org.jbpm.dashboard.renderer.client.panel.events.ProcessDashboardFocusEvent;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
@@ -58,17 +57,26 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
     ProcessDashboard presenter;
     DataSet dataSet;
 
+    @Override
     public void registerDataset() throws Exception {
         dataSet = ProcessDashboardData.INSTANCE.toDataSet();
         dataSet.setUUID(DATASET_PROCESS_INSTANCES);
         clientDataSetManager.registerDataSet(dataSet);
     }
 
+    @Override
+    protected AbstractDashboard.View getView() {
+        return view;
+    }
+
+    @Override
+    protected AbstractDashboard getPresenter() {
+        return presenter;
+    }
+
     @Before
     public void init() throws Exception {
         super.init();
-        registerDataset();
-        when(view.getI18nService()).thenReturn(i18n);
 
         presenter = new ProcessDashboard(view,
                 processBreadCrumb,
@@ -266,10 +274,11 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         reset(displayerListener);
 
         presenter.getProcessesByType().filterUpdate(COLUMN_PROCESS_NAME, 1);
-        assertEquals(presenter.getSelectedProcess(), "Process B");
+        final String process = "Process B";
+        assertEquals(presenter.getSelectedProcess(), process);
 
-        verify(view).showBreadCrumb("Process B");
-        verify(view).setHeaderText(anyString());
+        verify(view).showBreadCrumb(process);
+        verify(view).setHeaderText(i18n.selectedProcessStatusHeader("", process));
         verify(displayerListener, times(12)).onRedraw(any(Displayer.class));
         verify(displayerListener, never()).onError(any(Displayer.class), any(ClientRuntimeError.class));
     }
@@ -280,7 +289,7 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         presenter.resetCurrentProcess();
         assertNull(presenter.getSelectedProcess());
         verify(view).hideBreadCrumb();
-        verify(view).setHeaderText(anyString());
+        verify(view).setHeaderText(i18n.allProcesses());
     }
 
     @Test
@@ -293,7 +302,7 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         activeMetric.filterApply();
 
         assertEquals(presenter.getSelectedMetric(), activeMetric);
-        verify(view).setHeaderText(anyString());
+        verify(view).setHeaderText(i18n.activeProcesses());
         verify(displayerListener).onFilterEnabled(eq(activeMetric), any(DataSetFilter.class));
         verify(displayerListener, times(1)).onFilterEnabled(any(Displayer.class), any(DataSetFilter.class));
         verify(displayerListener, never()).onFilterReset(any(Displayer.class), any(DataSetFilter.class));
@@ -316,7 +325,7 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         activeMetric.filterReset();
 
         assertNull(presenter.getSelectedMetric());
-        verify(view).setHeaderText(anyString());
+        verify(view).setHeaderText(i18n.allProcesses());
         verify(displayerListener).onFilterReset(eq(activeMetric), any(DataSetFilter.class));
         verify(displayerListener, times(1)).onFilterReset(any(Displayer.class), any(DataSetFilter.class));
 
@@ -358,4 +367,24 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         verify(processDashboardFocusEvent).fire(any(ProcessDashboardFocusEvent.class));
         verify(placeManager).goTo(ProcessDashboard.PROCESS_DETAILS_SCREEN_ID);
     }
+
+    @Test
+    public void testHeaderText(){
+        verify(view).setHeaderText(i18n.allProcesses());
+
+        final String process = "Process Test";
+
+        verifyMetricHeaderText(process, presenter.getTotalMetric(), i18n.selectedProcessStatusHeader("", process));
+        verifyMetricHeaderText(process, presenter.getActiveMetric(), i18n.selectedProcessStatusHeader(i18n.processStatusActive(), process));
+        verifyMetricHeaderText(process, presenter.getPendingMetric(), i18n.selectedProcessStatusHeader(i18n.processStatusPending(), process));
+        verifyMetricHeaderText(process, presenter.getSuspendedMetric(), i18n.selectedProcessStatusHeader(i18n.processStatusSuspended(), process));
+        verifyMetricHeaderText(process, presenter.getAbortedMetric(), i18n.selectedProcessStatusHeader(i18n.processStatusAborted(), process));
+        verifyMetricHeaderText(process, presenter.getCompletedMetric(), i18n.selectedProcessStatusHeader(i18n.processStatusCompleted(), process));
+
+        reset(view);
+        presenter.resetCurrentProcess();
+        presenter.resetCurrentMetric();
+        verify(view).setHeaderText(i18n.allProcesses());
+    }
+
 }
