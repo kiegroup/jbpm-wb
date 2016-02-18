@@ -63,7 +63,7 @@ public class DataSetDefsBootstrap {
                 .dbSQL("select p.processName, p.externalId, t.* " +
                         "from ProcessInstanceLog p " +
                         "inner join BAMTaskSummary t on (t.processInstanceId = p.processInstanceId) " +
-                        "inner join (select min(pk) pk from BAMTaskSummary group by taskId) d on t.pk=d.pk",
+                        "inner join (select min(pk) as pk from BAMTaskSummary group by taskId) d on t.pk=d.pk",
                         true)
                 .buildDef();
 
