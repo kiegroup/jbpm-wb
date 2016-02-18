@@ -82,7 +82,6 @@ public class TaskCommentsPresenter {
                     public void callback(List<CommentSummary> comments) {
                         dataProvider.getList().clear();
                         dataProvider.getList().addAll(comments);
-                        dataProvider.refresh();
                         view.redrawDataGrid();
                     }
                 },

@@ -41,6 +41,7 @@ import org.uberfire.mocks.CallerMock;
 public class TaskCommentsPresenterTest {
 
     private static final Long TASK_ID = 1L;
+    private static final Long COMMENT_ID = 1L;
     private static final String USR_ID = "Jan";
 
     private CallerMock<TaskCommentsService> callerMock;
@@ -104,5 +105,19 @@ public class TaskCommentsPresenterTest {
                 .addComment(anyLong(), eq(comment), eq(USR_ID), any(Date.class));
         // Input cleared
         verify(viewMock).clearCommentInput();
+    }
+
+    @Test
+    public void removeCommentAdded() {
+        presenter.removeTaskComment(COMMENT_ID);
+
+        // Comment removed
+        verify(commentsServiceMock)
+                .deleteComment(anyLong(), eq(COMMENT_ID));
+        // Input cleared
+        verify(viewMock).clearCommentInput();
+        verify(commentsServiceMock).getAllCommentsByTaskId(anyLong());
+        verify(viewMock).redrawDataGrid();
+
     }
 }
