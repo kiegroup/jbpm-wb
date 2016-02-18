@@ -67,4 +67,21 @@ public class DataSetDefsBootstrapTest {
         assertFalse(((SQLDataSetDef) dsList.get(3)).getDbSQL().contains("order by"));
 
     }
+
+    @Test
+    public void noColumnAliasPresentInHumanTaskWithUserDataset() {
+        dataSetsBootstrap.registerDataSetDefinitions();
+        ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
+        verify(dataSetDefRegistryMock, times(4)).registerDataSetDef(argument.capture());
+
+        List<DataSetDef> dsList = argument.getAllValues();
+
+        String strSQL = ((SQLDataSetDef) dsList.get(1)).getDbSQL();
+        String[] columnsStr = strSQL.substring(strSQL.indexOf("select") + 6, strSQL.indexOf("from")).split(",");
+        for(String columnStr: columnsStr){
+            assertTrue(columnStr.trim().split(" ").length == 1 );
+        }
+
+    }
+
 }
