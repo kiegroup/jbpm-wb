@@ -131,10 +131,10 @@ public class DataSetDefsBootstrap {
                 .uuid(HUMAN_TASKS_WITH_VARIABLES_DATASET)
                 .name("Domain Specific Task")
                 .dataSource(jbpmDataSource)
-                .dbSQL("select  tvi.taskId taskId ,\n" +
-                        "       at.name name,\n" +
-                        "       tvi.name varname,\n" +
-                        "       tvi.value varvalue\n" +
+                .dbSQL("select  tvi.taskId as taskId ,\n" +
+                        "       at.name as name,\n" +
+                        "       tvi.name as varname,\n" +
+                        "       tvi.value as varvalue\n" +
                         " from TaskVariableImpl tvi,AuditTaskImpl at " +
                         " where tvi.taskId = at.taskId ", false)
                .number(COLUMN_TASK_VARIABLE_TASKID)
