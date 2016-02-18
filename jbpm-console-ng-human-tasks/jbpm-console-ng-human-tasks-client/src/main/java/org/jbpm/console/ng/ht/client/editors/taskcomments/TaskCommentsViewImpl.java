@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskcomments;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,12 +49,19 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.CommentSummary;
+import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
 import org.uberfire.ext.widgets.common.client.tables.PagedTable;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "TaskCommentsViewImpl.html")
 public class TaskCommentsViewImpl extends Composite implements TaskCommentsPresenter.TaskCommentsView {
+
+    protected static final String COL_ADDEDBY = "addedBy";
+    protected static final String COL_ADDEDAT = "addedAt";
+    protected static final String COL_COMMENT = "comment";
+    protected static final String COL_ID_ACTIONS = "Actions";
 
     private Constants constants = GWT.create( Constants.class );
 
@@ -65,21 +73,21 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
 
     @Inject
     @DataField
-    public FormLabel newTaskCommentLabel;
+    public FormLabel newTaskCommentLabel = GWT.create(FormLabel.class);
 
     @Inject
     @DataField
-    public Button addCommentButton;
+    public Button addCommentButton = GWT.create(Button.class);
 
     @DataField
-    public PagedTable<CommentSummary> commentsListGrid = new PagedTable<CommentSummary>();
+    public PagedTable<CommentSummary> commentsListGrid = new PagedTable<CommentSummary>(COMMENTS_PER_PAGE);
 
     @Inject
     private Event<NotificationEvent> notification;
 
     private ListHandler<CommentSummary> sortHandler;
 
-    private static final int COMMENTS_PER_PAGE = 6;
+    private static final int COMMENTS_PER_PAGE = 10;
 
     @Override
     public void clearCommentInput() {
@@ -88,12 +96,24 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
 
     @Override
     public void redrawDataGrid() {
+        commentsListGrid.refresh();
         commentsListGrid.redraw();
     }
 
     @Override
     public void init( TaskCommentsPresenter presenter ) {
         this.presenter = presenter;
+        List<String> bannedColumns = new ArrayList<String>();
+        bannedColumns.add( COL_COMMENT);
+        bannedColumns.add( COL_ID_ACTIONS );
+
+        List<String> initColumns = new ArrayList<String>();
+        initColumns.add( COL_ADDEDBY );
+        initColumns.add( COL_COMMENT );
+        initColumns.add( COL_ADDEDAT );
+        initColumns.add(COL_ID_ACTIONS);
+
+        commentsListGrid.setGridPreferencesStore( new GridPreferencesStore( new GridGlobalPreferences( "CommentsGrid", initColumns, bannedColumns ) ));
         commentsListGrid.setEmptyTableCaption( constants.No_Comments_For_This_Task() );
         // Attach a column sort handler to the ListDataProvider to sort the list.
         sortHandler = new ListHandler<CommentSummary>( presenter.getDataProvider().getList() );
@@ -127,6 +147,7 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
             }
         };
         addedByColumn.setSortable( false );
+        addedByColumn.setDataStoreName(COL_ADDEDBY);
         commentsListGrid.addColumn( addedByColumn, constants.Added_By() );
         commentsListGrid.setColumnWidth( addedByColumn, 100, Style.Unit.PX );
 
@@ -139,6 +160,7 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
             }
         };
         addedAtColumn.setSortable( true );
+        addedAtColumn.setDataStoreName(COL_ADDEDAT);
         addedAtColumn.setDefaultSortAscending( true );
         commentsListGrid.addColumn( addedAtColumn, constants.At() );
         sortHandler.setComparator( addedAtColumn, new Comparator<CommentSummary>() {
@@ -156,8 +178,9 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
                 return object.getText();
             }
         };
-        addedByColumn.setSortable( false );
-        commentsListGrid.addColumn( commentTextColumn, constants.Comment() );
+        commentTextColumn.setSortable( false );
+        commentTextColumn.setDataStoreName(COL_COMMENT);
+        commentsListGrid.addColumn(commentTextColumn, constants.Comment());
 
         List<HasCell<CommentSummary, ?>> cells = new LinkedList<HasCell<CommentSummary, ?>>();
 
@@ -176,7 +199,9 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
                 return object;
             }
         };
-        commentsListGrid.addColumn( actionsColumn, "" );
+        actionsColumn.setSortable(false);
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
+        commentsListGrid.addColumn(actionsColumn, "");
     }
 
     private class DeleteCommentActionHasCell implements HasCell<CommentSummary, CommentSummary> {
