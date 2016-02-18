@@ -31,10 +31,6 @@
   <name>jBPM Console NG</name>
   <description>jBPM Console NG Modules</description>
 
-  <properties>
-    <jdk.min.version>1.7.0</jdk.min.version>
-  </properties>
-
   <modules>
     <module>jbpm-console-ng-human-tasks-admin</module>
     <module>jbpm-console-ng-human-tasks-forms</module>
