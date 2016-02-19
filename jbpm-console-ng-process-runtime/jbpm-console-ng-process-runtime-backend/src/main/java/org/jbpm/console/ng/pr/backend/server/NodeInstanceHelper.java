@@ -46,7 +46,11 @@ public class NodeInstanceHelper {
     public static NodeInstanceSummary adapt(NodeInstanceDesc ni) {
         Date date = ni.getDataTimeStamp();
         String formattedDate = new SimpleDateFormat("d/MMM/yy HH:mm:ss").format(date);
-        return new NodeInstanceSummary(ni.getId(), ni.getProcessInstanceId(), ni.getName(), ni.getNodeId(), ni.getNodeType(),
+        String nodeName = (ni.getName() == null? "" :ni.getName());
+        String nodeUniqueName = (ni.getNodeId() == null? "" :ni.getNodeId());
+        String nodeType = (ni.getNodeType() == null? "" :ni.getNodeType());
+
+        return new NodeInstanceSummary(ni.getId(), ni.getProcessInstanceId(), nodeName, nodeUniqueName, nodeType,
                 formattedDate, ni.getConnection(), ni.isCompleted());
     }
 
