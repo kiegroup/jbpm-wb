@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.console.ng.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
+import org.jbpm.console.ng.pr.client.perspectives.DataSetProcessInstancesWithVariablesPerspective;
 import org.jbpm.console.ng.pr.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.console.ng.pr.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.console.ng.pr.forms.display.process.api.ProcessDisplayerConfig;
@@ -100,7 +101,7 @@ public abstract class BaseProcessDefDetailsMultiPresenter implements RefreshMenu
     }
 
     public void viewProcessInstances() {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instances" );
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( DataSetProcessInstancesWithVariablesPerspective.PERSPECTIVE_ID );
         placeRequestImpl.addParameter( "processName", processId );
         placeManager.goTo( placeRequestImpl );
     }

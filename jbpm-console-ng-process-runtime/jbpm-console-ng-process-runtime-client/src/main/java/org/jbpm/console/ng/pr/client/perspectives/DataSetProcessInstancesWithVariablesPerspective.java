@@ -16,35 +16,51 @@
 package org.jbpm.console.ng.pr.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 
 import org.jbpm.console.ng.gc.client.perspectives.AbstractPerspective;
+import org.jbpm.console.ng.pr.client.editors.instance.list.variables.dash.DataSetProcessInstanceWithVariablesListPresenter;
+import org.kie.workbench.common.widgets.client.search.SetSearchTextEvent;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.ClosableSimpleWorkbenchPanelPresenter;
+import org.uberfire.lifecycle.OnStartup;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 @ApplicationScoped
-@WorkbenchPerspective( identifier = DataSetProcessInstancesWithVariablesPerspective.PERSPECTIVE_ID )
+@WorkbenchPerspective(identifier = DataSetProcessInstancesWithVariablesPerspective.PERSPECTIVE_ID)
 public class DataSetProcessInstancesWithVariablesPerspective extends AbstractPerspective {
 
     public static final String PERSPECTIVE_ID = "DataSet Process Instances With Variables";
 
+    @Inject
+    private Event<SetSearchTextEvent> setSearchTextEvents;
+
+    private String currentProcessDefinition = "";
+
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( ClosableSimpleWorkbenchPanelPresenter.class.getName() );
-        p.setName( PERSPECTIVE_ID );
-
-        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "DataSet Process Instance List With Variables" );
-
-        p.getRoot().addPart( new PartDefinitionImpl( defaultPlaceRequest ) );
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(ClosableSimpleWorkbenchPanelPresenter.class.getName());
+        p.setName(PERSPECTIVE_ID);
+        final DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(DataSetProcessInstanceWithVariablesListPresenter.SCREEN_ID);
+        defaultPlaceRequest.addParameter("processName", currentProcessDefinition);
+        p.getRoot().addPart(new PartDefinitionImpl(defaultPlaceRequest));
         return p;
     }
 
     @Override
     public String getPerspectiveId() {
         return PERSPECTIVE_ID;
+    }
+
+    @OnStartup
+    public void onStartup(final PlaceRequest place) {
+        this.currentProcessDefinition = place.getParameter("processName", "");
+        setSearchTextEvents.fire(new SetSearchTextEvent(currentProcessDefinition));
     }
 }
