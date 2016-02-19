@@ -16,10 +16,8 @@
 package org.jbpm.console.ng.pr.client.editors.instance.list.variables.dash;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
@@ -81,8 +79,10 @@ import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
-@WorkbenchScreen( identifier = "DataSet Process Instance List With Variables" )
+@WorkbenchScreen( identifier = DataSetProcessInstanceWithVariablesListPresenter.SCREEN_ID)
 public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractScreenListPresenter<ProcessInstanceSummary> {
+
+    public static final String SCREEN_ID = "DataSet Process Instance List With Variables";
 
     public interface DataSetProcessInstanceWithVariablesListView extends ListView<ProcessInstanceSummary, DataSetProcessInstanceWithVariablesListPresenter> {
 
@@ -191,7 +191,6 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                         } else {
                             currentTableSettings.getDataSetLookup().addOperation( filter );
                         }
-                        textSearchStr = "";
                     }
 
 
@@ -361,6 +360,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
     @OnOpen
     public void onOpen() {
+        this.textSearchStr = place.getParameter("processName", "");
         refreshGrid();
     }
 
@@ -483,12 +483,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
     @Override
     protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
         textSearchStr = searchEvent.getFilter();
-        if ( textSearchStr != null && textSearchStr.trim().length() > 0 ) {
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put( "textSearch", textSearchStr );
-            dataSetQueryHelper.getCurrentTableSettings().getKey();
-
-            view.applyFilterOnPresenter( dataSetQueryHelper.getCurrentTableSettings().getKey() );
-        }
+        view.applyFilterOnPresenter( dataSetQueryHelper.getCurrentTableSettings().getKey() );
     }
+
 }
