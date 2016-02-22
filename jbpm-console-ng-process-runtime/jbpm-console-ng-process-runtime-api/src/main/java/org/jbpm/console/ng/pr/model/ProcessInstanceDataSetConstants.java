@@ -23,26 +23,28 @@ public final class ProcessInstanceDataSetConstants {
     public static final String PROCESS_INSTANCE_DATASET = "jbpmProcessInstances";
     public static final String PROCESS_INSTANCE_WITH_VARIABLES_DATASET = "jbpmProcessInstancesWithVariables";
 
-    public static final String COLUMN_PROCESSINSTANCEID = "processInstanceId";
-    public static final String COLUMN_PROCESSID = "processId";
+    public static final String COLUMN_PROCESS_INSTANCE_ID = "processInstanceId";
+    public static final String COLUMN_PROCESS_ID = "processId";
     public static final String COLUMN_START = "start_date";
     public static final String COLUMN_END = "end_date";
     public static final String COLUMN_STATUS = "status";
-    public static final String COLUMN_PARENTPROCESSINSTANCEID = "parentProcessInstanceId";
+    public static final String COLUMN_PARENT_PROCESS_INSTANCE_ID = "parentProcessInstanceId";
     public static final String COLUMN_OUTCOME = "outcome";
     public static final String COLUMN_DURATION = "duration";
     public static final String COLUMN_IDENTITY = "user_identity";
-    public static final String COLUMN_PROCESSVERSION = "processVersion";
-    public static final String COLUMN_PROCESSNAME = "processName";
-    public static final String COLUMN_CORRELATIONKEY = "correlationKey";
-    public static final String COLUMN_EXTERNALID = "externalId";
-    public static final String COLUMN_PROCESSINSTANCEDESCRIPTION = "processInstanceDescription";
+    public static final String COLUMN_PROCESS_VERSION = "processVersion";
+    public static final String COLUMN_PROCESS_NAME = "processName";
+    public static final String COLUMN_CORRELATION_KEY = "correlationKey";
+    public static final String COLUMN_EXTERNAL_ID = "externalId";
+    public static final String COLUMN_PROCESS_INSTANCE_DESCRIPTION = "processInstanceDescription";
 
     public static final String PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX = "DS_ProcessInstancesWithVariablesIncludedGrid";
 
-    public static final String PROCESS_INSTANCE_ID = "pid";
-    public static final String VARIABLE_NAME = "varname";
-    public static final String VARIABLE_VALUE = "varvalue";
+    public static final String PROCESS_INSTANCE_ID = "PID";
+    public static final String PROCESS_NAME = "PNAME";
+    public static final String VARIABLE_NAME = "VARNAME";
+    public static final String VARIABLE_VALUE = "VARVALUE";
+    public static final String VARIABLE_ID = "VARID";
 
     public static final String COL_ID_SELECT = "Select";
     public static final String COL_ID_ACTIONS = "Actions";

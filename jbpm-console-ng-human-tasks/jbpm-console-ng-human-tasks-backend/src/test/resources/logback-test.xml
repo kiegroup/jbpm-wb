@@ -8,10 +8,10 @@
     </encoder>
   </appender>
 
-  <logger name="org.kie" level="info" />
-  <logger name="org.hibernate" level="warn" />
+  <logger name="org.jbpm" level="info" />
+  <logger name="org.hibernate" level="info" />
 
-  <root level="error">
+  <root level="INFO">
     <appender-ref ref="consoleAppender" />
   </root>
 </configuration>

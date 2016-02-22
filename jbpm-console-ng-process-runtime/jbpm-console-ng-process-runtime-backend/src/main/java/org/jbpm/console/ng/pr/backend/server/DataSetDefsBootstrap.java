@@ -52,20 +52,20 @@ public class DataSetDefsBootstrap {
                 .name("Process Instances")
                 .dataSource(jbpmDataSource)
                 .dbTable("ProcessInstanceLog", false)
-                .number(COLUMN_PROCESSINSTANCEID)
-                .label(COLUMN_PROCESSID)
+                .number(COLUMN_PROCESS_INSTANCE_ID)
+                .label(COLUMN_PROCESS_ID)
                 .date(COLUMN_START)
                 .date(COLUMN_END)
                 .number(COLUMN_STATUS)
-                .number(COLUMN_PARENTPROCESSINSTANCEID)
+                .number(COLUMN_PARENT_PROCESS_INSTANCE_ID)
                 .label(COLUMN_OUTCOME)
                 .number(COLUMN_DURATION)
                 .label(COLUMN_IDENTITY)
-                .label(COLUMN_PROCESSVERSION)
-                .label(COLUMN_PROCESSNAME)
-                .label(COLUMN_CORRELATIONKEY)
-                .label(COLUMN_EXTERNALID)
-                .label(COLUMN_PROCESSINSTANCEDESCRIPTION)
+                .label(COLUMN_PROCESS_VERSION)
+                .label(COLUMN_PROCESS_NAME)
+                .label(COLUMN_CORRELATION_KEY)
+                .label(COLUMN_EXTERNAL_ID)
+                .label(COLUMN_PROCESS_INSTANCE_DESCRIPTION)
                 .buildDef();
 
 
@@ -73,22 +73,23 @@ public class DataSetDefsBootstrap {
                 .uuid(PROCESS_INSTANCE_WITH_VARIABLES_DATASET)
                 .name("Domain Specific Process Instances")
                 .dataSource(jbpmDataSource)
-                .dbSQL("select pil.processInstanceId as pid,\n" +
-                        "       pil.processId as pname,\n" +
-                        "       v.id as varid,\n" +
-                        "       v.variableId as varname,\n" +
-                        "       v.value as varvalue\n" +
-                        "from ProcessInstanceLog pil\n" +
-                        "  inner join (select vil.processInstanceId ,vil.variableId, MAX(vil.ID) as maxvilid  FROM VariableInstanceLog vil\n" +
-                        "  GROUP BY vil.processInstanceId, vil.variableId)  x\n" +
-                        "    on (x.processInstanceId =pil.processInstanceId)\n" +
-                        "  INNER JOIN VariableInstanceLog v\n" +
-                        "    ON (v.variableId = x.variableId  AND v.id = x.maxvilid )", false )
-                .number("pid")
-                .label("pname")
-                .number("varid")
-                .label("varname")
-                .label("varvalue")
+                .dbSQL("select " +
+                            "pil.processInstanceId as \""+ PROCESS_INSTANCE_ID + "\", " +
+                            "pil.processId as \"" + PROCESS_NAME + "\", " +
+                            "v.id as \"" + VARIABLE_ID + "\", " +
+                            "v.variableId as \"" + VARIABLE_NAME + "\", " +
+                            "v.value as \"" + VARIABLE_VALUE + "\" " +
+                            "from ProcessInstanceLog pil " +
+                            "inner join (select vil.processInstanceId, vil.variableId, MAX(vil.ID) as maxvilid FROM VariableInstanceLog vil " +
+                            "GROUP BY vil.processInstanceId, vil.variableId) x " +
+                            "on (x.processInstanceId = pil.processInstanceId) " +
+                            "INNER JOIN VariableInstanceLog v " +
+                            "ON (v.variableId = x.variableId  AND v.id = x.maxvilid )", false )
+                .number(PROCESS_INSTANCE_ID)
+                .label(PROCESS_NAME)
+                .number(VARIABLE_ID)
+                .label(VARIABLE_NAME)
+                .label(VARIABLE_VALUE)
                 .buildDef();
 
         // Hide all these internal data set from end user view

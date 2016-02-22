@@ -102,7 +102,7 @@ public class DataSetDefsBootstrapTest {
         verify(dataSetManager).lookupDataSet(argument.capture());
         assertEquals(argument.getValue(), DataSetLookupFactory.newDataSetLookupBuilder()
                 .dataset(PROCESS_INSTANCE_DATASET)
-                .filter(in(COLUMN_EXTERNALID, deploymentIds))
+                .filter(in(COLUMN_EXTERNAL_ID, deploymentIds))
                 .buildLookup());
     }
 }

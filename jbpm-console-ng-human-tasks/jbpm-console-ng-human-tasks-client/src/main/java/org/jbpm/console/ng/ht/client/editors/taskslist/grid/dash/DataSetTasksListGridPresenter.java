@@ -151,7 +151,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                         dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
                         dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
                     } else {
-                        dataSetQueryHelper.setLastOrderedColumn( COLUMN_CREATEDON );
+                        dataSetQueryHelper.setLastOrderedColumn(COLUMN_CREATED_ON);
                         dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                     }
 
@@ -180,11 +180,11 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
         if (searchString != null && searchString.trim().length() > 0) {
             try {
                 final Long taskId = Long.valueOf(searchString.trim());
-                filters.add(equalsTo(COLUMN_TASKID, taskId));
+                filters.add(equalsTo(COLUMN_TASK_ID, taskId));
             } catch (NumberFormatException ex) {
                 filters.add(likeTo(COLUMN_NAME, "%" + searchString.toLowerCase() + "%", false));
                 filters.add(likeTo(COLUMN_DESCRIPTION, "%" + searchString.toLowerCase() + "%", false));
-                filters.add(likeTo(COLUMN_PROCESSID, "%" + searchString.toLowerCase() + "%", false));
+                filters.add(likeTo(COLUMN_PROCESS_ID, "%" + searchString.toLowerCase() + "%", false));
             }
         }
         return filters;
@@ -267,7 +267,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
         dataSetQueryHelperDomainSpecific.setDataSetHandler(variablesTableSettings);
         dataSetQueryHelperDomainSpecific.setCurrentTableSettings(variablesTableSettings);
-        dataSetQueryHelperDomainSpecific.setLastOrderedColumn(COLUMN_TASKID);
+        dataSetQueryHelperDomainSpecific.setLastOrderedColumn(COLUMN_TASK_ID);
         dataSetQueryHelperDomainSpecific.setLastSortOrder(SortOrder.ASCENDING);
 
         List<Comparable> tasksIds = new ArrayList<Comparable>();
@@ -275,7 +275,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
             tasksIds.add(task.getTaskId());
         }
         DataSetFilter filter = new DataSetFilter();
-        ColumnFilter filter1 = FilterFactory.equalsTo(COLUMN_TASK_VARIABLE_TASKID, tasksIds);
+        ColumnFilter filter1 = FilterFactory.equalsTo(COLUMN_TASK_VARIABLE_TASK_ID, tasksIds);
         filter.addFilterColumn(filter1);
         variablesTableSettings.getDataSetLookup().addOperation(filter);
 
@@ -290,7 +290,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                 if(dataSet.getRowCount()>0) {
                     Set<String> columns = new HashSet<String>();
                     for (int i = 0; i < dataSet.getRowCount(); i++) {
-                        Long taskId = dataSetQueryHelperDomainSpecific.getColumnLongValue(dataSet, COLUMN_TASKID, i);
+                        Long taskId = dataSetQueryHelperDomainSpecific.getColumnLongValue(dataSet, COLUMN_TASK_ID, i);
                         String variableName = dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSet,COLUMN_TASK_VARIABLE_NAME, i);
                         String variableValue = dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSet,COLUMN_TASK_VARIABLE_VALUE, i);
 
@@ -322,21 +322,21 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
     protected TaskSummary createTaskSummaryFromDataSet(final DataSet dataSet, int i) {
         return new TaskSummary(
-                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_TASKID, i ),
+                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_TASK_ID, i ),
                 dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_NAME, i ),
                 dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_DESCRIPTION, i ),
                 dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_STATUS, i ),
                 dataSetQueryHelper.getColumnIntValue(dataSet, COLUMN_PRIORITY, i),
-                dataSetQueryHelper.getColumnStringValue( dataSet,COLUMN_ACTUALOWNER, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_CREATEDBY, i ),
-                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_CREATEDON, i),
-                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_ACTIVATIONTIME, i),
-                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_DUEDATE, i),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_PROCESSID, i),
-                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESSSESSIONID, i),
-                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESSINSTANCEID, i),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_DEPLOYMENTID, i ),
-                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENTID, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_ACTUAL_OWNER, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_CREATED_BY, i ),
+                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_CREATED_ON, i),
+                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_ACTIVATION_TIME, i),
+                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_DUE_DATE, i),
+                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_PROCESS_ID, i),
+                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESS_SESSION_ID, i),
+                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESS_INSTANCE_ID, i),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_DEPLOYMENT_ID, i ),
+                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENT_ID, i ),
                 HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet.getUUID()));
     }
 

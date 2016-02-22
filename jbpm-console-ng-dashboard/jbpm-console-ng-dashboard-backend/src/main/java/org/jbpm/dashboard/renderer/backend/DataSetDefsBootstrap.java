@@ -60,10 +60,13 @@ public class DataSetDefsBootstrap {
                 .uuid(TASKS_MONITORING_DATASET)
                 .name("Tasks monitoring")
                 .dataSource(jbpmDataSource)
-                .dbSQL("select p.processName, p.externalId, t.* " +
-                        "from ProcessInstanceLog p " +
-                        "inner join BAMTaskSummary t on (t.processInstanceId = p.processInstanceId) " +
-                        "inner join (select min(pk) as pk from BAMTaskSummary group by taskId) d on t.pk=d.pk",
+                .dbSQL("select " +
+                            "p.processName, " +
+                            "p.externalId, " +
+                            "t.* " +
+                            "from ProcessInstanceLog p " +
+                            "inner join BAMTaskSummary t on (t.processInstanceId = p.processInstanceId) " +
+                            "inner join (select min(pk) as pk from BAMTaskSummary group by taskId) d on t.pk = d.pk",
                         true)
                 .buildDef();
 
