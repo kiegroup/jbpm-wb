@@ -44,7 +44,7 @@ public class DeploymentIdsPreprocessor implements DataSetPreprocessor {
     public void preprocess(DataSetLookup lookup) {
         List<String> deploymentIds = deploymentRolesManager.getDeploymentsForUser(identityProvider);
         DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(in(COLUMN_EXTERNALID, deploymentIds));
+        filter.addFilterColumn(in(COLUMN_EXTERNAL_ID, deploymentIds));
         lookup.addOperation(0, filter);
     }
 }

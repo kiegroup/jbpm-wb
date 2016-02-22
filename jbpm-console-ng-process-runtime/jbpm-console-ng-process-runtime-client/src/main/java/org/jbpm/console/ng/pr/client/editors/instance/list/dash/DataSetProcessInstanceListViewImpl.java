@@ -131,16 +131,16 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
     public void init( final DataSetProcessInstanceListPresenter presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
         bannedColumns.add( COL_ID_SELECT );
-        bannedColumns.add( COLUMN_PROCESSINSTANCEID );
-        bannedColumns.add( COLUMN_PROCESSNAME );
-        bannedColumns.add( COLUMN_PROCESSINSTANCEDESCRIPTION );
+        bannedColumns.add(COLUMN_PROCESS_INSTANCE_ID);
+        bannedColumns.add(COLUMN_PROCESS_NAME);
+        bannedColumns.add(COLUMN_PROCESS_INSTANCE_DESCRIPTION);
         bannedColumns.add( COL_ID_ACTIONS );
         final List<String> initColumns = new ArrayList<String>();
         initColumns.add( COL_ID_SELECT );
-        initColumns.add( COLUMN_PROCESSINSTANCEID );
-        initColumns.add( COLUMN_PROCESSNAME );
-        initColumns.add( COLUMN_PROCESSINSTANCEDESCRIPTION );
-        initColumns.add( COLUMN_PROCESSVERSION );
+        initColumns.add(COLUMN_PROCESS_INSTANCE_ID);
+        initColumns.add(COLUMN_PROCESS_NAME);
+        initColumns.add(COLUMN_PROCESS_INSTANCE_DESCRIPTION);
+        initColumns.add(COLUMN_PROCESS_VERSION);
         initColumns.add( COL_ID_ACTIONS );
 
         final Button button = new Button();
@@ -351,7 +351,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
             }
         };
         processInstanceIdColumn.setSortable( true );
-        processInstanceIdColumn.setDataStoreName( COLUMN_PROCESSINSTANCEID );
+        processInstanceIdColumn.setDataStoreName(COLUMN_PROCESS_INSTANCE_ID);
 
         return processInstanceIdColumn;
     }
@@ -365,7 +365,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
             }
         };
         processNameColumn.setSortable( true );
-        processNameColumn.setDataStoreName( COLUMN_PROCESSNAME );
+        processNameColumn.setDataStoreName(COLUMN_PROCESS_NAME);
 
         return processNameColumn;
     }
@@ -393,7 +393,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
             }
         };
         processVersionColumn.setSortable( true );
-        processVersionColumn.setDataStoreName( COLUMN_PROCESSVERSION );
+        processVersionColumn.setDataStoreName(COLUMN_PROCESS_VERSION);
 
         return processVersionColumn;
     }
@@ -514,7 +514,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
             }
         };
         descriptionColumn.setSortable( true );
-        descriptionColumn.setDataStoreName( COLUMN_PROCESSINSTANCEDESCRIPTION );
+        descriptionColumn.setDataStoreName(COLUMN_PROCESS_INSTANCE_DESCRIPTION);
         return descriptionColumn;
     }
 
@@ -572,20 +572,20 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
         }
         builder.filter( equalsTo( COLUMN_STATUS, names ) );
 
-        builder.setColumn( COLUMN_PROCESSINSTANCEID, "processInstanceId" );
-        builder.setColumn( COLUMN_PROCESSID, "processId" );
-        builder.setColumn( COLUMN_START, "start", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_END, "end", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_STATUS, "status" );
-        builder.setColumn( COLUMN_PARENTPROCESSINSTANCEID, "parentProcessInstanceId" );
-        builder.setColumn( COLUMN_OUTCOME, "outcome" );
-        builder.setColumn( COLUMN_DURATION, "duration" );
-        builder.setColumn( COLUMN_IDENTITY, "identity" );
-        builder.setColumn( COLUMN_PROCESSVERSION, "processVersion" );
-        builder.setColumn( COLUMN_PROCESSNAME, "processName" );
-        builder.setColumn( COLUMN_CORRELATIONKEY, "CorrelationKey" );
-        builder.setColumn( COLUMN_EXTERNALID, "externalId" );
-        builder.setColumn( COLUMN_PROCESSINSTANCEDESCRIPTION, "processInstanceDescription" );
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, "processInstanceId" );
+        builder.setColumn(COLUMN_PROCESS_ID, "processId" );
+        builder.setColumn(COLUMN_START, "start", "MMM dd E, yyyy");
+        builder.setColumn(COLUMN_END, "end", "MMM dd E, yyyy");
+        builder.setColumn(COLUMN_STATUS, "status");
+        builder.setColumn(COLUMN_PARENT_PROCESS_INSTANCE_ID, "parentProcessInstanceId");
+        builder.setColumn(COLUMN_OUTCOME, "outcome");
+        builder.setColumn(COLUMN_DURATION, "duration");
+        builder.setColumn(COLUMN_IDENTITY, "identity");
+        builder.setColumn(COLUMN_PROCESS_VERSION, "processVersion" );
+        builder.setColumn(COLUMN_PROCESS_NAME, "processName" );
+        builder.setColumn(COLUMN_CORRELATION_KEY, "CorrelationKey" );
+        builder.setColumn(COLUMN_EXTERNAL_ID, "externalId" );
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION, "processInstanceDescription" );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
@@ -641,29 +641,20 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
 
         builder.dataset( PROCESS_INSTANCES_DATASET_ID );
 
-      /*  builder.setColumn( COLUMN_TASKID, constants.Id() );
-        builder.setColumn( COLUMN_NAME, constants.Task() );
-        builder.setColumn( COLUMN_DESCRIPTION, constants.Description() );
-        builder.setColumn( COLUMN_PRIORITY, "Priority" );
-        builder.setColumn( COLUMN_STATUS, constants.Status() );
-        builder.setColumn( COLUMN_CREATEDON , "Created on", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy" );
-       */
-
-        builder.setColumn( COLUMN_PROCESSINSTANCEID, "processInstanceId" );
-        builder.setColumn( COLUMN_PROCESSID, "processId" );
-        builder.setColumn( COLUMN_START, "start", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_END, "end", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_STATUS, "status" );
-        builder.setColumn( COLUMN_PARENTPROCESSINSTANCEID, "parentProcessInstanceId" );
-        builder.setColumn( COLUMN_OUTCOME, "outcome" );
-        builder.setColumn( COLUMN_DURATION, "duration" );
-        builder.setColumn( COLUMN_IDENTITY, "identity" );
-        builder.setColumn( COLUMN_PROCESSVERSION, "processVersion" );
-        builder.setColumn( COLUMN_PROCESSNAME, "processName" );
-        builder.setColumn( COLUMN_CORRELATIONKEY, "CorrelationKey" );
-        builder.setColumn( COLUMN_EXTERNALID, "externalId" );
-        builder.setColumn( COLUMN_PROCESSINSTANCEDESCRIPTION, "processInstanceDescription" );
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, "processInstanceId" );
+        builder.setColumn(COLUMN_PROCESS_ID, "processId" );
+        builder.setColumn(COLUMN_START, "start", "MMM dd E, yyyy");
+        builder.setColumn(COLUMN_END, "end", "MMM dd E, yyyy");
+        builder.setColumn(COLUMN_STATUS, "status");
+        builder.setColumn(COLUMN_PARENT_PROCESS_INSTANCE_ID, "parentProcessInstanceId");
+        builder.setColumn(COLUMN_OUTCOME, "outcome");
+        builder.setColumn(COLUMN_DURATION, "duration");
+        builder.setColumn(COLUMN_IDENTITY, "identity");
+        builder.setColumn(COLUMN_PROCESS_VERSION, "processVersion" );
+        builder.setColumn(COLUMN_PROCESS_NAME, "processName" );
+        builder.setColumn(COLUMN_CORRELATION_KEY, "CorrelationKey" );
+        builder.setColumn(COLUMN_EXTERNAL_ID, "externalId" );
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION, "processInstanceDescription" );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
